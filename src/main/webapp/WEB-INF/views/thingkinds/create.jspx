@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_ThingKind" modelAttribute="thingKind" path="/thingkinds" render="${empty dependencies}" z="Gk8QIKs7eInuSAnWgzP6kAceyGI=">
+        <field:textarea field="kindName" id="c_com_labsynch_labseer_domain_ThingKind_kindName" required="true" z="KvjrCNOpqb33kW7quSusdMA3bug="/>
+        <field:select field="lsType" id="c_com_labsynch_labseer_domain_ThingKind_lsType" itemValue="id" items="${thingtypes}" path="/thingtypes" required="true" z="TZs6ko/8VogGZX76vCQ3b8EZCEY="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ThingKind_lsTypeAndKind" z="mnau6V9TENFYA/PUX1+KbgLzOUE="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ThingKind" render="${not empty dependencies}" z="my1jPYUM0iQosaStM4k7GFVHBMk="/>
+</div>

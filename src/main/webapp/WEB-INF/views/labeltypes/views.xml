@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="labeltypes/list">
+        <put-attribute name="body" value="/WEB-INF/views/labeltypes/list.jspx"/>
+    </definition>
+<definition extends="default" name="labeltypes/show">
+        <put-attribute name="body" value="/WEB-INF/views/labeltypes/show.jspx"/>
+    </definition>
+<definition extends="default" name="labeltypes/create">
+        <put-attribute name="body" value="/WEB-INF/views/labeltypes/create.jspx"/>
+    </definition>
+<definition extends="default" name="labeltypes/update">
+        <put-attribute name="body" value="/WEB-INF/views/labeltypes/update.jspx"/>
+    </definition>
+<definition extends="default" name="labeltypes/findLabelTypesByTypeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/labeltypes/findLabelTypesByTypeNameEquals.jspx"/>
+    </definition>
+</tiles-definitions>

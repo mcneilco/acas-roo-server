@@ -1,0 +1,12 @@
+package com.labsynch.labseer.web;
+
+import com.labsynch.labseer.dto.BulkTransferPart1DTO;
+import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RooWebJson(jsonObject = BulkTransferPart1DTO.class)
+@Controller
+@RequestMapping("/bulktransferpart1dto")
+public class BulkTransferPart1DTOController {
+}

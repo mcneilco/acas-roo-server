@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_SubjectLabel" items="${subjectlabels}" z="Cq/t01AgdzggjTpNCGK9beQfIes=">
+        <table:table data="${subjectlabels}" id="l_com_labsynch_labseer_domain_SubjectLabel" path="/subjectlabels" z="pN+jBRW3+kJxqDozT4gMap/cdDc=">
+            <table:column id="c_com_labsynch_labseer_domain_SubjectLabel_labelText" property="labelText" z="TUPFYi7o+Iwv6Oj73Il6eCWIKvo="/>
+            <table:column id="c_com_labsynch_labseer_domain_SubjectLabel_recordedBy" property="recordedBy" z="3BLrECS0MwhGNdMpgOKh1Do19Vk="/>
+            <table:column date="true" dateTimePattern="${subjectLabel_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_SubjectLabel_recordedDate" property="recordedDate" z="QOTJIEHyKthLw67cnAQyotg+4jY="/>
+            <table:column date="true" dateTimePattern="${subjectLabel_modifieddate_date_format}" id="c_com_labsynch_labseer_domain_SubjectLabel_modifiedDate" property="modifiedDate" z="zMeDGcuFnDz+C8Stma4IJ2Syi3Y="/>
+            <table:column id="c_com_labsynch_labseer_domain_SubjectLabel_physicallyLabled" property="physicallyLabled" z="ySJ0/efRo7PK37VXY+bXkRK2HFw="/>
+            <table:column id="c_com_labsynch_labseer_domain_SubjectLabel_imageFile" property="imageFile" z="Pw9WK8ys+1uc/WgT+r6M0nHqCWc="/>
+        </table:table>
+    </page:list>
+</div>

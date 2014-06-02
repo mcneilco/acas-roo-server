@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_Experiment" modelAttribute="experiment" path="/experiments" versionField="Version" z="r8hkUx8LBQJ9nwiRZeWExnc0OoQ=">
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_Experiment_codeName" z="TB+sSauZFq5z5oIZInJ9rNrb70w="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_Experiment_recordedBy" required="true" z="YzFFtYMykCIPN4TuTcq7/9CCh5g="/>
+        <field:datetime dateTimePattern="${experiment_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_Experiment_recordedDate" required="true" z="QX1QBdL9hq6N9TPkOwxyOD0XuSQ="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_Experiment_modifiedBy" z="OhEignBY6jdLvKW+LHGowpVY+qM="/>
+        <field:datetime dateTimePattern="${experiment_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_Experiment_modifiedDate" z="4ZcUYSryt0YDgTIOKUAYaJu8VME="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_Experiment_ignored" z="3xN87qCyv7O+ZICNzLiURQFkHwQ="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_Experiment_lsTransaction" validationMessageCode="field_invalid_integer" z="3bxKbqnom0WB8Ah+BJA+PnAbxEs="/>
+        <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_Experiment_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="SWClQdSAmR5CmuDeR59xz4XrFTA="/>
+        <field:textarea field="shortDescription" id="c_com_labsynch_labseer_domain_Experiment_shortDescription" z="XEEHBSCgMx7+9JamxsybESjdDy4="/>
+        <field:simple field="analysisGroups" id="c_com_labsynch_labseer_domain_Experiment_analysisGroups" messageCode="entity_reference_not_managed" messageCodeAttribute="Analysis Group" z="9UFLg8KpBfuohw4bJnnVv8fWsh0="/>
+        <field:select field="protocol" id="c_com_labsynch_labseer_domain_Experiment_protocol" itemValue="id" items="${protocols}" path="/protocols" required="true" z="lcMTCLeLJDlRKVtFo+K/fhFmJbk="/>
+        <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_Experiment_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Experiment State" z="dZbxv88VJ0W26zIITLfcqqiYDuY="/>
+        <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_Experiment_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Experiment Label" z="+1eSxIqLj79+ert3NhBtKQNnzXw="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_Experiment_lsType" required="true" z="10CUpn1G5U16Qq8a2nD1seHEyQI="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_Experiment_lsKind" required="true" z="LJF1kR7Ozy3Cymor7VOam+O2suo="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_Experiment_lsTypeAndKind" z="AjF4xMOv0aSVdfIcJK5CgHEXOKI="/>
+        <field:select field="lsTags" id="c_com_labsynch_labseer_domain_Experiment_lsTags" itemValue="id" items="${lstags}" multiple="true" path="/lstags" z="7ZO2doMe33rF0pY2EgkqT/HwGLw="/>
+    </form:update>
+</div>

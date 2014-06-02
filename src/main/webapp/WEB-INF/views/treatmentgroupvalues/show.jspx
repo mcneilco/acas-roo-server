@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_TreatmentGroupValue" object="${treatmentgroupvalue}" path="/treatmentgroupvalues" z="758bUKheN4gw28Z8v/VcOwRS0tY=">
+        <field:display field="stringValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_stringValue" object="${treatmentgroupvalue}" z="6fs8k+xwSamhwBBG3Vz6+ewhlHw="/>
+        <field:display field="fileValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_fileValue" object="${treatmentgroupvalue}" z="uBErQd1XCiEKLmnNhWov6Q/zBe0="/>
+        <field:display field="urlValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_urlValue" object="${treatmentgroupvalue}" z="zqOl2QxDKOtQWUfhbJ5Kz4tidV8="/>
+        <field:display date="true" dateTimePattern="${treatmentGroupValue_datevalue_date_format}" field="dateValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_dateValue" object="${treatmentgroupvalue}" z="HVCKhfRCST/PWTANLnqP7TSxE+8="/>
+        <field:display field="clobValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_clobValue" object="${treatmentgroupvalue}" z="RRDxtwO8pRkcmTD7418WT/61jIo="/>
+        <field:display field="blobValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_blobValue" object="${treatmentgroupvalue}" z="lq7wWk3EK7+mDNlqQI/Pkl1AYRA="/>
+        <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_sigFigs" object="${treatmentgroupvalue}" z="jScnUfLDtGxCXQrnaP84t9OOgAk="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_uncertainty" object="${treatmentgroupvalue}" z="Laov6m/Kig78TdQi2NIrQl6YKDk="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_comments" object="${treatmentgroupvalue}" z="0TMi4+JyFPLcYilNpaQ2w6iJ78c="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_ignored" object="${treatmentgroupvalue}" z="JVP4FmgiHaRo6Z5sg2fg96+U78Y="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_lsTransaction" object="${treatmentgroupvalue}" z="p36Rf2UR/i9bz9UfCzbHpqOuKRE="/>
+        <field:display date="true" dateTimePattern="${treatmentGroupValue_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_recordedDate" object="${treatmentgroupvalue}" z="UY/BiW6uDOXHOneDgu23hHXtIAU="/>
+        <field:display date="true" dateTimePattern="${treatmentGroupValue_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_modifiedDate" object="${treatmentgroupvalue}" z="TGOIMsIP8EC9REDvIxeNzS5D8cU="/>
+        <field:display field="publicData" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_publicData" object="${treatmentgroupvalue}" z="DpjmyaaY6SsYAg823prXDUrsI7o="/>
+        <field:display field="codeValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_codeValue" object="${treatmentgroupvalue}" z="hD7Whr7neNtIzNDO94TMdGLu3gE="/>
+        <field:display field="numberOfReplicates" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_numberOfReplicates" object="${treatmentgroupvalue}" z="Yl55ZZRolbzEvjuykwG11dy1wfE="/>
+        <field:display field="uncertaintyType" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_uncertaintyType" object="${treatmentgroupvalue}" z="K75mCN/mqVQH9jvlrfatCKIeZE4="/>
+        <field:display field="lsState" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_lsState" object="${treatmentgroupvalue}" z="xfy/GQt4dnuuyEfpT7sKKdgXD2I="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_lsType" object="${treatmentgroupvalue}" z="4+i6bZgTQ5ZsXrD4fo3uqhYQH+A="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_lsKind" object="${treatmentgroupvalue}" z="i8bES+bfIdesflVcKbIxmafGVNc="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_lsTypeAndKind" object="${treatmentgroupvalue}" z="WnEEhTAbHqtbrNhq0EdOE7Dn+o8="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_recordedBy" object="${treatmentgroupvalue}" z="AT26AtXaoJmgIgKWdPJ615mnAiQ="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_modifiedBy" object="${treatmentgroupvalue}" z="e+MRaQSnLVUznc2pVY9g6GlBoak="/>
+        <field:display field="operatorType" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_operatorType" object="${treatmentgroupvalue}" z="GyPQC047jsyanKU98pRUn9yx+2o="/>
+        <field:display field="operatorKind" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_operatorKind" object="${treatmentgroupvalue}" z="mac59Evv0nGpjQXJIU+PjAfq2ks="/>
+        <field:display field="operatorTypeAndKind" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_operatorTypeAndKind" object="${treatmentgroupvalue}" z="u/bL8Bvj2/E4m8t+OA3ysWzNlE0="/>
+        <field:display field="unitType" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_unitType" object="${treatmentgroupvalue}" z="0Lh7Yr2oRWMY0L5lZhLsBdBs5cs="/>
+        <field:display field="unitKind" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_unitKind" object="${treatmentgroupvalue}" z="dh1bwbxjLqgKdoiCubIlAv3gubY="/>
+        <field:display field="unitTypeAndKind" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_unitTypeAndKind" object="${treatmentgroupvalue}" z="W1k1YJ+eW3lP2s/KY2S99kS1ji8="/>
+        <field:display field="numericValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_numericValue" object="${treatmentgroupvalue}" z="t+9ObW7E99HT3eVmPSrnA7cMR3c="/>
+        <field:display field="codeType" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_codeType" object="${treatmentgroupvalue}" z="jWZBursAqAwldv/jYGYHsCrQ6BE="/>
+        <field:display field="codeKind" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_codeKind" object="${treatmentgroupvalue}" z="XC6kKuS0NhO8l7P3sqo3MlZmTcE="/>
+        <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_codeTypeAndKind" object="${treatmentgroupvalue}" z="AXhQI7KfsrPZMR9Skz3qkD0N0pw="/>
+    </page:show>
+</div>

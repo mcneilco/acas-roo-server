@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_TreatmentGroup" modelAttribute="treatmentGroup" path="/treatmentgroups" versionField="Version" z="LlB/zHoUQ1g5BGWsm9npt3L9z3Q=">
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_TreatmentGroup_recordedBy" required="true" z="DqSvWodwDRKayPcuze/SM/2OF8A="/>
+        <field:datetime dateTimePattern="${treatmentGroup_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_TreatmentGroup_recordedDate" required="true" z="JD4IsawVvQsQmD3rAqtdMM9WKEw="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_TreatmentGroup_modifiedBy" z="xs0ac5ZJgjEd2S0fyXzRfzxKypY="/>
+        <field:datetime dateTimePattern="${treatmentGroup_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_TreatmentGroup_modifiedDate" z="0KL+aUGmRFcZzW1dPs9nRR8iFAM="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_TreatmentGroup_ignored" z="6Re1Gz7psuMPHTzGcseWU5SspP0="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsTransaction" validationMessageCode="field_invalid_integer" z="j3R/lmvO/Kvjna0MrL6PJBnbV1c="/>
+        <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_TreatmentGroup_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="kSwPniQe2b8w0dTJbyEbG5Ve8hg="/>
+        <field:select field="analysisGroup" id="c_com_labsynch_labseer_domain_TreatmentGroup_analysisGroup" itemValue="id" items="${analysisgroups}" path="/analysisgroups" required="true" z="1NkzbYbMGg19D2L1DHV/O4JdgjI="/>
+        <field:simple field="subjects" id="c_com_labsynch_labseer_domain_TreatmentGroup_subjects" messageCode="entity_reference_not_managed" messageCodeAttribute="Subject" z="Q6NlAZaQHQ1hSy3iqZlh5ahivvI="/>
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_TreatmentGroup_codeName" z="yfqxCk4oSvNS/kmuiVXn2Mn2AoM="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsType" required="true" z="ERXjcM7ePvd4pClCkblivCZB06U="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsKind" required="true" z="cP6Es1HZLoLwRgqnHder+7kgBw0="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsTypeAndKind" z="CG0FzAu/QltVi53395Mhe8Pim4g="/>
+        <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Treatment Group Label" z="lZ0LjRMFG4uqOmyCRyZ11D+khhM="/>
+        <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Treatment Group State" z="y0djJ5/AyZ4qHmU4d4n4COCjuSE="/>
+    </form:update>
+</div>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ItxContainerContainerValue" object="${itxcontainercontainervalue}" path="/itxcontainercontainervalues" z="MWui7A292Rs5incYUb9rVdaFn0c=">
+        <field:display field="stringValue" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_stringValue" object="${itxcontainercontainervalue}" z="bljY59smYHWMFFcxYK5Opz8/68Y="/>
+        <field:display field="fileValue" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_fileValue" object="${itxcontainercontainervalue}" z="qVhDgjfNuqoHdMgY+FSjbL1NFT0="/>
+        <field:display field="urlValue" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_urlValue" object="${itxcontainercontainervalue}" z="SlnVEIgedM+ff22GR8k1FvH69yI="/>
+        <field:display date="true" dateTimePattern="${itxContainerContainerValue_datevalue_date_format}" field="dateValue" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_dateValue" object="${itxcontainercontainervalue}" z="7vqd2dURabNlhNgdHz67H8s5XlA="/>
+        <field:display field="clobValue" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_clobValue" object="${itxcontainercontainervalue}" z="ppj7KKXsh46gcYvUBI7PjttRzZM="/>
+        <field:display field="blobValue" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_blobValue" object="${itxcontainercontainervalue}" z="e2VFYTbTykVNbPD03Ym1eAn8YE8="/>
+        <field:display field="numericValue" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_numericValue" object="${itxcontainercontainervalue}" z="56mZ+rC4sALXvkDRzLCV1qexeBo="/>
+        <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_sigFigs" object="${itxcontainercontainervalue}" z="5B9KjsskraM2sWxv8PugvPQse6A="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_uncertainty" object="${itxcontainercontainervalue}" z="+LBBVVK8QTLMCU4Co4M3QiMuXv8="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_comments" object="${itxcontainercontainervalue}" z="kL25pHdFqN62GEdgUSdiQegxrcU="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_ignored" object="${itxcontainercontainervalue}" z="5EfmNJgFvBrMQ5DPuqfaC03Wf4g="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_lsTransaction" object="${itxcontainercontainervalue}" z="oOTlCwDp5El0pHNBZlzGLIYuSzo="/>
+        <field:display date="true" dateTimePattern="${itxContainerContainerValue_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_recordedDate" object="${itxcontainercontainervalue}" z="wxkZwQYoaskZAnFgOwIKusg4oH4="/>
+        <field:display date="true" dateTimePattern="${itxContainerContainerValue_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_modifiedDate" object="${itxcontainercontainervalue}" z="acnhmlURHZ4fnxNLO4BdHuaRKAk="/>
+        <field:display field="publicData" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_publicData" object="${itxcontainercontainervalue}" z="O4e5osh8hVq+q4SWH7hL+MnQbKg="/>
+        <field:display field="codeValue" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_codeValue" object="${itxcontainercontainervalue}" z="lXso8Tr4O+HKn6vn+n85g/aQnq8="/>
+        <field:display field="numberOfReplicates" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_numberOfReplicates" object="${itxcontainercontainervalue}" z="gzArPZ78Qr1HfvaoXCl0lBwSjRw="/>
+        <field:display field="uncertaintyType" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_uncertaintyType" object="${itxcontainercontainervalue}" z="pvEybq2mE0ElwMLBfybqMtYu0Ws="/>
+        <field:display field="lsState" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_lsState" object="${itxcontainercontainervalue}" z="KxStsK7QZ6F6V50XEOQ3kPHumRI="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_lsType" object="${itxcontainercontainervalue}" z="cf6KCh3upsX7H6UHq6PhagEjFYw="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_lsKind" object="${itxcontainercontainervalue}" z="bZOrfoihc6KMQ2OPgTyHRYaSpmw="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_lsTypeAndKind" object="${itxcontainercontainervalue}" z="E9EI/E5N8s4buh0DpXyBvGBFpxY="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_recordedBy" object="${itxcontainercontainervalue}" z="HbNCEjRZNGv8R/dGWVbOHeOacto="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_modifiedBy" object="${itxcontainercontainervalue}" z="WEo03IuzpmRgZszKmwXBHKg5hAw="/>
+        <field:display field="operatorType" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_operatorType" object="${itxcontainercontainervalue}" z="7nBIQbmUHlTiyrcJcc1QnTOYRds="/>
+        <field:display field="operatorKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_operatorKind" object="${itxcontainercontainervalue}" z="gnKejR7zLOPIzZfN272S1phWdwo="/>
+        <field:display field="operatorTypeAndKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_operatorTypeAndKind" object="${itxcontainercontainervalue}" z="AZ63ObW7RSqOGfSzTjnuGWiiIcY="/>
+        <field:display field="unitType" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_unitType" object="${itxcontainercontainervalue}" z="eAGTR+RoVesHQg4gdCEbcgSvCB4="/>
+        <field:display field="unitKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_unitKind" object="${itxcontainercontainervalue}" z="fNBEv3R88CfAGnluQVvH+koZRzA="/>
+        <field:display field="unitTypeAndKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_unitTypeAndKind" object="${itxcontainercontainervalue}" z="h9Cpth4i8PYiJ/eIK/I4NX5wFIw="/>
+        <field:display field="codeType" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_codeType" object="${itxcontainercontainervalue}" z="8PygU8hKyuKkopc6Z6vc9qntLhw="/>
+        <field:display field="codeKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_codeKind" object="${itxcontainercontainervalue}" z="d80Db2vIjK/KVhTd33fvooH7aQo="/>
+        <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_codeTypeAndKind" object="${itxcontainercontainervalue}" z="M8VC1GtGWvWQh5ruEsLdpN+kHxI="/>
+    </page:show>
+</div>

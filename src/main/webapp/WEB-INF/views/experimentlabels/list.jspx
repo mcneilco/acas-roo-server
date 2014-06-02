@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ExperimentLabel" items="${experimentlabels}" z="foOA89E3Pa+ctNihfYf37be/DWw=">
+        <table:table data="${experimentlabels}" id="l_com_labsynch_labseer_domain_ExperimentLabel" path="/experimentlabels" z="4/fD5/RVxBVuTB2jyRftO8Bg1Qo=">
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentLabel_recordedBy" property="recordedBy" z="10p20GLPaM+O6iaWACQWodwJOJE="/>
+            <table:column date="true" dateTimePattern="${experimentLabel_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_ExperimentLabel_recordedDate" property="recordedDate" z="HC99tG3ONc9GKDzK41XS8oRiOqc="/>
+            <table:column date="true" dateTimePattern="${experimentLabel_modifieddate_date_format}" id="c_com_labsynch_labseer_domain_ExperimentLabel_modifiedDate" property="modifiedDate" z="AvjdqotbzefiDaCqDOYG3DIRpIE="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentLabel_physicallyLabled" property="physicallyLabled" z="DZEAgJgM6ehqzlJHJXMmxfntnYs="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentLabel_labelText" property="labelText" z="iUDrtMOSXuyh4VprQAu+fpi5gvY="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentLabel_imageFile" property="imageFile" z="2WHRyt7+78BBlmERauPAUD0zPjI="/>
+        </table:table>
+    </page:list>
+</div>

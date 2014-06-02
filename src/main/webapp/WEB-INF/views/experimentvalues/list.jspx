@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ExperimentValue" items="${experimentvalues}" z="0IjXasd0D4fNdNFzOXZ2Mpcf6U4=">
+        <table:table data="${experimentvalues}" id="l_com_labsynch_labseer_domain_ExperimentValue" path="/experimentvalues" z="AFvuw2aiahRgt8mffFfnb3njh7Q=">
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_lsType" property="lsType" z="q/h3wUMmUn1T6N14PnR4hmf3xu8="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_lsKind" property="lsKind" z="etQTM2Mz3U1XPlbTPwkLkcg0yKA="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_lsTypeAndKind" property="lsTypeAndKind" z="Dn5fA5plZ015EOXDct//Ev80O/s="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_codeType" property="codeType" z="YI+LtFM3v3xc3MDDjcQBVHyqhgc="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_codeKind" property="codeKind" z="CPiUOl8c6Sv01Tpj0ej+eVqfCt8="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_codeTypeAndKind" property="codeTypeAndKind" z="AIP9xpuY3x0g2SG4yQ+nPYg1AzM="/>
+        </table:table>
+    </page:list>
+</div>

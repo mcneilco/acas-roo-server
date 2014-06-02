@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_LsInteraction" modelAttribute="lsInteraction" path="/lsinteractions" versionField="Version" z="n2YEBFl4rLUuSkPkwDRF5EPjryw=">
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_LsInteraction_recordedBy" required="true" z="UwCZ/xTShbTEWlA7Hl2i9RoVtIY="/>
+        <field:datetime dateTimePattern="${lsInteraction_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_LsInteraction_recordedDate" required="true" z="PpBT0u2ZQaUYppu63J1FQQXyAYM="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_LsInteraction_modifiedBy" z="NSHYwl7xvQtz9cJ+N0DiWXG+O4Y="/>
+        <field:datetime dateTimePattern="${lsInteraction_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_LsInteraction_modifiedDate" z="Rk9RLDqPIT69W4agsb6r9S6ZDxE="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_LsInteraction_ignored" z="uPWceMPcAyZAcgQF6/WoNsPeLuw="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_LsInteraction_lsTransaction" validationMessageCode="field_invalid_integer" z="9Eb8tDb+EIJT508S5uj5h60rJYQ="/>
+        <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_LsInteraction_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="7sHOF20BEj4IONsXS7Lsl8/Alzw="/>
+        <field:input field="firstThing" id="c_com_labsynch_labseer_domain_LsInteraction_firstThing" required="true" validationMessageCode="field_invalid_integer" z="VrIkdO3bPXSjtRvAp2TWVlqibaU="/>
+        <field:input field="secondThing" id="c_com_labsynch_labseer_domain_LsInteraction_secondThing" required="true" validationMessageCode="field_invalid_integer" z="jAlq9hsRo6KNQpuIClWR6gHyadg="/>
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_LsInteraction_codeName" z="b9dOdC/Hv0ex2idF4XNiJOOoivI="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_LsInteraction_lsType" required="true" z="NyaPKffwuYcLFs6osAZT20vRygE="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_LsInteraction_lsKind" required="true" z="AT6P1BGsNv7UhQDngRQQNrFWwA4="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_LsInteraction_lsTypeAndKind" z="L0iaLCpMlK0ticTRK02gp3NUyuY="/>
+    </form:update>
+</div>

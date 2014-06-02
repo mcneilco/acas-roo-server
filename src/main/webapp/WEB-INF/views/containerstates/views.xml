@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="containerstates/list">
+        <put-attribute name="body" value="/WEB-INF/views/containerstates/list.jspx"/>
+    </definition>
+<definition extends="default" name="containerstates/show">
+        <put-attribute name="body" value="/WEB-INF/views/containerstates/show.jspx"/>
+    </definition>
+<definition extends="default" name="containerstates/create">
+        <put-attribute name="body" value="/WEB-INF/views/containerstates/create.jspx"/>
+    </definition>
+<definition extends="default" name="containerstates/update">
+        <put-attribute name="body" value="/WEB-INF/views/containerstates/update.jspx"/>
+    </definition>
+<definition extends="default" name="containerstates/findContainerStatesByContainer">
+        <put-attribute name="body" value="/WEB-INF/views/containerstates/findContainerStatesByContainer.jspx"/>
+    </definition>
+<definition extends="default" name="containerstates/findContainerStatesByIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/containerstates/findContainerStatesByIgnoredNot.jspx"/>
+    </definition>
+<definition extends="default" name="containerstates/findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/containerstates/findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot.jspx"/>
+    </definition>
+</tiles-definitions>

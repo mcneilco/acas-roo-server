@@ -1,0 +1,138 @@
+package com.labsynch.labseer.domain;
+
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Query;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.roo.addon.javabean.RooJavaBean;
+import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
+import org.springframework.roo.addon.json.RooJson;
+import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
+
+@RooJavaBean
+@RooToString
+@RooJson
+@Transactional
+@RooJpaActiveRecord(finders = { "findAnalysisGroupStatesByLsTypeAndKindEquals", 
+		"findAnalysisGroupStatesByAnalysisGroup",
+		"findAnalysisGroupStatesByLsTransactionEquals"})
+public class AnalysisGroupState extends AbstractState {
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "analysis_group_id")
+    private AnalysisGroup analysisGroup;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsState", fetch =  FetchType.LAZY)
+    private Set<AnalysisGroupValue> lsValues = new HashSet<AnalysisGroupValue>();
+
+    public AnalysisGroupState(com.labsynch.labseer.domain.AnalysisGroupState analysisGroupState) {
+        super.setRecordedBy(analysisGroupState.getRecordedBy());
+        super.setRecordedDate(analysisGroupState.getRecordedDate());
+        super.setLsTransaction(analysisGroupState.getLsTransaction());
+        super.setModifiedBy(analysisGroupState.getModifiedBy());
+        super.setModifiedDate(analysisGroupState.getModifiedDate());
+        super.setLsType(analysisGroupState.getLsType());
+        super.setLsKind(analysisGroupState.getLsKind());
+    }
+
+	public static AnalysisGroupState update(AnalysisGroupState analysisGroupState) {
+		AnalysisGroupState updatedAnalysisGroupState = AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId());
+		updatedAnalysisGroupState.setRecordedBy(analysisGroupState.getRecordedBy());
+		updatedAnalysisGroupState.setRecordedDate(analysisGroupState.getRecordedDate());
+		updatedAnalysisGroupState.setLsTransaction(analysisGroupState.getLsTransaction());
+		updatedAnalysisGroupState.setModifiedBy(analysisGroupState.getModifiedBy());
+		updatedAnalysisGroupState.setModifiedDate(new Date());
+		updatedAnalysisGroupState.setLsType(analysisGroupState.getLsType());
+		updatedAnalysisGroupState.setLsKind(analysisGroupState.getLsKind());
+		updatedAnalysisGroupState.merge();
+		return updatedAnalysisGroupState;
+    }
+    
+//	public static AnalysisGroupState update(AnalysisGroupState analysisGroupState) {
+//		AnalysisGroupState updatedAnalysisGroupState = new JSONDeserializer<AnalysisGroupState>().
+//				use(null, AnalysisGroupState.class).
+//				use(BigDecimal.class, new CustomBigDecimalFactory()).
+//				deserializeInto(analysisGroupState.toJson(), AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId()));				
+//		updatedAnalysisGroupState.setModifiedDate(new Date());
+//		updatedAnalysisGroupState.merge();
+//		return updatedAnalysisGroupState;
+//	}
+	
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class", "analysisGroup.experiment")
+        .transform(new ExcludeNulls(), void.class)
+        .serialize(this);
+    }
+
+	public static AnalysisGroupState fromJsonToAnalysisGroupState(String json) {
+        return new JSONDeserializer<AnalysisGroupState>()
+        		.use(null, AnalysisGroupState.class)
+        		.use(BigDecimal.class, new CustomBigDecimalFactory())
+        		.deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<AnalysisGroupState> collection) {
+        return new JSONSerializer()
+        		.exclude("*.class", "analysisGroup.experiment")
+        		.transform(new ExcludeNulls(), void.class)
+        		.serialize(collection);
+    }
+
+	public static String toJsonArrayStub(Collection<AnalysisGroupState> collection) {
+        return new JSONSerializer()
+        		.exclude("*.class", "analysisGroup")
+            	.transform(new ExcludeNulls(), void.class)
+            	.serialize(collection);
+    }
+	
+	public static Collection<AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(String json) {
+        return new JSONDeserializer<List<AnalysisGroupState>>()
+        		.use(null, ArrayList.class)
+        		.use("values", AnalysisGroupState.class)
+        		.use(BigDecimal.class, new CustomBigDecimalFactory())
+        		.deserialize(json);
+    }
+
+	public static Collection<AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(Reader json) {
+        return new JSONDeserializer<List<AnalysisGroupState>>()
+        		.use(null, ArrayList.class)
+        		.use("values", AnalysisGroupState.class)
+        		.use(BigDecimal.class, new CustomBigDecimalFactory())
+        		.deserialize(json);
+    }
+
+	public static int deleteByExperimentID(Long experimentId) {
+		if (experimentId == null) return 0;
+		EntityManager em = SubjectValue.entityManager();
+		String deleteSQL = "DELETE FROM AnalysisGroupState oo WHERE id in (select o.id from AnalysisGroupState o where o.analysisGroup.experiment.id = :experimentId)";
+
+		Query q = em.createQuery(deleteSQL);
+		q.setParameter("experimentId", experimentId);
+		int numberOfDeletedEntities = q.executeUpdate();
+		return numberOfDeletedEntities;
+	}
+
+}

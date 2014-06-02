@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="lsthingvalues/list">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/list.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/show">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/show.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/create">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/create.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/update">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/update.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsState">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsState.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByCodeValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByCodeValueEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByIgnoredNotAndCodeValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByIgnoredNotAndCodeValueEquals.jspx"/>
+    </definition>
+</tiles-definitions>

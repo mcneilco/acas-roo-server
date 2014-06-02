@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="protocols/list">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/list.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/show">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/show.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/create">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/create.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/update">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/update.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByCodeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByCodeNameEquals.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByIgnoredNot.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByLsTypeEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByLsTypeEquals.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByLsTypeAndKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByLsTypeAndKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByLsTransactionEquals.jspx"/>
+    </definition>
+</tiles-definitions>

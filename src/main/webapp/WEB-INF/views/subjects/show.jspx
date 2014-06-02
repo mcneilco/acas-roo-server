@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_Subject" object="${subject}" path="/subjects" z="eMnyffkF8NKFnaTdxn9pnLHXaW8=">
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_Subject_recordedBy" object="${subject}" z="EEEKu/DPmV5gXcehm6EP+miLM/8="/>
+        <field:display date="true" dateTimePattern="${subject_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_Subject_recordedDate" object="${subject}" z="WP1nuFI3nVP595Ao3D6iD+a5Y6s="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_Subject_modifiedBy" object="${subject}" z="BR1O7ntlWLBiw2CX+AFeD6C1TTk="/>
+        <field:display date="true" dateTimePattern="${subject_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_Subject_modifiedDate" object="${subject}" z="XeGdtOIHImDtFiJdC1Er/76z28k="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_Subject_ignored" object="${subject}" z="dzL1wcBwP5sORP/uGWbJJh0muoY="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_Subject_lsTransaction" object="${subject}" z="+VUQ7WnyJI3ENGWkWg9li7e+5To="/>
+        <field:display field="treatmentGroup" id="s_com_labsynch_labseer_domain_Subject_treatmentGroup" object="${subject}" z="0JdF6z/uCUgFehwN7fSVHYGkMUw="/>
+        <field:display field="codeName" id="s_com_labsynch_labseer_domain_Subject_codeName" object="${subject}" z="J8jFhDGl8xpe4EUC2rnl54QRICo="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_Subject_lsType" object="${subject}" z="9iYAcX+pRDtZF4ILvEDjyxYxojg="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_Subject_lsKind" object="${subject}" z="bQGEHMRaID3qaFTImfOaj53XD/0="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_Subject_lsTypeAndKind" object="${subject}" z="B3WnDuCziy+meAnvJHXJ5azImLk="/>
+    </page:show>
+</div>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_LsInteraction" items="${lsinteractions}" z="wIqc15XfD7nJ979c84XB3/r7P5c=">
+        <table:table data="${lsinteractions}" id="l_com_labsynch_labseer_domain_LsInteraction" path="/lsinteractions" z="zuxhIT8i0TOjx6ZE8vm993NY5k4=">
+            <table:column id="c_com_labsynch_labseer_domain_LsInteraction_recordedBy" property="recordedBy" z="0vrSRL1YA9C4woPAQAlIsLIg9WM="/>
+            <table:column date="true" dateTimePattern="${lsInteraction_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_LsInteraction_recordedDate" property="recordedDate" z="5pmsdXpAW6uUYcLAes8PSPEbELw="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsInteraction_codeName" property="codeName" z="0mUimT5eqC3GRdyHpOGXtm6Iq1E="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsInteraction_lsType" property="lsType" z="/K502445D3lera734ILaawRoi50="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsInteraction_lsKind" property="lsKind" z="4exulWNk9OEvKfMSzYO6qKO4F14="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsInteraction_lsTypeAndKind" property="lsTypeAndKind" z="RW1BfI4vFNSObHuVilpQQcu4IHs="/>
+        </table:table>
+    </page:list>
+</div>

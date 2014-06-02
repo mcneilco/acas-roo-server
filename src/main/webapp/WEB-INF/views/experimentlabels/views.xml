@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="experimentlabels/list">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/list.jspx"/>
+    </definition>
+<definition extends="default" name="experimentlabels/show">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/show.jspx"/>
+    </definition>
+<definition extends="default" name="experimentlabels/create">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/create.jspx"/>
+    </definition>
+<definition extends="default" name="experimentlabels/update">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/update.jspx"/>
+    </definition>
+<definition extends="default" name="experimentlabels/findExperimentLabelsByLabelTextLikeAndLabelTypeAndKindEqualsAndPreferredNotAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/findExperimentLabelsByLabelTextLikeAndLabelTypeAndKindEqualsAndPreferredNotAndIgnoredNot.jspx"/>
+    </definition>
+<definition extends="default" name="experimentlabels/findExperimentLabelsByExperiment">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/findExperimentLabelsByExperiment.jspx"/>
+    </definition>
+<definition extends="default" name="experimentlabels/findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot.jspx"/>
+    </definition>
+<definition extends="default" name="experimentlabels/findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot.jspx"/>
+    </definition>
+</tiles-definitions>

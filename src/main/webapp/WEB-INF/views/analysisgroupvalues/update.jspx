@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_AnalysisGroupValue" modelAttribute="analysisGroupValue" path="/analysisgroupvalues" versionField="Version" z="/TCd50bsarUVAM6Znaupmg34qDo=">
+        <field:textarea field="stringValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_stringValue" z="pyBGoJcpt6Cj8v5VkXqySGpxv8E="/>
+        <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_fileValue" z="3Xe0YhHS0IjQEbq2nmI1xq5PyCM="/>
+        <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_urlValue" z="+raBkOSoeUbWtlgOhBTPh8J/kvo="/>
+        <field:datetime dateTimePattern="${analysisGroupValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_dateValue" z="LxtW7MrvzqarfxHCrn9VuUE6Dxs="/>
+        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_clobValue" z="7kXHjydO4oDuNj59TEucwM6I7lw="/>
+        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_blobValue" z="lxUjQ65x+m9WaCEzjOvHmUGQyfE="/>
+        <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_sigFigs" validationMessageCode="field_invalid_integer" z="RIQv+viYR+0DDqOxwwKr7OY7Go4="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_uncertainty" validationMessageCode="field_invalid_number" z="72F5Bi7YBE0BtQnwvroisXLL+3o="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_comments" z="c4IOFGrBmnKeN5OPZ87SikJyrQ4="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_ignored" z="pllxg0/rMiQ+braQ3UH5gSqNDFQ="/>
+        <field:datetime dateTimePattern="${analysisGroupValue_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_recordedDate" required="true" z="z8Sx6soZpxWTkMURl41ZHWP3ru8="/>
+        <field:datetime dateTimePattern="${analysisGroupValue_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_modifiedDate" z="DAgrSQD3/7AVcco2RECJcGHRInU="/>
+        <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_publicData" z="HleeFwduSmvEDE7Z1p1xd7SPQwo="/>
+        <field:textarea field="codeValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_codeValue" z="rxY47UlW+VT9pOx3c4u/IEJYAI0="/>
+        <field:input field="numberOfReplicates" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_numberOfReplicates" validationMessageCode="field_invalid_integer" z="J3JEWFSPkKoua7pKiCwIigcvw0g="/>
+        <field:textarea field="uncertaintyType" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_uncertaintyType" z="tAfpCmj0Zduk/0Ej3lFQQdmMdy8="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_lsTransaction" validationMessageCode="field_invalid_integer" z="reJsVtZWkBotMHRJIAnbXkIOhOA="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_lsType" required="true" z="LZgMFuBVKzTILBuvPNEjalyLBkU="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_lsKind" required="true" z="xjPOCIbdmeXQh0GX8YjkHxkq1M0="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_lsTypeAndKind" z="tqlVZK38SMD1tmYqbomULBxbKps="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_recordedBy" required="true" z="tDh35KsLGkeWGAHG8MRDlcXd7o8="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_modifiedBy" z="bePCSY/W9b19+kFiZ+af5so/A/g="/>
+        <field:select field="lsState" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_lsState" itemValue="id" items="${analysisgroupstates}" path="/analysisgroupstates" required="true" z="iNnrOx48it6hPxXaFT3MH1kImrk="/>
+        <field:input field="operatorType" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_operatorType" max="25" z="Od+TSXE0jgGpkokdjuBpboDVBNU="/>
+        <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_operatorKind" max="10" z="CABftgO2Gzh/ltTZSyzLW9vK3VM="/>
+        <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_operatorTypeAndKind" z="+c9zOJJsw5bfL5ptnB5b34sRxtA="/>
+        <field:input field="unitType" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_unitType" max="25" z="caUAWHs0D2ZcrrFxE2MK0fC1yQs="/>
+        <field:input field="unitKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_unitKind" max="25" z="Tl3LSQs3UuZMWXUT96Sq4/XACgE="/>
+        <field:textarea field="unitTypeAndKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_unitTypeAndKind" z="Zu9usgvfbovwB76niTWvqP/eNLw="/>
+        <field:input field="numericValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_numericValue" validationMessageCode="field_invalid_number" z="nqOFc5O0GNf+AWwP1zV34rhUsBw="/>
+        <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_codeType" z="BF5q6xKCMfri4JNVTCQltklwVY4="/>
+        <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_codeKind" z="Npgfy74AczcWUMmx/pONuGA1xHY="/>
+        <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_codeTypeAndKind" z="jcOpH3kP9NDsaaSiM5LCo0NMz7c="/>
+    </form:update>
+</div>

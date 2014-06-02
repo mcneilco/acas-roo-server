@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="containerlabels/list">
+        <put-attribute name="body" value="/WEB-INF/views/containerlabels/list.jspx"/>
+    </definition>
+<definition extends="default" name="containerlabels/show">
+        <put-attribute name="body" value="/WEB-INF/views/containerlabels/show.jspx"/>
+    </definition>
+<definition extends="default" name="containerlabels/create">
+        <put-attribute name="body" value="/WEB-INF/views/containerlabels/create.jspx"/>
+    </definition>
+<definition extends="default" name="containerlabels/update">
+        <put-attribute name="body" value="/WEB-INF/views/containerlabels/update.jspx"/>
+    </definition>
+<definition extends="default" name="containerlabels/findContainerLabelsByContainerAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/containerlabels/findContainerLabelsByContainerAndIgnoredNot.jspx"/>
+    </definition>
+<definition extends="default" name="containerlabels/findContainerLabelsByLabelTextEqualsAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/containerlabels/findContainerLabelsByLabelTextEqualsAndIgnoredNot.jspx"/>
+    </definition>
+<definition extends="default" name="containerlabels/findContainerLabelsByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/containerlabels/findContainerLabelsByLsTransactionEquals.jspx"/>
+    </definition>
+</tiles-definitions>

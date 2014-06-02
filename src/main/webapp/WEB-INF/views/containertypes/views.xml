@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="containertypes/list">
+        <put-attribute name="body" value="/WEB-INF/views/containertypes/list.jspx"/>
+    </definition>
+<definition extends="default" name="containertypes/show">
+        <put-attribute name="body" value="/WEB-INF/views/containertypes/show.jspx"/>
+    </definition>
+<definition extends="default" name="containertypes/create">
+        <put-attribute name="body" value="/WEB-INF/views/containertypes/create.jspx"/>
+    </definition>
+<definition extends="default" name="containertypes/update">
+        <put-attribute name="body" value="/WEB-INF/views/containertypes/update.jspx"/>
+    </definition>
+<definition extends="default" name="containertypes/findContainerTypesByTypeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/containertypes/findContainerTypesByTypeNameEquals.jspx"/>
+    </definition>
+</tiles-definitions>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="lsthinglabels/list">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/list.jspx"/>
+    </definition>
+<definition extends="default" name="lsthinglabels/show">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/show.jspx"/>
+    </definition>
+<definition extends="default" name="lsthinglabels/create">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/create.jspx"/>
+    </definition>
+<definition extends="default" name="lsthinglabels/update">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/update.jspx"/>
+    </definition>
+<definition extends="default" name="lsthinglabels/findLsThingLabelsByLabelTextEqualsAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/findLsThingLabelsByLabelTextEqualsAndIgnoredNot.jspx"/>
+    </definition>
+<definition extends="default" name="lsthinglabels/findLsThingLabelsByLabelTextLike">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/findLsThingLabelsByLabelTextLike.jspx"/>
+    </definition>
+<definition extends="default" name="lsthinglabels/findLsThingLabelsByLsThing">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/findLsThingLabelsByLsThing.jspx"/>
+    </definition>
+<definition extends="default" name="lsthinglabels/findLsThingLabelsByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/findLsThingLabelsByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthinglabels/findLsThingLabelsByLabelTextEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthinglabels/findLsThingLabelsByLabelTextEquals.jspx"/>
+    </definition>
+</tiles-definitions>

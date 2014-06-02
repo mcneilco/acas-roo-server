@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="labelsequences/list">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/list.jspx"/>
+    </definition>
+<definition extends="default" name="labelsequences/show">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/show.jspx"/>
+    </definition>
+<definition extends="default" name="labelsequences/create">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/create.jspx"/>
+    </definition>
+<definition extends="default" name="labelsequences/update">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/update.jspx"/>
+    </definition>
+<definition extends="default" name="labelsequences/findLabelSequencesByThingTypeEqualsAndThingKindEqualsAndLabelTypeEqualsAndLabelKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/findLabelSequencesByThingTypeEqualsAndThingKindEqualsAndLabelTypeEqualsAndLabelKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals.jspx"/>
+    </definition>
+</tiles-definitions>

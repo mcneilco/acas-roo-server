@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_ItxProtocolProtocolState" modelAttribute="itxProtocolProtocolState" path="/itxprotocolprotocolstates" versionField="Version" z="yAU629vgo2ZFAz4vIjUMKUKJA3Q=">
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_recordedBy" required="true" z="xUla7xKZhWkqp7NuY9oz/svL4PM="/>
+        <field:datetime dateTimePattern="${itxProtocolProtocolState_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_recordedDate" required="true" z="XPxTGWE262v0Dx/j3YENvXssFZk="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_modifiedBy" z="0m0fXwFKO+F/lNwRALcDKHoHpsk="/>
+        <field:datetime dateTimePattern="${itxProtocolProtocolState_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_modifiedDate" z="xv+91JRzeX9984/k2ukRqM3YT+U="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_lsType" required="true" z="auUWO4gBOqSkK0qn/I0OVxB3pIs="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_lsKind" required="true" z="VgfDmg8+oRG6kSLp2htyqDg/DC0="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_lsTypeAndKind" z="sJrh70OshEY9MNPK8bFsP8s2Qvw="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_comments" z="ZxBO7SJ78Qfw3ZATSQsutMcMYM4="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_ignored" z="VyBNn0PVWTUC0I/q7yXW4o5wyDc="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_lsTransaction" validationMessageCode="field_invalid_integer" z="cFArUcG8dxFJyTMFeknRKv1HZ2A="/>
+        <field:select field="itxProtocolProtocol" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_itxProtocolProtocol" itemValue="id" items="${itxprotocolprotocols}" path="/itxprotocolprotocols" z="9VmWmChTBsIrVcQKXsJSL6vYRsw="/>
+        <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Protocol Protocol Value" z="nSZxMTwEOt6f8qkB0RlvhAr3NOI="/>
+    </form:update>
+</div>

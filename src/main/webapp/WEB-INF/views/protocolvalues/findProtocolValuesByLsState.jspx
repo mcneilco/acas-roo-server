@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:find finderName="ByLsState" id="ff_com_labsynch_labseer_domain_ProtocolValue" path="/protocolvalues" z="NtPxzR8/2Uh1/k3qGffia9kvpO4=">
+        <field:select disableFormBinding="true" field="lsState" id="f_com_labsynch_labseer_domain_ProtocolValue_lsState" itemValue="id" items="${protocolstates}" path="/protocolstates" required="true" z="m/ZaY7mnGF0Cgs+kBVqq7jl0vNc="/>
+    </form:find>
+</div>

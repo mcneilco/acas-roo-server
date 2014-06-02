@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_AnalysisGroup" object="${analysisgroup}" path="/analysisgroups" z="w07mdkXAzctEvkL1G0N55634gCQ=">
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_AnalysisGroup_recordedBy" object="${analysisgroup}" z="GGAIKZzAB0z5bcDj05EP2Bkkyto="/>
+        <field:display date="true" dateTimePattern="${analysisGroup_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_AnalysisGroup_recordedDate" object="${analysisgroup}" z="DrrIg9S/nHLDDOVa1+bbd7I+Wss="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_AnalysisGroup_modifiedBy" object="${analysisgroup}" z="uyoWLEz8Z/89FVk5PUxDdYcA+FI="/>
+        <field:display date="true" dateTimePattern="${analysisGroup_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_AnalysisGroup_modifiedDate" object="${analysisgroup}" z="iXaAebGqDyJXPkUXyOPEnhugVIg="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_AnalysisGroup_ignored" object="${analysisgroup}" z="3lo+mpxyCi33dYm1HsqZaA/9OLI="/>
+        <field:display field="experiment" id="s_com_labsynch_labseer_domain_AnalysisGroup_experiment" object="${analysisgroup}" z="YLCz1CIPB0YbpleyP3T/9Fi7RbQ="/>
+        <field:display field="codeName" id="s_com_labsynch_labseer_domain_AnalysisGroup_codeName" object="${analysisgroup}" z="2aaY8CvBda8C2+T94kLhA6PixBE="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_AnalysisGroup_lsType" object="${analysisgroup}" z="/i7aeATa+NKtox5+4hLEfY/oEJk="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_AnalysisGroup_lsKind" object="${analysisgroup}" z="VmTBnqre15rKuvcHs6c9nubD9cA="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_AnalysisGroup_lsTypeAndKind" object="${analysisgroup}" z="j8Tw4Fu0CM+HSHAzPkEmvWoK0A8="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_AnalysisGroup_lsTransaction" object="${analysisgroup}" z="6Z3urlqQKUj/lCOGN2NC3FySrbI="/>
+    </page:show>
+</div>

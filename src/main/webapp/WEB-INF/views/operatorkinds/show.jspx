@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_OperatorKind" object="${operatorkind}" path="/operatorkinds" z="Thu8ojc2XOtGd9oWxhucuvlQ7Lc=">
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_OperatorKind_lsType" object="${operatorkind}" z="9Y26lqWGJT4N5g6fEknGwan6e3g="/>
+        <field:display field="kindName" id="s_com_labsynch_labseer_domain_OperatorKind_kindName" object="${operatorkind}" z="1XNK1nSPZX08gLFoLgvXpPT7aDk="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_OperatorKind_lsTypeAndKind" object="${operatorkind}" z="x9V9ALYmSw5F+6C3V4OKM828o2U="/>
+    </page:show>
+</div>

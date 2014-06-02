@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_ExperimentValue" modelAttribute="experimentValue" path="/experimentvalues" render="${empty dependencies}" z="za/JDkU0cPfLBkxlchMoWCTZT0g=">
+        <field:textarea field="stringValue" id="c_com_labsynch_labseer_domain_ExperimentValue_stringValue" z="X9mkBm46IY3qdv5IXFc8qgcCa2A="/>
+        <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_ExperimentValue_fileValue" z="l24QKTNYJxcivqBMAmEJMSK77wc="/>
+        <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_ExperimentValue_urlValue" z="KN6d3wJC9dtH56NHKYV3TGSdoeg="/>
+        <field:datetime dateTimePattern="${experimentValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_ExperimentValue_dateValue" z="1AwngP0rZed8sVy3iGpZRxhHfus="/>
+        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ExperimentValue_clobValue" z="M5EoBIVWUyxqzC2nINQAW8zZabM="/>
+        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ExperimentValue_blobValue" z="FqkBnbyrKuAszK1MGOlojXkCZlU="/>
+        <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_ExperimentValue_sigFigs" validationMessageCode="field_invalid_integer" z="BczkNOc/G09wAQ1gEZpVF41efFA="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ExperimentValue_uncertainty" validationMessageCode="field_invalid_number" z="yPCo9AKL5gFq5dbgbs7Yr16U3jM="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ExperimentValue_comments" z="O17SSG4Rx2QzLCqdX0ghAsXlmWU="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ExperimentValue_ignored" z="phfAMT26Sc2tUkQbrgjGhRHpQCM="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ExperimentValue_lsTransaction" validationMessageCode="field_invalid_integer" z="Z9mu9HoScdmEgp2rkwAe2dhMM/Y="/>
+        <field:datetime dateTimePattern="${experimentValue_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_ExperimentValue_recordedDate" required="true" z="/U7zFEgxEosNeJOlR9uA0WfhxDQ="/>
+        <field:datetime dateTimePattern="${experimentValue_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_ExperimentValue_modifiedDate" z="s2ehJkTOHGfmIs+SY/jTxuZKoPw="/>
+        <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_ExperimentValue_publicData" z="fZ1YprPLFetxY48CSQ/jQObxQZc="/>
+        <field:textarea field="codeValue" id="c_com_labsynch_labseer_domain_ExperimentValue_codeValue" z="o9qQKL66Tem9ClsU2e7Bkx36lkA="/>
+        <field:input field="numberOfReplicates" id="c_com_labsynch_labseer_domain_ExperimentValue_numberOfReplicates" validationMessageCode="field_invalid_integer" z="JGvqLvT5qAmRjL00ifnVOsGnk9o="/>
+        <field:textarea field="uncertaintyType" id="c_com_labsynch_labseer_domain_ExperimentValue_uncertaintyType" z="nxXRGUufApt02BMvHCf2MfzedJk="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_ExperimentValue_lsType" required="true" z="rrGLzYrftXeebkl8iXtMfmVj+b8="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ExperimentValue_lsKind" required="true" z="+MDILnDqJ7IVImbrQallHsO0pYs="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ExperimentValue_lsTypeAndKind" z="FMAkHTZS9NSCHPOFs/RffwlXGrE="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_ExperimentValue_recordedBy" required="true" z="hMzV+7I3lH7utYJFE17zfVUZWbk="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_ExperimentValue_modifiedBy" z="4IjSb/TpHqXu/L3gNgpyH/5XXeQ="/>
+        <field:select field="lsState" id="c_com_labsynch_labseer_domain_ExperimentValue_lsState" itemValue="id" items="${experimentstates}" path="/experimentstates" required="true" z="1RfwUxAd4CnawWlcN+A/XDkok4A="/>
+        <field:input field="operatorType" id="c_com_labsynch_labseer_domain_ExperimentValue_operatorType" max="25" z="O3xUGlxOnqZWZduLHQ/lODUcE9w="/>
+        <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_ExperimentValue_operatorKind" max="10" z="Rhlb/oXnC4B4w2uXA/JtFB8X1JY="/>
+        <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_ExperimentValue_operatorTypeAndKind" z="4dyIqwsBe35666lgoiBEGEgZxMc="/>
+        <field:input field="unitType" id="c_com_labsynch_labseer_domain_ExperimentValue_unitType" max="25" z="J0xI2Y3GdqUH+jnWBKKGg2bL0ow="/>
+        <field:input field="unitKind" id="c_com_labsynch_labseer_domain_ExperimentValue_unitKind" max="25" z="W4TYP4Y5YK+wsPL+VWjsfcbsRW8="/>
+        <field:textarea field="unitTypeAndKind" id="c_com_labsynch_labseer_domain_ExperimentValue_unitTypeAndKind" z="Fz4Vx4ojtesNBI0hqsnnQB5l4sw="/>
+        <field:input field="numericValue" id="c_com_labsynch_labseer_domain_ExperimentValue_numericValue" validationMessageCode="field_invalid_number" z="u/+jVrzi/Oe4zb34vHctaUtrIFw="/>
+        <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_ExperimentValue_codeType" z="aKuabOzszFynE/AAvEcoEV5P08o="/>
+        <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_ExperimentValue_codeKind" z="Nx+7K7pnwdCjl7ukMdKFNNCgQCM="/>
+        <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_ExperimentValue_codeTypeAndKind" z="6qaFuVxLXzIgAaMzdrGm+LFhygw="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ExperimentValue" render="${not empty dependencies}" z="dZg/3hMIQvSCl7gQjiWTZDENU0w="/>
+</div>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_CodeType" object="${codetype}" path="/codetypes" z="JYIc3/t+9kSHSs96QKnS/gFrkqE=">
+        <field:display field="typeName" id="s_com_labsynch_labseer_domain_CodeType_typeName" object="${codetype}" z="n48y9YBmIvUm1Ls4uOm3YauQGxA="/>
+    </page:show>
+</div>

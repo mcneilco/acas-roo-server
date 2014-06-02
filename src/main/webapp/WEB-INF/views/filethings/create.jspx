@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_FileThing" modelAttribute="fileThing" path="/filethings" render="${empty dependencies}" z="8yCONRCodqNhnc+gjgglqwJBeCc=">
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_FileThing_codeName" z="yXgLneWs4EAB0boisxmgPX6OcPw="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_FileThing_recordedBy" required="true" z="8hCdMtwuj18qP1bcs3B1P/plTVQ="/>
+        <field:datetime dateTimePattern="${fileThing_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_FileThing_recordedDate" required="true" z="jfI4pGgjElRU4B3PSaacn2BaeiM="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_FileThing_modifiedBy" z="/U9qokZDWy01EvIU03XAE+p/p6I="/>
+        <field:datetime dateTimePattern="${fileThing_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_FileThing_modifiedDate" z="RG0BU4duxwrpmO9uT+mrTx56WSE="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_FileThing_ignored" z="mWAXftUVrZM2oKwY/TxQOEI2iM0="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_FileThing_lsTransaction" validationMessageCode="field_invalid_integer" z="3upV0Vj7wM5ZOLF9Cr85DeTVHAg="/>
+        <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_FileThing_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="Y86zbf+onqbYzjZy2qkVVvzrtV8="/>
+        <field:textarea field="name" id="c_com_labsynch_labseer_domain_FileThing_name" z="7i4Bxp4vTtHlYP37nv6SUmIy6UY="/>
+        <field:textarea field="description" id="c_com_labsynch_labseer_domain_FileThing_description" z="d2maFhGiHjX+MhGk+7tigMyrUUg="/>
+        <field:textarea field="fileExtension" id="c_com_labsynch_labseer_domain_FileThing_fileExtension" z="WFZ39nISxMPpJKfg9qs/X7cSOVw="/>
+        <field:textarea field="applicationType" id="c_com_labsynch_labseer_domain_FileThing_applicationType" z="RrScxGpNAzCHJzRJHY8s5zNSdPQ="/>
+        <field:textarea field="mimeType" id="c_com_labsynch_labseer_domain_FileThing_mimeType" z="dveepHxYXinbBh2/7zOg2ebMIQo="/>
+        <field:textarea field="fileURL" id="c_com_labsynch_labseer_domain_FileThing_fileURL" z="XUSwRFzDzyoy8dDz+cwk93IJA/8="/>
+        <field:input field="fileSize" id="c_com_labsynch_labseer_domain_FileThing_fileSize" validationMessageCode="field_invalid_integer" z="3dgvXd7lvet0AgV9INFntq+Z7mY="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_FileThing_lsType" required="true" z="rY4gxNaLXzD7msJ/H4oDSSg/hEE="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_FileThing_lsKind" required="true" z="KlfnNHq/eB/X9tziQveisyNaT0M="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_FileThing_lsTypeAndKind" z="4mauWsBl4QDaW/kaJqRideq00i0="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_FileThing" render="${not empty dependencies}" z="macjLR9HXp6+IzoGF4cWRBLjEGo="/>
+</div>

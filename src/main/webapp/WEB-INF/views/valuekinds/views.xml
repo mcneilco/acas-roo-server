@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="valuekinds/list">
+        <put-attribute name="body" value="/WEB-INF/views/valuekinds/list.jspx"/>
+    </definition>
+<definition extends="default" name="valuekinds/show">
+        <put-attribute name="body" value="/WEB-INF/views/valuekinds/show.jspx"/>
+    </definition>
+<definition extends="default" name="valuekinds/create">
+        <put-attribute name="body" value="/WEB-INF/views/valuekinds/create.jspx"/>
+    </definition>
+<definition extends="default" name="valuekinds/update">
+        <put-attribute name="body" value="/WEB-INF/views/valuekinds/update.jspx"/>
+    </definition>
+<definition extends="default" name="valuekinds/findValueKindsByKindNameEqualsAndLsType">
+        <put-attribute name="body" value="/WEB-INF/views/valuekinds/findValueKindsByKindNameEqualsAndLsType.jspx"/>
+    </definition>
+<definition extends="default" name="valuekinds/findValueKindsByLsType">
+        <put-attribute name="body" value="/WEB-INF/views/valuekinds/findValueKindsByLsType.jspx"/>
+    </definition>
+</tiles-definitions>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_UncertaintyKind" items="${uncertaintykinds}" z="QakgPBOu53VXd8brC99Os8etZbE=">
+        <table:table data="${uncertaintykinds}" id="l_com_labsynch_labseer_domain_UncertaintyKind" path="/uncertaintykinds" z="6qEHiocG3Z04SmgrvsC63wJm8A0=">
+            <table:column id="c_com_labsynch_labseer_domain_UncertaintyKind_kindName" property="kindName" z="tYMlWobgAPRE4WiSrLAlLa7uNdY="/>
+        </table:table>
+    </page:list>
+</div>

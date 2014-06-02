@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="thingkinds/list">
+        <put-attribute name="body" value="/WEB-INF/views/thingkinds/list.jspx"/>
+    </definition>
+<definition extends="default" name="thingkinds/show">
+        <put-attribute name="body" value="/WEB-INF/views/thingkinds/show.jspx"/>
+    </definition>
+<definition extends="default" name="thingkinds/create">
+        <put-attribute name="body" value="/WEB-INF/views/thingkinds/create.jspx"/>
+    </definition>
+<definition extends="default" name="thingkinds/update">
+        <put-attribute name="body" value="/WEB-INF/views/thingkinds/update.jspx"/>
+    </definition>
+<definition extends="default" name="thingkinds/findThingKindsByKindNameEqualsAndLsType">
+        <put-attribute name="body" value="/WEB-INF/views/thingkinds/findThingKindsByKindNameEqualsAndLsType.jspx"/>
+    </definition>
+<definition extends="default" name="thingkinds/findThingKindsByLsType">
+        <put-attribute name="body" value="/WEB-INF/views/thingkinds/findThingKindsByLsType.jspx"/>
+    </definition>
+<definition extends="default" name="thingkinds/findThingKindsByLsTypeAndKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/thingkinds/findThingKindsByLsTypeAndKindEquals.jspx"/>
+    </definition>
+</tiles-definitions>

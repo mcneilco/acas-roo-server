@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ItxProtocolProtocolValue" items="${itxprotocolprotocolvalues}" z="OWA5doi56meQTMHqlQdFjCuu1Kw=">
+        <table:table data="${itxprotocolprotocolvalues}" id="l_com_labsynch_labseer_domain_ItxProtocolProtocolValue" path="/itxprotocolprotocolvalues" z="TRWZ1nKNDjZCwRupRoHSqBw1cFk=">
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsType" property="lsType" z="dPae/rLss2zkw9NFGlnv0E4skAU="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsKind" property="lsKind" z="36Ad7SueV9CHCNnJF3v8OWRYk7c="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsTypeAndKind" property="lsTypeAndKind" z="88JkjA8VlVbMGAhO+2MfyA3iTDI="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeType" property="codeType" z="/3+GnJRam9Ew6AzOPGpcQFDSvVU="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeKind" property="codeKind" z="CWVzA1yP27MA4bTTresDX5t+ayE="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeTypeAndKind" property="codeTypeAndKind" z="eHcG+e/BiTnofIVk41lWEGTW/cA="/>
+        </table:table>
+    </page:list>
+</div>

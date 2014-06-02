@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_ItxSubjectContainerValue" modelAttribute="itxSubjectContainerValue" path="/itxsubjectcontainervalues" render="${empty dependencies}" z="HBl/Do+RJ4rWJgnkWyJthoHgvzo=">
+        <field:textarea field="stringValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_stringValue" z="wkroXgER0xsrhSb5ZACVlK36u/I="/>
+        <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_fileValue" z="tWG+uq8BGxRrSJYOzYoMUZK0M2o="/>
+        <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_urlValue" z="4wWcgpZF6zLppX3JO3e0VjKhR3w="/>
+        <field:datetime dateTimePattern="${itxSubjectContainerValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_dateValue" z="5MuAnSC+CJvbx/SBes5irxvh5lw="/>
+        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_clobValue" z="saZhcAJ3buk4atY6DPaPB1TZya8="/>
+        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_blobValue" z="tTTejftw2J0gbABFUvBeTblyX1U="/>
+        <field:input field="numericValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_numericValue" validationMessageCode="field_invalid_number" z="qJdmHe4ZqFctQLClXv5NJaqp1c0="/>
+        <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_sigFigs" validationMessageCode="field_invalid_integer" z="JFWnqOXyV3oacPpqVgk6tmXik78="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_uncertainty" validationMessageCode="field_invalid_number" z="ZvpzpOQAFQ5Cx68DEg88Z3n13k4="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_comments" z="KbQFWBVJHTFOOH7+7bk5/o/Ovqk="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_ignored" z="QL6chWhT1DbzPDgDVLzioOQJSHI="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_lsTransaction" validationMessageCode="field_invalid_integer" z="jwRTdYQ6380xxvvahxgQJB+srzg="/>
+        <field:datetime dateTimePattern="${itxSubjectContainerValue_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_recordedDate" required="true" z="B0DR7ybzyX19b8RYW3L+2y1vHsc="/>
+        <field:datetime dateTimePattern="${itxSubjectContainerValue_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_modifiedDate" z="unm0yPUs/YYTXp2bvvkin/zVQhI="/>
+        <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_publicData" z="jPTHIZYzHyuCepb40QEQDjXHumk="/>
+        <field:textarea field="codeValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeValue" z="tckSs16PtHisbGNgUvdkGAY1G/A="/>
+        <field:input field="numberOfReplicates" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_numberOfReplicates" validationMessageCode="field_invalid_integer" z="eFoiFEfvg3vxJwd/Nso3nh+qqhg="/>
+        <field:textarea field="uncertaintyType" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_uncertaintyType" z="caugNVGKDIU7k79wRpLPrz6PUHc="/>
+        <field:select field="lsState" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_lsState" itemValue="id" items="${itxsubjectcontainerstates}" path="/itxsubjectcontainerstates" z="BiCmmzKVEsDlDQwj30Fhxsf6CBk="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_lsType" required="true" z="Quq1jjpfvsWP98dTund/d7uiS+s="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_lsKind" required="true" z="rRVPXbQTpu2G6lLjg4tuqlQEUOU="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_lsTypeAndKind" z="MXbcg+LpvvTDEaJ1D4Wa0Lq0GIM="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_recordedBy" required="true" z="PlMrubDov/xYl6C701XYBw7Y7Zk="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_modifiedBy" z="TU9S8NoY/z5yOa3ycB2zFuuOX0o="/>
+        <field:input field="operatorType" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_operatorType" max="25" z="23e3Mz0KAlkn2prvdmiEIBnI0Ko="/>
+        <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_operatorKind" max="10" z="Q7mSZTTYP1n4OgEGcu/WUUQufXc="/>
+        <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_operatorTypeAndKind" z="7iPoMrNhbTHIUJUXCWmfZe7WySo="/>
+        <field:input field="unitType" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_unitType" max="25" z="kaIBDJhWJRS3wNr4Hv0AH2HDpCM="/>
+        <field:input field="unitKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_unitKind" max="25" z="TgWQQdpywaIE7fkkyeHBl3VxAdM="/>
+        <field:textarea field="unitTypeAndKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_unitTypeAndKind" z="5SgfEgBJsRfEws/pYzWklkq52+Y="/>
+        <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeType" z="NhSke8iEg3nHPzDmQ3Oin4lTQ24="/>
+        <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeKind" z="jVMNtTlRAWHTNyUnTPZc+pyKcc8="/>
+        <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeTypeAndKind" z="zmn0zYrta6oT79M2daU71tAcn1Y="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ItxSubjectContainerValue" render="${not empty dependencies}" z="9xH/6rM+75uh0zpd160sR2M7jOg="/>
+</div>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="authorroles/list">
+        <put-attribute name="body" value="/WEB-INF/views/authorroles/list.jspx"/>
+    </definition>
+<definition extends="default" name="authorroles/show">
+        <put-attribute name="body" value="/WEB-INF/views/authorroles/show.jspx"/>
+    </definition>
+<definition extends="default" name="authorroles/create">
+        <put-attribute name="body" value="/WEB-INF/views/authorroles/create.jspx"/>
+    </definition>
+<definition extends="default" name="authorroles/update">
+        <put-attribute name="body" value="/WEB-INF/views/authorroles/update.jspx"/>
+    </definition>
+<definition extends="default" name="authorroles/findAuthorRolesByUserEntry">
+        <put-attribute name="body" value="/WEB-INF/views/authorroles/findAuthorRolesByUserEntry.jspx"/>
+    </definition>
+<definition extends="default" name="authorroles/findAuthorRolesByRoleEntry">
+        <put-attribute name="body" value="/WEB-INF/views/authorroles/findAuthorRolesByRoleEntry.jspx"/>
+    </definition>
+<definition extends="default" name="authorroles/findAuthorRolesByRoleEntryAndUserEntry">
+        <put-attribute name="body" value="/WEB-INF/views/authorroles/findAuthorRolesByRoleEntryAndUserEntry.jspx"/>
+    </definition>
+</tiles-definitions>

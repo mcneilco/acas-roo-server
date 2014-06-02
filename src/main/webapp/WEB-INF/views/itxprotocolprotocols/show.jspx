@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ItxProtocolProtocol" object="${itxprotocolprotocol}" path="/itxprotocolprotocols" z="ozUJM61nWXBzZslVRiLvbViSPn0=">
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_lsType" object="${itxprotocolprotocol}" z="MbyDKDywdYZu/gWHCql1OPd356Y="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_lsKind" object="${itxprotocolprotocol}" z="ggtTwQV3PjSF+qJjsmnB1MMipcw="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_lsTypeAndKind" object="${itxprotocolprotocol}" z="hCcHrutsYfbSk+4R41dLPr/xZJo="/>
+        <field:display field="codeName" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_codeName" object="${itxprotocolprotocol}" z="k7++mSQ35kh9+ADwJIM+mgNWLiw="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_recordedBy" object="${itxprotocolprotocol}" z="den003kMaZqhQE6c2TmLxyVsPdA="/>
+        <field:display date="true" dateTimePattern="${itxProtocolProtocol_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_recordedDate" object="${itxprotocolprotocol}" z="uPj2PTHTNmhG+9qNw2f2jtI4twA="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_modifiedBy" object="${itxprotocolprotocol}" z="Fh2sEzB7Z53Fg3gy2cFydTUhOq8="/>
+        <field:display date="true" dateTimePattern="${itxProtocolProtocol_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_modifiedDate" object="${itxprotocolprotocol}" z="1n1piNuHmJZ/leChoKngO+R6lnM="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_ignored" object="${itxprotocolprotocol}" z="h7pfVaj4GBXHg7AhkSBg9JM2JJM="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_lsTransaction" object="${itxprotocolprotocol}" z="zwI8JyknW5+YHSbDVvRakW1e/Co="/>
+        <field:display field="firstProtocol" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_firstProtocol" object="${itxprotocolprotocol}" z="Lk9aogaC06bGPrYoPSI5jQHhmSA="/>
+        <field:display field="secondProtocol" id="s_com_labsynch_labseer_domain_ItxProtocolProtocol_secondProtocol" object="${itxprotocolprotocol}" z="PsCcn6isUimL3gUqN0bp27sku1c="/>
+    </page:show>
+</div>

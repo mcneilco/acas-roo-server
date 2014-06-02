@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_LsThing" items="${lsthings}" z="s7Hzo8aFYYDBn6r5IbBGK4x+Ae0=">
+        <table:table data="${lsthings}" id="l_com_labsynch_labseer_domain_LsThing" path="/lsthings" z="QV8Mg7bPCPFMG57r2hyZUYJNso0=">
+            <table:column id="c_com_labsynch_labseer_domain_LsThing_lsType" property="lsType" z="66B3TQrQ5Nv+Z1d8/E/3Ltk8+os="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThing_lsKind" property="lsKind" z="Qb7Pqh9FiEfsK7SQdaYs5ldk7tQ="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThing_lsTypeAndKind" property="lsTypeAndKind" z="j4fQ88+asIUXbpfAWQ2psq1Rkuw="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThing_codeName" property="codeName" z="O9jCmZFucmKunPPhcXf4SvLA3NM="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThing_recordedBy" property="recordedBy" z="JYLny5O82LYx3aHXZh+fhf+mbSM="/>
+            <table:column date="true" dateTimePattern="${lsThing_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_LsThing_recordedDate" property="recordedDate" z="+8xY7XPcLuu04mdhjAk6VepUszg="/>
+        </table:table>
+    </page:list>
+</div>

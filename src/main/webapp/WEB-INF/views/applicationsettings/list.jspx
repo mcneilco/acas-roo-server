@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ApplicationSetting" items="${applicationsettings}" z="rapYuOev8T7CAXAbc26ojZJEzmI=">
+        <table:table data="${applicationsettings}" id="l_com_labsynch_labseer_domain_ApplicationSetting" path="/applicationsettings" z="OTF2wQRI3q1qZdppxRBz0gTPtfY=">
+            <table:column id="c_com_labsynch_labseer_domain_ApplicationSetting_propName" property="propName" z="76nji8VuhHvEK8w/54P3WBjM5CY="/>
+            <table:column id="c_com_labsynch_labseer_domain_ApplicationSetting_propValue" property="propValue" z="ayQhV5KxEWwH/1n8v47HAU4QVt4="/>
+            <table:column id="c_com_labsynch_labseer_domain_ApplicationSetting_comments" property="comments" z="zeFWGDp6/Ize709icDrbj9AHyzo="/>
+            <table:column id="c_com_labsynch_labseer_domain_ApplicationSetting_ignored" property="ignored" z="m9qBLfx+pV3piXT4lT6F87cRFWg="/>
+            <table:column date="true" dateTimePattern="${applicationSetting_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_ApplicationSetting_recordedDate" property="recordedDate" z="f6maheAzL2BYJ3PlZqMZ3U+E3DA="/>
+        </table:table>
+    </page:list>
+</div>

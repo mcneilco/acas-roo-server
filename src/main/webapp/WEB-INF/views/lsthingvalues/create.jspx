@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_LsThingValue" modelAttribute="lsThingValue" path="/lsthingvalues" render="${empty dependencies}" z="n9izk3mIgrR/QEpnAiYn20s7GQI=">
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_LsThingValue_lsType" required="true" z="MUn8dbVoEjr+vNSyE9Hm5oE9E38="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_LsThingValue_lsKind" required="true" z="rTSnhdMhIt3KN7MsK3/tBEgTXXw="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingValue_lsTypeAndKind" z="ri41UhF5m3toWTR+APcafPljzn4="/>
+        <field:textarea field="stringValue" id="c_com_labsynch_labseer_domain_LsThingValue_stringValue" z="p07BFGbouPgSIhMnNifu5c86xBU="/>
+        <field:textarea field="codeValue" id="c_com_labsynch_labseer_domain_LsThingValue_codeValue" z="0xka5DPtXF5ieIITtRzZ/bz1xnk="/>
+        <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_LsThingValue_fileValue" z="VpNajBX4h5tgbIpJJIS3dryu1o8="/>
+        <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_LsThingValue_urlValue" z="HhzwdGrgbjg48oeGg8pL269DH7o="/>
+        <field:datetime dateTimePattern="${lsThingValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_LsThingValue_dateValue" z="bjSqxXdoCfQtA8/P4Doi+OIaU9o="/>
+        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_LsThingValue_clobValue" z="vjYSNL9fLkTGE9ox8B2OlQe6EVE="/>
+        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_LsThingValue_blobValue" z="KtG+wlONGZWu5j9890IN7zcvS2s="/>
+        <field:input field="operatorType" id="c_com_labsynch_labseer_domain_LsThingValue_operatorType" max="25" z="RiLzE6xK5l0lWAD4CNNasZ/VDJk="/>
+        <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_LsThingValue_operatorKind" max="10" z="vrkR35rEdfwTeC9gXigqTYuHvVc="/>
+        <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingValue_operatorTypeAndKind" z="J0IfnBw0ovAqhAusQnMUFcKvosE="/>
+        <field:input field="numericValue" id="c_com_labsynch_labseer_domain_LsThingValue_numericValue" validationMessageCode="field_invalid_number" z="rS+DTjinRmPs6uUztd5TyvJyO0I="/>
+        <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_LsThingValue_sigFigs" validationMessageCode="field_invalid_integer" z="XgzXORwFCVLbTW5jIgJJBwpU+AQ="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_LsThingValue_uncertainty" validationMessageCode="field_invalid_number" z="lEN56U1k4rMbfgPhe5Qkdg8BH0I="/>
+        <field:input field="numberOfReplicates" id="c_com_labsynch_labseer_domain_LsThingValue_numberOfReplicates" validationMessageCode="field_invalid_integer" z="A0ef0hbrk8LxnVd0kvPUXPwEC4E="/>
+        <field:textarea field="uncertaintyType" id="c_com_labsynch_labseer_domain_LsThingValue_uncertaintyType" z="S0lhgHVq1+Vc1DiM1yOXV2K01sM="/>
+        <field:input field="unitType" id="c_com_labsynch_labseer_domain_LsThingValue_unitType" max="25" z="5z0SrZAa6jCntrOKUTn0beVhth4="/>
+        <field:input field="unitKind" id="c_com_labsynch_labseer_domain_LsThingValue_unitKind" max="25" z="XZ39O6BBuevS4oB8KqSDlloBmlQ="/>
+        <field:textarea field="unitTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingValue_unitTypeAndKind" z="5BB5pnKsxe8C5qh9+bIFqXbIIPw="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_LsThingValue_comments" z="T6j9AkKtDMYFnkSjYeH0BJ9DqAk="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_LsThingValue_ignored" z="EKKAURJraCf1KkNtXJC4d1KD+SY="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_LsThingValue_lsTransaction" validationMessageCode="field_invalid_integer" z="LnXuEfm0YwXBbkK0Mlvf+kdeRjQ="/>
+        <field:datetime dateTimePattern="${lsThingValue_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_LsThingValue_recordedDate" required="true" z="UYWfwBXZLfArFBnVz2HVUjNPVn8="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_LsThingValue_recordedBy" required="true" z="/g5dMa0/FBg6z8q+8oB8w5Cjnxc="/>
+        <field:datetime dateTimePattern="${lsThingValue_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_LsThingValue_modifiedDate" z="WsylVte1wwHOLKiYAJW005CoB/A="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_LsThingValue_modifiedBy" z="AMC6Sr5z2WnPN7XIBKA0H4pJST8="/>
+        <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_LsThingValue_publicData" z="LrzH0UhtBof4+LA3u+dT0UMDWF0="/>
+        <field:select field="lsState" id="c_com_labsynch_labseer_domain_LsThingValue_lsState" itemValue="id" items="${lsthingstates}" path="/lsthingstates" required="true" z="flrHYfm2Ouu+SXcrloQgaJxLT64="/>
+        <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_LsThingValue_codeType" z="nhUhFKV24mv4Ks0umV4GGpLCa5w="/>
+        <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_LsThingValue_codeKind" z="Z1+YEqCTOU5cjTc1J5QHiAqEkuY="/>
+        <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingValue_codeTypeAndKind" z="64yDBrEf9AnzRAK0BIDQiP8YSkw="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_LsThingValue" render="${not empty dependencies}" z="MObDxUKDpRTMdIPH4rh4TpxPfv0="/>
+</div>

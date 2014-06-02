@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_Experiment" object="${experiment}" path="/experiments" z="UWFdyTVLVxvYyhcFZYIV5Ys+TxY=">
+        <field:display field="codeName" id="s_com_labsynch_labseer_domain_Experiment_codeName" object="${experiment}" z="k4TTU5LWkN5xqEmmQWAgaAYOlfM="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_Experiment_recordedBy" object="${experiment}" z="ZPCLAyv91t8FKp5tTAUJgahrsNc="/>
+        <field:display date="true" dateTimePattern="${experiment_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_Experiment_recordedDate" object="${experiment}" z="8y8M7FEMwq2pAguossQfMpZ7XBQ="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_Experiment_modifiedBy" object="${experiment}" z="rrHlSKsARQGCb9qw94C/GMpeM2c="/>
+        <field:display date="true" dateTimePattern="${experiment_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_Experiment_modifiedDate" object="${experiment}" z="GrvTU6KlDf4PIsJWPaIMvs1nj2M="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_Experiment_ignored" object="${experiment}" z="B8bQ24qmIISd+xXD0UqkM6VLZuE="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_Experiment_lsTransaction" object="${experiment}" z="/Mp6XAnxMaMNU9CD2yhGrz8IBAk="/>
+        <field:display field="shortDescription" id="s_com_labsynch_labseer_domain_Experiment_shortDescription" object="${experiment}" z="U6TBxgA2W5GXJoxPVZn0FBwlSfU="/>
+        <field:display field="protocol" id="s_com_labsynch_labseer_domain_Experiment_protocol" object="${experiment}" z="kaT4DCZGSLfA1LS66cup/3suNnY="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_Experiment_lsType" object="${experiment}" z="kuZkikefGNT2xE3MLOqur2a3Yf0="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_Experiment_lsKind" object="${experiment}" z="Q1CiDgGAik8fdn3X1Bfqe/UYuWo="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_Experiment_lsTypeAndKind" object="${experiment}" z="D5Rndcz0rTKL6y6RCt5pRaz0ySw="/>
+        <field:display field="lsTags" id="s_com_labsynch_labseer_domain_Experiment_lsTags" object="${experiment}" z="SMrJnEQHbmrJzKRwXIQLUnpIsXw="/>
+    </page:show>
+</div>

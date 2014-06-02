@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ItxSubjectContainerState" items="${itxsubjectcontainerstates}" z="deiacjsVRft21nUBVfUnUxeoCy8=">
+        <table:table data="${itxsubjectcontainerstates}" id="l_com_labsynch_labseer_domain_ItxSubjectContainerState" path="/itxsubjectcontainerstates" z="s17jjgukYPAzcX3g+8HOKseZBUg=">
+            <table:column id="c_com_labsynch_labseer_domain_ItxSubjectContainerState_recordedBy" property="recordedBy" z="CWuZD+iAGMGC+/iuv6Kq2vsS0Gs="/>
+            <table:column date="true" dateTimePattern="${itxSubjectContainerState_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_ItxSubjectContainerState_recordedDate" property="recordedDate" z="SbCEPFi6grdi2whZvMdIuF2Jlks="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxSubjectContainerState_modifiedBy" property="modifiedBy" z="QT/yhaQaKZfH7sPYn0WpxNCGlAY="/>
+            <table:column date="true" dateTimePattern="${itxSubjectContainerState_modifieddate_date_format}" id="c_com_labsynch_labseer_domain_ItxSubjectContainerState_modifiedDate" property="modifiedDate" z="MMrF6nKCWXbSGKrg6SmeD0Z9HgI="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxSubjectContainerState_lsType" property="lsType" z="k4rLU2QafOg9Fcj9Qz6vq8FhmxY="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxSubjectContainerState_lsKind" property="lsKind" z="0I14xj9tquegQvsPdVK4u45DHRk="/>
+        </table:table>
+    </page:list>
+</div>

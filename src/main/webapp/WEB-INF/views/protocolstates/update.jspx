@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_ProtocolState" modelAttribute="protocolState" path="/protocolstates" versionField="Version" z="RSlBX4Xnu4FNebdP8nDycHfp3sM=">
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_ProtocolState_recordedBy" required="true" z="QVXliUlo4uz1xYr1Hh3SUfDq3qQ="/>
+        <field:datetime dateTimePattern="${protocolState_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_ProtocolState_recordedDate" required="true" z="NQhP7ySC/whjqk4gC+FJVSOTEdg="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_ProtocolState_modifiedBy" z="/OgZhfHhXh1b0DWMCfxMXsH+V3k="/>
+        <field:datetime dateTimePattern="${protocolState_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_ProtocolState_modifiedDate" z="GadTNHWZp3owN9SO2YykkjxrPZA="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ProtocolState_comments" z="4vWuffr65r9f2mie7/UfI+3ij9o="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ProtocolState_ignored" z="I4HZw+SK/RMxQBazPOX22LgVHwA="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ProtocolState_lsTransaction" validationMessageCode="field_invalid_integer" z="6k550gNjJ7sQ4fDVzd2hCBLzGNk="/>
+        <field:select field="protocol" id="c_com_labsynch_labseer_domain_ProtocolState_protocol" itemValue="id" items="${protocols}" path="/protocols" required="true" z="vCIfK44raYPcef8lKW2F2CpeFvE="/>
+        <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_ProtocolState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Protocol Value" z="2L3clTv+op9aUtOa/z3JL4fM+VU="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_ProtocolState_lsType" required="true" z="FGOp+rZ3LZts6Z+6YVva0qCqZXY="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ProtocolState_lsKind" required="true" z="atYs8v3lD1RR5vF/0aDmdMGVCxc="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ProtocolState_lsTypeAndKind" z="+67Mczf/O99FVGfbe+CD76f3xiE="/>
+    </form:update>
+</div>

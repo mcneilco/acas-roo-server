@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_TreatmentGroupLabel" modelAttribute="treatmentGroupLabel" path="/treatmentgrouplabels" versionField="Version" z="rc1NgVQKSkM+LLvVeLT9QUBsD+8=">
+        <field:textarea field="labelText" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_labelText" required="true" z="jEyt787WDoJxkzqgoEaM7y4SyYA="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_recordedBy" required="true" z="aDg7QAzfnqlNFv3bWNy4lcY4bPE="/>
+        <field:datetime dateTimePattern="${treatmentGroupLabel_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_recordedDate" required="true" z="C7BJcw2jVBXF2i0xZBpEQL9zkVA="/>
+        <field:datetime dateTimePattern="${treatmentGroupLabel_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_modifiedDate" z="UCK/OSfzt0thRx6t8NbJYQ7noqs="/>
+        <field:checkbox field="physicallyLabled" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_physicallyLabled" z="0f+DBH2kDkdcjmymxAN7Epfy7XU="/>
+        <field:textarea field="imageFile" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_imageFile" z="jI0CmeoTZF+sOUa1S8F2sIzSMNU="/>
+        <field:checkbox field="preferred" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_preferred" z="JNSmkaZH0/rSaXQ/4Xgw3RO2k+c="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_ignored" z="R52k2qGy2oon9rhuenFxsiOquQ8="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_lsTransaction" validationMessageCode="field_invalid_integer" z="k2NQvPyR1tFQ/3Ap8PAxteo/sU0="/>
+        <field:select field="treatmentGroup" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_treatmentGroup" itemValue="id" items="${treatmentgroups}" path="/treatmentgroups" required="true" z="+OF43yO9Y7s5lGyqGuutrf88fP4="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_lsType" required="true" z="lwEA/BXmaVpqtt4DBUVKfIXRbY0="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_lsKind" required="true" z="y7Zj5Ty3pVzCE9u9ojPDqemo//U="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_TreatmentGroupLabel_lsTypeAndKind" z="k1wCDgAg6duu5w0BsMrnCUlEUS8="/>
+    </form:update>
+</div>

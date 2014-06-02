@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_TreatmentGroupLabel" object="${treatmentgrouplabel}" path="/treatmentgrouplabels" z="H7D2m+T1rxkAylJQjCQJd3TF/II=">
+        <field:display field="labelText" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_labelText" object="${treatmentgrouplabel}" z="yFWzEyWGkyReNJGB5aWVx6CZ95w="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_recordedBy" object="${treatmentgrouplabel}" z="THcAtdUp+yrj6PRa+2GxgSTtLJU="/>
+        <field:display date="true" dateTimePattern="${treatmentGroupLabel_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_recordedDate" object="${treatmentgrouplabel}" z="AdWMBJt0VxPw2SSt+4iaDP5KFls="/>
+        <field:display date="true" dateTimePattern="${treatmentGroupLabel_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_modifiedDate" object="${treatmentgrouplabel}" z="CVVMBbSLiPbHSuwOj0JlsjzgRSI="/>
+        <field:display field="physicallyLabled" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_physicallyLabled" object="${treatmentgrouplabel}" z="ItBVQtferTFQJKtxKseBTQaLOGY="/>
+        <field:display field="imageFile" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_imageFile" object="${treatmentgrouplabel}" z="kNO3o3VVq2A6rjeqFOk3Q0U1fk4="/>
+        <field:display field="preferred" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_preferred" object="${treatmentgrouplabel}" z="hGNts+fYX9aNFsFmMyCQw2QlUY8="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_ignored" object="${treatmentgrouplabel}" z="TbabOQgyR9gPA8Ji+1khy/MDEts="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_lsTransaction" object="${treatmentgrouplabel}" z="LSEdUEp+OXWJ7HxKhQdQUGZ36+A="/>
+        <field:display field="treatmentGroup" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_treatmentGroup" object="${treatmentgrouplabel}" z="la4qRh0Ix+jo2Q1hG+9tVGyfHe0="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_lsType" object="${treatmentgrouplabel}" z="6nYxbiptiU02vpDs5VVdHWSrEgE="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_lsKind" object="${treatmentgrouplabel}" z="tylcYbN2bMA2TORTbs933ZKGgEM="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_lsTypeAndKind" object="${treatmentgrouplabel}" z="KQb0syGmgU8s4JK78ebZ35lO6gM="/>
+    </page:show>
+</div>

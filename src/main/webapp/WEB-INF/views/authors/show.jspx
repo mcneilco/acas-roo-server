@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_Author" object="${author}" path="/authors" z="L6lWnBwSi2bzpRRjk6YDceDEiWo=">
+        <field:display field="firstName" id="s_com_labsynch_labseer_domain_Author_firstName" object="${author}" z="7N1LvD24O4jOsYpWL45tAurW9XM="/>
+        <field:display field="lastName" id="s_com_labsynch_labseer_domain_Author_lastName" object="${author}" z="WgjH/CDul1jYm9phQ7TViXpwKf4="/>
+        <field:display field="userName" id="s_com_labsynch_labseer_domain_Author_userName" object="${author}" z="MrnWu5l6/D4RaRYky8Cf0mOAZkU="/>
+        <field:display field="password" id="s_com_labsynch_labseer_domain_Author_password" object="${author}" render="false" z="user-managed"/>
+        <field:display date="true" dateTimePattern="${author_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_Author_recordedDate" object="${author}" z="G3am9PHb6hSyyJ1w7Y4pRx/3wXk="/>
+        <field:display date="true" dateTimePattern="${author_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_Author_modifiedDate" object="${author}" z="dF8ktY+b3rIITma5qUr4PQXiWRw="/>
+        <field:display date="true" dateTimePattern="${author_activationdate_date_format}" field="activationDate" id="s_com_labsynch_labseer_domain_Author_activationDate" object="${author}" z="o1NALZdtl9bpD3QC96YMt3Z5NlA="/>
+        <field:display field="activationKey" id="s_com_labsynch_labseer_domain_Author_activationKey" object="${author}" render="false" z="user-managed"/>
+        <field:display field="enabled" id="s_com_labsynch_labseer_domain_Author_enabled" object="${author}" z="j+62edaaHq32iJBk8T/XzIQf25k="/>
+        <field:display field="locked" id="s_com_labsynch_labseer_domain_Author_locked" object="${author}" z="mukjkMKfXtQdWpAThQT+gHJjy00="/>
+        <field:display field="emailAddress" id="s_com_labsynch_labseer_domain_Author_emailAddress" object="${author}" z="b3w5VZzB/poqDY09MMLAYwhfSgw="/>
+    </page:show>
+</div>

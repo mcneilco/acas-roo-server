@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="lsthingstates/list">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingstates/list.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingstates/show">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingstates/show.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingstates/create">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingstates/create.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingstates/update">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingstates/update.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingstates/findLsThingStatesByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingstates/findLsThingStatesByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingstates/findLsThingStatesByLsThing">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingstates/findLsThingStatesByLsThing.jspx"/>
+    </definition>
+</tiles-definitions>
