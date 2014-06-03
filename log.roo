@@ -651,3 +651,5 @@ finder list
 finder add findAuthorsByUserNameEquals
 finder add findAuthorsByEmailEquals
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-03-05 08:52:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-02 21:07:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-02 21:15:09
