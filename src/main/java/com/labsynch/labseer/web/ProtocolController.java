@@ -69,104 +69,82 @@ public class ProtocolController {
         }
         return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.OK);
     }
-  
+
     @Transactional
-    @RequestMapping(value = "/{lstype}/{lskind}",  method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/{lstype}/{lskind}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> listJsonByPath(
-    		@PathVariable("lstype") String lsType,
-    		@PathVariable("lskind") String lsKind,
-    		@RequestParam(value = "with", required = false) String with,
-    		@RequestParam(value = "prettyjson", required = false) String prettyjson) {
+    public ResponseEntity<java.lang.String> listJsonByPath(@PathVariable("lstype") String lsType, @PathVariable("lskind") String lsKind, @RequestParam(value = "with", required = false) String with, @RequestParam(value = "prettyjson", required = false) String prettyjson) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        
         boolean prettyJson = false;
-        if (prettyjson != null){
-        	if (prettyjson.equalsIgnoreCase("true")){
-        		prettyJson = true;
-        	}
+        if (prettyjson != null) {
+            if (prettyjson.equalsIgnoreCase("true")) {
+                prettyJson = true;
+            }
         }
-        
         boolean includeExperiments = false;
-        if (with != null){
-        	if (with.equalsIgnoreCase("experiments") || with.equalsIgnoreCase("fullobject")){
-        		includeExperiments = true;
-        	}
+        if (with != null) {
+            if (with.equalsIgnoreCase("experiments") || with.equalsIgnoreCase("fullobject")) {
+                includeExperiments = true;
+            }
         }
-
         List<Protocol> protocols = null;
-        if (lsKind != null){
-        	if (lsType != null){
-        		protocols = Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
-        	} else {
-        		protocols = Protocol.findProtocolsByLsKindEquals(lsKind).getResultList();
-        	}
+        if (lsKind != null) {
+            if (lsType != null) {
+                protocols = Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+            } else {
+                protocols = Protocol.findProtocolsByLsKindEquals(lsKind).getResultList();
+            }
         } else {
-        	protocols = Protocol.findAllProtocols();
+            protocols = Protocol.findAllProtocols();
         }
-        
         return new ResponseEntity<String>(Protocol.toJsonArray(protocols, prettyJson, includeExperiments), headers, HttpStatus.OK);
     }
-    
-    
+
     @Transactional
-    @RequestMapping( method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> listJson(
-    		@RequestParam(value = "with", required = false) String with,
-    		@RequestParam(value = "prettyjson", required = false) String prettyjson,
-    		@RequestParam(value = "lstype", required = false) String lsType,
-    		@RequestParam(value = "lskind", required = false) String lsKind) {
+    public ResponseEntity<java.lang.String> listJson(@RequestParam(value = "with", required = false) String with, @RequestParam(value = "prettyjson", required = false) String prettyjson, @RequestParam(value = "lstype", required = false) String lsType, @RequestParam(value = "lskind", required = false) String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        
         logger.debug("value for prettyjson: " + prettyjson);
         boolean prettyJson = false;
-        if (prettyjson != null){
-        	if (prettyjson.equalsIgnoreCase("true")){
-        		prettyJson = true;
-        	}
+        if (prettyjson != null) {
+            if (prettyjson.equalsIgnoreCase("true")) {
+                prettyJson = true;
+            }
         }
-        
         boolean includeExperiments = false;
-        if (with != null){
-        	if (with.equalsIgnoreCase("experiments") || with.equalsIgnoreCase("fullobject")){
-        		includeExperiments = true;
-        	}
+        if (with != null) {
+            if (with.equalsIgnoreCase("experiments") || with.equalsIgnoreCase("fullobject")) {
+                includeExperiments = true;
+            }
         }
-
         List<Protocol> protocols = null;
-        if (lsKind != null){
-        	logger.debug("incoming lsKind is: " + lsKind);
-        	if (lsType != null){
-        		protocols = Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
-        	} else {
-        		protocols = Protocol.findProtocolsByLsKindEquals(lsKind).getResultList();
-        	}
+        if (lsKind != null) {
+            logger.debug("incoming lsKind is: " + lsKind);
+            if (lsType != null) {
+                protocols = Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+            } else {
+                protocols = Protocol.findProtocolsByLsKindEquals(lsKind).getResultList();
+            }
         } else {
-        	protocols = Protocol.findAllProtocols();
+            protocols = Protocol.findAllProtocols();
         }
-        
-        
         return new ResponseEntity<String>(Protocol.toJsonArray(protocols, prettyJson, includeExperiments), headers, HttpStatus.OK);
     }
-    
+
     @Transactional
-    @RequestMapping( value = "/codetable",  method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/codetable", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> listJsonCodeTable(
-    		@RequestParam(value = "with", required = false) String with,
-    		@RequestParam(value = "prettyjson", required = false) String prettyjson,
-    		@RequestParam(value = "lstype", required = false) String lsType,
-    		@RequestParam(value = "lskind", required = false) String lsKind) {
+    public ResponseEntity<java.lang.String> listJsonCodeTable(@RequestParam(value = "with", required = false) String with, @RequestParam(value = "prettyjson", required = false) String prettyjson, @RequestParam(value = "lstype", required = false) String lsType, @RequestParam(value = "lskind", required = false) String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<CodeTableDTO> result;
-        if (lsKind != null){
+        if (lsKind != null) {
             result = Protocol.getProtocolCodeTableByKindEquals(lsKind);
         } else {
-        	 result = Protocol.getProtocolCodeTable();
+            result = Protocol.getProtocolCodeTable();
         }
         return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
     }
@@ -378,7 +356,6 @@ public class ProtocolController {
     void populateEditForm(Model uiModel, Protocol protocol) {
         uiModel.addAttribute("protocol", protocol);
         addDateTimeFormatPatterns(uiModel);
-
     }
 
     String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

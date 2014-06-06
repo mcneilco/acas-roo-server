@@ -214,7 +214,7 @@ public class ContainerValueController {
         containerValue.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-    
+
     void populateEditForm(Model uiModel, ContainerValue containerValue) {
         uiModel.addAttribute("containerValue", containerValue);
         addDateTimeFormatPatterns(uiModel);

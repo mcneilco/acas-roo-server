@@ -13,4 +13,13 @@
 <definition extends="default" name="itxprotocolprotocols/update">
         <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/update.jspx"/>
     </definition>
+<definition extends="default" name="itxprotocolprotocols/findItxProtocolProtocolsByFirstProtocol">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/findItxProtocolProtocolsByFirstProtocol.jspx"/>
+    </definition>
+<definition extends="default" name="itxprotocolprotocols/findItxProtocolProtocolsByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/findItxProtocolProtocolsByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="itxprotocolprotocols/findItxProtocolProtocolsBySecondProtocol">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/findItxProtocolProtocolsBySecondProtocol.jspx"/>
+    </definition>
 </tiles-definitions>

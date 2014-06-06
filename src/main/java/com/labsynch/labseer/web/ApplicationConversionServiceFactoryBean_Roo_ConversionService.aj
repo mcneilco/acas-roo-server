@@ -5,6 +5,9 @@ package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.CodeKind;
 import com.labsynch.labseer.domain.CodeType;
+import com.labsynch.labseer.domain.DDictKind;
+import com.labsynch.labseer.domain.DDictType;
+import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.ItxProtocolProtocolState;
 import com.labsynch.labseer.domain.ItxProtocolProtocolValue;
@@ -63,6 +66,78 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.CodeType>() {
             public com.labsynch.labseer.domain.CodeType convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), CodeType.class);
+            }
+        };
+    }
+    
+    public Converter<DDictKind, String> ApplicationConversionServiceFactoryBean.getDDictKindToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.DDictKind, java.lang.String>() {
+            public String convert(DDictKind dDictKind) {
+                return new StringBuilder().append(dDictKind.getLsType()).append(' ').append(dDictKind.getName()).append(' ').append(dDictKind.getDescription()).append(' ').append(dDictKind.getComments()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, DDictKind> ApplicationConversionServiceFactoryBean.getIdToDDictKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.DDictKind>() {
+            public com.labsynch.labseer.domain.DDictKind convert(java.lang.Long id) {
+                return DDictKind.findDDictKind(id);
+            }
+        };
+    }
+    
+    public Converter<String, DDictKind> ApplicationConversionServiceFactoryBean.getStringToDDictKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.DDictKind>() {
+            public com.labsynch.labseer.domain.DDictKind convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), DDictKind.class);
+            }
+        };
+    }
+    
+    public Converter<DDictType, String> ApplicationConversionServiceFactoryBean.getDDictTypeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.DDictType, java.lang.String>() {
+            public String convert(DDictType dDictType) {
+                return new StringBuilder().append(dDictType.getName()).append(' ').append(dDictType.getDescription()).append(' ').append(dDictType.getComments()).append(' ').append(dDictType.getDisplayOrder()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, DDictType> ApplicationConversionServiceFactoryBean.getIdToDDictTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.DDictType>() {
+            public com.labsynch.labseer.domain.DDictType convert(java.lang.Long id) {
+                return DDictType.findDDictType(id);
+            }
+        };
+    }
+    
+    public Converter<String, DDictType> ApplicationConversionServiceFactoryBean.getStringToDDictTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.DDictType>() {
+            public com.labsynch.labseer.domain.DDictType convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), DDictType.class);
+            }
+        };
+    }
+    
+    public Converter<DDictValue, String> ApplicationConversionServiceFactoryBean.getDDictValueToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.DDictValue, java.lang.String>() {
+            public String convert(DDictValue dDictValue) {
+                return new StringBuilder().append(dDictValue.getLsType()).append(' ').append(dDictValue.getLsKind()).append(' ').append(dDictValue.getLsTypeAndKind()).append(' ').append(dDictValue.getLsValue()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, DDictValue> ApplicationConversionServiceFactoryBean.getIdToDDictValueConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.DDictValue>() {
+            public com.labsynch.labseer.domain.DDictValue convert(java.lang.Long id) {
+                return DDictValue.findDDictValue(id);
+            }
+        };
+    }
+    
+    public Converter<String, DDictValue> ApplicationConversionServiceFactoryBean.getStringToDDictValueConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.DDictValue>() {
+            public com.labsynch.labseer.domain.DDictValue convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), DDictValue.class);
             }
         };
     }

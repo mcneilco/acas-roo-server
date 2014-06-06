@@ -1,6 +1,11 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupLabel;
+import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ThingPage;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -23,6 +28,7 @@ import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,29 +54,26 @@ public class AnalysisGroupController {
     @Transactional
     @RequestMapping(method = RequestMethod.GET, value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> showJson(
-    		@PathVariable("id") Long id,
-    		@RequestParam(value = "with", required = false) String with) {
+    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id, @RequestParam(value = "with", required = false) String with) {
         AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (analysisGroup == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        
-		if (with != null) {
-			if (with.equalsIgnoreCase("fullobject")) {
-				return new ResponseEntity<String>(analysisGroup.toFullJson(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("prettyjson")) {
-				return new ResponseEntity<String>(analysisGroup.toPrettyJson(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("prettyjsonstub")) {
-				return new ResponseEntity<String>(analysisGroup.toPrettyJsonStub(), headers, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers, HttpStatus.NOT_IMPLEMENTED);
-			}
-		} else {
-			return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
-		}
+        if (with != null) {
+            if (with.equalsIgnoreCase("fullobject")) {
+                return new ResponseEntity<String>(analysisGroup.toFullJson(), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("prettyjson")) {
+                return new ResponseEntity<String>(analysisGroup.toPrettyJson(), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("prettyjsonstub")) {
+                return new ResponseEntity<String>(analysisGroup.toPrettyJsonStub(), headers, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers, HttpStatus.NOT_IMPLEMENTED);
+            }
+        } else {
+            return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
+        }
     }
 
     @Transactional
@@ -175,7 +178,6 @@ public class AnalysisGroupController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         int batchSize = propertiesUtilService.getBatchSize();
-        
         List<IdCollectionDTO> idList = new ArrayList<IdCollectionDTO>();
         IdCollectionDTO idDTO = null;
         int i = 0;
@@ -244,5 +246,10 @@ public class AnalysisGroupController {
         }
         analysisGroup.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+
+    void populateEditForm(Model uiModel, AnalysisGroup analysisGroup) {
+        uiModel.addAttribute("analysisGroup", analysisGroup);
+        addDateTimeFormatPatterns(uiModel);
     }
 }

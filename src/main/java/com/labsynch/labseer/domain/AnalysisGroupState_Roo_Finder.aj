@@ -34,4 +34,14 @@ privileged aspect AnalysisGroupState_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<AnalysisGroupState> AnalysisGroupState.findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = AnalysisGroupState.entityManager();
+        TypedQuery<AnalysisGroupState> q = em.createQuery("SELECT o FROM AnalysisGroupState AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", AnalysisGroupState.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
 }

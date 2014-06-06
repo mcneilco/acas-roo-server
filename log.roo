@@ -653,3 +653,46 @@ finder add findAuthorsByEmailEquals
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-03-05 08:52:17
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-02 21:07:29
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-02 21:15:09
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-03 08:39:53
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-03 14:58:51
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-04 12:11:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-04 14:42:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-04 18:01:38
+web mvc all --package ~.web
+web mvc finder all
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 11:50:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 15:02:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 15:05:21
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 15:05:34
+focus --class ~.domain.AnalysisGroupValue
+finder list
+finder add findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 15:10:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 15:11:28
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 15:13:02
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 15:32:22
+focus --class ~.domain.SubjectValue
+finder list
+finder add findSubjectValuesByLsTypeEqualsAndLsKindEquals
+focus --class AnalysisGroupState
+finder list
+finder add findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 16:13:48
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 16:13:52
+focus --class ~.domain.SubjectValue
+finder list
+finder add finderSubjectValuesBySubject
+finder add findSubjectValuesBySubject
+finder add findSubjectValueByLsStateAndLsTypeEqualAndLsKindEquals
+finder add findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals
+focus --class ~.domain.SubjectState
+// [failed] finder list
+// [failed] finder list
+finder list
+finder add findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 16:47:19

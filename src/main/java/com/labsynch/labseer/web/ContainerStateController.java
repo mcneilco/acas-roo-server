@@ -1,5 +1,14 @@
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerState;
+import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.UpdateLog;
+import com.labsynch.labseer.dto.ContainerMiniDTO;
+import com.labsynch.labseer.dto.ContainerStateMiniDTO;
+import com.labsynch.labseer.service.ContainerStateService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import flexjson.JSONTokener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
@@ -11,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import org.apache.commons.io.IOUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
@@ -37,22 +45,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
-import com.labsynch.labseer.domain.Container;
-import com.labsynch.labseer.domain.ContainerState;
-import com.labsynch.labseer.domain.LsTransaction;
-import com.labsynch.labseer.domain.UpdateLog;
-import com.labsynch.labseer.dto.ContainerMiniDTO;
-import com.labsynch.labseer.dto.ContainerStateMiniDTO;
-import com.labsynch.labseer.service.ContainerStateService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-
-import flexjson.JSONTokener;
-
 @Controller
 @RequestMapping("/containerstates")
-//@RooWebJson(jsonObject = ContainerState.class)
-//@RooWebScaffold(path = "containerstates", formBackingObject = ContainerState.class)
-//@RooWebFinder
+@RooWebScaffold(path = "containerstates", formBackingObject = ContainerState.class)
+@RooWebFinder
 public class ContainerStateController {
 
     private static final Logger logger = LoggerFactory.getLogger(ContainerStateController.class);
@@ -89,16 +85,25 @@ public class ContainerStateController {
     @RequestMapping(value = "/findValidContainerStates/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getValidContainerStatesFromIDs(@RequestBody String json) {
         Collection<Container> containers = Container.fromJsonArrayToContainers(json);
+        logger.debug("number of containers found: " + containers.size());
+        List<ContainerState> containerStates = new ArrayList<ContainerState>();
+        int counter = 0;
         List<Long> containerIds = new ArrayList<Long>();
-        for (Container container : containers){
-        	containerIds.add(container.getId());
+        for (Container container : containers) {
+            containerIds.add(container.getId());
+            counter++;
+            if (counter == 990) {
+                containerStates.addAll(ContainerState.findValidContainerStates(containerIds));
+                counter = 0;
+                containerIds.clear();
+                logger.debug("number of container States found: " + containerStates.size());
+                logger.debug("number of counter: " + counter);
+            }
         }
-        List<ContainerState> containerStates = ContainerState.findValidContainerStates(containerIds);
-//        for (Container container : containers) {
-//            for (ContainerState cs : ContainerState.findValidContainerStates(Container.findContainer(container.getId()))) {
-//                containerStates.add(cs);
-//            }
-//        }
+        if (counter > 0) {
+            containerStates.addAll(ContainerState.findValidContainerStates(containerIds));
+        }
+        logger.debug("number of container States found: " + containerStates.size());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(ContainerState.toJsonArray(containerStates), headers, HttpStatus.OK);
@@ -324,79 +329,78 @@ public class ContainerStateController {
         containerState.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-    
+
     @Transactional
     void populateEditForm(Model uiModel, ContainerState containerState) {
         uiModel.addAttribute("containerState", containerState);
         addDateTimeFormatPatterns(uiModel);
         List<Container> containers = new ArrayList<Container>();
-        if (containerState.getId() != null){
-            containers.add(ContainerState.findContainerState(containerState.getId()).getContainer());        	
+        if (containerState.getId() != null) {
+            containers.add(ContainerState.findContainerState(containerState.getId()).getContainer());
         }
         uiModel.addAttribute("containers", containers);
     }
-    
 
-	@RequestMapping(params = "find=ByContainer", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByContainer", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindContainerStatesByContainer(@RequestParam("container") Container container) {
+    public ResponseEntity<java.lang.String> jsonFindContainerStatesByContainer(@RequestParam("container") Container container) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByContainer(container).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByContainerAndLsKindEqualsAndIgnoredNot", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByContainerAndLsKindEqualsAndIgnoredNot", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(@RequestParam("container") Container container, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored) {
+    public ResponseEntity<java.lang.String> jsonFindContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(@RequestParam("container") Container container, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(container, lsKind, ignored).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByIgnoredNot", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByIgnoredNot", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindContainerStatesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored) {
+    public ResponseEntity<java.lang.String> jsonFindContainerStatesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByIgnoredNot(ignored).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = { "find=ByContainer", "form" }, method = RequestMethod.GET)
+    @RequestMapping(params = { "find=ByContainer", "form" }, method = RequestMethod.GET)
     public String findContainerStatesByContainerForm(Model uiModel) {
         uiModel.addAttribute("containers", Container.findAllContainers());
         return "containerstates/findContainerStatesByContainer";
     }
 
-	@RequestMapping(params = "find=ByContainer", method = RequestMethod.GET)
+    @RequestMapping(params = "find=ByContainer", method = RequestMethod.GET)
     public String findContainerStatesByContainer(@RequestParam("container") Container container, Model uiModel) {
         uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByContainer(container).getResultList());
         return "containerstates/list";
     }
 
-	@RequestMapping(params = { "find=ByContainerAndLsKindEqualsAndIgnoredNot", "form" }, method = RequestMethod.GET)
+    @RequestMapping(params = { "find=ByContainerAndLsKindEqualsAndIgnoredNot", "form" }, method = RequestMethod.GET)
     public String findContainerStatesByContainerAndLsKindEqualsAndIgnoredNotForm(Model uiModel) {
         uiModel.addAttribute("containers", Container.findAllContainers());
         return "containerstates/findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot";
     }
 
-	@RequestMapping(params = "find=ByContainerAndLsKindEqualsAndIgnoredNot", method = RequestMethod.GET)
+    @RequestMapping(params = "find=ByContainerAndLsKindEqualsAndIgnoredNot", method = RequestMethod.GET)
     public String findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(@RequestParam("container") Container container, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
         uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(container, lsKind, ignored).getResultList());
         return "containerstates/list";
     }
 
-	@RequestMapping(params = { "find=ByIgnoredNot", "form" }, method = RequestMethod.GET)
+    @RequestMapping(params = { "find=ByIgnoredNot", "form" }, method = RequestMethod.GET)
     public String findContainerStatesByIgnoredNotForm(Model uiModel) {
         return "containerstates/findContainerStatesByIgnoredNot";
     }
 
-	@RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET)
+    @RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET)
     public String findContainerStatesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
         uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByIgnoredNot(ignored).getResultList());
         return "containerstates/list";
     }
 
-	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
+    @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String create(@Valid ContainerState containerState, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             populateEditForm(uiModel, containerState);
@@ -407,7 +411,7 @@ public class ContainerStateController {
         return "redirect:/containerstates/" + encodeUrlPathSegment(containerState.getId().toString(), httpServletRequest);
     }
 
-	@RequestMapping(params = "form", produces = "text/html")
+    @RequestMapping(params = "form", produces = "text/html")
     public String createForm(Model uiModel) {
         populateEditForm(uiModel, new ContainerState());
         List<String[]> dependencies = new ArrayList<String[]>();
@@ -418,7 +422,7 @@ public class ContainerStateController {
         return "containerstates/create";
     }
 
-	@RequestMapping(value = "/{id}", produces = "text/html")
+    @RequestMapping(value = "/{id}", produces = "text/html")
     public String show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("containerstate", ContainerState.findContainerState(id));
@@ -426,7 +430,7 @@ public class ContainerStateController {
         return "containerstates/show";
     }
 
-	@RequestMapping(produces = "text/html")
+    @RequestMapping(produces = "text/html")
     public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
@@ -441,7 +445,7 @@ public class ContainerStateController {
         return "containerstates/list";
     }
 
-	@RequestMapping(method = RequestMethod.PUT, produces = "text/html")
+    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
     public String update(@Valid ContainerState containerState, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             populateEditForm(uiModel, containerState);
@@ -452,13 +456,13 @@ public class ContainerStateController {
         return "redirect:/containerstates/" + encodeUrlPathSegment(containerState.getId().toString(), httpServletRequest);
     }
 
-	@RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
         populateEditForm(uiModel, ContainerState.findContainerState(id));
         return "containerstates/update";
     }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         ContainerState containerState = ContainerState.findContainerState(id);
         containerState.remove();
@@ -468,19 +472,20 @@ public class ContainerStateController {
         return "redirect:/containerstates";
     }
 
-	void addDateTimeFormatPatterns(Model uiModel) {
+    void addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("containerState_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
         uiModel.addAttribute("containerState_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
     }
 
-	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
+    String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {
             enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
         }
         try {
             pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        } catch (UnsupportedEncodingException uee) {}
+        } catch (UnsupportedEncodingException uee) {
+        }
         return pathSegment;
     }
 }

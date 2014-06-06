@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,8 +25,6 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
 @RequestMapping("api/v1/experiments")
-@RooWebScaffold(path = "experiments", formBackingObject = Experiment.class)
-@RooWebFinder
 @Transactional
 @RooWebJson(jsonObject = Experiment.class)
 public class ApiExperimentController {

@@ -1,11 +1,13 @@
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.dto.AuthorNameDTO;
+import com.labsynch.labseer.utils.PropertiesFileService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import java.util.Date;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.dto.AuthorNameDTO;
-import com.labsynch.labseer.utils.PropertiesFileService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-
 @RooWebJson(jsonObject = Author.class)
 @Controller
 @RequestMapping("/authors")
@@ -39,14 +36,12 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 public class AuthorController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthorController.class);
-    
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
-	
-	@Autowired
-	private PropertiesFileService propertiesFileService;
-	
-	
+
+    @Autowired
+    private PropertiesUtilService propertiesUtilService;
+
+    @Autowired
+    private PropertiesFileService propertiesFileService;
 
     @Autowired
     private MessageDigestPasswordEncoder messageDigestPasswordEncoder;
@@ -57,20 +52,17 @@ public class AuthorController {
         AuthorNameDTO authorName = AuthorNameDTO.fromJsonToAuthorNameDTO(json);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        
-        if (propertiesUtilService.getAuthStrategy().equalsIgnoreCase("properties")){
+        if (propertiesUtilService.getAuthStrategy().equalsIgnoreCase("properties")) {
             logger.debug("searching for properites user: " + authorName.getName());
-
-        	String propertiesUserName = propertiesFileService.getUsernameProperty(propertiesUtilService.getSecurityProperties(), authorName.getName());
+            String propertiesUserName = propertiesFileService.getUsernameProperty(propertiesUtilService.getSecurityProperties(), authorName.getName());
             logger.debug("found properites user: " + propertiesUserName);
-
-        	if (propertiesUserName != null && authorName.getName().equalsIgnoreCase(propertiesUserName)){
-	        		Author author = new Author();
-	        		author.setUserName(propertiesUserName);
-	        		author.setFirstName(propertiesUserName);
-	        		author.setId(new Date().getTime());
-	                return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.OK);
-        	}
+            if (propertiesUserName != null && authorName.getName().equalsIgnoreCase(propertiesUserName)) {
+                Author author = new Author();
+                author.setUserName(propertiesUserName);
+                author.setFirstName(propertiesUserName);
+                author.setId(new Date().getTime());
+                return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.OK);
+            }
         } else {
             List<Author> authors = Author.findAuthorsByUserName(authorName.getName()).getResultList();
             if (authors.size() == 0) {
@@ -82,10 +74,8 @@ public class AuthorController {
             } else {
                 return new ResponseEntity<String>(Author.toJsonArray(authors), headers, HttpStatus.OK);
             }
-        	
         }
-		return new ResponseEntity<String>("[ ]", headers, HttpStatus.NOT_FOUND);
-        
+        return new ResponseEntity<String>("[ ]", headers, HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/username", params = { "userName" }, method = RequestMethod.GET, headers = "Accept=application/json")

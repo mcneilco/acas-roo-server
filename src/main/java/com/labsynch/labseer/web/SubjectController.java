@@ -1,5 +1,10 @@
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.dto.SubjectDTO;
+import com.labsynch.labseer.service.SubjectService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import flexjson.JSONTokener;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -7,7 +12,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.dto.SubjectDTO;
-import com.labsynch.labseer.service.SubjectService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-
-import flexjson.JSONTokener;
 
 @RooWebJson(jsonObject = Subject.class)
 @Controller
@@ -74,40 +71,33 @@ public class SubjectController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> showJson(
-    		@PathVariable("id") Long id,
-    		@RequestParam(value = "with", required = false) String with) {
-    	Subject subject = null;
-    	try {
+    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id, @RequestParam(value = "with", required = false) String with) {
+        Subject subject = null;
+        try {
             subject = Subject.findSubject(id);
-    	} catch (Exception e){
-    		logger.error(e.toString());
-    		subject = null;
-    	}
+        } catch (Exception e) {
+            logger.error(e.toString());
+            subject = null;
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        
         if (subject == null) {
-        	logger.info("did not find the query subject: " + id);
+            logger.info("did not find the query subject: " + id);
             return new ResponseEntity<String>("subject not found", headers, HttpStatus.CONFLICT);
         }
-        
-		if (with != null) {
-			if (with.equalsIgnoreCase("fullobject")) {
-				return new ResponseEntity<String>(subject.toJson(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("prettyjson")) {
-				return new ResponseEntity<String>(subject.toPrettyJson(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("prettyjsonstub")) {
-				return new ResponseEntity<String>(subject.toPrettyJsonStub(), headers, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers, HttpStatus.NOT_IMPLEMENTED);
-			}
-		} else {
-        	//not sure why I wanted to retrieve the subjectDTO
-        	//SubjectDTO subjectDTO = subjectService.getSubject(subject);
-			return new ResponseEntity<String>(subject.toJsonStub(), headers, HttpStatus.OK);
-		}
-        
+        if (with != null) {
+            if (with.equalsIgnoreCase("fullobject")) {
+                return new ResponseEntity<String>(subject.toJson(), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("prettyjson")) {
+                return new ResponseEntity<String>(subject.toPrettyJson(), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("prettyjsonstub")) {
+                return new ResponseEntity<String>(subject.toPrettyJsonStub(), headers, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers, HttpStatus.NOT_IMPLEMENTED);
+            }
+        } else {
+            return new ResponseEntity<String>(subject.toJsonStub(), headers, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(headers = "Accept=application/json")

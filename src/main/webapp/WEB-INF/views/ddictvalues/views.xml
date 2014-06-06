@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="ddictvalues/list">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/list.jspx"/>
+    </definition>
+<definition extends="default" name="ddictvalues/show">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/show.jspx"/>
+    </definition>
+<definition extends="default" name="ddictvalues/create">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/create.jspx"/>
+    </definition>
+<definition extends="default" name="ddictvalues/update">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/update.jspx"/>
+    </definition>
+</tiles-definitions>

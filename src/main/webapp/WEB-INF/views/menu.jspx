@@ -15,6 +15,7 @@
             <menu:item id="fi_subjectvalue_codevalueequals" messageCode="global_menu_find" url="/subjectvalues?find=ByCodeValueEquals&amp;form" z="TpWX8msqy3emIF2r650tZJHJY6k="/>
             <menu:item id="fi_subjectvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/subjectvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="bnUyulwMsBH/zqMrGnupxosiaVU="/>
             <menu:item id="fi_subjectvalue_lsstate" messageCode="global_menu_find" url="/subjectvalues?find=ByLsState&amp;form" z="BJmnpo+wwNSfXPFeJKim6rKslHc="/>
+            <menu:item id="fi_subjectvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/subjectvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="5LZbpyZOLdzBr/CmYasxHhPq/l8="/>
         </menu:category>
         <menu:category id="c_containervalue" z="61ft2oqlcmXT8pmGGZYwQQQ0VPo=">
             <menu:item id="i_containervalue_new" messageCode="global_menu_new" url="/containervalues?form" z="8boDwXK/aCoPpkpkvLS5e3iqgM0="/>
@@ -215,6 +216,7 @@
             <menu:item id="fi_analysisgroupstate_analysisgroup" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroup&amp;form" z="2+M5p4bKObib0x+zWt6V9//EhSU="/>
             <menu:item id="fi_analysisgroupstate_lstransactionequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTransactionEquals&amp;form" z="vGHNTtmEd9lwxe3fSyQxzne+vyY="/>
             <menu:item id="fi_analysisgroupstate_lstypeandkindequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTypeAndKindEquals&amp;form" z="heUs1Kgk6b7vaf9Xgj7fPtEps0U="/>
+            <menu:item id="fi_analysisgroupstate_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="8yJM+iV1XzrrXDwRfpPtPGM3aQ8="/>
         </menu:category>
         <menu:category id="c_itxsubjectcontainervalue" z="p7hvR3xhX4SPAM9hlDwQBFuAa7M=">
             <menu:item id="i_itxsubjectcontainervalue_new" messageCode="global_menu_new" url="/itxsubjectcontainervalues?form" z="LIS5Tx5kNDL+DroDTf1heIb29xQ="/>
@@ -258,6 +260,7 @@
             <menu:item id="fi_analysisgroupvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="CU68x9ymqioluFHCw8V3JjJZQKo="/>
             <menu:item id="fi_analysisgroupvalue_lsstate" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByLsState&amp;form" z="bwLbER+dIxX1Ulz0rkXQO7CUHZI="/>
             <menu:item id="fi_analysisgroupvalue_lstransactionequals" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByLsTransactionEquals&amp;form" z="gQRw7Ct7FyQs8b7F4TbA3YNpTR4="/>
+            <menu:item id="fi_analysisgroupvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="pmQU3t/4+TPfu59T7ShIJ/ZXOWY="/>
         </menu:category>
         <menu:category id="c_lstransaction" z="U0NaXo+9gg292dbIsM3ERr7ucbM=">
             <menu:item id="i_lstransaction_new" messageCode="global_menu_new" url="/lstransactions?form" z="kAHkjx8THLjMG4bFs1J3s3QPjL8="/>
@@ -399,6 +402,9 @@
         <menu:category id="c_itxprotocolprotocol" z="lmgYw5QqKJwU04tbGuaKaMJoxlc=">
             <menu:item id="i_itxprotocolprotocol_new" messageCode="global_menu_new" url="/itxprotocolprotocols?form" z="dMXVapq9fuBlhNUnKCw6jF2F8ug="/>
             <menu:item id="i_itxprotocolprotocol_list" messageCode="global_menu_list" url="/itxprotocolprotocols?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iq6qexLG4PaxGfjcA03XJ0+5AaQ="/>
+            <menu:item id="fi_itxprotocolprotocol_firstprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByFirstProtocol&amp;form" z="UJuHinNHGy4nCOcXPxemLzxtACw="/>
+            <menu:item id="fi_itxprotocolprotocol_lstransactionequals" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByLsTransactionEquals&amp;form" z="t2qEPlGnBoKuT2h+SyEOZ446WTs="/>
+            <menu:item id="fi_itxprotocolprotocol_secondprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=BySecondProtocol&amp;form" z="AyzEdhOcH4pkRXswaVImyoHU6zc="/>
         </menu:category>
         <menu:category id="c_itxprotocolprotocolstate" z="5crXh8kZ9negy5Cyo9mf6r7Zwo8=">
             <menu:item id="i_itxprotocolprotocolstate_new" messageCode="global_menu_new" url="/itxprotocolprotocolstates?form" z="m085rBwmeyS6/phK6Wv6DPfHCQ8="/>
@@ -407,6 +413,18 @@
         <menu:category id="c_itxprotocolprotocolvalue" z="555vgfOT3Y115uZEQ8D2IetG+Do=">
             <menu:item id="i_itxprotocolprotocolvalue_new" messageCode="global_menu_new" url="/itxprotocolprotocolvalues?form" z="c32BDszvdEtLScQVzWKW3qj7bSw="/>
             <menu:item id="i_itxprotocolprotocolvalue_list" messageCode="global_menu_list" url="/itxprotocolprotocolvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="HcSiFh69ErMhaCuhPWVvN3uKwOA="/>
+        </menu:category>
+        <menu:category id="c_ddictvalue" z="//tNoHqIxdxTRG7zgPcUetLYu8k=">
+            <menu:item id="i_ddictvalue_new" messageCode="global_menu_new" url="/ddictvalues?form" z="tC4RJQp+VQAUTyApAsKkHNYcuWw="/>
+            <menu:item id="i_ddictvalue_list" messageCode="global_menu_list" url="/ddictvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="xmGlnyJ/6c5Fuax8ETox1f+dGzM="/>
+        </menu:category>
+        <menu:category id="c_ddictkind" z="yHaefGubr62nUhD/k83b8i8XzOA=">
+            <menu:item id="i_ddictkind_new" messageCode="global_menu_new" url="/ddictkinds?form" z="NTVKxBr80f+SE5zGFfgCiEdZuRw="/>
+            <menu:item id="i_ddictkind_list" messageCode="global_menu_list" url="/ddictkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="CLuGcUYZD9G1SH8niBCy6EfNmts="/>
+        </menu:category>
+        <menu:category id="c_ddicttype" z="chrlf5slxhLU69oRtw0p3eAUcO8=">
+            <menu:item id="i_ddicttype_new" messageCode="global_menu_new" url="/ddicttypes?form" z="rNkCTFSaQ+VZ5Iw6eE8XjLb6O/Q="/>
+            <menu:item id="i_ddicttype_list" messageCode="global_menu_list" url="/ddicttypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KgBIOkyA9YuvjIhRyd+WcD6nejM="/>
         </menu:category>
     </menu:menu>
 </div>

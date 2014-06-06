@@ -35,4 +35,26 @@ privileged aspect SubjectValue_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<SubjectValue> SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(SubjectState lsState, String lsType, String lsKind) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsState = :lsState AND o.lsType = :lsType  AND o.lsKind = :lsKind", SubjectValue.class);
+        q.setParameter("lsState", lsState);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
+    public static TypedQuery<SubjectValue> SubjectValue.findSubjectValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = SubjectValue.entityManager();
+        TypedQuery<SubjectValue> q = em.createQuery("SELECT o FROM SubjectValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", SubjectValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
 }

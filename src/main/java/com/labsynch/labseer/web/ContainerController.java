@@ -305,10 +305,9 @@ public class ContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Container.toJsonArray(Container.findContainerByContainerLabel(labelText)), headers, HttpStatus.OK);
     }
-    
+
     void populateEditForm(Model uiModel, Container container) {
         uiModel.addAttribute("container", container);
         addDateTimeFormatPatterns(uiModel);
     }
-    
 }

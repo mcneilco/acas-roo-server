@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_DDictValue" items="${ddictvalues}" z="tvM83ACibEmJRQ6TV3GVxV0K6no=">
+        <table:table data="${ddictvalues}" id="l_com_labsynch_labseer_domain_DDictValue" path="/ddictvalues" z="bzPBVcgPdiZMsJ3mPfJEor75gBA=">
+            <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsType" property="lsType" z="tfCLvvQrdhf8UC898UnbecwDhig="/>
+            <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsKind" property="lsKind" z="D9PMKO3J96C9Vx+yqSmVkNVjZ3Y="/>
+            <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsTypeAndKind" property="lsTypeAndKind" z="tlx1AqrCBajH2tbD251HtqbzoXw="/>
+            <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsValue" property="lsValue" z="evJFpvyH7KHp1ojZOJuYAC5wg1c="/>
+            <table:column id="c_com_labsynch_labseer_domain_DDictValue_description" property="description" z="rpCXbA/cY04Mf03X3CD0DZDd4UY="/>
+            <table:column id="c_com_labsynch_labseer_domain_DDictValue_comments" property="comments" z="Ld05wX3VkFuOKv7LRpE2U2R+OmM="/>
+        </table:table>
+    </page:list>
+</div>
