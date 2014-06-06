@@ -25,4 +25,7 @@
 <definition extends="default" name="subjectvalues/findSubjectValuesByLsTypeEqualsAndLsKindEquals">
         <put-attribute name="body" value="/WEB-INF/views/subjectvalues/findSubjectValuesByLsTypeEqualsAndLsKindEquals.jspx"/>
     </definition>
+<definition extends="default" name="subjectvalues/findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
 </tiles-definitions>

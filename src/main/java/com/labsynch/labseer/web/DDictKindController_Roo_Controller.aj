@@ -84,10 +84,6 @@ privileged aspect DDictKindController_Roo_Controller {
         return "redirect:/ddictkinds";
     }
     
-    void DDictKindController.populateEditForm(Model uiModel, DDictKind DDictKind_) {
-        uiModel.addAttribute("DDictKind_", DDictKind_);
-    }
-    
     String DDictKindController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {

@@ -9,5 +9,6 @@
         <field:display field="comments" id="s_com_labsynch_labseer_domain_DDictKind_comments" object="${ddictkind_}" z="3OdRb8/jXnqeyiChyK2yP0Mbb2E="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_DDictKind_ignored" object="${ddictkind_}" z="TszIEdrMycQ2gKq7cGWHaxkDfbc="/>
         <field:display field="displayOrder" id="s_com_labsynch_labseer_domain_DDictKind_displayOrder" object="${ddictkind_}" z="IOYwxPFQpuipgB7hN9/vhdgmu4Y="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_DDictKind_lsTypeAndKind" object="${ddictkind_}" z="JgnYImsVHOsUWn/YMUuelf8t3b8="/>
     </page:show>
 </div>

@@ -10,9 +10,9 @@
 	<context:property-placeholder location="file://${ACAS_HOME}/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" /> 
 -->
 
-
+<!--
     <context:property-placeholder location="file:///opt/acas-bio/acas/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" />
-
+-->
 
 <!--
     <context:property-placeholder location="file:///vol/bluebird/acas/acas/acas/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" />

@@ -47,6 +47,18 @@ privileged aspect SubjectValueController_Roo_Controller_Finder {
         return "subjectvalues/list";
     }
     
+    @RequestMapping(params = { "find=ByLsStateAndLsTypeEqualsAndLsKindEquals", "form" }, method = RequestMethod.GET)
+    public String SubjectValueController.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEqualsForm(Model uiModel) {
+        uiModel.addAttribute("subjectstates", SubjectState.findAllSubjectStates());
+        return "subjectvalues/findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsStateAndLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
+    public String SubjectValueController.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(@RequestParam("lsState") SubjectState lsState, @RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(lsState, lsType, lsKind).getResultList());
+        return "subjectvalues/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsTypeEqualsAndLsKindEquals", "form" }, method = RequestMethod.GET)
     public String SubjectValueController.findSubjectValuesByLsTypeEqualsAndLsKindEqualsForm(Model uiModel) {
         return "subjectvalues/findSubjectValuesByLsTypeEqualsAndLsKindEquals";

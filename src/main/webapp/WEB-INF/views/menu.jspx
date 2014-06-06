@@ -16,6 +16,7 @@
             <menu:item id="fi_subjectvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/subjectvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="bnUyulwMsBH/zqMrGnupxosiaVU="/>
             <menu:item id="fi_subjectvalue_lsstate" messageCode="global_menu_find" url="/subjectvalues?find=ByLsState&amp;form" z="BJmnpo+wwNSfXPFeJKim6rKslHc="/>
             <menu:item id="fi_subjectvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/subjectvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="5LZbpyZOLdzBr/CmYasxHhPq/l8="/>
+            <menu:item id="fi_subjectvalue_lsstateandlstypeequalsandlskindequals" messageCode="global_menu_find" url="/subjectvalues?find=ByLsStateAndLsTypeEqualsAndLsKindEquals&amp;form" z="PeJIDXh3beV/5+TJGQuVm1xX/Gw="/>
         </menu:category>
         <menu:category id="c_containervalue" z="61ft2oqlcmXT8pmGGZYwQQQ0VPo=">
             <menu:item id="i_containervalue_new" messageCode="global_menu_new" url="/containervalues?form" z="8boDwXK/aCoPpkpkvLS5e3iqgM0="/>
@@ -26,6 +27,7 @@
         <menu:category id="c_subjectstate" z="0tgh9BM9hpSSmL0bvyQlmfMqw2U=">
             <menu:item id="i_subjectstate_new" messageCode="global_menu_new" url="/subjectstates?form" z="4krRYbTerlNMe5b8ay8adW6ASaQ="/>
             <menu:item id="i_subjectstate_list" messageCode="global_menu_list" url="/subjectstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="klh8NBo8hZN330MTV2AqH5GauUk="/>
+            <menu:item id="fi_subjectstate_lstypeequalsandlskindequalsandsubject" messageCode="global_menu_find" url="/subjectstates?find=ByLsTypeEqualsAndLsKindEqualsAndSubject&amp;form" z="3jOpqQoUkT/T00ahzkKfGRw5uEc="/>
             <menu:item id="fi_subjectstate_subject" messageCode="global_menu_find" url="/subjectstates?find=BySubject&amp;form" z="Ui74O9iuaQbkfKs+C8b7Rrog9/w="/>
         </menu:category>
         <menu:category id="c_operatortype" z="A+8dbY+wVhuFDbqgFE9E7JHF128=">
@@ -417,6 +419,9 @@
         <menu:category id="c_ddictvalue" z="//tNoHqIxdxTRG7zgPcUetLYu8k=">
             <menu:item id="i_ddictvalue_new" messageCode="global_menu_new" url="/ddictvalues?form" z="tC4RJQp+VQAUTyApAsKkHNYcuWw="/>
             <menu:item id="i_ddictvalue_list" messageCode="global_menu_list" url="/ddictvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="xmGlnyJ/6c5Fuax8ETox1f+dGzM="/>
+            <menu:item id="fi_ddictvalue_lskindequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsKindEquals&amp;form" z="uj2KVoztgITKChOyu5a/e6QbxDo="/>
+            <menu:item id="fi_ddictvalue_lstypeequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEquals&amp;form" z="RElPZg2kR/YHutT5s+iE9ijh9/Y="/>
+            <menu:item id="fi_ddictvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="q7iZ5coIZEBVrxCOcYulJugpQ2c="/>
         </menu:category>
         <menu:category id="c_ddictkind" z="yHaefGubr62nUhD/k83b8i8XzOA=">
             <menu:item id="i_ddictkind_new" messageCode="global_menu_new" url="/ddictkinds?form" z="NTVKxBr80f+SE5zGFfgCiEdZuRw="/>

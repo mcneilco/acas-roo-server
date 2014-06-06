@@ -13,6 +13,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 privileged aspect SubjectStateController_Roo_Controller_Finder {
     
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndLsKindEqualsAndSubject", "form" }, method = RequestMethod.GET)
+    public String SubjectStateController.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubjectForm(Model uiModel) {
+        uiModel.addAttribute("subjects", Subject.findAllSubjects());
+        return "subjectstates/findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndSubject", method = RequestMethod.GET)
+    public String SubjectStateController.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("subject") Subject subject, Model uiModel) {
+        uiModel.addAttribute("subjectstates", SubjectState.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(lsType, lsKind, subject).getResultList());
+        return "subjectstates/list";
+    }
+    
     @RequestMapping(params = { "find=BySubject", "form" }, method = RequestMethod.GET)
     public String SubjectStateController.findSubjectStatesBySubjectForm(Model uiModel) {
         uiModel.addAttribute("subjects", Subject.findAllSubjects());

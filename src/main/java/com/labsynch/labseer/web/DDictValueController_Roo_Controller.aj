@@ -84,10 +84,6 @@ privileged aspect DDictValueController_Roo_Controller {
         return "redirect:/ddictvalues";
     }
     
-    void DDictValueController.populateEditForm(Model uiModel, DDictValue DDictValue_) {
-        uiModel.addAttribute("DDictValue_", DDictValue_);
-    }
-    
     String DDictValueController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {

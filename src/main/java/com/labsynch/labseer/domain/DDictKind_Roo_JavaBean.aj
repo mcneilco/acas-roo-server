@@ -23,6 +23,14 @@ privileged aspect DDictKind_Roo_JavaBean {
         this.name = name;
     }
     
+    public String DDictKind.getLsTypeAndKind() {
+        return this.lsTypeAndKind;
+    }
+    
+    public void DDictKind.setLsTypeAndKind(String lsTypeAndKind) {
+        this.lsTypeAndKind = lsTypeAndKind;
+    }
+    
     public String DDictKind.getDescription() {
         return this.description;
     }

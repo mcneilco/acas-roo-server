@@ -16,4 +16,7 @@
 <definition extends="default" name="subjectstates/findSubjectStatesBySubject">
         <put-attribute name="body" value="/WEB-INF/views/subjectstates/findSubjectStatesBySubject.jspx"/>
     </definition>
+<definition extends="default" name="subjectstates/findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject">
+        <put-attribute name="body" value="/WEB-INF/views/subjectstates/findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject.jspx"/>
+    </definition>
 </tiles-definitions>

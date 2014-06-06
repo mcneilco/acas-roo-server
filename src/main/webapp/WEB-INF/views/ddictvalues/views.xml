@@ -13,4 +13,13 @@
 <definition extends="default" name="ddictvalues/update">
         <put-attribute name="body" value="/WEB-INF/views/ddictvalues/update.jspx"/>
     </definition>
+<definition extends="default" name="ddictvalues/findDDictValuesByLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="ddictvalues/findDDictValuesByLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="ddictvalues/findDDictValuesByLsTypeEquals">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByLsTypeEquals.jspx"/>
+    </definition>
 </tiles-definitions>

@@ -3,12 +3,13 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <form:create id="fc_com_labsynch_labseer_domain_DDictKind" modelAttribute="DDictKind_" path="/ddictkinds" render="${empty dependencies}" z="Aw9iQs8xobxBnpdl7a5Ci2sM8BI=">
-        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_DDictKind_lsType" z="6JiN4g3OfNrsUucw5WptiCHKvbI="/>
+        <field:select field="lsType" id="c_com_labsynch_labseer_domain_DDictKind_lsType" itemValue="name" items="${ddicttypes}" path="/ddicttypes" required="true" z="user-managed"/>
         <field:textarea field="name" id="c_com_labsynch_labseer_domain_DDictKind_name" required="true" z="Xv3LdM0FH8/YFXkOSB8Uy/EHP6w="/>
         <field:textarea field="description" id="c_com_labsynch_labseer_domain_DDictKind_description" z="pbJS3hAnn6nYA90kGmSUZHg01Rs="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_DDictKind_comments" z="O2jso579VxLeVjAS2LsVnHykq8s="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_DDictKind_ignored" z="GWZIit4ndSmpqwj8KCV48sMbNDw="/>
         <field:input field="displayOrder" id="c_com_labsynch_labseer_domain_DDictKind_displayOrder" validationMessageCode="field_invalid_integer" z="ED1xh+ObN5fnetyoDDTCB8/eOQU="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_DDictKind_lsTypeAndKind" render="false" z="user-managed"/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_DDictKind" render="${not empty dependencies}" z="hm600ehLKDnuDqygaZkBXjjS3xQ="/>
 </div>

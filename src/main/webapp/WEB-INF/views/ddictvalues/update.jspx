@@ -3,9 +3,9 @@
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <form:update id="fu_com_labsynch_labseer_domain_DDictValue" modelAttribute="DDictValue_" path="/ddictvalues" versionField="Version" z="M17LB48LGDFuK1CnylKG8YaxKFA=">
-        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_DDictValue_lsType" required="true" z="+tKRhzSMsc7NcZQ749oXI8wWcVw="/>
-        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_DDictValue_lsKind" required="true" z="UnMFTtFW7b6QDW+9fagViKNy45E="/>
-        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_DDictValue_lsTypeAndKind" z="7xUstYw4eVrvRkmI4wPnV029JSs="/>
+        <field:select field="lsType" id="c_com_labsynch_labseer_domain_DDictValue_lsType" itemValue="name" items="${ddicttypes}" path="/ddicttypes" required="true" z="user-managed"/>
+        <field:select field="lsKind" id="c_com_labsynch_labseer_domain_DDictValue_lsKind" itemValue="name" items="${ddictkinds}" path="/ddictkinds" required="true" z="user-managed"/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_DDictValue_lsTypeAndKind" render="false" z="user-managed"/>
         <field:textarea field="lsValue" id="c_com_labsynch_labseer_domain_DDictValue_lsValue" required="true" z="2RsRHutYnu5RVt2Gkq0xjUyvfnY="/>
         <field:textarea field="description" id="c_com_labsynch_labseer_domain_DDictValue_description" z="bbVpvASJMAaac7CNtESA1fiufVY="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_DDictValue_comments" z="L1JfXOP8q4cdLMlmSqZGEDGtGFA="/>

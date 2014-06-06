@@ -15,6 +15,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect SubjectStateController_Roo_Controller_Json {
     
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndSubject", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> SubjectStateController.jsonFindSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("subject") Subject subject) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(SubjectState.toJsonArray(SubjectState.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(lsType, lsKind, subject).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=BySubject", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> SubjectStateController.jsonFindSubjectStatesBySubject(@RequestParam("subject") Subject subject) {

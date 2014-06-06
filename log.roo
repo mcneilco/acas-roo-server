@@ -696,3 +696,18 @@ finder list
 finder add findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject
 quit
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 16:47:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 20:52:38
+web mvc finder all
+web mvc all --package ~.web
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 12:15:10
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-06 12:15:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 12:18:30
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-06 12:20:30
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-06 12:22:50
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 12:26:10
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-06 13:41:23
+focus --class ~.domain.DDictValue
+finder list
+// [failed] finder add findDDictValuesByLsTypeEqualsAndLsKindEquals
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 14:12:18
