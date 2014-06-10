@@ -94,10 +94,12 @@ public abstract class AbstractValue {
 	@org.hibernate.annotations.Index(name="_OPTK_IDX")
 	private String operatorTypeAndKind;
 
+	@Column(precision=38, scale=18)
 	private BigDecimal numericValue;
 
 	private Integer sigFigs;
-
+	
+	@Column(precision=38, scale=18)
 	private BigDecimal uncertainty;
 	
 	private Integer numberOfReplicates;
@@ -210,4 +212,5 @@ public abstract class AbstractValue {
 		return merged;
 	}
 
+	
 }
