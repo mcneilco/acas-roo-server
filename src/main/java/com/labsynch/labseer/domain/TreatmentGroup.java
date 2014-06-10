@@ -13,6 +13,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
@@ -44,8 +46,14 @@ public class TreatmentGroup extends AbstractThing {
   
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
 	private Set<TreatmentGroupState> lsStates = new HashSet<TreatmentGroupState>();
+	
+	// @OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
+	// private Set<Subject> subjects = new HashSet<Subject>();
  
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
+	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
+	@JoinTable(name="TREATMENT_GROUP_SUBJECT", 
+	joinColumns={@JoinColumn(name="treatment_group_id")}, 
+	inverseJoinColumns={@JoinColumn(name="subject_id")})
 	private Set<Subject> subjects = new HashSet<Subject>();
 
     public TreatmentGroup() {

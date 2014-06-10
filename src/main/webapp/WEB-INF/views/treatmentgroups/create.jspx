@@ -11,7 +11,7 @@
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsTransaction" validationMessageCode="field_invalid_integer" z="j3R/lmvO/Kvjna0MrL6PJBnbV1c="/>
         <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_TreatmentGroup_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="kSwPniQe2b8w0dTJbyEbG5Ve8hg="/>
         <field:select field="analysisGroup" id="c_com_labsynch_labseer_domain_TreatmentGroup_analysisGroup" itemValue="id" items="${analysisgroups}" path="/analysisgroups" required="true" z="1NkzbYbMGg19D2L1DHV/O4JdgjI="/>
-        <field:simple field="subjects" id="c_com_labsynch_labseer_domain_TreatmentGroup_subjects" messageCode="entity_reference_not_managed" messageCodeAttribute="Subject" z="Q6NlAZaQHQ1hSy3iqZlh5ahivvI="/>
+        <field:select field="subjects" id="c_com_labsynch_labseer_domain_TreatmentGroup_subjects" itemValue="id" items="${subjects}" multiple="true" path="/subjects" z="OOiRJcIZPDOW2DvRnfUOGjMg9Wo="/>
         <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_TreatmentGroup_codeName" z="yfqxCk4oSvNS/kmuiVXn2Mn2AoM="/>
         <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsType" required="true" z="ERXjcM7ePvd4pClCkblivCZB06U="/>
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsKind" required="true" z="cP6Es1HZLoLwRgqnHder+7kgBw0="/>
