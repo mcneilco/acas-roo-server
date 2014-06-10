@@ -26,11 +26,9 @@ import com.labsynch.labseer.domain.SubjectValue;
 
 public class ApiSubjectValueController {
 
-	private static final Logger logger = LoggerFactory.getLogger(ApiSubjectValueController.class);
-	
-
-
-	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    private static final Logger logger = LoggerFactory.getLogger(ApiSubjectValueController.class);
+    
+    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
         SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
@@ -42,7 +40,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(headers = "Accept=application/json")
+    @RequestMapping(headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listJson() {
         HttpHeaders headers = new HttpHeaders();
@@ -51,7 +49,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(SubjectValue.toJsonArray(result), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
         SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
         subjectValue.persist();
@@ -60,7 +58,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
-	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
         for (SubjectValue subjectValue: SubjectValue.fromJsonArrayToSubjectValues(json)) {
             subjectValue.persist();
@@ -70,7 +68,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
-	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -80,13 +78,14 @@ public class ApiSubjectValueController {
         }
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-	
-	@RequestMapping(value = "/updatevalue/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    
+    @RequestMapping(value = "/updatevalue/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> updateSubjectValue(
-    		@RequestParam String lsType,
-    		@RequestParam String lsValue,
-    		@PathVariable("id") Long id
-    		) {
+            @RequestParam("lsType") String lsType,
+            @RequestParam("lsValue") String lsValue,
+            @PathVariable("id") Long id
+            ) {
+        logger.info("in updateSubjectValue");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
@@ -97,7 +96,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -109,7 +108,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
         SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
         HttpHeaders headers = new HttpHeaders();
@@ -121,7 +120,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByCodeValueEquals", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByCodeValueEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindSubjectValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue) {
         HttpHeaders headers = new HttpHeaders();
@@ -129,7 +128,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByCodeValueEquals(codeValue).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindSubjectValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue) {
         HttpHeaders headers = new HttpHeaders();
@@ -137,7 +136,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsState", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsState", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindSubjectValuesByLsState(@RequestParam("lsState") SubjectState lsState) {
         HttpHeaders headers = new HttpHeaders();
@@ -145,7 +144,7 @@ public class ApiSubjectValueController {
         return new ResponseEntity<String>(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByLsState(lsState).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindSubjectValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
