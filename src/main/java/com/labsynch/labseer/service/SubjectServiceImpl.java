@@ -163,7 +163,11 @@ public class SubjectServiceImpl implements SubjectService {
 		logger.debug("incoming meta subject: " + subject.toJson());
 
 		Subject newSubject = new Subject(subject);
-		newSubject.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(subject.getTreatmentGroup().getId()));
+		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+		for (TreatmentGroup treatmentGroup : subject.getTreatmentGroups()){
+			treatmentGroups.add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));
+		}
+		newSubject.setTreatmentGroups(treatmentGroups);
 		newSubject.persist();
 		if (subject.getLsLabels() != null) {
 			for(SubjectLabel subjectLabel : subject.getLsLabels()){

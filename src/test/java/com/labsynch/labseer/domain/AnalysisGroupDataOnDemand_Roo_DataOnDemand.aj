@@ -5,8 +5,6 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupDataOnDemand;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentDataOnDemand;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 privileged aspect AnalysisGroupDataOnDemand_Roo_DataOnDemand {
@@ -28,13 +25,9 @@ privileged aspect AnalysisGroupDataOnDemand_Roo_DataOnDemand {
     
     private List<AnalysisGroup> AnalysisGroupDataOnDemand.data;
     
-    @Autowired
-    ExperimentDataOnDemand AnalysisGroupDataOnDemand.experimentDataOnDemand;
-    
     public AnalysisGroup AnalysisGroupDataOnDemand.getNewTransientAnalysisGroup(int index) {
         AnalysisGroup obj = new AnalysisGroup();
         setCodeName(obj, index);
-        setExperiment(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -53,11 +46,6 @@ privileged aspect AnalysisGroupDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
-    }
-    
-    public void AnalysisGroupDataOnDemand.setExperiment(AnalysisGroup obj, int index) {
-        Experiment experiment = experimentDataOnDemand.getRandomExperiment();
-        obj.setExperiment(experiment);
     }
     
     public void AnalysisGroupDataOnDemand.setIgnored(AnalysisGroup obj, int index) {

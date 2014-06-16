@@ -1,5 +1,8 @@
 package com.labsynch.labseer.manytomany;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -11,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.TreatmentGroup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,6 +34,33 @@ public class TreatmentGroupTest {
 		logger.debug(String.valueOf(theSize));
 		
 		Assert.assertEquals(4, theSize);
+	}
+	
+	@Transactional
+	@Test
+	public void SimpleTest2() {
+
+		TreatmentGroup treatmentGroup = new TreatmentGroup();
+		
+		treatmentGroup.getAnalysisGroups().add(new AnalysisGroup());
+		
+		logger.debug(treatmentGroup.toJson());
+		
+		
+	}
+	
+	@Transactional
+	//@Test
+	public void SimpleTest3() {
+
+		TreatmentGroup treatmentGroup = new TreatmentGroup();
+		Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+		analysisGroups.add(new AnalysisGroup());
+		treatmentGroup.setAnalysisGroups(analysisGroups);
+		
+		logger.debug(treatmentGroup.toJson());
+		
+		
 	}
 
 }

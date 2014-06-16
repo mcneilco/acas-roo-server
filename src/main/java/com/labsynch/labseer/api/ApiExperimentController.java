@@ -1,9 +1,9 @@
 package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-
-import javax.persistence.TypedQuery;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,18 +107,15 @@ public class ApiExperimentController {
     		@RequestParam("stateValueKind") String stateValueKind
     		) {
 		
-    	List<KeyValueDTO> lsValues = new ArrayList<KeyValueDTO>();
     	List<String> values = new ArrayList<String>();
     	Experiment experiment = Experiment.findExperiment(id);
-    	List<AnalysisGroup> analysisGroups = AnalysisGroup.findAnalysisGroupsByExperiment(experiment).getResultList();
+    	Set<Experiment> experiments = new HashSet<Experiment>();
+    	experiments.add(experiment);
+    	Set<AnalysisGroup> analysisGroups = experiment.getAnalysisGroups();
         for (AnalysisGroup analysisGroup: analysisGroups) {
-			//AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
-			List<TreatmentGroup> treatmentGroups = TreatmentGroup
-					.findTreatmentGroupsByAnalysisGroup(analysisGroup)
-					.getResultList();
+			Set<TreatmentGroup> treatmentGroups = analysisGroup.getTreatmentGroups();
 			for (TreatmentGroup treatmentGroup : treatmentGroups) {
-				List<Subject> subjects = Subject.findSubjectsByTreatmentGroup(
-						treatmentGroup).getResultList();
+				Set<Subject> subjects = treatmentGroup.getSubjects();
 				for (Subject subject : subjects) {
 					List<SubjectState> subjectStates = SubjectState
 							.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(
@@ -130,16 +127,11 @@ public class ApiExperimentController {
 										subjectState, stateValueType, stateValueKind)
 								.getResultList();
 						for (SubjectValue subjectValue : subjectValues) {
-							//KeyValueDTO kvDTO = new KeyValueDTO();
-							//kvDTO.setKey("lsValue");
 							if (stateValueType.equalsIgnoreCase("stringValue")) {
-	    	   					//kvDTO.setValue(subjectValue.getStringValue());
 	    	   					values.add(subjectValue.getStringValue());
 	    	   				} else if (stateValueType.equalsIgnoreCase("numericValue")) {
-	    	   					//kvDTO.setValue(subjectValue.getNumericValue().toString());
 	    	   					values.add(subjectValue.getNumericValue().toString());
 	    	   				}
-							//lsValues.add(kvDTO);
 						}
 					}
 				}
@@ -148,13 +140,9 @@ public class ApiExperimentController {
         
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (experiment == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
         KeyValueDTO transferDTO = new KeyValueDTO();
         transferDTO.setKey("lsValue");
         transferDTO.setValue(values.toString());
-        //return new ResponseEntity<String>(KeyValueDTO.toJsonArray(lsValues), headers, HttpStatus.OK);
         return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
     }
 

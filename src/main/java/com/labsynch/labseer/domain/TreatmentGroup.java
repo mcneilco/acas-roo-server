@@ -35,11 +35,9 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(finders = { "findTreatmentGroupsByAnalysisGroup", "findTreatmentGroupsByLsTransactionEquals" })
 @RooJson
 public class TreatmentGroup extends AbstractThing {
-
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "analysis_group_id")
-	private AnalysisGroup analysisGroup;
+	
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroups")
+    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
     private Set<TreatmentGroupLabel> lsLabels = new HashSet<TreatmentGroupLabel>();
@@ -93,7 +91,7 @@ public class TreatmentGroup extends AbstractThing {
 	public String toJson() {
 		return new JSONSerializer()
 		.include("lsLabels","lsStates.lsValues", "subjects")
-		.exclude("*.class", "analysisGroup.experiment", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroup")
+		.exclude("*.class", "analysisGroups.experiment", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroup")
 		.serialize(this);
 	}
 

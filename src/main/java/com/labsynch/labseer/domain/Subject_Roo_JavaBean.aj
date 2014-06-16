@@ -11,12 +11,12 @@ import java.util.Set;
 
 privileged aspect Subject_Roo_JavaBean {
     
-    public TreatmentGroup Subject.getTreatmentGroup() {
-        return this.treatmentGroup;
+    public Set<TreatmentGroup> Subject.getTreatmentGroups() {
+        return this.treatmentGroups;
     }
     
-    public void Subject.setTreatmentGroup(TreatmentGroup treatmentGroup) {
-        this.treatmentGroup = treatmentGroup;
+    public void Subject.setTreatmentGroups(Set<TreatmentGroup> treatmentGroups) {
+        this.treatmentGroups = treatmentGroups;
     }
     
     public Set<SubjectLabel> Subject.getLsLabels() {

@@ -2,6 +2,7 @@ package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,56 +36,49 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 @Transactional
 @RooWebJson(jsonObject = AnalysisGroup.class)
 public class ApiAnalysisGroupController {
-	
-    private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupController.class);
 
-    
-    @RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> findSubjectValues(
-            @PathVariable("id") Long id,
-            @RequestParam("stateType") String stateType,
-            @RequestParam("stateKind") String stateKind,
-            @RequestParam("stateValueType") String stateValueType,
-            @RequestParam("stateValueKind") String stateValueKind
-            ) {
-        List<String> values = new ArrayList<String>();
-        List<KeyValueDTO> lsValues = new ArrayList<KeyValueDTO>();
-        AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
-        List<TreatmentGroup> treatmentGroups = TreatmentGroup.findTreatmentGroupsByAnalysisGroup(analysisGroup).getResultList();
-        for (TreatmentGroup treatmentGroup : treatmentGroups){
-            List<Subject> subjects = Subject.findSubjectsByTreatmentGroup(treatmentGroup).getResultList();
-            for (Subject subject : subjects){
-                List<SubjectState> subjectStates = SubjectState.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(stateType, stateKind, subject).getResultList();
-                for (SubjectState subjectState : subjectStates){
-                    List<SubjectValue> subjectValues = SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(subjectState, stateValueType, stateValueKind).getResultList();
-                    for (SubjectValue subjectValue : subjectValues){
-                        //KeyValueDTO kvDTO = new KeyValueDTO();
-                        //kvDTO.setKey("lsValue");
-                        if (stateValueType.equalsIgnoreCase("stringValue")) {
-                            //kvDTO.setValue(subjectValue.getStringValue());
-                            values.add(subjectValue.getStringValue());
-                        } else if (stateValueType.equalsIgnoreCase("numericValue")) {
-                            //kvDTO.setValue(subjectValue.getNumericValue().toString());
-                            values.add(subjectValue.getNumericValue().toString());
-                        }
-                        //lsValues.add(kvDTO);
-                    }
-                }
-            }
-        }
-        
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        if (analysisGroup == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        KeyValueDTO transferDTO = new KeyValueDTO();
-        transferDTO.setKey("lsValue");
-        transferDTO.setValue(values.toString());
-        //return new ResponseEntity<String>(KeyValueDTO.toJsonArray(lsValues), headers, HttpStatus.OK);
-        return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
-    }
+	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupController.class);
+
+
+	@RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> findSubjectValues(
+			@PathVariable("id") Long id,
+			@RequestParam("stateType") String stateType,
+			@RequestParam("stateKind") String stateKind,
+			@RequestParam("stateValueType") String stateValueType,
+			@RequestParam("stateValueKind") String stateValueKind
+			) {
+		List<String> values = new ArrayList<String>();
+		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
+
+		if (analysisGroup != null){
+			Set<TreatmentGroup> treatmentGroups = analysisGroup.getTreatmentGroups();
+			for (TreatmentGroup treatmentGroup : treatmentGroups){
+				Set<Subject> subjects = treatmentGroup.getSubjects();
+				for (Subject subject : subjects){
+					List<SubjectState> subjectStates = SubjectState.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(stateType, stateKind, subject).getResultList();
+					for (SubjectState subjectState : subjectStates){
+						List<SubjectValue> subjectValues = SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(subjectState, stateValueType, stateValueKind).getResultList();
+						for (SubjectValue subjectValue : subjectValues){
+							if (stateValueType.equalsIgnoreCase("stringValue")) {
+								values.add(subjectValue.getStringValue());
+							} else if (stateValueType.equalsIgnoreCase("numericValue")) {
+								values.add(subjectValue.getNumericValue().toString());
+							}
+						}
+					}
+				}
+			}			
+		}
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		KeyValueDTO transferDTO = new KeyValueDTO();
+		transferDTO.setKey("lsValue");
+		transferDTO.setValue(values.toString());
+		return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
+	}
 
 
 }

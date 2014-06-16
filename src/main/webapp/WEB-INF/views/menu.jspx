@@ -6,7 +6,7 @@
         <menu:category id="c_analysisgroup" z="iopiwKdmsxTqwIsacT4c426gzBk=">
             <menu:item id="i_analysisgroup_new" messageCode="global_menu_new" url="/analysisgroups?form" z="X9jRijQ+XKj10kDbLotTpYYe/ys="/>
             <menu:item id="i_analysisgroup_list" messageCode="global_menu_list" url="/analysisgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dMhUOKH445lv1mKn1yfZmyxOZ98="/>
-            <menu:item id="fi_analysisgroup_experiment" messageCode="global_menu_find" url="/analysisgroups?find=ByExperiment&amp;form" z="KLQ/RbT5SjkBhtHTkIdQ90Q19mE="/>
+            <menu:item id="fi_analysisgroup_experiments" messageCode="global_menu_find" url="/analysisgroups?find=ByExperiments&amp;form" z="Y40E6UBp3Tu3sgYLiSLPaBoSXws="/>
             <menu:item id="fi_analysisgroup_lstransactionequals" messageCode="global_menu_find" url="/analysisgroups?find=ByLsTransactionEquals&amp;form" z="ZM5JaF4c4zMnbS0GOOUFidz8F0o="/>
         </menu:category>
         <menu:category id="c_subjectvalue" z="6SMWPdUodXL01WGzx30fZs5ZIOk=">
@@ -107,7 +107,6 @@
         <menu:category id="c_treatmentgroup" z="ktUYfUrpZ7HfqyFfY/J0m/tpOoo=">
             <menu:item id="i_treatmentgroup_new" messageCode="global_menu_new" url="/treatmentgroups?form" z="v3FU/ZE1lF1a2skcKvCNuIjLj/U="/>
             <menu:item id="i_treatmentgroup_list" messageCode="global_menu_list" url="/treatmentgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="hd7pnyrJiPjfIeF0QjdyN+25FT4="/>
-            <menu:item id="fi_treatmentgroup_analysisgroup" messageCode="global_menu_find" url="/treatmentgroups?find=ByAnalysisGroup&amp;form" z="vq3Ni9E5Q1KIsbDohEs7nXU1n3A="/>
             <menu:item id="fi_treatmentgroup_lstransactionequals" messageCode="global_menu_find" url="/treatmentgroups?find=ByLsTransactionEquals&amp;form" z="2s/GJeWUCASFrWp34UPFUUqiD34="/>
         </menu:category>
         <menu:category id="c_experimentlabel" z="/OtfTArcZoLVbM+za1A3M+tikNU=">
@@ -146,7 +145,6 @@
             <menu:item id="i_subject_list" messageCode="global_menu_list" url="/subjects?page=1&amp;size=${empty param.size ? 10 : param.size}" z="EQd4RQgsWkj2hqqLFZF+zKoYy0I="/>
             <menu:item id="fi_subject_codenameequals" messageCode="global_menu_find" url="/subjects?find=ByCodeNameEquals&amp;form" z="zovGgLy8KbWDsVN34u8z9Yr8AjM="/>
             <menu:item id="fi_subject_lstransactionequals" messageCode="global_menu_find" url="/subjects?find=ByLsTransactionEquals&amp;form" z="dTm5hB6bXbJCNWpPupcDtlGTyT4="/>
-            <menu:item id="fi_subject_treatmentgroup" messageCode="global_menu_find" url="/subjects?find=ByTreatmentGroup&amp;form" z="3XCoVHeMR7NwRGjtvvqr/q86odo="/>
         </menu:category>
         <menu:category id="c_valuekind" z="9viZJ2aDVXUdiNwMWfcWAHDyag8=">
             <menu:item id="i_valuekind_new" messageCode="global_menu_new" url="/valuekinds?form" z="2E2vA03Cv0nAAWiQXa0SyezClro="/>

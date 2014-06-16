@@ -2,6 +2,8 @@ package com.labsynch.labseer.service;
 
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +39,12 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 		int batchSize = propertiesUtilService.getBatchSize();
 		Date recordedDate = new Date();
 		TreatmentGroup newTreatmentGroup = new TreatmentGroup(treatmentGroup);
-		newTreatmentGroup.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(treatmentGroup.getAnalysisGroup().getId()));
+		Set<AnalysisGroup> analysisGroups = treatmentGroup.getAnalysisGroups();
+		Set<AnalysisGroup> currentAnalysisGroups = new HashSet<AnalysisGroup>();
+		for (AnalysisGroup analysisGroup : analysisGroups){
+			currentAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));
+		}
+		newTreatmentGroup.setAnalysisGroups(currentAnalysisGroups);
 		newTreatmentGroup.persist();
 		logger.debug("persisted the newTreatmentGroup: " + newTreatmentGroup.toJson());
 
@@ -132,7 +139,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			for(Subject subject : treatmentGroup.getSubjects()){
 				if (subject.getId() == null){
 					Subject newSubject = new Subject(subject);
-					newSubject.setTreatmentGroup(treatmentGroup);
+					newSubject.getTreatmentGroups().add(treatmentGroup);
 					newSubject.persist();							
 				} else {
 					subject = Subject.update(subject);

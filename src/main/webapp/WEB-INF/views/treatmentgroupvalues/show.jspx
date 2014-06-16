@@ -10,7 +10,6 @@
         <field:display field="clobValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_clobValue" object="${treatmentgroupvalue}" z="RRDxtwO8pRkcmTD7418WT/61jIo="/>
         <field:display field="blobValue" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_blobValue" object="${treatmentgroupvalue}" z="lq7wWk3EK7+mDNlqQI/Pkl1AYRA="/>
         <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_sigFigs" object="${treatmentgroupvalue}" z="jScnUfLDtGxCXQrnaP84t9OOgAk="/>
-        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_uncertainty" object="${treatmentgroupvalue}" z="Laov6m/Kig78TdQi2NIrQl6YKDk="/>
         <field:display field="comments" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_comments" object="${treatmentgroupvalue}" z="0TMi4+JyFPLcYilNpaQ2w6iJ78c="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_ignored" object="${treatmentgroupvalue}" z="JVP4FmgiHaRo6Z5sg2fg96+U78Y="/>
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_TreatmentGroupValue_lsTransaction" object="${treatmentgroupvalue}" z="p36Rf2UR/i9bz9UfCzbHpqOuKRE="/>

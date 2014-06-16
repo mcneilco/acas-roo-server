@@ -10,7 +10,6 @@
         <field:display field="clobValue" id="s_com_labsynch_labseer_domain_ProtocolValue_clobValue" object="${protocolvalue}" z="ylLp59ZdlJAwj1hwhpaenI1xsb8="/>
         <field:display field="blobValue" id="s_com_labsynch_labseer_domain_ProtocolValue_blobValue" object="${protocolvalue}" z="yHd3t6qfN5Iv4a8Jg0y3rgNEd0M="/>
         <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_ProtocolValue_sigFigs" object="${protocolvalue}" z="MjoO+7ydNQO84CDH8SGFqtvZg08="/>
-        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_ProtocolValue_uncertainty" object="${protocolvalue}" z="3p4Zp05pSxlRQ+M58/WE7xgGp/4="/>
         <field:display field="comments" id="s_com_labsynch_labseer_domain_ProtocolValue_comments" object="${protocolvalue}" z="M4Aq5z1xIlp7BacMcc5/EMS5Xq8="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_ProtocolValue_ignored" object="${protocolvalue}" z="2gl/PV3YLCBAOo5ur87Vhe6Wq0A="/>
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ProtocolValue_lsTransaction" object="${protocolvalue}" z="YkCAaxEfqAojL51BQiAnRlbunco="/>

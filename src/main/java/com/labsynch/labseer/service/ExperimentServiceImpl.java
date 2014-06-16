@@ -201,7 +201,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		if(experiment.getAnalysisGroups() != null){
 			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 			for(AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
-				analysisGroup.setExperiment(newExperiment);
+				analysisGroup.getExperiments().add(newExperiment);
 				AnalysisGroup newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
 				analysisGroups.add(newAnalysisGroup);
 				logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
@@ -229,7 +229,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 		}	
 		experiment.setLsStates(lsStates);
 		Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
-		for (AnalysisGroup analysisGroup : AnalysisGroup.findAnalysisGroupsByExperiment(experiment).getResultList()){
+		Set<Experiment> experiments = new HashSet<Experiment>();
+		experiments.add(experiment);
+		for (AnalysisGroup analysisGroup : AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList()){
 			analysisGroups.add(analysisGroup);
 		}
 		experiment.setAnalysisGroups(analysisGroups);

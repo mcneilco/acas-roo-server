@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 
 import java.util.Date;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,11 +45,16 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 		int batchSize = propertiesUtilService.getBatchSize();
 		Date recordedDate = new Date();
 		AnalysisGroup newAnalysisGroup = new AnalysisGroup(analysisGroup);
-		logger.debug("incoming experiment: " + analysisGroup.getExperiment().toJson());
-		newAnalysisGroup.setExperiment(Experiment.findExperiment(analysisGroup.getExperiment().getId()));
-//		logger.debug("set experiment = " + newAnalysisGroup.getExperiment().getId());
+		logger.debug("incoming experiment: " + Experiment.toJsonArray(analysisGroup.getExperiments()));
+		
+		
+		newAnalysisGroup.setExperiments(analysisGroup.getExperiments());
 		if (newAnalysisGroup.getRecordedDate() == null) { newAnalysisGroup.setRecordedDate(recordedDate);}
-		if (newAnalysisGroup.getRecordedBy() == null) { newAnalysisGroup.setRecordedBy(analysisGroup.getExperiment().getRecordedBy()); }
+		if (newAnalysisGroup.getRecordedBy() == null) { 
+			Set<Experiment> experiments = analysisGroup.getExperiments();
+			for (Experiment experiment : experiments){
+				newAnalysisGroup.setRecordedBy(experiment.getRecordedBy()); }
+			}
 		newAnalysisGroup.persist();
 		logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
 
@@ -98,7 +104,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			int i = 0;
 			for(TreatmentGroup treatmentGroup : analysisGroup.getTreatmentGroups()){
 				TreatmentGroup newTreatmentGroup = new TreatmentGroup(treatmentGroup);
-				newTreatmentGroup.setAnalysisGroup(newAnalysisGroup);
+				newTreatmentGroup.getAnalysisGroups().add(newAnalysisGroup);
 				newTreatmentGroup.persist();
 				if (treatmentGroup.getLsLabels() != null) {
 					for(TreatmentGroupLabel treatmentGroupLabel : treatmentGroup.getLsLabels()){
@@ -131,7 +137,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 					int j = 0;
 					for(Subject subject : treatmentGroup.getSubjects()){
 						Subject newSubject = new Subject(subject);
-						newSubject.setTreatmentGroup(newTreatmentGroup);
+						newSubject.getTreatmentGroups().add(newTreatmentGroup);
 						newSubject.persist();
 						if (subject.getLsLabels() != null) {
 							for(SubjectLabel subjectLabel : subject.getLsLabels()){

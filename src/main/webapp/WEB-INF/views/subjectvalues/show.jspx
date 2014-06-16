@@ -10,7 +10,6 @@
         <field:display field="clobValue" id="s_com_labsynch_labseer_domain_SubjectValue_clobValue" object="${subjectvalue}" z="4+uVGzC0NgFzttX+T2q1zOA8TvU="/>
         <field:display field="blobValue" id="s_com_labsynch_labseer_domain_SubjectValue_blobValue" object="${subjectvalue}" z="ZdZcll01iRHf2M0dy688lepWTZ0="/>
         <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_SubjectValue_sigFigs" object="${subjectvalue}" z="hv2aiGCluwXB8d+YEctAKatLhwk="/>
-        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_SubjectValue_uncertainty" object="${subjectvalue}" z="oKxNCd2+i7ObtUXAcEe7qduX85Y="/>
         <field:display field="comments" id="s_com_labsynch_labseer_domain_SubjectValue_comments" object="${subjectvalue}" z="+VjRjNomf8E2C+Z0hksOqkoVeYc="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_SubjectValue_ignored" object="${subjectvalue}" z="N88qG0k3TfcQhmFhm16wq96/TVw="/>
         <field:display date="true" dateTimePattern="${subjectValue_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_SubjectValue_recordedDate" object="${subjectvalue}" z="emD49yVG5TN0I9FOPG2FclLXQzk="/>

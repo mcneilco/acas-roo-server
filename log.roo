@@ -732,3 +732,8 @@ quit
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-09 17:55:19
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-10 10:20:54
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-10 10:58:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-10 21:49:49
+focus --class ~.domain.AnalysisGroup
+finder list
+finder add findAnalysisGroupsByExperiments
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-13 09:07:57

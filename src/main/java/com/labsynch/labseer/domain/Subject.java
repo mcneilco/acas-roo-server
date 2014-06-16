@@ -13,7 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.validation.constraints.NotNull;
@@ -37,10 +37,8 @@ import flexjson.JSONSerializer;
 @RooJson
 public class Subject extends AbstractThing {
 
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "treatment_group_id")
-	private TreatmentGroup treatmentGroup;
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "subjects")
+    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "subject", fetch =  FetchType.LAZY)
     private Set<SubjectLabel> lsLabels = new HashSet<SubjectLabel>();

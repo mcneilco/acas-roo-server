@@ -10,7 +10,6 @@
         <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ProtocolValue_clobValue" z="QK9GukaosxwmCEV1Mgf5zS679Aw="/>
         <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ProtocolValue_blobValue" z="SCwu5r78TaX0d42HUtVtcNaVA+k="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_ProtocolValue_sigFigs" validationMessageCode="field_invalid_integer" z="Ixe5dC4PYANKcrOIWU99y5EfSTA="/>
-        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ProtocolValue_uncertainty" validationMessageCode="field_invalid_number" z="N3VmuQgokgbDSvQzYAne2ydP5yg="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ProtocolValue_comments" z="kQegVDC7lFr/wGNbcYzoZRHmZzc="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ProtocolValue_ignored" z="V/LIGlTmvcXqecGv9+1RRd/ULuo="/>
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ProtocolValue_lsTransaction" validationMessageCode="field_invalid_integer" z="8FW0Qf3sGN/GMINPeGsIsQ1hZBM="/>

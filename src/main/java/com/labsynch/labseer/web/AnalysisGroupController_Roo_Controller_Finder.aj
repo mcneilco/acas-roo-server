@@ -6,6 +6,7 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.web.AnalysisGroupController;
+import java.util.Set;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,15 +14,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 privileged aspect AnalysisGroupController_Roo_Controller_Finder {
     
-    @RequestMapping(params = { "find=ByExperiment", "form" }, method = RequestMethod.GET)
-    public String AnalysisGroupController.findAnalysisGroupsByExperimentForm(Model uiModel) {
+    @RequestMapping(params = { "find=ByExperiments", "form" }, method = RequestMethod.GET)
+    public String AnalysisGroupController.findAnalysisGroupsByExperimentsForm(Model uiModel) {
         uiModel.addAttribute("experiments", Experiment.findAllExperiments());
-        return "analysisgroups/findAnalysisGroupsByExperiment";
+        return "analysisgroups/findAnalysisGroupsByExperiments";
     }
     
-    @RequestMapping(params = "find=ByExperiment", method = RequestMethod.GET)
-    public String AnalysisGroupController.findAnalysisGroupsByExperiment(@RequestParam("experiment") Experiment experiment, Model uiModel) {
-        uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperiment(experiment).getResultList());
+    @RequestMapping(params = "find=ByExperiments", method = RequestMethod.GET)
+    public String AnalysisGroupController.findAnalysisGroupsByExperiments(@RequestParam("experiments") Set<Experiment> experiments, Model uiModel) {
+        uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList());
         return "analysisgroups/list";
     }
     
