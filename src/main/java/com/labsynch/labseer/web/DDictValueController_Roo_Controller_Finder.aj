@@ -12,6 +12,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 privileged aspect DDictValueController_Roo_Controller_Finder {
     
+    @RequestMapping(params = { "find=ByIgnoredNot", "form" }, method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByIgnoredNotForm(Model uiModel) {
+        return "ddictvalues/findDDictValuesByIgnoredNot";
+    }
+    
+    @RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
+        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByIgnoredNot(ignored).getResultList());
+        return "ddictvalues/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsKindEquals", "form" }, method = RequestMethod.GET)
     public String DDictValueController.findDDictValuesByLsKindEqualsForm(Model uiModel) {
         return "ddictvalues/findDDictValuesByLsKindEquals";

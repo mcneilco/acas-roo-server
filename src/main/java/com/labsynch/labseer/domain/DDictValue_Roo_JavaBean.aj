@@ -31,12 +31,12 @@ privileged aspect DDictValue_Roo_JavaBean {
         this.lsTypeAndKind = lsTypeAndKind;
     }
     
-    public String DDictValue.getLsValue() {
-        return this.lsValue;
+    public String DDictValue.getLabelText() {
+        return this.labelText;
     }
     
-    public void DDictValue.setLsValue(String lsValue) {
-        this.lsValue = lsValue;
+    public void DDictValue.setLabelText(String labelText) {
+        this.labelText = labelText;
     }
     
     public String DDictValue.getDescription() {

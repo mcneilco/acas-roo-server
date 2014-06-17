@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
 import org.slf4j.Logger;
@@ -35,9 +36,11 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		    		
             List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
             LabelSequence labelSequence;
-            
-            if (labelSequences.size() != 1) {
-                logger.info("did not find the label seq!!! ");
+            if(labelSequences.size() == 0) {
+            	logger.info("Label sequence does not exist!!!");
+            	throw new NoResultException();
+            } else if (labelSequences.size() != 1) {
+                logger.info("found duplicate sequences!!!");
                 throw new NonUniqueResultException();
             } else {
                  labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	

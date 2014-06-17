@@ -6,10 +6,11 @@
         <field:select field="lsType" id="c_com_labsynch_labseer_domain_DDictValue_lsType" itemValue="name" items="${ddicttypes}" path="/ddicttypes" required="true" z="user-managed"/>
         <field:select field="lsKind" id="c_com_labsynch_labseer_domain_DDictValue_lsKind" itemValue="name" items="${ddictkinds}" path="/ddictkinds" required="true" z="user-managed"/>
         <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_DDictValue_lsTypeAndKind" render="false" z="user-managed"/>
-        <field:textarea field="lsValue" id="c_com_labsynch_labseer_domain_DDictValue_lsValue" required="true" z="2RsRHutYnu5RVt2Gkq0xjUyvfnY="/>
         <field:textarea field="description" id="c_com_labsynch_labseer_domain_DDictValue_description" z="bbVpvASJMAaac7CNtESA1fiufVY="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_DDictValue_comments" z="L1JfXOP8q4cdLMlmSqZGEDGtGFA="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_DDictValue_ignored" z="yIh3YJLyTDoSo4TClFz8QropN40="/>
         <field:input field="displayOrder" id="c_com_labsynch_labseer_domain_DDictValue_displayOrder" validationMessageCode="field_invalid_integer" z="3NnpasRDp/fR4HOzA5LHrwwWcaA="/>
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_DDictValue_codeName" required="true" z="J6C9qHhHy59OhXZSbfpZEwJ4/s8="/>
+        <field:textarea field="labelText" id="c_com_labsynch_labseer_domain_DDictValue_labelText" required="true" z="Ud8FS/iMv/QdGIhOX5zKz7jmV6c="/>
     </form:update>
 </div>
