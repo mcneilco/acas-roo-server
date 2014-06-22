@@ -12,14 +12,6 @@ import java.util.Set;
 
 privileged aspect TreatmentGroup_Roo_JavaBean {
     
-    public Set<AnalysisGroup> TreatmentGroup.getAnalysisGroups() {
-        return this.analysisGroups;
-    }
-    
-    public void TreatmentGroup.setAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
-        this.analysisGroups = analysisGroups;
-    }
-    
     public Set<TreatmentGroupLabel> TreatmentGroup.getLsLabels() {
         return this.lsLabels;
     }
@@ -42,6 +34,14 @@ privileged aspect TreatmentGroup_Roo_JavaBean {
     
     public void TreatmentGroup.setSubjects(Set<Subject> subjects) {
         this.subjects = subjects;
+    }
+    
+    public Set<AnalysisGroup> TreatmentGroup.getAnalysisGroups() {
+        return this.analysisGroups;
+    }
+    
+    public void TreatmentGroup.setAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
+        this.analysisGroups = analysisGroups;
     }
     
 }

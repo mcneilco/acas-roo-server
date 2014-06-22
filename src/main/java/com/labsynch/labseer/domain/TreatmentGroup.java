@@ -15,10 +15,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -36,8 +34,6 @@ import flexjson.JSONSerializer;
 @RooJson
 public class TreatmentGroup extends AbstractThing {
 	
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroups")
-    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
     private Set<TreatmentGroupLabel> lsLabels = new HashSet<TreatmentGroupLabel>();
@@ -45,15 +41,15 @@ public class TreatmentGroup extends AbstractThing {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
 	private Set<TreatmentGroupState> lsStates = new HashSet<TreatmentGroupState>();
 	
-	// @OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
-	// private Set<Subject> subjects = new HashSet<Subject>();
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroups")  
+    private Set<Subject> subjects = new HashSet<Subject>();
  
 	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
-	@JoinTable(name="TREATMENT_GROUP_SUBJECT", 
+	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
 	joinColumns={@JoinColumn(name="treatment_group_id")}, 
-	inverseJoinColumns={@JoinColumn(name="subject_id")})
-	private Set<Subject> subjects = new HashSet<Subject>();
-
+	inverseJoinColumns={@JoinColumn(name="analysis_group_id")})
+    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+	
     public TreatmentGroup() {
     }
     

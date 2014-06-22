@@ -7,9 +7,9 @@
             <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsType" property="lsType" z="tfCLvvQrdhf8UC898UnbecwDhig="/>
             <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsKind" property="lsKind" z="D9PMKO3J96C9Vx+yqSmVkNVjZ3Y="/>
             <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsTypeAndKind" property="lsTypeAndKind" z="tlx1AqrCBajH2tbD251HtqbzoXw="/>
-            <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsValue" property="lsValue" z="evJFpvyH7KHp1ojZOJuYAC5wg1c="/>
             <table:column id="c_com_labsynch_labseer_domain_DDictValue_description" property="description" z="rpCXbA/cY04Mf03X3CD0DZDd4UY="/>
             <table:column id="c_com_labsynch_labseer_domain_DDictValue_comments" property="comments" z="Ld05wX3VkFuOKv7LRpE2U2R+OmM="/>
+            <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsValue" property="lsValue" z="evJFpvyH7KHp1ojZOJuYAC5wg1c="/>
         </table:table>
     </page:list>
 </div>

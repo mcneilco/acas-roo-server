@@ -16,6 +16,14 @@ public interface AutoLabelService {
 
 	List<AutoLabelDTO> getAutoLabels(String thingTypeAndKind, String labelTypeAndKind, Long numberOfLabels) throws NonUniqueResultException;
 
+	String getExperimentCodeName();
+
+	String getAnalysisGroupCodeName();
+
+	String getTreatmentGroupCodeName();
+
+	String getSubjectCodeName();
+
 	
 	
 	

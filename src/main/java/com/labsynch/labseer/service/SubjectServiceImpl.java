@@ -1,6 +1,7 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,9 @@ public class SubjectServiceImpl implements SubjectService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubjectServiceImpl.class);
 
+	@Autowired
+	private AutoLabelService autoLabelService;
+	
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 	
@@ -163,6 +167,13 @@ public class SubjectServiceImpl implements SubjectService {
 		logger.debug("incoming meta subject: " + subject.toJson());
 
 		Subject newSubject = new Subject(subject);
+		if (newSubject.getCodeName() == null){
+			newSubject.setCodeName(autoLabelService.getSubjectCodeName());
+		}
+		if (newSubject.getRecordedDate() == null){
+			newSubject.setRecordedDate(new Date());
+		}
+		
 		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 		for (TreatmentGroup treatmentGroup : subject.getTreatmentGroups()){
 			treatmentGroups.add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));

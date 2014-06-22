@@ -60,11 +60,14 @@ public class Experiment extends AbstractThing {
 	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch =  FetchType.LAZY)
 	//private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 	
-	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
-	@JoinTable(name="EXPERIMENT_ANALYSIS_GROUP", 
-	joinColumns={@JoinColumn(name="experiment_id")}, 
-	inverseJoinColumns={@JoinColumn(name="analysis_group_id")})
-	private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "experiments")  
+    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();  
+	
+//	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
+//	@JoinTable(name="EXPERIMENT_ANALYSIS_GROUP", 
+//	joinColumns={@JoinColumn(name="experiment_id")}, 
+//	inverseJoinColumns={@JoinColumn(name="analysis_group_id")})
+//	private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch =  FetchType.LAZY)
 	private Set<ExperimentLabel> lsLabels = new HashSet<ExperimentLabel>();
@@ -101,7 +104,7 @@ public class Experiment extends AbstractThing {
 				}
 			}
 		} else {
-			logger.info("No experiment labels to save");
+			logger.info("No experiment tags to save");
 		}
 	}
 
@@ -260,8 +263,8 @@ public class Experiment extends AbstractThing {
 	public String toPrettyJson() {
 		return new JSONSerializer()
 		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", 
-				"analysisGroups.experiment", "lsLabels.experiment")
-				.include("lsTags", "lsLabels", "lsStates.lsValues", 
+				"analysisGroups.experiments", "lsLabels.experiment")
+				.include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups",
 						"analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels",
 						"analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels",
 						"analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels")

@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -30,6 +31,9 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupServiceImpl.class);
+	
+	@Autowired
+	private AutoLabelService autoLabelService;
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
@@ -45,16 +49,22 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 		int batchSize = propertiesUtilService.getBatchSize();
 		Date recordedDate = new Date();
 		AnalysisGroup newAnalysisGroup = new AnalysisGroup(analysisGroup);
-		logger.debug("incoming experiment: " + Experiment.toJsonArray(analysisGroup.getExperiments()));
+
+		logger.debug("incoming experiment array: " + Experiment.toJsonArray(newAnalysisGroup.getExperiments()));
+		Set<Experiment> experimentSet = new HashSet<Experiment>();
+		for (Experiment experiment : newAnalysisGroup.getExperiments()){
+			//newAnalysisGroup.getExperiments().add(Experiment.findExperiment(experiment.getId()));
+			experimentSet.add(Experiment.findExperiment(experiment.getId()));
+		}
+		newAnalysisGroup.setExperiments(experimentSet);		
 		
-		
-		newAnalysisGroup.setExperiments(analysisGroup.getExperiments());
+		if (newAnalysisGroup.getCodeName() == null) { newAnalysisGroup.setCodeName(autoLabelService.getAnalysisGroupCodeName());}
 		if (newAnalysisGroup.getRecordedDate() == null) { newAnalysisGroup.setRecordedDate(recordedDate);}
 		if (newAnalysisGroup.getRecordedBy() == null) { 
-			Set<Experiment> experiments = analysisGroup.getExperiments();
-			for (Experiment experiment : experiments){
-				newAnalysisGroup.setRecordedBy(experiment.getRecordedBy()); }
+			for (Experiment experiment : analysisGroup.getExperiments()){
+				newAnalysisGroup.setRecordedBy(experiment.getRecordedBy()); 
 			}
+		}
 		newAnalysisGroup.persist();
 		logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
 
@@ -137,7 +147,10 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 					int j = 0;
 					for(Subject subject : treatmentGroup.getSubjects()){
 						Subject newSubject = new Subject(subject);
-						newSubject.getTreatmentGroups().add(newTreatmentGroup);
+//						Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+//						treatmentGroups.add(newTreatmentGroup);
+//						newSubject.setTreatmentGroups(treatmentGroups);
+						newSubject.getTreatmentGroups().add(TreatmentGroup.findTreatmentGroup(newTreatmentGroup.getId()));
 						newSubject.persist();
 						if (subject.getLsLabels() != null) {
 							for(SubjectLabel subjectLabel : subject.getLsLabels()){

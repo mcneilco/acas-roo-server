@@ -2,7 +2,6 @@ package com.labsynch.labseer.service;
 
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -26,6 +25,9 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 	private static final Logger logger = LoggerFactory.getLogger(TreatmentGroupServiceImpl.class);
 
 	@Autowired
+	private AutoLabelService autoLabelService;
+	
+	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 	
 	@Autowired
@@ -38,13 +40,22 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 		logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
 		int batchSize = propertiesUtilService.getBatchSize();
 		Date recordedDate = new Date();
+
 		TreatmentGroup newTreatmentGroup = new TreatmentGroup(treatmentGroup);
-		Set<AnalysisGroup> analysisGroups = treatmentGroup.getAnalysisGroups();
-		Set<AnalysisGroup> currentAnalysisGroups = new HashSet<AnalysisGroup>();
-		for (AnalysisGroup analysisGroup : analysisGroups){
-			currentAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));
+		if (newTreatmentGroup.getCodeName() == null){
+			newTreatmentGroup.setCodeName(autoLabelService.getTreatmentGroupCodeName());
 		}
-		newTreatmentGroup.setAnalysisGroups(currentAnalysisGroups);
+		if (newTreatmentGroup.getRecordedDate() == null){
+			newTreatmentGroup.setRecordedDate(recordedDate);
+		}
+		
+		Set<AnalysisGroup> analysisGroups = treatmentGroup.getAnalysisGroups();
+//		Set<AnalysisGroup> currentAnalysisGroups = new HashSet<AnalysisGroup>();
+		for (AnalysisGroup analysisGroup : analysisGroups){
+//			currentAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));
+			newTreatmentGroup.getAnalysisGroups().add(analysisGroup);
+		}
+//		newTreatmentGroup.setAnalysisGroups(currentAnalysisGroups);
 		newTreatmentGroup.persist();
 		logger.debug("persisted the newTreatmentGroup: " + newTreatmentGroup.toJson());
 
@@ -119,6 +130,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 					treatmentGroupState.setId(newTreatmentGroupState.getId());
 				} else {
 					TreatmentGroupState updatedTreatmentGroupState = TreatmentGroupState.update(treatmentGroupState);
+					logger.debug(updatedTreatmentGroupState.toJson());
 				}
 				if (treatmentGroupState.getLsValues() != null){
 					for(TreatmentGroupValue treatmentGroupValue : treatmentGroupState.getLsValues()){
@@ -128,6 +140,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 							treatmentGroupValue.persist();
 						} else {
 							TreatmentGroupValue updatedTreatmentGroupValue = TreatmentGroupValue.update(treatmentGroupValue);
+							logger.debug(updatedTreatmentGroupValue.toJson());
 						}
 
 					}				

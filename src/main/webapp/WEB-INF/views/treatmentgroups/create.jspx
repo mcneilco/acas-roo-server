@@ -10,7 +10,6 @@
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_TreatmentGroup_ignored" z="6Re1Gz7psuMPHTzGcseWU5SspP0="/>
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsTransaction" validationMessageCode="field_invalid_integer" z="j3R/lmvO/Kvjna0MrL6PJBnbV1c="/>
         <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_TreatmentGroup_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="kSwPniQe2b8w0dTJbyEbG5Ve8hg="/>
-        <field:select field="subjects" id="c_com_labsynch_labseer_domain_TreatmentGroup_subjects" itemValue="id" items="${subjects}" multiple="true" path="/subjects" z="OOiRJcIZPDOW2DvRnfUOGjMg9Wo="/>
         <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_TreatmentGroup_codeName" z="yfqxCk4oSvNS/kmuiVXn2Mn2AoM="/>
         <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsType" required="true" z="ERXjcM7ePvd4pClCkblivCZB06U="/>
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsKind" required="true" z="cP6Es1HZLoLwRgqnHder+7kgBw0="/>
@@ -18,6 +17,7 @@
         <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Treatment Group Label" z="lZ0LjRMFG4uqOmyCRyZ11D+khhM="/>
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_TreatmentGroup_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Treatment Group State" z="y0djJ5/AyZ4qHmU4d4n4COCjuSE="/>
         <field:select field="analysisGroups" id="c_com_labsynch_labseer_domain_TreatmentGroup_analysisGroups" itemValue="id" items="${analysisgroups}" multiple="true" path="/analysisgroups" z="dl7zgtrHjpfEUUMzwPAkaEPBq50="/>
+        <field:select field="subjects" id="c_com_labsynch_labseer_domain_TreatmentGroup_subjects" itemValue="id" items="${subjects}" multiple="true" path="/subjects" z="OOiRJcIZPDOW2DvRnfUOGjMg9Wo="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_TreatmentGroup" render="${not empty dependencies}" z="3eGh75p1F7nsGEk5jwYZXK2XS1Y="/>
 </div>

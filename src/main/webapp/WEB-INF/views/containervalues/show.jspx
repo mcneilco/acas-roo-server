@@ -35,5 +35,6 @@
         <field:display field="codeType" id="s_com_labsynch_labseer_domain_ContainerValue_codeType" object="${containervalue}" z="5itYL4t51jwsan0GDZ1blshKyGY="/>
         <field:display field="codeKind" id="s_com_labsynch_labseer_domain_ContainerValue_codeKind" object="${containervalue}" z="e2nWCOzRtW/9XUs603VA8as27B0="/>
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_ContainerValue_codeTypeAndKind" object="${containervalue}" z="gM+Li55FsYwEX8QzPB7fynQhcOU="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_ContainerValue_uncertainty" object="${containervalue}" z="FWph93ptV34iEYuTIkFrweUMgUE="/>
     </page:show>
 </div>

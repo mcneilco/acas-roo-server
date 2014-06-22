@@ -35,6 +35,7 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_SubjectValue_codeType" z="sUENtjnfYzYKXNQK2v4wvb4++ec="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_SubjectValue_codeKind" z="7c1dq7L6BUGGxXS7im0d1jAElOM="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_SubjectValue_codeTypeAndKind" z="mW9ExrSN+ZYTv6rWO2BvrSh5DiI="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_SubjectValue_uncertainty" validationMessageCode="field_invalid_number" z="JWsVQgIh8qFKjZ5MKsMjA2agEKY="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_SubjectValue" render="${not empty dependencies}" z="R/tiBwbRMNV4pwGZAtn0AgrJ6CE="/>
 </div>
