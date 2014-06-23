@@ -49,6 +49,7 @@ import org.springframework.web.util.WebUtils;
 @RequestMapping("/containerstates")
 @RooWebScaffold(path = "containerstates", formBackingObject = ContainerState.class)
 @RooWebFinder
+@RooWebJson(jsonObject = ContainerState.class)
 public class ContainerStateController {
 
     private static final Logger logger = LoggerFactory.getLogger(ContainerStateController.class);

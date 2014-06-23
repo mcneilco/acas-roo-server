@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ItxExperimentExperimentValue" object="${itxexperimentexperimentvalue}" path="/itxexperimentexperimentvalues" z="rW685OoIS6YhW7isPbEPY+8Lmdk=">
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsType" object="${itxexperimentexperimentvalue}" z="rLOcoFp0/f1fiCS6lyJIsb0Gl4g="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsKind" object="${itxexperimentexperimentvalue}" z="XKTYLr59n1Io0D3y2zPj08pi3U0="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsTypeAndKind" object="${itxexperimentexperimentvalue}" z="RdCq8elqPbD9IpMBbsxDFMF1yN8="/>
+        <field:display field="codeType" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_codeType" object="${itxexperimentexperimentvalue}" z="E0A7tdqb2M0LshElBP/0qX/DUqo="/>
+        <field:display field="codeKind" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_codeKind" object="${itxexperimentexperimentvalue}" z="wTlnkUrZzSYI4HAoJhDRDGhkKKk="/>
+        <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_codeTypeAndKind" object="${itxexperimentexperimentvalue}" z="rNd0aDrOrT+3bsILWTTiFPMEr+8="/>
+        <field:display field="stringValue" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_stringValue" object="${itxexperimentexperimentvalue}" z="l1TQLaSWUXzR0mJwovFE4XM6lsI="/>
+        <field:display field="codeValue" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_codeValue" object="${itxexperimentexperimentvalue}" z="gTMKoh9xKPnWZHwL0EaAKw0YvhQ="/>
+        <field:display field="fileValue" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_fileValue" object="${itxexperimentexperimentvalue}" z="+DqemURz/tu7xP6vSG0TgJTPS8w="/>
+        <field:display field="urlValue" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_urlValue" object="${itxexperimentexperimentvalue}" z="EIEB6jll+cQVT+Uo9StA5G9s6oE="/>
+        <field:display date="true" dateTimePattern="${itxExperimentExperimentValue_datevalue_date_format}" field="dateValue" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_dateValue" object="${itxexperimentexperimentvalue}" z="uBqclmR8vB9Z3x5xpg54iil8RgA="/>
+        <field:display field="clobValue" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_clobValue" object="${itxexperimentexperimentvalue}" z="UW9IhRXKdXDD6moKghPqGR6k92s="/>
+        <field:display field="blobValue" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_blobValue" object="${itxexperimentexperimentvalue}" z="mqkchjgjICx2zBpjac8iHSGS9kk="/>
+        <field:display field="operatorType" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_operatorType" object="${itxexperimentexperimentvalue}" z="EXNn3hS+9dLvctDerRbi4cP/17g="/>
+        <field:display field="operatorKind" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_operatorKind" object="${itxexperimentexperimentvalue}" z="WkINtNxpkPDx8gdlk3fVz092Ib4="/>
+        <field:display field="operatorTypeAndKind" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_operatorTypeAndKind" object="${itxexperimentexperimentvalue}" z="kPz/SVR6gVNY3hP/ZfBrfozOLdc="/>
+        <field:display field="numericValue" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_numericValue" object="${itxexperimentexperimentvalue}" z="lA81gwe1eTUqSZr1PXWXUYYm0F0="/>
+        <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_sigFigs" object="${itxexperimentexperimentvalue}" z="UDgPG5pnYDjLYlzkd9GR3uBzhHI="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_uncertainty" object="${itxexperimentexperimentvalue}" z="jZYbu9d1AQUXp2RIA6jOjK3a2WY="/>
+        <field:display field="numberOfReplicates" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_numberOfReplicates" object="${itxexperimentexperimentvalue}" z="54gZu/lruXSwALk8wxU7GtfEqMA="/>
+        <field:display field="uncertaintyType" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_uncertaintyType" object="${itxexperimentexperimentvalue}" z="YLLgO9vG4yMQoiPQ7NA68ek92wA="/>
+        <field:display field="unitType" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_unitType" object="${itxexperimentexperimentvalue}" z="vqzAPpt6qmBIW+fw3MXFw1PXlS4="/>
+        <field:display field="unitKind" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_unitKind" object="${itxexperimentexperimentvalue}" z="Omj/e++nnCc5iDzm2BYCizuV5eU="/>
+        <field:display field="unitTypeAndKind" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_unitTypeAndKind" object="${itxexperimentexperimentvalue}" z="wJ3H8E7t8Ownm6KqI682Cug6t2k="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_comments" object="${itxexperimentexperimentvalue}" z="SL23fUuBxLu9upFjccXf58sM1qo="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_ignored" object="${itxexperimentexperimentvalue}" z="zcK7npu8/r4urmC1jZB3WtdRm+4="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsTransaction" object="${itxexperimentexperimentvalue}" z="Jv14+ZZaosktmXM6Vpkk8wz5EoQ="/>
+        <field:display date="true" dateTimePattern="${itxExperimentExperimentValue_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_recordedDate" object="${itxexperimentexperimentvalue}" z="PBaeZJpH/gFA+YHXV/Km12ctnA8="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_recordedBy" object="${itxexperimentexperimentvalue}" z="8xSVxS3BE7Kb/fhnchb+OjNO8PE="/>
+        <field:display date="true" dateTimePattern="${itxExperimentExperimentValue_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_modifiedDate" object="${itxexperimentexperimentvalue}" z="woGB09Gl/pGXoxn8sZQ/nChaTqI="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_modifiedBy" object="${itxexperimentexperimentvalue}" z="7ntlX5ToExSRtfmmIhzL/LKH0CQ="/>
+        <field:display field="publicData" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_publicData" object="${itxexperimentexperimentvalue}" z="6VAe94mlixss75yaITi2Dvf77Uk="/>
+        <field:display field="lsState" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsState" object="${itxexperimentexperimentvalue}" z="1NJva1y12fOcG6UNmu5UqnskcCU="/>
+    </page:show>
+</div>

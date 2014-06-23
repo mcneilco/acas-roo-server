@@ -1,16 +1,16 @@
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.DDictType;
+import com.labsynch.labseer.domain.ItxExperimentExperiment;
 import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RequestMapping("/ddicttypes")
+@RooWebJson(jsonObject = ItxExperimentExperiment.class)
 @Controller
-@RooWebScaffold(path = "ddicttypes", formBackingObject = DDictType.class)
+@RequestMapping("/itxexperimentexperiments")
+@RooWebScaffold(path = "itxexperimentexperiments", formBackingObject = ItxExperimentExperiment.class)
 @RooWebFinder
-@RooWebJson(jsonObject = DDictType.class)
-public class DDictTypeController {
+public class ItxExperimentExperimentController {
 }

@@ -429,5 +429,20 @@
             <menu:item id="i_ddicttype_new" messageCode="global_menu_new" url="/ddicttypes?form" z="rNkCTFSaQ+VZ5Iw6eE8XjLb6O/Q="/>
             <menu:item id="i_ddicttype_list" messageCode="global_menu_list" url="/ddicttypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KgBIOkyA9YuvjIhRyd+WcD6nejM="/>
         </menu:category>
+        <menu:category id="c_itxexperimentexperimentvalue" z="Aeo0RR7U+fLNyS6TzQCRpXi9ulY=">
+            <menu:item id="i_itxexperimentexperimentvalue_new" messageCode="global_menu_new" url="/itxexperimentexperimentvalues?form" z="jM/hi+0hzXfIqUBD/jOxw4lh26M="/>
+            <menu:item id="i_itxexperimentexperimentvalue_list" messageCode="global_menu_list" url="/itxexperimentexperimentvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="fq39w6t2JIM3o1taR06tBd3omG4="/>
+        </menu:category>
+        <menu:category id="c_itxexperimentexperiment" z="Sdn4GgIls6zJg8Di/AxrnTiSXk8=">
+            <menu:item id="i_itxexperimentexperiment_new" messageCode="global_menu_new" url="/itxexperimentexperiments?form" z="AMWVqwXle8FO2ihlo6mF17HFRnA="/>
+            <menu:item id="i_itxexperimentexperiment_list" messageCode="global_menu_list" url="/itxexperimentexperiments?page=1&amp;size=${empty param.size ? 10 : param.size}" z="vb5ZE7C5evruWlqzVReMq9prrUM="/>
+            <menu:item id="fi_itxexperimentexperiment_firstexperiment" messageCode="global_menu_find" url="/itxexperimentexperiments?find=ByFirstExperiment&amp;form" z="awRaEl7NGdb4Ey/IvOpPNkDdQ4I="/>
+            <menu:item id="fi_itxexperimentexperiment_lstransactionequals" messageCode="global_menu_find" url="/itxexperimentexperiments?find=ByLsTransactionEquals&amp;form" z="LmSbmf+33EdJEfrTYpcucBotDnY="/>
+            <menu:item id="fi_itxexperimentexperiment_secondexperiment" messageCode="global_menu_find" url="/itxexperimentexperiments?find=BySecondExperiment&amp;form" z="O+6fUbXunsl/3bimwRnMRda8ZO0="/>
+        </menu:category>
+        <menu:category id="c_itxexperimentexperimentstate" z="w15kS3YrfxKIudnbAwP1ajFMQag=">
+            <menu:item id="i_itxexperimentexperimentstate_new" messageCode="global_menu_new" url="/itxexperimentexperimentstates?form" z="LnR4C38cHoHF+LFlVamM1HyEego="/>
+            <menu:item id="i_itxexperimentexperimentstate_list" messageCode="global_menu_list" url="/itxexperimentexperimentstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="BN7SOiV9ZrlJ1lwIIaTuF7r2Kpo="/>
+        </menu:category>
     </menu:menu>
 </div>

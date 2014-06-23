@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="itxexperimentexperiments/list">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperiments/list.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperiments/show">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperiments/show.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperiments/create">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperiments/create.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperiments/update">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperiments/update.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperiments/findItxExperimentExperimentsByFirstExperiment">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperiments/findItxExperimentExperimentsByFirstExperiment.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperiments/findItxExperimentExperimentsByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperiments/findItxExperimentExperimentsByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperiments/findItxExperimentExperimentsBySecondExperiment">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperiments/findItxExperimentExperimentsBySecondExperiment.jspx"/>
+    </definition>
+</tiles-definitions>
