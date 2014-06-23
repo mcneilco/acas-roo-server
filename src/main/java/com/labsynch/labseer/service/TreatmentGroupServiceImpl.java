@@ -53,7 +53,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 //		Set<AnalysisGroup> currentAnalysisGroups = new HashSet<AnalysisGroup>();
 		for (AnalysisGroup analysisGroup : analysisGroups){
 //			currentAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));
-			newTreatmentGroup.getAnalysisGroups().add(analysisGroup);
+			newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));
 		}
 //		newTreatmentGroup.setAnalysisGroups(currentAnalysisGroups);
 		newTreatmentGroup.persist();
