@@ -1,5 +1,6 @@
 package com.labsynch.labseer.manytomany;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -68,14 +69,20 @@ public class TreatmentGroupTest {
 		
 	}
 	
-	//@Transactional
+	@Transactional
 	@Test
 	public void SimpleTest4() {
 
 		String json = "{\"analysisGroups\":[{\"id\":290,\"version\":0}],\"lsType\":\"default\",\"lsKind\":\"default\",\"codeName\":\"TG-00000035\",\"subjects\":null,\"lsStates\":null,\"recordedBy\":\"dfenger\",\"comments\":\"\",\"lsTransaction\":20,\"ignored\":false,\"recordedDate\":1403543647000}";
-		TreatmentGroup treatmentGroup = treatmentGroupService.saveLsTreatmentGroup(TreatmentGroup.fromJsonToTreatmentGroup(json));
+		TreatmentGroup inputTreatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
+		Date recordedDate = null;
+		if (inputTreatmentGroup.getRecordedDate() != null){
+			recordedDate = inputTreatmentGroup.getRecordedDate();
+		} else {
+			recordedDate = new Date();
+		}
+		TreatmentGroup treatmentGroup = treatmentGroupService.saveLsTreatmentGroup(inputTreatmentGroup.getAnalysisGroups(), inputTreatmentGroup, recordedDate);
 		logger.debug(treatmentGroup.toJson());
-		
 		
 	}
 

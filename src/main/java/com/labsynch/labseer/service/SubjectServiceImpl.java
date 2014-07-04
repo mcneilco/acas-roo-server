@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AbstractThing;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
@@ -23,7 +24,6 @@ import com.labsynch.labseer.dto.SubjectStateDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
-@Transactional
 public class SubjectServiceImpl implements SubjectService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubjectServiceImpl.class);
@@ -34,6 +34,7 @@ public class SubjectServiceImpl implements SubjectService {
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 	
+
 	@Override
 	public Set<Subject> ignoreAllSubjectStates(Set<Subject> subjects) {
 		//mark subject and all states and values as ignore 
@@ -162,31 +163,68 @@ public class SubjectServiceImpl implements SubjectService {
 	}
 	
 	@Override
-	@Transactional
+	public void saveSubjects(TreatmentGroup treatmentGroup, Set<Subject> subjects, Date recordedDate){
+		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+		treatmentGroups.add(treatmentGroup);
+		int j = 0;
+		logger.debug("number of incoming subjects: " + subjects.size());
+		for (Subject subject : subjects){
+			Subject newSubject = saveSubject(treatmentGroups, subject, recordedDate);
+			if ( j % propertiesUtilService.getBatchSize() == 0 ) { 
+				newSubject.flush();
+				newSubject.clear();
+			}
+			j++;
+		}
+	}
+	
+	@Override
 	public Subject saveSubject(Subject subject){
 		logger.debug("incoming meta subject: " + subject.toJson());
-
-		Subject newSubject = new Subject(subject);
-		if (newSubject.getCodeName() == null){
-			newSubject.setCodeName(autoLabelService.getSubjectCodeName());
-		}
-		if (newSubject.getRecordedDate() == null){
-			newSubject.setRecordedDate(new Date());
-		}
+		Date recordedDate = new Date();
 		
-		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
-		for (TreatmentGroup treatmentGroup : subject.getTreatmentGroups()){
-			treatmentGroups.add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));
+		return saveSubject(subject.getTreatmentGroups(), subject, recordedDate);
+	}
+
+	
+	@Override
+	public Subject saveSubject(Set<TreatmentGroup> treatmentGroups, Subject subject, Date recordedDate){
+		logger.debug("incoming meta subject: " + subject.toJson());
+		Subject newSubject = null;
+
+		if (subject.getId() == null){
+			newSubject = new Subject(subject);
+			if (newSubject.getCodeName() == null){
+				newSubject.setCodeName(autoLabelService.getSubjectCodeName());
+			}
+			if (newSubject.getRecordedDate() == null){
+				newSubject.setRecordedDate(recordedDate);
+			}
+			
+			for (TreatmentGroup treatmentGroup : treatmentGroups){
+				newSubject.getTreatmentGroups().add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));
+			}
+			
+			newSubject.persist();
+			saveLabels(subject, newSubject, recordedDate );
+			saveStates(subject, newSubject, recordedDate );
+			
+		} else {
+			logger.debug("this is an existing subject -----------");
+			newSubject = Subject.findSubject(subject.getId());
+			for (TreatmentGroup treatmentGroup : treatmentGroups){
+				logger.debug("incoming treatment group: ------------ " + treatmentGroup.toJson());
+				newSubject.getTreatmentGroups().add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));
+			}
+
+			newSubject.merge();
+		
 		}
-		newSubject.setTreatmentGroups(treatmentGroups);
-		newSubject.persist();
-		if (subject.getLsLabels() != null) {
-			for(SubjectLabel subjectLabel : subject.getLsLabels()){
-				SubjectLabel newSubjectLabel = new SubjectLabel(subjectLabel);
-				newSubjectLabel.setSubject(newSubject);
-				newSubjectLabel.persist();	
-			}		
-		}
+		return Subject.findSubject(newSubject.getId());
+	}
+
+
+	private void saveStates(Subject subject, Subject newSubject, Date recordedDate) {
 		if (subject.getLsStates() != null){
 			for(SubjectState subjectState : subject.getLsStates()){
 				SubjectState newSubjectState = new SubjectState(subjectState);
@@ -199,11 +237,20 @@ public class SubjectServiceImpl implements SubjectService {
 					}								
 				}
 			}
-		}
-		
-		return Subject.findSubject(newSubject.getId());
+		}		
 	}
 
+	private void saveLabels(Subject subject, Subject newSubject, Date recordedDate) {
+		if (subject.getLsLabels() != null) {
+			for(SubjectLabel subjectLabel : subject.getLsLabels()){
+				SubjectLabel newSubjectLabel = new SubjectLabel(subjectLabel);
+				newSubjectLabel.setSubject(newSubject);
+				newSubjectLabel.setRecordedDate(recordedDate);
+				newSubjectLabel.setRecordedBy(newSubject.getRecordedBy());
+				newSubjectLabel.persist();	
+			}		
+		}		
+	}
 
 	@Override
 	@Transactional
@@ -250,7 +297,5 @@ public class SubjectServiceImpl implements SubjectService {
 		
 		return Subject.findSubject(subject.getId());
 	}
-
-
 
 }

@@ -37,7 +37,6 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@Transactional
 @RooJpaActiveRecord(finders = { "findAnalysisGroupsByLsTransactionEquals", "findAnalysisGroupsByExperiments" })
 public class AnalysisGroup extends AbstractThing {
 
@@ -80,7 +79,15 @@ public class AnalysisGroup extends AbstractThing {
 		this.setCodeName(analysisGroup.getCodeName());
 		this.setLsKind(analysisGroup.getLsKind());
 		this.setLsType(analysisGroup.getLsType());
-		this.setExperiments(analysisGroup.getExperiments());
+//		for (Experiment experiment : analysisGroup.getExperiments()){
+//			this.getExperiments().add(Experiment.findExperiment(experiment.getId()));
+//		}
+		Set<Experiment> experimentSet = new HashSet<Experiment>();
+		for (Experiment experiment : analysisGroup.getExperiments()){
+			experimentSet.add(Experiment.findExperiment(experiment.getId()));
+		}
+		this.setExperiments(experimentSet);	
+		
 	}
 
 	//TODO: FIX this
@@ -97,7 +104,7 @@ public class AnalysisGroup extends AbstractThing {
 		for (Experiment experiment : analysisGroup.getExperiments()){
 			updatedAnalysisGroup.getExperiments().add(experiment);
 		}
-		updatedAnalysisGroup.merge();
+//		updatedAnalysisGroup.merge();
 		return updatedAnalysisGroup;
 	}
 

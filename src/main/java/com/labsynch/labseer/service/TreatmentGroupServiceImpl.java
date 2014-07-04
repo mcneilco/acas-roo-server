@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -19,54 +20,100 @@ import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
-@Transactional
 public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 	private static final Logger logger = LoggerFactory.getLogger(TreatmentGroupServiceImpl.class);
 
 	@Autowired
 	private AutoLabelService autoLabelService;
-	
+
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
-	
+
 	@Autowired
 	private SubjectService subjectService;
 
 	@Override
-	@Transactional
+	public void saveLsTreatmentGroups(AnalysisGroup newAnalysisGroup, Set<TreatmentGroup> treatmentGroups,
+			Date recordedDate) {
+		Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+		analysisGroups.add(newAnalysisGroup);
+		if (treatmentGroups != null){
+			int j = 0;
+			for (TreatmentGroup treatmentGroup : treatmentGroups){
+				TreatmentGroup newTreatmentGroup = saveLsTreatmentGroup(analysisGroups, treatmentGroup, recordedDate);
+				if ( j % propertiesUtilService.getBatchSize() == 0 ) { 
+					newTreatmentGroup.flush();
+					newTreatmentGroup.clear();
+				}
+				j++;
+			}
+		}		
+	}
+
+	@Override
 	public TreatmentGroup saveLsTreatmentGroup(TreatmentGroup treatmentGroup){
 
 		logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
-		int batchSize = propertiesUtilService.getBatchSize();
-		Date recordedDate = new Date();
+		Date recordedDate = new Date();		
+		return saveLsTreatmentGroup(treatmentGroup.getAnalysisGroups(), treatmentGroup, recordedDate);
 
-		TreatmentGroup newTreatmentGroup = new TreatmentGroup(treatmentGroup);
-		if (newTreatmentGroup.getCodeName() == null){
-			newTreatmentGroup.setCodeName(autoLabelService.getTreatmentGroupCodeName());
-		}
-		if (newTreatmentGroup.getRecordedDate() == null){
-			newTreatmentGroup.setRecordedDate(recordedDate);
-		}
-		
-		Set<AnalysisGroup> analysisGroups = treatmentGroup.getAnalysisGroups();
-//		Set<AnalysisGroup> currentAnalysisGroups = new HashSet<AnalysisGroup>();
-		for (AnalysisGroup analysisGroup : analysisGroups){
-//			currentAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));
-			newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));
-		}
-//		newTreatmentGroup.setAnalysisGroups(currentAnalysisGroups);
-		newTreatmentGroup.persist();
-		logger.debug("persisted the newTreatmentGroup: " + newTreatmentGroup.toJson());
+	}
 
-		if (treatmentGroup.getLsLabels() != null) {
-			for(TreatmentGroupLabel treatmentGroupLabel : treatmentGroup.getLsLabels()){
-				TreatmentGroupLabel newTreatmentGroupLabel = new TreatmentGroupLabel(treatmentGroupLabel);
-				newTreatmentGroupLabel.setTreatmentGroup(newTreatmentGroup);
-				if (newTreatmentGroupLabel.getRecordedDate() == null) {newTreatmentGroupLabel.setRecordedDate(recordedDate);}
-				newTreatmentGroupLabel.persist();	
-			}		
+	@Override
+	@Transactional
+	public TreatmentGroup saveLsTreatmentGroup(Set<AnalysisGroup> analysisGroups, TreatmentGroup treatmentGroup, Date recordedDate){
+
+		//logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
+		TreatmentGroup newTreatmentGroup = null;
+
+		if (treatmentGroup.getId() == null){
+			newTreatmentGroup = new TreatmentGroup(treatmentGroup);
+			if (newTreatmentGroup.getCodeName() == null){
+				newTreatmentGroup.setCodeName(autoLabelService.getTreatmentGroupCodeName());
+			}
+			if (newTreatmentGroup.getRecordedDate() == null){
+				newTreatmentGroup.setRecordedDate(recordedDate);
+			}
+			
+			for (AnalysisGroup analysisGroup : analysisGroups){
+				newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));				
+			}
+			newTreatmentGroup.persist();
+			logger.debug("persisted the new treatmentGroup: " + newTreatmentGroup.toJson());
+
+			saveLabels(treatmentGroup, newTreatmentGroup, recordedDate);
+			saveStates(treatmentGroup, newTreatmentGroup, recordedDate);
+			
+			logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(treatmentGroup.getSubjects()));
+			saveSubjects(newTreatmentGroup, treatmentGroup.getSubjects(), recordedDate);
+
+
+		} else {
+			newTreatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroup.getId());
+			for (AnalysisGroup analysisGroup : analysisGroups){
+				newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));				
+			}
+			newTreatmentGroup.merge();
+			logger.debug("updated the treatmentGroup: -------------- " + newTreatmentGroup.toJson());
+			if (treatmentGroup.getSubjects() != null){
+				logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(newTreatmentGroup.getSubjects()));
+				saveSubjects(newTreatmentGroup, newTreatmentGroup.getSubjects(), recordedDate);				
+			}
 		}
+
+		return newTreatmentGroup;
+	}
+
+	private void saveSubjects(TreatmentGroup treatmentGroup,
+			Set<Subject> subjects, Date recordedDate) {
+		if (treatmentGroup.getSubjects().size() > 0){
+			subjectService.saveSubjects(treatmentGroup, subjects, recordedDate);
+		}		
+	}
+
+	private void saveStates(TreatmentGroup treatmentGroup,
+			TreatmentGroup newTreatmentGroup, Date recordedDate) {
 		if (treatmentGroup.getLsStates() != null){
 			for(TreatmentGroupState treatmentGroupState : treatmentGroup.getLsStates()){
 				TreatmentGroupState newTreatmentGroupState = new TreatmentGroupState(treatmentGroupState);
@@ -80,22 +127,19 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 					}										
 				}
 			}					
-		}
+		}		
+	}
 
-		if (treatmentGroup.getSubjects() != null){
-			int j = 0;
-			for(Subject subject : treatmentGroup.getSubjects()){
-				Subject newSubject = subjectService.saveSubject(subject);
-				if ( j % batchSize == 0 ) { 
-					newSubject.flush();
-					newSubject.clear();
-				}
-				j++;
-			}
-		}
-
-
-		return TreatmentGroup.findTreatmentGroup(newTreatmentGroup.getId());
+	private void saveLabels(TreatmentGroup treatmentGroup,
+			TreatmentGroup newTreatmentGroup, Date recordedDate) {
+		if (treatmentGroup.getLsLabels() != null) {
+			for(TreatmentGroupLabel treatmentGroupLabel : treatmentGroup.getLsLabels()){
+				TreatmentGroupLabel newTreatmentGroupLabel = new TreatmentGroupLabel(treatmentGroupLabel);
+				newTreatmentGroupLabel.setTreatmentGroup(newTreatmentGroup);
+				if (newTreatmentGroupLabel.getRecordedDate() == null) {newTreatmentGroupLabel.setRecordedDate(recordedDate);}
+				newTreatmentGroupLabel.persist();	
+			}		
+		}		
 	}
 
 	@Override
@@ -163,5 +207,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 		return TreatmentGroup.findTreatmentGroup(treatmentGroup.getId());
 
 	}
+
+
 
 }

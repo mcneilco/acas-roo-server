@@ -737,3 +737,5 @@ focus --class ~.domain.AnalysisGroup
 finder list
 finder add findAnalysisGroupsByExperiments
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-13 09:07:57
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-26 23:57:58
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-27 21:40:27

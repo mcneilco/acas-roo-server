@@ -22,6 +22,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 
@@ -87,7 +88,7 @@ public class TreatmentGroup extends AbstractThing {
 	public String toJson() {
 		return new JSONSerializer()
 		.include("lsLabels","lsStates.lsValues", "subjects")
-		.exclude("*.class", "analysisGroups.experiment", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroup")
+		.exclude("*.class", "analysisGroups.experiments", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroups")
 		.serialize(this);
 	}
 
