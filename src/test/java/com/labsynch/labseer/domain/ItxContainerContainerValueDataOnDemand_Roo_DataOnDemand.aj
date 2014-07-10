@@ -185,6 +185,9 @@ privileged aspect ItxContainerContainerValueDataOnDemand_Roo_DataOnDemand {
     
     public void ItxContainerContainerValueDataOnDemand.setNumericValue(ItxContainerContainerValue obj, int index) {
         BigDecimal numericValue = BigDecimal.valueOf(index);
+        if (numericValue.compareTo(new BigDecimal("99999999999999999999.999999999999999999")) == 1) {
+            numericValue = new BigDecimal("99999999999999999999.999999999999999999");
+        }
         obj.setNumericValue(numericValue);
     }
     
@@ -245,6 +248,9 @@ privileged aspect ItxContainerContainerValueDataOnDemand_Roo_DataOnDemand {
     
     public void ItxContainerContainerValueDataOnDemand.setUncertainty(ItxContainerContainerValue obj, int index) {
         BigDecimal uncertainty = BigDecimal.valueOf(index);
+        if (uncertainty.compareTo(new BigDecimal("99999999999999999999.999999999999999999")) == 1) {
+            uncertainty = new BigDecimal("99999999999999999999.999999999999999999");
+        }
         obj.setUncertainty(uncertainty);
     }
     
