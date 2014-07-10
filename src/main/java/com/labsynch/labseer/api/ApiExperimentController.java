@@ -1,6 +1,7 @@
 package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.TypedQuery;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import scala.util.parsing.json.JSONArray;
+
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Protocol;
@@ -29,6 +32,7 @@ import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.dto.SubjectStateValueDTO;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -107,12 +111,11 @@ public class ApiExperimentController {
     		@RequestParam("stateValueKind") String stateValueKind
     		) {
 		
-    	List<KeyValueDTO> lsValues = new ArrayList<KeyValueDTO>();
-    	List<String> values = new ArrayList<String>();
+    	List<SubjectStateValueDTO > lsValues = new ArrayList<SubjectStateValueDTO>();
+    	
     	Experiment experiment = Experiment.findExperiment(id);
     	List<AnalysisGroup> analysisGroups = AnalysisGroup.findAnalysisGroupsByExperiment(experiment).getResultList();
         for (AnalysisGroup analysisGroup: analysisGroups) {
-			//AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
 			List<TreatmentGroup> treatmentGroups = TreatmentGroup
 					.findTreatmentGroupsByAnalysisGroup(analysisGroup)
 					.getResultList();
@@ -130,16 +133,14 @@ public class ApiExperimentController {
 										subjectState, stateValueType, stateValueKind)
 								.getResultList();
 						for (SubjectValue subjectValue : subjectValues) {
-							//KeyValueDTO kvDTO = new KeyValueDTO();
-							//kvDTO.setKey("lsValue");
+							SubjectStateValueDTO svDTO = new SubjectStateValueDTO();
+							svDTO.setSubjectId(subject.getId());
 							if (stateValueType.equalsIgnoreCase("stringValue")) {
-	    	   					//kvDTO.setValue(subjectValue.getStringValue());
-	    	   					values.add(subjectValue.getStringValue());
+								svDTO.setSubjectValue(subjectValue.getStringValue());
 	    	   				} else if (stateValueType.equalsIgnoreCase("numericValue")) {
-	    	   					//kvDTO.setValue(subjectValue.getNumericValue().toString());
-	    	   					values.add(subjectValue.getNumericValue().toString());
+	    	   					svDTO.setSubjectValue(subjectValue.getNumericValue().toString());
 	    	   				}
-							//lsValues.add(kvDTO);
+							lsValues.add(svDTO);
 						}
 					}
 				}
@@ -151,11 +152,8 @@ public class ApiExperimentController {
         if (experiment == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        KeyValueDTO transferDTO = new KeyValueDTO();
-        transferDTO.setKey("lsValue");
-        transferDTO.setValue(values.toString());
-        //return new ResponseEntity<String>(KeyValueDTO.toJsonArray(lsValues), headers, HttpStatus.OK);
-        return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
+        
+        return new ResponseEntity<String>(SubjectStateValueDTO.toJsonArray(lsValues), headers, HttpStatus.OK);
     }
 
 }
