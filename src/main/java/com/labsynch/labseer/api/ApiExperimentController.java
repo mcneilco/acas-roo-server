@@ -1,7 +1,6 @@
 package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +27,7 @@ import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
-import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.dto.SubjectStateValueDTO;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -107,10 +106,9 @@ public class ApiExperimentController {
     		@RequestParam("stateValueKind") String stateValueKind
     		) {
 		
-    	List<String> values = new ArrayList<String>();
+    	List<SubjectStateValueDTO > lsValues = new ArrayList<SubjectStateValueDTO>();
+    	
     	Experiment experiment = Experiment.findExperiment(id);
-    	Set<Experiment> experiments = new HashSet<Experiment>();
-    	experiments.add(experiment);
     	Set<AnalysisGroup> analysisGroups = experiment.getAnalysisGroups();
         for (AnalysisGroup analysisGroup: analysisGroups) {
 			Set<TreatmentGroup> treatmentGroups = analysisGroup.getTreatmentGroups();
@@ -127,11 +125,14 @@ public class ApiExperimentController {
 										subjectState, stateValueType, stateValueKind)
 								.getResultList();
 						for (SubjectValue subjectValue : subjectValues) {
+							SubjectStateValueDTO svDTO = new SubjectStateValueDTO();
+							svDTO.setSubjectId(subject.getId());
 							if (stateValueType.equalsIgnoreCase("stringValue")) {
-	    	   					values.add(subjectValue.getStringValue());
+								svDTO.setSubjectValue(subjectValue.getStringValue());
 	    	   				} else if (stateValueType.equalsIgnoreCase("numericValue")) {
-	    	   					values.add(subjectValue.getNumericValue().toString());
+	    	   					svDTO.setSubjectValue(subjectValue.getNumericValue().toString());
 	    	   				}
+							lsValues.add(svDTO);
 						}
 					}
 				}
@@ -140,10 +141,11 @@ public class ApiExperimentController {
         
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        KeyValueDTO transferDTO = new KeyValueDTO();
-        transferDTO.setKey("lsValue");
-        transferDTO.setValue(values.toString());
-        return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
+        if (experiment == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        
+        return new ResponseEntity<String>(SubjectStateValueDTO.toJsonArray(lsValues), headers, HttpStatus.OK);
     }
 
 }

@@ -41,7 +41,7 @@ public class AnalysisGroupTest {
 	
 
 	@Transactional
-	//@Test
+	@Test
 	public void Analysis_Group_Many_To_Many_Test() {
 		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(15L);
 		logger.debug(analysisGroup.toJson());

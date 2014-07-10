@@ -8,16 +8,11 @@
 
 <!--
 	<context:property-placeholder location="file://${ACAS_HOME}/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" /> 
--->
-
-<!--
     <context:property-placeholder location="file:///opt/acas-bio/acas/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" />
--->
-
-
-<!--
     <context:property-placeholder location="file:///vol/bluebird/acas/acas/acas/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" />
+    <context:property-placeholder location="file:${catalina.home}/../client/acas/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" />
 -->
+
 
     <!-- Turn on AspectJ @Configurable support. As a result, any time you instantiate 
 		an object, Spring will attempt to perform dependency injection on that object. 

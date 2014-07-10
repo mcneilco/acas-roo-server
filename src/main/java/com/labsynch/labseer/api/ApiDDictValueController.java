@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.DDictValue;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
 
 @Transactional
@@ -61,7 +63,7 @@ public class ApiDDictValueController {
         	for (DDictValue ddict : ddictValues){
         		KeyValueDTO kvDTO = new KeyValueDTO();
         		kvDTO.setKey("lsValue");
-        		kvDTO.setValue(ddict.getLsValue());
+        		kvDTO.setValue(ddict.getLabelText());
         		lsValues.add(kvDTO);
         	}
         	return new ResponseEntity<String>(KeyValueDTO.toJsonArray(lsValues), headers, HttpStatus.OK);
@@ -170,5 +172,24 @@ public class ApiDDictValueController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+	
+    @Transactional
+    @RequestMapping(value = "/codetable", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> listJsonCodeTable(
+    		@RequestParam(value = "with", required = false) String with, 
+    		@RequestParam(value = "prettyjson", required = false) String prettyjson, 
+    		@RequestParam(value = "lstype", required = false) String lsType, 
+    		@RequestParam(value = "lskind", required = false) String lsKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<CodeTableDTO> result;
+        if (lsKind != null) {
+            result = DDictValue.getDDictValueCodeTableByKindEquals(lsKind);
+        } else {
+            result = DDictValue.getDDictCodeTable();
+        }
+        return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
     }
 }

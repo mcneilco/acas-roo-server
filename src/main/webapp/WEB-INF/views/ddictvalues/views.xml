@@ -22,4 +22,7 @@
 <definition extends="default" name="ddictvalues/findDDictValuesByLsTypeEquals">
         <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByLsTypeEquals.jspx"/>
     </definition>
+<definition extends="default" name="ddictvalues/findDDictValuesByIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByIgnoredNot.jspx"/>
+    </definition>
 </tiles-definitions>

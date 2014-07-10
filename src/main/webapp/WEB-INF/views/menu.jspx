@@ -417,6 +417,7 @@
         <menu:category id="c_ddictvalue" z="//tNoHqIxdxTRG7zgPcUetLYu8k=">
             <menu:item id="i_ddictvalue_new" messageCode="global_menu_new" url="/ddictvalues?form" z="tC4RJQp+VQAUTyApAsKkHNYcuWw="/>
             <menu:item id="i_ddictvalue_list" messageCode="global_menu_list" url="/ddictvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="xmGlnyJ/6c5Fuax8ETox1f+dGzM="/>
+            <menu:item id="fi_ddictvalue_ignorednot" messageCode="global_menu_find" url="/ddictvalues?find=ByIgnoredNot&amp;form" z="s/eTBpRm5jJR+UYNSjHKb+3iS9Y="/>
             <menu:item id="fi_ddictvalue_lskindequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsKindEquals&amp;form" z="uj2KVoztgITKChOyu5a/e6QbxDo="/>
             <menu:item id="fi_ddictvalue_lstypeequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEquals&amp;form" z="RElPZg2kR/YHutT5s+iE9ijh9/Y="/>
             <menu:item id="fi_ddictvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="q7iZ5coIZEBVrxCOcYulJugpQ2c="/>

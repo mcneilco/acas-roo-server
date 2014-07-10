@@ -1987,7 +1987,7 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 	public Converter<DDictValue, String> getDDictValueToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.DDictValue, java.lang.String>() {
             public String convert(DDictValue dDictValue) {
-                return new StringBuilder().append(dDictValue.getLsType()).append(' ').append(dDictValue.getLsKind()).append(' ').append(dDictValue.getLsTypeAndKind()).append(' ').append(dDictValue.getLsValue()).toString();
+                return new StringBuilder().append(dDictValue.getLsType()).append(' ').append(dDictValue.getLsKind()).append(' ').append(dDictValue.getLsTypeAndKind()).append(' ').append(dDictValue.getLabelText()).toString();
             }
         };
     }
