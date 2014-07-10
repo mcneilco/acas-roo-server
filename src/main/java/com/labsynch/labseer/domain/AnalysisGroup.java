@@ -27,6 +27,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -62,6 +63,17 @@ public class AnalysisGroup extends AbstractThing {
         super.setLsType(analysisGroup.getLsType());
 //        this.setExperiment(analysisGroup.getExperiment());
 
+	}
+
+	public AnalysisGroup(AnalysisGroupCsvDTO analysisGroupDTO) {
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setCodeName(analysisGroupDTO.getCodeName());
+		this.setLsKind(analysisGroupDTO.getLsKind());
+		this.setLsType(analysisGroupDTO.getLsType());	
 	}
 
 	public static AnalysisGroup update(AnalysisGroup analysisGroup){

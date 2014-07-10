@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 
 import java.util.Date;
+import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -142,6 +144,32 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 		return TreatmentGroup.findTreatmentGroup(treatmentGroup.getId());
 
+	}
+
+	@Override
+	public HashMap<String, TempThingDTO> createLsTreatmentGroupsFromCSV(
+			HashMap<String, TempThingDTO> analysisGroupMap,
+			String treatmentGroupCSV, String subjectCSV) {
+		
+		HashMap<String, TempThingDTO> treatmentGroupMap = createTreatmentGroupsFromCSV(analysisGroupMap, treatmentGroupCSV);
+		
+		if (subjectCSV != null){
+			
+			//HashMap<String, TempThingDTO> subjectGroupMap = treatmentGroupService.createLsTreatmentGroupsFromCSV(analysisGroupMap, treatmentGroupCSV, subjectCSV);
+			
+		}
+		
+		return analysisGroupMap;
+
+	}
+
+	private HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
+			HashMap<String, TempThingDTO> analysisGroupMap,
+			String treatmentGroupCSV) {
+		
+		
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

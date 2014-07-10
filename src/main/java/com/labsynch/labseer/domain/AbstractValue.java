@@ -60,7 +60,7 @@ public abstract class AbstractValue {
 	private String codeTypeAndKind;
 	
 	@Size(max = 255)
-	private String stringValue;
+	protected String stringValue;
 
 	@Size(max = 255)
 	@org.hibernate.annotations.Index(name="_CODE_IDX")

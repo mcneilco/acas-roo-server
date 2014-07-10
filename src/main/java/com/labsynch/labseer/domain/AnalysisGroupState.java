@@ -1,5 +1,6 @@
 package com.labsynch.labseer.domain;
 
+import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
@@ -42,16 +43,26 @@ public class AnalysisGroupState extends AbstractState {
     private Set<AnalysisGroupValue> lsValues = new HashSet<AnalysisGroupValue>();
 
     public AnalysisGroupState(com.labsynch.labseer.domain.AnalysisGroupState analysisGroupState) {
-        super.setRecordedBy(analysisGroupState.getRecordedBy());
-        super.setRecordedDate(analysisGroupState.getRecordedDate());
-        super.setLsTransaction(analysisGroupState.getLsTransaction());
-        super.setModifiedBy(analysisGroupState.getModifiedBy());
-        super.setModifiedDate(analysisGroupState.getModifiedDate());
-        super.setLsType(analysisGroupState.getLsType());
-        super.setLsKind(analysisGroupState.getLsKind());
+        this.setRecordedBy(analysisGroupState.getRecordedBy());
+        this.setRecordedDate(analysisGroupState.getRecordedDate());
+        this.setLsTransaction(analysisGroupState.getLsTransaction());
+        this.setModifiedBy(analysisGroupState.getModifiedBy());
+        this.setModifiedDate(analysisGroupState.getModifiedDate());
+        this.setLsType(analysisGroupState.getLsType());
+        this.setLsKind(analysisGroupState.getLsKind());
     }
 
-    public static com.labsynch.labseer.domain.AnalysisGroupState update(com.labsynch.labseer.domain.AnalysisGroupState analysisGroupState) {
+    public AnalysisGroupState(AnalysisGroupCsvDTO analysisGroupDTO) {
+        this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+        this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+        this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+        this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+        this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+        this.setLsType(analysisGroupDTO.getStateType());
+        this.setLsKind(analysisGroupDTO.getStateKind());
+     }
+
+	public static com.labsynch.labseer.domain.AnalysisGroupState update(com.labsynch.labseer.domain.AnalysisGroupState analysisGroupState) {
         AnalysisGroupState updatedAnalysisGroupState = AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId());
         updatedAnalysisGroupState.setRecordedBy(analysisGroupState.getRecordedBy());
         updatedAnalysisGroupState.setRecordedDate(analysisGroupState.getRecordedDate());

@@ -15,8 +15,8 @@
             <menu:item id="fi_subjectvalue_codevalueequals" messageCode="global_menu_find" url="/subjectvalues?find=ByCodeValueEquals&amp;form" z="TpWX8msqy3emIF2r650tZJHJY6k="/>
             <menu:item id="fi_subjectvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/subjectvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="bnUyulwMsBH/zqMrGnupxosiaVU="/>
             <menu:item id="fi_subjectvalue_lsstate" messageCode="global_menu_find" url="/subjectvalues?find=ByLsState&amp;form" z="BJmnpo+wwNSfXPFeJKim6rKslHc="/>
-            <menu:item id="fi_subjectvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/subjectvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="5LZbpyZOLdzBr/CmYasxHhPq/l8="/>
             <menu:item id="fi_subjectvalue_lsstateandlstypeequalsandlskindequals" messageCode="global_menu_find" url="/subjectvalues?find=ByLsStateAndLsTypeEqualsAndLsKindEquals&amp;form" z="PeJIDXh3beV/5+TJGQuVm1xX/Gw="/>
+            <menu:item id="fi_subjectvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/subjectvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="5LZbpyZOLdzBr/CmYasxHhPq/l8="/>
         </menu:category>
         <menu:category id="c_containervalue" z="61ft2oqlcmXT8pmGGZYwQQQ0VPo=">
             <menu:item id="i_containervalue_new" messageCode="global_menu_new" url="/containervalues?form" z="8boDwXK/aCoPpkpkvLS5e3iqgM0="/>
