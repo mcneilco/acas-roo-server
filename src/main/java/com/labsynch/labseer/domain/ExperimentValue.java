@@ -46,6 +46,14 @@ public class ExperimentValue extends AbstractValue {
     
         return newExperimentValue;
     }
+    
+    public static ExperimentValue create(String experimentValueJson) {
+        ExperimentValue newExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(experimentValueJson, 
+        				new ExperimentValue());	
+    
+        return newExperimentValue;
+    }
 
 	public ExperimentValue() {
 		// Default empty constructor
@@ -133,6 +141,8 @@ public class ExperimentValue extends AbstractValue {
         updatedExperimentValue.merge();
         return updatedExperimentValue;
     }
+
+    
 
     
 //    public static ExperimentValue update(ExperimentValue experimentValue) {
