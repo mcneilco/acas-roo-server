@@ -2,6 +2,7 @@ package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import scala.util.parsing.json.JSONArray;
+
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
@@ -32,6 +35,7 @@ import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.dto.SubjectStateValueDTO;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
