@@ -19,13 +19,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext.xml")
+@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
 public class SubjectValueServiceTest {
 	
@@ -33,6 +34,9 @@ public class SubjectValueServiceTest {
 	
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+	private SubjectValueService subjectValueService;
 		
 	//@Test
 	@Transactional
@@ -101,7 +105,7 @@ public class SubjectValueServiceTest {
 		logger.info("elapsed time = " + (endTime-startTime));
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void SimpleTest_5() throws IOException{
 		
@@ -127,5 +131,13 @@ public class SubjectValueServiceTest {
 //		logger.debug(json);
 		long endTime = new Date().getTime();
 		logger.info("elapsed time = " + (endTime-startTime));
+	}
+	
+	@Test
+	@Transactional
+	public void testSubjectServiceSave() {
+		String json = "{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"Response\",\"lsState\":{\"id\":20,\"ignored\":false,\"lsKind\":\"results\",\"lsTransaction\":3,\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"jmcneil\",\"recordedDate\":1401368054000,\"version\":0},\"lsTransaction\":3,\"lsType\":\"numericValue\",\"lsTypeAndKind\":\"numericValue_Response\",\"numericValue\":25.30,\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"POSTTest\",\"recordedDate\":1401368054000,\"unitKind\":\"efficacy\",\"unitTypeAndKind\":\"null_efficacy\",\"version\":0}";
+		SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
+		subjectValueService.saveSubjectValue(subjectValue);
 	}
 }
