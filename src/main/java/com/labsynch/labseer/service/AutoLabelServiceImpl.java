@@ -37,8 +37,19 @@ public class AutoLabelServiceImpl implements AutoLabelService {
             List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
             LabelSequence labelSequence;
             if(labelSequences.size() == 0) {
-            	logger.info("Label sequence does not exist!!!");
-            	throw new NoResultException();
+            	logger.info("Label sequence does not exist! Creating new Sequence.");
+            	labelSequence = new LabelSequence();
+            	labelSequence.setDigits(6);
+            	labelSequence.setGroupDigits(false);
+            	labelSequence.setIgnored(false);
+            	labelSequence.setLabelPrefix(generateLabelPrifix(thingTypeAndKind));
+            	labelSequence.setLabelSeparator("-");
+            	labelSequence.setLabelTypeAndKind(labelTypeAndKind);
+            	labelSequence.setLatestNumber(0L);
+            	labelSequence.setModifiedDate((new Date()));
+            	labelSequence.setThingTypeAndKind(thingTypeAndKind);
+            	labelSequence.setVersion(0);
+            	labelSequence.persist();
             } else if (labelSequences.size() != 1) {
                 logger.info("found duplicate sequences!!!");
                 throw new NonUniqueResultException();
@@ -71,5 +82,17 @@ public class AutoLabelServiceImpl implements AutoLabelService {
     		
     		return autoLabels;
     	}
+	
+	private String generateLabelPrifix(String thingTypeAndKind) {
+		String kindSegment = thingTypeAndKind.split("_")[1];
+		String labelPrefix = kindSegment.substring(0, 1);
+		if(kindSegment.contains("_")) {
+			labelPrefix = labelPrefix + kindSegment.split("_")[1].substring(0,1);
+		}
+		if(kindSegment.contains(" ")) {
+			labelPrefix = labelPrefix + kindSegment.split(" ")[1].substring(0,1);
+		}
+		return labelPrefix.toUpperCase();
+	}
 
 }
