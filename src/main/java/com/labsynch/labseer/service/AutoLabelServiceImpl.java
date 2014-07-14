@@ -42,7 +42,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
             	labelSequence.setDigits(6);
             	labelSequence.setGroupDigits(false);
             	labelSequence.setIgnored(false);
-            	labelSequence.setLabelPrefix(generateLabelPrifix(thingTypeAndKind));
+            	labelSequence.setLabelPrefix(generateLabelPrefix(thingTypeAndKind));
             	labelSequence.setLabelSeparator("-");
             	labelSequence.setLabelTypeAndKind(labelTypeAndKind);
             	labelSequence.setLatestNumber(0L);
@@ -83,7 +83,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
     		return autoLabels;
     	}
 	
-	private String generateLabelPrifix(String thingTypeAndKind) {
+	private String generateLabelPrefix(String thingTypeAndKind) {
 		String kindSegment = thingTypeAndKind.split("_")[1];
 		String labelPrefix = kindSegment.substring(0, 1);
 		if(kindSegment.contains("_")) {
