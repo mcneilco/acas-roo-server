@@ -18,68 +18,44 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.service.SubjectValueService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
 @RequestMapping("api/v1/subject")
 @Transactional
 @RooWebJson(jsonObject = Subject.class)
 public class ApiSubjectController {
-
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
 	
 	@Autowired
 	private SubjectValueService subjectValueService;
 
-	@RequestMapping(value = "/{IdOrCodeName}/values/{Id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{SubjectIdOrCodeName}/values/{SubjectValueId}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getSubjectValueByIdOrCodeName (
-			@PathVariable("IdOrCodeName") String IdOrCodeName,
-			@PathVariable("Id") Long Id) {
+			@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName,
+			@PathVariable("SubjectValueId") Long subjectValueId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
-		List<SubjectValue> subjectValues = null;
-		Long id = null;
-		if(isNumeric(IdOrCodeName)) {
-			id = Long.valueOf(IdOrCodeName);
-		} else {
-			id = retrieveSubjectIdFromCodeName(IdOrCodeName);
-		}
-		if(id != null) {
-			subjectValues = subjectValueService.getSubjectValuesBySubjectId(Long.valueOf(id));
-		} 
-		
-		SubjectValue result = null;
-		
-		for(SubjectValue subjectValue : subjectValues) {
-			if(subjectValue.getId() == Id) {
-				result = subjectValue;
-				break;
-			}
-		}
+
+		SubjectValue result = SubjectValue.findSubjectValue(subjectValueId);
+
 		return (result == null) ?
 			new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND) :
 			new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/{IdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{SubjectIdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getSubjectValuesForSubjectByIdOrCodeName (
-			@PathVariable("IdOrCodeName") String IdOrCodeName) {		
+			@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		
 		List<SubjectValue> subjectValues = null;
-		Long id = null;
-		if(isNumeric(IdOrCodeName)) {
-			id = Long.valueOf(IdOrCodeName);
-		} else {
-			id = retrieveSubjectIdFromCodeName(IdOrCodeName);
-		}
-		if(id != null) {
-			subjectValues = subjectValueService.getSubjectValuesBySubjectId(Long.valueOf(id));
+		Long subjectId = isNumeric(subjectIdOrCodeName) ?
+				Long.valueOf(subjectIdOrCodeName) :
+				retrieveSubjectIdFromCodeName(subjectIdOrCodeName);
+		if(subjectId != null) {
+			subjectValues = subjectValueService.getSubjectValuesBySubjectId(subjectId);
 		}
 		
 		return (subjectValues == null) ?
@@ -88,15 +64,10 @@ public class ApiSubjectController {
 	}
 	
 	private static Long retrieveSubjectIdFromCodeName(String codeName) {
-		Long id = null;
-		List<Subject> subjects = Subject.findAllSubjects();
-		for(Subject su : subjects) {
-			if(su.getCodeName() != null && su.getCodeName().compareTo(codeName) == 0) {
-				id = su.getId();
-				break;
-			}
-		}
-		return id;
+		List<Subject> subjects = Subject.findSubjectsByCodeNameEquals(codeName).getResultList();
+		return (subjects == null || subjects.size() == 0) ? 
+					null :
+					subjects.get(0).getId();
 	}
 	
 	@RequestMapping(value = "/values", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -111,37 +82,37 @@ public class ApiSubjectController {
 	    	new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@RequestMapping(value = "{IdOrCodeName}/values/{Id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "{SubjectIdOrCodeName}/values/{SubjectValueId}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public @ResponseBody ResponseEntity<String> updateSubjectFromJsonWithId(
     		@RequestBody String json,
-    		@PathVariable("Id") String Id,
-    		@PathVariable("IdOrCodeName") String IdOrCodeName) {
+    		@PathVariable("SubjectValueId") String subjectValueId,
+    		@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         
         SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
         if(subjectValue.getId() == null) {
-        	return (subjectValueService.saveSubjectValue(subjectValue) != null) ?
-        	    	new ResponseEntity<String>(headers, HttpStatus.OK) :
-        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+        	return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
+        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
+        	    	new ResponseEntity<String>(headers, HttpStatus.OK);
         }      
         return ((subjectValueService.updateSubjectValue(subjectValue)) == null) ? 
         		new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
         		new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "{IdOrCodeName}/values", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "{SubjectIdOrCodeName}/values", method = RequestMethod.PUT, headers = "Accept=application/json")
     public @ResponseBody ResponseEntity<String> updateSubjectFromJsonWithId(
     		@RequestBody String json,
-    		@PathVariable("IdOrCodeName") String IdOrCodeName) {
+    		@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         
         SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
         if(subjectValue.getId() == null) {
-        	return (subjectValueService.saveSubjectValue(subjectValue) != null) ?
-        	    	new ResponseEntity<String>(headers, HttpStatus.OK) :
-        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+        	return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
+        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
+        	    	new ResponseEntity<String>(headers, HttpStatus.OK);
         }      
         return ((subjectValueService.updateSubjectValue(subjectValue)) == null) ? 
         		new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
