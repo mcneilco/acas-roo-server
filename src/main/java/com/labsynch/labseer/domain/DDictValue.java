@@ -63,7 +63,7 @@ public class DDictValue {
     private String comments;
 
     @NotNull
-    private boolean ignored;
+	public boolean ignored;
 
     private Integer displayOrder;
 
