@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,8 @@ import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.service.DataDictionaryService;
+import com.labsynch.labseer.service.ExperimentService;
 
 @Transactional
 @RequestMapping("api/v1/ddictvalues")
@@ -33,6 +36,9 @@ import com.labsynch.labseer.dto.KeyValueDTO;
 public class ApiDDictValueController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiDDictValueController.class);
+	
+	@Autowired
+	private DataDictionaryService dataDictionaryService;
 
     @RequestMapping(value = "/getvalues/{format}", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> findByTypeAndKind(
@@ -192,4 +198,74 @@ public class ApiDDictValueController {
         }
         return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/all/{lsType}/{lsKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getDDictValuesByTypeKindFormat(
+    		@PathVariable("lsType") String lsType, 
+    		@PathVariable("lsKind") String lsKind, 
+    		@PathVariable("format") String format) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<CodeTableDTO> result;
+        List<DDictValue> dDictResult;
+        if (lsKind != null && lsType != null) {
+            result = dataDictionaryService.getDataDictionaryCodeTableListByTypeKind(lsType, lsKind); 
+            if(result.size() == 0) {
+            	return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
+            }
+        } else {
+        	return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+        }
+        if(format.compareTo("json") == 0) {
+        	dDictResult = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+        	if(dDictResult.size() == 0) {
+            	return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
+            }
+        	return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResult), headers, HttpStatus.OK);
+        } else if(format.compareTo("list") == 0) {
+        	dDictResult = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+        	if(dDictResult.size() == 0) {
+            	return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
+            }
+        	return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResult), headers, HttpStatus.OK);
+        }
+        return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/bytype/{lsType}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getDDictValuesByTypeFormat(
+    		@PathVariable("lsType") String lsType, 
+    		@PathVariable("format") String format) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<CodeTableDTO> result;
+        List<DDictValue> dDictResult;
+        if (lsType != null) {
+        	DDictValue.findDDictValuesByLsTypeEquals(lsType).getResultList();
+            result = dataDictionaryService.getDataDictionaryCodeTableListByType(lsType); 
+            if(result.size() == 0) {
+            	return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
+            }
+        } else {
+        	return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+        }
+        if(format.compareTo("json") == 0) {
+        	dDictResult = DDictValue.findDDictValuesByLsTypeEquals(lsType).getResultList();
+        	if(dDictResult.size() == 0) {
+            	return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
+            }
+        	return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResult), headers, HttpStatus.OK);
+        } else if(format.compareTo("list") == 0) {
+        	dDictResult = DDictValue.findDDictValuesByLsTypeEquals(lsType).getResultList();
+        	if(dDictResult.size() == 0) {
+            	return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
+            }
+        	return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResult), headers, HttpStatus.OK);
+        }
+        return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
+    }
 }
+
+

@@ -1,6 +1,7 @@
 package com.labsynch.labseer.service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
 
 @Service
 @Transactional
@@ -70,5 +72,36 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	@Override
+	public List<CodeTableDTO> getDataDictionaryCodeTableListByTypeKind(String lsType, String lsKind) {
+		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
+		for (DDictValue val : DDictValue.findDDictValuesByLsKindEquals(lsKind).getResultList()) {
+			if (!val.ignored && val.getLsType().compareTo(lsType) == 0) {
+				CodeTableDTO codeTable = new CodeTableDTO();
+				codeTable.setName(val.getLabelText());
+				codeTable.setCode(val.getCodeName());
+				codeTable.setIgnored(val.ignored);
+				codeTable.setCodeName(val.getCodeName());
+				codeTableList.add(codeTable);
+			}
+		}
+		return codeTableList;
+	}
+	
+	@Override
+	public List<CodeTableDTO> getDataDictionaryCodeTableListByType(String lsType) {
+		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
+		for (DDictValue val : DDictValue.findDDictValuesByLsTypeEquals(lsType).getResultList()) {
+			if (!val.ignored) {
+				CodeTableDTO codeTable = new CodeTableDTO();
+				codeTable.setName(val.getLabelText());
+				codeTable.setCode(val.getCodeName());
+				codeTable.setIgnored(val.ignored);
+				codeTable.setCodeName(val.getCodeName());
+				codeTableList.add(codeTable);
+			}
+		}
+		return codeTableList;
+	}
 }
