@@ -5,18 +5,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
 @Service
@@ -24,12 +18,6 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 public class ExperimentValueServiceImpl implements ExperimentValueService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentValueServiceImpl.class);
-
-	@Override
-	public void deleteExperimentValue(ExperimentValue experimentValue){
-		logger.debug("incoming meta experiment: " + experimentValue.toJson());
-
-	}
 
 	//Query hibernate object and grab existing table references - add them to json hydrated object
 	@Override

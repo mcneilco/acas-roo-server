@@ -1,12 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.ExcludeNulls;
-import com.labsynch.labseer.web.ProtocolController;
-
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,9 +8,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
@@ -30,6 +23,13 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "experiments", "lsLabels" })
@@ -295,6 +295,7 @@ public class Protocol extends AbstractThing {
 				CodeTableDTO codeTable = new CodeTableDTO();
 				codeTable.setName(protocol.findPreferredName());
 				codeTable.setCode(protocol.getCodeName());
+				codeTable.setCodeName(protocol.getCodeName());
 				codeTable.setIgnored(protocol.isIgnored());
 				codeTableList.add(codeTable);
 			}

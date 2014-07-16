@@ -1,13 +1,9 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.dto.AutoLabelDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.service.AutoLabelService;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -19,21 +15,28 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import org.hibernate.annotations.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+
+import com.labsynch.labseer.dto.CodeTableDTO;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Entity
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "DDICT_VALUE_PKSEQ", finders = { "findDDictValuesByLsTypeEqualsAndLsKindEquals", "findDDictValuesByLsTypeEquals", "findDDictValuesByLsKindEquals", "findDDictValuesByIgnoredNot" })
+@RooJpaActiveRecord(sequenceName = "DDICT_VALUE_PKSEQ", finders = { "findDDictValuesByCodeNameEquals", "findDDictValuesByLsTypeEqualsAndLsKindEquals", "findDDictValuesByLsTypeEquals", "findDDictValuesByLsKindEquals", "findDDictValuesByIgnoredNot" })
 public class DDictValue {
 
     private static final Logger logger = LoggerFactory.getLogger(DDictValue.class);
@@ -63,7 +66,7 @@ public class DDictValue {
     private String comments;
 
     @NotNull
-	public boolean ignored;
+	private boolean ignored;
 
     private Integer displayOrder;
 
@@ -106,6 +109,10 @@ public class DDictValue {
 
     public void setCodeName(String codeName) {
         this.codeName = codeName;
+    }
+    
+    public boolean getIgnored(){
+    	return this.ignored;
     }
 
     public static final EntityManager entityManager() {
@@ -193,6 +200,7 @@ public class DDictValue {
 				CodeTableDTO codeTable = new CodeTableDTO();
 				codeTable.setName(val.labelText);
 				codeTable.setCode(val.getCodeName());
+				codeTable.setCodeName(val.getCodeName());
 				codeTable.setIgnored(val.ignored);
 				codeTableList.add(codeTable);
 			}
@@ -207,10 +215,44 @@ public class DDictValue {
 		for (DDictValue val : dDicts) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setName(val.labelText);
+			codeTable.setCodeName(val.getCodeName());
 			codeTable.setCode(val.getCodeName());
 			codeTable.setIgnored(val.ignored);
 			codeTableList.add(codeTable);
 		}
 		return codeTableList;
 	}
+	
+	public static String[] getColumns(){
+		String[] headerColumns = new String[] {
+				"id", 
+				"codeName",
+				"lsType",
+				"lsKind",
+				"labelText",
+				"description",
+				"comments",
+				"ignored",
+				"displayOrder"};
+		
+		return headerColumns;
+
+	}
+
+	public static CellProcessor[] getProcessors() {
+		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional()
+		};
+
+		return processors;
+	}
+
 }
