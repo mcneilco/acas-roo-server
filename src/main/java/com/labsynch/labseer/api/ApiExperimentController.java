@@ -188,38 +188,84 @@ public class ApiExperimentController {
 		return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/{IdOrCodeName}/values/{Id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/values", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getExperimentValueByIdOrCodeName (
-			@PathVariable("IdOrCodeName") String IdOrCodeName,
-			@PathVariable("Id") Long Id) {
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind) {
+		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement
+		return null;
 
-		List<ExperimentValue> experimentValues = null;
-		Long id = null;
-		if(isNumeric(IdOrCodeName)) {
-			id = Long.valueOf(IdOrCodeName);
-		} else {
-			id = retrieveExperimentIdFromCodeName(IdOrCodeName);
-		}
-		if(id != null) {
-			experimentValues = experimentValueService.getExperimentValuesByExperimentId(Long.valueOf(id));
-		} 
-
-		ExperimentValue result = null;
-
-		for(ExperimentValue experimentValue : experimentValues) {
-			if(experimentValue.getId() == Id) {
-				result = experimentValue;
-				break;
-			}
-		}
-		return (result == null) ?
-				new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND) :
-					new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/experimentvalues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter2 (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("valueType") String valueType,
+			@PathVariable("valueKind") String valueKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement
+		return null;
+
+	}
+	
+	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/agvalues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter3 (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("valueType") String valueType,
+			@PathVariable("valueKind") String valueKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement
+		return null;
+
+	}
+	
+	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/tgvalues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter4 (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("valueType") String valueType,
+			@PathVariable("valueKind") String valueKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement
+		return null;
+
+	}
+	
+	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/subjectvalues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter5 (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("valueType") String valueType,
+			@PathVariable("valueKind") String valueKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement
+		return null;
+
+	}
+	
 	@RequestMapping(value = "/{IdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getExperimentValuesForExperimentByIdOrCodeName (
@@ -232,10 +278,11 @@ public class ApiExperimentController {
 		if(isNumeric(IdOrCodeName)) {
 			id = Long.valueOf(IdOrCodeName);
 		} else {
-			id = retrieveExperimentIdFromCodeName(IdOrCodeName);
+			id = Experiment.findExperimentsByCodeNameEquals(IdOrCodeName).getSingleResult().getId();
 		}
+		
 		if(id != null) {
-			experimentValues = experimentValueService.getExperimentValuesByExperimentId(Long.valueOf(id));
+			experimentValues = experimentValueService.getExperimentValuesByExperimentId(id);
 		}
 
 		return (experimentValues == null) ?
@@ -243,17 +290,32 @@ public class ApiExperimentController {
 					new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues), headers, HttpStatus.OK);
 	}
 
-	private static Long retrieveExperimentIdFromCodeName(String codeName) {
-		Long id = null;
-		List<Experiment> experiments = Experiment.findAllExperiments();
-		for(Experiment ex : experiments) {
-			if(ex.getCodeName() != null && ex.getCodeName().compareTo(codeName) == 0) {
-				id = ex.getId();
-				break;
-			}
+	
+	@RequestMapping(value = "/{experimentIdOrCodeName}/values/{valueId}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeName (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("valueId") Long valueId) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {
+			experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
 		}
-		return id;
+
+		ExperimentValue experimentValue = ExperimentValue.findExperimentValue(valueId);
+		
+		if (experimentValue.getLsState().getExperiment().getId() != experiment.getId()){
+			new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
 	}
+
 
 	@RequestMapping(value = "/values", method = RequestMethod.POST, headers = "Accept=application/json")
 	public @ResponseBody ResponseEntity<String> saveExperimentFromJson(@RequestBody String json) {
