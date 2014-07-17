@@ -11,10 +11,10 @@ public class CodeTableDTO {
 
 	private String code;
 
+	private String codeName;  //code and codeName should be the same. Prefer to use codeName but older client code may be using code.
+	
 	private String name;
 	
-	private String codeName;
-
 	private boolean ignored;
 
 }

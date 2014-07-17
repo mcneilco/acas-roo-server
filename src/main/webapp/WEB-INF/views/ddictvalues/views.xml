@@ -25,4 +25,7 @@
 <definition extends="default" name="ddictvalues/findDDictValuesByIgnoredNot">
         <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByIgnoredNot.jspx"/>
     </definition>
+<definition extends="default" name="ddictvalues/findDDictValuesByCodeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByCodeNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

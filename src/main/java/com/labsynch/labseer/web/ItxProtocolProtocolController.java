@@ -1,12 +1,7 @@
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.InteractionKind;
-import com.labsynch.labseer.domain.InteractionType;
-import com.labsynch.labseer.domain.ItxProtocolProtocol;
-import com.labsynch.labseer.domain.ItxProtocolProtocolState;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ThingPage;
 import java.util.List;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.labsynch.labseer.domain.InteractionKind;
+import com.labsynch.labseer.domain.InteractionType;
+import com.labsynch.labseer.domain.ItxProtocolProtocol;
+import com.labsynch.labseer.domain.ItxProtocolProtocolState;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ThingPage;
 
 @RequestMapping("/itxprotocolprotocols")
 @Controller

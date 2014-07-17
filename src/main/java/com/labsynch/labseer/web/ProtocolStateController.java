@@ -1,16 +1,15 @@
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ProtocolState;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.apache.commons.io.IOUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +32,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
+
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolState;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @RooWebJson(jsonObject = ProtocolState.class)
 @Controller

@@ -15,20 +15,20 @@ privileged aspect CodeTableDTO_Roo_JavaBean {
         this.code = code;
     }
     
-    public String CodeTableDTO.getName() {
-        return this.name;
-    }
-    
-    public void CodeTableDTO.setName(String name) {
-        this.name = name;
-    }
-    
     public String CodeTableDTO.getCodeName() {
         return this.codeName;
     }
     
     public void CodeTableDTO.setCodeName(String codeName) {
         this.codeName = codeName;
+    }
+    
+    public String CodeTableDTO.getName() {
+        return this.name;
+    }
+    
+    public void CodeTableDTO.setName(String name) {
+        this.name = name;
     }
     
     public boolean CodeTableDTO.isIgnored() {

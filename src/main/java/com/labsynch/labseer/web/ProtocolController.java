@@ -1,20 +1,15 @@
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ProtocolKind;
-import com.labsynch.labseer.domain.ProtocolType;
-import com.labsynch.labseer.domain.ThingPage;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.service.ProtocolService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.apache.commons.io.IOUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
@@ -40,6 +35,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
+
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.service.ProtocolService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @RooWebJson(jsonObject = Protocol.class)
 @Controller
@@ -137,7 +137,11 @@ public class ProtocolController {
     @Transactional
     @RequestMapping(value = "/codetable", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> listJsonCodeTable(@RequestParam(value = "with", required = false) String with, @RequestParam(value = "prettyjson", required = false) String prettyjson, @RequestParam(value = "lstype", required = false) String lsType, @RequestParam(value = "lskind", required = false) String lsKind) {
+    public ResponseEntity<java.lang.String> listJsonCodeTable(
+    		@RequestParam(value = "with", required = false) String with, 
+    		@RequestParam(value = "prettyjson", required = false) String prettyjson, 
+    		@RequestParam(value = "lstype", required = false) String lsType, 
+    		@RequestParam(value = "lskind", required = false) String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<CodeTableDTO> result;
