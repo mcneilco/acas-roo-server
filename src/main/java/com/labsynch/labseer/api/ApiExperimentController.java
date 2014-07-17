@@ -52,7 +52,7 @@ public class ApiExperimentController {
 	private ExperimentValueService experimentValueService;
 
 
-	@RequestMapping(value = "/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/bytypekind/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<java.lang.String> listExperimentsByTypeKindJson(
@@ -188,21 +188,39 @@ public class ApiExperimentController {
 		return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/values", method = RequestMethod.GET, headers = "Accept=application/json")
+
+	@RequestMapping(value = "/{experimentIdOrCodeName}/exptstates/bytypekind/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter (
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter11 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind) {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement
+		//TODO: implement; Return an array of experimentStates
+		
 		return null;
 
 	}
 
-	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/experimentvalues", method = RequestMethod.GET, headers = "Accept=application/json")
+	// GET values from different levels
+	
+	@RequestMapping(value = "/{experimentIdOrCodeName}/exptvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter1 (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement; return an array of experiment values in different formats
+		return null;
+
+	}
+
+	@RequestMapping(value = "/{experimentIdOrCodeName}/exptvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter2 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
@@ -213,12 +231,26 @@ public class ApiExperimentController {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement
+		//TODO: implement; return an array of experiment values in different formats
+		return null;
+
+	}
+
+	@RequestMapping(value = "/{experimentIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter31 (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement; return an array of analysisGroups values in different formats
 		return null;
 
 	}
 	
-	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/agvalues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{experimentIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter3 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
@@ -229,12 +261,25 @@ public class ApiExperimentController {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement
+		//TODO: implement; return an array of analysisGroups values in different formats
+		return null;
+
+	}
+	@RequestMapping(value = "/{experimentIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter41 (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement; return an array of treatment group values in different formats
 		return null;
 
 	}
 	
-	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/tgvalues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{experimentIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter4 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
@@ -245,12 +290,28 @@ public class ApiExperimentController {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement
+		//TODO: implement; return an array of treatment group values in different formats
+		return null;
+
+	}
+
+//	@RequestMapping(value = "/{experimentIdOrCodeName}/subjects/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+
+	@RequestMapping(value = "/{experimentIdOrCodeName}/subjectvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter51 (
+			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//TODO: implement; return an array of subject values in different formats
 		return null;
 
 	}
 	
-	@RequestMapping(value = "/{experimentIdOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/subjectvalues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{experimentIdOrCodeName}/subjectvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter5 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
@@ -261,7 +322,7 @@ public class ApiExperimentController {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement
+		//TODO: implement; return an array of subject values in different formats
 		return null;
 
 	}
