@@ -47,9 +47,45 @@ public class ApiExperimentController {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
-	
+
 	@Autowired
 	private ExperimentValueService experimentValueService;
+
+
+	@RequestMapping(value = "/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<java.lang.String> listExperimentsByTypeKindJson(
+			@PathVariable("lsType") String lsType,
+			@PathVariable("lsKind") String lsKind,
+			@RequestParam(value = "protocolType", required = false) String protocolType,
+			@RequestParam(value = "protocolKind", required = false) String protocolKind,
+			@RequestParam(value = "with", required = false) String with) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+
+		if (protocolType != null && protocolKind != null){
+			//TODO: filter the experiments by protocol type and kind
+		}
+
+		List<Experiment> experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+
+		if (with != null) {
+			if (with.equalsIgnoreCase("analysisgroups")) {
+				return new ResponseEntity<String>(Experiment.toJsonArrayStubWithAG(experiments), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("fullobject")) {
+				return new ResponseEntity<String>(Experiment.toJsonArray(experiments), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(Experiment.toJsonArrayPretty(experiments), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjsonstub")) {
+				return new ResponseEntity<String>(Experiment.toJsonArrayStubPretty(experiments), headers, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<String>(Experiment.toJsonArrayStub(experiments), headers, HttpStatus.OK);
+			}
+		} else {
+			return new ResponseEntity<String>(Experiment.toJsonArrayStub(experiments), headers, HttpStatus.OK);
+		}
+	}
 
 	@RequestMapping(value = "/dto", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -60,7 +96,7 @@ public class ApiExperimentController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<ExperimentGuiStubDTO> result = new ArrayList<ExperimentGuiStubDTO>();
-		
+
 		if (protocolKind != null && protocolName != null){
 			List<Protocol> protocols = Protocol.findProtocolsByLsKindEquals(protocolKind).getResultList();
 			for (Protocol protocol:protocols){
@@ -102,23 +138,23 @@ public class ApiExperimentController {
 
 		return new ResponseEntity<String>(ExperimentGuiStubDTO.toJsonArray(result), headers, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> findSubjectValues(
-    		@PathVariable("id") Long id,
-    		@RequestParam("stateType") String stateType,
-    		@RequestParam("stateKind") String stateKind,
-    		@RequestParam("stateValueType") String stateValueType,
-    		@RequestParam("stateValueKind") String stateValueKind
-    		) {
-		
-    	List<String> values = new ArrayList<String>();
-    	Experiment experiment = Experiment.findExperiment(id);
-    	Set<Experiment> experiments = new HashSet<Experiment>();
-    	experiments.add(experiment);
-    	Set<AnalysisGroup> analysisGroups = experiment.getAnalysisGroups();
-        for (AnalysisGroup analysisGroup: analysisGroups) {
+	@ResponseBody
+	public ResponseEntity<String> findSubjectValues(
+			@PathVariable("id") Long id,
+			@RequestParam("stateType") String stateType,
+			@RequestParam("stateKind") String stateKind,
+			@RequestParam("stateValueType") String stateValueType,
+			@RequestParam("stateValueKind") String stateValueKind
+			) {
+
+		List<String> values = new ArrayList<String>();
+		Experiment experiment = Experiment.findExperiment(id);
+		Set<Experiment> experiments = new HashSet<Experiment>();
+		experiments.add(experiment);
+		Set<AnalysisGroup> analysisGroups = experiment.getAnalysisGroups();
+		for (AnalysisGroup analysisGroup: analysisGroups) {
 			Set<TreatmentGroup> treatmentGroups = analysisGroup.getTreatmentGroups();
 			for (TreatmentGroup treatmentGroup : treatmentGroups) {
 				Set<Subject> subjects = treatmentGroup.getSubjects();
@@ -126,31 +162,31 @@ public class ApiExperimentController {
 					List<SubjectState> subjectStates = SubjectState
 							.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(
 									stateType, stateKind, subject)
-							.getResultList();
+									.getResultList();
 					for (SubjectState subjectState : subjectStates) {
 						List<SubjectValue> subjectValues = SubjectValue
 								.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(
 										subjectState, stateValueType, stateValueKind)
-								.getResultList();
+										.getResultList();
 						for (SubjectValue subjectValue : subjectValues) {
 							if (stateValueType.equalsIgnoreCase("stringValue")) {
-	    	   					values.add(subjectValue.getStringValue());
-	    	   				} else if (stateValueType.equalsIgnoreCase("numericValue")) {
-	    	   					values.add(subjectValue.getNumericValue().toString());
-	    	   				}
+								values.add(subjectValue.getStringValue());
+							} else if (stateValueType.equalsIgnoreCase("numericValue")) {
+								values.add(subjectValue.getNumericValue().toString());
+							}
 						}
 					}
 				}
 			}
-        }
-        
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        KeyValueDTO transferDTO = new KeyValueDTO();
-        transferDTO.setKey("lsValue");
-        transferDTO.setValue(values.toString());
-        return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
-    }
+		}
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		KeyValueDTO transferDTO = new KeyValueDTO();
+		transferDTO.setKey("lsValue");
+		transferDTO.setValue(values.toString());
+		return new ResponseEntity<String>(transferDTO.toJson(), headers, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/{IdOrCodeName}/values/{Id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -159,7 +195,7 @@ public class ApiExperimentController {
 			@PathVariable("Id") Long Id) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
+
 		List<ExperimentValue> experimentValues = null;
 		Long id = null;
 		if(isNumeric(IdOrCodeName)) {
@@ -170,9 +206,9 @@ public class ApiExperimentController {
 		if(id != null) {
 			experimentValues = experimentValueService.getExperimentValuesByExperimentId(Long.valueOf(id));
 		} 
-		
+
 		ExperimentValue result = null;
-		
+
 		for(ExperimentValue experimentValue : experimentValues) {
 			if(experimentValue.getId() == Id) {
 				result = experimentValue;
@@ -180,17 +216,17 @@ public class ApiExperimentController {
 			}
 		}
 		return (result == null) ?
-			new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND) :
-			new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+				new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND) :
+					new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 	}
-	
+
 	@RequestMapping(value = "/{IdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getExperimentValuesForExperimentByIdOrCodeName (
 			@PathVariable("IdOrCodeName") String IdOrCodeName) {		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
+
 		List<ExperimentValue> experimentValues = null;
 		Long id = null;
 		if(isNumeric(IdOrCodeName)) {
@@ -201,12 +237,12 @@ public class ApiExperimentController {
 		if(id != null) {
 			experimentValues = experimentValueService.getExperimentValuesByExperimentId(Long.valueOf(id));
 		}
-		
+
 		return (experimentValues == null) ?
-			new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND) :
-			new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues), headers, HttpStatus.OK);
+				new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND) :
+					new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues), headers, HttpStatus.OK);
 	}
-	
+
 	private static Long retrieveExperimentIdFromCodeName(String codeName) {
 		Long id = null;
 		List<Experiment> experiments = Experiment.findAllExperiments();
@@ -218,60 +254,60 @@ public class ApiExperimentController {
 		}
 		return id;
 	}
-	
+
 	@RequestMapping(value = "/values", method = RequestMethod.POST, headers = "Accept=application/json")
-    public @ResponseBody ResponseEntity<String> saveExperimentFromJson(@RequestBody String json) {
+	public @ResponseBody ResponseEntity<String> saveExperimentFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-             
-        ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-        
-	    return (experimentValueService.saveExperimentValue(experimentValue) == null) ?
-	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
-	    	new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
+		headers.add("Content-Type", "application/json");
+
+		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+
+		return (experimentValueService.saveExperimentValue(experimentValue) == null) ?
+				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
+					new ResponseEntity<String>(headers, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "{IdOrCodeName}/values/{Id}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
-    		@RequestBody String json,
-    		@PathVariable("Id") String Id,
-    		@PathVariable("IdOrCodeName") String IdOrCodeName) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        
-        ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-        if(experimentValue.getId() == null) {
-        	return (experimentValueService.saveExperimentValue(experimentValue) != null) ?
-        	    	new ResponseEntity<String>(headers, HttpStatus.OK) :
-        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
-        }      
-        return ((experimentValueService.updateExperimentValue(experimentValue)) == null) ? 
-        		new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
-        		new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-	
+	public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
+			@RequestBody String json,
+			@PathVariable("Id") String Id,
+			@PathVariable("IdOrCodeName") String IdOrCodeName) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+
+		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+		if(experimentValue.getId() == null) {
+			return (experimentValueService.saveExperimentValue(experimentValue) != null) ?
+					new ResponseEntity<String>(headers, HttpStatus.OK) :
+						new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+		}      
+		return ((experimentValueService.updateExperimentValue(experimentValue)) == null) ? 
+				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
+					new ResponseEntity<String>(headers, HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "{IdOrCodeName}/values", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
-    		@RequestBody String json,
-    		@PathVariable("IdOrCodeName") String IdOrCodeName) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        
-        ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-        if(experimentValue.getId() == null) {
-        	return (experimentValueService.saveExperimentValue(experimentValue) != null) ?
-        	    	new ResponseEntity<String>(headers, HttpStatus.OK) :
-        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
-        }      
-        return ((experimentValueService.updateExperimentValue(experimentValue)) == null) ? 
-        		new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
-        		new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-	
+	public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
+			@RequestBody String json,
+			@PathVariable("IdOrCodeName") String IdOrCodeName) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+
+		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+		if(experimentValue.getId() == null) {
+			return (experimentValueService.saveExperimentValue(experimentValue) != null) ?
+					new ResponseEntity<String>(headers, HttpStatus.OK) :
+						new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+		}      
+		return ((experimentValueService.updateExperimentValue(experimentValue)) == null) ? 
+				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
+					new ResponseEntity<String>(headers, HttpStatus.OK);
+	}
+
 	private static boolean isNumeric(String str) {
-	    for (char c : str.toCharArray()) {
-	        if (!Character.isDigit(c)) return false;
-	    }
-	    return true;
+		for (char c : str.toCharArray()) {
+			if (!Character.isDigit(c)) return false;
+		}
+		return true;
 	}
 }

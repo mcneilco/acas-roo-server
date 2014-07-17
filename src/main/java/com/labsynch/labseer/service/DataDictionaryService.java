@@ -17,4 +17,8 @@ public interface DataDictionaryService {
 	public List<CodeTableDTO> getDataDictionaryCodeTableListByType(String lsType);
 
 	public String getCsvList(List<DDictValue> dDictResults);
+
+	public CodeTableDTO getDataDictionaryCodeTable(DDictValue dDictValue);
+
+	public List<CodeTableDTO> convertToCodeTables(List<DDictValue> dDictResults);
 }

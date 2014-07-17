@@ -632,7 +632,9 @@ public class ExperimentController {
     @Transactional
     @RequestMapping(params = "FindByCodeName", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> jsonFindExperimentsByCodeNameEquals(@RequestParam("codeName") String codeName, @RequestParam(value = "with", required = false) String with) {
+    public ResponseEntity<java.lang.String> jsonFindExperimentsByCodeNameEquals(
+    		@RequestParam("codeName") String codeName, 
+    		@RequestParam(value = "with", required = false) String with) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(codeName).getResultList();

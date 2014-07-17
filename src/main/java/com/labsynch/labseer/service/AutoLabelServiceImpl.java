@@ -77,7 +77,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 
 	private LabelSequence createLabelSequence(String thingTypeAndKind, String labelTypeAndKind) {
 		
-		if (thingTypeAndKind.equals("") && labelTypeAndKind.equals("")){
+		if (thingTypeAndKind.equals("document_datadictionary") && labelTypeAndKind.equals("id_codeName")){
 			
 			return createDataDictionarySequence();
 			
@@ -105,7 +105,16 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		return labelSequence;
 	}
 
-
+	@Transactional
+	@Override
+	public String getDataDictionaryCodeName() {
+		String thingTypeAndKind = "document_datadictionary";
+		String labelTypeAndKind = "id_codeName";
+		Long numberOfLabels = 1L;
+		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
+		return labels.get(0).getAutoLabel();		
+	}
+	
 	@Transactional
 	@Override
 	public String getExperimentCodeName() {

@@ -24,6 +24,8 @@ public interface AutoLabelService {
 
 	String getExperimentCodeName();
 
+	String getDataDictionaryCodeName();
+
 	
 	
 	

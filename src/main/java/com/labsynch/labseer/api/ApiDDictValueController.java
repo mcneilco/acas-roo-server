@@ -1,6 +1,7 @@
 package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class ApiDDictValueController {
 			@PathVariable (value = "format") String format,
 			@RequestParam (value = "lsType", required = false) String lsType,
 			@RequestParam (value = "lsKind", required = false) String lsKind) {
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 
@@ -60,97 +62,149 @@ public class ApiDDictValueController {
 			ddictValues = DDictValue.findAllDDictValues();
 		}
 
-		if (format.equalsIgnoreCase("json")){
-			return new ResponseEntity<String>(DDictValue.toJsonArray(ddictValues), headers, HttpStatus.OK);
-		} else if (format.equalsIgnoreCase("list")){
-			dataDictionaryService.getDataDictionaryCodeTableListByType(lsType);
-			List<KeyValueDTO> lsValues = new ArrayList<KeyValueDTO>();
-			for (DDictValue ddict : ddictValues){
-				KeyValueDTO kvDTO = new KeyValueDTO();
-				kvDTO.setKey("lsValue");
-				kvDTO.setValue(ddict.getLabelText());
-				lsValues.add(kvDTO);
-			}
-			return new ResponseEntity<String>(KeyValueDTO.toJsonArray(lsValues), headers, HttpStatus.OK);
-
+		if(format.equalsIgnoreCase("codeTable")) {
+			List<CodeTableDTO> results = dataDictionaryService.getDataDictionaryCodeTableListByType(lsType); 
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(results), headers, HttpStatus.OK);
+		} else if (format.equalsIgnoreCase("csv")) {
+			String outputString = dataDictionaryService.getCsvList(ddictValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<String>(headers, HttpStatus.OK);
+			//default format is json
+			return new ResponseEntity<String>(DDictValue.toJsonArray(ddictValues), headers, HttpStatus.OK);
 		}
-
 	}
 
 
+	@Transactional
 	@RequestMapping(method = RequestMethod.GET, value = "/{idOrCodeName}", headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> showJson(@PathVariable("idOrCodeName") String idOrCodeName) {
+	public ResponseEntity<String> showJson(
+			@PathVariable("idOrCodeName") String idOrCodeName,
+			@RequestParam (value = "format", required = false) String format) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		
 		DDictValue dDictValue = null;
+		List<DDictValue> dDictValues = null;
 		if (isNumeric(idOrCodeName)){
 			dDictValue = DDictValue.findDDictValue(Long.valueOf(idOrCodeName));
 		} else {
-			List<DDictValue> dDictValues = DDictValue.findDDictValuesByCodeNameEquals(idOrCodeName).getResultList();
+			dDictValues = DDictValue.findDDictValuesByCodeNameEquals(idOrCodeName).getResultList();
 			if (dDictValues.size() == 1){
 				dDictValue = dDictValues.get(0);
+				logger.info("found a value " + dDictValue.toJson());
 			} else if (dDictValues.size() > 1) {
 				logger.error("found multiple entries");
 			}
 		}
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json; charset=utf-8");
+
 		if (dDictValue == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<String>(dDictValue.toJson(), headers, HttpStatus.OK);
+
+		if(format != null &&  format.equalsIgnoreCase("codeTable")) {
+			CodeTableDTO results = dataDictionaryService.getDataDictionaryCodeTable(dDictValue); 
+			return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
+		} else if (format != null &&  format.equalsIgnoreCase("csv")){
+			dDictValues.add(dDictValue);
+			String outputString = dataDictionaryService.getCsvList(dDictValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			logger.info("default fromat is JSON " + dDictValue.toJson());
+			return new ResponseEntity<String>(dDictValue.toJson(), headers, HttpStatus.OK);
+		}
 	}
 
-	@RequestMapping(headers = "Accept=application/json")
+	@Transactional
+	@RequestMapping(method = RequestMethod.GET, value = "/{idOrCodeName}/{format}", headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> listJson() {
+	public ResponseEntity<String> showJsonWithFormat(
+			@PathVariable("idOrCodeName") String idOrCodeName,
+			@PathVariable (value = "format") String format) {
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		List<DDictValue> result = DDictValue.findAllDDictValues();
-		return new ResponseEntity<String>(DDictValue.toJsonArray(result), headers, HttpStatus.OK);
+		
+		DDictValue dDictValue = null;
+		List<DDictValue> dDictValues = null;
+		if (isNumeric(idOrCodeName)){
+			dDictValue = DDictValue.findDDictValue(Long.valueOf(idOrCodeName));
+		} else {
+			dDictValues = DDictValue.findDDictValuesByCodeNameEquals(idOrCodeName).getResultList();
+			if (dDictValues.size() == 1){
+				dDictValue = dDictValues.get(0);
+				logger.info("found a value " + dDictValue.toJson());
+			} else if (dDictValues.size() > 1) {
+				logger.error("found multiple entries");
+			}
+		}
+
+		if (dDictValue == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+
+		if(format != null &&  format.equalsIgnoreCase("codeTable")) {
+			CodeTableDTO results = dataDictionaryService.getDataDictionaryCodeTable(dDictValue); 
+			return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
+		} else if (format != null &&  format.equalsIgnoreCase("csv")){
+			dDictValues.add(dDictValue);
+			String outputString = dataDictionaryService.getCsvList(dDictValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			logger.info("default fromat is JSON " + dDictValue.toJson());
+			return new ResponseEntity<String>(dDictValue.toJson(), headers, HttpStatus.OK);
+		}
 	}
+
+
 
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody String json) {
-		DDictValue DDictValue_ = DDictValue.fromJsonToDDictValue(json);
-		DDictValue_.persist();
+		DDictValue dDictValue = DDictValue.fromJsonToDDictValue(json);
+		dDictValue = dataDictionaryService.saveDataDictionaryValue(dDictValue);
+		dDictValue.persist();
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+		return new ResponseEntity<String>(dDictValue.toJson(), headers, HttpStatus.CREATED);
 	}
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
-		for (DDictValue DDictValue_: DDictValue.fromJsonArrayToDDictValues(json)) {
-			DDictValue_.persist();
+		Collection<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
+		for (DDictValue dDictValue: DDictValue.fromJsonArrayToDDictValues(json)) {
+			dDictValue = dataDictionaryService.saveDataDictionaryValue(dDictValue);
+			dDictValue.persist();
+			savedDDictValues.add(dDictValue);
 		}
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+		return new ResponseEntity<String>(DDictValue.toJsonArray(savedDDictValues), headers, HttpStatus.CREATED);
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		DDictValue DDictValue_ = DDictValue.fromJsonToDDictValue(json);
-		if (DDictValue_.merge() == null) {
+		DDictValue dDictValue = DDictValue.fromJsonToDDictValue(json);
+		if (dDictValue.merge() == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
+		return new ResponseEntity<String>(dDictValue.toJson(), headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		for (DDictValue DDictValue_: DDictValue.fromJsonArrayToDDictValues(json)) {
-			if (DDictValue_.merge() == null) {
+		Collection<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
+		for (DDictValue dDictValue: DDictValue.fromJsonArrayToDDictValues(json)) {
+			if (dDictValue.merge() == null) {
 				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 			}
+			savedDDictValues.add(dDictValue);
 		}
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
+		return new ResponseEntity<String>(DDictValue.toJsonArray(savedDDictValues), headers, HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -189,23 +243,44 @@ public class ApiDDictValueController {
 		return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
 	}
 
-	@Transactional
-	@RequestMapping(value = "/codetable", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> listJsonCodeTable(
-			@RequestParam(value = "with", required = false) String with, 
-			@RequestParam(value = "prettyjson", required = false) String prettyjson, 
-			@RequestParam(value = "lstype", required = false) String lsType, 
-			@RequestParam(value = "lskind", required = false) String lsKind) {
+	public ResponseEntity<String> listJson(
+			@RequestParam (value = "format", required = false) String format) {
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		List<CodeTableDTO> result;
-		if (lsKind != null) {
-			result = DDictValue.getDDictValueCodeTableByKindEquals(lsKind);
+		List<DDictValue> dDictResults = DDictValue.findAllDDictValues();
+
+		if(format != null && format.equalsIgnoreCase("codeTable")) {
+			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+		} else if (format != null && format.equalsIgnoreCase("csv")) {
+			String outputString = dataDictionaryService.getCsvList(dDictResults);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
-			result = DDictValue.getDDictCodeTable();
+			return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResults), headers, HttpStatus.OK);
 		}
-		return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> listJsonWithFormat(
+			@PathVariable (value = "format") String format) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		List<DDictValue> dDictResults = DDictValue.findAllDDictValues();
+
+		if(format != null && format.equalsIgnoreCase("codeTable")) {
+			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+		} else if (format != null && format.equalsIgnoreCase("csv")) {
+			String outputString = dataDictionaryService.getCsvList(dDictResults);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResults), headers, HttpStatus.OK);
+		}
 	}
 
 	@RequestMapping(value = "/all/{lsType}/{lsKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -214,33 +289,27 @@ public class ApiDDictValueController {
 			@PathVariable("lsType") String lsType, 
 			@PathVariable("lsKind") String lsKind, 
 			@PathVariable("format") String format) {
+
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		List<CodeTableDTO> result;
-		List<DDictValue> dDictResult;
-		if (lsKind != null && lsType != null) {
-			result = dataDictionaryService.getDataDictionaryCodeTableListByTypeKind(lsType, lsKind); 
-			if(result.size() == 0) {
-				return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
-			}
-		} else {
+
+		if (lsKind == null || lsType == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
 		}
-		if(format.compareTo("json") == 0) {
-			dDictResult = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
-			if(dDictResult.size() == 0) {
-				return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
-			}
-			return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResult), headers, HttpStatus.OK);
-		} else if(format.compareTo("list") == 0) {
-			dDictResult = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
-			if(dDictResult.size() == 0) {
-				return new ResponseEntity<String>(headers, HttpStatus.NO_CONTENT);
-			}
-			return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResult), headers, HttpStatus.OK);
+
+		List<DDictValue> dDictResults = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+
+		if(format != null && format.equalsIgnoreCase("codeTable")) {
+			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+		} else if (format != null && format.equalsIgnoreCase("csv")) {
+			String outputString = dataDictionaryService.getCsvList(dDictResults);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResults), headers, HttpStatus.OK);
 		}
-		return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
 	}
+
 
 	@RequestMapping(value = "/bytype/{lsType}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -257,29 +326,27 @@ public class ApiDDictValueController {
 
 		List<DDictValue> dDictResults = DDictValue.findDDictValuesByLsTypeEquals(lsType).getResultList();
 
-		if(format.equalsIgnoreCase("codeTable")) {
+		if(format != null && format.equalsIgnoreCase("codeTable")) {
 			List<CodeTableDTO> results = dataDictionaryService.getDataDictionaryCodeTableListByType(lsType); 
-			if(dDictResults.size() == 0) {
-				return new ResponseEntity<String>(CodeTableDTO.toJsonArray(results), headers, HttpStatus.NO_CONTENT);
-			}
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(results), headers, HttpStatus.OK);
-		} else if (format.equalsIgnoreCase("list")) {
+		} else if (format != null && format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(dDictResults);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
-			if(dDictResults.size() == 0) {
-				return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResults), headers, HttpStatus.NO_CONTENT);
-			}
+			// if user wants to know an error code for empty results; user will normally inspect the size of the result array to on their end
+			//			if(dDictResults.size() == 0) {
+			//				return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResults), headers, HttpStatus.NO_CONTENT);
+			//			}
 			return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResults), headers, HttpStatus.OK);
 		}
 
 	}
-	
+
 	private static boolean isNumeric(String str) {
-	    for (char c : str.toCharArray()) {
-	        if (!Character.isDigit(c)) return false;
-	    }
-	    return true;
+		for (char c : str.toCharArray()) {
+			if (!Character.isDigit(c)) return false;
+		}
+		return true;
 	}
 }
 
