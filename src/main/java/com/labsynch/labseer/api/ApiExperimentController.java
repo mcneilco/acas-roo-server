@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.NoResultException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +22,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
 import com.labsynch.labseer.service.ExperimentService;
+import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -54,6 +52,9 @@ public class ApiExperimentController {
 
 	@Autowired
 	private ExperimentValueService experimentValueService;
+	
+	@Autowired
+	private ExperimentStateService experimentStateService;
 
 
 	@RequestMapping(value = "/bytypekind/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -195,17 +196,42 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/exptstates/bytypekind/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter11 (
+	public ResponseEntity<String> getExperimentStatesByIdOrCodeNameFilter11 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
-			@PathVariable("stateKind") String stateKind) {
+			@PathVariable("stateKind") String stateKind, 
+			@PathVariable("format") String format) {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement; Return an array of experimentStates
 		
-		return null;
-
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
+		
+		List<ExperimentState> experimentStates;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			experimentStates = experimentStateService.getExperimentStatesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		} else {
+			//If there is no result the method should return an empty array
+			return new ResponseEntity<String>("[]", headers, HttpStatus.OK);
+		}
+		if (format.equalsIgnoreCase("csv")) {
+			//getCSvList is just a stub service for now
+			String outputString = experimentStateService.getCsvList(experimentStates);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(ExperimentState.toJsonArray(experimentStates), headers, HttpStatus.OK);
+		}
 	}
 
 	// GET values from different levels
@@ -232,7 +258,7 @@ public class ApiExperimentController {
 			}
 		}
 		
-		List<ExperimentValue> experimentValues = new ArrayList<ExperimentValue>();
+		List<ExperimentValue> experimentValues;
 		if(experiment != null) {
 			Long experimentId = experiment.getId();
 			experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
