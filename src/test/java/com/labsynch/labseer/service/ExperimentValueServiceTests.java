@@ -165,7 +165,7 @@ public class ExperimentValueServiceTests {
 		String stateKind = "experiment metadata";
 		List<ExperimentValue> results = new ArrayList<ExperimentValue>();
 		try {
-			results = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
+			results = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
 		} catch(IllegalArgumentException ex ) {
 			logger.info(ex.getMessage());
 		}
@@ -188,7 +188,7 @@ public class ExperimentValueServiceTests {
 		}
 		List<ExperimentValue> results = new ArrayList<ExperimentValue>();
 		try {
-			results = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKind(experiment.getId(), stateType, stateKind).getResultList();
+			results = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKind(experiment.getId(), stateType, stateKind);
 		} catch(IllegalArgumentException ex ) {
 			logger.info(ex.getMessage());
 			assert(results.size() == 0);
