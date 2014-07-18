@@ -148,7 +148,8 @@ public class ExperimentValue extends AbstractValue {
 
 
     
-    public static TypedQuery<ExperimentValue> findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType, 
+    public static TypedQuery<ExperimentValue> findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, 
+    													String stateType, 
     													String stateKind, String valueType, String valueKind) {
         if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
         if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
@@ -171,6 +172,27 @@ public class ExperimentValue extends AbstractValue {
         q.setParameter("ignored", true);
         return q;
     }
+    
+    public static TypedQuery<ExperimentValue> findExperimentValuesByExptIDAndStateTypeKind(Long experimentId, 
+		String stateType, 
+		String stateKind) {
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " +
+		"JOIN ev.lsState evs " +
+		"JOIN evs.experiment exp " +
+		"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+		"AND ev.ignored IS NOT :ignored " +
+		"AND exp.id = :experimentId ";
+		TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
+		q.setParameter("experimentId", experimentId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 
 //    String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO( " + "agv.id, ags.id as stateId, 
 //    ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, " + "agv.codeValue, agv.fileValue, agv.urlValue, 

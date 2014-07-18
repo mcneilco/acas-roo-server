@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -218,11 +220,38 @@ public class ApiExperimentController {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement; return an array of experiment values in different formats
-		return null;
-
+		
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
+		
+		List<ExperimentValue> experimentValues = new ArrayList<ExperimentValue>();
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		} else {
+			//If there is no result the method should return an empty array
+			return new ResponseEntity<String>("[]", headers, HttpStatus.OK);
+		}
+		if (format.equalsIgnoreCase("csv")) {
+			//getCSvList is just a stub service for now
+			String outputString = experimentValueService.getCsvList(experimentValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues), headers, HttpStatus.OK);
+		}
 	}
 
+	
+	//Gregory please use this as a working template
 	@RequestMapping(value = "/{experimentIdOrCodeName}/exptvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter2 (
@@ -240,6 +269,8 @@ public class ApiExperimentController {
 		if(isNumeric(experimentIdOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
 		} else {
+			
+			//warning -- may need to catch if does not find a result
 			experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
 		}
 		
@@ -247,6 +278,7 @@ public class ApiExperimentController {
 		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
 		
 		if (format.equalsIgnoreCase("csv")) {
+			//getCSvList is just a stub service for now
 			String outputString = experimentValueService.getCsvList(experimentValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {

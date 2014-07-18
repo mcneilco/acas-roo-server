@@ -75,6 +75,15 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 
 		return experimentValues;
 	}
+	
+	@Override
+	public List<ExperimentValue> getExperimentValuesByExperimentIdAndStateTypeKind(Long experimentId, String stateType, 
+			String stateKind) {	
+		
+		List<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
+
+		return experimentValues;
+	}
 
 	@Override
 	public String getCsvList(List<ExperimentValue> experimentValues) {

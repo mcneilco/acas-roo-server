@@ -2,7 +2,10 @@
 
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.NoResultException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -128,7 +131,7 @@ public class ExperimentValueServiceTests {
 		experimentValue = experimentValueService.updateExperimentValue(experimentValue);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryExperimentValueByKinds(){
 		
@@ -140,6 +143,58 @@ public class ExperimentValueServiceTests {
 		List<ExperimentValue> results = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
 		logger.info(ExperimentValue.toJsonArray(results));
 		
+	}
+	
+	@Test
+	@Transactional
+	public void QueryExperimentValueByExpIdAndStateTypeKind(){
+		
+		Long experimentId = 9L;
+		String stateType = "metadata";
+		String stateKind = "experiment metadata";
+		List<ExperimentValue> results = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		logger.info(ExperimentValue.toJsonArray(results));
+		assert(results.size() == 8);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryExperimentValueByExpIdAndStateTypeKindWithBadData() {
+		Long experimentId = 9L;
+		String stateType = "";
+		String stateKind = "experiment metadata";
+		List<ExperimentValue> results = new ArrayList<ExperimentValue>();
+		try {
+			results = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
+		} catch(IllegalArgumentException ex ) {
+			logger.info(ex.getMessage());
+		}
+		assert(results.size() == 0);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryExperimentValueByExpIdAndStateTypeKindWithCodeName() {
+		String experimentCodeName = "EXPT-00000003";
+		String stateType = "metadata";
+		String stateKind = "experiment metadata";
+		Experiment experiment = null;
+		boolean didCatch = false;
+		try {
+			experiment = Experiment.findExperimentsByCodeNameEquals(experimentCodeName).getSingleResult();
+		} catch(Exception nre) {
+			logger.info(nre.getMessage());
+			didCatch = true;
+		}
+		List<ExperimentValue> results = new ArrayList<ExperimentValue>();
+		try {
+			results = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKind(experiment.getId(), stateType, stateKind).getResultList();
+		} catch(IllegalArgumentException ex ) {
+			logger.info(ex.getMessage());
+			assert(results.size() == 0);
+			didCatch = true;
+		}
+		if(!didCatch) assert(results.size() == 8);
 	}
 	
 }
