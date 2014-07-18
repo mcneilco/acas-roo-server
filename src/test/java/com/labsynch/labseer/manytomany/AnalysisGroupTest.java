@@ -43,18 +43,18 @@ public class AnalysisGroupTest {
 	@Transactional
 	@Test
 	public void Analysis_Group_Many_To_Many_Test() {
-		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(15L);
+		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(235L);
 		logger.debug(analysisGroup.toJson());
 		
 		int theSize = analysisGroup.getTreatmentGroups().size();
 		logger.debug(String.valueOf(theSize));
 		System.out.println("" + theSize);
 		
-		Assert.assertEquals(10, theSize);
+		Assert.assertEquals(1, theSize);
 	}
 
 	
-//	@Transactional
+	@Transactional
 	@Test
 	public void saveWithExistingTreatmentGroups() throws UniqueExperimentNameException {
 		
@@ -84,7 +84,11 @@ public class AnalysisGroupTest {
 		analysisGroup.setTreatmentGroups(treatmentGroups);
 		
 		AnalysisGroup output = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
-//		logger.info(AnalysisGroup.findAnalysisGroup(output.getId()).toPrettyFullJson());
+		output.flush();
+		//Assert.assertEquals("AG-00000238", output.getCodeName());
+		Assert.assertEquals(2, analysisGroup.getTreatmentGroups().size());
+
+		logger.info(AnalysisGroup.findAnalysisGroup(output.getId()).toPrettyFullJson());
 
 		
 	}

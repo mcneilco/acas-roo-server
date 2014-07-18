@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 
 import flexjson.JSONDeserializer;
@@ -42,6 +44,14 @@ public class ExperimentValue extends AbstractValue {
     public static ExperimentValue create(ExperimentValue experimentValue) {
         ExperimentValue newExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).
         		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(experimentValue.toJson(), 
+        				new ExperimentValue());	
+    
+        return newExperimentValue;
+    }
+    
+    public static ExperimentValue create(String experimentValueJson) {
+        ExperimentValue newExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(experimentValueJson, 
         				new ExperimentValue());	
     
         return newExperimentValue;
@@ -132,6 +142,19 @@ public class ExperimentValue extends AbstractValue {
         updatedExperimentValue.setModifiedDate(new Date());
         updatedExperimentValue.merge();
         return updatedExperimentValue;
+    }
+
+    //TODO fix this and test
+    public static TypedQuery<ExperimentValue> findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType, String stateKind, String valueType, String valueKind) {
+        String sqlQuery = "select new com.labsynch.labseer.domain.ExperimentValue( " + "agv.id, ags.id as stateId, ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, " + "agv.codeValue, agv.fileValue, agv.urlValue, agv.dateValue, " + "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, " + "agv.sigFigs, agv.uncertainty, agv.numberOfReplicates, agv.uncertaintyType, " + "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " + "agv.lsTransaction, agv.publicData) " + "FROM AnalysisGroupValue agv " + "join agv.lsState ags with ags.ignored = false " + "join ags.analysisGroup ag with ag.ignored = false " + "join ag.experiment exp with exp.ignored = false " + "where ags.lsType = :stateType AND ags.lsKind = :stateKind " + "and agv.lsType = :valueType AND agv.lsKind = :valueKind and agv.ignored = false " + "and exp.codeName = :experimentCode";
+        EntityManager em = entityManager();
+        TypedQuery<ExperimentValue> q = em.createQuery(sqlQuery, ExperimentValue.class);
+        q.setParameter("stateType", stateType);
+        q.setParameter("stateKind", stateKind);
+        q.setParameter("valueType", valueType);
+        q.setParameter("valueKind", valueKind);
+        q.setParameter("experimentId", experimentId);
+        return q;
     }
 
     

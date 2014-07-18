@@ -1,14 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.BatchCodeDTO;
-import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
-import com.labsynch.labseer.dto.ValueTypeKindDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.ExcludeNulls;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,6 +8,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -28,6 +20,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -35,6 +28,16 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
+import com.labsynch.labseer.dto.ValueTypeKindDTO;
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString

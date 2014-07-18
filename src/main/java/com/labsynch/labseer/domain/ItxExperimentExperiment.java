@@ -70,7 +70,9 @@ public class ItxExperimentExperiment extends AbstractThing {
     }
     
     public String toJson() {
-        return new JSONSerializer().exclude("*.class")
+        return new JSONSerializer()
+        		.exclude("*.class")
+        		.include("firstExperiment.lsLabels", "secondExperiment.lsLabels")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }
@@ -84,6 +86,7 @@ public class ItxExperimentExperiment extends AbstractThing {
     
     public static String toJsonArray(Collection<ItxExperimentExperiment> collection) {
         return new JSONSerializer().exclude("*.class")
+        		.include("firstExperiment.lsLabels", "secondExperiment.lsLabels")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }

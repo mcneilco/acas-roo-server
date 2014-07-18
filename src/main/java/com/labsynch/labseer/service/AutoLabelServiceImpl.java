@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
 import org.slf4j.Logger;
@@ -21,7 +22,6 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 
 	private static final Logger logger = LoggerFactory.getLogger(AutoLabelServiceImpl.class);
 
-	@Transactional
 	@Override
 	public List<AutoLabelDTO> getAutoLabels(String json) {
 
@@ -31,15 +31,19 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		return getAutoLabels(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind(), lsDTO.getNumberOfLabels());
 	}
 
-	@Transactional
 	@Override
 	public List<AutoLabelDTO> getAutoLabels(String thingTypeAndKind, String labelTypeAndKind, Long numberOfLabels) throws NonUniqueResultException {
 
 		List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
 		LabelSequence labelSequence;
-
-		if (labelSequences.size() != 1) {
-			logger.info("did not find the label seq!!! ");
+		if(labelSequences.size() == 0) {
+			logger.info("Label sequence does not exist! Create new Sequence if possible.");
+			labelSequence = createLabelSequence(thingTypeAndKind, labelTypeAndKind);
+			if (labelSequence == null){
+				throw new NoResultException();
+			}
+		} else if (labelSequences.size() > 1) {
+			logger.error("found duplicate sequences!!!");
 			throw new NonUniqueResultException();
 		} else {
 			labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	
@@ -71,6 +75,46 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		return autoLabels;
 	}
 
+	private LabelSequence createLabelSequence(String thingTypeAndKind, String labelTypeAndKind) {
+		
+		if (thingTypeAndKind.equals("document_datadictionary") && labelTypeAndKind.equals("id_codeName")){
+			
+			return createDataDictionarySequence();
+			
+		} else {
+			
+			return null;
+		}
+		
+
+	}
+
+	private LabelSequence createDataDictionarySequence() {
+		LabelSequence labelSequence = new LabelSequence();
+		labelSequence.setThingTypeAndKind("document_datadictionary");
+		labelSequence.setLabelTypeAndKind("id_codeName");
+		labelSequence.setDigits(6);
+		labelSequence.setGroupDigits(false);
+		labelSequence.setIgnored(false);
+		labelSequence.setLabelPrefix("DDICT");
+		labelSequence.setLabelSeparator("-");
+		labelSequence.setLatestNumber(0L);
+		labelSequence.setModifiedDate((new Date()));
+		labelSequence.persist();
+
+		return labelSequence;
+	}
+
+	@Transactional
+	@Override
+	public String getDataDictionaryCodeName() {
+		String thingTypeAndKind = "document_datadictionary";
+		String labelTypeAndKind = "id_codeName";
+		Long numberOfLabels = 1L;
+		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
+		return labels.get(0).getAutoLabel();		
+	}
+	
 	@Transactional
 	@Override
 	public String getExperimentCodeName() {
@@ -80,7 +124,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
 		return labels.get(0).getAutoLabel();		
 	}
-	
+
 	@Transactional
 	@Override
 	public String getAnalysisGroupCodeName() {
@@ -90,7 +134,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
 		return labels.get(0).getAutoLabel();		
 	}
-	
+
 	@Transactional
 	@Override
 	public String getTreatmentGroupCodeName() {
@@ -100,7 +144,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
 		return labels.get(0).getAutoLabel();		
 	}
-	
+
 	@Transactional
 	@Override
 	public String getSubjectCodeName() {
