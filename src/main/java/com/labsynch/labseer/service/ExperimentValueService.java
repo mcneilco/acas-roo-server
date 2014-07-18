@@ -14,5 +14,11 @@ public interface ExperimentValueService {
 	public ExperimentValue updateExperimentValue(ExperimentValue experimentValue);
 	
 	public List<ExperimentValue> getExperimentValuesByExperimentId(Long id);
+
+	public List<ExperimentValue> getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(
+			Long experimentId, String stateType, String stateKind,
+			String valueType, String valueKind);
+
+	public String getCsvList(List<ExperimentValue> experimentValues);
 	
 }

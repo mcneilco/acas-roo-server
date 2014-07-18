@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.api.ApiExperimentController;
 import com.labsynch.labseer.domain.Experiment;
@@ -120,10 +121,25 @@ public class ExperimentValueServiceTests {
 		experimentValue = experimentValueService.saveExperimentValue(experimentValue);
 	}
 	
-	@Test
+	//@Test
 	public void updateEvperimentValueTest() {
 		String json = "{\"clobValue\":null,\"codeKind\":null,\"codeType\":null,\"codeTypeAndKind\":\"null_null\",\"codeValue\":null,\"comments\":null,\"dateValue\":null,\"fileValue\":\"experiments/EXPT-00000003/1A_Generic.xlsx\",\"id\":37,\"ignored\":false,\"lsKind\":\"source file\",\"lsState\":{\"comments\":\"\",\"experiment\":{\"codeName\":\"EXPT-00000003\",\"id\":9,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":2,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"modifiedBy\":null,\"modifiedDate\":null,\"protocol\":{\"codeName\":\"PROT-00000002\",\"id\":1,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"jmcneil\",\"recordedDate\":1401363350000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":1},\"recordedBy\":\"jmcneil\",\"recordedDate\":1401365250000,\"shortDescription\":\"experiment created by generic data parser\",\"version\":1},\"id\":11,\"ignored\":false,\"lsKind\":\"raw results locations\",\"lsTransaction\":2,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_raw results locations\",\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"jmcneil\",\"recordedDate\":1401365250000,\"version\":0},\"lsTransaction\":2,\"lsType\":\"fileValue\",\"lsTypeAndKind\":\"fileValue_source file\",\"modifiedBy\":null,\"modifiedDate\":null,\"numberOfReplicates\":null,\"numericValue\":null,\"operatorKind\":null,\"operatorType\":null,\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"TEST_PUT\",\"recordedDate\":1401365251000,\"sigFigs\":null,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null,\"unitType\":null,\"unitTypeAndKind\":\"null_null\",\"urlValue\":null,\"version\":1}";
 	    ExperimentValue experimentValue = ExperimentValue.create(json);
 		experimentValue = experimentValueService.updateExperimentValue(experimentValue);
 	}
+	
+	@Test
+	@Transactional
+	public void QueryExperimentValueByKinds(){
+		
+		Long experimentId = 9L;
+		String stateType = "metadata";
+		String stateKind = "experiment metadata";
+		String valueType = "stringValue";
+		String valueKind = "analysis status";
+		List<ExperimentValue> results = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
+		logger.info(ExperimentValue.toJsonArray(results));
+		
+	}
+	
 }

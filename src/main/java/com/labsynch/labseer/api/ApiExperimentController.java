@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Protocol;
@@ -29,6 +30,7 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
 import com.labsynch.labseer.service.ExperimentService;
@@ -211,7 +213,8 @@ public class ApiExperimentController {
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter1 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
-			@PathVariable("stateKind") String stateKind) {
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("format") String format) {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
@@ -227,12 +230,29 @@ public class ApiExperimentController {
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
 			@PathVariable("valueType") String valueType,
-			@PathVariable("valueKind") String valueKind) {
+			@PathVariable("valueKind") String valueKind,
+			@PathVariable("format") String format) {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement; return an array of experiment values in different formats
-		return null;
+		
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {
+			experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+		}
+		
+		Long experimentId = experiment.getId();
+		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
+		
+		if (format.equalsIgnoreCase("csv")) {
+			String outputString = experimentValueService.getCsvList(experimentValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues), headers, HttpStatus.OK);
+		}
 
 	}
 
@@ -241,7 +261,8 @@ public class ApiExperimentController {
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter31 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
-			@PathVariable("stateKind") String stateKind) {
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("format") String format) {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
