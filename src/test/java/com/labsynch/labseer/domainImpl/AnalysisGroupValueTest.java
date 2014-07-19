@@ -76,4 +76,18 @@ public class AnalysisGroupValueTest {
 		}
 		if(!didCatch) assert(results.size() == 11);
 	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindAndValueTypeKind(){
+			
+		Long experimentId = 9L;
+		String stateType = "data";
+		String stateKind = "Generic";
+		String valueType = "numericValue";
+		String valueKind = "solubility";
+		List<AnalysisGroupValue> results = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind).getResultList();
+		logger.info(AnalysisGroupValue.toJsonArray(results));
+		assert(results.size() == 2);
+	}
 }

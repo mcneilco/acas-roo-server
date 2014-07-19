@@ -357,18 +357,43 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter3 (
+	public ResponseEntity<String> getAnalysisGroupValueByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter3 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
 			@PathVariable("valueType") String valueType,
-			@PathVariable("valueKind") String valueKind) {
+			@PathVariable("valueKind") String valueKind,
+			@PathVariable("format") String format) {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement; return an array of analysisGroups values in different formats
-		return null;
+		
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
 
+		List<AnalysisGroupValue> analysisGroupValues;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
+		} else {
+			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
+		}
+		if (format.equalsIgnoreCase("csv")) {
+			//getCSvList is just a stub service for now
+			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues), headers, HttpStatus.OK);
+		}
 	}
 	@RequestMapping(value = "/{experimentIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody

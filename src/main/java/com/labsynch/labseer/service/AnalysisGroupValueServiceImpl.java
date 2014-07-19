@@ -16,9 +16,18 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 	public List<AnalysisGroupValue> getAnalysisGroupValuesByExperimentIdAndStateTypeKind(
 			Long experimentId, String stateType, String stateKind) {
 		
-		List<AnalysisGroupValue> AnalysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
 
-		return AnalysisGroupValues;
+		return analysisGroupValues;
+	}
+	
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
+			String stateKind, String valueType, String valueKind) {
+		
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType,
+				stateKind, valueType, valueKind).getResultList();
+		
+		return analysisGroupValues;
 	}
 
 	@Override
