@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -19,13 +21,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext.xml")
+@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
 public class SubjectValueServiceTest {
 	
@@ -33,6 +37,9 @@ public class SubjectValueServiceTest {
 	
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+	private SubjectValueService subjectValueService;
 		
 	//@Test
 	@Transactional
@@ -101,7 +108,7 @@ public class SubjectValueServiceTest {
 		logger.info("elapsed time = " + (endTime-startTime));
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void SimpleTest_5() throws IOException{
 		
@@ -127,5 +134,79 @@ public class SubjectValueServiceTest {
 //		logger.debug(json);
 		long endTime = new Date().getTime();
 		logger.info("elapsed time = " + (endTime-startTime));
+	}
+	
+	@Test
+	@Transactional
+	public void testSubjectServiceSave() {
+		String json = "{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"Response\",\"lsState\":{\"id\":20,\"ignored\":false,\"lsKind\":\"results\",\"lsTransaction\":3,\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"jmcneil\",\"recordedDate\":1401368054000,\"version\":0},\"lsTransaction\":3,\"lsType\":\"numericValue\",\"lsTypeAndKind\":\"numericValue_Response\",\"numericValue\":25.30,\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"POSTTest\",\"recordedDate\":1401368054000,\"unitKind\":\"efficacy\",\"unitTypeAndKind\":\"null_efficacy\",\"version\":0}";
+		SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
+		subjectValueService.saveSubjectValue(subjectValue);
+	}
+	
+	@Test
+	@Transactional
+	public void QuerySubjectValueByExpIdAndStateTypeKind(){
+			
+		Long experimentId = 14L;
+		String stateType = "data";
+		String stateKind = "test compound treatment";
+		List<SubjectValue> results = subjectValueService.getSubjectValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		logger.info(SubjectValue.toJsonArray(results));
+		assert(results.size() == 800);
+	}
+	
+	@Test
+	@Transactional
+	public void QuerySubjectValueByExpIdAndStateTypeKindWithBadData() {
+		Long experimentId = 14L;
+		String stateType = "";
+		String stateKind = "experiment metadata";
+		List<SubjectValue> results = new ArrayList<SubjectValue>();
+		try {
+			results = subjectValueService.getSubjectValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		} catch(IllegalArgumentException ex ) {
+			logger.info(ex.getMessage());
+		}
+		assert(results.size() == 0);
+	}
+	
+	@Test
+	@Transactional
+	public void QuerySubjectValueByExpIdAndStateTypeKindWithCodeName() {
+		String experimentCodeName = "EXPT-00000004";
+		String stateType = "data";
+		String stateKind = "test compound treatment";
+		Experiment experiment = null;
+		boolean didCatch = false;
+		try {
+			experiment = Experiment.findExperimentsByCodeNameEquals(experimentCodeName).getSingleResult();
+		} catch(NoResultException nre) {
+			logger.info(nre.getMessage());
+			didCatch = true;
+		}
+		List<SubjectValue> results = new ArrayList<SubjectValue>();
+		try {
+			results = subjectValueService.getSubjectValuesByExperimentIdAndStateTypeKind(experiment.getId(), stateType, stateKind);
+		} catch(IllegalArgumentException ex ) {
+			logger.info(ex.getMessage());
+			assert(results.size() == 0);
+			didCatch = true;
+		}
+		if(!didCatch) assert(results.size() == 800);
+	}
+	
+	@Test
+	@Transactional
+	public void QuerySubjectValueByExpIdAndStateTypeKindAndValueTypeKind(){
+			
+		Long experimentId = 14L;
+		String stateType = "data";
+		String stateKind = "test compound treatment";
+		String valueType = "codeValue";
+		String valueKind = "batch code";
+		List<SubjectValue> results = subjectValueService.getSubjectValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
+		logger.info(SubjectValue.toJsonArray(results));
+		assert(results.size() == 400);
 	}
 }

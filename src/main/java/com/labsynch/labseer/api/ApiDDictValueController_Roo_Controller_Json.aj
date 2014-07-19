@@ -14,6 +14,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect ApiDDictValueController_Roo_Controller_Json {
     
+    @RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ApiDDictValueController.jsonFindDDictValuesByCodeNameEquals(@RequestParam("codeName") String codeName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByIgnoredNot", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ApiDDictValueController.jsonFindDDictValuesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored) {

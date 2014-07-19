@@ -9,6 +9,14 @@ import javax.persistence.TypedQuery;
 
 privileged aspect DDictValue_Roo_Finder {
     
+    public static TypedQuery<DDictValue> DDictValue.findDDictValuesByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.codeName = :codeName", DDictValue.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+    
     public static TypedQuery<DDictValue> DDictValue.findDDictValuesByIgnoredNot(boolean ignored) {
         EntityManager em = DDictValue.entityManager();
         TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.ignored IS NOT :ignored", DDictValue.class);

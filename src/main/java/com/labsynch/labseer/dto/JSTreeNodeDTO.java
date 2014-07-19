@@ -13,6 +13,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.LsTag;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
