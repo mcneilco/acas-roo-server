@@ -60,13 +60,13 @@ public class ApiExperimentController {
 
 	@Autowired
 	private ExperimentStateService experimentStateService;
-	
+
 	@Autowired
 	private AnalysisGroupValueService analysisGroupValueService;
-	
+
 	@Autowired
 	private TreatmentGroupValueService treatmentGroupValueService;
-	
+
 	@Autowired
 	private SubjectValueService subjectValueService;
 
@@ -305,14 +305,21 @@ public class ApiExperimentController {
 		Experiment experiment;
 		if(isNumeric(experimentIdOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
-		} else {
-
-			//warning -- may need to catch if does not find a result
-			experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
 		}
 
-		Long experimentId = experiment.getId();
-		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
+		List<ExperimentValue> experimentValues;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
+		} else {
+			experimentValues = new ArrayList<ExperimentValue>();
+		}
 
 		if (format.equalsIgnoreCase("csv")) {
 			//getCSvList is just a stub service for now
@@ -335,7 +342,7 @@ public class ApiExperimentController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
+
 		Experiment experiment;
 		if(isNumeric(experimentIdOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
@@ -376,7 +383,7 @@ public class ApiExperimentController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
+
 		Experiment experiment;
 		if(isNumeric(experimentIdOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
@@ -414,7 +421,7 @@ public class ApiExperimentController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
+
 		Experiment experiment;
 		if(isNumeric(experimentIdOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
@@ -456,7 +463,7 @@ public class ApiExperimentController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
+
 		Experiment experiment;
 		if(isNumeric(experimentIdOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
@@ -498,7 +505,7 @@ public class ApiExperimentController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		
+
 		Experiment experiment;
 		if(isNumeric(experimentIdOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
@@ -539,7 +546,7 @@ public class ApiExperimentController {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-	
+
 		Experiment experiment;
 		if(isNumeric(experimentIdOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
@@ -567,7 +574,7 @@ public class ApiExperimentController {
 			//default format is json
 			return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues), headers, HttpStatus.OK);
 		}
-		
+
 	}
 
 	@RequestMapping(value = "/{IdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
