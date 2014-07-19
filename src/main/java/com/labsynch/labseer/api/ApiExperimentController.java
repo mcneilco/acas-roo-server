@@ -31,12 +31,14 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
+import com.labsynch.labseer.service.TreatmentGroupValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
@@ -60,6 +62,9 @@ public class ApiExperimentController {
 	
 	@Autowired
 	private AnalysisGroupValueService analysisGroupValueService;
+	
+	@Autowired
+	private TreatmentGroupValueService treatmentGroupValueService;
 
 	@RequestMapping(value = "/bytypekind/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -397,32 +402,84 @@ public class ApiExperimentController {
 	}
 	@RequestMapping(value = "/{experimentIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter41 (
+	public ResponseEntity<String> getTreatmentGroupValuesByIdOrCodeNameAndStateTypeKindFilter41 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
-			@PathVariable("stateKind") String stateKind) {
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("format") String format) {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement; return an array of treatment group values in different formats
-		return null;
+		
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
+
+		List<TreatmentGroupValue> treatmentGroupValues;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			treatmentGroupValues = treatmentGroupValueService.getTreatmentGroupValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		} else {
+			treatmentGroupValues = new ArrayList<TreatmentGroupValue>();
+		}
+		if (format.equalsIgnoreCase("csv")) {
+			//getCSvList is just a stub service for now
+			String outputString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues), headers, HttpStatus.OK);
+		}
 
 	}
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter4 (
+	public ResponseEntity<String> getTreatmentGroupValuesByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter4 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
 			@PathVariable("valueType") String valueType,
-			@PathVariable("valueKind") String valueKind) {
+			@PathVariable("valueKind") String valueKind,
+			@PathVariable("format") String format) {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement; return an array of treatment group values in different formats
-		return null;
+		
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
 
+		List<TreatmentGroupValue> treatmentGroupValues;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			treatmentGroupValues = treatmentGroupValueService.getTreatmentGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType,
+					stateKind, valueType, valueKind);
+		} else {
+			treatmentGroupValues = new ArrayList<TreatmentGroupValue>();
+		}
+		if (format.equalsIgnoreCase("csv")) {
+			//getCSvList is just a stub service for now
+			String outputString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues), headers, HttpStatus.OK);
+		}
 	}
 
 	//	@RequestMapping(value = "/{experimentIdOrCodeName}/subjects/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")

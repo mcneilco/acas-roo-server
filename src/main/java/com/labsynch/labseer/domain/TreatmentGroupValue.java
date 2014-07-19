@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -169,5 +170,56 @@ public class TreatmentGroupValue extends AbstractValue {
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
+	
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByExptIDAndStateTypeKind(Long experimentId, String stateType, String stateKind) {
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
+		"JOIN tgv.lsState tvs " +
+		"JOIN tvs.treatmentGroup tg " +
+		"JOIN tg.analysisGroup ag " +
+		"JOIN ag.experiment exp " +
+		"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored IS NOT :ignored " +
+		"AND tgv.ignored IS NOT :ignored " +
+		"AND tg.ignored IS NOT :ignored " +
+		"AND ag.ignored IS NOT :ignored " +
+		"AND exp.id = :experimentId ";
+		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
+		q.setParameter("experimentId", experimentId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+	
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
+				"JOIN tgv.lsState tvs " +
+				"JOIN tvs.treatmentGroup tg " +
+				"JOIN tg.analysisGroup ag " +
+				"JOIN ag.experiment exp " +
+				"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored IS NOT :ignored " +
+				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
+				"AND tg.ignored IS NOT :ignored " +
+				"AND ag.ignored IS NOT :ignored " +
+				"AND exp.id = :experimentId ";
+		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
+		q.setParameter("experimentId", experimentId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 
 }
