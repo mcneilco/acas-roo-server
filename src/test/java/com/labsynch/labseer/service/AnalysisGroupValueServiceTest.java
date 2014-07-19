@@ -13,6 +13,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
+
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
@@ -53,6 +56,9 @@ public class AnalysisGroupValueServiceTest {
 
 	@Autowired
 	private LsThingService lsThingService;
+	
+	@Autowired
+	private AnalysisGroupValueService analysisGroupValueService;
 
 	//@Test
 	public void SimpleTest_1(){
@@ -342,6 +348,58 @@ public class AnalysisGroupValueServiceTest {
 		}
 
 
+	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
+			
+		Long experimentId = 9L;
+		String stateType = "data";
+		String stateKind = "Generic";
+		List<AnalysisGroupValue> results = analysisGroupValueService.getAnalysisGroupValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		logger.info(AnalysisGroupValue.toJsonArray(results));
+		assert(results.size() == 11);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithBadData() {
+		Long experimentId = 9L;
+		String stateType = "";
+		String stateKind = "experiment metadata";
+		List<AnalysisGroupValue> results = new ArrayList<AnalysisGroupValue>();
+		try {
+			results = analysisGroupValueService.getAnalysisGroupValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		} catch(IllegalArgumentException ex ) {
+			logger.info(ex.getMessage());
+		}
+		assert(results.size() == 0);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithCodeName() {
+		String experimentCodeName = "EXPT-00000003";
+		String stateType = "data";
+		String stateKind = "Generic";
+		Experiment experiment = null;
+		boolean didCatch = false;
+		try {
+			experiment = Experiment.findExperimentsByCodeNameEquals(experimentCodeName).getSingleResult();
+		} catch(NoResultException nre) {
+			logger.info(nre.getMessage());
+			didCatch = true;
+		}
+		List<AnalysisGroupValue> results = new ArrayList<AnalysisGroupValue>();
+		try {
+			results = analysisGroupValueService.getAnalysisGroupValuesByExperimentIdAndStateTypeKind(experiment.getId(), stateType, stateKind);
+		} catch(IllegalArgumentException ex ) {
+			logger.info(ex.getMessage());
+			assert(results.size() == 0);
+			didCatch = true;
+		}
+		if(!didCatch) assert(results.size() == 11);
 	}
 
 }

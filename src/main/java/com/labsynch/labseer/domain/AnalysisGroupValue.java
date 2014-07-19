@@ -507,4 +507,27 @@ public class AnalysisGroupValue extends AbstractValue {
         TypedQuery<String> q = em.createQuery(criteria);
         return q;
     }
+    
+    public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByExptIDAndStateTypeKind(Long experimentId, 
+			String stateType, 
+			String stateKind) {
+			if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+			if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+			
+			EntityManager em = entityManager();
+			String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
+			"JOIN agv.lsState evs " +
+			"JOIN evs.analysisGroup ag " +
+			"JOIN ag.experiment exp " +
+			"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+			"AND agv.ignored IS NOT :ignored " +
+			"AND ag.ignored IS NOT :ignored " +
+			"AND exp.id = :experimentId ";
+			TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
+			q.setParameter("experimentId", experimentId);
+			q.setParameter("stateType", stateType);
+			q.setParameter("stateKind", stateKind);
+			q.setParameter("ignored", true);
+			return q;
+		}
 }
