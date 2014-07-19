@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
 
 
 @Service
@@ -70,5 +71,31 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 			}
 		}
 		return subjectValues;
+	}
+
+	@Override
+	public List<SubjectValue> getSubjectValuesByExperimentIdAndStateTypeKind(
+			Long experimentId, String stateType, String stateKind) {
+		
+		List<SubjectValue> subjectValues = SubjectValue.findSubjectValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
+
+		return subjectValues;
+	}
+
+	@Override
+	public List<SubjectValue> getSubjectValuesByExperimentIdAndStateTypeKindAndValueTypeKind(
+			Long experimentId, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		
+		List<SubjectValue> subjectValues = SubjectValue.findSubjectValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType,
+				stateKind, valueType, valueKind).getResultList();
+		
+		return subjectValues;
+	}
+
+	@Override
+	public String getCsvList(List<SubjectValue> subjectValues) {
+		// TODO Auto-generated method stub
+		return "NEED TO IMPLEMENT";
 	}
 }

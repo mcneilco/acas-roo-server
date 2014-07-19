@@ -38,6 +38,7 @@ import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
+import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -65,6 +66,9 @@ public class ApiExperimentController {
 	
 	@Autowired
 	private TreatmentGroupValueService treatmentGroupValueService;
+	
+	@Autowired
+	private SubjectValueService subjectValueService;
 
 	@RequestMapping(value = "/bytypekind/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -486,32 +490,84 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/subjectvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter51 (
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameAndStateTypeKindFilter51 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
-			@PathVariable("stateKind") String stateKind) {
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("format") String format) {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement; return an array of subject values in different formats
-		return null;
+		
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
 
+		List<SubjectValue> subjectValues;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			subjectValues = subjectValueService.getSubjectValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+		} else {
+			subjectValues = new ArrayList<SubjectValue>();
+		}
+		if (format.equalsIgnoreCase("csv")) {
+			//getCSvList is just a stub service for now
+			String outputString = subjectValueService.getCsvList(subjectValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues), headers, HttpStatus.OK);
+		}
 	}
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/subjectvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter5 (
+	public ResponseEntity<String> getExperimentValueByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter5 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
 			@PathVariable("valueType") String valueType,
-			@PathVariable("valueKind") String valueKind) {
+			@PathVariable("valueKind") String valueKind,
+			@PathVariable("format") String format) {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//TODO: implement; return an array of subject values in different formats
-		return null;
+	
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
 
+		List<SubjectValue> subjectValues;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			subjectValues = subjectValueService.getSubjectValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType,
+					stateKind, valueType, valueKind);
+		} else {
+			subjectValues = new ArrayList<SubjectValue>();
+		}
+		if (format.equalsIgnoreCase("csv")) {
+			//getCSvList is just a stub service for now
+			String outputString = subjectValueService.getCsvList(subjectValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues), headers, HttpStatus.OK);
+		}
+		
 	}
 
 	@RequestMapping(value = "/{IdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
