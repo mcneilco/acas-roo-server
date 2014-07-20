@@ -1,15 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
-import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.BatchCodeDTO;
-import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
-import com.labsynch.labseer.dto.ValueTypeKindDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.ExcludeNulls;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,6 +8,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -29,6 +20,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -36,6 +28,16 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
+import com.labsynch.labseer.dto.ValueTypeKindDTO;
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -532,5 +534,54 @@ public class AnalysisGroupValue extends AbstractValue {
         criteria.where(criteriaBuilder.and(predicateList.toArray(predicates)));
         TypedQuery<String> q = em.createQuery(criteria);
         return q;
+    }
+    
+    public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByExptIDAndStateTypeKind(Long experimentId, 
+			String stateType, 
+			String stateKind) {
+			if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+			if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+			
+			EntityManager em = entityManager();
+			String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
+			"JOIN agv.lsState evs " +
+			"JOIN evs.analysisGroup ag " +
+			"JOIN ag.experiment exp " +
+			"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+			"AND agv.ignored IS NOT :ignored " +
+			"AND ag.ignored IS NOT :ignored " +
+			"AND exp.id = :experimentId ";
+			TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
+			q.setParameter("experimentId", experimentId);
+			q.setParameter("stateType", stateType);
+			q.setParameter("stateKind", stateKind);
+			q.setParameter("ignored", true);
+			return q;
+		}
+    
+    public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
+			String stateKind, String valueType, String valueKind) {
+    	if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
+				"JOIN agv.lsState evs " +
+				"JOIN evs.analysisGroup ag " +
+				"JOIN ag.experiment exp " +
+				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
+				"AND ag.ignored IS NOT :ignored " +
+				"AND exp.id = :experimentId ";
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
+		q.setParameter("experimentId", experimentId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
     }
 }

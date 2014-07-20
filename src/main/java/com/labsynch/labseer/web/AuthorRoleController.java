@@ -1,13 +1,12 @@
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.AuthorRole;
-import com.labsynch.labseer.domain.LsRole;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -27,6 +26,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
+
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.LsRole;
 
 @RooWebJson(jsonObject = AuthorRole.class)
 @RooWebFinder

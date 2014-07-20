@@ -27,8 +27,6 @@ import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.AutoLabelDTO;
-import com.labsynch.labseer.dto.BatchCodeDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;

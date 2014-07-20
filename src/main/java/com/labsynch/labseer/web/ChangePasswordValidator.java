@@ -17,7 +17,6 @@ import org.springframework.security.authentication.encoding.MessageDigestPasswor
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 

@@ -1,7 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -31,6 +29,9 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.transaction.annotation.Transactional;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Entity
 @RooJson

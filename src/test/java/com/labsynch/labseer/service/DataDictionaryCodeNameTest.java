@@ -3,8 +3,12 @@
  */
 package com.labsynch.labseer.service;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
@@ -23,13 +27,16 @@ import com.labsynch.labseer.domain.DDictValue;
 @Configurable
 public class DataDictionaryCodeNameTest {
 	
+	private static final Logger logger = LoggerFactory.getLogger(DataDictionaryCodeNameTest.class);
+
+	
 	@Autowired
-	private DataDictionaryService theDataDictionaryService;
+	private DataDictionaryService dataDictionaryService;
 
 	/**
 	 * Test method for {@link com.labsynch.labseer.domain.DDictValue#validate()}.
 	 */
-	@Test
+	//@Test
 	@Transactional
 	public void testValidate() {
 		DDictValue theValue = new DDictValue();
@@ -37,7 +44,24 @@ public class DataDictionaryCodeNameTest {
 		theValue.setLsKind("random");
 		theValue.setLabelText("random");
 		theValue.setIgnored(false);
-		theDataDictionaryService.saveDataDictionaryValue(theValue);
+		dataDictionaryService.saveDataDictionaryValue(theValue);
+		theValue.persist();
+	}
+
+	@Test
+	public void getValues() {
+		List<DDictValue> dDictValues = DDictValue.findAllDDictValues();
+		logger.info("---------------------" + DDictValue.toJsonArray(dDictValues));
+		
+		String output = dataDictionaryService.getCsvList(dDictValues);
+		logger.info("---------------------" + output);
+
+	}
+
+	@Test
+	public void createSequence() {
+
+
 	}
 
 }
