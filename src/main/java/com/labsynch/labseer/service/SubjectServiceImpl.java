@@ -1,6 +1,7 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,7 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.SubjectLabelDTO;
 import com.labsynch.labseer.dto.SubjectStateDTO;
+import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -234,6 +236,14 @@ public class SubjectServiceImpl implements SubjectService {
 		}
 		
 		return Subject.findSubject(subject.getId());
+	}
+
+	//TODO: Gregory please implement the following service
+	@Override
+	public HashMap<String, TempThingDTO> createSubjectsFromCSV(
+			String subjectFilePath, HashMap<String, TempThingDTO> output2) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

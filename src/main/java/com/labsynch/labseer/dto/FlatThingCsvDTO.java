@@ -40,52 +40,59 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-public class AnalysisGroupCsvDTO {
+public class FlatThingCsvDTO {
 
-	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupCsvDTO.class);
+	private static final Logger logger = LoggerFactory.getLogger(FlatThingCsvDTO.class);
 
-	public AnalysisGroupCsvDTO(){
+	public FlatThingCsvDTO(){
 		//empty constructor
 	}
+
 
 	//	valueType	valueKind	numericValue	stringValue	dateValue	clobValue	urlValue	fileValue	codeValue	valueUnit	valueOperator	publicData	stateType	stateKind	stateID	analysisGroupID	experimentID	experimentVersion	lsTransaction	recordedBy	codeName
 	//	stringValue	Rendering Hint	NULL	4 parameter D-R	NULL	NULL	NULL	NULL	NULL	NULL	NULL	FALSE	data	results	1	1	1007	1	86	smeyer	AG-1
 	//	stringValue	Rendering Hint	NULL	4 parameter D-R	NULL	NULL	NULL	NULL	NULL	NULL	NULL	FALSE	data	results	5	2	1007	1	86	smeyer	AG-2
-//	valueType,valueKind,numericValue,stringValue,dateValue,clobValue,urlValue,fileValue,codeType,codeKind,codeValue,unitKind,unitType,operatorKind,operatorType,publicData,stateType,stateKind,tempStateId,stateId,id,tempId,parentId,tempParentId,lsTransaction,recordedBy,codeName,lsType,lsKind
+	//	valueType,valueKind,numericValue,stringValue,dateValue,clobValue,urlValue,
+	//	fileValue,codeType,codeKind,codeValue,unitKind,unitType,operatorKind,operatorType,
+	//	publicData,stateType,stateKind,tempStateId,stateId,id,tempId,parentId,tempParentId,
+	//	lsTransaction,recordedBy,codeName,lsType,lsKind
 
-	private Long experimentID;
-	private String experimentCodeName;
-	private Integer experimentVersion;
 
-	private String analysisGroupID;	
+	private Long parentId;
+	private String tempParentId;
+
 	private Long id;	
-	private Integer version;
+	private String tempId;	
+	private String codeName;
 	private String lsType;
 	private String lsKind;
-	private String codeName;
 
-	private Long stateID;	
+	private Long stateId;	
+	private String tempStateId;	
 	private String stateType;
 	private String stateKind;
 
-	private Long valueId;	
+	private Long valueId;
+	private String tempValueId;	
 	private String valueType;
 	private String valueKind;
 	private String codeType;
 	private String codeKind;
-	private String stringValue;
 	protected String codeValue;
+	private String stringValue;
 	private String fileValue;
 	private String urlValue;
 	private Date dateValue;
 	private String clobValue;
-	private String valueOperator;
+	private String operatorType;
+	private String operatorKind;
 	private BigDecimal numericValue;
 	private Integer sigFigs;
 	private BigDecimal uncertainty;
 	private Integer numberOfReplicates;
 	private String uncertaintyType;
-	private String valueUnit;
+	private String unitType;
+	private String unitKind;
 	private String comments;
 	private boolean ignored;
 	private Long lsTransaction;
@@ -95,32 +102,31 @@ public class AnalysisGroupCsvDTO {
 	private String modifiedBy;
 	private boolean publicData;
 
+
 	public void setLsTransaction(String lsTransaction) {
 		if (lsTransaction.equalsIgnoreCase("NULL")){
 			this.lsTransaction = null;
 		} else {
-		this.lsTransaction = Long.valueOf(lsTransaction);
-	}
+			this.lsTransaction = Long.valueOf(lsTransaction);
 		}
+	}
 
-	public void setExperimentVersion(String experimentVersion) {
-		if (experimentVersion.equalsIgnoreCase("NULL")){
-			this.experimentVersion = null;
+	public void setCodeName(String codeName) {
+		if (codeName.equalsIgnoreCase("NULL")){
+			this.codeName = null;
+		} 
+	}
+	
+	public void setParentId(String parentId) {
+		if (parentId.equalsIgnoreCase("NULL")){
+			this.parentId = null;
 		} else {
-		this.experimentVersion = Integer.valueOf(experimentVersion);
+			this.parentId = Long.valueOf(parentId);
 		}
 	}
 
-	public void setExperimentID(String experimentID) {
-		if (experimentID.equalsIgnoreCase("NULL")){
-			this.experimentID = null;
-		} else {
-			this.experimentID = Long.valueOf(experimentID);
-		}
-	}
-
-	public void setStateID(String stateID) {
-		this.stateID = Long.valueOf(stateID);
+	public void setStateId(String stateId) {
+		this.stateId = Long.valueOf(stateId);
 	}
 
 	public void setPublicData(String publicData) {
@@ -151,15 +157,52 @@ public class AnalysisGroupCsvDTO {
 
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
-				"id", 
-				"protocolId",
-				"experimentId",
-				"experimentCodeName",
-				"experimentName",
+				"parentId", 
+				"tempParentId",
+				"id",
+				"tempId",
+				"codeName",
 				"lsType",
 				"lsKind",
-				"testedLot",
-		"result"};
+				"stateId",
+				"tempStateId",
+				"stateType",
+				"stateKind",
+				"tempValueId",
+				"valueType",
+				"valueKind",
+				"codeType",
+				"codeKind",
+				"codeValue",
+				"stringValue",
+				"fileValue",
+				"urlValue",
+				"dateValue",
+				"clobValue",
+				"operatorType",
+				"operatorKind",
+				"numericValue",
+				"sigFigs",
+				"uncertainty",
+				"numberOfReplicates",
+				"uncertaintyType",
+				"unitType",
+				"unitKind",
+				"comments",
+				//				"ignored",
+				"lsTransaction",
+				//				"recordedDate",
+				"recordedBy",
+				//				"modifiedDate",
+				//				"modifiedBy",
+				"publicData"
+				// 39 values
+		};
+
+		//		valueType,valueKind,numericValue,stringValue,dateValue,clobValue,urlValue,
+		//		fileValue,codeType,codeKind,codeValue,unitKind,unitType,operatorKind,operatorType,
+		//		publicData,stateType,stateKind,tempStateId,stateId,id,tempId,parentId,tempParentId,
+		//		lsTransaction,recordedBy,codeName,lsType,lsKind
 
 		return headerColumns;
 
@@ -189,7 +232,24 @@ public class AnalysisGroupCsvDTO {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional()
+
+
 		};
 
 		return processors;

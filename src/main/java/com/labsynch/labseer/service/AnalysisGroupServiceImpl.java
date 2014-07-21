@@ -36,6 +36,7 @@ import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -47,6 +48,9 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+	private AutoLabelService autoLabelService;
 	
 	@Autowired
 	private TreatmentGroupService treatmentGroupService;
@@ -263,17 +267,12 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 	public HashMap<String, TempThingDTO> createAnalysisGroupsFromCSV(String absoluteFilePath) throws IOException{
 		
 		int batchSize = propertiesUtilService.getBatchSize();
-
-
 		ICsvBeanReader beanReader = null;
-
 		HashMap<String, TempThingDTO> analysisGroupMap = new HashMap<String, TempThingDTO>();
 		HashMap<String, TempThingDTO> analysisStateMap = new HashMap<String, TempThingDTO>();
 		HashMap<String, TempThingDTO> analysisValueMap = new HashMap<String, TempThingDTO>();
 
 		try {
-
-
 			logger.info("read csv delimited file");
 			//InputStream is = CreateAnalysisGroupsFromCSVFileTests.class.getClassLoader().getResourceAsStream(inputFileName);
 			InputStream is = new FileInputStream(absoluteFilePath);  
@@ -288,12 +287,8 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			for (String head : headerText){
 				logger.info("header column: " + position + "  " + head);
 				headerList.add(head);
-				//				if (geneBeanMap.get(head) != null){
-				//					headerList.add(geneBeanMap.get(head));   				
-				//				}
 				position++;
 			}
-
 
 			logger.info("size of header list  " + headerList.size());
 			String[] header = new String[headerList.size()];
@@ -304,53 +299,69 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 				position++;
 			}
 
-			final CellProcessor[] processors = AnalysisGroupCsvDTO.getProcessors();
+			final CellProcessor[] processors = FlatThingCsvDTO.getProcessors();
 
-			AnalysisGroupCsvDTO analysisGroupDTO;
+			FlatThingCsvDTO analysisGroupDTO;
 			AnalysisGroup analysisGroup;
 			AnalysisGroupState analysisGroupState;
 			AnalysisGroupValue analysisGroupValue;
+
+			// note: we want to allow creation of anlysisGroups with no states or values
+			// thus the code must create the analysisGroups first. (modification to input file ??) 
+			// try leaning on stateType and stateKind or valueType and valueKind
+			// if both null -- then do not create an entry
 			
 			long rowIndex = 1;
-			while( (analysisGroupDTO = beanReader.read(AnalysisGroupCsvDTO.class, header, processors)) != null ) {
+			while( (analysisGroupDTO = beanReader.read(FlatThingCsvDTO.class, header, processors)) != null ) {
 				System.out.println(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), analysisGroupDTO));
 
-				Experiment testExperiment = Experiment.findExperimentEntries(0, 1).get(0);
-				analysisGroupDTO.setExperimentID(testExperiment.getId().toString());
-				analysisGroupDTO.setId(rowIndex);
-				if (analysisGroupDTO.getLsType() == null) {analysisGroupDTO.setLsType("default");}
-				if (analysisGroupDTO.getLsKind() == null) {analysisGroupDTO.setLsKind("default");}
+				if (analysisGroupDTO.getLsType() == null) analysisGroupDTO.setLsType("default");
+				if (analysisGroupDTO.getLsKind() == null) analysisGroupDTO.setLsKind("default");
+				if (analysisGroupDTO.getTempId() == null) analysisGroupDTO.setTempId(analysisGroupDTO.getId().toString());
 
 				analysisGroup = getOrCreateAnalysisGroup(analysisGroupDTO, analysisGroupMap);
 				if (analysisGroup != null){
 					analysisGroup.persist();
-//				    if ( rowIndex % batchSize == 0 ) {
-//				    	analysisGroup.flush();
-//				    	analysisGroup.clear();
-//				    }
+					logger.debug("saved the new analysis group: " + analysisGroup.getId() + " " + analysisGroup.getCodeName());
+					logger.debug("saved the new analysis group: " + analysisGroup.toJson());
+
+////				    if ( rowIndex % batchSize == 0 ) {
+////				    	analysisGroup.flush();
+////				    	analysisGroup.clear();
+////				    }
 					analysisGroupMap = saveTempAnalysisGroup(analysisGroup, analysisGroupDTO, analysisGroupMap);
 				}
 			
+				if (analysisGroupDTO.getStateType() != null && analysisGroupDTO.getStateKind() != null){
+					if (analysisGroupDTO.getTempStateId() == null) analysisGroupDTO.setTempStateId(analysisGroupDTO.getStateId().toString());
+					analysisGroupState = getOrCreateAnalysisState(analysisGroupDTO, analysisStateMap, analysisGroupMap);
+					if (analysisGroupState != null){
+						analysisGroupState.persist();
+						logger.debug("saved the new analysis group state: " + analysisGroupState.getId());
+						logger.debug("saved the new analysis group state: " + analysisGroupState.toJson());
 
-				analysisGroupState = getOrCreateAnalysisState(analysisGroupDTO, analysisStateMap, analysisGroupMap);
-				if (analysisGroupState != null){
-					analysisGroupState.persist();
-//				    if ( rowIndex % batchSize == 0 ) {
-//				    	analysisGroupState.flush();
-//				    	analysisGroupState.clear();
-//				    }
-				    analysisStateMap = saveTempAnalysisState(analysisGroupState, analysisGroupDTO, analysisStateMap);
-				}
-				
-				analysisGroupValue = getOrCreateAnalysisValue(analysisGroupDTO, analysisValueMap, analysisStateMap);
-				if (analysisGroupValue != null){
-					analysisGroupValue.persist();
-					logger.debug("saved the analysisGroupValue: " + analysisGroupValue.toJson());
-				    if ( rowIndex % batchSize == 0 ) {
-				    	analysisGroupValue.flush();
-				    	analysisGroupValue.clear();
-				    }
-				    analysisValueMap = saveTempAnalysisValue(analysisGroupValue, analysisGroupDTO, analysisValueMap);
+//					    if ( rowIndex % batchSize == 0 ) {
+//					    	analysisGroupState.flush();
+//					    	analysisGroupState.clear();
+//					    }
+					    analysisStateMap = saveTempAnalysisState(analysisGroupState, analysisGroupDTO, analysisStateMap);
+					}
+
+					if (analysisGroupDTO.getValueType() != null && analysisGroupDTO.getValueKind() != null){
+						if (analysisGroupDTO.getTempValueId() == null) analysisGroupDTO.setTempValueId(Long.toString(rowIndex));
+						analysisGroupValue = getOrCreateAnalysisValue(analysisGroupDTO, analysisValueMap, analysisStateMap);
+						if (analysisGroupValue != null){
+							analysisGroupValue.persist();
+							logger.debug("saved the analysisGroupValue: " + analysisGroupValue.toJson());
+						    if ( rowIndex % batchSize == 0 ) {
+						    	analysisGroupValue.flush();
+						    	analysisGroupValue.clear();
+						    }
+						    analysisValueMap = saveTempAnalysisValue(analysisGroupValue, analysisGroupDTO, analysisValueMap);
+						}
+					}
+				} else {
+					logger.debug("---------- not saving a new analysis group state: " + analysisGroupDTO.getStateType());
 				}
 				
 				rowIndex++;
@@ -367,84 +378,97 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 
 	private HashMap<String, TempThingDTO> saveTempAnalysisValue(
 			AnalysisGroupValue analysisGroupValue,
-			AnalysisGroupCsvDTO analysisGroupDTO,
+			FlatThingCsvDTO analysisGroupDTO,
 			HashMap<String, TempThingDTO> analysisValueMap) {
 
 		TempThingDTO tempThingDTO = new TempThingDTO();
 		tempThingDTO.setId(analysisGroupValue.getId());
-		tempThingDTO.setTempId(analysisGroupDTO.getId().toString());
-		analysisValueMap.put(analysisGroupDTO.getId().toString(), tempThingDTO);
+		tempThingDTO.setTempId(analysisGroupDTO.getTempValueId());
+		analysisValueMap.put(analysisGroupDTO.getTempValueId(), tempThingDTO);
 		return analysisValueMap;
 	}
 
 	private HashMap<String, TempThingDTO> saveTempAnalysisState(
 			AnalysisGroupState analysisGroupState,
-			AnalysisGroupCsvDTO analysisGroupDTO,
+			FlatThingCsvDTO analysisGroupDTO,
 			HashMap<String, TempThingDTO> analysisStateMap) {
 
 		TempThingDTO tempThingDTO = new TempThingDTO();
 		tempThingDTO.setId(analysisGroupState.getId());
-		tempThingDTO.setTempId(analysisGroupDTO.getAnalysisGroupID());
-		analysisStateMap.put(analysisGroupDTO.getStateID().toString(), tempThingDTO);
+		tempThingDTO.setTempId(analysisGroupDTO.getTempStateId());
+		analysisStateMap.put(analysisGroupDTO.getTempStateId(), tempThingDTO);
 
 		return analysisStateMap;
 	}
 
 	private HashMap<String, TempThingDTO> saveTempAnalysisGroup(
 				AnalysisGroup analysisGroup,
-				AnalysisGroupCsvDTO analysisGroupDTO, 
+				FlatThingCsvDTO analysisGroupDTO, 
 				HashMap<String, TempThingDTO> analysisGroupMap) {
 		
 		TempThingDTO tempThingDTO = new TempThingDTO();
 		tempThingDTO.setId(analysisGroup.getId());
 		tempThingDTO.setCodeName(analysisGroup.getCodeName());
-		tempThingDTO.setTempId(analysisGroupDTO.getId().toString());
-		analysisGroupMap.put(analysisGroupDTO.getId().toString(), tempThingDTO);
+		tempThingDTO.setTempId(analysisGroupDTO.getTempId().toString());
+		analysisGroupMap.put(analysisGroupDTO.getTempId(), tempThingDTO);
 		return analysisGroupMap;
 	}
 
 	private AnalysisGroupValue getOrCreateAnalysisValue(
-			AnalysisGroupCsvDTO analysisGroupDTO,
+			FlatThingCsvDTO analysisGroupDTO,
 			HashMap<String, TempThingDTO> analysisValueMap, HashMap<String, TempThingDTO> analysisStateMap) {
 
 		logger.debug("searching for analysisGroupDTO.id ---- " + analysisGroupDTO.getId());
 		AnalysisGroupValue analysisGroupValue = null;
-
-		if (!analysisValueMap.containsKey(analysisGroupDTO.getId().toString())){
+		if (!analysisValueMap.containsKey(analysisGroupDTO.getTempValueId())){
 			analysisGroupValue = new AnalysisGroupValue(analysisGroupDTO);
-			AnalysisGroupState ags = AnalysisGroupState.findAnalysisGroupState(analysisStateMap.get(analysisGroupDTO.getStateID().toString()).getId());
+			AnalysisGroupState ags = AnalysisGroupState.findAnalysisGroupState(analysisStateMap.get(analysisGroupDTO.getTempStateId()).getId());
 			analysisGroupValue.setLsState(ags);
 		} else {
-			logger.debug("skipping the saved analysisGroupValue --------- " + analysisGroupDTO.getStateID());
+			logger.debug("skipping the saved analysisGroupValue --------- " + analysisGroupDTO.getStateId());
 		}
 
 		return analysisGroupValue;
 	}
 
 	private AnalysisGroupState getOrCreateAnalysisState(
-			AnalysisGroupCsvDTO analysisGroupDTO,
+			FlatThingCsvDTO analysisGroupDTO,
 			HashMap<String, TempThingDTO> analysisStateMap, HashMap<String, TempThingDTO> analysisGroupMap) {
 
 		AnalysisGroupState analysisGroupState = null;
-		if (!analysisStateMap.containsKey(analysisGroupDTO.getStateID().toString())){
-			analysisGroupState = new AnalysisGroupState(analysisGroupDTO);
-			analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(analysisGroupDTO.getAnalysisGroupID()).getId()));
+		if (!analysisStateMap.containsKey(analysisGroupDTO.getTempStateId())){
+			if (analysisGroupDTO.getStateId() == null){
+				analysisGroupState = new AnalysisGroupState(analysisGroupDTO);
+				analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(analysisGroupDTO.getTempId()).getId()));				
+			} else {
+				analysisGroupState = AnalysisGroupState.findAnalysisGroupState(analysisGroupDTO.getStateId());
+			}
 		} else {
-			logger.debug("skipping the saved analysisGroupState --------- " + analysisGroupDTO.getStateID());
+			logger.debug("skipping the saved analysisGroupState --------- " + analysisGroupDTO.getStateId());
 		}
 
 		return analysisGroupState;
 	}
 
 
-	private AnalysisGroup getOrCreateAnalysisGroup(AnalysisGroupCsvDTO analysisGroupDTO, HashMap<String, TempThingDTO> analysisGroupMap) {
+	private AnalysisGroup getOrCreateAnalysisGroup(
+			FlatThingCsvDTO analysisGroupDTO, 
+			HashMap<String, TempThingDTO> analysisGroupMap) {
+
 		AnalysisGroup analysisGroup = null;
-		if (!analysisGroupMap.containsKey(analysisGroupDTO.getAnalysisGroupID().toString())){
-			analysisGroup = new AnalysisGroup(analysisGroupDTO);
-			analysisGroup.setExperiment(Experiment.findExperiment(analysisGroupDTO.getExperimentID()));
-			analysisGroup = saveLsAnalysisGroup(analysisGroup);
+		if (!analysisGroupMap.containsKey(analysisGroupDTO.getTempId())){
+			if (analysisGroupDTO.getId() == null){
+				analysisGroup = new AnalysisGroup(analysisGroupDTO);
+				analysisGroup.setExperiment(Experiment.findExperiment(analysisGroupDTO.getParentId()));
+				if (analysisGroup.getCodeName() == null){
+					analysisGroup.setCodeName(autoLabelService.getAnalysisGroupCodeName());
+				}
+				//analysisGroup = saveLsAnalysisGroup(analysisGroup);
+			} else {
+				analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupDTO.getId());
+			}
 		} else {
-			logger.debug("skipping the saved analysisGroup --------- " + analysisGroupDTO.getCodeName());
+			logger.debug("skipping the previously saved analysisGroup --------- " + analysisGroupDTO.getCodeName());
 		}
 
 		return analysisGroup;

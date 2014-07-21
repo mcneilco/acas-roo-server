@@ -23,6 +23,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -43,7 +44,33 @@ public class TreatmentGroupValue extends AbstractValue {
     @JoinColumn(name = "treatment_state_id")
     private TreatmentGroupState lsState;
     
-    public static TreatmentGroupValue create(TreatmentGroupValue treatmentGroupValue) {
+    public TreatmentGroupValue(FlatThingCsvDTO inputDTO) {
+    	this.setCodeValue(inputDTO.getCodeValue());
+    	this.setLsType(inputDTO.getValueType());
+    	this.setLsKind(inputDTO.getValueKind());
+    	this.setStringValue(inputDTO.getStringValue());
+    	this.setFileValue(inputDTO.getFileValue());
+    	this.setUrlValue(inputDTO.getUrlValue());
+    	this.setDateValue(inputDTO.getDateValue());
+    	this.setOperatorKind(inputDTO.getOperatorKind());
+    	this.setNumericValue(inputDTO.getNumericValue());
+    	this.setFileValue(inputDTO.getFileValue());
+    	this.setUncertainty(inputDTO.getUncertainty());
+    	this.setUncertaintyType(inputDTO.getUncertaintyType());
+    	this.setUnitKind(inputDTO.getUnitKind());
+    	this.setNumberOfReplicates(inputDTO.getNumberOfReplicates());
+        this.setRecordedBy(inputDTO.getRecordedBy());
+        this.setRecordedDate(inputDTO.getRecordedDate());
+        this.setLsTransaction(inputDTO.getLsTransaction());
+        this.setModifiedBy(inputDTO.getModifiedBy());
+        this.setModifiedDate(inputDTO.getModifiedDate());
+        this.setComments(inputDTO.getComments());
+        this.setIgnored(inputDTO.isIgnored());
+        this.setPublicData(inputDTO.isPublicData());
+        this.setSigFigs(inputDTO.getSigFigs());	
+    }
+
+	public static TreatmentGroupValue create(TreatmentGroupValue treatmentGroupValue) {
     	TreatmentGroupValue newTreatmentGroupValue = new JSONDeserializer<TreatmentGroupValue>().use(null, TreatmentGroupValue.class).
         		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(treatmentGroupValue.toJson(), 
         				new TreatmentGroupValue());	

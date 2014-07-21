@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
@@ -17,4 +18,8 @@ public interface TreatmentGroupService {
 	HashMap<String, TempThingDTO> createLsTreatmentGroupsFromCSV(
 			HashMap<String, TempThingDTO> analysisGroupMap,
 			String treatmentGroupCSV, String subjectCSV);
+
+	HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
+			String treatmentGroupFilePath, HashMap<String, TempThingDTO> output) throws IOException;
+	
 }

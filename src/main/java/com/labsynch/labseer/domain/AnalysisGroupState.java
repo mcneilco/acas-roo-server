@@ -25,6 +25,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -38,78 +39,88 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(finders = { "findAnalysisGroupStatesByLsTypeAndKindEquals", "findAnalysisGroupStatesByAnalysisGroup", "findAnalysisGroupStatesByLsTransactionEquals", "findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals" })
 public class AnalysisGroupState extends AbstractState {
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "analysis_group_id")
-    private AnalysisGroup analysisGroup;
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "analysis_group_id")
+	private AnalysisGroup analysisGroup;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsState", fetch = FetchType.LAZY)
-    private Set<AnalysisGroupValue> lsValues = new HashSet<AnalysisGroupValue>();
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "lsState", fetch = FetchType.LAZY)
+	private Set<AnalysisGroupValue> lsValues = new HashSet<AnalysisGroupValue>();
 
-    public AnalysisGroupState(com.labsynch.labseer.domain.AnalysisGroupState analysisGroupState) {
-        this.setRecordedBy(analysisGroupState.getRecordedBy());
-        this.setRecordedDate(analysisGroupState.getRecordedDate());
-        this.setLsTransaction(analysisGroupState.getLsTransaction());
-        this.setModifiedBy(analysisGroupState.getModifiedBy());
-        this.setModifiedDate(analysisGroupState.getModifiedDate());
-        this.setLsType(analysisGroupState.getLsType());
-        this.setLsKind(analysisGroupState.getLsKind());
-    }
+	public AnalysisGroupState(com.labsynch.labseer.domain.AnalysisGroupState analysisGroupState) {
+		this.setRecordedBy(analysisGroupState.getRecordedBy());
+		this.setRecordedDate(analysisGroupState.getRecordedDate());
+		this.setLsTransaction(analysisGroupState.getLsTransaction());
+		this.setModifiedBy(analysisGroupState.getModifiedBy());
+		this.setModifiedDate(analysisGroupState.getModifiedDate());
+		this.setLsType(analysisGroupState.getLsType());
+		this.setLsKind(analysisGroupState.getLsKind());
+	}
 
-    public AnalysisGroupState(AnalysisGroupCsvDTO analysisGroupDTO) {
-        this.setRecordedBy(analysisGroupDTO.getRecordedBy());
-        this.setRecordedDate(analysisGroupDTO.getRecordedDate());
-        this.setLsTransaction(analysisGroupDTO.getLsTransaction());
-        this.setModifiedBy(analysisGroupDTO.getModifiedBy());
-        this.setModifiedDate(analysisGroupDTO.getModifiedDate());
-        this.setLsType(analysisGroupDTO.getStateType());
-        this.setLsKind(analysisGroupDTO.getStateKind());
-     }
+	public AnalysisGroupState(AnalysisGroupCsvDTO analysisGroupDTO) {
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setLsType(analysisGroupDTO.getStateType());
+		this.setLsKind(analysisGroupDTO.getStateKind());
+	}
+
+	public AnalysisGroupState(FlatThingCsvDTO analysisGroupDTO) {
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setLsType(analysisGroupDTO.getStateType());
+		this.setLsKind(analysisGroupDTO.getStateKind());
+	}
 
 	public static com.labsynch.labseer.domain.AnalysisGroupState update(com.labsynch.labseer.domain.AnalysisGroupState analysisGroupState) {
-        AnalysisGroupState updatedAnalysisGroupState = AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId());
-        updatedAnalysisGroupState.setRecordedBy(analysisGroupState.getRecordedBy());
-        updatedAnalysisGroupState.setRecordedDate(analysisGroupState.getRecordedDate());
-        updatedAnalysisGroupState.setLsTransaction(analysisGroupState.getLsTransaction());
-        updatedAnalysisGroupState.setModifiedBy(analysisGroupState.getModifiedBy());
-        updatedAnalysisGroupState.setModifiedDate(new Date());
-        updatedAnalysisGroupState.setLsType(analysisGroupState.getLsType());
-        updatedAnalysisGroupState.setLsKind(analysisGroupState.getLsKind());
-        updatedAnalysisGroupState.merge();
-        return updatedAnalysisGroupState;
-    }
+		AnalysisGroupState updatedAnalysisGroupState = AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId());
+		updatedAnalysisGroupState.setRecordedBy(analysisGroupState.getRecordedBy());
+		updatedAnalysisGroupState.setRecordedDate(analysisGroupState.getRecordedDate());
+		updatedAnalysisGroupState.setLsTransaction(analysisGroupState.getLsTransaction());
+		updatedAnalysisGroupState.setModifiedBy(analysisGroupState.getModifiedBy());
+		updatedAnalysisGroupState.setModifiedDate(new Date());
+		updatedAnalysisGroupState.setLsType(analysisGroupState.getLsType());
+		updatedAnalysisGroupState.setLsKind(analysisGroupState.getLsKind());
+		updatedAnalysisGroupState.merge();
+		return updatedAnalysisGroupState;
+	}
 
-    public String toJson() {
-        return new JSONSerializer().exclude("*.class", "analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(this);
-    }
+	public String toJson() {
+		return new JSONSerializer().exclude("*.class", "analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(this);
+	}
 
-    public static com.labsynch.labseer.domain.AnalysisGroupState fromJsonToAnalysisGroupState(String json) {
-        return new JSONDeserializer<AnalysisGroupState>().use(null, AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
-    }
+	public static com.labsynch.labseer.domain.AnalysisGroupState fromJsonToAnalysisGroupState(String json) {
+		return new JSONDeserializer<AnalysisGroupState>().use(null, AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
 
-    public static String toJsonArray(Collection<com.labsynch.labseer.domain.AnalysisGroupState> collection) {
-        return new JSONSerializer().exclude("*.class", "analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
-    }
+	public static String toJsonArray(Collection<com.labsynch.labseer.domain.AnalysisGroupState> collection) {
+		return new JSONSerializer().exclude("*.class", "analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+	}
 
-    public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.AnalysisGroupState> collection) {
-        return new JSONSerializer().exclude("*.class", "analysisGroup").transform(new ExcludeNulls(), void.class).serialize(collection);
-    }
+	public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.AnalysisGroupState> collection) {
+		return new JSONSerializer().exclude("*.class", "analysisGroup").transform(new ExcludeNulls(), void.class).serialize(collection);
+	}
 
-    public static Collection<com.labsynch.labseer.domain.AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(String json) {
-        return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
-    }
+	public static Collection<com.labsynch.labseer.domain.AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(String json) {
+		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
 
-    public static Collection<com.labsynch.labseer.domain.AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(Reader json) {
-        return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
-    }
+	public static Collection<com.labsynch.labseer.domain.AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(Reader json) {
+		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
 
-    public static int deleteByExperimentID(Long experimentId) {
-        if (experimentId == null) return 0;
-        EntityManager em = SubjectValue.entityManager();
-        String deleteSQL = "DELETE FROM AnalysisGroupState oo WHERE id in (select o.id from AnalysisGroupState o where o.analysisGroup.experiment.id = :experimentId)";
-        Query q = em.createQuery(deleteSQL);
-        q.setParameter("experimentId", experimentId);
-        int numberOfDeletedEntities = q.executeUpdate();
-        return numberOfDeletedEntities;
-    }
+	public static int deleteByExperimentID(Long experimentId) {
+		if (experimentId == null) return 0;
+		EntityManager em = SubjectValue.entityManager();
+		String deleteSQL = "DELETE FROM AnalysisGroupState oo WHERE id in (select o.id from AnalysisGroupState o where o.analysisGroup.experiment.id = :experimentId)";
+		Query q = em.createQuery(deleteSQL);
+		q.setParameter("experimentId", experimentId);
+		int numberOfDeletedEntities = q.executeUpdate();
+		return numberOfDeletedEntities;
+	}
 }

@@ -33,6 +33,7 @@ import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
 import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -68,7 +69,6 @@ public class AnalysisGroupValue extends AbstractValue {
     	this.setUncertaintyType(analysisGroupDTO.getUncertaintyType());
     	this.setUnitKind(analysisGroupDTO.getValueUnit());
     	this.setNumberOfReplicates(analysisGroupDTO.getNumberOfReplicates());
-    	
         this.setRecordedBy(analysisGroupDTO.getRecordedBy());
         this.setRecordedDate(analysisGroupDTO.getRecordedDate());
         this.setLsTransaction(analysisGroupDTO.getLsTransaction());
@@ -78,8 +78,33 @@ public class AnalysisGroupValue extends AbstractValue {
         this.setIgnored(analysisGroupDTO.isIgnored());
         this.setPublicData(analysisGroupDTO.isPublicData());
         this.setSigFigs(analysisGroupDTO.getSigFigs());
-    	
 	}
+
+	public AnalysisGroupValue(FlatThingCsvDTO analysisGroupDTO) {
+    	this.setCodeValue(analysisGroupDTO.getCodeValue());
+    	this.setLsType(analysisGroupDTO.getValueType());
+    	this.setLsKind(analysisGroupDTO.getValueKind());
+    	this.setStringValue(analysisGroupDTO.getStringValue());
+    	this.setFileValue(analysisGroupDTO.getFileValue());
+    	this.setUrlValue(analysisGroupDTO.getUrlValue());
+    	this.setDateValue(analysisGroupDTO.getDateValue());
+    	this.setOperatorKind(analysisGroupDTO.getOperatorKind());
+    	this.setNumericValue(analysisGroupDTO.getNumericValue());
+    	this.setFileValue(analysisGroupDTO.getFileValue());
+    	this.setUncertainty(analysisGroupDTO.getUncertainty());
+    	this.setUncertaintyType(analysisGroupDTO.getUncertaintyType());
+    	this.setUnitKind(analysisGroupDTO.getUnitKind());
+    	this.setNumberOfReplicates(analysisGroupDTO.getNumberOfReplicates());
+        this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+        this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+        this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+        this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+        this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+        this.setComments(analysisGroupDTO.getComments());
+        this.setIgnored(analysisGroupDTO.isIgnored());
+        this.setPublicData(analysisGroupDTO.isPublicData());
+        this.setSigFigs(analysisGroupDTO.getSigFigs());
+   }
 
 	public static com.labsynch.labseer.domain.AnalysisGroupValue create(com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
         AnalysisGroupValue newAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(null, AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(analysisGroupValue.toJson(), new AnalysisGroupValue());

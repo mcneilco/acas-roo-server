@@ -23,6 +23,7 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 
 import flexjson.JSONDeserializer;
@@ -64,6 +65,17 @@ public class TreatmentGroup extends AbstractThing {
         super.setLsKind(treatmentGroup.getLsKind());
         super.setLsTypeAndKind(treatmentGroup.getLsTypeAndKind());
 
+	}
+
+	public TreatmentGroup(FlatThingCsvDTO treatmentGroupDTO) {
+		this.setRecordedBy(treatmentGroupDTO.getRecordedBy());
+		this.setRecordedDate(treatmentGroupDTO.getRecordedDate());
+		this.setLsTransaction(treatmentGroupDTO.getLsTransaction());
+		this.setModifiedBy(treatmentGroupDTO.getModifiedBy());
+		this.setModifiedDate(treatmentGroupDTO.getModifiedDate());
+		this.setCodeName(treatmentGroupDTO.getCodeName());
+		this.setLsKind(treatmentGroupDTO.getLsKind());
+		this.setLsType(treatmentGroupDTO.getLsType());
 	}
 
 	public static TreatmentGroup update(TreatmentGroup treatmentGroup) {

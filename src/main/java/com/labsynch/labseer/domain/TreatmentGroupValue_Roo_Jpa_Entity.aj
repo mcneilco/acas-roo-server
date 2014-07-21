@@ -10,4 +10,8 @@ privileged aspect TreatmentGroupValue_Roo_Jpa_Entity {
     
     declare @type: TreatmentGroupValue: @Entity;
     
+    public TreatmentGroupValue.new() {
+        super();
+    }
+
 }
