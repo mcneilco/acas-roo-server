@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -21,7 +22,7 @@ public interface SubjectService {
 	Subject updateSubject(Subject subject);
 	Subject saveSubject(Subject subject);
 	
-	HashMap<String, TempThingDTO> createSubjectsFromCSV(String subjectFilePath, HashMap<String, TempThingDTO> output2);
+	HashMap<String, TempThingDTO> createSubjectsFromCSV(String subjectFilePath, HashMap<String, TempThingDTO> treatmentGroupMap) throws IOException;
 
 	
 	

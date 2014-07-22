@@ -24,6 +24,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -46,6 +47,33 @@ public class SubjectValue extends AbstractValue {
 
 	public SubjectValue() {
 	}
+
+	
+	public SubjectValue(FlatThingCsvDTO subjectDTO) {
+    	this.setCodeValue(subjectDTO.getCodeValue());
+    	this.setLsType(subjectDTO.getValueType());
+    	this.setLsKind(subjectDTO.getValueKind());
+    	this.setStringValue(subjectDTO.getStringValue());
+    	this.setFileValue(subjectDTO.getFileValue());
+    	this.setUrlValue(subjectDTO.getUrlValue());
+    	this.setDateValue(subjectDTO.getDateValue());
+    	this.setOperatorKind(subjectDTO.getOperatorKind());
+    	this.setNumericValue(subjectDTO.getNumericValue());
+    	this.setFileValue(subjectDTO.getFileValue());
+    	this.setUncertainty(subjectDTO.getUncertainty());
+    	this.setUncertaintyType(subjectDTO.getUncertaintyType());
+    	this.setUnitKind(subjectDTO.getUnitKind());
+    	this.setNumberOfReplicates(subjectDTO.getNumberOfReplicates());
+        this.setRecordedBy(subjectDTO.getRecordedBy());
+        this.setRecordedDate(subjectDTO.getRecordedDate());
+        this.setLsTransaction(subjectDTO.getLsTransaction());
+        this.setModifiedBy(subjectDTO.getModifiedBy());
+        this.setModifiedDate(subjectDTO.getModifiedDate());
+        this.setComments(subjectDTO.getComments());
+        this.setIgnored(subjectDTO.isIgnored());
+        this.setPublicData(subjectDTO.isPublicData());
+        this.setSigFigs(subjectDTO.getSigFigs());	
+    }
 
 	public static com.labsynch.labseer.domain.SubjectValue create(com.labsynch.labseer.domain.SubjectValue subjectValue) {
 		SubjectValue newsubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(subjectValue.toJson(), new SubjectValue());

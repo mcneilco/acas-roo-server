@@ -28,6 +28,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -64,8 +65,18 @@ public class SubjectState extends AbstractState {
         this.setLsKind(subjectState.getLsKind());
         this.setIgnored(subjectState.isIgnored());
     }
+    
+    public SubjectState(FlatThingCsvDTO subjectDTO) {
+		this.setRecordedBy(subjectDTO.getRecordedBy());
+		this.setRecordedDate(subjectDTO.getRecordedDate());
+		this.setLsTransaction(subjectDTO.getLsTransaction());
+		this.setModifiedBy(subjectDTO.getModifiedBy());
+		this.setModifiedDate(subjectDTO.getModifiedDate());
+		this.setLsType(subjectDTO.getStateType());
+		this.setLsKind(subjectDTO.getStateKind());
+	}
 
-    public static com.labsynch.labseer.domain.SubjectState update(com.labsynch.labseer.domain.SubjectState subjectState) {
+	public static com.labsynch.labseer.domain.SubjectState update(com.labsynch.labseer.domain.SubjectState subjectState) {
         SubjectState updatedSubjectState = SubjectState.findSubjectState(subjectState.getId());
         updatedSubjectState.setRecordedBy(subjectState.getRecordedBy());
         updatedSubjectState.setRecordedDate(subjectState.getRecordedDate());
