@@ -49,15 +49,18 @@ public class CreateAnalysisGroupsFromCSVFileTests {
 	@Transactional
 	public void ReadCSVFile_Test11() throws IOException{
 		
-		String absoluteFilePath = "/Users/fairway/Documents/McNeilCo/acas-roo-server/src/test/resources/analysisGroupData_v3.csv";
+		String absoluteFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/analysisGroupData_v3.csv";
+		//String absoluteFilePath = "/Users/fairway/Documents/McNeilCo/acas-roo-server/src/test/resources/analysisGroupData_v3.csv";
 		HashMap<String, TempThingDTO> output = analysisGroupService.createAnalysisGroupsFromCSV(absoluteFilePath );
 		
-		String treatmentGroupFilePath = "/Users/fairway/Documents/McNeilCo/acas-roo-server/src/test/resources/treatmentGroupData_v3.csv";
+		String treatmentGroupFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/treatmentGroupData_v3.csv";
+//		String treatmentGroupFilePath = "/Users/fairway/Documents/McNeilCo/acas-roo-server/src/test/resources/treatmentGroupData_v3.csv";
 		HashMap<String, TempThingDTO> output2 = treatmentGroupService.createTreatmentGroupsFromCSV(treatmentGroupFilePath, output);
 		
 		//TODO: Gregory please implement the following service
 		// please look at the two services above for working examples
-		String subjectFilePath = "/Users/fairway/Documents/McNeilCo/acas-roo-server/src/test/resources/subjectData_v3.csv";
+		String subjectFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/subjectData_v3.csv";
+//		String subjectFilePath = "/Users/fairway/Documents/McNeilCo/acas-roo-server/src/test/resources/subjectData_v3.csv";
 		HashMap<String, TempThingDTO> output3 = subjectService.createSubjectsFromCSV(subjectFilePath, output2);
 		
 		

@@ -299,6 +299,7 @@ public class SubjectServiceImpl implements SubjectService {
 
 			long rowIndex = 1;
 			while( (subjectDTO = beanReader.read(FlatThingCsvDTO.class, header, processors)) != null ) {
+				logger.debug("-------------working on rowIndex: " + rowIndex + "--------------------");
 				logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), subjectDTO));
 
 				if (subjectDTO.getLsType() == null) subjectDTO.setLsType("default");
@@ -414,6 +415,7 @@ public class SubjectServiceImpl implements SubjectService {
 		if (!subjectStateMap.containsKey(subjectDTO.getTempStateId())){
 			if (subjectDTO.getStateId() == null){
 				subjectState = new SubjectState(subjectDTO);
+				logger.debug("subjectDTO TempId: " + subjectDTO.getTempId());
 				subjectState.setSubject(Subject.findSubject(subjectMap.get(subjectDTO.getTempId()).getId()));	
 			} else {
 				subjectState = SubjectState.findSubjectState(subjectDTO.getStateId());
@@ -451,12 +453,13 @@ public class SubjectServiceImpl implements SubjectService {
 					subject = new Subject(subjectDTO);
 					subject.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId()));
 					if (subject.getCodeName() == null){
+						logger.debug("incoming subject codeName: " + subjectDTO.getCodeName());
 						String newCodeName = autoLabelService.getSubjectCodeName();
 						logger.debug("------------------ new codeName: " + newCodeName);
 						subject.setCodeName(newCodeName);
 					}
 				} else {
-					logger.debug("the temp parent ID is null");
+					logger.debug("the temp parent ID is null " + subjectDTO.getTempParentId());
 				}
 			} else {
 				subject = Subject.findSubject(subjectDTO.getId());

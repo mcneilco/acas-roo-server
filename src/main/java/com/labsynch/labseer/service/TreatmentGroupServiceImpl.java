@@ -395,7 +395,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 						treatmentGroup.setCodeName(newCodeName);
 					}
 				} else {
-					logger.debug("the temp parent ID is null");
+					logger.debug("the temp parent ID is null" + treatmentGroupDTO.getTempParentId());
 				}
 			} else {
 				treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupDTO.getId());

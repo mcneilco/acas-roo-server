@@ -114,7 +114,9 @@ public class FlatThingCsvDTO {
 	public void setCodeName(String codeName) {
 		if (codeName.equalsIgnoreCase("NULL")){
 			this.codeName = null;
-		} 
+		} else {
+			this.codeName = codeName;
+		}
 	}
 	
 	public void setParentId(String parentId) {
