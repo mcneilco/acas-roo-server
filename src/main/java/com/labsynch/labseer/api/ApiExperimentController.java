@@ -77,12 +77,14 @@ public class ApiExperimentController {
 	private SubjectValueService subjectValueService;
 
 	@Transactional	
-	@RequestMapping(value = "/analyisgroup/savefromcsv", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisgroup/savefromcsv", method = RequestMethod.POST, headers = "Accept=application/json")
 	public @ResponseBody ResponseEntity<String> saveAnalysisGroupDataFromCsv(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 
 		ExperimentCsvDataDTO experimentCsvDataDTO = ExperimentCsvDataDTO.fromJsonToExperimentCsvDataDTO(json);
+		logger.info("loading data from csv files: " + experimentCsvDataDTO.toJson());
+		
 		String analysisGroupFilePath = experimentCsvDataDTO.getAnalysisGroupCsvFilePath();
 		String treatmentGroupFilePath = experimentCsvDataDTO.getTreatmentGroupCsvFilePath();
 		String subjectFilePath = experimentCsvDataDTO.getSubjectCsvFilePath();
