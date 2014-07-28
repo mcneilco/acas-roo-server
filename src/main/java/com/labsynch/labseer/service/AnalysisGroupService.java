@@ -16,4 +16,7 @@ public interface AnalysisGroupService {
 	AnalysisGroup updateLsAnalysisGroup(AnalysisGroup analysisGroup);
 
 	HashMap<String, TempThingDTO> createAnalysisGroupsFromCSV(String absoluteFilePath) throws IOException;
+
+	boolean saveLsAnalysisGroupFromCsv(String analysisGroupFilePath,
+			String treatmentGroupFilePath, String subjectFilePath);
 }

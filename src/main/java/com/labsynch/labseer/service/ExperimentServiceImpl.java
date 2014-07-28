@@ -8,6 +8,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.TypedQuery;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
+import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
 import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -51,6 +54,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentServiceImpl.class);
 
+	
 	@Override
 	public void deleteLsExperiment(Experiment experiment){
 		logger.debug("incoming meta experiment: " + experiment.toJson());
@@ -693,6 +697,40 @@ public class ExperimentServiceImpl implements ExperimentService {
 		//
 		//		}
 
+	}
+
+
+	@Override
+	public Collection<Experiment> findExperimentsByMetadataJson(String json) {
+		Collection<Experiment> experimentList = new HashSet<Experiment>();
+		Collection<StringCollectionDTO> metaDataList = StringCollectionDTO.fromJsonArrayToStringCollectioes(json);
+		for (StringCollectionDTO metaData : metaDataList){
+			Collection<Experiment> experiments = findExperimentByMetadata(metaData.getName());
+			if (experiments.size() > 0){
+				experimentList.addAll(experiments);
+			}
+		}
+		
+		return experimentList;
+	}
+
+
+	private Collection<Experiment> findExperimentByMetadata(String queryString) {
+		Collection<Experiment> experimentList = new HashSet<Experiment>();
+		
+		//find by experiment codeName
+		List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(queryString).getResultList();
+		if (!experiments.isEmpty()){
+			experimentList.addAll(experiments);
+		}
+		
+		//find by experiment name
+		Collection<Experiment> experimentsByName = Experiment.findExperimentByName(queryString);
+		if (!experimentsByName.isEmpty()){
+			experimentList.addAll(experimentsByName);
+		}
+		
+		return experimentList;
 	}
 
 }

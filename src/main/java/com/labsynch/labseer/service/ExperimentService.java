@@ -3,6 +3,8 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.TypedQuery;
+
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Experiment;
@@ -27,13 +29,15 @@ public interface ExperimentService {
 
 
 
-	List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest);
+	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest);
 
-	Collection<ExperimentFilterDTO> getExperimentFilters(Collection<String> experimentCodes);
+	public Collection<ExperimentFilterDTO> getExperimentFilters(Collection<String> experimentCodes);
 
 
-	Collection<JSTreeNodeDTO> getExperimentNodesByProtocolTree(
+	public Collection<JSTreeNodeDTO> getExperimentNodesByProtocolTree(
 			Collection<String> codeValues);
+
+	public Collection<Experiment> findExperimentsByMetadataJson(String json);
 
 	
 }

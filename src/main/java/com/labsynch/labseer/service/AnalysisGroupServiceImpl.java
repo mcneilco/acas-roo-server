@@ -11,7 +11,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,6 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -54,6 +52,28 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 	
 	@Autowired
 	private TreatmentGroupService treatmentGroupService;
+		
+	@Autowired
+	private SubjectService subjectService;
+		
+	@Override
+	@Transactional
+	public boolean saveLsAnalysisGroupFromCsv(String analysisGroupFilePath, String treatmentGroupFilePath, String subjectFilePath){
+		
+		boolean successfulLoad = true;
+
+		try {
+			HashMap<String, TempThingDTO> output = createAnalysisGroupsFromCSV(analysisGroupFilePath );
+			HashMap<String, TempThingDTO> output2 = treatmentGroupService.createTreatmentGroupsFromCSV(treatmentGroupFilePath, output);
+			HashMap<String, TempThingDTO> output3 = subjectService.createSubjectsFromCSV(subjectFilePath, output2);
+		} catch (IOException e) {
+			logger.error("Unable to open file " + e);
+			successfulLoad = false;
+		}
+
+		return successfulLoad;
+		
+	}
 	
 	@Override
 	@Transactional

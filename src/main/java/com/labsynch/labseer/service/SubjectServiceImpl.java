@@ -377,10 +377,6 @@ public class SubjectServiceImpl implements SubjectService {
 			if (subjectDTO.getValueId() == null){
 				subjectValue = new SubjectValue(subjectDTO);
 				logger.debug("query state: " + subjectDTO.getTempStateId());
-				Set<String> subjectStateKeys = subjectStateMap.keySet();
-				for (String key : subjectStateKeys){
-					logger.debug("subjectStateKey: " + key);
-				}
 				subjectValue.setLsState(SubjectState.findSubjectState(subjectStateMap.get(subjectDTO.getTempStateId()).getId()));				
 			} else {
 				subjectValue = SubjectValue.findSubjectValue(subjectDTO.getValueId());
