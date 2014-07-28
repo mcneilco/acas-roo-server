@@ -27,6 +27,8 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -45,10 +47,6 @@ public class AnalysisGroup extends AbstractThing {
     public AnalysisGroup() {
     }
 	
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "experiment_id")
-	private Experiment experiment;
 	
 	//constructor to instantiate a new analysisGroup from nested json objects
 	public AnalysisGroup (AnalysisGroup analysisGroup){
@@ -64,6 +62,29 @@ public class AnalysisGroup extends AbstractThing {
 
 	}
 
+	public AnalysisGroup(AnalysisGroupCsvDTO analysisGroupDTO) {
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setCodeName(analysisGroupDTO.getCodeName());
+		this.setLsKind(analysisGroupDTO.getLsKind());
+		this.setLsType(analysisGroupDTO.getLsType());	
+	}
+
+	public AnalysisGroup(FlatThingCsvDTO analysisGroupDTO) {
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setCodeName(analysisGroupDTO.getCodeName());
+		this.setLsKind(analysisGroupDTO.getLsKind());
+		this.setLsType(analysisGroupDTO.getLsType());
+	}
+	
+
 	public static AnalysisGroup update(AnalysisGroup analysisGroup){
 		AnalysisGroup updatedAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroup.getId());
 		updatedAnalysisGroup.setRecordedBy(analysisGroup.getRecordedBy());
@@ -77,6 +98,11 @@ public class AnalysisGroup extends AbstractThing {
 		updatedAnalysisGroup.merge();
 		return updatedAnalysisGroup;
 	}
+	
+	@NotNull
+	@ManyToOne
+	@JoinColumn(name = "experiment_id")
+	private Experiment experiment;
 	
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch =  FetchType.LAZY)
     private Set<AnalysisGroupLabel> lsLabels = new HashSet<AnalysisGroupLabel>();

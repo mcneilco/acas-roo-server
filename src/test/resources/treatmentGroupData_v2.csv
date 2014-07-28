@@ -1,0 +1,290 @@
+"valueType","valueKind","numericValue","stringValue","dateValue","clobValue","urlValue","fileValue","codeValue","valueUnit","valueOperator","publicData","stateType","stateKind","stateID","treatmentGroupID","analysisGroupID","lsTransaction","recordedBy","codeName"
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",36,25,1,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",44,29,1,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",30,22,1,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",16,16,1,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",10,13,1,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",4,10,1,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",58,7,1,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",52,4,1,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",2,1,1,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",22,19,1,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",26,20,1,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",48,30,1,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",32,23,1,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",18,17,1,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",12,14,1,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",6,11,1,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",60,8,1,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",54,5,1,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",24,2,1,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",6,11,2,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",60,8,2,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",54,5,2,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",24,2,2,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",38,26,2,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",26,20,2,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",48,30,2,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",32,23,2,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",18,17,2,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",12,14,2,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",40,27,3,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,3,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,3,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,3,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,3,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,3,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,3,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,3,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,3,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,3,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,3,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,4,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,4,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,4,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,4,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,4,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,4,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,4,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,4,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,4,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,4,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,5,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,5,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,5,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,5,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,5,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,5,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,5,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,5,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,5,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,5,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,6,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,6,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,6,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,6,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,6,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,6,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,6,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,6,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,6,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,6,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,7,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,7,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,7,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,7,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,7,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,7,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,7,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,7,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,7,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,7,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,8,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,8,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,8,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,8,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,8,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,8,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,8,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,8,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,8,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,8,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,9,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,9,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,9,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,9,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,9,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,9,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,9,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,9,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,9,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,9,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,10,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,10,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,10,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,10,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,10,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,10,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,10,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,10,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,10,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,10,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,11,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,11,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,11,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,11,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,11,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,11,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,11,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,11,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,11,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,11,86,"smeyer",NULL
+"numericValue","Dose","20","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",42,28,12,86,"smeyer",NULL
+"numericValue","Dose","10","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",28,21,12,86,"smeyer",NULL
+"numericValue","Dose","5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",50,31,12,86,"smeyer",NULL
+"numericValue","Dose","2.5","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",34,24,12,86,"smeyer",NULL
+"numericValue","Dose","1.25","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",20,18,12,86,"smeyer",NULL
+"numericValue","Dose","0.625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",14,15,12,86,"smeyer",NULL
+"numericValue","Dose","0.3125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",8,12,12,86,"smeyer",NULL
+"numericValue","Dose","0.15625","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",62,9,12,86,"smeyer",NULL
+"numericValue","Dose","0.078125","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",56,6,12,86,"smeyer",NULL
+"numericValue","Dose","0.039063","NULL","NULL","NULL","NULL","NULL","NULL","uM","NULL",TRUE,"data","test compound treatment",46,3,12,86,"smeyer",NULL
+"numericValue","Response","93.85875","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",35,25,1,86,"smeyer",NULL
+"numericValue","Response","90.9126666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",43,29,1,86,"smeyer",NULL
+"numericValue","Response","85.4206666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",29,22,1,86,"smeyer",NULL
+"numericValue","Response","71.6716666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",15,16,1,86,"smeyer",NULL
+"numericValue","Response","51.8586666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",9,13,1,86,"smeyer",NULL
+"numericValue","Response","45.6796666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",3,10,1,86,"smeyer",NULL
+"numericValue","Response","31.3396666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",57,7,1,86,"smeyer",NULL
+"numericValue","Response","27.8306666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",51,4,1,86,"smeyer",NULL
+"numericValue","Response","15.1116333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",1,1,1,86,"smeyer",NULL
+"numericValue","Response","93.916","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",21,19,1,86,"smeyer",NULL
+"numericValue","Response","98.922","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",25,20,1,86,"smeyer",NULL
+"numericValue","Response","91.256","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",47,30,1,86,"smeyer",NULL
+"numericValue","Response","85.077","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",31,23,1,86,"smeyer",NULL
+"numericValue","Response","75.295","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",17,17,1,86,"smeyer",NULL
+"numericValue","Response","60.821","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",11,14,1,86,"smeyer",NULL
+"numericValue","Response","41.656","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",5,11,1,86,"smeyer",NULL
+"numericValue","Response","36.965","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",59,8,1,86,"smeyer",NULL
+"numericValue","Response","25.295","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",53,5,1,86,"smeyer",NULL
+"numericValue","Response","18.086","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",23,2,1,86,"smeyer",NULL
+"numericValue","Response","30.01275","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",5,11,2,86,"smeyer",NULL
+"numericValue","Response","26.65625","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",59,8,2,86,"smeyer",NULL
+"numericValue","Response","11.9812","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",53,5,2,86,"smeyer",NULL
+"numericValue","Response","16.2645","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",23,2,2,86,"smeyer",NULL
+"numericValue","Response","97.0545","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",37,26,2,86,"smeyer",NULL
+"numericValue","Response","96.619","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",25,20,2,86,"smeyer",NULL
+"numericValue","Response","92.95375","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",47,30,2,86,"smeyer",NULL
+"numericValue","Response","83.0675","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",31,23,2,86,"smeyer",NULL
+"numericValue","Response","71.103","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",17,17,2,86,"smeyer",NULL
+"numericValue","Response","54.50375","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",11,14,2,86,"smeyer",NULL
+"numericValue","Response","94.179","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",39,27,3,86,"smeyer",NULL
+"numericValue","Response","86.8786666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,3,86,"smeyer",NULL
+"numericValue","Response","81.5966666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,3,86,"smeyer",NULL
+"numericValue","Response","75.866","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,3,86,"smeyer",NULL
+"numericValue","Response","63.1843333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,3,86,"smeyer",NULL
+"numericValue","Response","53.1936666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,3,86,"smeyer",NULL
+"numericValue","Response","32.9376666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,3,86,"smeyer",NULL
+"numericValue","Response","23.8686666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,3,86,"smeyer",NULL
+"numericValue","Response","27.531","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,3,86,"smeyer",NULL
+"numericValue","Response","22.274","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,3,86,"smeyer",NULL
+"numericValue","Response","87.825","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,3,86,"smeyer",NULL
+"numericValue","Response","85.583","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,4,86,"smeyer",NULL
+"numericValue","Response","87.078","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,4,86,"smeyer",NULL
+"numericValue","Response","83.1163333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,4,86,"smeyer",NULL
+"numericValue","Response","75.0936666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,4,86,"smeyer",NULL
+"numericValue","Response","59.2233333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,4,86,"smeyer",NULL
+"numericValue","Response","41.0846666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,4,86,"smeyer",NULL
+"numericValue","Response","24.6906666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,4,86,"smeyer",NULL
+"numericValue","Response","7.59915166666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,4,86,"smeyer",NULL
+"numericValue","Response","15.0486333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,4,86,"smeyer",NULL
+"numericValue","Response","5.282","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,4,86,"smeyer",NULL
+"numericValue","Response","85.4093333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,5,86,"smeyer",NULL
+"numericValue","Response","85.8286666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,5,86,"smeyer",NULL
+"numericValue","Response","80.1656666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,5,86,"smeyer",NULL
+"numericValue","Response","73.4533333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,5,86,"smeyer",NULL
+"numericValue","Response","50.7473333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,5,86,"smeyer",NULL
+"numericValue","Response","47.4176666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,5,86,"smeyer",NULL
+"numericValue","Response","34.4916666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,5,86,"smeyer",NULL
+"numericValue","Response","23.8993333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,5,86,"smeyer",NULL
+"numericValue","Response","15.3254","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,5,86,"smeyer",NULL
+"numericValue","Response","11.1306333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,5,86,"smeyer",NULL
+"numericValue","Response","92.672","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,6,86,"smeyer",NULL
+"numericValue","Response","88.9486666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,6,86,"smeyer",NULL
+"numericValue","Response","87.2446666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,6,86,"smeyer",NULL
+"numericValue","Response","79.772","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,6,86,"smeyer",NULL
+"numericValue","Response","61.943","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,6,86,"smeyer",NULL
+"numericValue","Response","52.1633333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,6,86,"smeyer",NULL
+"numericValue","Response","38.5293333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,6,86,"smeyer",NULL
+"numericValue","Response","23.4013333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,6,86,"smeyer",NULL
+"numericValue","Response","26.2063333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,6,86,"smeyer",NULL
+"numericValue","Response","20.0974","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,6,86,"smeyer",NULL
+"numericValue","Response","90.46925","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,7,86,"smeyer",NULL
+"numericValue","Response","92.2","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,7,86,"smeyer",NULL
+"numericValue","Response","85.1345","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,7,86,"smeyer",NULL
+"numericValue","Response","77.44","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,7,86,"smeyer",NULL
+"numericValue","Response","65.22625","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,7,86,"smeyer",NULL
+"numericValue","Response","51.9395","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,7,86,"smeyer",NULL
+"numericValue","Response","36.722","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,7,86,"smeyer",NULL
+"numericValue","Response","11.8363425","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,7,86,"smeyer",NULL
+"numericValue","Response","0.76669","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,7,86,"smeyer",NULL
+"numericValue","Response","-13.092075","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,7,86,"smeyer",NULL
+"numericValue","Response","87.758","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,8,86,"smeyer",NULL
+"numericValue","Response","88.853","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,8,86,"smeyer",NULL
+"numericValue","Response","86.2975","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,8,86,"smeyer",NULL
+"numericValue","Response","74.72575","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,8,86,"smeyer",NULL
+"numericValue","Response","62.6205","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,8,86,"smeyer",NULL
+"numericValue","Response","41.09275","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,8,86,"smeyer",NULL
+"numericValue","Response","26.108625","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,8,86,"smeyer",NULL
+"numericValue","Response","5.647875","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,8,86,"smeyer",NULL
+"numericValue","Response","-1.387825","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,8,86,"smeyer",NULL
+"numericValue","Response","-24.26398","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,8,86,"smeyer",NULL
+"numericValue","Response","89.2453333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,9,86,"smeyer",NULL
+"numericValue","Response","86.2056666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,9,86,"smeyer",NULL
+"numericValue","Response","77.336","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,9,86,"smeyer",NULL
+"numericValue","Response","61.1166666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,9,86,"smeyer",NULL
+"numericValue","Response","43.9253333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,9,86,"smeyer",NULL
+"numericValue","Response","37.1233333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,9,86,"smeyer",NULL
+"numericValue","Response","17.7643333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,9,86,"smeyer",NULL
+"numericValue","Response","8.32173333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,9,86,"smeyer",NULL
+"numericValue","Response","-20.4056333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,9,86,"smeyer",NULL
+"numericValue","Response","1.906","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,9,86,"smeyer",NULL
+"numericValue","Response","87.4016666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,10,86,"smeyer",NULL
+"numericValue","Response","83.3656666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,10,86,"smeyer",NULL
+"numericValue","Response","72.6273333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,10,86,"smeyer",NULL
+"numericValue","Response","58.0766666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,10,86,"smeyer",NULL
+"numericValue","Response","33.9343333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,10,86,"smeyer",NULL
+"numericValue","Response","25.4383333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,10,86,"smeyer",NULL
+"numericValue","Response","9.8665","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,10,86,"smeyer",NULL
+"numericValue","Response","-1.6694","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,10,86,"smeyer",NULL
+"numericValue","Response","-28.1289","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,10,86,"smeyer",NULL
+"numericValue","Response","-18.8607","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,10,86,"smeyer",NULL
+"numericValue","Response","88.267","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,11,86,"smeyer",NULL
+"numericValue","Response","87.1656666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,11,86,"smeyer",NULL
+"numericValue","Response","78.435","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,11,86,"smeyer",NULL
+"numericValue","Response","68.524","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,11,86,"smeyer",NULL
+"numericValue","Response","38.2673333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,11,86,"smeyer",NULL
+"numericValue","Response","31.3976666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,11,86,"smeyer",NULL
+"numericValue","Response","11.078173","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,11,86,"smeyer",NULL
+"numericValue","Response","2.18983333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,11,86,"smeyer",NULL
+"numericValue","Response","-30.3216666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,11,86,"smeyer",NULL
+"numericValue","Response","-11.5754936666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,11,86,"smeyer",NULL
+"numericValue","Response","89.368","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",41,28,12,86,"smeyer",NULL
+"numericValue","Response","85.881","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",27,21,12,86,"smeyer",NULL
+"numericValue","Response","80.4013333333333","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",49,31,12,86,"smeyer",NULL
+"numericValue","Response","63.149","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",33,24,12,86,"smeyer",NULL
+"numericValue","Response","53.081","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",19,18,12,86,"smeyer",NULL
+"numericValue","Response","39.893","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",13,15,12,86,"smeyer",NULL
+"numericValue","Response","34.282","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",7,12,12,86,"smeyer",NULL
+"numericValue","Response","12.4679","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",61,9,12,86,"smeyer",NULL
+"numericValue","Response","1.14093966666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",55,6,12,86,"smeyer",NULL
+"numericValue","Response","-3.13296666666667","NULL","NULL","NULL","NULL","NULL","NULL","efficacy","NULL",TRUE,"data","results",45,3,12,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",36,25,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",44,29,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",30,22,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",16,16,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",10,13,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",4,10,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",58,7,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",52,4,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",2,1,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000001-01","NULL","NULL",TRUE,"data","test compound treatment",22,19,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",26,20,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",48,30,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",32,23,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",18,17,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",12,14,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",6,11,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",60,8,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",54,5,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",24,2,1,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",6,11,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",60,8,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",54,5,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",24,2,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",38,26,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",26,20,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",48,30,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",32,23,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",18,17,2,86,"smeyer",NULL
+"codeValue","batch code","NULL","NULL","NULL","NULL","NULL","NULL","CMPD-0000002-01","NULL","NULL",TRUE,"data","test compound treatment",12,14,2,86,"smeyer",NULL

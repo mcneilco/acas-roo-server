@@ -24,6 +24,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -171,4 +172,15 @@ public class Subject extends AbstractThing {
 	public Subject() {
 		
     }
+	
+	public Subject(FlatThingCsvDTO subjectDTO) {
+		this.setRecordedBy(subjectDTO.getRecordedBy());
+		this.setRecordedDate(subjectDTO.getRecordedDate());
+		this.setLsTransaction(subjectDTO.getLsTransaction());
+		this.setModifiedBy(subjectDTO.getModifiedBy());
+		this.setModifiedDate(subjectDTO.getModifiedDate());
+		this.setCodeName(subjectDTO.getCodeName());
+		this.setLsKind(subjectDTO.getLsKind());
+		this.setLsType(subjectDTO.getLsType());
+	}
 }

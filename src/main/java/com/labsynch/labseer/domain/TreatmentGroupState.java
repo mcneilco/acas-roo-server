@@ -24,6 +24,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -56,6 +57,16 @@ public class TreatmentGroupState extends AbstractState {
         super.setLsType(treatmentGroupState.getLsType());
         super.setLsKind(treatmentGroupState.getLsKind());
     }
+
+	public TreatmentGroupState(FlatThingCsvDTO treatmentGroupDTO) {
+		this.setRecordedBy(treatmentGroupDTO.getRecordedBy());
+		this.setRecordedDate(treatmentGroupDTO.getRecordedDate());
+		this.setLsTransaction(treatmentGroupDTO.getLsTransaction());
+		this.setModifiedBy(treatmentGroupDTO.getModifiedBy());
+		this.setModifiedDate(treatmentGroupDTO.getModifiedDate());
+		this.setLsType(treatmentGroupDTO.getStateType());
+		this.setLsKind(treatmentGroupDTO.getStateKind());
+	}
 
 	public static TreatmentGroupState update(TreatmentGroupState treatmentGroupState) {
 		TreatmentGroupState updatedTreatmentGroupState = TreatmentGroupState.findTreatmentGroupState(treatmentGroupState.getId());

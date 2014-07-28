@@ -1,5 +1,7 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
+
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Protocol;
@@ -12,6 +14,8 @@ public interface ProtocolService {
 	Protocol getFullProtocol(Protocol protocol);
 
 	Protocol updateProtocol(Protocol protocol);
+
+	Collection<Protocol> findProtocolsByMetadataJson(String json);
 	
 	
 	

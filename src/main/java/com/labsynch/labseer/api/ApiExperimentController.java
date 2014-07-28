@@ -1,6 +1,7 @@
 package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,8 +33,10 @@ import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.service.ExperimentStateService;
@@ -62,6 +65,9 @@ public class ApiExperimentController {
 	private ExperimentStateService experimentStateService;
 
 	@Autowired
+	private AnalysisGroupService analysisGroupService;
+	
+	@Autowired
 	private AnalysisGroupValueService analysisGroupValueService;
 
 	@Autowired
@@ -70,6 +76,56 @@ public class ApiExperimentController {
 	@Autowired
 	private SubjectValueService subjectValueService;
 
+	@Transactional	
+	@RequestMapping(value = "/analyisgroup/savefromcsv", method = RequestMethod.POST, headers = "Accept=application/json")
+	public @ResponseBody ResponseEntity<String> saveAnalysisGroupDataFromCsv(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+
+		ExperimentCsvDataDTO experimentCsvDataDTO = ExperimentCsvDataDTO.fromJsonToExperimentCsvDataDTO(json);
+		String analysisGroupFilePath = experimentCsvDataDTO.getAnalysisGroupCsvFilePath();
+		String treatmentGroupFilePath = experimentCsvDataDTO.getTreatmentGroupCsvFilePath();
+		String subjectFilePath = experimentCsvDataDTO.getSubjectCsvFilePath();
+
+		boolean dataLoaded = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
+		logger.info("dataLoaded: " + dataLoaded);
+		
+		if (dataLoaded){
+			return new ResponseEntity<String>(headers, HttpStatus.OK) ;
+		} else {
+			return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@RequestMapping(value = "/find=bymetadata", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<java.lang.String> findExperimentsByMetadata(
+			@RequestBody String json,
+			@RequestParam(value = "with", required = false) String with) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+
+		Collection<Experiment> experiments = experimentService.findExperimentsByMetadataJson(json);
+
+		if (with != null) {
+			if (with.equalsIgnoreCase("analysisgroups")) {
+				return new ResponseEntity<String>(Experiment.toJsonArrayStubWithAG(experiments), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("fullobject")) {
+				return new ResponseEntity<String>(Experiment.toJsonArray(experiments), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(Experiment.toJsonArrayPretty(experiments), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjsonstub")) {
+				return new ResponseEntity<String>(Experiment.toJsonArrayStubPretty(experiments), headers, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<String>(Experiment.toJsonArrayStub(experiments), headers, HttpStatus.OK);
+			}
+		} else {
+			return new ResponseEntity<String>(Experiment.toJsonArrayStub(experiments), headers, HttpStatus.OK);
+		}
+	}
+
+	
 	@RequestMapping(value = "/bytypekind/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
@@ -683,4 +739,102 @@ public class ApiExperimentController {
 		}
 		return true;
 	}
+
+	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
+        Experiment experiment = Experiment.findExperiment(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        if (experiment == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.OK);
+    }
+
+	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> createFromJson(@RequestBody String json) {
+        Experiment experiment = Experiment.fromJsonToExperiment(json);
+        experiment.persist();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+
+	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
+        for (Experiment experiment: Experiment.fromJsonArrayToExperiments(json)) {
+            experiment.persist();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+
+	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> updateFromJson(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Experiment experiment = Experiment.fromJsonToExperiment(json);
+        if (experiment.merge() == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+
+	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        for (Experiment experiment: Experiment.fromJsonArrayToExperiments(json)) {
+            if (experiment.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
+        Experiment experiment = Experiment.findExperiment(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (experiment == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        experiment.remove();
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+
+	@RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> jsonFindExperimentsByCodeNameEquals(@RequestParam("codeName") String codeName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+    }
+
+	@RequestMapping(params = "find=ByLsTransaction", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> jsonFindExperimentsByLsTransaction(@RequestParam("lsTransaction") Long lsTransaction) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByLsTransaction(lsTransaction).getResultList()), headers, HttpStatus.OK);
+    }
+
+	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> jsonFindExperimentsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+
+	@RequestMapping(params = "find=ByProtocol", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> jsonFindExperimentsByProtocol(@RequestParam("protocol") Protocol protocol) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByProtocol(protocol).getResultList()), headers, HttpStatus.OK);
+    }
 }
