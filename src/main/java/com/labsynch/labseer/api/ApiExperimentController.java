@@ -140,11 +140,15 @@ public class ApiExperimentController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
+		List<Experiment> experiments = null;
 		if (protocolType != null && protocolKind != null){
-			//TODO: filter the experiments by protocol type and kind
+//TODO: filter the experiments by protocol type and kind and experiment type and kind else 
+//TODO: Greg please implement and test			
+//TODO:			experiments = Experiment.findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(protocolType, protocolKind, lsType, lsKind).getResultList();
+		} else {
+			experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+		
 		}
-
-		List<Experiment> experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
 
 		if (with != null) {
 			if (with.equalsIgnoreCase("analysisgroups")) {
@@ -346,7 +350,6 @@ public class ApiExperimentController {
 	}
 
 
-	//Gregory please use this as a working template
 	@RequestMapping(value = "/{experimentIdOrCodeName}/exptvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter2 (
@@ -380,9 +383,16 @@ public class ApiExperimentController {
 		}
 
 		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+//TODO: Gregory - use this as a template
+// please write unit tests for the services as well			
 			String outputString = experimentValueService.getCsvList(experimentValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else if (format.equalsIgnoreCase("keyvalue")) {
+//TODO: Gregory - use this as a template
+// please write unit tests for the services as well			
+
+			KeyValueDTO keyValueDTO = experimentValueService.getKeyValueList(experimentValues);
+			return new ResponseEntity<String>(keyValueDTO.toJson(), headers, HttpStatus.OK);
 		} else {
 			//default format is json
 			return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues), headers, HttpStatus.OK);
