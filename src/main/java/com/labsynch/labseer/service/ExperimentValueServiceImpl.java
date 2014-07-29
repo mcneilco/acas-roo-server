@@ -27,6 +27,7 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
 
 
@@ -150,5 +151,25 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		transferDTO.setValue(values.toString());
 		return transferDTO;
 		
+	}
+	
+	@Override
+	public List<CodeTableDTO> convertToCodeTables(List<ExperimentValue> experimentValues) {
+		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
+		for (ExperimentValue val : experimentValues) {
+			if (val.getLsType().equalsIgnoreCase("stringValue") || (val.getLsType().equalsIgnoreCase("numericValue"))){
+				CodeTableDTO codeTable = new CodeTableDTO();
+				if ((val.getLsType().equalsIgnoreCase("numericValue"))){
+					codeTable.setName(val.getNumericValue().toString());
+				} else {
+					codeTable.setName(val.getStringValue());
+				}
+				codeTable.setCode(val.getId().toString());
+				codeTable.setCodeName(val.getId().toString());
+				codeTable.setIgnored(val.isIgnored());
+				codeTableList.add(codeTable);			
+			}
+		}
+		return codeTableList;	
 	}
 }

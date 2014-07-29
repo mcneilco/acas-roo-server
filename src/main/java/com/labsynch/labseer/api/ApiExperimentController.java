@@ -33,6 +33,7 @@ import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
@@ -382,17 +383,22 @@ public class ApiExperimentController {
 			experimentValues = new ArrayList<ExperimentValue>();
 		}
 
-		if (format.equalsIgnoreCase("csv")) {
+		if (format != null && format.equalsIgnoreCase("csv")) {
 //TODO: Gregory - use this as a template
 // please write unit tests for the services as well			
 			String outputString = experimentValueService.getCsvList(experimentValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
-		} else if (format.equalsIgnoreCase("keyvalue")) {
+		} else if (format != null && format.equalsIgnoreCase("keyvalue")) {
 //TODO: Gregory - use this as a template
 // please write unit tests for the services as well			
 
 			KeyValueDTO keyValueDTO = experimentValueService.getKeyValueList(experimentValues);
 			return new ResponseEntity<String>(keyValueDTO.toJson(), headers, HttpStatus.OK);
+		} else if(format != null && format.equalsIgnoreCase("codeTable")) {
+//TODO: Gregory - use this as a template
+// please write unit tests for the services as well					
+			List<CodeTableDTO> codeTables = experimentValueService.convertToCodeTables(experimentValues);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else {
 			//default format is json
 			return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues), headers, HttpStatus.OK);
