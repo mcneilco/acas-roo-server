@@ -157,6 +157,7 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 	public List<CodeTableDTO> convertToCodeTables(List<ExperimentValue> experimentValues) {
 		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
 		for (ExperimentValue val : experimentValues) {
+			//TODO: add in codeValue as well
 			if (val.getLsType().equalsIgnoreCase("stringValue") || (val.getLsType().equalsIgnoreCase("numericValue"))){
 				CodeTableDTO codeTable = new CodeTableDTO();
 				if ((val.getLsType().equalsIgnoreCase("numericValue"))){

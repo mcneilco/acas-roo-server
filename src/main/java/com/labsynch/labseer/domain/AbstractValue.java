@@ -216,12 +216,9 @@ public abstract class AbstractValue {
 
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
-				"stateId",
-				"stateType",
-				"stateKind",
-				"valueId",
-				"valueType",
-				"valueKind",
+				"id",
+				"lsType",
+				"lsKind",
 				"codeType",
 				"codeKind",
 				"codeValue",
@@ -258,9 +255,6 @@ public abstract class AbstractValue {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
-				new Optional(),
-				new Optional(),
-				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),

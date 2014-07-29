@@ -300,7 +300,7 @@ public class ApiExperimentController {
 			experimentStates = new ArrayList<ExperimentState>();
 		}
 		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+			//getCSvList is just a stub service for now (skip for now) --> FlatThingCsvDTO
 			String outputString = experimentStateService.getCsvList(experimentStates);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
