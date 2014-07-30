@@ -10,4 +10,8 @@ privileged aspect AnalysisGroupValue_Roo_Jpa_Entity {
     
     declare @type: AnalysisGroupValue: @Entity;
     
+    public AnalysisGroupValue.new() {
+        super();
+    }
+
 }

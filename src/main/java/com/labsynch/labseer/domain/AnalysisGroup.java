@@ -28,6 +28,8 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -44,7 +46,7 @@ public class AnalysisGroup extends AbstractThing {
 
 	//    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroups")
 	//    private Set<Experiment> experiments = new HashSet<Experiment>();
-	
+
 	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
 	@JoinTable(name="EXPERIMENT_ANALYSISGROUP", 
 	joinColumns={@JoinColumn(name="analysis_group_id")}, 
@@ -56,21 +58,16 @@ public class AnalysisGroup extends AbstractThing {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
 	private Set<AnalysisGroupState> lsStates = new HashSet<AnalysisGroupState>();
-	
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroups")  
+
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroups")  
 	private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
-
-//	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
-//	@JoinTable(name="ANALYSIS_GROUP_TREATMENT_GROUP", 
-//	joinColumns={@JoinColumn(name="analysis_group_id")}, 
-//	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
-//	private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
-
-
+	
 	public AnalysisGroup() {
 	}
 
-	public AnalysisGroup(com.labsynch.labseer.domain.AnalysisGroup analysisGroup) {
+
+	//constructor to instantiate a new analysisGroup from nested json objects
+	public AnalysisGroup(AnalysisGroup analysisGroup) {
 		this.setRecordedBy(analysisGroup.getRecordedBy());
 		this.setRecordedDate(analysisGroup.getRecordedDate());
 		this.setLsTransaction(analysisGroup.getLsTransaction());
@@ -79,19 +76,39 @@ public class AnalysisGroup extends AbstractThing {
 		this.setCodeName(analysisGroup.getCodeName());
 		this.setLsKind(analysisGroup.getLsKind());
 		this.setLsType(analysisGroup.getLsType());
-//		for (Experiment experiment : analysisGroup.getExperiments()){
-//			this.getExperiments().add(Experiment.findExperiment(experiment.getId()));
-//		}
 		Set<Experiment> experimentSet = new HashSet<Experiment>();
 		for (Experiment experiment : analysisGroup.getExperiments()){
 			experimentSet.add(Experiment.findExperiment(experiment.getId()));
 		}
 		this.setExperiments(experimentSet);	
-		
+
 	}
 
-	//TODO: FIX this
-	public static com.labsynch.labseer.domain.AnalysisGroup update(com.labsynch.labseer.domain.AnalysisGroup analysisGroup) {
+
+	public AnalysisGroup(AnalysisGroupCsvDTO analysisGroupDTO) {
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setCodeName(analysisGroupDTO.getCodeName());
+		this.setLsKind(analysisGroupDTO.getLsKind());
+		this.setLsType(analysisGroupDTO.getLsType());	
+	}
+
+	public AnalysisGroup(FlatThingCsvDTO analysisGroupDTO) {
+		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
+		this.setRecordedDate(analysisGroupDTO.getRecordedDate());
+		this.setLsTransaction(analysisGroupDTO.getLsTransaction());
+		this.setModifiedBy(analysisGroupDTO.getModifiedBy());
+		this.setModifiedDate(analysisGroupDTO.getModifiedDate());
+		this.setCodeName(analysisGroupDTO.getCodeName());
+		this.setLsKind(analysisGroupDTO.getLsKind());
+		this.setLsType(analysisGroupDTO.getLsType());
+	}
+
+
+	public static AnalysisGroup update(AnalysisGroup analysisGroup){
 		AnalysisGroup updatedAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroup.getId());
 		updatedAnalysisGroup.setRecordedBy(analysisGroup.getRecordedBy());
 		updatedAnalysisGroup.setRecordedDate(analysisGroup.getRecordedDate());
@@ -104,7 +121,7 @@ public class AnalysisGroup extends AbstractThing {
 		for (Experiment experiment : analysisGroup.getExperiments()){
 			updatedAnalysisGroup.getExperiments().add(experiment);
 		}
-//		updatedAnalysisGroup.merge();
+		//		updatedAnalysisGroup.merge();
 		return updatedAnalysisGroup;
 	}
 
@@ -179,18 +196,23 @@ public class AnalysisGroup extends AbstractThing {
 		for (AnalysisGroup analysisgroup : analysisgroups) {
 			logger.debug("removing analysis group: " + analysisgroup.getCodeName());
 			analysisgroup.remove();
+
 		}
+
 	}
 
-	public static TypedQuery<com.labsynch.labseer.domain.AnalysisGroup> findAnalysisGroupsByExperimentIdAndIgnored(Long id, boolean includeIgnored) {
-		if (id == null) throw new IllegalArgumentException("The id argument is required");
+
+	public static TypedQuery<AnalysisGroup> findAnalysisGroupsByExperimentIdAndIgnored(Long id, boolean includeIgnored) {
+		if (id == null ) throw new IllegalArgumentException("The id argument is required");
 		EntityManager em = Experiment.entityManager();
 		String sqlQuery;
-		if (includeIgnored) {
+		if (includeIgnored){
 			sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id ";
 		} else {
-			sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id " + "AND o.ignored != true";
+			sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id "
+					+ "AND o.ignored != true";
 		}
+
 		TypedQuery<AnalysisGroup> q = em.createQuery(sqlQuery, AnalysisGroup.class);
 		q.setParameter("id", id);
 		return q;

@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
@@ -46,60 +48,79 @@ public class ExperimentState extends AbstractState {
     public ExperimentState() {
     }
     
-//constructor to instantiate a new experimentState from nested json objects
-public ExperimentState(ExperimentState experimentState) {
+	//constructor to instantiate a new experimentState from nested json objects
+	public ExperimentState(ExperimentState experimentState) {
+		
+		super.setRecordedBy(experimentState.getRecordedBy());
+		super.setRecordedDate(experimentState.getRecordedDate());
+		super.setLsTransaction(experimentState.getLsTransaction());
+		super.setModifiedBy(experimentState.getModifiedBy());
+		super.setModifiedDate(experimentState.getModifiedDate());
+		super.setLsType(experimentState.getLsType());
+		super.setLsKind(experimentState.getLsKind());
 	
-	super.setRecordedBy(experimentState.getRecordedBy());
-	super.setRecordedDate(experimentState.getRecordedDate());
-	super.setLsTransaction(experimentState.getLsTransaction());
-	super.setModifiedBy(experimentState.getModifiedBy());
-	super.setModifiedDate(experimentState.getModifiedDate());
-	super.setLsType(experimentState.getLsType());
-	super.setLsKind(experimentState.getLsKind());
-
-}
-
-public static ExperimentState update(ExperimentState experimentState) {
-	ExperimentState updatedExperimentState = ExperimentState.findExperimentState(experimentState.getId());
-	updatedExperimentState.setRecordedBy(experimentState.getRecordedBy());
-	updatedExperimentState.setRecordedDate(experimentState.getRecordedDate());
-	updatedExperimentState.setLsTransaction(experimentState.getLsTransaction());
-	updatedExperimentState.setModifiedBy(experimentState.getModifiedBy());
-	updatedExperimentState.setModifiedDate(new Date());
-	updatedExperimentState.setLsType(experimentState.getLsType());
-	updatedExperimentState.setLsKind(experimentState.getLsKind());	
-	updatedExperimentState.setIgnored(experimentState.isIgnored());
-	updatedExperimentState.merge();
-	return updatedExperimentState;
-}
-
-public String toJson() {
-    return new JSONSerializer().exclude("*.class")
-			.transform(new ExcludeNulls(), void.class)
-    		.serialize(this);
-}
-
-public static ExperimentState fromJsonToExperimentState(String json) {
-    return new JSONDeserializer<ExperimentState>().use(null, ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
-}
-
-public static String toJsonArray(Collection<ExperimentState> collection) {
-    return new JSONSerializer().exclude("*.class")
-			.transform(new ExcludeNulls(), void.class)
-    		.serialize(collection);
-}
-
-
-public static Collection<ExperimentState> fromJsonArrayToExperimentStates(String json) {
-    return new JSONDeserializer<List<ExperimentState>>().use(null, ArrayList.class).use("values", ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
-}
-
-public static Collection<ExperimentState> fromJsonArrayToExperimentStates(Reader json) {
-    return new JSONDeserializer<List<ExperimentState>>().use(null, ArrayList.class).use("values", ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
-}
+	}
+	
+	public static ExperimentState update(ExperimentState experimentState) {
+		ExperimentState updatedExperimentState = ExperimentState.findExperimentState(experimentState.getId());
+		updatedExperimentState.setRecordedBy(experimentState.getRecordedBy());
+		updatedExperimentState.setRecordedDate(experimentState.getRecordedDate());
+		updatedExperimentState.setLsTransaction(experimentState.getLsTransaction());
+		updatedExperimentState.setModifiedBy(experimentState.getModifiedBy());
+		updatedExperimentState.setModifiedDate(new Date());
+		updatedExperimentState.setLsType(experimentState.getLsType());
+		updatedExperimentState.setLsKind(experimentState.getLsKind());	
+		updatedExperimentState.setIgnored(experimentState.isIgnored());
+		updatedExperimentState.merge();
+		return updatedExperimentState;
+	}
+	
+	public String toJson() {
+	    return new JSONSerializer().exclude("*.class")
+				.transform(new ExcludeNulls(), void.class)
+	    		.serialize(this);
+	}
+	
+	public static ExperimentState fromJsonToExperimentState(String json) {
+	    return new JSONDeserializer<ExperimentState>().use(null, ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
+	
+	public static String toJsonArray(Collection<ExperimentState> collection) {
+	    return new JSONSerializer().exclude("*.class")
+				.transform(new ExcludeNulls(), void.class)
+	    		.serialize(collection);
+	}
+	
+	
+	public static Collection<ExperimentState> fromJsonArrayToExperimentStates(String json) {
+	    return new JSONDeserializer<List<ExperimentState>>().use(null, ArrayList.class).use("values", ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
+	
+	public static Collection<ExperimentState> fromJsonArrayToExperimentStates(Reader json) {
+	    return new JSONDeserializer<List<ExperimentState>>().use(null, ArrayList.class).use("values", ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
 
 
 	public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
+	
+	public static TypedQuery<ExperimentState> findExperimentStatesByExptIDAndStateTypeKind(Long experimentId, 
+			String stateType, 
+			String stateKind) {
+			if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+			if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+			
+			EntityManager em = entityManager();
+			String hsqlQuery = "SELECT evs FROM ExperimentState AS evs " +
+			"JOIN evs.experiment exp " +
+			"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+			"AND exp.id = :experimentId ";
+			TypedQuery<ExperimentState> q = em.createQuery(hsqlQuery, ExperimentState.class);
+			q.setParameter("experimentId", experimentId);
+			q.setParameter("stateType", stateType);
+			q.setParameter("stateKind", stateKind);
+			q.setParameter("ignored", true);
+			return q;
+		}
 }

@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,11 +10,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -157,5 +160,32 @@ public class ProtocolServiceImpl implements ProtocolService {
 		protocol.setLsStates(lsStates);
 
 		return protocol;
+	}
+
+	@Override
+	public Collection<Protocol> findProtocolsByMetadataJson(String json) {
+		Collection<Protocol> protocolList = new HashSet<Protocol>();
+		Collection<StringCollectionDTO> metaDataList = StringCollectionDTO.fromJsonArrayToStringCollectioes(json);
+		for (StringCollectionDTO metaData : metaDataList){
+			Collection<Protocol> protocols = findProtocolByMetadata(metaData.getName());
+			if (protocols.size() > 0){
+				protocolList.addAll(protocols);
+			}
+		}
+		
+		return protocolList;
+	}
+
+	private Collection<Protocol> findProtocolByMetadata(String queryString) {
+		Collection<Protocol> protocolList = new HashSet<Protocol>();
+		
+		//find by experiment codeName
+		List<Protocol> protocols = Protocol.findProtocolsByCodeNameEquals(queryString).getResultList();
+		if (!protocols.isEmpty()){
+			protocolList.addAll(protocols);
+		}
+		
+		
+		return protocolList;
 	}
 }

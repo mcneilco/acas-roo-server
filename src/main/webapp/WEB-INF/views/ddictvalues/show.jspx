@@ -10,6 +10,7 @@
         <field:display field="comments" id="s_com_labsynch_labseer_domain_DDictValue_comments" object="${ddictvalue_}" z="bE2FiySeZ7jkjBQXF9ckcuNyiE8="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_DDictValue_ignored" object="${ddictvalue_}" z="VCANm1Bfp7rwc6cGfmILAYg4lN0="/>
         <field:display field="displayOrder" id="s_com_labsynch_labseer_domain_DDictValue_displayOrder" object="${ddictvalue_}" z="Dx6uXEX3ynILGGn24WlVcQp67A8="/>
-        <field:display field="lsValue" id="s_com_labsynch_labseer_domain_DDictValue_lsValue" object="${ddictvalue_}" z="/+BAFqHskOFcrtjOSMGWtk0wSn0="/>
+        <field:display field="codeName" id="s_com_labsynch_labseer_domain_DDictValue_codeName" object="${ddictvalue_}" z="JH/mZzPNX+ywC+xXsbtUoRQaf7Q="/>
+        <field:display field="labelText" id="s_com_labsynch_labseer_domain_DDictValue_labelText" object="${ddictvalue_}" z="C5cnYcXFdwzP+e5vuiJ6acnsFew="/>
     </page:show>
 </div>

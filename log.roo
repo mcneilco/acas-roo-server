@@ -711,31 +711,22 @@ focus --class ~.domain.DDictValue
 finder list
 // [failed] finder add findDDictValuesByLsTypeEqualsAndLsKindEquals
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 14:12:18
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 15:38:06
-// Spring Roo UNKNOWN VERSION log closed at 2014-06-09 15:44:21
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 15:44:35
-// Spring Roo UNKNOWN VERSION log closed at 2014-06-09 15:45:10
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 16:02:10
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 16:04:47
-download status
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 16:18:28
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 16:19:14
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 16:22:04
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 16:23:52
-// Spring Roo UNKNOWN VERSION log opened at 2014-06-09 16:25:13
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-09 16:28:41
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-09 16:31:50
-quit
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-09 17:18:54
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-09 17:42:04
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-09 17:49:13
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-09 17:55:19
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-10 10:20:54
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-10 10:58:24
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-10 21:49:49
-focus --class ~.domain.AnalysisGroup
-finder list
-finder add findAnalysisGroupsByExperiments
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-13 09:07:57
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-26 23:57:58
-// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-27 21:40:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-20 13:05:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-03 23:42:06
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-07 09:56:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-19 18:20:18
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-19 22:41:26
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-20 11:45:59
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-21 20:26:06
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-22 19:27:12
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-23 07:19:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-27 21:18:22
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-29 17:59:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-29 20:32:54
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-29 20:33:18
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-29 20:43:08
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-29 20:44:41
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-29 22:11:58
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-29 22:14:23
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-29 22:58:43
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-29 22:58:56

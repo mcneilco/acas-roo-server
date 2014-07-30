@@ -10,7 +10,8 @@
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_DDictValue_comments" z="L1JfXOP8q4cdLMlmSqZGEDGtGFA="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_DDictValue_ignored" z="yIh3YJLyTDoSo4TClFz8QropN40="/>
         <field:input field="displayOrder" id="c_com_labsynch_labseer_domain_DDictValue_displayOrder" validationMessageCode="field_invalid_integer" z="3NnpasRDp/fR4HOzA5LHrwwWcaA="/>
-        <field:textarea field="lsValue" id="c_com_labsynch_labseer_domain_DDictValue_lsValue" required="true" z="2RsRHutYnu5RVt2Gkq0xjUyvfnY="/>
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_DDictValue_codeName" required="true" z="J6C9qHhHy59OhXZSbfpZEwJ4/s8="/>
+        <field:textarea field="labelText" id="c_com_labsynch_labseer_domain_DDictValue_labelText" required="true" z="Ud8FS/iMv/QdGIhOX5zKz7jmV6c="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_DDictValue" render="${not empty dependencies}" z="DsenGFy0fIo9nPsRNPGSc6LplZ4="/>
 </div>

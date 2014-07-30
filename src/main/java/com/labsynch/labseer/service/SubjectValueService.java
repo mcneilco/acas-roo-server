@@ -17,4 +17,11 @@ public interface SubjectValueService {
 	
 	public List<SubjectValue> getSubjectValuesBySubjectId(Long id);
 	
+	public List<SubjectValue> getSubjectValuesByExperimentIdAndStateTypeKind(Long experimentId, String stateType, String stateKind);
+	
+	public List<SubjectValue> getSubjectValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
+			String stateKind, String valueType, String valueKind);
+	
+	public String getCsvList(List<SubjectValue> subjectValues);
+	
 }

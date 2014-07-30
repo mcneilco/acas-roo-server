@@ -22,6 +22,8 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -144,18 +146,61 @@ public class ExperimentValue extends AbstractValue {
         return updatedExperimentValue;
     }
 
-    //TODO fix this and test
-    public static TypedQuery<ExperimentValue> findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType, String stateKind, String valueType, String valueKind) {
-        String sqlQuery = "select new com.labsynch.labseer.domain.ExperimentValue( " + "agv.id, ags.id as stateId, ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, " + "agv.codeValue, agv.fileValue, agv.urlValue, agv.dateValue, " + "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, " + "agv.sigFigs, agv.uncertainty, agv.numberOfReplicates, agv.uncertaintyType, " + "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " + "agv.lsTransaction, agv.publicData) " + "FROM AnalysisGroupValue agv " + "join agv.lsState ags with ags.ignored = false " + "join ags.analysisGroup ag with ag.ignored = false " + "join ag.experiment exp with exp.ignored = false " + "where ags.lsType = :stateType AND ags.lsKind = :stateKind " + "and agv.lsType = :valueType AND agv.lsKind = :valueKind and agv.ignored = false " + "and exp.codeName = :experimentCode";
+
+    
+    public static TypedQuery<ExperimentValue> findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, 
+    													String stateType, 
+    													String stateKind, String valueType, String valueKind) {
+        if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+        if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+        if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+        if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+        
         EntityManager em = entityManager();
-        TypedQuery<ExperimentValue> q = em.createQuery(sqlQuery, ExperimentValue.class);
+        String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " +
+        		"JOIN ev.lsState evs " +
+        		"JOIN evs.experiment exp " +
+        		"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+        		"AND ev.lsType = :valueType AND ev.lsKind = :valueKind AND ev.ignored IS NOT :ignored " +
+        		"AND exp.id = :experimentId ";
+        TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
+        q.setParameter("experimentId", experimentId);
         q.setParameter("stateType", stateType);
         q.setParameter("stateKind", stateKind);
         q.setParameter("valueType", valueType);
         q.setParameter("valueKind", valueKind);
-        q.setParameter("experimentId", experimentId);
+        q.setParameter("ignored", true);
         return q;
     }
+    
+    public static TypedQuery<ExperimentValue> findExperimentValuesByExptIDAndStateTypeKind(Long experimentId, 
+		String stateType, 
+		String stateKind) {
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT ev FROM ExperimentValue AS ev " +
+		"JOIN ev.lsState evs " +
+		"JOIN evs.experiment exp " +
+		"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+		"AND ev.ignored IS NOT :ignored " +
+		"AND exp.id = :experimentId ";
+		TypedQuery<ExperimentValue> q = em.createQuery(hsqlQuery, ExperimentValue.class);
+		q.setParameter("experimentId", experimentId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+
+//    String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO( " + "agv.id, ags.id as stateId, 
+//    ag.codeName as agCodeName, agv.lsType, agv.lsKind, agv.stringValue, " + "agv.codeValue, agv.fileValue, agv.urlValue, 
+//    agv.dateValue, " + "agv.clobValue, agv.operatorType, agv.operatorKind, agv.numericValue, " + "agv.sigFigs, agv.uncertainty, 
+//    agv.numberOfReplicates, agv.uncertaintyType, " + "agv.unitType, agv.unitKind, agv.comments, agv.ignored, " + " +
+//    ""agv.lsTransaction, agv.publicData) " + "FROM AnalysisGroupValue agv " + "join agv.lsState ags " + " +
+//    ""join ags.analysisGroup ag " + "join ag.experiment exp " + "where ags.lsType = :lsType AND ags.lsKind = :lsKind " + " +
+//    		""and exp.codeName = :experimentCode";
 
     
 //    public static ExperimentValue update(ExperimentValue experimentValue) {
@@ -196,5 +241,39 @@ public class ExperimentValue extends AbstractValue {
 //		updatedValue.merge();
 //		return updatedValue;
 //	}
+    
+    //TODO: update this with real values
+	public static String[] getColumns(){
+		String[] headerColumns = new String[] {
+				"id", 
+				"codeName",
+				"lsType",
+				"lsKind",
+				"labelText",
+				"description",
+				"comments",
+				"ignored",
+				"displayOrder"};
+		
+		return headerColumns;
+
+	}
+
+    //TODO: update this with real values	
+	public static CellProcessor[] getProcessors() {
+		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional()
+		};
+
+		return processors;
+	}
 
 }

@@ -66,4 +66,28 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		}
 		return experimentValues;
 	}
+
+	@Override
+	public List<ExperimentValue> getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType, 
+			String stateKind, String valueType, String valueKind){	
+		
+		List<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind).getResultList();
+
+		return experimentValues;
+	}
+	
+	@Override
+	public List<ExperimentValue> getExperimentValuesByExperimentIdAndStateTypeKind(Long experimentId, String stateType, 
+			String stateKind) {	
+		
+		List<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getResultList();
+
+		return experimentValues;
+	}
+
+	@Override
+	public String getCsvList(List<ExperimentValue> experimentValues) {
+		// TODO Auto-generated method stub
+		return "NEED TO IMPLEMENT";
+	}
 }

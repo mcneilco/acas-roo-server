@@ -10,9 +10,6 @@
             <table:column id="c_com_labsynch_labseer_domain_DDictValue_codeName" property="codeName" z="0aobSj08SthypIZC9bHHUQNpigk="/>
             <table:column id="c_com_labsynch_labseer_domain_DDictValue_labelText" property="labelText" z="r9gZtCB1O6tp7hXbSiD9Q9YGx4s="/>
             <table:column id="c_com_labsynch_labseer_domain_DDictValue_ignored" property="ignored" z="5UDmkpJYCILGQ+cpnsLDMC8I2/I="/>
-            <table:column id="c_com_labsynch_labseer_domain_DDictValue_description" property="description" z="rpCXbA/cY04Mf03X3CD0DZDd4UY="/>
-            <table:column id="c_com_labsynch_labseer_domain_DDictValue_comments" property="comments" z="Ld05wX3VkFuOKv7LRpE2U2R+OmM="/>
-            <table:column id="c_com_labsynch_labseer_domain_DDictValue_lsValue" property="lsValue" z="evJFpvyH7KHp1ojZOJuYAC5wg1c="/>
         </table:table>
     </page:list>
 </div>
