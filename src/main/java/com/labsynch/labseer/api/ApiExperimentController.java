@@ -142,7 +142,7 @@ public class ApiExperimentController {
 		if (protocolType != null && protocolKind != null){
 //TODO: filter the experiments by protocol type and kind and experiment type and kind else 
 //TODO: Greg please implement and test			
-//TODO:			experiments = Experiment.findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(protocolType, protocolKind, lsType, lsKind).getResultList();
+			experiments = Experiment.findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(protocolType, protocolKind, lsType, lsKind).getResultList();
 		} else {
 			experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
 		
@@ -379,20 +379,13 @@ public class ApiExperimentController {
 			experimentValues = new ArrayList<ExperimentValue>();
 		}
 
-		if (format != null && format.equalsIgnoreCase("csv")) {
-//TODO: Gregory - use this as a template
-// please write unit tests for the services as well			
+		if (format != null && format.equalsIgnoreCase("csv")) {		
 			String outputString = experimentValueService.getCsvList(experimentValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else if (format != null && format.equalsIgnoreCase("keyvalue")) {
-//TODO: Gregory - use this as a template
-// please write unit tests for the services as well			
-
 			List<StateValueDTO> stateValues = experimentValueService.getKeyValueList(experimentValues);
 			return new ResponseEntity<String>(StateValueDTO.toJsonArray(stateValues), headers, HttpStatus.OK);
-		} else if(format != null && format.equalsIgnoreCase("codeTable")) {
-//TODO: Gregory - use this as a template
-// please write unit tests for the services as well					
+		} else if(format != null && format.equalsIgnoreCase("codeTable")) {				
 			List<CodeTableDTO> codeTables = experimentValueService.convertToCodeTables(experimentValues);
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else {
@@ -632,7 +625,6 @@ public class ApiExperimentController {
 			subjectValues = new ArrayList<SubjectValue>();
 		}
 		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
 			String outputString = subjectValueService.getCsvList(subjectValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
