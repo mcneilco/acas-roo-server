@@ -37,6 +37,7 @@ import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentService;
@@ -392,8 +393,8 @@ public class ApiExperimentController {
 //TODO: Gregory - use this as a template
 // please write unit tests for the services as well			
 
-			KeyValueDTO keyValueDTO = experimentValueService.getKeyValueList(experimentValues);
-			return new ResponseEntity<String>(keyValueDTO.toJson(), headers, HttpStatus.OK);
+			List<StateValueDTO> stateValues = experimentValueService.getKeyValueList(experimentValues);
+			return new ResponseEntity<String>(StateValueDTO.toJsonArray(stateValues), headers, HttpStatus.OK);
 		} else if(format != null && format.equalsIgnoreCase("codeTable")) {
 //TODO: Gregory - use this as a template
 // please write unit tests for the services as well					

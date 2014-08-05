@@ -3,13 +3,10 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -18,17 +15,11 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AbstractValue;
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.dto.StateValueDTO;
 
 
 @Service
@@ -134,22 +125,22 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 	}
 
 	@Override
-	public KeyValueDTO getKeyValueList(List<ExperimentValue> experimentValues) {
-		List<String> values = new ArrayList<String>();
+	public List<StateValueDTO> getKeyValueList(List<ExperimentValue> experimentValues) {
+		List<StateValueDTO> stateValues = new ArrayList<StateValueDTO>();
 		for (ExperimentValue experimentValue : experimentValues){
+			StateValueDTO stateValue = new StateValueDTO();
+			stateValue.setId(experimentValue.getId());
 			if (experimentValue.getLsType().equalsIgnoreCase("numericValue")){
-				values.add(experimentValue.getNumericValue().toString());
+				stateValue.setLsValue(experimentValue.getNumericValue().toString());
 			} else if (experimentValue.getLsType().equalsIgnoreCase("stringValue")){
-				values.add(experimentValue.getStringValue());
+				stateValue.setLsValue(experimentValue.getStringValue());
 			} else if (experimentValue.getLsType().equalsIgnoreCase("codeValue")){
-				values.add(experimentValue.getCodeValue());
+				stateValue.setLsValue(experimentValue.getCodeValue());
 			}
+			stateValues.add(stateValue);
 		}
 		
-		KeyValueDTO transferDTO = new KeyValueDTO();
-		transferDTO.setKey("lsValue");
-		transferDTO.setValue(values.toString());
-		return transferDTO;
+		return stateValues;
 		
 	}
 	

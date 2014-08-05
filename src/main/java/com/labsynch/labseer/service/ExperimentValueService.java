@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.dto.StateValueDTO;
 
 @Service
 public interface ExperimentValueService {
@@ -26,7 +26,7 @@ public interface ExperimentValueService {
 
 	public String getCsvList(List<ExperimentValue> experimentValues);
 
-	public KeyValueDTO getKeyValueList(List<ExperimentValue> experimentValues);
+	public List<StateValueDTO> getKeyValueList(List<ExperimentValue> experimentValues);
 
 	List<CodeTableDTO> convertToCodeTables(
 			List<ExperimentValue> experimentValues);

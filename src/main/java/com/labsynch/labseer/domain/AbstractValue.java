@@ -34,6 +34,7 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 @Transactional
 public abstract class AbstractValue {
 
+	
 	@NotNull
 	@Size(max = 64)
 	@org.hibernate.annotations.Index(name="_TYPE_IDX")
