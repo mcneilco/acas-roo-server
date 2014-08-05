@@ -45,7 +45,6 @@ import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
 @RequestMapping("api/v1/experiments")
@@ -56,9 +55,6 @@ public class ApiExperimentController {
 
 	@Autowired
 	private ExperimentService experimentService;
-
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
 	private ExperimentValueService experimentValueService;
@@ -342,7 +338,6 @@ public class ApiExperimentController {
 			experimentValues = new ArrayList<ExperimentValue>();
 		}
 		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
 			String outputString = experimentValueService.getCsvList(experimentValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
