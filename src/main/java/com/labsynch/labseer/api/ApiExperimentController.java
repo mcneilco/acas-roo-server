@@ -432,7 +432,6 @@ public class ApiExperimentController {
 			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
 		}
 		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
 			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -473,7 +472,6 @@ public class ApiExperimentController {
 			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
 		}
 		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
 			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -511,7 +509,6 @@ public class ApiExperimentController {
 			treatmentGroupValues = new ArrayList<TreatmentGroupValue>();
 		}
 		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
 			String outputString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
