@@ -83,11 +83,13 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 		AnalysisGroup newAnalysisGroup = null;
 		if (analysisGroup.getId() == null){
 			newAnalysisGroup = new AnalysisGroup(analysisGroup);
+			
 
 			if (newAnalysisGroup.getCodeName() == null) { newAnalysisGroup.setCodeName(autoLabelService.getAnalysisGroupCodeName());}
 			if (newAnalysisGroup.getRecordedDate() == null) { newAnalysisGroup.setRecordedDate(recordedDate);}
 			if (newAnalysisGroup.getRecordedBy() == null) { 
 				for (Experiment experiment : analysisGroup.getExperiments()){
+					logger.info("here is the experiment: " + experiment.getId());
 					newAnalysisGroup.setRecordedBy(experiment.getRecordedBy()); 
 				}
 			}

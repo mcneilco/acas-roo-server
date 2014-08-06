@@ -38,7 +38,6 @@ public class ApiAnalysisGroupController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupController.class);
 
-
 	@RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> findSubjectValues(
@@ -156,14 +155,6 @@ public class ApiAnalysisGroupController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-    @RequestMapping(params = "find=ByExperiments", headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> findAnalysisGroupsByExperiments(@RequestParam("experiments") Set<Experiment> experiments) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList()), headers, HttpStatus.OK);
-    }
- 
 
 	@RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
     @ResponseBody
@@ -171,5 +162,13 @@ public class ApiAnalysisGroupController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+    }
+
+	@RequestMapping(params = "find=ByExperiments", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> jsonFindAnalysisGroupsByExperiments(@RequestParam("experiments") Set<Experiment> experiments) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList()), headers, HttpStatus.OK);
     }
 }
