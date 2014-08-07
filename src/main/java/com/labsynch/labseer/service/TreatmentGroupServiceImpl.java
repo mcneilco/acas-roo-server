@@ -93,7 +93,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			if (newTreatmentGroup.getRecordedDate() == null){
 				newTreatmentGroup.setRecordedDate(recordedDate);
 			}
-			
+
 			for (AnalysisGroup analysisGroup : analysisGroups){
 				newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));				
 			}
@@ -102,7 +102,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 			saveLabels(treatmentGroup, newTreatmentGroup, recordedDate);
 			saveStates(treatmentGroup, newTreatmentGroup, recordedDate);
-			
+
 			logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(treatmentGroup.getSubjects()));
 			saveSubjects(newTreatmentGroup, treatmentGroup.getSubjects(), recordedDate);
 
@@ -229,13 +229,13 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 	@Override
 	public HashMap<String, TempThingDTO> createLsTreatmentGroupsFromCSV(
 			HashMap<String, TempThingDTO> analysisGroupMap,
-			String treatmentGroupCSV, String subjectCSV) {
+			String treatmentGroupCSV, String subjectCSV) throws IOException {
 
-		HashMap<String, TempThingDTO> treatmentGroupMap = createTreatmentGroupsFromCSV(analysisGroupMap, treatmentGroupCSV);
+		HashMap<String, TempThingDTO> treatmentGroupMap = createTreatmentGroupsFromCSV(treatmentGroupCSV, analysisGroupMap);
 
 		if (subjectCSV != null){
 
-			//HashMap<String, TempThingDTO> subjectGroupMap = treatmentGroupService.createLsTreatmentGroupsFromCSV(analysisGroupMap, treatmentGroupCSV, subjectCSV);
+			HashMap<String, TempThingDTO> subjectGroupMap = subjectService.createSubjectsFromCSV(subjectCSV, treatmentGroupMap);
 
 		}
 
@@ -243,14 +243,14 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 	}
 
-	private HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
-			HashMap<String, TempThingDTO> analysisGroupMap,
-			String treatmentGroupCSV) {
-
-
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	private HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
+//			HashMap<String, TempThingDTO> analysisGroupMap,
+//			String treatmentGroupCSV) {
+//
+//
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	@Transactional
@@ -307,7 +307,11 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 				treatmentGroup = getOrCreateTreatmentGroup(treatmentGroupDTO, treatmentGroupMap, analysisGroupMap);
 				if (treatmentGroup != null){
-					treatmentGroup.persist();
+					if (treatmentGroup.getId() == null){
+						treatmentGroup.persist();
+					} else {
+						treatmentGroup.merge();
+					}
 					logger.debug("saved the new treatment Group: ID: " + treatmentGroup.getId() + " codeName" + treatmentGroup.getCodeName());
 					logger.debug("saved the new treatment group: " + treatmentGroup.toJson());
 					treatmentGroupMap = saveTempTreatmentGroup(treatmentGroup, treatmentGroupDTO, treatmentGroupMap);
@@ -449,10 +453,6 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			if (treatmentGroupDTO.getId() == null){
 				if (treatmentGroupDTO.getTempParentId() != null && !treatmentGroupDTO.getTempParentId().equalsIgnoreCase("null")){
 					treatmentGroup = new TreatmentGroup(treatmentGroupDTO);
-					Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
-					AnalysisGroup foundAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
-					analysisGroups.add(foundAnalysisGroup);
-					treatmentGroup.setAnalysisGroups(analysisGroups);
 					if (treatmentGroup.getCodeName() == null){
 						String newCodeName = autoLabelService.getTreatmentGroupCodeName();
 						logger.debug("------------------ new codeName: " + newCodeName);
@@ -464,6 +464,15 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			} else {
 				treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupDTO.getId());
 			}
+			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+			AnalysisGroup foundAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
+			analysisGroups.add(foundAnalysisGroup);
+			if (treatmentGroup.getAnalysisGroups() == null){
+				treatmentGroup.setAnalysisGroups(analysisGroups);
+			} else {
+				treatmentGroup.getAnalysisGroups().addAll(analysisGroups);
+			}
+
 		} else {
 			logger.debug("skipping the previously saved treatmentGroup --------- " + treatmentGroupDTO.getCodeName());
 		}

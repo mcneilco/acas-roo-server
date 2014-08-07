@@ -26,7 +26,7 @@ public interface TreatmentGroupService {
 
 	HashMap<String, TempThingDTO> createLsTreatmentGroupsFromCSV(
 			HashMap<String, TempThingDTO> analysisGroupMap,
-			String treatmentGroupCSV, String subjectCSV);
+			String treatmentGroupCSV, String subjectCSV) throws IOException;
 
 	HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
 			String treatmentGroupFilePath, HashMap<String, TempThingDTO> output) throws IOException;

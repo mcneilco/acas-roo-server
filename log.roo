@@ -733,3 +733,5 @@ finder list
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-08-05 18:12:58
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-08-05 18:30:58
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-08-05 18:31:11
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-08-06 17:47:59
+web mvc all --package ~.web

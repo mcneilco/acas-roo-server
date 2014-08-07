@@ -1536,19 +1536,32 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 //        };
 //    }
 //	
-	@Transactional
-    public Converter<Set<LsTag>, String> getLsSetConverter() {
-        return new Converter<Set<LsTag>, String>() {
-            public String convert(Set<LsTag> lsTags) {
-            	StringBuilder sb = new StringBuilder();
-            	for (LsTag lt : lsTags){
-            		sb.append(lt.getTagText()).append(' ');
-            	}
-                return sb.toString();
-            }
-        };
-    }
-    
+//	@Transactional
+//    public Converter<Set<LsTag>, String> getLsSetConverter() {
+//        return new Converter<Set<LsTag>, String>() {
+//            public String convert(Set<LsTag> lsTags) {
+//            	StringBuilder sb = new StringBuilder();
+//            	for (LsTag lt : lsTags){
+//            		sb.append(lt.getTagText()).append(' ');
+//            	}
+//                return sb.toString();
+//            }
+//        };
+//    }
+// 
+//	@Transactional
+//    public Converter<Set<AnalysisGroup>, String> getLsAnalysisGroupConverter() {
+//        return new Converter<Set<AnalysisGroup>, String>() {
+//            public String convert(Set<AnalysisGroup> lsTags) {
+//            	StringBuilder sb = new StringBuilder();
+//            	for (AnalysisGroup lt : lsTags){
+//            		sb.append(lt.getCodeName()).append(' ');
+//            	}
+//                return sb.toString();
+//            }
+//        };
+//    }
+	
 //	@Transactional
 //    public Converter<Set<Experiment>, String> getExperimentSetConverter() {
 //        return new Converter<Set<Experiment>, String>() {
@@ -1578,7 +1591,9 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 	
 	
 	public void installLabelConverters(FormatterRegistry registry) {
-		registry.addConverter(getLsSetConverter());
+//		registry.addConverter(getLsSetConverter());
+		registry.addConverter(getLsTagToStringConverter());
+        registry.addConverter(getIdToLsTagConverter());
 		registry.addConverter(getAnalysisGroupToStringConverter());
         registry.addConverter(getIdToAnalysisGroupConverter());
         registry.addConverter(getStringToAnalysisGroupConverter());
@@ -2199,4 +2214,5 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
             }
         };
     }
+	
 }

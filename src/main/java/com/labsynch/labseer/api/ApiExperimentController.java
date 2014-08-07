@@ -110,7 +110,7 @@ public class ApiExperimentController {
 
 		ExperimentCsvDataDTO experimentCsvDataDTO = ExperimentCsvDataDTO.fromJsonToExperimentCsvDataDTO(json);
 		logger.info("loading data from csv files: " + experimentCsvDataDTO.toJson());
-		
+				
 		String analysisGroupFilePath = experimentCsvDataDTO.getAnalysisGroupCsvFilePath();
 		String treatmentGroupFilePath = experimentCsvDataDTO.getTreatmentGroupCsvFilePath();
 		String subjectFilePath = experimentCsvDataDTO.getSubjectCsvFilePath();

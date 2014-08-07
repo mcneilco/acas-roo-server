@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
@@ -59,12 +60,22 @@ public class CreateAnalysisGroupsFromCSVFileTests {
 ////		String subjectFilePath = "/Users/fairway/Documents/McNeilCo/acas-roo-server/src/test/resources/subjectData_v3.csv";
 //		HashMap<String, TempThingDTO> output3 = subjectService.createSubjectsFromCSV(subjectFilePath, output2);
 
-		String analysisGroupFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/analysisGroupData_v3.csv";
-		String treatmentGroupFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/treatmentGroupData_v3.csv";
-		String subjectFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/subjectData_v3.csv";
+//		String analysisGroupFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/analysisGroupData_v3.csv";
+//		String treatmentGroupFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/treatmentGroupData_v3.csv";
+//		String subjectFilePath = "/Users/goshiro2014/Documents/McNeilco_2012/clients/ACAS_ROO_GIT/git/acas-roo-server/src/test/resources/subjectData_v3.csv";
 
+		String treatmentGroupFilePath = null;
+		String subjectFilePath = null;
+		
+		String analysisGroupFilePath = "/tmp/AnalysisGroupData.csv";
+//		String treatmentGroupFilePath = "/tmp/TreatmentGroupData.csv";
+//		String subjectFilePath = "/tmp/SubjectGroupData.csv";
+		
 		boolean loadValue = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
 		logger.info("loadValue: " + loadValue);
+		
+		Experiment experiment = Experiment.findExperiment(1482L);
+		logger.info(experiment.toJsonStubWithAnalysisGroups());
 		
 	}
 	

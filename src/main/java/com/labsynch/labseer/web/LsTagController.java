@@ -1,13 +1,12 @@
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.LsTag;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
@@ -28,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
-
-import com.labsynch.labseer.domain.LsTag;
 
 @RooWebJson(jsonObject = LsTag.class)
 @Transactional
