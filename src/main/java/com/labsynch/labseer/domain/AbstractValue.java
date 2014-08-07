@@ -180,6 +180,14 @@ public abstract class AbstractValue {
         this.numericValue = numericValue;
     }
     
+    public boolean getIgnored() {
+        return this.ignored;
+    }
+    
+    public boolean getPublicData() {
+        return this.publicData;
+    }
+    
     
 	@PersistenceContext
 	transient EntityManager entityManager;
