@@ -120,5 +120,14 @@ public class TreatmentGroupValueServiceTest {
 		logger.info(TreatmentGroupValue.toJsonArray(results));
 		assert(results.size() == 120);
 	}
+	
+	@Test
+	@Transactional
+	public void TreatmentGroupValuesToCsv() {
+		List<TreatmentGroupValue> treatmentGroupValues = treatmentGroupValueService.getTreatmentGroupValuesByExperimentIdAndStateTypeKind(9l, "metadata", "experiment metadata");
+		String csvString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
+		assert(csvString != null && csvString.compareTo("") != 0);
+		logger.info(csvString);
+	}
 
 }

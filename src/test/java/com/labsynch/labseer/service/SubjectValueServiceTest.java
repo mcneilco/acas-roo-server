@@ -22,6 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
@@ -208,5 +209,14 @@ public class SubjectValueServiceTest {
 		List<SubjectValue> results = subjectValueService.getSubjectValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
 		logger.info(SubjectValue.toJsonArray(results));
 		assert(results.size() == 400);
+	}
+	
+	@Test
+	@Transactional
+	public void SubjectValuesToCsv() {
+		List<SubjectValue> subjectValues = subjectValueService.getSubjectValuesBySubjectId(17l);
+		String csvString = subjectValueService.getCsvList(subjectValues);
+		assert(csvString != null && csvString.compareTo("") != 0);
+		logger.info(csvString);
 	}
 }
