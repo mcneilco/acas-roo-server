@@ -138,6 +138,14 @@ public class FlatThingCsvDTO {
 			this.publicData = true;
 		}
 	}
+	
+	public void setIgnored(String ignored) {
+		if (ignored.equalsIgnoreCase("FALSE")){
+			this.ignored = false;
+		} else {
+			this.ignored = true;
+		}
+	}
 
 	public void setDateValue(String dateValue) throws ParseException {
 		if (dateValue.equalsIgnoreCase("NULL")){
@@ -156,7 +164,47 @@ public class FlatThingCsvDTO {
 		}
 	}
 
+	public void setUncertainty(String uncertainty) {
+		if (uncertainty.equalsIgnoreCase("NULL")){
+			this.uncertainty = null;
+		} else {
+			this.uncertainty = new BigDecimal(uncertainty);
+		}
+	}
+	
+	public void setId(String id) {
+		if (id.equalsIgnoreCase("NULL")){
+			this.id = null;
+		} else {
+			this.id = Long.valueOf(id);
+		}
+	}
+	
+	public void setValueId(String valueId) {
+		if (valueId.equalsIgnoreCase("NULL")){
+			this.valueId = null;
+		} else {
+			this.valueId = Long.valueOf(valueId);
+		}
+	}
+	
+	public void setSigFigs(String sigFigs) {
+		if (sigFigs.equalsIgnoreCase("NULL")){
+			this.sigFigs = null;
+		} else {
+			this.sigFigs = Integer.valueOf(sigFigs);
+		}
+	}
 
+	public void setNumberOfReplicates(String numberOfReplicates) {
+		if (numberOfReplicates.equalsIgnoreCase("NULL")){
+			this.numberOfReplicates = null;
+		} else {
+			this.numberOfReplicates = Integer.valueOf(numberOfReplicates);
+		}
+	}
+	
+	
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
 				"parentId", 

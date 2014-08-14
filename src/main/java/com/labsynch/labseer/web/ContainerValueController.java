@@ -1,12 +1,15 @@
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.ContainerState;
+import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import flexjson.JSONTokener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,12 +27,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.ContainerState;
-import com.labsynch.labseer.domain.ContainerValue;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-
-import flexjson.JSONTokener;
 
 @RooWebJson(jsonObject = ContainerValue.class)
 @Controller

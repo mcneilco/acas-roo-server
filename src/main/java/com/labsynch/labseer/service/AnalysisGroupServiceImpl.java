@@ -61,18 +61,22 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 	public boolean saveLsAnalysisGroupFromCsv(String analysisGroupFilePath, String treatmentGroupFilePath, String subjectFilePath){
 		
 		boolean successfulLoad = true;
-
+		HashMap<String, TempThingDTO> output2 = null;
 		try {
 			HashMap<String, TempThingDTO> output = createAnalysisGroupsFromCSV(analysisGroupFilePath );
-			HashMap<String, TempThingDTO> output2 = treatmentGroupService.createTreatmentGroupsFromCSV(treatmentGroupFilePath, output);
-			HashMap<String, TempThingDTO> output3 = subjectService.createSubjectsFromCSV(subjectFilePath, output2);
+			if (treatmentGroupFilePath != null && !treatmentGroupFilePath.equalsIgnoreCase("")) {
+				output2 = treatmentGroupService.createTreatmentGroupsFromCSV(treatmentGroupFilePath, output);
+			}
+			if (output2 != null && subjectFilePath != null && !subjectFilePath.equalsIgnoreCase("")){
+				HashMap<String, TempThingDTO> output3 = subjectService.createSubjectsFromCSV(subjectFilePath, output2);
+			}
 		} catch (IOException e) {
 			logger.error("Unable to open file " + e);
 			successfulLoad = false;
 		}
 
 		return successfulLoad;
-		
+				
 	}
 	
 	@Override
@@ -299,7 +303,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			InputStreamReader isr = new InputStreamReader(is);  
 			BufferedReader br = new BufferedReader(isr);
 
-			beanReader = new CsvBeanReader(br, CsvPreference.EXCEL_PREFERENCE);
+			beanReader = new CsvBeanReader(br, CsvPreference.TAB_PREFERENCE);
 			String[] headerText = beanReader.getHeader(true);
 
 			List<String> headerList = new ArrayList<String>();
@@ -333,7 +337,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			
 			long rowIndex = 1;
 			while( (analysisGroupDTO = beanReader.read(FlatThingCsvDTO.class, header, processors)) != null ) {
-				System.out.println(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), analysisGroupDTO));
+				logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), analysisGroupDTO));
 
 				if (analysisGroupDTO.getLsType() == null) analysisGroupDTO.setLsType("default");
 				if (analysisGroupDTO.getLsKind() == null) analysisGroupDTO.setLsKind("default");

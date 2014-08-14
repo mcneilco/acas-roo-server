@@ -31,6 +31,14 @@ privileged aspect DDictValue_Roo_JavaBean {
         this.lsTypeAndKind = lsTypeAndKind;
     }
     
+    public String DDictValue.getShortName() {
+        return this.shortName;
+    }
+    
+    public void DDictValue.setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+    
     public String DDictValue.getLabelText() {
         return this.labelText;
     }

@@ -22,7 +22,6 @@ import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
@@ -270,7 +269,7 @@ public class SubjectServiceImpl implements SubjectService {
 			InputStreamReader isr = new InputStreamReader(is);  
 			BufferedReader br = new BufferedReader(isr);
 
-			beanReader = new CsvBeanReader(br, CsvPreference.EXCEL_PREFERENCE);
+			beanReader = new CsvBeanReader(br, CsvPreference.TAB_PREFERENCE);
 			String[] headerText = beanReader.getHeader(true);
 
 			List<String> headerList = new ArrayList<String>();

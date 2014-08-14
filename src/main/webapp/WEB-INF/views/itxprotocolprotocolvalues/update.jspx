@@ -36,5 +36,6 @@
         <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_modifiedBy" z="iGdYYqa4zqejLhZHySIXKD21i9k="/>
         <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_publicData" z="2fbsJalx+OfFEMzkI5rBONf+JEg="/>
         <field:select field="lsState" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsState" itemValue="id" items="${itxprotocolprotocolstates}" path="/itxprotocolprotocolstates" z="M0aSthrtqJ9HgxgfWG3lriJBKts="/>
+        <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeOrigin" z="iZvDzl/XDTDJIAJ7KHuyQ15Ek34="/>
     </form:update>
 </div>

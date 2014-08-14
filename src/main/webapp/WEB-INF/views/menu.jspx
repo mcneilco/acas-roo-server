@@ -434,5 +434,9 @@
             <menu:item id="i_ddicttype_new" messageCode="global_menu_new" url="/ddicttypes?form" z="rNkCTFSaQ+VZ5Iw6eE8XjLb6O/Q="/>
             <menu:item id="i_ddicttype_list" messageCode="global_menu_list" url="/ddicttypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KgBIOkyA9YuvjIhRyd+WcD6nejM="/>
         </menu:category>
+        <menu:category id="c_codeorigin" z="YIlul8nVnnFkXmJTSwjIrUaiCbk=">
+            <menu:item id="i_codeorigin_new" messageCode="global_menu_new" url="/codeorigins?form" z="4YkihonA/OS0RucT6PxNTrBF264="/>
+            <menu:item id="i_codeorigin_list" messageCode="global_menu_list" url="/codeorigins?page=1&amp;size=${empty param.size ? 10 : param.size}" z="mXDEu129EL4jbhn0szLC72IYL8k="/>
+        </menu:category>
     </menu:menu>
 </div>

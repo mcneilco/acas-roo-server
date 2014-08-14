@@ -29,6 +29,14 @@ privileged aspect AbstractValue_Roo_JavaBean {
         return this.lsTypeAndKind;
     }
     
+    public String AbstractValue.getCodeOrigin() {
+        return this.codeOrigin;
+    }
+    
+    public void AbstractValue.setCodeOrigin(String codeOrigin) {
+        this.codeOrigin = codeOrigin;
+    }
+    
     public String AbstractValue.getCodeType() {
         return this.codeType;
     }
