@@ -36,5 +36,6 @@
         <field:display field="codeType" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeType" object="${analysisgroupvalue}" z="0ZqEEklI/x6qVvLTesFn7A4UXlA="/>
         <field:display field="codeKind" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeKind" object="${analysisgroupvalue}" z="qskR5iqYxljY0DQ51LAGfxvyBnU="/>
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeTypeAndKind" object="${analysisgroupvalue}" z="NbSj8E0YZJOOtDy/gDXzm7Shr38="/>
+        <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeOrigin" object="${analysisgroupvalue}" z="+CuEl6nOTkVlK8M+4T9aWo7/R+g="/>
     </page:show>
 </div>

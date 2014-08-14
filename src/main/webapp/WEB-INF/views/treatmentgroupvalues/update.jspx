@@ -36,5 +36,6 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeType" z="OtsD3NnPc71kikzADHNTHfC6om0="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeKind" z="HMTnhpGKMdhMbzggO2umBBABueQ="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeTypeAndKind" z="WsyUIZFOYKfbfPp5M9X4IDm4EqU="/>
+        <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeOrigin" z="1B5R4a2U7gTmgDPLHY3eTtT8zhk="/>
     </form:update>
 </div>

@@ -23,9 +23,6 @@ import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
@@ -209,7 +206,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			InputStreamReader isr = new InputStreamReader(is);  
 			BufferedReader br = new BufferedReader(isr);
 
-			beanReader = new CsvBeanReader(br, CsvPreference.EXCEL_PREFERENCE);
+			beanReader = new CsvBeanReader(br, CsvPreference.TAB_PREFERENCE);
 			String[] headerText = beanReader.getHeader(true);
 
 			List<String> headerList = new ArrayList<String>();

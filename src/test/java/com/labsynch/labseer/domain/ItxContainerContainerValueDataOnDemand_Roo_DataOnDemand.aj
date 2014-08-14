@@ -36,6 +36,7 @@ privileged aspect ItxContainerContainerValueDataOnDemand_Roo_DataOnDemand {
         setBlobValue(obj, index);
         setClobValue(obj, index);
         setCodeKind(obj, index);
+        setCodeOrigin(obj, index);
         setCodeType(obj, index);
         setCodeTypeAndKind(obj, index);
         setCodeValue(obj, index);
@@ -86,10 +87,18 @@ privileged aspect ItxContainerContainerValueDataOnDemand_Roo_DataOnDemand {
         obj.setCodeKind(codeKind);
     }
     
+    public void ItxContainerContainerValueDataOnDemand.setCodeOrigin(ItxContainerContainerValue obj, int index) {
+        String codeOrigin = "codeOrigin_" + index;
+        if (codeOrigin.length() > 255) {
+            codeOrigin = codeOrigin.substring(0, 255);
+        }
+        obj.setCodeOrigin(codeOrigin);
+    }
+    
     public void ItxContainerContainerValueDataOnDemand.setCodeType(ItxContainerContainerValue obj, int index) {
         String codeType = "codeType_" + index;
-        if (codeType.length() > 64) {
-            codeType = codeType.substring(0, 64);
+        if (codeType.length() > 255) {
+            codeType = codeType.substring(0, 255);
         }
         obj.setCodeType(codeType);
     }

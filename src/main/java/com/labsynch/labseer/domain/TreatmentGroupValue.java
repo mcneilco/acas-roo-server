@@ -70,6 +70,9 @@ public class TreatmentGroupValue extends AbstractValue {
         this.setSigFigs(inputDTO.getSigFigs());	
     }
 
+	public TreatmentGroupValue() {
+	}
+
 	public static TreatmentGroupValue create(TreatmentGroupValue treatmentGroupValue) {
     	TreatmentGroupValue newTreatmentGroupValue = new JSONDeserializer<TreatmentGroupValue>().use(null, TreatmentGroupValue.class).
         		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(treatmentGroupValue.toJson(), 

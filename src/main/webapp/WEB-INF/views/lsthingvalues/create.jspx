@@ -36,6 +36,7 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_LsThingValue_codeType" z="nhUhFKV24mv4Ks0umV4GGpLCa5w="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_LsThingValue_codeKind" z="Z1+YEqCTOU5cjTc1J5QHiAqEkuY="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingValue_codeTypeAndKind" z="64yDBrEf9AnzRAK0BIDQiP8YSkw="/>
+        <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_LsThingValue_codeOrigin" z="RZ1oQDIViL60GSjYSXWaTGJ8YXA="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_LsThingValue" render="${not empty dependencies}" z="MObDxUKDpRTMdIPH4rh4TpxPfv0="/>
 </div>

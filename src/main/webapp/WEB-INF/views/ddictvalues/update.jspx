@@ -12,5 +12,6 @@
         <field:input field="displayOrder" id="c_com_labsynch_labseer_domain_DDictValue_displayOrder" validationMessageCode="field_invalid_integer" z="3NnpasRDp/fR4HOzA5LHrwwWcaA="/>
         <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_DDictValue_codeName" required="true" z="J6C9qHhHy59OhXZSbfpZEwJ4/s8="/>
         <field:textarea field="labelText" id="c_com_labsynch_labseer_domain_DDictValue_labelText" required="true" z="Ud8FS/iMv/QdGIhOX5zKz7jmV6c="/>
+        <field:textarea field="shortName" id="c_com_labsynch_labseer_domain_DDictValue_shortName" z="b0x/gU9maIH2JyrHyrnYy014VwU="/>
     </form:update>
 </div>

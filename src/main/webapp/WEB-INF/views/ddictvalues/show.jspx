@@ -12,5 +12,6 @@
         <field:display field="displayOrder" id="s_com_labsynch_labseer_domain_DDictValue_displayOrder" object="${ddictvalue_}" z="Dx6uXEX3ynILGGn24WlVcQp67A8="/>
         <field:display field="codeName" id="s_com_labsynch_labseer_domain_DDictValue_codeName" object="${ddictvalue_}" z="JH/mZzPNX+ywC+xXsbtUoRQaf7Q="/>
         <field:display field="labelText" id="s_com_labsynch_labseer_domain_DDictValue_labelText" object="${ddictvalue_}" z="C5cnYcXFdwzP+e5vuiJ6acnsFew="/>
+        <field:display field="shortName" id="s_com_labsynch_labseer_domain_DDictValue_shortName" object="${ddictvalue_}" z="jRNCP4TD/UEG9ei5Faz+Ya3aHDk="/>
     </page:show>
 </div>

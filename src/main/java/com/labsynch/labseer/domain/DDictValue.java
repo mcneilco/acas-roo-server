@@ -55,6 +55,10 @@ public class DDictValue {
     @Index(name = "DD_VALUE_TK_IDX")
     private String lsTypeAndKind;
 
+    @Size(max = 256)
+    @Index(name = "DD_VALUE_SNAME_IDX")
+    private String shortName;
+    
     @NotNull
     @Size(max = 512)
     private String labelText;
@@ -72,6 +76,7 @@ public class DDictValue {
 
     @NotNull
     @Size(max = 255)
+    @Index(name = "DD_VALUE_CODE_IDX")
     private String codeName;
 
     @Id

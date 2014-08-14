@@ -46,8 +46,11 @@ public abstract class AbstractValue {
 	@org.hibernate.annotations.Index(name="_TK_IDX")
 	private String lsTypeAndKind;
 
-
-	@Size(max = 64)
+	@Size(max = 255)
+	@org.hibernate.annotations.Index(name="_CDORGN_IDX")
+	private String codeOrigin;
+	
+	@Size(max = 255)
 	@org.hibernate.annotations.Index(name="_CDTYPE_IDX")
 	private String codeType;
 
