@@ -8,8 +8,8 @@
             <table:column id="c_com_labsynch_labseer_domain_TreatmentGroupValue_lsKind" property="lsKind" z="R2rbK8VA1AXl6n1Lu8Vlmv6kph0="/>
             <table:column id="c_com_labsynch_labseer_domain_TreatmentGroupValue_lsTypeAndKind" property="lsTypeAndKind" z="e1P+ClUWjTQCCtUF1/FVfKXrwRU="/>
             <table:column id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeType" property="codeType" z="2RQU7dDeJHqf8DI88BZerTWH1cE="/>
-            <table:column id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeKind" property="codeKind" z="O48GekUPtsFlNS3plXhBwuoOonw="/>
-            <table:column id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeTypeAndKind" property="codeTypeAndKind" z="Aoyv3tP0A/xx1VS6FClgNmR6yhM="/>
+            <table:column id="c_com_labsynch_labseer_domain_TreatmentGroupValue_ignored" property="ignored" z="QYCz2xLKeLWMt3GfOXIoY4dIZLo="/>
+            <table:column id="c_com_labsynch_labseer_domain_TreatmentGroupValue_publicData" property="publicData" z="IU66gcnM6FULDK8g3jBg4yeO4iU="/>
         </table:table>
     </page:list>
 </div>

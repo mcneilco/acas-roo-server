@@ -8,8 +8,8 @@
             <table:column id="c_com_labsynch_labseer_domain_ItxContainerContainerValue_lsKind" property="lsKind" z="jdPDWj9+Wx0DbN0MUK904XALu8c="/>
             <table:column id="c_com_labsynch_labseer_domain_ItxContainerContainerValue_lsTypeAndKind" property="lsTypeAndKind" z="pTM89VyW2Kih7312pa/w9bwLpX8="/>
             <table:column id="c_com_labsynch_labseer_domain_ItxContainerContainerValue_codeType" property="codeType" z="uRpw4MjVH/J4KtMURayWMKvI0pU="/>
-            <table:column id="c_com_labsynch_labseer_domain_ItxContainerContainerValue_codeKind" property="codeKind" z="cybkKBw+Z9sq0wOuJQqQOYOAVMg="/>
-            <table:column id="c_com_labsynch_labseer_domain_ItxContainerContainerValue_codeTypeAndKind" property="codeTypeAndKind" z="JUKoTDf7wcDOfnvO9hsmgOONgZc="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxContainerContainerValue_ignored" property="ignored" z="TSECezyLXBNcnrLQdCDFnK3AEHM="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxContainerContainerValue_publicData" property="publicData" z="mg8pl37gd7fWjt1YT7gBZk65XaY="/>
         </table:table>
     </page:list>
 </div>

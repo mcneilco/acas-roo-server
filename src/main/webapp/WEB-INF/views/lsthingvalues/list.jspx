@@ -8,8 +8,8 @@
             <table:column id="c_com_labsynch_labseer_domain_LsThingValue_lsKind" property="lsKind" z="wERTeHRZ6TFyo2DYip5kbzz1JQw="/>
             <table:column id="c_com_labsynch_labseer_domain_LsThingValue_lsTypeAndKind" property="lsTypeAndKind" z="v3fjpr9HVBAsCtPTdVIOc+xH4Uw="/>
             <table:column id="c_com_labsynch_labseer_domain_LsThingValue_codeType" property="codeType" z="kMs9iHgiBqDKyk8ccQP4B/MNcjA="/>
-            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_codeKind" property="codeKind" z="gncSEbW2Vq9tlczc8/zAaWtQQww="/>
-            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_codeTypeAndKind" property="codeTypeAndKind" z="AdiEoPX5CnDVtVdXcRmXn559r0M="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_ignored" property="ignored" z="4EoI9A8xqgrmaVEP1LYpnOE1Gj0="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_publicData" property="publicData" z="JZ2+zQ2d069Su0/96cg9G4LZaYM="/>
         </table:table>
     </page:list>
 </div>
