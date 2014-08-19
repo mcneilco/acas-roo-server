@@ -1,11 +1,19 @@
 package com.labsynch.labseer.service;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
+import com.labsynch.labseer.domain.AbstractValue;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.ExperimentValue;
 
 
 @Service
@@ -31,10 +39,31 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 	}
 
 	@Override
-	public String getCsvList(List<AnalysisGroupValue> AnalysisGroupValues) {
-		// TODO Auto-generated method stub
-		return "NEED TO IMPLEMENT";
+	public String getCsvList(List<AnalysisGroupValue> analysisGroupValues) {
+		StringWriter outFile = new StringWriter();
+		ICsvBeanWriter beanWriter = null;
+		try {
+			beanWriter = new CsvBeanWriter(outFile, CsvPreference.TAB_PREFERENCE);
+			final String[] header = AnalysisGroupValue.getColumns();
+			final CellProcessor[] processors = AnalysisGroupValue.getProcessors();
+			beanWriter.writeHeader(header);
+			for (final AnalysisGroupValue analysisGroupValue : analysisGroupValues) {
+				beanWriter.write(analysisGroupValue, header, processors);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (beanWriter != null) {
+				try {
+					beanWriter.close();
+					outFile.flush();
+					outFile.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return outFile.toString();
 	}
-
-
 }

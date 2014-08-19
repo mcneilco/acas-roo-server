@@ -22,6 +22,8 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -72,6 +74,27 @@ public class TreatmentGroupValue extends AbstractValue {
 
 	public TreatmentGroupValue() {
 	}
+	
+	public Long getStateId() {
+		return this.lsState.getId();
+	}
+	
+	public String getStateType() {
+		return this.lsState.getLsType();
+	}
+	
+	public String getStateKind() {
+		return this.lsState.getLsKind();
+	}
+
+	public Long getTreatmentGroupId() {
+		return this.lsState.getTreatmentGroup().getId();
+	}
+	
+	public Long getAnalysisGroupId() {
+		return this.lsState.getTreatmentGroup().getAnalysisGroup().getId();
+	}
+	
 
 	public static TreatmentGroupValue create(TreatmentGroupValue treatmentGroupValue) {
     	TreatmentGroupValue newTreatmentGroupValue = new JSONDeserializer<TreatmentGroupValue>().use(null, TreatmentGroupValue.class).
@@ -182,14 +205,18 @@ public class TreatmentGroupValue extends AbstractValue {
  
 	@Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class")
-            	.transform(new ExcludeNulls(), void.class)
+        return new JSONSerializer()
+				.exclude("*.class", "lsState.treatmentGroup.analysisGroup.experiment")
+				.include("lsState.treatmentGroup.analysisGroup")
+				.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }
     
 	@Transactional
     public static String toJsonArray(Collection<TreatmentGroupValue> collection) {
-        return new JSONSerializer().exclude("*.class")
+        return new JSONSerializer()
+        		.exclude("*.class", "lsState.treatmentGroup.analysisGroup.experiment")
+        		.include("lsState.treatmentGroup.analysisGroup")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
@@ -251,5 +278,99 @@ public class TreatmentGroupValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+	
+	public static String[] getColumns(){
+		String[] headerColumns = new String[] {
+				"analysisGroupId",
+				"treatmentGroupId",
+				
+				"stateId",
+				"stateType",
+				"stateKind",
+				
+				"id",
+				"lsType",
+				"lsKind",
+				"codeType",
+				"codeKind",
+				"codeValue",
+				"stringValue",
+				
+				"fileValue",
+				"urlValue",
+				"dateValue",
+				"clobValue",
+				"operatorType",
+				"operatorKind",
+				"numericValue",
+				"sigFigs",
+				"uncertainty",
+				"numberOfReplicates",
+				
+				"uncertaintyType",
+				"unitType",
+				"unitKind",
+				"comments",
+				"ignored",
+				"lsTransaction",
+				"recordedDate",
+				"recordedBy",
+				"modifiedDate",
+				"modifiedBy",
+				
+				"publicData"
+		};
+//31 columns
+		return headerColumns;
+
+	}
+
+	public static CellProcessor[] getProcessors() {
+		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional()
+
+
+		};
+
+		return processors;
+	}
+
 
 }

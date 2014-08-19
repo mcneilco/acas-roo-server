@@ -3,42 +3,51 @@
 
 package com.labsynch.labseer.dto;
 
-import com.labsynch.labseer.dto.SubjectStateMiniDTO;
+import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.dto.SubjectValueDTO;
+import java.math.BigDecimal;
 import java.util.Date;
 
 privileged aspect SubjectValueDTO_Roo_JavaBean {
     
-    public SubjectStateMiniDTO SubjectValueDTO.getSubjectState() {
-        return this.subjectState;
+    public SubjectState SubjectValueDTO.getLsState() {
+        return this.lsState;
     }
     
-    public void SubjectValueDTO.setSubjectState(SubjectStateMiniDTO subjectState) {
-        this.subjectState = subjectState;
+    public void SubjectValueDTO.setLsState(SubjectState lsState) {
+        this.lsState = lsState;
     }
     
-    public String SubjectValueDTO.getValueType() {
-        return this.valueType;
+    public Long SubjectValueDTO.getId() {
+        return this.id;
     }
     
-    public void SubjectValueDTO.setValueType(String valueType) {
-        this.valueType = valueType;
+    public void SubjectValueDTO.setId(Long id) {
+        this.id = id;
     }
     
-    public String SubjectValueDTO.getValueKind() {
-        return this.valueKind;
+    public String SubjectValueDTO.getLsType() {
+        return this.lsType;
     }
     
-    public void SubjectValueDTO.setValueKind(String valueKind) {
-        this.valueKind = valueKind;
+    public void SubjectValueDTO.setLsType(String lsType) {
+        this.lsType = lsType;
     }
     
-    public String SubjectValueDTO.getValueTypeAndKind() {
-        return this.valueTypeAndKind;
+    public String SubjectValueDTO.getLsKind() {
+        return this.lsKind;
     }
     
-    public void SubjectValueDTO.setValueTypeAndKind(String valueTypeAndKind) {
-        this.valueTypeAndKind = valueTypeAndKind;
+    public void SubjectValueDTO.setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+    
+    public String SubjectValueDTO.getLsTypeAndKind() {
+        return this.lsTypeAndKind;
+    }
+    
+    public void SubjectValueDTO.setLsTypeAndKind(String lsTypeAndKind) {
+        this.lsTypeAndKind = lsTypeAndKind;
     }
     
     public String SubjectValueDTO.getStringValue() {
@@ -97,19 +106,11 @@ privileged aspect SubjectValueDTO_Roo_JavaBean {
         this.blobValue = blobValue;
     }
     
-    public String SubjectValueDTO.getValueOperator() {
-        return this.valueOperator;
-    }
-    
-    public void SubjectValueDTO.setValueOperator(String valueOperator) {
-        this.valueOperator = valueOperator;
-    }
-    
-    public Float SubjectValueDTO.getNumericValue() {
+    public BigDecimal SubjectValueDTO.getNumericValue() {
         return this.numericValue;
     }
     
-    public void SubjectValueDTO.setNumericValue(Float numericValue) {
+    public void SubjectValueDTO.setNumericValue(BigDecimal numericValue) {
         this.numericValue = numericValue;
     }
     
@@ -121,11 +122,11 @@ privileged aspect SubjectValueDTO_Roo_JavaBean {
         this.sigFigs = sigFigs;
     }
     
-    public Float SubjectValueDTO.getUncertainty() {
+    public BigDecimal SubjectValueDTO.getUncertainty() {
         return this.uncertainty;
     }
     
-    public void SubjectValueDTO.setUncertainty(Float uncertainty) {
+    public void SubjectValueDTO.setUncertainty(BigDecimal uncertainty) {
         this.uncertainty = uncertainty;
     }
     
@@ -145,14 +146,6 @@ privileged aspect SubjectValueDTO_Roo_JavaBean {
         this.uncertaintyType = uncertaintyType;
     }
     
-    public String SubjectValueDTO.getValueUnit() {
-        return this.valueUnit;
-    }
-    
-    public void SubjectValueDTO.setValueUnit(String valueUnit) {
-        this.valueUnit = valueUnit;
-    }
-    
     public String SubjectValueDTO.getComments() {
         return this.comments;
     }
@@ -167,14 +160,6 @@ privileged aspect SubjectValueDTO_Roo_JavaBean {
     
     public void SubjectValueDTO.setIgnored(boolean ignored) {
         this.ignored = ignored;
-    }
-    
-    public Long SubjectValueDTO.getLsTransaction_Id() {
-        return this.lsTransaction_Id;
-    }
-    
-    public void SubjectValueDTO.setLsTransaction_Id(Long lsTransaction_Id) {
-        this.lsTransaction_Id = lsTransaction_Id;
     }
     
     public Date SubjectValueDTO.getRecordedDate() {
@@ -201,12 +186,84 @@ privileged aspect SubjectValueDTO_Roo_JavaBean {
         this.publicData = publicData;
     }
     
-    public Long SubjectValueDTO.getId() {
-        return this.id;
+    public String SubjectValueDTO.getCodeOrigin() {
+        return this.codeOrigin;
     }
     
-    public void SubjectValueDTO.setId(Long id) {
-        this.id = id;
+    public void SubjectValueDTO.setCodeOrigin(String codeOrigin) {
+        this.codeOrigin = codeOrigin;
+    }
+    
+    public String SubjectValueDTO.getCodeType() {
+        return this.codeType;
+    }
+    
+    public void SubjectValueDTO.setCodeType(String codeType) {
+        this.codeType = codeType;
+    }
+    
+    public String SubjectValueDTO.getCodeKind() {
+        return this.codeKind;
+    }
+    
+    public void SubjectValueDTO.setCodeKind(String codeKind) {
+        this.codeKind = codeKind;
+    }
+    
+    public String SubjectValueDTO.getOperatorType() {
+        return this.operatorType;
+    }
+    
+    public void SubjectValueDTO.setOperatorType(String operatorType) {
+        this.operatorType = operatorType;
+    }
+    
+    public String SubjectValueDTO.getOperatorKind() {
+        return this.operatorKind;
+    }
+    
+    public void SubjectValueDTO.setOperatorKind(String operatorKind) {
+        this.operatorKind = operatorKind;
+    }
+    
+    public String SubjectValueDTO.getUnitType() {
+        return this.unitType;
+    }
+    
+    public void SubjectValueDTO.setUnitType(String unitType) {
+        this.unitType = unitType;
+    }
+    
+    public String SubjectValueDTO.getUnitKind() {
+        return this.unitKind;
+    }
+    
+    public void SubjectValueDTO.setUnitKind(String unitKind) {
+        this.unitKind = unitKind;
+    }
+    
+    public Long SubjectValueDTO.getLsTransaction() {
+        return this.lsTransaction;
+    }
+    
+    public void SubjectValueDTO.setLsTransaction(Long lsTransaction) {
+        this.lsTransaction = lsTransaction;
+    }
+    
+    public String SubjectValueDTO.getRecordedBy() {
+        return this.recordedBy;
+    }
+    
+    public void SubjectValueDTO.setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+    
+    public String SubjectValueDTO.getModifiedBy() {
+        return this.modifiedBy;
+    }
+    
+    public void SubjectValueDTO.setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
     }
     
 }

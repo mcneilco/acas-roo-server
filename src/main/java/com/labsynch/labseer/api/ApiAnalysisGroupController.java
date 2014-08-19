@@ -29,7 +29,6 @@ import com.labsynch.labseer.dto.KeyValueDTO;
 
 @Controller
 @RequestMapping("api/v1/analysisgroups")
-//@RooWebScaffold(path = "analysisgroups", formBackingObject = AnalysisGroup.class)
 @RooWebFinder
 @Transactional
 @RooWebJson(jsonObject = AnalysisGroup.class)

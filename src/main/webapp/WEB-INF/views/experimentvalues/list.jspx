@@ -7,8 +7,8 @@
             <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_lsType" property="lsType" z="q/h3wUMmUn1T6N14PnR4hmf3xu8="/>
             <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_lsKind" property="lsKind" z="etQTM2Mz3U1XPlbTPwkLkcg0yKA="/>
             <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_lsTypeAndKind" property="lsTypeAndKind" z="Dn5fA5plZ015EOXDct//Ev80O/s="/>
-            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_codeType" property="codeType" z="YI+LtFM3v3xc3MDDjcQBVHyqhgc="/>
-            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_codeKind" property="codeKind" z="CPiUOl8c6Sv01Tpj0ej+eVqfCt8="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_ignored" property="ignored" z="gs6AM5blLcIxrwtGKEz6hFVdslI="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_publicData" property="publicData" z="hB4NvS2XRomLLHVEhATJtLPTv5Y="/>
             <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_codeOrigin" property="codeOrigin" z="uahy2KJXXyACFO2wVmqTcWfzg7Y="/>
         </table:table>
     </page:list>

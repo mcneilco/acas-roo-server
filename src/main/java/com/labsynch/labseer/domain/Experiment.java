@@ -412,4 +412,15 @@ public class Experiment extends AbstractThing {
 			}
 		}
 	}
+	
+	public static TypedQuery<Experiment> findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(String protocolType, String protocolKind, String lsType, String lsKind) {
+		EntityManager em = Experiment.entityManager();
+		TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.protocol.lsType = :protocolType AND " +
+				"o.protocol.lsKind = :protocolKind AND o.lsType = :lsType AND o.lsKind = :lsKind", Experiment.class);
+		q.setParameter("protocolType", protocolType);
+		q.setParameter("protocolKind", protocolKind);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		return q;
+	}
 }

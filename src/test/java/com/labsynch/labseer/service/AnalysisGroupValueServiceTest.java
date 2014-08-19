@@ -37,6 +37,7 @@ import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
@@ -414,6 +415,15 @@ public class AnalysisGroupValueServiceTest {
 		List<AnalysisGroupValue> results = analysisGroupValueService.getAnalysisGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
 		logger.info(AnalysisGroupValue.toJsonArray(results));
 		assert(results.size() == 2);
+	}
+	
+	@Test
+	@Transactional
+	public void AnalysisGroupValuesToCsv() {
+		List<AnalysisGroupValue> analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByExperimentIdAndStateTypeKind(9l, "metadata", "experiment metadata");
+		String csvString = analysisGroupValueService.getCsvList(analysisGroupValues);
+		assert(csvString != null && csvString.compareTo("") != 0);
+		logger.info(csvString);
 	}
 
 }

@@ -145,7 +145,7 @@ public class ExperimentValueServiceTests {
 		
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryExperimentValueByExpIdAndStateTypeKind(){
 		
@@ -157,7 +157,7 @@ public class ExperimentValueServiceTests {
 		assert(results.size() == 8);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryExperimentValueByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 9L;
@@ -172,7 +172,7 @@ public class ExperimentValueServiceTests {
 		assert(results.size() == 0);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryExperimentValueByExpIdAndStateTypeKindWithCodeName() {
 		String experimentCodeName = "EXPT-00000003";
@@ -195,6 +195,15 @@ public class ExperimentValueServiceTests {
 			didCatch = true;
 		}
 		if(!didCatch) assert(results.size() == 8);
+	}
+	
+	@Test
+	@Transactional
+	public void ExperimentValuesToCodeName() {
+		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentId(9l);
+		String csvString = experimentValueService.getCsvList(experimentValues);
+		assert(csvString != null && csvString.compareTo("") != 0);
+		logger.info(csvString);
 	}
 	
 }

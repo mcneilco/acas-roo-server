@@ -24,6 +24,8 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
 
 @RooJavaBean
 @RooToString
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public abstract class AbstractValue {
 
+	
 	@NotNull
 	@Size(max = 64)
 	@org.hibernate.annotations.Index(name="_TYPE_IDX")
@@ -180,6 +183,14 @@ public abstract class AbstractValue {
         this.numericValue = numericValue;
     }
     
+    public boolean getIgnored() {
+        return this.ignored;
+    }
+    
+    public boolean getPublicData() {
+        return this.publicData;
+    }
+    
     
 	@PersistenceContext
 	transient EntityManager entityManager;
@@ -215,5 +226,86 @@ public abstract class AbstractValue {
 		return merged;
 	}
 
+	public static String[] getColumns(){
+		String[] headerColumns = new String[] {
+				"id",
+				"lsType",
+				"lsKind",
+				"codeType",
+				"codeKind",
+				"codeValue",
+				"stringValue",
+				
+				"fileValue",
+				"urlValue",
+				"dateValue",
+				"clobValue",
+				"operatorType",
+				"operatorKind",
+				"numericValue",
+				"sigFigs",
+				"uncertainty",
+				"numberOfReplicates",
+				
+				"uncertaintyType",
+				"unitType",
+				"unitKind",
+				"comments",
+				"ignored",
+				"lsTransaction",
+				"recordedDate",
+				"recordedBy",
+				"modifiedDate",
+				"modifiedBy",
+				
+				"publicData"
+		};
+//31 columns
+		return headerColumns;
+
+	}
+
+	public static CellProcessor[] getProcessors() {
+		final CellProcessor[] processors = new CellProcessor[] { 
+				
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional()
+
+
+		};
+
+		return processors;
+	}
+	
+	
 	
 }

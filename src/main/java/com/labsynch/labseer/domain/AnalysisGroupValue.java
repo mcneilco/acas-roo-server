@@ -28,6 +28,8 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
 import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
@@ -53,6 +55,8 @@ public class AnalysisGroupValue extends AbstractValue {
     @ManyToOne
     @JoinColumn(name = "analysis_state_id")
     private AnalysisGroupState lsState;
+    
+    
 
     public AnalysisGroupValue(AnalysisGroupCsvDTO analysisGroupDTO) {
     	this.setCodeValue(analysisGroupDTO.getCodeValue());
@@ -106,6 +110,26 @@ public class AnalysisGroupValue extends AbstractValue {
         this.setSigFigs(analysisGroupDTO.getSigFigs());
    }
 
+	public Long getStateId() {
+		return this.lsState.getId();
+	}
+	
+	public String getStateType() {
+		return this.lsState.getLsType();
+	}
+	
+	public String getStateKind() {
+		return this.lsState.getLsKind();
+	}
+	
+	public Long getAnalysisGroupId() {
+		return this.lsState.getAnalysisGroup().getId();
+	}
+	
+	public String getAnalysisGroupCode() {
+		return this.lsState.getAnalysisGroup().getCodeName();
+	}
+	
 	public static com.labsynch.labseer.domain.AnalysisGroupValue create(com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
         AnalysisGroupValue newAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(null, AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(analysisGroupValue.toJson(), new AnalysisGroupValue());
         return newAnalysisGroupValue;
@@ -265,17 +289,23 @@ public class AnalysisGroupValue extends AbstractValue {
 
     @Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer()
+        				.include("lsState.analysisGroup")
+        				.exclude("*.class", "lsState.analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
     public static String toJsonArray(Collection<com.labsynch.labseer.domain.AnalysisGroupValue> collection) {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer()
+        				.exclude("*.class", "lsState.analysisGroup.experiment")
+        				.include("lsState.analysisGroup")
+        				.transform(new ExcludeNulls(), void.class)
+        				.serialize(collection);
     }
 
     @Transactional
     public static String toPrettyJsonArray(Collection<com.labsynch.labseer.domain.AnalysisGroupValue> collection) {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).prettyPrint(true).serialize(collection);
+        return new JSONSerializer().exclude("*.class", "lsState.analysisGroup.experiment").transform(new ExcludeNulls(), void.class).prettyPrint(true).serialize(collection);
     }
 
     @Transactional
@@ -610,4 +640,99 @@ public class AnalysisGroupValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
     }
+    
+	public static String[] getColumns(){
+		String[] headerColumns = new String[] {
+				"analysisGroupId",
+				"analysisGroupCode",
+				
+				"stateId",
+				"stateType",
+				"stateKind",
+				
+				"id",
+				"lsType",
+				"lsKind",
+				"codeType",
+				"codeKind",
+				"codeValue",
+				"stringValue",
+				
+				"fileValue",
+				"urlValue",
+				"dateValue",
+				"clobValue",
+				"operatorType",
+				"operatorKind",
+				"numericValue",
+				"sigFigs",
+				"uncertainty",
+				"numberOfReplicates",
+				
+				"uncertaintyType",
+				"unitType",
+				"unitKind",
+				"comments",
+				"ignored",
+				"lsTransaction",
+				"recordedDate",
+				"recordedBy",
+				"modifiedDate",
+				"modifiedBy",
+				
+				"publicData"
+		};
+//31 columns
+		return headerColumns;
+
+	}
+
+	public static CellProcessor[] getProcessors() {
+		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional()
+
+
+		};
+
+		return processors;
+	}
+	
+
 }

@@ -23,6 +23,8 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.Optional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -75,6 +77,27 @@ public class SubjectValue extends AbstractValue {
         this.setSigFigs(subjectDTO.getSigFigs());	
     }
 
+	public Long getStateId() {
+		return this.lsState.getId();
+	}
+	
+	public String getStateType() {
+		return this.lsState.getLsType();
+	}
+	
+	public String getStateKind() {
+		return this.lsState.getLsKind();
+	}
+
+	public Long getTreatmentGroupId() {
+		return this.lsState.getSubject().getTreatmentGroup().getId();
+	}
+	
+	public Long getSubjectId() {
+		return this.lsState.getSubject().getId();
+	}
+	
+	
 	public static com.labsynch.labseer.domain.SubjectValue create(com.labsynch.labseer.domain.SubjectValue subjectValue) {
 		SubjectValue newsubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(subjectValue.toJson(), new SubjectValue());
 		return newsubjectValue;
@@ -82,7 +105,10 @@ public class SubjectValue extends AbstractValue {
 
 	@Transactional
 	public String toJson() {
-		return new JSONSerializer().include().exclude("*.class", "lsState.subject").transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer()
+			.include("lsState.subject.treatmentGroup")
+			.exclude("*.class", "lsState.subject.treatmentGroup.analysisGroup")
+			.transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
 	@Transactional
@@ -96,7 +122,10 @@ public class SubjectValue extends AbstractValue {
 
 	@Transactional
 	public static String toJsonArray(Collection<com.labsynch.labseer.domain.SubjectValue> collection) {
-		return new JSONSerializer().exclude("*.class", "lsState.subject").transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer()
+			.include("lsState.subject.treatmentGroup")
+			.exclude("*.class", "lsState.subject.treatmentGroup.analysisGroup")
+			.transform(new ExcludeNulls(), void.class).serialize(collection);
 	}
 
 	@Transactional
@@ -253,4 +282,98 @@ public class SubjectValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+	
+	public static String[] getColumns(){
+		String[] headerColumns = new String[] {
+				"treatmentGroupId",
+				"subjectId",
+				
+				"stateId",
+				"stateType",
+				"stateKind",
+				
+				"id",
+				"lsType",
+				"lsKind",
+				"codeType",
+				"codeKind",
+				"codeValue",
+				"stringValue",
+				
+				"fileValue",
+				"urlValue",
+				"dateValue",
+				"clobValue",
+				"operatorType",
+				"operatorKind",
+				"numericValue",
+				"sigFigs",
+				"uncertainty",
+				"numberOfReplicates",
+				
+				"uncertaintyType",
+				"unitType",
+				"unitKind",
+				"comments",
+				"ignored",
+				"lsTransaction",
+				"recordedDate",
+				"recordedBy",
+				"modifiedDate",
+				"modifiedBy",
+				
+				"publicData"
+		};
+//31 columns
+		return headerColumns;
+
+	}
+
+	public static CellProcessor[] getProcessors() {
+		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional()
+
+
+		};
+
+		return processors;
+	}
+
 }

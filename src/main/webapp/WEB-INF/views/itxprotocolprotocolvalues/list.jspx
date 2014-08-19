@@ -7,8 +7,8 @@
             <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsType" property="lsType" z="dPae/rLss2zkw9NFGlnv0E4skAU="/>
             <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsKind" property="lsKind" z="36Ad7SueV9CHCNnJF3v8OWRYk7c="/>
             <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsTypeAndKind" property="lsTypeAndKind" z="88JkjA8VlVbMGAhO+2MfyA3iTDI="/>
-            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeType" property="codeType" z="/3+GnJRam9Ew6AzOPGpcQFDSvVU="/>
-            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeKind" property="codeKind" z="CWVzA1yP27MA4bTTresDX5t+ayE="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_ignored" property="ignored" z="YL5KWmVcMjIaCggK4aBKt8ZJGKw="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_publicData" property="publicData" z="ELvRW2n/VClNMhgV7r1uBamsK/Y="/>
             <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeOrigin" property="codeOrigin" z="JMBEmSDg02vF8tJhJaohaWYCxcI="/>
         </table:table>
     </page:list>

@@ -22,7 +22,7 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.service.SubjectValueService;
 
 @Controller
-@RequestMapping("api/v1/subject")
+@RequestMapping("api/v1/subjects")
 @Transactional
 @RooWebJson(jsonObject = Subject.class)
 public class ApiSubjectController {

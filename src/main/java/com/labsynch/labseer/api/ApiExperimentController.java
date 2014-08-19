@@ -33,9 +33,11 @@ import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentService;
@@ -43,7 +45,6 @@ import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
 @RequestMapping("api/v1/experiments")
@@ -54,9 +55,6 @@ public class ApiExperimentController {
 
 	@Autowired
 	private ExperimentService experimentService;
-
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
 	private ExperimentValueService experimentValueService;
@@ -77,7 +75,7 @@ public class ApiExperimentController {
 	private SubjectValueService subjectValueService;
 
 	@Transactional	
-	@RequestMapping(value = "/analysisgroup/savefromcsv", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisgroup/savefromtsv", method = RequestMethod.POST, headers = "Accept=application/json")
 	public @ResponseBody ResponseEntity<String> saveAnalysisGroupDataFromCsv(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
@@ -140,11 +138,15 @@ public class ApiExperimentController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
+		List<Experiment> experiments = null;
 		if (protocolType != null && protocolKind != null){
-			//TODO: filter the experiments by protocol type and kind
+//TODO: filter the experiments by protocol type and kind and experiment type and kind else 
+//TODO: Greg please implement and test			
+			experiments = Experiment.findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(protocolType, protocolKind, lsType, lsKind).getResultList();
+		} else {
+			experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+		
 		}
-
-		List<Experiment> experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
 
 		if (with != null) {
 			if (with.equalsIgnoreCase("analysisgroups")) {
@@ -217,6 +219,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> findSubjectValues(
 			@PathVariable("id") Long id,
 			@RequestParam("stateType") String stateType,
@@ -267,6 +270,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/exptstates/bytypekind/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getExperimentStatesByIdOrCodeNameFilter11 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -294,8 +298,8 @@ public class ApiExperimentController {
 		} else {
 			experimentStates = new ArrayList<ExperimentState>();
 		}
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format.equalsIgnoreCase("tsv")) {
+			//getCSvList is just a stub service for now (skip for now) --> FlatThingCsvDTO
 			String outputString = experimentStateService.getCsvList(experimentStates);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -308,6 +312,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/exptvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter1 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -335,8 +340,7 @@ public class ApiExperimentController {
 		} else {
 			experimentValues = new ArrayList<ExperimentValue>();
 		}
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format.equalsIgnoreCase("tsv")) {
 			String outputString = experimentValueService.getCsvList(experimentValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -346,9 +350,9 @@ public class ApiExperimentController {
 	}
 
 
-	//Gregory please use this as a working template
 	@RequestMapping(value = "/{experimentIdOrCodeName}/exptvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameFilter2 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -379,10 +383,15 @@ public class ApiExperimentController {
 			experimentValues = new ArrayList<ExperimentValue>();
 		}
 
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format != null && format.equalsIgnoreCase("tsv")) {		
 			String outputString = experimentValueService.getCsvList(experimentValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else if (format != null && format.equalsIgnoreCase("keyvalue")) {
+			List<StateValueDTO> stateValues = experimentValueService.getKeyValueList(experimentValues);
+			return new ResponseEntity<String>(StateValueDTO.toJsonArray(stateValues), headers, HttpStatus.OK);
+		} else if(format != null && format.equalsIgnoreCase("codeTable")) {				
+			List<CodeTableDTO> codeTables = experimentValueService.convertToCodeTables(experimentValues);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else {
 			//default format is json
 			return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues), headers, HttpStatus.OK);
@@ -392,6 +401,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getAnalysisGroupValuesByIdOrCodeNameFilter31 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -419,8 +429,7 @@ public class ApiExperimentController {
 		} else {
 			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
 		}
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format.equalsIgnoreCase("tsv")) {
 			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -431,6 +440,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getAnalysisGroupValueByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter3 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -460,8 +470,7 @@ public class ApiExperimentController {
 		} else {
 			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
 		}
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format.equalsIgnoreCase("tsv")) {
 			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -471,6 +480,7 @@ public class ApiExperimentController {
 	}
 	@RequestMapping(value = "/{experimentIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getTreatmentGroupValuesByIdOrCodeNameAndStateTypeKindFilter41 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -498,8 +508,7 @@ public class ApiExperimentController {
 		} else {
 			treatmentGroupValues = new ArrayList<TreatmentGroupValue>();
 		}
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format.equalsIgnoreCase("tsv")) {
 			String outputString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -511,6 +520,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getTreatmentGroupValuesByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter4 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -541,8 +551,7 @@ public class ApiExperimentController {
 		} else {
 			treatmentGroupValues = new ArrayList<TreatmentGroupValue>();
 		}
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format.equalsIgnoreCase("tsv")) {
 			String outputString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -555,6 +564,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/subjectvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameAndStateTypeKindFilter51 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -582,8 +592,7 @@ public class ApiExperimentController {
 		} else {
 			subjectValues = new ArrayList<SubjectValue>();
 		}
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format.equalsIgnoreCase("tsv")) {
 			String outputString = subjectValueService.getCsvList(subjectValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -594,6 +603,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/subjectvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getExperimentValueByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter5 (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -624,8 +634,7 @@ public class ApiExperimentController {
 		} else {
 			subjectValues = new ArrayList<SubjectValue>();
 		}
-		if (format.equalsIgnoreCase("csv")) {
-			//getCSvList is just a stub service for now
+		if (format.equalsIgnoreCase("tsv")) {
 			String outputString = subjectValueService.getCsvList(subjectValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
@@ -637,6 +646,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{IdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getExperimentValuesForExperimentByIdOrCodeName (
 			@PathVariable("IdOrCodeName") String IdOrCodeName) {		
 		HttpHeaders headers = new HttpHeaders();
@@ -662,6 +672,7 @@ public class ApiExperimentController {
 
 	@RequestMapping(value = "/{experimentIdOrCodeName}/values/{valueId}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
+	@Transactional
 	public ResponseEntity<String> getExperimentValueByIdOrCodeName (
 			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
 			@PathVariable("valueId") Long valueId) {
@@ -685,7 +696,7 @@ public class ApiExperimentController {
 		return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
 	}
 
-
+	@Transactional
 	@RequestMapping(value = "/values", method = RequestMethod.POST, headers = "Accept=application/json")
 	public @ResponseBody ResponseEntity<String> saveExperimentFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
@@ -698,6 +709,7 @@ public class ApiExperimentController {
 					new ResponseEntity<String>(headers, HttpStatus.OK);
 	}
 
+	@Transactional
 	@RequestMapping(value = "{IdOrCodeName}/values/{Id}", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
 			@RequestBody String json,
@@ -717,6 +729,7 @@ public class ApiExperimentController {
 					new ResponseEntity<String>(headers, HttpStatus.OK);
 	}
 
+	@Transactional
 	@RequestMapping(value = "{IdOrCodeName}/values", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
 			@RequestBody String json,

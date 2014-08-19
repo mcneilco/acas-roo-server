@@ -1,5 +1,7 @@
 package com.labsynch.labseer.service;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
+import com.labsynch.labseer.domain.AbstractValue;
+import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
@@ -95,7 +103,30 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 
 	@Override
 	public String getCsvList(List<SubjectValue> subjectValues) {
-		// TODO Auto-generated method stub
-		return "NEED TO IMPLEMENT";
+		StringWriter outFile = new StringWriter();
+		ICsvBeanWriter beanWriter = null;
+		try {
+			beanWriter = new CsvBeanWriter(outFile, CsvPreference.TAB_PREFERENCE);
+			final String[] header = SubjectValue.getColumns();
+			final CellProcessor[] processors = SubjectValue.getProcessors();
+			beanWriter.writeHeader(header);
+			for (final SubjectValue subjectValue : subjectValues) {
+				beanWriter.write(subjectValue, header, processors);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (beanWriter != null) {
+				try {
+					beanWriter.close();
+					outFile.flush();
+					outFile.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return outFile.toString();
 	}
 }

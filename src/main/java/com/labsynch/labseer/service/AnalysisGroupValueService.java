@@ -15,6 +15,6 @@ public interface AnalysisGroupValueService {
 	public List<AnalysisGroupValue> getAnalysisGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
 			String stateKind, String valueType, String valueKind);
 
-	public String getCsvList(List<AnalysisGroupValue> AnalysisGroupValues);
+	public String getCsvList(List<AnalysisGroupValue> analysisGroupValues);
 	
 }

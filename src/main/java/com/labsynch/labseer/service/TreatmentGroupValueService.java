@@ -15,6 +15,6 @@ public interface TreatmentGroupValueService {
 	public List<TreatmentGroupValue> getTreatmentGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
 			String stateKind, String valueType, String valueKind);
 
-	public String getCsvList(List<TreatmentGroupValue> TreatmentGroupValues);
+	public String getCsvList(List<TreatmentGroupValue> treatmentGroupValues);
 	
 }

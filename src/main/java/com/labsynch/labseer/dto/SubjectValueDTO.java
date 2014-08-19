@@ -1,11 +1,13 @@
 package com.labsynch.labseer.dto;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
+import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 
 @RooJavaBean
@@ -26,16 +28,17 @@ public class SubjectValueDTO {
 //		this.setStateType(subjectvalue.getStateType());	
 //		this.setStateTypeAndKind(subjectvalue.getStateTypeAndKind());
 //		this.setComments(subjectvalue.getComments());
-//		this.setSubject(new SubjectMiniDTO(subjectState.getSubject()));
     }
     
-	private SubjectStateMiniDTO subjectState;
+	private SubjectState lsState;
+	
+	private Long id;
     
-	private String valueType;
+	private String lsType;
 
-	private String valueKind;
+	private String lsKind;
 
-	private String valueTypeAndKind;
+	private String lsTypeAndKind;
 
 	private String stringValue;
 
@@ -51,33 +54,45 @@ public class SubjectValueDTO {
     
     private byte[] blobValue;
 
-    private String valueOperator;
-
-	private Float numericValue;
+	private BigDecimal numericValue;
 
 	private Integer sigFigs;
 
-	private Float uncertainty;
+	private BigDecimal uncertainty;
 	
 	private Integer numberOfReplicates;
 	
 	private String uncertaintyType;
 
-	private String valueUnit;
-
 	private String comments;
 
 	private boolean ignored;
 	
-	private Long lsTransaction_Id;
-
 	private Date recordedDate;
 
 	private Date modifiedDate;
 
 	private boolean publicData;
 
-	private Long id;
+	private String codeOrigin;
+	
+	private String codeType;
+
+	private String codeKind;
+    
+	private String operatorType;
+
+	private String operatorKind;
+    
+	private String unitType;
+
+	private String unitKind;
+		
+	private Long lsTransaction;
+
+	private String recordedBy;
+
+	private String modifiedBy;
 
 
 }
