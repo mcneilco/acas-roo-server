@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
@@ -176,4 +177,98 @@ public class ApiAnalysisGroupController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
+	
+	
+	//TODO: example for Gregory
+	// DO FIRST AND COMMITT
+	@RequestMapping(value = "/{analysisGroupIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> getAnalysisGroupValuesByIdOrCodeNameFilter31 (
+			@PathVariable("analysisGroupIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("format") String format) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+
+		Experiment experiment;
+		if(isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
+
+		List<AnalysisGroupValue> analysisGroupValues;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByIdAndStateTypeKind(experimentId, stateType, stateKind);
+		} else {
+			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
+		}
+		if (format.equalsIgnoreCase("tsv")) {
+			String outputString = analysisGroupValueService.getTsvList(analysisGroupValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues), headers, HttpStatus.OK);
+		}
+	}
+	
+	//TODO: LATER
+//	@RequestMapping(value = "/{experimentIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+//	@ResponseBody
+//	@Transactional
+//	public ResponseEntity<String> getAnalysisGroupValueByIdOrCodeNameAndStateTypeKindAndValueTypeKindFilter3 (
+//			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+//			@PathVariable("stateType") String stateType,
+//			@PathVariable("stateKind") String stateKind,
+//			@PathVariable("valueType") String valueType,
+//			@PathVariable("valueKind") String valueKind,
+//			@PathVariable("format") String format) {
+//
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Content-Type", "application/json; charset=utf-8");
+//
+//		Experiment experiment;
+//		if(isNumeric(experimentIdOrCodeName)) {
+//			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+//		} else {		
+//			try {
+//				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+//			} catch(Exception ex) {
+//				experiment = null;
+//			}
+//		}
+//
+//		List<AnalysisGroupValue> analysisGroupValues;
+//		if(experiment != null) {
+//			Long experimentId = experiment.getId();
+//			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
+//		} else {
+//			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
+//		}
+//		if (format.equalsIgnoreCase("tsv")) {
+//			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
+//			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+//		} else {
+//			//default format is json
+//			return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues), headers, HttpStatus.OK);
+//		}
+//	}
+
+	
+	private static boolean isNumeric(String str) {
+		for (char c : str.toCharArray()) {
+			if (!Character.isDigit(c)) return false;
+		}
+		return true;
+	}
+
+	
 }
