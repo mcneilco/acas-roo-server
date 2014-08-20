@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.service.AnalysisGroupValueService;
 
 @Controller
 @RequestMapping("api/v1/analysisgroups")
@@ -37,6 +39,8 @@ public class ApiAnalysisGroupController {
 	
     private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupController.class);
 
+    @Autowired
+	private AnalysisGroupValueService analysisGroupValueService;
     
     @RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
     @ResponseBody
@@ -178,14 +182,11 @@ public class ApiAnalysisGroupController {
         return new ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
 	
-	
-	//TODO: example for Gregory
-	// DO FIRST AND COMMITT
 	@RequestMapping(value = "/{analysisGroupIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> getAnalysisGroupValuesByIdOrCodeNameFilter31 (
-			@PathVariable("analysisGroupIdOrCodeName") String experimentIdOrCodeName,
+			@PathVariable("analysisGroupIdOrCodeName") String analysisGroupIdOrCodeName,
 			@PathVariable("stateType") String stateType,
 			@PathVariable("stateKind") String stateKind,
 			@PathVariable("format") String format) {
@@ -193,26 +194,26 @@ public class ApiAnalysisGroupController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
-		Experiment experiment;
-		if(isNumeric(experimentIdOrCodeName)) {
-			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		AnalysisGroup analysisGroup;
+		if(isNumeric(analysisGroupIdOrCodeName)) {
+			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
 		} else {		
 			try {
-				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName).getSingleResult();
 			} catch(Exception ex) {
-				experiment = null;
+				analysisGroup = null;
 			}
 		}
 
 		List<AnalysisGroupValue> analysisGroupValues;
-		if(experiment != null) {
-			Long experimentId = experiment.getId();
-			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByIdAndStateTypeKind(experimentId, stateType, stateKind);
+		if(analysisGroup != null) {
+			Long analysisGroupId = analysisGroup.getId();
+			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
 		} else {
 			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
 		}
 		if (format.equalsIgnoreCase("tsv")) {
-			String outputString = analysisGroupValueService.getTsvList(analysisGroupValues);
+			String outputString = analysisGroupValueService.getCsvList(analysisGroupValues);
 			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
 		} else {
 			//default format is json

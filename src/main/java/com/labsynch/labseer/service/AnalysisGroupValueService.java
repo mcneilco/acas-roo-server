@@ -17,4 +17,6 @@ public interface AnalysisGroupValueService {
 
 	public String getCsvList(List<AnalysisGroupValue> analysisGroupValues);
 	
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind);
+	
 }

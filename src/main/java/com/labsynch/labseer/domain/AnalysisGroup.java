@@ -251,4 +251,12 @@ public class AnalysisGroup extends AbstractThing {
         q.setParameter("id", id);
 		return q;
 	}
+	
+	public static TypedQuery<AnalysisGroup> findAnalysisGroupsByCodeNameEquals(String codeName) {
+		if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+		EntityManager em = Experiment.entityManager();
+		TypedQuery<AnalysisGroup> q = em.createQuery("SELECT o FROM AnalysisGroup AS o WHERE o.codeName = :codeName", AnalysisGroup.class);
+		q.setParameter("codeName", codeName);
+		return q;
+	}
 }
