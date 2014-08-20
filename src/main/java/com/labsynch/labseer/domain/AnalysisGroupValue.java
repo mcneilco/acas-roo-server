@@ -623,7 +623,8 @@ public class AnalysisGroupValue extends AbstractValue {
 		String hsqlQuery = "SELECT agv from AnalysisGroupValue AS agv " +
 				"JOIN agv.lsState evs " +
 				"JOIN evs.analysisGroup ag " +
-				"WHERE evs.lsType = :stateType AND evs.ignored IS NOT :ignored " +
+				"WHERE evs.lsType = :stateType " +
+				"AND evs.ignored IS NOT :ignored " +
 				"AND agv.ignored IS NOT :ignored " +
 				"AND evs.lsKind = :stateKind " +
 				"AND ag.id = :analysisGroupId AND ag.ignored IS NOT :ignored";
