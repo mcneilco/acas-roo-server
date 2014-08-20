@@ -25,7 +25,7 @@ public class AnalysisGroupValueTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueTest.class);
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
 			
@@ -37,7 +37,7 @@ public class AnalysisGroupValueTest {
 		assert(results.size() == 11);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 9L;
@@ -52,7 +52,7 @@ public class AnalysisGroupValueTest {
 		assert(results.size() == 0);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithCodeName() {
 		String experimentCodeName = "EXPT-00000003";
@@ -77,7 +77,7 @@ public class AnalysisGroupValueTest {
 		if(!didCatch) assert(results.size() == 11);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindAndValueTypeKind(){
 			
@@ -89,5 +89,15 @@ public class AnalysisGroupValueTest {
 		List<AnalysisGroupValue> results = AnalysisGroupValue.findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind).getResultList();
 		logger.info(AnalysisGroupValue.toJsonArray(results));
 		assert(results.size() == 2);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByAnalysisGroupIdStateTypeAndKind() {
+		Long analysisGroupId = 10L;
+		String stateType = "data";
+		String stateKind = "Generic";
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
+		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
 }

@@ -620,13 +620,13 @@ public class AnalysisGroupValue extends AbstractValue {
 		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
 		
 		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
-		"JOIN agv.lsState evs " +
-		"JOIN evs.analysisGroup ag " +
-		"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
-		"AND agv.ignored IS NOT :ignored " +
-		"AND ag.ignored IS NOT :ignored " +
-		"AND ag.id = :analysisGroupId ";
+		String hsqlQuery = "SELECT agv from AnalysisGroupValue AS agv " +
+				"JOIN agv.lsState evs " +
+				"JOIN evs.analysisGroup ag " +
+				"WHERE evs.lsType = :stateType AND evs.ignored IS NOT :ignored " +
+				"AND agv.ignored IS NOT :ignored " +
+				"AND evs.lsKind = :stateKind " +
+				"AND ag.id = :analysisGroupId AND ag.ignored IS NOT :ignored";
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
 		q.setParameter("analysisGroupId", analysisGroupId);
 		q.setParameter("stateType", stateType);
