@@ -26,7 +26,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 	public List<AutoLabelDTO> getAutoLabels(String json) {
 
 		LabelSequenceDTO lsDTO = LabelSequenceDTO.fromJsonToLabelSequenceDTO(json);
-		logger.info("incoming label seq: " + lsDTO.toJson());
+		logger.debug("incoming label seq: " + lsDTO.toJson());
 
 		return getAutoLabels(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind(), lsDTO.getNumberOfLabels());
 	}
@@ -61,11 +61,11 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		long labelNumber = startingNumber;
 		String formatLabelNumber = "%";
 		formatLabelNumber = formatLabelNumber.concat("0").concat(labelSequence.getDigits().toString()).concat("d");
-		logger.info("format corpNumber: " + formatLabelNumber);
+		logger.debug("format corpNumber: " + formatLabelNumber);
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
 		while (labelNumber <= endingNumber) {
 			String label = labelSequence.getLabelPrefix().concat(labelSequence.getLabelSeparator()).concat(String.format(formatLabelNumber, labelNumber));
-			logger.info("new label: " + label);
+			logger.debug("new label: " + label);
 			AutoLabelDTO autoLabel = new AutoLabelDTO();
 			autoLabel.setAutoLabel(label);
 			autoLabels.add(autoLabel);

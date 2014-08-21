@@ -2,6 +2,7 @@ package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -87,8 +88,11 @@ public class ApiExperimentController {
 		String treatmentGroupFilePath = experimentCsvDataDTO.getTreatmentGroupCsvFilePath();
 		String subjectFilePath = experimentCsvDataDTO.getSubjectCsvFilePath();
 
+		long startTime = new Date().getTime();
 		boolean dataLoaded = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
-		logger.info("dataLoaded: " + dataLoaded);
+		long endTime = new Date().getTime();
+		long totalTime = endTime - startTime;
+		logger.info("dataLoaded: " + dataLoaded + "   total elapsed time: " + totalTime);
 		
 		if (dataLoaded){
 			return new ResponseEntity<String>(headers, HttpStatus.OK) ;

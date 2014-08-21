@@ -27,8 +27,10 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.KeyValueDTO;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
+import com.labsynch.labseer.service.SubjectValueService;
 
 @Controller
 @RequestMapping("api/v1/analysisgroups")
@@ -41,6 +43,9 @@ public class ApiAnalysisGroupController {
 
     @Autowired
 	private AnalysisGroupValueService analysisGroupValueService;
+    
+	@Autowired
+	private SubjectValueService subjectValueService;
     
     @RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
     @ResponseBody
@@ -221,7 +226,90 @@ public class ApiAnalysisGroupController {
 		}
 	}
 	
-	//TODO: LATER
+	
+//TODO: Now. Gregory please prioritize	
+	@RequestMapping(value = "/{analysisGroupIdOrCodeName}/subjectvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> getSubjectValuesByAnalysisGroupIdOrCodeNameFilter31 (
+			@PathVariable("analysisGroupIdOrCodeName") String analysisGroupIdOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("format") String format) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+
+		AnalysisGroup analysisGroup;
+		if(isNumeric(analysisGroupIdOrCodeName)) {
+			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
+		} else {		
+			try {
+				analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				analysisGroup = null;
+			}
+		}
+
+		List<SubjectValue> subjectValues;
+		if(analysisGroup != null) {
+			Long analysisGroupId = analysisGroup.getId();
+			subjectValues = subjectValueService.getSubjectValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
+		} else {
+			subjectValues = new ArrayList<SubjectValue>();
+		}
+		if (format.equalsIgnoreCase("tsv")) {
+			String outputString = subjectValueService.getCsvList(subjectValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues), headers, HttpStatus.OK);
+		}
+	}
+
+//TODO: LATER	
+//	@RequestMapping(value = "/{analysisGroupIdOrCodeName}/tgvalues/bystate/{stateType}/{stateKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
+//	@ResponseBody
+//	@Transactional
+//	public ResponseEntity<String> getTreatmentGroupValuesByIdOrCodeNameAndStateTypeKindFilter41 (
+//			@PathVariable("experimentIdOrCodeName") String experimentIdOrCodeName,
+//			@PathVariable("stateType") String stateType,
+//			@PathVariable("stateKind") String stateKind,
+//			@PathVariable("format") String format) {
+//
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Content-Type", "application/json; charset=utf-8");
+//
+//		Experiment experiment;
+//		if(isNumeric(experimentIdOrCodeName)) {
+//			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+//		} else {		
+//			try {
+//				experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+//			} catch(Exception ex) {
+//				experiment = null;
+//			}
+//		}
+//
+//		List<TreatmentGroupValue> treatmentGroupValues;
+//		if(experiment != null) {
+//			Long experimentId = experiment.getId();
+//			treatmentGroupValues = treatmentGroupValueService.getTreatmentGroupValuesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+//		} else {
+//			treatmentGroupValues = new ArrayList<TreatmentGroupValue>();
+//		}
+//		if (format.equalsIgnoreCase("tsv")) {
+//			String outputString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
+//			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+//		} else {
+//			//default format is json
+//			return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues), headers, HttpStatus.OK);
+//		}
+//
+//	}
+	
+	
+//TODO: LATER
 //	@RequestMapping(value = "/{experimentIdOrCodeName}/agvalues/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 //	@ResponseBody
 //	@Transactional
