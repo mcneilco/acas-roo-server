@@ -283,6 +283,30 @@ public class SubjectValue extends AbstractValue {
 		return q;
 	}
 	
+	public static TypedQuery<SubjectValue> findSubjectValuesByAnalysisGroupIDAndStateTypeKind(Long analysisGroupId, String stateType, String  stateKind) {
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
+				"JOIN sv.lsState svs " +
+				"JOIN svs.subject s " + 
+				"JOIN s.treatmentGroup tg " +
+				"JOIN tg.analysisGroup ag " +
+				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored IS NOT :ignored " +
+				"AND sv.ignored IS NOT :ignored " +
+				"AND s.ignored IS NOT :ignored " +
+				"AND tg.ignored IS NOT :ignored " +
+				"AND ag.ignored IS NOT :ignored " +
+				"AND ag.id = :analysisGroupId ";
+		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
+		q.setParameter("analysisGroupId", analysisGroupId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+	
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
 				"treatmentGroupId",

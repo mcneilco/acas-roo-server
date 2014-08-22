@@ -72,4 +72,15 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 
 		return outFile.toString();
 	}
+
+	@Override
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysiGroupIdAndStateTypeKindAndValueTypeKind(
+			Long analysisGroupId, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType,
+				stateKind, valueType, valueKind).getResultList();
+		
+		return analysisGroupValues;
+	}
 }

@@ -68,5 +68,14 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 		return outFile.toString();
 	}
 
+	@Override
+	public List<TreatmentGroupValue> getTreatmentGroupValuesByAnalysisGroupIdAndStateTypeKind(
+			Long analysisGroupId, String stateType, String stateKind) {
+		
+		List<TreatmentGroupValue> treatmentGroupValues = TreatmentGroupValue.findTreatmentGroupValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
+
+		return treatmentGroupValues;
+	}
+
 
 }

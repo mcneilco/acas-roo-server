@@ -129,4 +129,13 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 
 		return outFile.toString();
 	}
+
+	@Override
+	public List<SubjectValue> getSubjectValuesByAnalysisGroupIdAndStateTypeKind(
+			Long analysisGroupId, String stateType, String stateKind) {
+		
+		List<SubjectValue> subjectValues = SubjectValue.findSubjectValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
+
+		return subjectValues;
+	}
 }
