@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
@@ -25,7 +26,7 @@ public class SubjectValueTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(SubjectValueTest.class);
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QuerySubjectValueByExpIdAndStateTypeKind(){
 			
@@ -37,7 +38,7 @@ public class SubjectValueTest {
 		assert(results.size() == 800);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QuerySubjectValueByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 14L;
@@ -52,7 +53,7 @@ public class SubjectValueTest {
 		assert(results.size() == 0);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QuerySubjectValueByExpIdAndStateTypeKindWithCodeName() {
 		String experimentCodeName = "EXPT-00000004";
@@ -77,7 +78,7 @@ public class SubjectValueTest {
 		if(!didCatch) assert(results.size() == 800);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QuerySubjectValueByExpIdAndStateTypeKindAndValueTypeKind(){
 			
@@ -89,5 +90,15 @@ public class SubjectValueTest {
 		List<SubjectValue> results = SubjectValue.findSubjectValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind).getResultList();
 		logger.info(SubjectValue.toJsonArray(results));
 		assert(results.size() == 400);
+	}
+	
+	@Test
+	@Transactional
+	public void QuerySubjectValueByAnalysisGroupIdStateTypeAndKind() {
+		Long analysisGroupId = 15L;
+		String stateType = "data";
+		String stateKind = "results";
+		List<SubjectValue> subjectValues = SubjectValue.findSubjectValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
+		logger.info(String.valueOf(subjectValues.size()));
 	}
 }

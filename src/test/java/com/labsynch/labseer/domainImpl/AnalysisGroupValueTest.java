@@ -100,4 +100,16 @@ public class AnalysisGroupValueTest {
 		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
 		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByAnalysisGroupIdStateTypeAndKindAndValueTypeKind() {
+		Long analysisGroupId = 10L;
+		String stateType = "data";
+		String stateKind = "Generic";
+		String valueType = "stringValue";
+		String valueKind = "Assay Comment";
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind).getResultList();
+		logger.info(String.valueOf(analysisGroupValues.size()));
+	}
 }

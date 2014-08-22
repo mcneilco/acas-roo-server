@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -24,7 +25,7 @@ public class TreatmentGroupValueTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(TreatmentGroupValueTest.class);
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryTreatmentGroupValueByExpIdAndStateTypeKind(){
 			
@@ -36,7 +37,7 @@ public class TreatmentGroupValueTest {
 		assert(results.size() == 120);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryTreatmentGroupValueByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 14L;
@@ -51,7 +52,7 @@ public class TreatmentGroupValueTest {
 		assert(results.size() == 0);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryTreatmentGroupValueByExpIdAndStateTypeKindWithCodeName() {
 		String experimentCodeName = "EXPT-00000004";
@@ -76,7 +77,7 @@ public class TreatmentGroupValueTest {
 		if(!didCatch) assert(results.size() == 120);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryTreatmentGroupValueByExpIdAndStateTypeKindAndValueTypeKind(){
 			
@@ -88,5 +89,15 @@ public class TreatmentGroupValueTest {
 		List<TreatmentGroupValue> results = TreatmentGroupValue.findTreatmentGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind).getResultList();
 		logger.info(TreatmentGroupValue.toJsonArray(results));
 		assert(results.size() == 120);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryTreatmentGroupValueByAnalysisGroupIdStateTypeAndKind() {
+		Long analysisGroupId = 15L;
+		String stateType = "data";
+		String stateKind = "test compound treatment";
+		List<TreatmentGroupValue> treatmentGroupValues = TreatmentGroupValue.findTreatmentGroupValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
+		logger.info(String.valueOf(treatmentGroupValues.size()));
 	}
 }
