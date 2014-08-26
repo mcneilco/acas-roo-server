@@ -17,4 +17,6 @@ public interface TreatmentGroupValueService {
 
 	public String getCsvList(List<TreatmentGroupValue> treatmentGroupValues);
 	
+	public List<TreatmentGroupValue> getTreatmentGroupValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind);
+	
 }

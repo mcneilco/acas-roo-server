@@ -52,8 +52,6 @@ public class AnalysisGroupValueServiceTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueServiceTest.class);
 
-	@Autowired
-	private ExperimentService experimentService;
 
 	@Autowired
 	private LsThingService lsThingService;
@@ -320,7 +318,7 @@ public class AnalysisGroupValueServiceTest {
 
 	}
 
-	@Test
+	//@Test
 	@Transactional
 	public void GetGenedata_7(){
 
@@ -351,7 +349,7 @@ public class AnalysisGroupValueServiceTest {
 
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
 			
@@ -363,7 +361,7 @@ public class AnalysisGroupValueServiceTest {
 		assert(results.size() == 11);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 9L;
@@ -378,7 +376,7 @@ public class AnalysisGroupValueServiceTest {
 		assert(results.size() == 0);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithCodeName() {
 		String experimentCodeName = "EXPT-00000003";
@@ -403,7 +401,7 @@ public class AnalysisGroupValueServiceTest {
 		if(!didCatch) assert(results.size() == 11);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindAndValueTypeKind(){
 			
@@ -417,13 +415,65 @@ public class AnalysisGroupValueServiceTest {
 		assert(results.size() == 2);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void AnalysisGroupValuesToCsv() {
 		List<AnalysisGroupValue> analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByExperimentIdAndStateTypeKind(9l, "metadata", "experiment metadata");
 		String csvString = analysisGroupValueService.getCsvList(analysisGroupValues);
 		assert(csvString != null && csvString.compareTo("") != 0);
 		logger.info(csvString);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByAnalysisGroupIdAndStateTypeKind(){
+			
+		Long analysisGroupId = 10L;
+		String stateType = "data";
+		String stateKind = "Generic";
+		List<AnalysisGroupValue> results = analysisGroupValueService.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
+		logger.info(AnalysisGroupValue.toJsonArray(results));
+		assert(results.size() == 11);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByAnalysisGroupIdAndStateTypeKindWithBadData() {
+		Long analysisGroupId = 9L;
+		String stateType = "";
+		String stateKind = "experiment metadata";
+		List<AnalysisGroupValue> results = new ArrayList<AnalysisGroupValue>();
+		try {
+			results = analysisGroupValueService.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(analysisGroupId, stateType, stateKind);
+		} catch(IllegalArgumentException ex ) {
+			logger.info(ex.getMessage());
+		}
+		assert(results.size() == 0);
+	}
+	
+	@Test
+	@Transactional
+	public void QueryAnalysisGroupValueByAnalysisGroupIdAndStateTypeKindWithCodeName() {
+		String analysisGroupCodeName = "AG-00000008";
+		String stateType = "data";
+		String stateKind = "Generic";
+		AnalysisGroup analysisGroup = null;
+		boolean didCatch = false;
+		try {
+			analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(analysisGroupCodeName).getSingleResult();
+		} catch(NoResultException nre) {
+			logger.info(nre.getMessage());
+			didCatch = true;
+		}
+		List<AnalysisGroupValue> results = new ArrayList<AnalysisGroupValue>();
+		try {
+			results = analysisGroupValueService.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(analysisGroup.getId(), stateType, stateKind);
+		} catch(IllegalArgumentException ex ) {
+			logger.info(ex.getMessage());
+			assert(results.size() == 0);
+			didCatch = true;
+		}
+		if(!didCatch) assert(results.size() == 11);
 	}
 
 }

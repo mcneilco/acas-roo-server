@@ -615,6 +615,27 @@ public class AnalysisGroupValue extends AbstractValue {
 			return q;
 		}
     
+    public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind) {
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT agv from AnalysisGroupValue AS agv " +
+				"JOIN agv.lsState ags " +
+				"JOIN ags.analysisGroup ag " +
+				"WHERE ags.lsType = :stateType " +
+				"AND ags.ignored IS NOT :ignored " +
+				"AND agv.ignored IS NOT :ignored " +
+				"AND ags.lsKind = :stateKind " +
+				"AND ag.id = :analysisGroupId AND ag.ignored IS NOT :ignored";
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
+		q.setParameter("analysisGroupId", analysisGroupId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+    }
+    
     public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByExptIDAndStateTypeKindAndValueTypeKind(Long experimentId, String stateType,
 			String stateKind, String valueType, String valueKind) {
     	if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
@@ -633,6 +654,32 @@ public class AnalysisGroupValue extends AbstractValue {
 				"AND exp.id = :experimentId ";
 		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
 		q.setParameter("experimentId", experimentId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
+    }
+    
+    public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(Long analysisGroupId, String stateType,
+			String stateKind, String valueType, String valueKind) {
+    	
+    	if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
+				"JOIN agv.lsState evs " +
+				"JOIN evs.analysisGroup ag " +
+				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
+				"AND ag.ignored IS NOT :ignored " +
+				"AND ag.id = :analysisGroupId ";
+		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
+		q.setParameter("analysisGroupId", analysisGroupId);
 		q.setParameter("stateType", stateType);
 		q.setParameter("stateKind", stateKind);
 		q.setParameter("valueType", valueType);

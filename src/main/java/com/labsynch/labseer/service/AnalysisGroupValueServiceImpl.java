@@ -37,6 +37,12 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		
 		return analysisGroupValues;
 	}
+	
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind) {
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
+
+		return analysisGroupValues;
+	}
 
 	@Override
 	public String getCsvList(List<AnalysisGroupValue> analysisGroupValues) {
@@ -65,5 +71,16 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		}
 
 		return outFile.toString();
+	}
+
+	@Override
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysiGroupIdAndStateTypeKindAndValueTypeKind(
+			Long analysisGroupId, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		
+		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType,
+				stateKind, valueType, valueKind).getResultList();
+		
+		return analysisGroupValues;
 	}
 }
