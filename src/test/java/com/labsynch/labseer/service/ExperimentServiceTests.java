@@ -7,6 +7,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -121,7 +122,9 @@ public class ExperimentServiceTests {
 		experimentLabel.persist();
 		
 		AnalysisGroup ag = new AnalysisGroup();
-		ag.setExperiment(experiment);
+		Set<Experiment> experiments = new HashSet<Experiment>();
+		experiments.add(experiment);
+		ag.setExperiments(experiments);
 		ag.setRecordedBy(userName);
 		ag.setRecordedDate(recordedDate);
 		ag.setLsTransaction(lsTransaction.getId());
@@ -148,7 +151,9 @@ public class ExperimentServiceTests {
 		agv.persist();
 		
 		TreatmentGroup tg = new TreatmentGroup();
-		tg.setAnalysisGroup(ag);
+		Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+		analysisGroups.add(ag);
+		tg.setAnalysisGroups(analysisGroups);
 		tg.setRecordedBy(userName);
 		tg.setRecordedDate(recordedDate);
 		tg.setLsTransaction(lsTransaction.getId());

@@ -13,11 +13,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
+import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
-import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,30 +38,52 @@ import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(finders = { "findAnalysisGroupsByExperiment", "findAnalysisGroupsByLsTransactionEquals"  })
 @RooJson
-@Transactional
+@RooJpaActiveRecord(finders = { "findAnalysisGroupsByLsTransactionEquals", "findAnalysisGroupsByExperiments" })
 public class AnalysisGroup extends AbstractThing {
-	
-    private static final Logger logger = LoggerFactory.getLogger(AnalysisGroup.class);
 
-    public AnalysisGroup() {
-    }
+	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroup.class);
+
+	//    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroups")
+	//    private Set<Experiment> experiments = new HashSet<Experiment>();
+
+	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
+	@JoinTable(name="EXPERIMENT_ANALYSISGROUP", 
+	joinColumns={@JoinColumn(name="analysis_group_id")}, 
+	inverseJoinColumns={@JoinColumn(name="experiment_id")})
+	private Set<Experiment> experiments = new HashSet<Experiment>();
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
+	private Set<AnalysisGroupLabel> lsLabels = new HashSet<AnalysisGroupLabel>();
+
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
+	private Set<AnalysisGroupState> lsStates = new HashSet<AnalysisGroupState>();
+
+	@ManyToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroups")  
+	private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 	
-	
+	public AnalysisGroup() {
+	}
+
+
 	//constructor to instantiate a new analysisGroup from nested json objects
-	public AnalysisGroup (AnalysisGroup analysisGroup){
-		super.setRecordedBy(analysisGroup.getRecordedBy());
-		super.setRecordedDate(analysisGroup.getRecordedDate());
-		super.setLsTransaction(analysisGroup.getLsTransaction());
-		super.setModifiedBy(analysisGroup.getModifiedBy());
-		super.setModifiedDate(analysisGroup.getModifiedDate());
-        super.setCodeName(analysisGroup.getCodeName());
-        super.setLsKind(analysisGroup.getLsKind());
-        super.setLsType(analysisGroup.getLsType());
-//        this.setExperiment(analysisGroup.getExperiment());
+	public AnalysisGroup(AnalysisGroup analysisGroup) {
+		this.setRecordedBy(analysisGroup.getRecordedBy());
+		this.setRecordedDate(analysisGroup.getRecordedDate());
+		this.setLsTransaction(analysisGroup.getLsTransaction());
+		this.setModifiedBy(analysisGroup.getModifiedBy());
+		this.setModifiedDate(analysisGroup.getModifiedDate());
+		this.setCodeName(analysisGroup.getCodeName());
+		this.setLsKind(analysisGroup.getLsKind());
+		this.setLsType(analysisGroup.getLsType());
+		Set<Experiment> experimentSet = new HashSet<Experiment>();
+		for (Experiment experiment : analysisGroup.getExperiments()){
+			experimentSet.add(Experiment.findExperiment(experiment.getId()));
+		}
+		this.setExperiments(experimentSet);	
 
 	}
+
 
 	public AnalysisGroup(AnalysisGroupCsvDTO analysisGroupDTO) {
 		this.setRecordedBy(analysisGroupDTO.getRecordedBy());
@@ -83,7 +106,7 @@ public class AnalysisGroup extends AbstractThing {
 		this.setLsKind(analysisGroupDTO.getLsKind());
 		this.setLsType(analysisGroupDTO.getLsType());
 	}
-	
+
 
 	public static AnalysisGroup update(AnalysisGroup analysisGroup){
 		AnalysisGroup updatedAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroup.getId());
@@ -95,123 +118,63 @@ public class AnalysisGroup extends AbstractThing {
 		updatedAnalysisGroup.setCodeName(analysisGroup.getCodeName());
 		updatedAnalysisGroup.setLsKind(analysisGroup.getLsKind());
 		updatedAnalysisGroup.setLsType(analysisGroup.getLsType());
-		updatedAnalysisGroup.merge();
+		for (Experiment experiment : analysisGroup.getExperiments()){
+			updatedAnalysisGroup.getExperiments().add(experiment);
+		}
+		//		updatedAnalysisGroup.merge();
 		return updatedAnalysisGroup;
 	}
-	
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "experiment_id")
-	private Experiment experiment;
-	
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch =  FetchType.LAZY)
-    private Set<AnalysisGroupLabel> lsLabels = new HashSet<AnalysisGroupLabel>();
-    
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch =  FetchType.LAZY)
-	private Set<AnalysisGroupState> lsStates = new HashSet<AnalysisGroupState>();
-
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch =  FetchType.LAZY)
-	private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 
 	public String toFullJson() {
-		return new JSONSerializer()
-		.exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", 
-				"treatmentGroups.analysisGroup", "experiment.protocol")
-		.include("lsLabels", "lsStates.lsValues", 
-				"treatmentGroups.lsStates.lsValues", "treatmentGroups.lsLabels",
-				"treatmentGroups.subjects.lsStates.lsValues", "treatmentGroups.subjects.lsLabels")
-		.transform(new ExcludeNulls(), void.class)
-		.serialize(this);
+		return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol").include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsStates.lsValues", "treatmentGroups.lsLabels", "treatmentGroups.subjects.lsStates.lsValues", "treatmentGroups.subjects.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
 	}
-	
+
 	public String toPrettyFullJson() {
 		return new JSONSerializer()
 		.exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", 
-				"treatmentGroups.analysisGroup", "experiment.protocol")
-		.include("lsLabels", "lsStates.lsValues", 
-				"treatmentGroups.lsStates.lsValues", "treatmentGroups.lsLabels",
-				"treatmentGroups.subjects.lsStates.lsValues", "treatmentGroups.subjects.lsLabels")
-		.prettyPrint(true)
-		.transform(new ExcludeNulls(), void.class)
-		.serialize(this);
-	}
-	
-	public String toJson() {
-		return new JSONSerializer()
-		.exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol")
-		.include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsValues" )
-		.transform(new ExcludeNulls(), void.class)
-		.serialize(this);
-	}
-	
-	public String toJsonStub() {
-		return new JSONSerializer()
-		.exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol")
-		.include("lsLabels", "lsStates.lsValues" )
-		.transform(new ExcludeNulls(), void.class)
-		.serialize(this);
+				"treatmentGroups.analysisGroup", "experiments.protocol", "experiment.protocol")
+				.include("experiments", "lsLabels", "lsStates.lsValues", "treatmentGroups.lsStates.lsValues", 
+						"treatmentGroups.lsLabels", "treatmentGroups.subjects.lsStates.lsValues", 
+						"treatmentGroups.subjects.lsLabels")
+						.prettyPrint(true)
+						.transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
+	public String toJson() {
+		return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol").include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
+	}
+
+	public String toJsonStub() {
+		return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol").include("lsLabels", "lsStates.lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
+	}
 
 	public String toPrettyJson() {
-		return new JSONSerializer()
-		.exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol")
-		.include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsValues" )
-		.prettyPrint(true)
-		.transform(new ExcludeNulls(), void.class)
-		.serialize(this);
+		return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol").include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
 	public String toPrettyJsonStub() {
-		return new JSONSerializer()
-		.exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol")
-		.include("lsLabels", "lsStates.lsValues" )
-		.prettyPrint(true)
-		.transform(new ExcludeNulls(), void.class)
-		.serialize(this);
-	}
-	
-	public static String toJsonArray(Collection<AnalysisGroup> collection) {
-		return new JSONSerializer()
-		.exclude("*.class", "experiment.protocol")		            	
-		.transform(new ExcludeNulls(), void.class)
-		.serialize(collection);
+		return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol").include("lsLabels", "lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
-	
-	public static AnalysisGroup fromJsonToAnalysisGroup(String json) {
-        return new JSONDeserializer<AnalysisGroup>().
-        		use(null, AnalysisGroup.class).
-        		use("analysisGroup.lsStates", AnalysisGroupState.class).
-        		use("analysisGroup.lsStates.lsValues", AnalysisGroupValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
-        		deserialize(json, AnalysisGroup.class);
-    }
-	
-	public static AnalysisGroup fromJsonToAnalysisGroup2(Reader json) {
-		return new JSONDeserializer<AnalysisGroup>().
-        		use(null, AnalysisGroup.class).
-        		use("analysisGroup.lsStates", AnalysisGroupState.class).
-        		use("analysisGroup.lsStates.lsValues", AnalysisGroupValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
-        		deserialize(json);
-    }
+	public static String toJsonArray(Collection<com.labsynch.labseer.domain.AnalysisGroup> collection) {
+		return new JSONSerializer().exclude("*.class", "experiment.protocol").transform(new ExcludeNulls(), void.class).serialize(collection);
+	}
 
-	public static Collection<AnalysisGroup> fromJsonArrayToAnalysisGroups(Reader json) {
-        return new JSONDeserializer<List<AnalysisGroup>>().
-        		use(null, ArrayList.class).
-        		use("values", AnalysisGroup.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
-        		deserialize(json);
-    }
-	
-	public static Collection<AnalysisGroup> fromJsonArrayToAnalysisGroups(String json) {
-        return new JSONDeserializer<List<AnalysisGroup>>().
-        		use(null, ArrayList.class).
-        		use("values", AnalysisGroup.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
-        		deserialize(json);
-    }
+	public static com.labsynch.labseer.domain.AnalysisGroup fromJsonToAnalysisGroup(String json) {
+		return new JSONDeserializer<AnalysisGroup>().use(null, AnalysisGroup.class).use("analysisGroup.lsStates", AnalysisGroupState.class).use("analysisGroup.lsStates.lsValues", AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json, AnalysisGroup.class);
+	}
+
+	public static com.labsynch.labseer.domain.AnalysisGroup fromJsonToAnalysisGroup2(Reader json) {
+		return new JSONDeserializer<AnalysisGroup>().use(null, AnalysisGroup.class).use("analysisGroup.lsStates", AnalysisGroupState.class).use("analysisGroup.lsStates.lsValues", AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
+
+	public static Collection<com.labsynch.labseer.domain.AnalysisGroup> fromJsonArrayToAnalysisGroups(Reader json) {
+		return new JSONDeserializer<List<AnalysisGroup>>().use(null, ArrayList.class).use("values", AnalysisGroup.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
+
+	public static Collection<com.labsynch.labseer.domain.AnalysisGroup> fromJsonArrayToAnalysisGroups(String json) {
+		return new JSONDeserializer<List<AnalysisGroup>>().use(null, ArrayList.class).use("values", AnalysisGroup.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	}
 
 	@Transactional
 	public static int deleteByExperimentID(Long experimentId) {
@@ -223,32 +186,35 @@ public class AnalysisGroup extends AbstractThing {
 		int numberOfDeletedEntities = q.executeUpdate();
 		return numberOfDeletedEntities;
 	}
-	
+
 	@Transactional
 	public static void removeByExperimentID(Long id) {
-		List<AnalysisGroup> analysisgroups = AnalysisGroup.findAnalysisGroupsByExperiment(Experiment.findExperiment(id)).getResultList();
-		for (AnalysisGroup analysisgroup : analysisgroups){
+		Experiment experiment = Experiment.findExperiment(id);
+		Set<Experiment> experiments = new HashSet<Experiment>();
+		experiments.add(experiment);
+		List<AnalysisGroup> analysisgroups  = AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList();
+		for (AnalysisGroup analysisgroup : analysisgroups) {
 			logger.debug("removing analysis group: " + analysisgroup.getCodeName());
 			analysisgroup.remove();
-			
+
 		}
-			
+
 	}
 
 
 	public static TypedQuery<AnalysisGroup> findAnalysisGroupsByExperimentIdAndIgnored(Long id, boolean includeIgnored) {
-        if (id == null ) throw new IllegalArgumentException("The id argument is required");
-        EntityManager em = Experiment.entityManager();
-        String sqlQuery;
-        if (includeIgnored){
-            sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id ";
-        } else {
-            sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id "
-					 + "AND o.ignored != true";
-        }
- 
-        TypedQuery<AnalysisGroup> q = em.createQuery(sqlQuery, AnalysisGroup.class);
-        q.setParameter("id", id);
+		if (id == null ) throw new IllegalArgumentException("The id argument is required");
+		EntityManager em = Experiment.entityManager();
+		String sqlQuery;
+		if (includeIgnored){
+			sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id ";
+		} else {
+			sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id "
+					+ "AND o.ignored != true";
+		}
+
+		TypedQuery<AnalysisGroup> q = em.createQuery(sqlQuery, AnalysisGroup.class);
+		q.setParameter("id", id);
 		return q;
 	}
 	

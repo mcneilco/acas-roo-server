@@ -9,7 +9,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,10 +28,6 @@ import com.labsynch.labseer.domain.AnalysisGroupLabel;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectLabel;
-import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
@@ -79,37 +77,47 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 				
 	}
 	
-	@Override
 	@Transactional
+	@Override
 	public AnalysisGroup saveLsAnalysisGroup(AnalysisGroup analysisGroup){
 
 		logger.debug("incoming meta analysisGroup: " + analysisGroup.toJson());
-		int batchSize = propertiesUtilService.getBatchSize();
 		Date recordedDate = new Date();
-		AnalysisGroup newAnalysisGroup = new AnalysisGroup(analysisGroup);
-		logger.debug("incoming experiment: " + analysisGroup.getExperiment().toJson());
-		newAnalysisGroup.setExperiment(Experiment.findExperiment(analysisGroup.getExperiment().getId()));
-//		logger.debug("set experiment = " + newAnalysisGroup.getExperiment().getId());
-		if (newAnalysisGroup.getRecordedDate() == null) { newAnalysisGroup.setRecordedDate(recordedDate);}
-		if (newAnalysisGroup.getRecordedBy() == null) { newAnalysisGroup.setRecordedBy(analysisGroup.getExperiment().getRecordedBy()); }
-		newAnalysisGroup.persist();
-		logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
 
-		if (analysisGroup.getLsLabels() != null) {
-			int i = 0;
-			for(AnalysisGroupLabel analysisGroupLabel : analysisGroup.getLsLabels()){
-				AnalysisGroupLabel newAnalysisGroupLabel = new AnalysisGroupLabel(analysisGroupLabel);
-				newAnalysisGroupLabel.setAnalysisGroup(newAnalysisGroup);
-				//logger.debug("here is the newAnalysisGroupLabel before save: " + newAnalysisGroupLabel.toJson());				
-				newAnalysisGroupLabel.persist();
-			    if ( i % batchSize == 0 ) { // same as the JDBC batch size
-			    	newAnalysisGroupLabel.flush();
-			    	newAnalysisGroupLabel.clear();
-			    }
-			    i++;
-			}			
-		} 
-		
+		AnalysisGroup newAnalysisGroup = null;
+		if (analysisGroup.getId() == null){
+			newAnalysisGroup = new AnalysisGroup(analysisGroup);
+			
+
+			if (newAnalysisGroup.getCodeName() == null) { newAnalysisGroup.setCodeName(autoLabelService.getAnalysisGroupCodeName());}
+			if (newAnalysisGroup.getRecordedDate() == null) { newAnalysisGroup.setRecordedDate(recordedDate);}
+			if (newAnalysisGroup.getRecordedBy() == null) { 
+				for (Experiment experiment : analysisGroup.getExperiments()){
+					logger.info("here is the experiment: " + experiment.getId());
+					newAnalysisGroup.setRecordedBy(experiment.getRecordedBy()); 
+				}
+			}
+			newAnalysisGroup.persist();
+			logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
+			
+			this.saveLabels(analysisGroup, newAnalysisGroup, recordedDate);
+			this.saveStates(analysisGroup, newAnalysisGroup, recordedDate);
+			treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);
+
+		} else {
+			newAnalysisGroup = AnalysisGroup.update(analysisGroup);
+			newAnalysisGroup.merge();
+			
+			treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);
+
+		}
+
+		return newAnalysisGroup;
+
+		//		return AnalysisGroup.findAnalysisGroup(newAnalysisGroup.getId());
+	}
+
+	private void saveStates(AnalysisGroup analysisGroup, AnalysisGroup newAnalysisGroup, Date recordedDate) {
 		if (analysisGroup.getLsStates() != null){
 			int i = 0;
 			for(AnalysisGroupState analysisGroupState : analysisGroup.getLsStates()){
@@ -128,89 +136,32 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 						logger.debug("persisted the analysisGroupValue: " + analysisGroupValue.toJson());
 					}				
 				}
-			    if ( i % batchSize == 0 ) { //50, same as the JDBC batch size
-			    	newAnalysisGroupState.flush();
-			    	newAnalysisGroupState.clear();
-			    }
-			    i++;
+				if ( i % propertiesUtilService.getBatchSize() == 0 ) { //50, same as the JDBC batch size
+					newAnalysisGroupState.flush();
+					newAnalysisGroupState.clear();
+				}
+				i++;
 			}		
-		}
-
-		if (analysisGroup.getTreatmentGroups() != null){
-			logger.debug("number of treatmentGroups " + analysisGroup.getTreatmentGroups().size());
-			int i = 0;
-			for(TreatmentGroup treatmentGroup : analysisGroup.getTreatmentGroups()){
-				TreatmentGroup newTreatmentGroup = new TreatmentGroup(treatmentGroup);
-				newTreatmentGroup.setAnalysisGroup(newAnalysisGroup);
-				newTreatmentGroup.persist();
-				if (treatmentGroup.getLsLabels() != null) {
-					for(TreatmentGroupLabel treatmentGroupLabel : treatmentGroup.getLsLabels()){
-						TreatmentGroupLabel newTreatmentGroupLabel = new TreatmentGroupLabel(treatmentGroupLabel);
-						newTreatmentGroupLabel.setTreatmentGroup(newTreatmentGroup);
-						newTreatmentGroupLabel.persist();	
-					}		
-				}
-				if (treatmentGroup.getLsStates() != null){
-					for(TreatmentGroupState treatmentGroupState : treatmentGroup.getLsStates()){
-						TreatmentGroupState newTreatmentGroupState = new TreatmentGroupState(treatmentGroupState);
-						newTreatmentGroupState.setTreatmentGroup(newTreatmentGroup);
-						newTreatmentGroupState.persist();
-						if (treatmentGroupState.getLsValues() != null){
-							for(TreatmentGroupValue treatmentGroupValue : treatmentGroupState.getLsValues()){
-								treatmentGroupValue.setLsState(newTreatmentGroupState);
-								treatmentGroupValue.persist();
-								logger.debug("persisted the treatmentGroupValue: " + treatmentGroupValue.toJson());
-							}										
-						}
-					}					
-				}
-			    if ( i % batchSize == 0 ) { //50, same as the JDBC batch size
-			    	newTreatmentGroup.flush();
-			    	newTreatmentGroup.clear();
-			    }
-			    i++;
-
-				if (treatmentGroup.getSubjects() != null){
-					int j = 0;
-					for(Subject subject : treatmentGroup.getSubjects()){
-						Subject newSubject = new Subject(subject);
-						newSubject.setTreatmentGroup(newTreatmentGroup);
-						newSubject.persist();
-						if (subject.getLsLabels() != null) {
-							for(SubjectLabel subjectLabel : subject.getLsLabels()){
-								SubjectLabel newSubjectLabel = new SubjectLabel(subjectLabel);
-								newSubjectLabel.setSubject(newSubject);
-								newSubjectLabel.persist();	
-							}		
-						}
-						if (subject.getLsStates() != null){
-							for(SubjectState subjectState : subject.getLsStates()){
-								SubjectState newSubjectState = new SubjectState(subjectState);
-								newSubjectState.setSubject(newSubject);
-								newSubjectState.persist();
-								if (subjectState.getLsValues() != null){
-									for (SubjectValue subjectValue : subjectState.getLsValues()){
-										subjectValue.setLsState(newSubjectState);
-										subjectValue.persist();
-									}								
-								}
-							}
-						}
-					    if ( j % batchSize == 0 ) { 
-					    	newSubject.flush();
-					    	newSubject.clear();
-					    }
-					    j++;
-					}
-				}
-			}
-		}
-	
-		return newAnalysisGroup;
-
-//		return AnalysisGroup.findAnalysisGroup(newAnalysisGroup.getId());
+		}		
 	}
 
+	private void saveLabels(AnalysisGroup analysisGroup, AnalysisGroup newAnalysisGroup, Date recordedDate) {
+		if (analysisGroup.getLsLabels() != null) {
+			int i = 0;
+			for(AnalysisGroupLabel analysisGroupLabel : analysisGroup.getLsLabels()){
+				AnalysisGroupLabel newAnalysisGroupLabel = new AnalysisGroupLabel(analysisGroupLabel);
+				newAnalysisGroupLabel.setAnalysisGroup(newAnalysisGroup);
+				newAnalysisGroupLabel.persist();
+				if ( i % propertiesUtilService.getBatchSize() == 0 ) { // same as the JDBC batch size
+					newAnalysisGroupLabel.flush();
+					newAnalysisGroupLabel.clear();
+				}
+				i++;
+			}			
+		} 		
+	}
+
+	
 	@Override
 	@Transactional
 	public AnalysisGroup updateLsAnalysisGroup(AnalysisGroup analysisGroup){
@@ -345,7 +296,12 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 
 				analysisGroup = getOrCreateAnalysisGroup(analysisGroupDTO, analysisGroupMap);
 				if (analysisGroup != null){
-					analysisGroup.persist();
+					if (analysisGroup.getId() == null){
+						analysisGroup.persist();
+					} else {
+						analysisGroup.merge();
+					}
+					
 					logger.debug("saved the new analysis group: " + analysisGroup.getId() + " " + analysisGroup.getCodeName());
 					logger.debug("saved the new analysis group: " + analysisGroup.toJson());
 
@@ -355,6 +311,8 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 ////				    }
 					analysisGroupMap = saveTempAnalysisGroup(analysisGroup, analysisGroupDTO, analysisGroupMap);
 				}
+				
+				
 			
 				if (analysisGroupDTO.getStateType() != null && analysisGroupDTO.getStateKind() != null){
 					if (analysisGroupDTO.getTempStateId() == null) analysisGroupDTO.setTempStateId(analysisGroupDTO.getStateId().toString());
@@ -483,7 +441,6 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 		if (!analysisGroupMap.containsKey(analysisGroupDTO.getTempId())){
 			if (analysisGroupDTO.getId() == null){
 				analysisGroup = new AnalysisGroup(analysisGroupDTO);
-				analysisGroup.setExperiment(Experiment.findExperiment(analysisGroupDTO.getParentId()));
 				if (analysisGroup.getCodeName() == null){
 					analysisGroup.setCodeName(autoLabelService.getAnalysisGroupCodeName());
 				}
@@ -491,13 +448,21 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			} else {
 				analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupDTO.getId());
 			}
+			Set<Experiment> experimentSet = new HashSet<Experiment>();
+			experimentSet.add(Experiment.findExperiment(analysisGroupDTO.getParentId()));
+			if (analysisGroup.getExperiments() == null){
+				analysisGroup.setExperiments(experimentSet);
+			} else {
+				analysisGroup.getExperiments().addAll(experimentSet);
+			}
 		} else {
 			logger.debug("skipping the previously saved analysisGroup --------- " + analysisGroupDTO.getCodeName());
 		}
+		
 
+		
 		return analysisGroup;
 	}
-
 
 
 }

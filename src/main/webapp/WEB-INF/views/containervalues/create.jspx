@@ -10,7 +10,6 @@
         <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ContainerValue_clobValue" z="OhyqGnEN59fPwRuqmupztcZKiAQ="/>
         <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ContainerValue_blobValue" z="BpJRZP+Ac3+ueWS1Pun1XnwZ3CY="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_ContainerValue_sigFigs" validationMessageCode="field_invalid_integer" z="WUOjTHtrOfOS3+KZ7nJm2g7E5GE="/>
-        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ContainerValue_uncertainty" validationMessageCode="field_invalid_number" z="2PdWF/ueQt7rqlJh8VjbnLvumNA="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ContainerValue_comments" z="iBIj2BSTzZ2SzNZvCGsDogjA2X4="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ContainerValue_ignored" z="eDPkGeBz6SAnYjTtsAanlyGxseY="/>
         <field:datetime dateTimePattern="${containerValue_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_ContainerValue_recordedDate" required="true" z="knPKwQ/MZLZ5LSFsJSXdcIeocg0="/>
@@ -36,6 +35,7 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_ContainerValue_codeType" z="mFqoJlfGJIOJLbB+hJCZyUeuqKQ="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_ContainerValue_codeKind" z="nyFYWxKpHjJBhnpAgTaDwmf7zFk="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_ContainerValue_codeTypeAndKind" z="uJvU4jB5wlmx8zZ7PqNZfunCrFI="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ContainerValue_uncertainty" validationMessageCode="field_invalid_number" z="2PdWF/ueQt7rqlJh8VjbnLvumNA="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ContainerValue_codeOrigin" z="t8yzIb8o44xK5M/qdNF9Rt0XTE4="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ContainerValue" render="${not empty dependencies}" z="W+kJEqw/WhhBpGxnxg2BoJWHsSI="/>

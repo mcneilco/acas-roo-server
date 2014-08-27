@@ -10,12 +10,12 @@
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_Subject_ignored" z="ZwJi0WOsZ6h8yN1HGYDpVBgcIfQ="/>
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_Subject_lsTransaction" validationMessageCode="field_invalid_integer" z="nNUtkBFE1p6OuS6brb9eMNUMXw4="/>
         <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_Subject_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="4wmwsWSqO/gVovulIzedaWV2mKg="/>
-        <field:select field="treatmentGroup" id="c_com_labsynch_labseer_domain_Subject_treatmentGroup" itemValue="id" items="${treatmentgroups}" path="/treatmentgroups" required="true" z="gPuaA2v4kxh6L+cJ0XhG+mHhNtQ="/>
         <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_Subject_codeName" z="NHMFlOAuq5YC4vNgAftQUY/pBrk="/>
         <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_Subject_lsType" required="true" z="fxJ5plTHSqk9+86VnCug+mqqPQY="/>
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_Subject_lsKind" required="true" z="K4uDVl4QfOMZAjtgw0O3rqWn6MA="/>
         <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_Subject_lsTypeAndKind" z="9v+JBQtJNX5i8fWS27mMoC/2e04="/>
         <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_Subject_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Subject Label" z="Hwu3tsh7EV65uBH9xnmz99tk50Y="/>
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_Subject_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Subject State" z="bi05r8z5xTjjPwe4ovuL+1yhuWc="/>
+        <field:select field="treatmentGroups" id="c_com_labsynch_labseer_domain_Subject_treatmentGroups" itemValue="id" items="${treatmentgroups}" multiple="true" path="/treatmentgroups" z="8loIl+9D3CRAINdCNPe6Q4aA2o4="/>
     </form:update>
 </div>

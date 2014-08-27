@@ -151,12 +151,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 		newExperiment.setProtocol(Protocol.findProtocol(experiment.getProtocol().getId()));
 		if (newExperiment.getCodeName() == null){
-
-			String thingTypeAndKind = "document_experiment";
-			String labelTypeAndKind = "id_codeName";
-			Long numberOfLabels = 1L;
-			List<AutoLabelDTO> labels = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
-			newExperiment.setCodeName(labels.get(0).getAutoLabel());
+			newExperiment.setCodeName(autoLabelService.getExperimentCodeName());
 		}
 		newExperiment.persist();
 		logger.debug("persisted the newExperiment: " + newExperiment.toJson());
@@ -204,7 +199,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		if(experiment.getAnalysisGroups() != null){
 			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 			for(AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
-				analysisGroup.setExperiment(newExperiment);
+				analysisGroup.getExperiments().add(newExperiment);
 				AnalysisGroup newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
 				analysisGroups.add(newAnalysisGroup);
 				logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
@@ -214,6 +209,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 		return newExperiment;
 	}
+
 
 	@Override
 	public Experiment getFullExperiment(Experiment queryExperiment){
@@ -232,7 +228,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 		}	
 		experiment.setLsStates(lsStates);
 		Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
-		for (AnalysisGroup analysisGroup : AnalysisGroup.findAnalysisGroupsByExperiment(experiment).getResultList()){
+		Set<Experiment> experiments = new HashSet<Experiment>();
+		experiments.add(experiment);
+		for (AnalysisGroup analysisGroup : AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList()){
 			analysisGroups.add(analysisGroup);
 		}
 		experiment.setAnalysisGroups(analysisGroups);
@@ -484,7 +482,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 				for (String nodeName : nodeNameList){
 					logger.debug("here is the nodeName: " + nodeName + "  index:" + nodeIndex );
 					nodeIndex++; //incrementing to the next
-					
+
 					JSTreeNodeDTO protocolNode = new JSTreeNodeDTO();
 					protocolNode.setId(nodeName);
 					protocolNode.setDescription(prot.getShortDescription());
@@ -509,22 +507,22 @@ public class ExperimentServiceImpl implements ExperimentService {
 				nodes.add(protocolNode);
 
 			}
-			
-			
-//			JSTreeNodeDTO node = new JSTreeNodeDTO();
-//			node.setId(prot.getCodeName());
-//			node.setDescription(prot.getShortDescription());
-//			node.setParent(prot.getLsKind());
-//			node.setLsTags(prot.getLsTags());
-//			node.setText(new StringBuilder().append(protocolLabel).toString());
 
-//
-//			JSTreeNodeDTO protocolKindNode = new JSTreeNodeDTO();
-//			protocolKindNode.setId(prot.getLsKind());
-//			protocolKindNode.setParent("Root Node");
-//			protocolKindNode.setText(prot.getLsKind());
-//			protocolKindNode.setDescription("Protocol Kind");
-//			nodes.add(protocolKindNode);
+
+			//			JSTreeNodeDTO node = new JSTreeNodeDTO();
+			//			node.setId(prot.getCodeName());
+			//			node.setDescription(prot.getShortDescription());
+			//			node.setParent(prot.getLsKind());
+			//			node.setLsTags(prot.getLsTags());
+			//			node.setText(new StringBuilder().append(protocolLabel).toString());
+
+			//
+			//			JSTreeNodeDTO protocolKindNode = new JSTreeNodeDTO();
+			//			protocolKindNode.setId(prot.getLsKind());
+			//			protocolKindNode.setParent("Root Node");
+			//			protocolKindNode.setText(prot.getLsKind());
+			//			protocolKindNode.setDescription("Protocol Kind");
+			//			nodes.add(protocolKindNode);
 		}
 
 		logger.debug("number of nodes made: " + nodes.size());
@@ -557,7 +555,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
 		searchRequest.getExperimentCodeList().removeAll(Collections.singleton(null));
 
-		
+
 		Set<String> uniqueBatchCodes = new HashSet<String>();
 		if (searchRequest.getBatchCodeList() != null && searchRequest.getBatchCodeList().size() > 0 ){
 			uniqueBatchCodes.addAll(searchRequest.getBatchCodeList());
@@ -568,7 +566,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		Collection<String> collectionOfCodes = null;
 
 		boolean filteredGeneData = false;
-		
+
 		if (searchRequest.getBooleanFilter() != null && searchRequest.getBooleanFilter().equalsIgnoreCase("ADVANCED")){
 			//DO SQL substitutions for now. Try to do something more elegant later
 			collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getAdvancedFilterSQL()).getResultList();
@@ -608,7 +606,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			finalUniqueBatchCodes.addAll(collectionOfCodes);
 			logger.debug("number of unique batchCodes found: " + finalUniqueBatchCodes.size());
 		}
-		
+
 		finalUniqueBatchCodes.removeAll(Collections.singleton(null));
 
 

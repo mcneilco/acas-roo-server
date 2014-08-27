@@ -13,15 +13,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -34,21 +35,23 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(finders = { "findTreatmentGroupsByAnalysisGroup", "findTreatmentGroupsByLsTransactionEquals" })
 @RooJson
 public class TreatmentGroup extends AbstractThing {
-
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "analysis_group_id")
-	private AnalysisGroup analysisGroup;
+	
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
     private Set<TreatmentGroupLabel> lsLabels = new HashSet<TreatmentGroupLabel>();
   
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
 	private Set<TreatmentGroupState> lsStates = new HashSet<TreatmentGroupState>();
+	
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroups")  
+    private Set<Subject> subjects = new HashSet<Subject>();
  
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
-	private Set<Subject> subjects = new HashSet<Subject>();
-
+	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
+	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
+	joinColumns={@JoinColumn(name="treatment_group_id")}, 
+	inverseJoinColumns={@JoinColumn(name="analysis_group_id")})
+    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+	
     public TreatmentGroup() {
     }
     
@@ -97,7 +100,7 @@ public class TreatmentGroup extends AbstractThing {
 	public String toJson() {
 		return new JSONSerializer()
 		.include("lsLabels","lsStates.lsValues", "subjects")
-		.exclude("*.class", "analysisGroup.experiment", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroup")
+		.exclude("*.class", "analysisGroups.experiments", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroups")
 		.serialize(this);
 	}
 

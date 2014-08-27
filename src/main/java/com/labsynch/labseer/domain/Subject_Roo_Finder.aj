@@ -4,7 +4,6 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.TreatmentGroup;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -23,14 +22,6 @@ privileged aspect Subject_Roo_Finder {
         EntityManager em = Subject.entityManager();
         TypedQuery<Subject> q = em.createQuery("SELECT o FROM Subject AS o WHERE o.lsTransaction = :lsTransaction", Subject.class);
         q.setParameter("lsTransaction", lsTransaction);
-        return q;
-    }
-    
-    public static TypedQuery<Subject> Subject.findSubjectsByTreatmentGroup(TreatmentGroup treatmentGroup) {
-        if (treatmentGroup == null) throw new IllegalArgumentException("The treatmentGroup argument is required");
-        EntityManager em = Subject.entityManager();
-        TypedQuery<Subject> q = em.createQuery("SELECT o FROM Subject AS o WHERE o.treatmentGroup = :treatmentGroup", Subject.class);
-        q.setParameter("treatmentGroup", treatmentGroup);
         return q;
     }
     

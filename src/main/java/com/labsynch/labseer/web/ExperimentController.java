@@ -807,7 +807,7 @@ public class ExperimentController {
     void populateEditForm(Model uiModel, Experiment experiment) {
         uiModel.addAttribute("experiment", experiment);
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("lstags", LsTag.findAllLsTags());
+        uiModel.addAttribute("lsTags", LsTag.findAllLsTags());
         List<Protocol> protocols = new ArrayList<Protocol>();
         protocols.add(Protocol.findProtocol(experiment.getProtocol().getId()));
         uiModel.addAttribute("protocols", protocols);

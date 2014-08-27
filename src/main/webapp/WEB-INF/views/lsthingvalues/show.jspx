@@ -18,7 +18,6 @@
         <field:display field="operatorTypeAndKind" id="s_com_labsynch_labseer_domain_LsThingValue_operatorTypeAndKind" object="${lsthingvalue}" z="tSZci28LO2WWM4L4e6jqn4sWIlM="/>
         <field:display field="numericValue" id="s_com_labsynch_labseer_domain_LsThingValue_numericValue" object="${lsthingvalue}" z="P0gyO2JvuRyh+aKL9j44pTR/o7k="/>
         <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_LsThingValue_sigFigs" object="${lsthingvalue}" z="sdNcOxkhmRi44cvXoxbF6twmToc="/>
-        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_LsThingValue_uncertainty" object="${lsthingvalue}" z="oJFagxmkuPAJpPRMegMp1p+g5qk="/>
         <field:display field="numberOfReplicates" id="s_com_labsynch_labseer_domain_LsThingValue_numberOfReplicates" object="${lsthingvalue}" z="eL0mMmPiKso/SABTnGhsMc3/5t0="/>
         <field:display field="uncertaintyType" id="s_com_labsynch_labseer_domain_LsThingValue_uncertaintyType" object="${lsthingvalue}" z="LVJ8XUruNab8dHsDwsoG6NuC4SU="/>
         <field:display field="unitType" id="s_com_labsynch_labseer_domain_LsThingValue_unitType" object="${lsthingvalue}" z="JxwrSP5Dwv/11Qwq8VfnWrXtSD4="/>
@@ -36,6 +35,7 @@
         <field:display field="codeType" id="s_com_labsynch_labseer_domain_LsThingValue_codeType" object="${lsthingvalue}" z="5ShaMg58O1eib6ijoHm96UwnMTQ="/>
         <field:display field="codeKind" id="s_com_labsynch_labseer_domain_LsThingValue_codeKind" object="${lsthingvalue}" z="MS7zxrAapnIa66+FzAXBWYayOH0="/>
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_LsThingValue_codeTypeAndKind" object="${lsthingvalue}" z="VNxveSIcmw+3x6CT0yuSag9zGiw="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_LsThingValue_uncertainty" object="${lsthingvalue}" z="oJFagxmkuPAJpPRMegMp1p+g5qk="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_LsThingValue_codeOrigin" object="${lsthingvalue}" z="FeNSVkPk23NBm3Qy7v+nlIyI1BE="/>
     </page:show>
 </div>

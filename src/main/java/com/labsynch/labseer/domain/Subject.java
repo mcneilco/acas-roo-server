@@ -13,10 +13,10 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -38,10 +38,11 @@ import flexjson.JSONSerializer;
 @RooJson
 public class Subject extends AbstractThing {
 
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "treatment_group_id")
-	private TreatmentGroup treatmentGroup;
+	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
+	@JoinTable(name="TREATMENTGROUP_SUBJECT", 
+	joinColumns={@JoinColumn(name="subject_id")}, 
+	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
+    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "subject", fetch =  FetchType.LAZY)
     private Set<SubjectLabel> lsLabels = new HashSet<SubjectLabel>();

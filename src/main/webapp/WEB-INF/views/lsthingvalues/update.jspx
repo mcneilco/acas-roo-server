@@ -18,7 +18,6 @@
         <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingValue_operatorTypeAndKind" z="J0IfnBw0ovAqhAusQnMUFcKvosE="/>
         <field:input field="numericValue" id="c_com_labsynch_labseer_domain_LsThingValue_numericValue" validationMessageCode="field_invalid_number" z="rS+DTjinRmPs6uUztd5TyvJyO0I="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_LsThingValue_sigFigs" validationMessageCode="field_invalid_integer" z="XgzXORwFCVLbTW5jIgJJBwpU+AQ="/>
-        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_LsThingValue_uncertainty" validationMessageCode="field_invalid_number" z="lEN56U1k4rMbfgPhe5Qkdg8BH0I="/>
         <field:input field="numberOfReplicates" id="c_com_labsynch_labseer_domain_LsThingValue_numberOfReplicates" validationMessageCode="field_invalid_integer" z="A0ef0hbrk8LxnVd0kvPUXPwEC4E="/>
         <field:textarea field="uncertaintyType" id="c_com_labsynch_labseer_domain_LsThingValue_uncertaintyType" z="S0lhgHVq1+Vc1DiM1yOXV2K01sM="/>
         <field:input field="unitType" id="c_com_labsynch_labseer_domain_LsThingValue_unitType" max="25" z="5z0SrZAa6jCntrOKUTn0beVhth4="/>
@@ -36,6 +35,7 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_LsThingValue_codeType" z="nhUhFKV24mv4Ks0umV4GGpLCa5w="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_LsThingValue_codeKind" z="Z1+YEqCTOU5cjTc1J5QHiAqEkuY="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingValue_codeTypeAndKind" z="64yDBrEf9AnzRAK0BIDQiP8YSkw="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_LsThingValue_uncertainty" validationMessageCode="field_invalid_number" z="lEN56U1k4rMbfgPhe5Qkdg8BH0I="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_LsThingValue_codeOrigin" z="RZ1oQDIViL60GSjYSXWaTGJ8YXA="/>
     </form:update>
 </div>

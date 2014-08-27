@@ -3,7 +3,6 @@
 
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.web.TreatmentGroupController;
 import org.springframework.http.HttpHeaders;
@@ -14,14 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect TreatmentGroupController_Roo_Controller_Json {
-    
-    @RequestMapping(params = "find=ByAnalysisGroup", headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> TreatmentGroupController.jsonFindTreatmentGroupsByAnalysisGroup(@RequestParam("analysisGroup") AnalysisGroup analysisGroup) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(TreatmentGroup.toJsonArray(TreatmentGroup.findTreatmentGroupsByAnalysisGroup(analysisGroup).getResultList()), headers, HttpStatus.OK);
-    }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
     @ResponseBody

@@ -14,6 +14,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.ThingPage;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 
 import flexjson.JSONDeserializer;
@@ -35,7 +36,11 @@ public class SubjectDTO {
 		this.setIgnored(subject.isIgnored());
 		this.setCodeName(subject.getCodeName());
 		this.setLsKind(subject.getLsKind());
-		this.setTreatmentGroup(new TreatmentGroupMiniDTO(subject.getTreatmentGroup()));
+		Set<TreatmentGroupMiniDTO> treatmentGroups = new HashSet<TreatmentGroupMiniDTO>();
+		for (TreatmentGroup treatmentGroup : subject.getTreatmentGroups()){
+			treatmentGroups.add(new TreatmentGroupMiniDTO(treatmentGroup));
+		}
+		this.setTreatmentGroups(treatmentGroups);
     }
 
     
@@ -61,7 +66,8 @@ public class SubjectDTO {
 
 	private Long lsTransaction;
 
-	private TreatmentGroupMiniDTO treatmentGroup;
+	
+    private Set<TreatmentGroupMiniDTO> treatmentGroups = new HashSet<TreatmentGroupMiniDTO>();
 
     private Set<SubjectLabelDTO> lsLabels = new HashSet<SubjectLabelDTO>();
 

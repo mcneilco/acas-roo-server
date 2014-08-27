@@ -9,10 +9,11 @@
         <field:display date="true" dateTimePattern="${treatmentGroup_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_TreatmentGroup_modifiedDate" object="${treatmentgroup}" z="vfWxUNWAI0+eeoYqRyMSgT0f4M0="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_TreatmentGroup_ignored" object="${treatmentgroup}" z="hB3nB3wfIexqZ6bTo+69051nFlI="/>
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_TreatmentGroup_lsTransaction" object="${treatmentgroup}" z="8zHk2H5oYK5dmFduM9kOJ8R0Feo="/>
-        <field:display field="analysisGroup" id="s_com_labsynch_labseer_domain_TreatmentGroup_analysisGroup" object="${treatmentgroup}" z="k+lLnGEW5I4hxMX9ycVNxjVQSpo="/>
         <field:display field="codeName" id="s_com_labsynch_labseer_domain_TreatmentGroup_codeName" object="${treatmentgroup}" z="57unvxAdnDNomusKllq6kp/YfMc="/>
         <field:display field="lsType" id="s_com_labsynch_labseer_domain_TreatmentGroup_lsType" object="${treatmentgroup}" z="wrMEnkBYq8pmGxadk+sxJjmehb8="/>
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_TreatmentGroup_lsKind" object="${treatmentgroup}" z="6j7clw3vddiVXGyVQ3+DsTFnPaM="/>
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_TreatmentGroup_lsTypeAndKind" object="${treatmentgroup}" z="5+jFU5sBgJgzOJP1TIc1F98FYuc="/>
+        <field:display field="analysisGroups" id="s_com_labsynch_labseer_domain_TreatmentGroup_analysisGroups" object="${treatmentgroup}" z="WNFHM+fuXDiFdR43f9bhg3WXJB4="/>
+        <field:display field="subjects" id="s_com_labsynch_labseer_domain_TreatmentGroup_subjects" object="${treatmentgroup}" z="el+zC/lGSs9cpWW6C/ZtE7wYN+A="/>
     </page:show>
 </div>

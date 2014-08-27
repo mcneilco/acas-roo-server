@@ -3,8 +3,6 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupDataOnDemand;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupDataOnDemand;
 import java.security.SecureRandom;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 privileged aspect TreatmentGroupDataOnDemand_Roo_DataOnDemand {
@@ -28,12 +25,8 @@ privileged aspect TreatmentGroupDataOnDemand_Roo_DataOnDemand {
     
     private List<TreatmentGroup> TreatmentGroupDataOnDemand.data;
     
-    @Autowired
-    AnalysisGroupDataOnDemand TreatmentGroupDataOnDemand.analysisGroupDataOnDemand;
-    
     public TreatmentGroup TreatmentGroupDataOnDemand.getNewTransientTreatmentGroup(int index) {
         TreatmentGroup obj = new TreatmentGroup();
-        setAnalysisGroup(obj, index);
         setCodeName(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
@@ -45,11 +38,6 @@ privileged aspect TreatmentGroupDataOnDemand_Roo_DataOnDemand {
         setRecordedBy(obj, index);
         setRecordedDate(obj, index);
         return obj;
-    }
-    
-    public void TreatmentGroupDataOnDemand.setAnalysisGroup(TreatmentGroup obj, int index) {
-        AnalysisGroup analysisGroup = analysisGroupDataOnDemand.getRandomAnalysisGroup();
-        obj.setAnalysisGroup(analysisGroup);
     }
     
     public void TreatmentGroupDataOnDemand.setCodeName(TreatmentGroup obj, int index) {

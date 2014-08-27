@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ItxExperimentExperimentValue" items="${itxexperimentexperimentvalues}" z="30KNecZWiIcryvSYGMaGZ8b7EF4=">
+        <table:table data="${itxexperimentexperimentvalues}" id="l_com_labsynch_labseer_domain_ItxExperimentExperimentValue" path="/itxexperimentexperimentvalues" z="hoJ40WQRBKK5wzz/XnshiWGZkv0=">
+            <table:column id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsType" property="lsType" z="pkmx2snY/NuAWWWRLTPpxErDC8U="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsKind" property="lsKind" z="I4nSEEqTTZzP0LuSuNBLhOoYrQ0="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsTypeAndKind" property="lsTypeAndKind" z="rxvmMOKTDGJHiCf+P11ppq1GB/w="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_ignored" property="ignored" z="Cvq4jeSUhS9iRxP3APrcipTJniU="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_publicData" property="publicData" z="y2IyegHYZ8MuH5JhTqW4fVhCU08="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_codeOrigin" property="codeOrigin" z="OIEN88O6+nnRSrsBWy2Nk+VyrjA="/>
+        </table:table>
+    </page:list>
+</div>

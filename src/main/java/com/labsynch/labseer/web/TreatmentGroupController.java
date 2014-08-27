@@ -67,10 +67,10 @@ public class TreatmentGroupController {
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
         TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
-        treatmentGroup.persist();
+        TreatmentGroup savedTreatmentGroup = treatmentGroupService.saveLsTreatmentGroup(treatmentGroup);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(treatmentGroup.toJson(), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(savedTreatmentGroup.toJson(), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = { "/jsonArray", "/jsonArrayParse" }, method = RequestMethod.POST, headers = "Accept=application/json")

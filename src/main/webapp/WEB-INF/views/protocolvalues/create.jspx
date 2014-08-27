@@ -10,7 +10,6 @@
         <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ProtocolValue_clobValue" z="QK9GukaosxwmCEV1Mgf5zS679Aw="/>
         <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ProtocolValue_blobValue" z="SCwu5r78TaX0d42HUtVtcNaVA+k="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_ProtocolValue_sigFigs" validationMessageCode="field_invalid_integer" z="Ixe5dC4PYANKcrOIWU99y5EfSTA="/>
-        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ProtocolValue_uncertainty" validationMessageCode="field_invalid_number" z="N3VmuQgokgbDSvQzYAne2ydP5yg="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ProtocolValue_comments" z="kQegVDC7lFr/wGNbcYzoZRHmZzc="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ProtocolValue_ignored" z="V/LIGlTmvcXqecGv9+1RRd/ULuo="/>
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ProtocolValue_lsTransaction" validationMessageCode="field_invalid_integer" z="8FW0Qf3sGN/GMINPeGsIsQ1hZBM="/>
@@ -36,6 +35,7 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_ProtocolValue_codeType" z="Loqo09USLp1nYjBOhGx13SsHUTk="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_ProtocolValue_codeKind" z="LW4tXHUV1WDjgEFtHTPw8e6i9Ho="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_ProtocolValue_codeTypeAndKind" z="xsqysATV5TBfH3LC1W3HxSkd4+U="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ProtocolValue_uncertainty" validationMessageCode="field_invalid_number" z="N3VmuQgokgbDSvQzYAne2ydP5yg="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ProtocolValue_codeOrigin" z="3Mh85tgYst8bdlk2VgceRkaOgRg="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ProtocolValue" render="${not empty dependencies}" z="//RiUk84gQbQg+ClwxDKmXcxd0U="/>

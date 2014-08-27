@@ -3,20 +3,11 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 privileged aspect TreatmentGroup_Roo_Finder {
-    
-    public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByAnalysisGroup(AnalysisGroup analysisGroup) {
-        if (analysisGroup == null) throw new IllegalArgumentException("The analysisGroup argument is required");
-        EntityManager em = TreatmentGroup.entityManager();
-        TypedQuery<TreatmentGroup> q = em.createQuery("SELECT o FROM TreatmentGroup AS o WHERE o.analysisGroup = :analysisGroup", TreatmentGroup.class);
-        q.setParameter("analysisGroup", analysisGroup);
-        return q;
-    }
     
     public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");

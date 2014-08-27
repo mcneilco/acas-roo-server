@@ -11,8 +11,6 @@ import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.web.TreatmentGroupController;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.joda.time.format.DateTimeFormat;
@@ -42,11 +40,6 @@ privileged aspect TreatmentGroupController_Roo_Controller {
     @RequestMapping(params = "form", produces = "text/html")
     public String TreatmentGroupController.createForm(Model uiModel) {
         populateEditForm(uiModel, new TreatmentGroup());
-        List<String[]> dependencies = new ArrayList<String[]>();
-        if (AnalysisGroup.countAnalysisGroups() == 0) {
-            dependencies.add(new String[] { "analysisgroup", "analysisgroups" });
-        }
-        uiModel.addAttribute("dependencies", dependencies);
         return "treatmentgroups/create";
     }
     

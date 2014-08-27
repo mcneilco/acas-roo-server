@@ -55,8 +55,17 @@ public class Experiment extends AbstractThing {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
 	private Set<ExperimentState> lsStates = new HashSet<ExperimentState>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
-	private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch =  FetchType.LAZY)
+	//private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+	
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "experiments")  
+    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();  
+	
+//	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
+//	@JoinTable(name="EXPERIMENT_ANALYSIS_GROUP", 
+//	joinColumns={@JoinColumn(name="experiment_id")}, 
+//	inverseJoinColumns={@JoinColumn(name="analysis_group_id")})
+//	private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
 	private Set<ExperimentLabel> lsLabels = new HashSet<ExperimentLabel>();
@@ -91,7 +100,7 @@ public class Experiment extends AbstractThing {
 				}
 			}
 		} else {
-			logger.info("No experiment labels to save");
+			logger.info("No experiment tags to save");
 		}
 	}
 
@@ -194,37 +203,84 @@ public class Experiment extends AbstractThing {
 
 	@Transactional
 	public String toJson() {
-		return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels", "analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer()
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", 
+				"analysisGroups.experiment", "lsLabels.experiment")
+				.include("lsTags", "lsLabels", "lsStates.lsValues", 
+						"analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels",
+						"analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels",
+						"analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels")
+						.transform(new ExcludeNulls(), void.class)
+						.serialize(this);
 	}
 
 	@Transactional
 	public String toPrettyJson() {
-		return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels", "analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer()
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", 
+				"analysisGroups.experiments", "lsLabels.experiment")
+				.include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups",
+						"analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels",
+						"analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels",
+						"analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels")
+						.prettyPrint(true)
+						.transform(new ExcludeNulls(), void.class)
+						.serialize(this);
 	}
 
 	@Transactional
 	public String toPrettyJsonStub() {
-		return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups", "lsLabels.experiment").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer()
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", 
+				"analysisGroups", "lsLabels.experiment")
+				.include("lsTags", "lsLabels", "lsStates.lsValues")
+				.prettyPrint(true)
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(this);
 	}
 
 	@Transactional
 	public String toJsonStub() {
-		return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups", "lsLabels.experiment").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer()
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", 
+				"analysisGroups", "lsLabels.experiment")
+				.include("lsTags", "lsLabels", "lsStates.lsValues")
+				.prettyPrint(false)
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(this);
 	}
 
 	@Transactional
 	public String toJsonStubWithAnalysisGroups() {
-		return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer()
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", 
+				"lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment")
+				.include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups")
+				.prettyPrint(false)
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(this);
 	}
 
 	@Transactional
 	public String toJsonStubWithAnalysisGroupValues() {
-		return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer()
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", 
+				"lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment")
+				.include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues")
+				.prettyPrint(false)
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(this);
 	}
 
 	@Transactional
 	public String toJsonStubWithAnalysisGroupStates() {
-		return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment").include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer()
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", 
+				"lsLabels.experiment", "analysisGroups.subjects", "analysisGroups.experiment")
+				.include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates")
+				.prettyPrint(false)
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(this);
 	}
 
 	@Transactional
@@ -234,37 +290,80 @@ public class Experiment extends AbstractThing {
 
 	@Transactional
 	public static String toJsonArray(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-		return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels", "analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subject", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer()
+		.include("lsTags", "lsLabels", "lsStates.lsValues", 
+				"analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels",
+				"analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels",
+				"analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels")
+				.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", 
+						"analysisGroups.subject", "lsLabels.experiment")
+						.transform(new ExcludeNulls(), void.class)
+						.serialize(collection);
 	}
 
 	@Transactional
 	public static String toJsonArrayPretty(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-		return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels", "analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels", "analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subject", "lsLabels.experiment").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer()
+		.include("lsTags", "lsLabels", "lsStates.lsValues", 
+				"analysisGroups.lsStates.lsValues", "analysisGroups.lsLabels",
+				"analysisGroups.treatmentGroups.lsStates.lsValues", "analysisGroups.treatmentGroups.lsLabels",
+				"analysisGroups.treatmentGroups.subjects.lsStates.lsValues", "analysisGroups.treatmentGroups.subjects.lsLabels")
+				.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", 
+						"analysisGroups.subject", "lsLabels.experiment")
+						.prettyPrint(true)
+						.transform(new ExcludeNulls(), void.class)
+						.serialize(collection);
 	}
 
 	@Transactional
 	public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-		return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues").exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer()
+		.include("lsTags", "lsLabels", "lsStates.lsValues")
+		.exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", 
+				"lsLabels.experiment")
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(collection);
 	}
 
 	@Transactional
 	public static String toJsonArrayStubWithAG(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-		return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subjects", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer()
+		.include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups")
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", 
+				"analysisGroups.subjects", "lsLabels.experiment")
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(collection);
 	}
 
 	@Transactional
 	public static String toJsonArrayStubWithAGStates(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-		return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subjects", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer()
+		.include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates")
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", 
+				"analysisGroups.subjects", "lsLabels.experiment")
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(collection);
 	}
 
 	@Transactional
 	public static String toJsonArrayStubWithAGValues(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-		return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues").exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "analysisGroups.subjects", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer()
+		.include("lsTags", "lsLabels", "lsStates.lsValues", "analysisGroups.lsStates.lsValues")
+		.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", 
+				"analysisGroups.subjects", "lsLabels.experiment")
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(collection);
 	}
 
 	@Transactional
 	public static String toJsonArrayStubPretty(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-		return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues").exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
+		return new JSONSerializer()
+		.include("lsTags", "lsLabels", "lsStates.lsValues")
+		.exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", 
+				"lsLabels.experiment")
+				.prettyPrint(true)
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(collection);
 	}
 
 	@Transactional

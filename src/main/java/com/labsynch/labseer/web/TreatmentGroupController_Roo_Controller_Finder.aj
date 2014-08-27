@@ -3,7 +3,6 @@
 
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.web.TreatmentGroupController;
 import org.springframework.ui.Model;
@@ -12,18 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 privileged aspect TreatmentGroupController_Roo_Controller_Finder {
-    
-    @RequestMapping(params = { "find=ByAnalysisGroup", "form" }, method = RequestMethod.GET)
-    public String TreatmentGroupController.findTreatmentGroupsByAnalysisGroupForm(Model uiModel) {
-        uiModel.addAttribute("analysisgroups", AnalysisGroup.findAllAnalysisGroups());
-        return "treatmentgroups/findTreatmentGroupsByAnalysisGroup";
-    }
-    
-    @RequestMapping(params = "find=ByAnalysisGroup", method = RequestMethod.GET)
-    public String TreatmentGroupController.findTreatmentGroupsByAnalysisGroup(@RequestParam("analysisGroup") AnalysisGroup analysisGroup, Model uiModel) {
-        uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByAnalysisGroup(analysisGroup).getResultList());
-        return "treatmentgroups/list";
-    }
     
     @RequestMapping(params = { "find=ByLsTransactionEquals", "form" }, method = RequestMethod.GET)
     public String TreatmentGroupController.findTreatmentGroupsByLsTransactionEqualsForm(Model uiModel) {

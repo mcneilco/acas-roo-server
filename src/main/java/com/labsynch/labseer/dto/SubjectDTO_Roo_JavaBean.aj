@@ -101,12 +101,12 @@ privileged aspect SubjectDTO_Roo_JavaBean {
         this.lsTransaction = lsTransaction;
     }
     
-    public TreatmentGroupMiniDTO SubjectDTO.getTreatmentGroup() {
-        return this.treatmentGroup;
+    public Set<TreatmentGroupMiniDTO> SubjectDTO.getTreatmentGroups() {
+        return this.treatmentGroups;
     }
     
-    public void SubjectDTO.setTreatmentGroup(TreatmentGroupMiniDTO treatmentGroup) {
-        this.treatmentGroup = treatmentGroup;
+    public void SubjectDTO.setTreatmentGroups(Set<TreatmentGroupMiniDTO> treatmentGroups) {
+        this.treatmentGroups = treatmentGroups;
     }
     
     public Set<SubjectLabelDTO> SubjectDTO.getLsLabels() {

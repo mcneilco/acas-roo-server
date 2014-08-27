@@ -10,8 +10,6 @@ import com.labsynch.labseer.domain.ThingPage;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.web.SubjectController;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.joda.time.format.DateTimeFormat;
@@ -41,11 +39,6 @@ privileged aspect SubjectController_Roo_Controller {
     @RequestMapping(params = "form", produces = "text/html")
     public String SubjectController.createForm(Model uiModel) {
         populateEditForm(uiModel, new Subject());
-        List<String[]> dependencies = new ArrayList<String[]>();
-        if (TreatmentGroup.countTreatmentGroups() == 0) {
-            dependencies.add(new String[] { "treatmentgroup", "treatmentgroups" });
-        }
-        uiModel.addAttribute("dependencies", dependencies);
         return "subjects/create";
     }
     

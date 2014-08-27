@@ -89,8 +89,9 @@ public class SubjectValue extends AbstractValue {
 		return this.lsState.getLsKind();
 	}
 
+	//TODO: work out a different strategy with the many to many
 	public Long getTreatmentGroupId() {
-		return this.lsState.getSubject().getTreatmentGroup().getId();
+		return 0L;
 	}
 	
 	public Long getSubjectId() {

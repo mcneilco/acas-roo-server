@@ -10,7 +10,6 @@
         <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_clobValue" z="7kXHjydO4oDuNj59TEucwM6I7lw="/>
         <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_blobValue" z="lxUjQ65x+m9WaCEzjOvHmUGQyfE="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_sigFigs" validationMessageCode="field_invalid_integer" z="RIQv+viYR+0DDqOxwwKr7OY7Go4="/>
-        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_uncertainty" validationMessageCode="field_invalid_number" z="72F5Bi7YBE0BtQnwvroisXLL+3o="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_comments" z="c4IOFGrBmnKeN5OPZ87SikJyrQ4="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_ignored" z="pllxg0/rMiQ+braQ3UH5gSqNDFQ="/>
         <field:datetime dateTimePattern="${analysisGroupValue_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_recordedDate" required="true" z="z8Sx6soZpxWTkMURl41ZHWP3ru8="/>
@@ -36,6 +35,7 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_codeType" z="BF5q6xKCMfri4JNVTCQltklwVY4="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_codeKind" z="Npgfy74AczcWUMmx/pONuGA1xHY="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_codeTypeAndKind" z="jcOpH3kP9NDsaaSiM5LCo0NMz7c="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_uncertainty" validationMessageCode="field_invalid_number" z="72F5Bi7YBE0BtQnwvroisXLL+3o="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_AnalysisGroupValue_codeOrigin" z="9krbrScFVRxSrikIC02jr3tUJg4="/>
     </form:update>
 </div>

@@ -10,7 +10,6 @@
         <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ExperimentValue_clobValue" z="M5EoBIVWUyxqzC2nINQAW8zZabM="/>
         <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ExperimentValue_blobValue" z="FqkBnbyrKuAszK1MGOlojXkCZlU="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_ExperimentValue_sigFigs" validationMessageCode="field_invalid_integer" z="BczkNOc/G09wAQ1gEZpVF41efFA="/>
-        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ExperimentValue_uncertainty" validationMessageCode="field_invalid_number" z="yPCo9AKL5gFq5dbgbs7Yr16U3jM="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ExperimentValue_comments" z="O17SSG4Rx2QzLCqdX0ghAsXlmWU="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ExperimentValue_ignored" z="phfAMT26Sc2tUkQbrgjGhRHpQCM="/>
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ExperimentValue_lsTransaction" validationMessageCode="field_invalid_integer" z="Z9mu9HoScdmEgp2rkwAe2dhMM/Y="/>
@@ -36,6 +35,7 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_ExperimentValue_codeType" z="aKuabOzszFynE/AAvEcoEV5P08o="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_ExperimentValue_codeKind" z="Nx+7K7pnwdCjl7ukMdKFNNCgQCM="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_ExperimentValue_codeTypeAndKind" z="6qaFuVxLXzIgAaMzdrGm+LFhygw="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ExperimentValue_uncertainty" validationMessageCode="field_invalid_number" z="yPCo9AKL5gFq5dbgbs7Yr16U3jM="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ExperimentValue_codeOrigin" z="Tp5iOW3kt1mM+10DciGyouAk17o="/>
     </form:update>
 </div>
