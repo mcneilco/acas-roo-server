@@ -2,6 +2,7 @@ package com.labsynch.labseer.manytomany;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -39,16 +40,16 @@ public class ExperimentTest {
 	private ExperimentService experimentService;
 
 	@Transactional
-	//@Test
+	@Test
 	public void Experiment_Many_To_Many_Test() {
-		Experiment theExperiment = Experiment.findExperiment(9L);
-		logger.debug(theExperiment.toJson());
+		Experiment theExperiment = Experiment.findExperiment(2165L);
+
+		//logger.debug(theExperiment.toJson());
 		
 		int theSize = theExperiment.getAnalysisGroups().size();
 		logger.debug(String.valueOf(theSize));
 		System.out.println("" + theSize);
-		
-		Assert.assertEquals(3, theSize);
+		Assert.assertEquals(7, theSize);
 	}
 	
 	@Transactional
@@ -128,6 +129,7 @@ public class ExperimentTest {
 		
 	}
 
+	@Transactional
 	@Test
 	public void CreateFullExperimentFromJson1_Test() throws UniqueExperimentNameException {
 		
@@ -149,5 +151,72 @@ public class ExperimentTest {
 		//Assert.assertEquals(testExperiment.toJson(), experiment.toJson());
 		Assert.assertEquals(Experiment.findExperiment(testExperiment.getId()), experiment);
 
+	}
+	
+	//@TODO: Fill out method stubs
+	@Transactional
+	@Test
+	public void findExperimentByNameTest (String experimentName) {
+		
+	}
+	
+	@Transactional
+	@Test
+	public void findExperimentByExperimentNameTest (String experimentName) {
+		
+	}
+	
+	@Transactional
+	@Test
+	public void findExperimentByExperimentNameAndProtocolIdTest (String experimentName, Long protocolId) {
+		
+	}
+	
+	@Transactional
+	@Test
+	public void findExperimentByNameAndProtocolIdTest (String experimentName, Long protocolId) {
+		
+	}
+	
+	@Transactional
+	@Test
+	public void fromJsonToExperimentTest (String json) {
+		
+	}
+	
+	@Transactional
+	@Test
+	public void deleteExperimentTest (Experiment experiment) {
+		
+	}
+	
+	@Transactional
+	@Test
+	public static void deleteExperimentTest (Long experimentId) {
+	
+	}
+	
+	@Transactional
+	@Test
+	public static void findExperimentsByCodeNameEquals(String codeName) {
+	
+	}
+	
+	@Transactional
+	@Test
+	public static void findExperimentsByLsTransaction(Long lsTransaction) {
+	
+	}
+	
+	@Transactional
+	@Test
+	public static void findExperimentsByProtocol(Protocol protocol)  {
+	
+	}
+	
+	@Transactional
+	@Test
+	public static void findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(String protocolType, String protocolKind, String lsType, String lsKind) {
+		
 	}
 }

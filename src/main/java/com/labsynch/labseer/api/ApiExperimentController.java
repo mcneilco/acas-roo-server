@@ -85,9 +85,6 @@ public class ApiExperimentController {
 	private ExperimentService experimentService;
 
 	@Autowired
-	private PropertiesUtilService propertiesUtilService;
-
-	@Autowired
 	private ExperimentValueService experimentValueService;
 
 	@Autowired
@@ -173,9 +170,7 @@ public class ApiExperimentController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		List<Experiment> experiments = null;
-		if (protocolType != null && protocolKind != null){
-//TODO: filter the experiments by protocol type and kind and experiment type and kind else 
-//TODO: Greg please implement and test			
+		if (protocolType != null && protocolKind != null){		
 			experiments = Experiment.findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(protocolType, protocolKind, lsType, lsKind).getResultList();
 		} else {
 			experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
