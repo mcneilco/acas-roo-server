@@ -1,5 +1,7 @@
 package com.labsynch.labseer.manytomany;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +42,7 @@ public class ExperimentTest {
 	private ExperimentService experimentService;
 
 	@Transactional
-	@Test
+	//@Test
 	public void Experiment_Many_To_Many_Test() {
 		Experiment theExperiment = Experiment.findExperiment(2165L);
 
@@ -53,7 +55,7 @@ public class ExperimentTest {
 	}
 	
 	@Transactional
-	@Test
+	//@Test
 	public void CreateFullExperiment_Test() throws UniqueExperimentNameException {
 		
 		Protocol protocol = Protocol.findProtocolEntries(0, 1).get(0);
@@ -130,7 +132,7 @@ public class ExperimentTest {
 	}
 
 	@Transactional
-	@Test
+	//@Test
 	public void CreateFullExperimentFromJson1_Test() throws UniqueExperimentNameException {
 		
 		String json = "{\"analysisGroups\":[{\"id\":null,\"ignored\":false,\"lsKind\":\"results\",\"lsLabels\":[],\"lsStates\":[],\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"tester\",\"recordedDate\":1403419760648,\"treatmentGroups\":[{\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[],\"lsStates\":[],\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"tester\",\"recordedDate\":1403419760694,\"subjects\":[{\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[],\"lsStates\":[],\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"tester\",\"recordedDate\":1403419760738,\"version\":0}],\"version\":0}],\"version\":0}],\"codeName\":null,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[],\"lsStates\":[],\"lsTags\":[],\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000002\",\"id\":1,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"smeyer\",\"recordedDate\":1402943976000,\"shortDescription\":\"confirmation screen\",\"version\":1},\"recordedBy\":\"tester\",\"recordedDate\":1403419760597,\"version\":0}";
@@ -140,7 +142,7 @@ public class ExperimentTest {
 	}
 	
 	@Transactional
-	@Test
+	//@Test
 	public void GetFullExperimentJson1_Test() {
 		
 		Experiment experiment = Experiment.findExperiment(242L);
@@ -153,70 +155,95 @@ public class ExperimentTest {
 
 	}
 	
-	//@TODO: Fill out method stubs
+	//This method searches by Experiment Code Name
 	@Transactional
 	@Test
-	public void findExperimentByNameTest (String experimentName) {
-		
+	public void findExperimentByNameTest () {
+		String experimentCodeName = "EXPT-00000002";
+		Collection<Experiment> experiments = Experiment.findExperimentByName(experimentCodeName);
+		assert(!experiments.isEmpty());
+	}
+	
+	//This method searches by Experiment Label Text
+	@Transactional
+	@Test
+	public void findExperimentByExperimentNameTest () {
+		String experimentLabelText = "Test Load 102";
+		List<Experiment> experiments = Experiment.findExperimentByExperimentName(experimentLabelText);
+		assert(experiments.get(0).getId() == 1007);
 	}
 	
 	@Transactional
 	@Test
-	public void findExperimentByExperimentNameTest (String experimentName) {
-		
+	public void findExperimentByExperimentNameAndProtocolIdTest () {
+		String experimentName = "Test Load 102";
+		Long protocolId = 1006L;
+		List<Experiment> experiments = Experiment.findExperimentByExperimentNameAndProtocolId(experimentName, protocolId);
+		assert(experiments.get(0).getId() == 1007);
 	}
 	
+	//Experiment.getProtocol is broken
 	@Transactional
 	@Test
-	public void findExperimentByExperimentNameAndProtocolIdTest (String experimentName, Long protocolId) {
-		
+	public void findExperimentByNameAndProtocolIdTest () {
+		String experimentCodeName = "EXPT-00000002";
+		Long protocolId = 1006L;
+		Collection<Experiment> experiments = Experiment.findExperimentByNameAndProtocolId(experimentCodeName, protocolId);
+		Experiment[] arrayOfExperiments = (Experiment[]) experiments.toArray();
+		Experiment experiment = arrayOfExperiments[0];
+		assert(!experiments.isEmpty());
 	}
 	
+	//Need to locate appropriate JSON string for new model
 	@Transactional
-	@Test
-	public void findExperimentByNameAndProtocolIdTest (String experimentName, Long protocolId) {
-		
-	}
-	
-	@Transactional
-	@Test
+	//@Test
 	public void fromJsonToExperimentTest (String json) {
 		
 	}
 	
+	//Delete SQL query is now invalid
 	@Transactional
 	@Test
-	public void deleteExperimentTest (Experiment experiment) {
-		
+	public void deleteExperimentTest () {
+		List<Experiment> experiment = Experiment.findExperimentByExperimentName("Test Load 102");
+		assert(experiment.size() == 1);
+		Experiment.deleteExperiment(experiment.get(0));
+		experiment = Experiment.findExperimentByExperimentName("Test Load 102");
+		assert(experiment.size() == 0);
 	}
 	
 	@Transactional
 	@Test
-	public static void deleteExperimentTest (Long experimentId) {
-	
+	public void findExperimentsByCodeNameEqualsTest() {
+		List<Experiment> experiment = Experiment.findExperimentsByCodeNameEquals("EXPT-00000002").getResultList();
+		assert(experiment.size() == 1);
 	}
 	
 	@Transactional
 	@Test
-	public static void findExperimentsByCodeNameEquals(String codeName) {
-	
+	public void findExperimentsByLsTransaction() {
+		Long lsTransaction = 5L;
+		List<Experiment> experiment = Experiment.findExperimentsByLsTransaction(lsTransaction).getResultList();
+		assert(experiment.size() == 1);
 	}
 	
 	@Transactional
 	@Test
-	public static void findExperimentsByLsTransaction(Long lsTransaction) {
-	
+	public void findExperimentsByProtocol()  {
+		Long protocolId = 1006L;
+		Protocol protocol = Protocol.findProtocol(protocolId);
+		List<Experiment> experiments = Experiment.findExperimentsByProtocol(protocol).getResultList();
+		assert(experiments.size() == 23);
 	}
 	
 	@Transactional
 	@Test
-	public static void findExperimentsByProtocol(Protocol protocol)  {
-	
-	}
-	
-	@Transactional
-	@Test
-	public static void findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(String protocolType, String protocolKind, String lsType, String lsKind) {
-		
+	public void findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKindTest() {
+		String protocolType = "default";
+		String protocolKind = "default";
+		String experimentType = "default";
+		String experimentKind = "default";
+		List<Experiment> experiments = Experiment.findExperimentsByProtocolTypeAndKindAndExperimentTypeAndKind(protocolType, protocolKind, experimentType, experimentKind).getResultList();
+		assert(experiments.size() == 70);
 	}
 }
