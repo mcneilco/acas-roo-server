@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.TypedQuery;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -88,8 +90,38 @@ public class AnalysisGroupTest {
 		//Assert.assertEquals("AG-00000238", output.getCodeName());
 		Assert.assertEquals(2, analysisGroup.getTreatmentGroups().size());
 
-		logger.info(AnalysisGroup.findAnalysisGroup(output.getId()).toPrettyFullJson());
-
-		
+		logger.info(AnalysisGroup.findAnalysisGroup(output.getId()).toPrettyFullJson());		
+	}
+	
+	//TODO:Implement test method stubs
+	@Transactional
+	@Test
+	public void findAnalysisGroupsByExperimentIdAndIgnored() {
+		Long id;
+		boolean includeIgnored;
+	}
+	
+	@Transactional
+	@Test
+	public void findAnalysisGroupsByCodeNameEquals() {
+		String codeName;
+	}
+	
+	@Transactional
+	@Test
+	public void removeByExperimentID() {
+		Long id;
+	}
+	
+	@Transactional
+	@Test
+	public void deleteByExperimentID() {
+		Long experimentId;
+	}
+	
+	@Transactional
+	@Test
+	public void fromJsonToAnalysisGroup() {
+		String json;
 	}
 }
