@@ -2,6 +2,7 @@ package com.labsynch.labseer.manytomany;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.TypedQuery;
@@ -43,7 +44,7 @@ public class AnalysisGroupTest {
 	
 
 	@Transactional
-	@Test
+	//@Test
 	public void Analysis_Group_Many_To_Many_Test() {
 		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(235L);
 		logger.debug(analysisGroup.toJson());
@@ -57,7 +58,7 @@ public class AnalysisGroupTest {
 
 	
 	@Transactional
-	@Test
+	//@Test
 	public void saveWithExistingTreatmentGroups() throws UniqueExperimentNameException {
 		
 		Protocol protocol = Protocol.findProtocolEntries(0, 1).get(0);
@@ -96,32 +97,47 @@ public class AnalysisGroupTest {
 	//TODO:Implement test method stubs
 	@Transactional
 	@Test
-	public void findAnalysisGroupsByExperimentIdAndIgnored() {
-		Long id;
-		boolean includeIgnored;
+	//TODO:test failed
+	public void findAnalysisGroupsByExperimentIdAndIgnoredTest() {
+		Long id = 172612L;
+		Boolean includeIgnored = false;
+		List<AnalysisGroup> analysisgroup = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(id, includeIgnored).getResultList();
+		assert(analysisgroup.size() == 1);
 	}
 	
 	@Transactional
 	@Test
-	public void findAnalysisGroupsByCodeNameEquals() {
-		String codeName;
+	//test passed
+	public void findAnalysisGroupsByCodeNameEqualsTest() {
+		String codeName = "AG-00086151";
+		List<AnalysisGroup> analysisgroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(codeName).getResultList();
+		assert(analysisgroup.size() ==1);
+		
 	}
 	
 	@Transactional
 	@Test
-	public void removeByExperimentID() {
-		Long id;
+	//TODO:test failed
+	public void removeByExperimentIDTest() {
+		Long id = 172616L;
+		AnalysisGroup.removeByExperimentID(id);
+		List<AnalysisGroup> analysisgroup = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(id, false).getResultList();
+		assert(analysisgroup.size() ==0);
 	}
 	
 	@Transactional
 	@Test
-	public void deleteByExperimentID() {
-		Long experimentId;
+	//TODO:test failed
+	public void deleteByExperimentIDTest() {
+		Long experimentId = 2775L;
+		AnalysisGroup.deleteByExperimentID(experimentId);
+		List<AnalysisGroup> analysisgroup = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experimentId, false).getResultList();
+		assert(analysisgroup.size() ==0);
 	}
 	
 	@Transactional
-	@Test
-	public void fromJsonToAnalysisGroup() {
+	//@Test
+	public void fromJsonToAnalysisGroupTest() {
 		String json;
 	}
 }
