@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.persistence.TypedQuery;
 
 import junit.framework.Assert;
+import oracle.net.aso.e;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +42,49 @@ public class AnalysisGroupTest {
 	@Autowired
 	private ExperimentService experimentService;
 	
+	private Protocol makeTestingProtocol() {
+		//initialize some entries to fill in the fields
+		Date now = new Date();
+		//create protocol
+		Protocol protocol = new Protocol();
+		protocol.setRecordedBy("test user");
+		protocol.setLsKind("default");
+		protocol.setLsType("default");
+		protocol.persist();
+		protocol.flush();
+		return protocol;
+	}
 	
+	private Experiment makeTestingExperiment() {
+		Protocol protocol = makeTestingProtocol();
+		Experiment experiment = new Experiment();
+        experiment.setCodeName("EXPT-12345678");
+        experiment.setIgnored(false);
+        experiment.setLsKind(protocol.getLsKind());
+        experiment.setLsType(protocol.getLsType());
+        experiment.setRecordedBy(protocol.getRecordedBy());
+        experiment.setRecordedDate(protocol.getRecordedDate());
+        experiment.setProtocol(protocol);
+        experiment.persist();
+        experiment.flush();
+        return experiment;
+	}
+	
+	private AnalysisGroup makeTestingAnalysisGroup() {
+		Experiment experiment = makeTestingExperiment();
+		AnalysisGroup analysisgroup= new AnalysisGroup();
+        analysisgroup.setCodeName("AG-12345678");
+        analysisgroup.setIgnored(experiment.isIgnored());
+        analysisgroup.setLsKind(experiment.getLsKind());
+        analysisgroup.setLsType(experiment.getLsType());
+        analysisgroup.setRecordedBy(experiment.getRecordedBy());
+        Set<Experiment> experimentSet = new HashSet<Experiment>();
+        experimentSet.add(experiment);
+        analysisgroup.setExperiments(experimentSet);
+        analysisgroup.persist();
+        analysisgroup.flush();
+        return analysisgroup;
+	}
 
 	@Transactional
 	//@Test
@@ -97,44 +140,59 @@ public class AnalysisGroupTest {
 	//TODO:Implement test method stubs
 	@Transactional
 	@Test
-	//TODO:test failed
 	public void findAnalysisGroupsByExperimentIdAndIgnoredTest() {
-		Long id = 172612L;
-		Boolean includeIgnored = false;
-		List<AnalysisGroup> analysisgroup = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(id, includeIgnored).getResultList();
-		assert(analysisgroup.size() == 1);
+		//generate an analysisgroup for testing
+        AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
+        Long experimentId = analysisgroup.getExperiments().iterator().next().getId();
+        boolean ignored = analysisgroup.isIgnored();
+        //go get the analysisgroup by its ExperimentId and Ignored
+		AnalysisGroup check = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experimentId, ignored).getSingleResult();
+		assert(analysisgroup.toJson() == check.toJson());
 	}
 	
 	@Transactional
 	@Test
-	//test passed
+	public void findAnalysisGroupsByExperimentsAndIgnoredNotTest() {
+		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
+		Set<Experiment> experiments = analysisgroup.getExperiments();
+		boolean ignored = analysisgroup.isIgnored();
+		AnalysisGroup check = AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(experiments, !ignored).getSingleResult();
+		assert(analysisgroup.toJson() == check.toJson());
+	}
+	
+	@Transactional
+	@Test
 	public void findAnalysisGroupsByCodeNameEqualsTest() {
-		String codeName = "AG-00086151";
-		List<AnalysisGroup> analysisgroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(codeName).getResultList();
-		assert(analysisgroup.size() ==1);
-		
+		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
+		String codename = analysisgroup.getCodeName();
+		AnalysisGroup check = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(codename).getSingleResult();
+		assert(check.toJson() == analysisgroup.toJson());
 	}
 	
 	@Transactional
 	@Test
-	//TODO:test failed
-	public void removeByExperimentIDTest() {
-		Long experimentId = 2165L;
-		Long id = 2166L;
+	public void removeByExperimentIdTest() {
+		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
+		Long id = analysisgroup.getId();
+		Long experimentId = analysisgroup.getExperiments().iterator().next().getId();
+		AnalysisGroup checkbefore = AnalysisGroup.findAnalysisGroup(id);
+		assert(analysisgroup.toJson() == checkbefore.toJson());
 		AnalysisGroup.removeByExperimentID(experimentId);
-		AnalysisGroup analysisgroup = AnalysisGroup.findAnalysisGroup(id);
-		assert(!(analysisgroup == null));
+		AnalysisGroup checkafter = AnalysisGroup.findAnalysisGroup(id);
+		assert(analysisgroup.toJson() != checkafter.toJson());
 	}
 	
 	@Transactional
 	@Test
-	//TODO:test failed
 	public void deleteByExperimentIDTest() {
-		Long experimentId = 2165L;
-		Long id = 2167L;
+		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
+		Long id = analysisgroup.getId();
+		Long experimentId = analysisgroup.getExperiments().iterator().next().getId();
+		AnalysisGroup checkbefore = AnalysisGroup.findAnalysisGroup(id);
+		assert(analysisgroup.toJson() == checkbefore.toJson());
 		AnalysisGroup.deleteByExperimentID(experimentId);
-		AnalysisGroup analysisgroup = AnalysisGroup.findAnalysisGroup(id);
-		assert(!(analysisgroup == null));
+		AnalysisGroup checkafter = AnalysisGroup.findAnalysisGroup(id);
+		assert(analysisgroup.toJson() != checkafter.toJson());
 	}
 	
 	@Transactional
@@ -142,4 +200,20 @@ public class AnalysisGroupTest {
 	public void fromJsonToAnalysisGroupTest() {
 		String json;
 	}
+	
+	@Transactional
+	@Test
+    public void removeTest() {
+		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
+        //go get the analysisgroup by its ID
+        AnalysisGroup check = AnalysisGroup.findAnalysisGroup(analysisgroup.getId());
+        //logger.info(check.toPrettyFullJson());
+        //check that the original and the fetched analysisgroups are the same
+        assert(check.toJson() == analysisgroup.toJson());
+        //remove the original
+        analysisgroup.remove();
+        //make sure the original doesn't matched the one fetched before the remove
+        assert(check.toJson() != analysisgroup.toJson());
+        
+    }
 }
