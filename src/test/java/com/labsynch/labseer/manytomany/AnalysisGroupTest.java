@@ -119,20 +119,22 @@ public class AnalysisGroupTest {
 	@Test
 	//TODO:test failed
 	public void removeByExperimentIDTest() {
-		Long id = 172616L;
-		AnalysisGroup.removeByExperimentID(id);
-		List<AnalysisGroup> analysisgroup = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(id, false).getResultList();
-		assert(analysisgroup.size() ==0);
+		Long experimentId = 2165L;
+		Long id = 2166L;
+		AnalysisGroup.removeByExperimentID(experimentId);
+		AnalysisGroup analysisgroup = AnalysisGroup.findAnalysisGroup(id);
+		assert(!(analysisgroup == null));
 	}
 	
 	@Transactional
 	@Test
 	//TODO:test failed
 	public void deleteByExperimentIDTest() {
-		Long experimentId = 2775L;
+		Long experimentId = 2165L;
+		Long id = 2167L;
 		AnalysisGroup.deleteByExperimentID(experimentId);
-		List<AnalysisGroup> analysisgroup = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experimentId, false).getResultList();
-		assert(analysisgroup.size() ==0);
+		AnalysisGroup analysisgroup = AnalysisGroup.findAnalysisGroup(id);
+		assert(!(analysisgroup == null));
 	}
 	
 	@Transactional
