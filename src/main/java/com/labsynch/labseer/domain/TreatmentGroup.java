@@ -32,7 +32,7 @@ import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(finders = { "findTreatmentGroupsByAnalysisGroup", "findTreatmentGroupsByLsTransactionEquals" })
+@RooJpaActiveRecord(finders = { "findTreatmentGroupsByAnalysisGroups", "findTreatmentGroupsByLsTransactionEquals" })
 @RooJson
 public class TreatmentGroup extends AbstractThing {
 	
