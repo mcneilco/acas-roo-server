@@ -188,7 +188,7 @@ public class Experiment extends AbstractThing {
 		Collection<Experiment> experimentList = new HashSet<Experiment>();
 		for (ExperimentLabel experimentLabel : foundExperimentLabels) {
 			Experiment experiment = Experiment.findExperiment(experimentLabel.getExperiment().getId());
-			if (experiment.getProtocol().getId() == protocolId) {
+			if (experiment.getProtocol().getId().equals(protocolId)) {
 				experimentList.add(experiment);
 			}
 		}
