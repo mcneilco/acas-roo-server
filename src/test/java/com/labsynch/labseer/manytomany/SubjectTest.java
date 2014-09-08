@@ -164,7 +164,7 @@ public class SubjectTest {
 	
 	@Transactional
 	@Test
-	public void findSubjectsByLsTransactionEquals() {
+	public void findSubjectsByLsTransactionEqualsTest() {
 		Subject subject = makeTestingSubject();
 		Long lstransaction = subject.getLsTransaction();
 		Subject check = Subject.findSubjectsByLsTransactionEquals(lstransaction).getSingleResult();
@@ -173,7 +173,7 @@ public class SubjectTest {
 	
 	@Transactional
 	@Test
-	public void findSubjectsByCodeNameEquals() {
+	public void findSubjectsByCodeNameEqualsTest() {
 		Subject subject = makeTestingSubject();
 		String codename = subject.getCodeName();
 		Subject check = Subject.findSubjectsByCodeNameEquals(codename).getSingleResult();
@@ -182,7 +182,7 @@ public class SubjectTest {
 
 	@Transactional
 	@Test
-	public void testDeleteByExperimentID() {
+	public void deleteByExperimentIDTest() {
 		Subject subject = makeTestingSubject();
 		Long id = subject.getId();
 		Long experimentid = subject.getTreatmentGroups().iterator().next().getAnalysisGroups().iterator().next().getExperiments().iterator().next().getId();

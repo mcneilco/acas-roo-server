@@ -158,11 +158,12 @@ public class AnalysisGroup extends AbstractThing {
     public static int deleteByExperimentID(Long experimentId) {
         if (experimentId == null) return 0;
         EntityManager em = SubjectValue.entityManager();
-        String deleteSQL = "DELETE FROM AnalysisGroup oo WHERE id in (select o.id from AnalysisGroup o where o.experiment.id = :experimentId)";
+        String deleteSQL = "DELETE FROM AnalysisGroup a WHERE AnalysisGroup IN (SELECT a FROM AnalysisGroup a JOIN a.experiments e WHERE e.id = :experimentId)";
         Query q = em.createQuery(deleteSQL);
         q.setParameter("experimentId", experimentId);
-        int numberOfDeletedEntities = q.executeUpdate();
-        return numberOfDeletedEntities;
+        //int numberOfDeletedEntities = q.executeUpdate();
+        //return numberOfDeletedEntities;
+        return 0;
     }
 
     @Transactional
@@ -182,12 +183,12 @@ public class AnalysisGroup extends AbstractThing {
         Experiment experiment = Experiment.findExperiment(id);
         Set<Experiment> experiments = new HashSet<Experiment>();
         experiments.add(experiment);
-//        EntityManager em = Experiment.entityManager();
-//        String sqlQuery;
+        //EntityManager em = Experiment.entityManager();
+        //String sqlQuery;
 //        if (includeIgnored) {
-//            sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id ";
+//            sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE AnalysisGroup IN (SELECT o FROM AnalysisGroup o JOIN o.experiments e WHERE e.id = :experimentId)";
 //        } else {
-//            sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE o.experiment.id = :id " + "AND o.ignored != true";
+//            sqlQuery = "SELECT o FROM AnalysisGroup AS o WHERE AnalysisGroup IN (SELECT o FROM AnalysisGroup o JOIN o.experiments e WHERE e.id = :experimentId) AND o.ignored != true";
 //        }
 //        TypedQuery<AnalysisGroup> q1 = em.createQuery(sqlQuery, AnalysisGroup.class);
         TypedQuery<AnalysisGroup> q2 = AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(experiments, !includeIgnored);

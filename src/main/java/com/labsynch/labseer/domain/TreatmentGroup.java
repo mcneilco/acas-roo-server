@@ -137,12 +137,12 @@ public class TreatmentGroup extends AbstractThing {
 	public static int deleteByExperimentID(Long experimentId) {
 		if (experimentId == null) return 0;
 		EntityManager em = SubjectValue.entityManager();
-		String deleteSQL = "DELETE FROM TreatmentGroup oo WHERE id in (select o.id from TreatmentGroup o where o.analysisGroup.experiment.id = :experimentId)";
-
+		String deleteSQL = "DELETE FROM TreatmentGroup t WHERE TreatmentGroup IN (SELECT t FROM TreatmentGroup t JOIN t.analysisGroups a JOIN a.experiments e WHERE e.id = :experimentId)";
 		Query q = em.createQuery(deleteSQL);
 		q.setParameter("experimentId", experimentId);
-		int numberOfDeletedEntities = q.executeUpdate();
-		return numberOfDeletedEntities;
+		//int numberOfDeletedEntities = q.executeUpdate();
+		//return numberOfDeletedEntities;
+		return 0;
 	}
 
 
