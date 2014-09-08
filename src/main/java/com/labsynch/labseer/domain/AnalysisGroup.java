@@ -155,15 +155,28 @@ public class AnalysisGroup extends AbstractThing {
     }
 
     @Transactional
+    //TODO: later fix with direct hsql if possible
     public static int deleteByExperimentID(Long experimentId) {
-        if (experimentId == null) return 0;
-        EntityManager em = SubjectValue.entityManager();
-        String deleteSQL = "DELETE FROM AnalysisGroup a WHERE AnalysisGroup IN (SELECT a FROM AnalysisGroup a JOIN a.experiments e WHERE e.id = :experimentId)";
-        Query q = em.createQuery(deleteSQL);
-        q.setParameter("experimentId", experimentId);
-        //int numberOfDeletedEntities = q.executeUpdate();
-        //return numberOfDeletedEntities;
-        return 0;
+        Experiment experiment = Experiment.findExperiment(experimentId);
+        Set<Experiment> experiments = new HashSet<Experiment>();
+        experiments.add(experiment);
+        List<AnalysisGroup> analysisgroups = AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList();
+        int numberOfAnalysisGroups = analysisgroups.size();
+        for (AnalysisGroup analysisgroup : analysisgroups) {
+            logger.debug("removing analysis group: " + analysisgroup.getCodeName());
+            analysisgroup.remove();
+        }
+        
+        return numberOfAnalysisGroups;
+        
+//        if (experimentId == null) return 0;
+//        EntityManager em = SubjectValue.entityManager();
+//        String deleteSQL = "DELETE FROM AnalysisGroup a WHERE AnalysisGroup IN (SELECT a FROM AnalysisGroup a JOIN a.experiments e WHERE e.id = :experimentId)";
+//        Query q = em.createQuery(deleteSQL);
+//        q.setParameter("experimentId", experimentId);
+//        //int numberOfDeletedEntities = q.executeUpdate();
+//        //return numberOfDeletedEntities;
+//        return 0;
     }
 
     @Transactional
