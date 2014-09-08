@@ -20,17 +20,20 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.service.SubjectService;
 import com.labsynch.labseer.service.TreatmentGroupService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
-public class TreatmentGroupTest {
+
+public class SubjectTest {
 	
-	private static final Logger logger = LoggerFactory.getLogger(TreatmentGroupTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(SubjectTest.class);
 
 	@Autowired
-	private TreatmentGroupService treatmentGroupService;
+	private SubjectService subjectService;
 	
 	private Protocol makeTestingProtocol() {
 		//initialize some entries to fill in the fields
@@ -97,99 +100,97 @@ public class TreatmentGroupTest {
 		return treatmentgroup;
 	}
 	
-	@Transactional
-	@Test
-	public void findTreatmentGroupsByAnalysisGroupsTest() {
+	private Subject makeTestingSubject() {
 		TreatmentGroup treatmentgroup = makeTestingTreatmentGroup();
-		Set<AnalysisGroup> analysisgroups = new HashSet<AnalysisGroup>();
-		analysisgroups = treatmentgroup.getAnalysisGroups();
-		TreatmentGroup check = TreatmentGroup.findTreatmentGroupsByAnalysisGroups(analysisgroups).getSingleResult();
-		assert(treatmentgroup.toJson() == check.toJson());
-	}
-	
-	@Transactional
-	@Test
-	public void findTreatmentGroupsByLsTransactionEqualsTest() {
-		TreatmentGroup treatmentgroup = makeTestingTreatmentGroup();
-		Long lstransaction = treatmentgroup.getLsTransaction();
-		TreatmentGroup check = TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(lstransaction).getSingleResult();
-		assert(treatmentgroup.toJson() == check.toJson());
-	}
-	
-	@Transactional
-	@Test
-	public void deleteByExperimentIdTest() {
-		TreatmentGroup treatmentgroup = makeTestingTreatmentGroup();
-		Long id = treatmentgroup.getId();
-		Long experimentid = treatmentgroup.getAnalysisGroups().iterator().next().getExperiments().iterator().next().getId();
-		TreatmentGroup checkbefore = TreatmentGroup.findTreatmentGroup(id);
-		assert(checkbefore.toJson() == treatmentgroup.toJson());
-		TreatmentGroup.deleteByExperimentID(experimentid);
-		TreatmentGroup checkafter = TreatmentGroup.findTreatmentGroup(id);
-		assert(checkafter.toJson() != treatmentgroup.toJson());
+		Subject subject = new Subject();
+		subject.setCodeName("SUBJ-12345678");
+		subject.setIgnored(treatmentgroup.isIgnored());
+		subject.setLsKind(treatmentgroup.getLsKind());
+		subject.setLsType(treatmentgroup.getLsType());
+		subject.setRecordedBy(treatmentgroup.getRecordedBy());
+		subject.setLsTransaction(treatmentgroup.getLsTransaction());
+		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+		treatmentGroups.add(treatmentgroup);
+		subject.setTreatmentGroups(treatmentGroups);
+		subject.persist();
+		subject.flush();
+		return subject;
 	}
 	
 	@Transactional
 	//@Test
-	public void Treatment_Group_Many_To_Many_Test() {
-		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(16L);
-		logger.debug(treatmentGroup.toJson());
-		
-		int theSize = treatmentGroup.getSubjects().size();
-		logger.debug(String.valueOf(theSize));
-		
-		Assert.assertEquals(4, theSize);
-	}
-	
-	@Transactional
-	//@Test
-	public void SimpleTest2() {
-
-		TreatmentGroup treatmentGroup = new TreatmentGroup();
-		
-		treatmentGroup.getAnalysisGroups().add(new AnalysisGroup());
-		
-		logger.debug(treatmentGroup.toJson());
-		
-		
-	}
-	
-	@Transactional
-	//@Test
-	public void SimpleTest3() {
-
-		TreatmentGroup treatmentGroup = new TreatmentGroup();
-		Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
-		analysisGroups.add(new AnalysisGroup());
-		treatmentGroup.setAnalysisGroups(analysisGroups);
-		
-		logger.debug(treatmentGroup.toJson());
-		
-		
-	}
-	
-	@Transactional
-	//@Test
-	public void SimpleTest4() {
-
-		String json = "{\"analysisGroups\":[{\"id\":290,\"version\":0}],\"lsType\":\"default\",\"lsKind\":\"default\",\"codeName\":\"TG-00000035\",\"subjects\":null,\"lsStates\":null,\"recordedBy\":\"dfenger\",\"comments\":\"\",\"lsTransaction\":20,\"ignored\":false,\"recordedDate\":1403543647000}";
-		TreatmentGroup inputTreatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
-		Date recordedDate = null;
-		if (inputTreatmentGroup.getRecordedDate() != null){
-			recordedDate = inputTreatmentGroup.getRecordedDate();
-		} else {
-			recordedDate = new Date();
-		}
-		TreatmentGroup treatmentGroup = treatmentGroupService.saveLsTreatmentGroup(inputTreatmentGroup.getAnalysisGroups(), inputTreatmentGroup, recordedDate);
-		logger.debug(treatmentGroup.toJson());
-	}
-	
-	@Transactional
-	@Test
 	public void updateTest() {
-		TreatmentGroup treatmentgroup = new TreatmentGroup();
+	}
+
+	@Transactional
+	//@Test
+	public void fromJsonToSampleTest() {
 		
 	}
 	
+	@Transactional
+	//@Test
+	public void toJsonArrayTest() {
+		
+	}
+	
+	@Transactional
+	//@Test
+	public void fromJsonToSubjectTest() {
+		
+	}
+
+	@Transactional
+	//@Test
+	public void fromJsonArrayToSubjectsStringTest() {
+		
+	}
+
+	@Transactional
+	//@Test
+	public void fromJsonArrayToSubjectsReaderTest() {
+		
+	}
+	
+	@Transactional
+	@Test
+	public void findSubjectsByTreatmentGroupsTest() {
+		Subject subject = makeTestingSubject();
+		Set<TreatmentGroup> treatmentgroups = new HashSet<TreatmentGroup>();
+		treatmentgroups = subject.getTreatmentGroups();
+		Subject check = Subject.findSubjectsByTreatmentGroups(treatmentgroups).getSingleResult();
+		assert(subject.toJson() == check.toJson());
+	}
+	
+	@Transactional
+	@Test
+	public void findSubjectsByLsTransactionEquals() {
+		Subject subject = makeTestingSubject();
+		Long lstransaction = subject.getLsTransaction();
+		Subject check = Subject.findSubjectsByLsTransactionEquals(lstransaction).getSingleResult();
+		assert(subject.toJson() == check.toJson());
+	}
+	
+	@Transactional
+	@Test
+	public void findSubjectsByCodeNameEquals() {
+		Subject subject = makeTestingSubject();
+		String codename = subject.getCodeName();
+		Subject check = Subject.findSubjectsByCodeNameEquals(codename).getSingleResult();
+		assert(subject.toJson() == check.toJson());
+	}
+
+	@Transactional
+	@Test
+	public void testDeleteByExperimentID() {
+		Subject subject = makeTestingSubject();
+		Long id = subject.getId();
+		Long experimentid = subject.getTreatmentGroups().iterator().next().getAnalysisGroups().iterator().next().getExperiments().iterator().next().getId();
+		Subject checkbefore = Subject.findSubject(id);
+		assert(checkbefore.toJson() == subject.toJson());
+		Subject.deleteByExperimentID(experimentid);
+		Subject checkafter = Subject.findSubject(id);
+		assert(checkafter.toJson() != subject.toJson());
+	}
 
 }

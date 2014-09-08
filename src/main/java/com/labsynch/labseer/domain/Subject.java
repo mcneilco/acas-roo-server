@@ -34,7 +34,7 @@ import flexjson.JSONSerializer;
 @Entity
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(finders = { "findSubjectsByTreatmentGroup", "findSubjectsByLsTransactionEquals", "findSubjectsByCodeNameEquals" })
+@RooJpaActiveRecord(finders = { "findSubjectsByTreatmentGroups", "findSubjectsByLsTransactionEquals", "findSubjectsByCodeNameEquals" })
 @RooJson
 public class Subject extends AbstractThing {
 
