@@ -35,6 +35,7 @@ public class TreatmentGroupTest {
 	@Autowired
 	private TreatmentGroupService treatmentGroupService;
 	
+	
 	private Protocol makeTestingProtocol() {
 		//initialize some entries to fill in the fields
 		Date now = new Date();
