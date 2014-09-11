@@ -159,7 +159,7 @@ public class SubjectTest {
 		Set<TreatmentGroup> treatmentgroups = new HashSet<TreatmentGroup>();
 		treatmentgroups = subject.getTreatmentGroups();
 		Subject check = Subject.findSubjectsByTreatmentGroups(treatmentgroups).getSingleResult();
-		assert(subject.toJson() == check.toJson());
+		Assert.assertEquals(subject.toJson(), check.toJson());
 	}
 	
 	@Transactional
@@ -168,7 +168,7 @@ public class SubjectTest {
 		Subject subject = makeTestingSubject();
 		Long lstransaction = subject.getLsTransaction();
 		Subject check = Subject.findSubjectsByLsTransactionEquals(lstransaction).getSingleResult();
-		assert(subject.toJson() == check.toJson());
+		Assert.assertEquals(subject.toJson(), check.toJson());
 	}
 	
 	@Transactional
@@ -177,7 +177,7 @@ public class SubjectTest {
 		Subject subject = makeTestingSubject();
 		String codename = subject.getCodeName();
 		Subject check = Subject.findSubjectsByCodeNameEquals(codename).getSingleResult();
-		assert(subject.toJson() == check.toJson());
+		Assert.assertEquals(subject.toJson(), check.toJson());
 	}
 
 	@Transactional
@@ -187,10 +187,10 @@ public class SubjectTest {
 		Long id = subject.getId();
 		Long experimentid = subject.getTreatmentGroups().iterator().next().getAnalysisGroups().iterator().next().getExperiments().iterator().next().getId();
 		Subject checkbefore = Subject.findSubject(id);
-		assert(checkbefore.toJson() == subject.toJson());
+		Assert.assertEquals(subject.toJson(), checkbefore.toJson());
 		Subject.deleteByExperimentID(experimentid);
 		Subject checkafter = Subject.findSubject(id);
-		assert(checkafter.toJson() != subject.toJson());
+		Assert.assertEquals(true,checkafter == null);;
 	}
 
 }

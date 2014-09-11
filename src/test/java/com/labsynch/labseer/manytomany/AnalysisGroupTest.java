@@ -1,6 +1,7 @@
 package com.labsynch.labseer.manytomany;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +26,7 @@ import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
 import com.labsynch.labseer.service.AnalysisGroupService;
@@ -43,14 +45,230 @@ public class AnalysisGroupTest {
 	@Autowired
 	private ExperimentService experimentService;
 	
+	public HashMap<String, Long> makeTestStack() {
+		//each of these methods creates the full stack from protocol to subject.
+		Date now = new Date();
+		//create 1 Protocol
+		Protocol protocol = new Protocol();
+		protocol.setRecordedBy("test user");
+		protocol.setRecordedDate(now);
+		protocol.setLsKind("default");
+		protocol.setLsType("default");
+		protocol.setLsTransaction(98765L);
+		protocol.persist();
+		protocol.flush();
+		
+		//create 3 Experiments
+		Experiment e1 = new Experiment();
+        e1.setCodeName("T-EXPT-1111111");
+        Experiment e2 = new Experiment();
+        e2.setCodeName("T-EXPT-22222222");
+        Experiment e3 = new Experiment();
+        e3.setCodeName("T-EXPT-33333333");
+        Set<Experiment> allExperiments = new HashSet<Experiment>();
+        allExperiments.add(e1);
+        allExperiments.add(e2);
+        allExperiments.add(e3);
+        for (Experiment experiment: allExperiments) {
+        	experiment.setIgnored(false);
+        	experiment.setLsKind(protocol.getLsKind());
+        	experiment.setLsType(protocol.getLsType());
+        	experiment.setRecordedBy(protocol.getRecordedBy());
+        	experiment.setRecordedDate(protocol.getRecordedDate());
+            experiment.setLsTransaction(protocol.getLsTransaction());
+        	experiment.setProtocol(protocol);
+        }
+        
+		//create 3 AnalysisGroups
+        AnalysisGroup a1= new AnalysisGroup();
+        a1.setCodeName("T-AG-11111111");
+        AnalysisGroup a2= new AnalysisGroup();
+        a2.setCodeName("T-AG-22222222");
+        AnalysisGroup a3= new AnalysisGroup();
+        a3.setCodeName("T-AG-33333333");
+        Set<AnalysisGroup> allAnalysisGroups = new HashSet<AnalysisGroup>();
+        allAnalysisGroups.add(a1);
+        allAnalysisGroups.add(a2);
+        allAnalysisGroups.add(a3);
+        for (AnalysisGroup analysisGroup: allAnalysisGroups) {
+        	analysisGroup.setIgnored(e1.isIgnored());
+            analysisGroup.setLsKind(e1.getLsKind());
+            analysisGroup.setLsType(e1.getLsType());
+            analysisGroup.setRecordedBy(e1.getRecordedBy());
+            analysisGroup.setRecordedDate(e1.getRecordedDate());
+            analysisGroup.setLsTransaction(e1.getLsTransaction());
+        }
+        
+        //create 3 TreatmentGroups
+        TreatmentGroup t1 = new TreatmentGroup();
+		t1.setCodeName("T-TG-11111111");
+		TreatmentGroup t2 = new TreatmentGroup();
+		t2.setCodeName("T-TG-22222222");
+		TreatmentGroup t3 = new TreatmentGroup();
+		t3.setCodeName("T-TG-33333333");
+		Set<TreatmentGroup> allTreatmentGroups = new HashSet<TreatmentGroup>();
+		allTreatmentGroups.add(t1);
+		allTreatmentGroups.add(t2);
+		allTreatmentGroups.add(t3);
+		for (TreatmentGroup treatmentGroup: allTreatmentGroups) {
+			treatmentGroup.setIgnored(a1.isIgnored());
+			treatmentGroup.setLsKind(a1.getLsKind());
+			treatmentGroup.setLsType(a1.getLsType());
+			treatmentGroup.setRecordedBy(a1.getRecordedBy());
+            treatmentGroup.setRecordedDate(a1.getRecordedDate());
+			treatmentGroup.setLsTransaction(a1.getLsTransaction());
+		}
+		
+		//create 3 Subjects
+		Subject s1 = new Subject();
+		s1.setCodeName("T-SUBJ-11111111");
+		Subject s2 = new Subject();
+		s2.setCodeName("T-SUBJ-22222222");
+		Subject s3 = new Subject();
+		s3.setCodeName("T-SUBJ-33333333");
+		Set<Subject> allSubjects = new HashSet<Subject>();
+		allSubjects.add(s1);
+		allSubjects.add(s2);
+		allSubjects.add(s3);
+		for (Subject subject: allSubjects) {
+			subject.setIgnored(t1.isIgnored());
+			subject.setLsKind(t1.getLsKind());
+			subject.setLsType(t1.getLsType());
+			subject.setRecordedBy(t1.getRecordedBy());
+            subject.setRecordedDate(t1.getRecordedDate());
+			subject.setLsTransaction(t1.getLsTransaction());
+		}
+		
+		//Create the various Sets for mapping
+		Set<AnalysisGroup> e1AnalysisGroups = new HashSet<AnalysisGroup>();
+		e1AnalysisGroups.add(a1);
+		e1AnalysisGroups.add(a3);
+		Set<AnalysisGroup> e2AnalysisGroups = new HashSet<AnalysisGroup>();
+		e2AnalysisGroups.add(a1);
+		e2AnalysisGroups.add(a2);
+		Set<AnalysisGroup> e3AnalysisGroups = new HashSet<AnalysisGroup>();
+		e3AnalysisGroups.add(a2);
+		e3AnalysisGroups.add(a3);
+		Set<Experiment> a1Experiments = new HashSet<Experiment>();
+		a1Experiments.add(e1);
+		a1Experiments.add(e2);
+		Set<Experiment> a2Experiments = new HashSet<Experiment>();
+		a2Experiments.add(e2);
+		a2Experiments.add(e3);
+		Set<Experiment> a3Experiments = new HashSet<Experiment>();
+		a3Experiments.add(e1);
+		a3Experiments.add(e3);
+		Set<TreatmentGroup> a1TreatmentGroups = new HashSet<TreatmentGroup>();
+		a1TreatmentGroups.add(t1);
+		a1TreatmentGroups.add(t3);
+		Set<TreatmentGroup> a2TreatmentGroups = new HashSet<TreatmentGroup>();
+		a2TreatmentGroups.add(t1);
+		a2TreatmentGroups.add(t2);
+		Set<TreatmentGroup> a3TreatmentGroups = new HashSet<TreatmentGroup>();
+		a3TreatmentGroups.add(t2);
+		a3TreatmentGroups.add(t3);
+		Set<AnalysisGroup> t1AnalysisGroups = new HashSet<AnalysisGroup>();
+		t1AnalysisGroups.add(a1);
+		t1AnalysisGroups.add(a2);
+		Set<AnalysisGroup> t2AnalysisGroups = new HashSet<AnalysisGroup>();
+		t2AnalysisGroups.add(a2);
+		t2AnalysisGroups.add(a3);
+		Set<AnalysisGroup> t3AnalysisGroups = new HashSet<AnalysisGroup>();
+		t3AnalysisGroups.add(a1);
+		t3AnalysisGroups.add(a3);
+		Set<Subject> t1Subjects = new HashSet<Subject>();
+		t1Subjects.add(s1);
+		t1Subjects.add(s3);
+		Set<Subject> t2Subjects = new HashSet<Subject>();
+		t2Subjects.add(s1);
+		t2Subjects.add(s2);
+		Set<Subject> t3Subjects = new HashSet<Subject>();
+		t3Subjects.add(s2);
+		t3Subjects.add(s3);
+		Set<TreatmentGroup> s1TreatmentGroups = new HashSet<TreatmentGroup>();
+		s1TreatmentGroups.add(t1);
+		s1TreatmentGroups.add(t2);
+		Set<TreatmentGroup> s2TreatmentGroups = new HashSet<TreatmentGroup>();
+		s2TreatmentGroups.add(t2);
+		s2TreatmentGroups.add(t3);
+		Set<TreatmentGroup> s3TreatmentGroups = new HashSet<TreatmentGroup>();
+		s3TreatmentGroups.add(t1);
+		s3TreatmentGroups.add(t3);
+		
+		//Then assign all the groups to their owners to create the mappings
+		e1.setAnalysisGroups(e1AnalysisGroups);
+		e2.setAnalysisGroups(e2AnalysisGroups);
+		e3.setAnalysisGroups(e3AnalysisGroups);
+		a1.setExperiments(a1Experiments);
+		a2.setExperiments(a2Experiments);
+		a3.setExperiments(a3Experiments);
+		a1.setTreatmentGroups(a1TreatmentGroups);
+		a2.setTreatmentGroups(a2TreatmentGroups);
+		a3.setTreatmentGroups(a3TreatmentGroups);
+		t1.setAnalysisGroups(t1AnalysisGroups);
+		t2.setAnalysisGroups(t2AnalysisGroups);
+		t3.setAnalysisGroups(t3AnalysisGroups);
+		t1.setSubjects(t1Subjects);
+		t2.setSubjects(t2Subjects);
+		t3.setSubjects(t3Subjects);
+		s1.setTreatmentGroups(s1TreatmentGroups);
+		s2.setTreatmentGroups(s2TreatmentGroups);
+		s3.setTreatmentGroups(s3TreatmentGroups);
+		
+		//Then persist and flush everything to the database
+		e1.persist();
+		e1.flush();
+		e2.persist();
+		e2.flush();
+		e3.persist();
+		e3.flush();
+		a1.persist();
+		a1.flush();
+		a2.persist();
+		a2.flush();
+		a3.persist();
+		a3.flush();
+		t1.persist();
+		t1.flush();
+		t2.persist();
+		t2.flush();
+		t3.persist();
+		t3.flush();
+		s1.persist();
+		s1.flush();
+		s2.persist();
+		s2.flush();
+		s3.persist();
+		s3.flush();
+		
+		HashMap<String, Long> idMap = new HashMap<String, Long>();
+		idMap.put("e1", e1.getId());
+		idMap.put("e2", e2.getId());
+		idMap.put("e3", e3.getId());
+		idMap.put("a1", a1.getId());
+		idMap.put("a2", a2.getId());
+		idMap.put("a3", a3.getId());
+		idMap.put("t1", t1.getId());
+		idMap.put("t2", t2.getId());
+		idMap.put("t3", t3.getId());
+		idMap.put("s1", s1.getId());
+		idMap.put("s2", s2.getId());
+		idMap.put("s3", s3.getId());
+		
+		return idMap;
+		
+	}
+	
 	private Protocol makeTestingProtocol() {
 		//initialize some entries to fill in the fields
 		Date now = new Date();
 		//create protocol
 		Protocol protocol = new Protocol();
 		protocol.setRecordedBy("test user");
+		protocol.setRecordedDate(now);
 		protocol.setLsKind("default");
 		protocol.setLsType("default");
+		protocol.setLsTransaction(98765L);
 		protocol.persist();
 		protocol.flush();
 		return protocol;
@@ -65,6 +283,7 @@ public class AnalysisGroupTest {
         experiment.setLsType(protocol.getLsType());
         experiment.setRecordedBy(protocol.getRecordedBy());
         experiment.setRecordedDate(protocol.getRecordedDate());
+        experiment.setLsTransaction(protocol.getLsTransaction());
         experiment.setProtocol(protocol);
         experiment.persist();
         experiment.flush();
@@ -75,16 +294,51 @@ public class AnalysisGroupTest {
 		Experiment experiment = makeTestingExperiment();
 		AnalysisGroup analysisgroup= new AnalysisGroup();
         analysisgroup.setCodeName("AG-12345678");
-        analysisgroup.setIgnored(false);
+        analysisgroup.setIgnored(experiment.isIgnored());
         analysisgroup.setLsKind(experiment.getLsKind());
         analysisgroup.setLsType(experiment.getLsType());
         analysisgroup.setRecordedBy(experiment.getRecordedBy());
+        analysisgroup.setLsTransaction(experiment.getLsTransaction());
         Set<Experiment> experimentSet = new HashSet<Experiment>();
         experimentSet.add(experiment);
         analysisgroup.setExperiments(experimentSet);
         analysisgroup.persist();
         analysisgroup.flush();
         return analysisgroup;
+	}
+	
+	private TreatmentGroup makeTestingTreatmentGroup() {
+		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
+		TreatmentGroup treatmentgroup = new TreatmentGroup();
+		treatmentgroup.setCodeName("TG-12345678");
+		treatmentgroup.setIgnored(analysisgroup.isIgnored());
+		treatmentgroup.setLsKind(analysisgroup.getLsKind());
+		treatmentgroup.setLsType(analysisgroup.getLsType());
+		treatmentgroup.setRecordedBy(analysisgroup.getRecordedBy());
+		treatmentgroup.setLsTransaction(analysisgroup.getLsTransaction());
+		Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+		analysisGroups.add(analysisgroup);
+		treatmentgroup.setAnalysisGroups(analysisGroups);
+		treatmentgroup.persist();
+		treatmentgroup.flush();
+		return treatmentgroup;
+	}
+	
+	private Subject makeTestingSubject() {
+		TreatmentGroup treatmentgroup = makeTestingTreatmentGroup();
+		Subject subject = new Subject();
+		subject.setCodeName("SUBJ-12345678");
+		subject.setIgnored(treatmentgroup.isIgnored());
+		subject.setLsKind(treatmentgroup.getLsKind());
+		subject.setLsType(treatmentgroup.getLsType());
+		subject.setRecordedBy(treatmentgroup.getRecordedBy());
+		subject.setLsTransaction(treatmentgroup.getLsTransaction());
+		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+		treatmentGroups.add(treatmentgroup);
+		subject.setTreatmentGroups(treatmentGroups);
+		subject.persist();
+		subject.flush();
+		return subject;
 	}
 
 	@Transactional
@@ -142,69 +396,89 @@ public class AnalysisGroupTest {
 	@Transactional
 	@Test
 	public void findAnalysisGroupsByExperimentIdAndIgnoredTest() {
-		//generate an analysisgroup for testing
-        AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
-        Long experimentId = analysisgroup.getExperiments().iterator().next().getId();
-        boolean ignored = analysisgroup.isIgnored();
+		//generate the testing stack
+		HashMap<String, Long> idMap = makeTestStack();
+		Long experiment1Id = idMap.get("e1");
+		Set<AnalysisGroup> expectedAnalysisGroups = new HashSet<AnalysisGroup>();
+		expectedAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(idMap.get("a1")));
+		expectedAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(idMap.get("a3")));
+        boolean ignored = AnalysisGroup.findAnalysisGroup(idMap.get("a1")).isIgnored();
         //go get the analysisgroup by its ExperimentId and Ignored
-		AnalysisGroup check = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experimentId, ignored).getSingleResult();
-		assert(analysisgroup.toJson() == check.toJson());
+		List<AnalysisGroup> checkList = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experiment1Id, ignored).getResultList();
+		Assert.assertEquals(checkList.size(), 2);
+		Assert.assertEquals(checkList.get(0).toJson(), expectedAnalysisGroups.iterator().next().toJson());
 	}
 	
 	@Transactional
 	@Test
 	public void findAnalysisGroupsByExperimentsAndIgnoredNotTest() {
-		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
-		Set<Experiment> experiments = analysisgroup.getExperiments();
-		boolean ignored = analysisgroup.isIgnored();
-		AnalysisGroup check = AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(experiments, !ignored).getSingleResult();
-		assert(analysisgroup.toJson() == check.toJson());
+		HashMap<String, Long> idMap = makeTestStack();
+		Set<Experiment> experiments = new HashSet<Experiment>();
+		experiments.add(Experiment.findExperiment(idMap.get("e2")));
+		experiments.add(Experiment.findExperiment(idMap.get("e3")));
+		Set<AnalysisGroup> expectedAnalysisGroups = new HashSet<AnalysisGroup>();
+		expectedAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(idMap.get("a2")));
+        boolean ignored = AnalysisGroup.findAnalysisGroup(idMap.get("a1")).isIgnored();
+        List<AnalysisGroup> checkList = AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(experiments, !ignored).getResultList();
+        Assert.assertEquals(1, checkList.size());
+		Assert.assertEquals(checkList.get(0).toJson(), expectedAnalysisGroups.iterator().next().toJson());
 	}
 	
 	@Transactional
 	@Test
 	public void findAnalysisGroupsByCodeNameEqualsTest() {
-		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
-		String codename = analysisgroup.getCodeName();
+		HashMap<String, Long> idMap = makeTestStack();
+		AnalysisGroup a2 = AnalysisGroup.findAnalysisGroup(idMap.get("a2"));
+        String codename = a2.getCodeName();
 		AnalysisGroup check = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(codename).getSingleResult();
-		assert(check.toJson() == analysisgroup.toJson());
+		Assert.assertEquals(check.toJson(), a2.toJson());
 	}
 	
 	@Transactional
 	@Test
-	public void removeByExperimentIdTest() {
+	public void removeByExperimentIdManyToManyTest() {		
+		HashMap<String, Long> idMap = makeTestStack();
+		Long experiment2Id = idMap.get("e2");
+		Set<AnalysisGroup> expectedAnalysisGroupsBefore = new HashSet<AnalysisGroup>();
+		expectedAnalysisGroupsBefore.add(AnalysisGroup.findAnalysisGroup(idMap.get("a1")));
+		expectedAnalysisGroupsBefore.add(AnalysisGroup.findAnalysisGroup(idMap.get("a2")));
+		List<AnalysisGroup> checkbefore = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experiment2Id, false).getResultList();
+		Assert.assertEquals(checkbefore.size(), 2);
+		AnalysisGroup.removeByExperimentID(experiment2Id);
+		List<AnalysisGroup> checkafter = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experiment2Id, false).getResultList();
+		Assert.assertEquals(checkafter.size(), 0);
+	}
+	@Transactional
+	@Test
+	public void removeByExperimentIdSingleTest() {
 		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
+		TreatmentGroup treatmentgroup = makeTestingTreatmentGroup();
+		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+		treatmentGroups.add(treatmentgroup);
+		analysisgroup.setTreatmentGroups(treatmentGroups);
+		analysisgroup.persist();
+		analysisgroup.flush();
 		Long id = analysisgroup.getId();
 		Long experimentId = analysisgroup.getExperiments().iterator().next().getId();
 		AnalysisGroup checkbefore = AnalysisGroup.findAnalysisGroup(id);
-		assert(analysisgroup.toJson() == checkbefore.toJson());
+		Assert.assertEquals(analysisgroup.toJson(), checkbefore.toJson());
 		AnalysisGroup.removeByExperimentID(experimentId);
 		AnalysisGroup checkafter = AnalysisGroup.findAnalysisGroup(id);
-		assert(analysisgroup.toJson() != checkafter.toJson());
-	}
-
-	@Transactional
-	@Test
-	public void deleteByExperimentIDTest1() {
-		Long experimentId = 2180L;
-		AnalysisGroup.deleteByExperimentID(experimentId);
-		Assert.assertNull(AnalysisGroup.findAnalysisGroup(2181L));
+		Assert.assertEquals(null,checkafter);
 	}
 	
 	
 	@Transactional
 	@Test
-	public void deleteByExperimentIDTest() {
-		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
-		Long id = analysisgroup.getId();
-		Long experimentId = analysisgroup.getExperiments().iterator().next().getId();
-		logger.info("here is the experiment ID: " + experimentId);
-		AnalysisGroup checkbefore = AnalysisGroup.findAnalysisGroup(id);
-		assert(analysisgroup.toJson() == checkbefore.toJson());
-		logger.info(analysisgroup.toPrettyFullJson());
-		AnalysisGroup.deleteByExperimentID(experimentId);
-		AnalysisGroup checkafter = AnalysisGroup.findAnalysisGroup(id);
-		assert(analysisgroup.toJson() != checkafter.toJson());
+	public void deleteByExperimentIdTest() {
+		HashMap<String, Long> idMap = makeTestStack();
+		Long experiment1Id = idMap.get("e2");
+		Set<AnalysisGroup> expectedAnalysisGroupsBefore = new HashSet<AnalysisGroup>();
+		expectedAnalysisGroupsBefore.add(AnalysisGroup.findAnalysisGroup(idMap.get("a1")));
+		expectedAnalysisGroupsBefore.add(AnalysisGroup.findAnalysisGroup(idMap.get("a2")));
+		AnalysisGroup.deleteByExperimentID(experiment1Id);
+		List<AnalysisGroup> checkafter = AnalysisGroup.findAnalysisGroupsByExperimentIdAndIgnored(experiment1Id, false).getResultList();
+		Assert.assertEquals(checkafter.size(), 0);
 	}
 	
 	@Transactional
@@ -221,11 +495,11 @@ public class AnalysisGroupTest {
         AnalysisGroup check = AnalysisGroup.findAnalysisGroup(analysisgroup.getId());
         //logger.info(check.toPrettyFullJson());
         //check that the original and the fetched analysisgroups are the same
-        assert(check.toJson() == analysisgroup.toJson());
+        Assert.assertEquals(check.toJson(),analysisgroup.toJson());
         //remove the original
         analysisgroup.remove();
         //make sure the original doesn't matched the one fetched before the remove
-        assert(check.toJson() != analysisgroup.toJson());
+        Assert.assertEquals(check.toJson(), analysisgroup.toJson());
         
     }
 }
