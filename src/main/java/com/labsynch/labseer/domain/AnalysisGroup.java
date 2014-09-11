@@ -157,25 +157,40 @@ public class AnalysisGroup extends AbstractThing {
     @Transactional
     //TODO: later fix with direct hsql if possible
     public static int deleteByExperimentID(Long experimentId) {
-        Experiment experiment = Experiment.findExperiment(experimentId);
-        Set<Experiment> experiments = new HashSet<Experiment>();
-        experiments.add(experiment);
-        List<AnalysisGroup> analysisgroups = AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList();
-        int numberOfAnalysisGroups = analysisgroups.size();
-        for (AnalysisGroup analysisgroup : analysisgroups) {
-            logger.debug("removing analysis group: " + analysisgroup.getCodeName());
-            analysisgroup.remove();
-        }
+//        Experiment experiment = Experiment.findExperiment(experimentId);
+//        Set<Experiment> experiments = new HashSet<Experiment>();
+//        experiments.add(experiment);
+//        List<AnalysisGroup> analysisgroups = AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList();
+//        int numberOfAnalysisGroups = analysisgroups.size();
+//        for (AnalysisGroup analysisgroup : analysisgroups) {
+//            logger.debug("removing analysis group: " + analysisgroup.getCodeName());
+//            analysisgroup.remove();
+//        }
+//        
+//        return numberOfAnalysisGroups;
         
-        return numberOfAnalysisGroups;
+        if (experimentId == null) return 0;
+        EntityManager em = SubjectValue.entityManager();
         
-//        if (experimentId == null) return 0;
-//        EntityManager em = SubjectValue.entityManager();
-//        String deleteSQL = "DELETE FROM AnalysisGroup a WHERE AnalysisGroup IN (SELECT a FROM AnalysisGroup a JOIN a.experiments e WHERE e.id = :experimentId)";
-//        Query q = em.createQuery(deleteSQL);
-//        q.setParameter("experimentId", experimentId);
-//        //int numberOfDeletedEntities = q.executeUpdate();
-//        //return numberOfDeletedEntities;
+        Query q1 = em.createQuery("SELECT ag.id FROM AnalysisGroup as ag JOIN ag.experiments exp WHERE exp.id = :experimentId");
+        q1.setParameter("experimentId", experimentId);
+        @SuppressWarnings("unchecked")
+		List<Long> agIds = q1.getResultList();
+        logger.info("Found number of agroups: " + agIds.size());
+        
+        Query q2 = em.createNativeQuery("DELETE FROM experiment_analysisgroup o WHERE o.experiment_id = :experimentId");
+        q2.setParameter("experimentId", experimentId);
+        int numberOfDeletes = q2.executeUpdate();
+        logger.info("Deleted number of numberOfDeletes: " + numberOfDeletes);
+
+        String deleteSQL = "DELETE FROM AnalysisGroup o where o.id in (:agIds)";
+        Query q = em.createQuery(deleteSQL);
+        q.setParameter("agIds", agIds);
+        int numberOfDeletedEntities = q.executeUpdate();
+        logger.info("Deleted number of numberOfDeletedEntities: " + numberOfDeletedEntities);
+
+        
+        return numberOfDeletedEntities;
 //        return 0;
     }
 

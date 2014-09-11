@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.Protocol;
@@ -74,7 +75,7 @@ public class AnalysisGroupTest {
 		Experiment experiment = makeTestingExperiment();
 		AnalysisGroup analysisgroup= new AnalysisGroup();
         analysisgroup.setCodeName("AG-12345678");
-        analysisgroup.setIgnored(experiment.isIgnored());
+        analysisgroup.setIgnored(false);
         analysisgroup.setLsKind(experiment.getLsKind());
         analysisgroup.setLsType(experiment.getLsType());
         analysisgroup.setRecordedBy(experiment.getRecordedBy());
@@ -181,6 +182,15 @@ public class AnalysisGroupTest {
 		AnalysisGroup checkafter = AnalysisGroup.findAnalysisGroup(id);
 		assert(analysisgroup.toJson() != checkafter.toJson());
 	}
+
+	@Transactional
+	@Test
+	public void deleteByExperimentIDTest1() {
+		Long experimentId = 2180L;
+		AnalysisGroup.deleteByExperimentID(experimentId);
+		Assert.assertNull(AnalysisGroup.findAnalysisGroup(2181L));
+	}
+	
 	
 	@Transactional
 	@Test
@@ -188,8 +198,10 @@ public class AnalysisGroupTest {
 		AnalysisGroup analysisgroup = makeTestingAnalysisGroup();
 		Long id = analysisgroup.getId();
 		Long experimentId = analysisgroup.getExperiments().iterator().next().getId();
+		logger.info("here is the experiment ID: " + experimentId);
 		AnalysisGroup checkbefore = AnalysisGroup.findAnalysisGroup(id);
 		assert(analysisgroup.toJson() == checkbefore.toJson());
+		logger.info(analysisgroup.toPrettyFullJson());
 		AnalysisGroup.deleteByExperimentID(experimentId);
 		AnalysisGroup checkafter = AnalysisGroup.findAnalysisGroup(id);
 		assert(analysisgroup.toJson() != checkafter.toJson());
