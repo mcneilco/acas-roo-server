@@ -40,7 +40,7 @@ public class AnalysisGroup extends AbstractThing {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalysisGroup.class);
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") })
     private Set<Experiment> experiments = new HashSet<Experiment>();
 
@@ -50,7 +50,7 @@ public class AnalysisGroup extends AbstractThing {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
     private Set<AnalysisGroupState> lsStates = new HashSet<AnalysisGroupState>();
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroups")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")
     private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 
     public AnalysisGroup() {
