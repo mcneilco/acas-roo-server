@@ -58,9 +58,13 @@ public class Experiment extends AbstractThing {
 	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch =  FetchType.LAZY)
 	//private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 	
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "experiments")  
-    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();  
+//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "experiments")  
+//    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();  
 	
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") })
+    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+    
 //	@ManyToMany(cascade = CascadeType.ALL, fetch =  FetchType.LAZY)
 //	@JoinTable(name="EXPERIMENT_ANALYSIS_GROUP", 
 //	joinColumns={@JoinColumn(name="experiment_id")}, 

@@ -4,8 +4,10 @@ import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
+
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
@@ -24,6 +27,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -40,8 +44,11 @@ public class AnalysisGroup extends AbstractThing {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalysisGroup.class);
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") })
+//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+//    @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") })
+//    private Set<Experiment> experiments = new HashSet<Experiment>();
+    
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")  
     private Set<Experiment> experiments = new HashSet<Experiment>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
@@ -50,9 +57,15 @@ public class AnalysisGroup extends AbstractThing {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
     private Set<AnalysisGroupState> lsStates = new HashSet<AnalysisGroupState>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")
-    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")
+//    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
+	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
+	joinColumns={@JoinColumn(name="analysis_group_id")}, 
+	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
+    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+    
     public AnalysisGroup() {
     }
 
@@ -194,6 +207,7 @@ public class AnalysisGroup extends AbstractThing {
 //        return 0;
     }
     
+    //@Transactional
     public static void removeByExperimentID(Long id) {
         Experiment experiment = Experiment.findExperiment(id);
         Set<Experiment> experiments = new HashSet<Experiment>();
@@ -201,6 +215,7 @@ public class AnalysisGroup extends AbstractThing {
         List<AnalysisGroup> analysisgroups = AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList();
         for (AnalysisGroup analysisgroup : analysisgroups) {
             logger.debug("removing analysis group: " + analysisgroup.getCodeName());
+            //analysisgroup.getTreatmentGroups().clear();
             analysisgroup.remove();
         }
     }
