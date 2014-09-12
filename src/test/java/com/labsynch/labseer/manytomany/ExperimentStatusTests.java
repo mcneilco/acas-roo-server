@@ -41,7 +41,7 @@ public class ExperimentStatusTests {
 	private ExperimentService experimentService;
 
 	@Transactional
-	@Test
+	//@Test
 	public void CountExperimentsTest() {
 		List<Experiment> experiments = Experiment.findAllExperiments();
 		logger.info("number of experiments found -- " + experiments.size());
@@ -56,7 +56,7 @@ public class ExperimentStatusTests {
 	@Transactional
 	@Test
 	public void FindExperimentStatusTest() {
-		Long id = 9L;
+		Long id = 2222L;
 		String stateType = "metadata";
 		String stateKind = "experiment metadata";
 		String stateValueType = "stringValue";

@@ -1,8 +1,10 @@
 package com.labsynch.labseer.manytomany;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -47,7 +49,6 @@ public class SubjectTest {
 		protocol.setLsType("default");
 		protocol.setLsTransaction(98765L);
 		protocol.persist();
-		protocol.flush();
 		
 		//create 3 Experiments
 		Experiment e1 = new Experiment();
@@ -208,29 +209,17 @@ public class SubjectTest {
 		
 		//Then persist and flush everything to the database
 		e1.persist();
-		e1.flush();
 		e2.persist();
-		e2.flush();
 		e3.persist();
-		e3.flush();
 		a1.persist();
-		a1.flush();
 		a2.persist();
-		a2.flush();
 		a3.persist();
-		a3.flush();
 		t1.persist();
-		t1.flush();
 		t2.persist();
-		t2.flush();
 		t3.persist();
-		t3.flush();
 		s1.persist();
-		s1.flush();
 		s2.persist();
-		s2.flush();
 		s3.persist();
-		s3.flush();
 		
 		HashMap<String, Long> idMap = new HashMap<String, Long>();
 		idMap.put("e1", e1.getId());
@@ -262,7 +251,6 @@ public class SubjectTest {
 		protocol.setLsType("default");
 		protocol.setLsTransaction(98765L);
 		protocol.persist();
-		protocol.flush();
 		return protocol;
 	}
 	
@@ -278,7 +266,6 @@ public class SubjectTest {
         experiment.setLsTransaction(protocol.getLsTransaction());
         experiment.setProtocol(protocol);
         experiment.persist();
-        experiment.flush();
         return experiment;
 	}
 	
@@ -295,7 +282,6 @@ public class SubjectTest {
         experimentSet.add(experiment);
         analysisgroup.setExperiments(experimentSet);
         analysisgroup.persist();
-        analysisgroup.flush();
         return analysisgroup;
 	}
 	
@@ -312,7 +298,6 @@ public class SubjectTest {
 		analysisGroups.add(analysisgroup);
 		treatmentgroup.setAnalysisGroups(analysisGroups);
 		treatmentgroup.persist();
-		treatmentgroup.flush();
 		return treatmentgroup;
 	}
 	
@@ -329,7 +314,6 @@ public class SubjectTest {
 		treatmentGroups.add(treatmentgroup);
 		subject.setTreatmentGroups(treatmentGroups);
 		subject.persist();
-		subject.flush();
 		return subject;
 	}
 	
@@ -339,38 +323,74 @@ public class SubjectTest {
 	}
 
 	@Transactional
-	//@Test
+	@Test
 	public void fromJsonToSampleTest() {
-		
+		Subject subject = makeTestingSubject();
+		String json = subject.toJson();
+		Subject check = Subject.fromJsonToSample(json);
+		Assert.assertEquals(subject.toJson(), check.toJson());
 	}
 	
 	@Transactional
-	//@Test
+	@Test
 	public void toJsonArrayTest() {
-		
+		HashMap<String, Long> idMap = makeTestStack();
+		Subject s1 = Subject.findSubject(idMap.get("s1"));
+		Subject s2 = Subject.findSubject(idMap.get("s2"));
+		Set<Subject> subjectCollection = new HashSet<Subject>();
+		subjectCollection.add(s1);
+		subjectCollection.add(s2);
+		String jsonArray = Subject.toJsonArray(subjectCollection);
+		Assert.assertNotNull(jsonArray);
 	}
 	
 	@Transactional
-	//@Test
+	@Test
 	public void fromJsonToSubjectTest() {
-		
+		HashMap<String, Long> idMap = makeTestStack();
+		Subject s1 = Subject.findSubject(idMap.get("s1"));
+		String json = s1.toJson();
+		Subject s1check = Subject.fromJsonToSubject(json);
+		Assert.assertEquals(s1.toJson(), s1check.toJson());
 	}
 
 	@Transactional
-	//@Test
+	@Test
 	public void fromJsonArrayToSubjectsStringTest() {
-		
+		HashMap<String, Long> idMap = makeTestStack();
+		Subject s1 = Subject.findSubject(idMap.get("s1"));
+		Subject s2 = Subject.findSubject(idMap.get("s2"));
+		Set<Subject> subjectCollection = new HashSet<Subject>();
+		subjectCollection.add(s1);
+		subjectCollection.add(s2);
+		String jsonArray = Subject.toJsonArray(subjectCollection);
+		Collection<Subject> subjectCollectionCheck = Subject.fromJsonArrayToSubjects(jsonArray);
+		String checkCodeName = subjectCollectionCheck.iterator().next().getCodeName();
+		String s1CodeName = s1.getCodeName();
+		String s2CodeName = s2.getCodeName();
+		Assert.assertTrue(checkCodeName.equals(s1CodeName) || checkCodeName.equals(s2CodeName));
 	}
 
 	@Transactional
 	//@Test
 	public void fromJsonArrayToSubjectsReaderTest() {
-		
 	}
 	
 	@Transactional
 	@Test
-	public void findSubjectsByTreatmentGroupsTest() {
+	public void findSubjectsByTreatmentGroupsManyTest() {
+		HashMap<String, Long> idMap = makeTestStack();
+		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+		treatmentGroups.add(TreatmentGroup.findTreatmentGroup(idMap.get("t2")));
+		treatmentGroups.add(TreatmentGroup.findTreatmentGroup(idMap.get("t1")));
+		List<Subject> checkList = Subject.findSubjectsByTreatmentGroups(treatmentGroups).getResultList();
+		Assert.assertEquals(checkList.size(), 1);
+		Assert.assertEquals(checkList.get(0).toJson(), Subject.findSubject(idMap.get("s1")).toJson());
+	}
+	
+	@Transactional
+	@Test
+	public void findSubjectsByTreatmentGroupsSingleTest() {
 		Subject subject = makeTestingSubject();
 		Set<TreatmentGroup> treatmentgroups = new HashSet<TreatmentGroup>();
 		treatmentgroups = subject.getTreatmentGroups();
@@ -380,7 +400,21 @@ public class SubjectTest {
 	
 	@Transactional
 	@Test
-	public void findSubjectsByLsTransactionEqualsTest() {
+	public void findSubjectsByLsTransactionEqualsManyTest() {
+		HashMap<String, Long> idMap = makeTestStack();
+		Subject t1 = Subject.findSubject(idMap.get("s1"));
+		Long lstransaction = t1.getLsTransaction();
+		Set<Subject> expected = new HashSet<Subject>();
+		expected.add(Subject.findSubject(idMap.get("s1")));
+		expected.add(Subject.findSubject(idMap.get("s2")));
+		expected.add(Subject.findSubject(idMap.get("s3")));
+		List<Subject> check = Subject.findSubjectsByLsTransactionEquals(lstransaction).getResultList();
+		Assert.assertEquals(3, check.size());
+	}
+	
+	@Transactional
+	@Test
+	public void findSubjectsByLsTransactionEqualsSingleTest() {
 		Subject subject = makeTestingSubject();
 		Long lstransaction = subject.getLsTransaction();
 		Subject check = Subject.findSubjectsByLsTransactionEquals(lstransaction).getSingleResult();
@@ -397,7 +431,7 @@ public class SubjectTest {
 	}
 
 	@Transactional
-	@Test
+	//@Test
 	public void deleteByExperimentIDTest() {
 		Subject subject = makeTestingSubject();
 		Long id = subject.getId();

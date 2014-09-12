@@ -47,7 +47,6 @@ public class TreatmentGroupTest {
 		protocol.setLsType("default");
 		protocol.setLsTransaction(98765L);
 		protocol.persist();
-		protocol.flush();
 		return protocol;
 	}
 	
@@ -63,7 +62,6 @@ public class TreatmentGroupTest {
         experiment.setLsTransaction(protocol.getLsTransaction());
         experiment.setProtocol(protocol);
         experiment.persist();
-        experiment.flush();
         return experiment;
 	}
 	
@@ -80,7 +78,6 @@ public class TreatmentGroupTest {
         experimentSet.add(experiment);
         analysisgroup.setExperiments(experimentSet);
         analysisgroup.persist();
-        analysisgroup.flush();
         return analysisgroup;
 	}
 	
@@ -97,7 +94,6 @@ public class TreatmentGroupTest {
 		analysisGroups.add(analysisgroup);
 		treatmentgroup.setAnalysisGroups(analysisGroups);
 		treatmentgroup.persist();
-		treatmentgroup.flush();
 		return treatmentgroup;
 	}
 	
@@ -112,7 +108,6 @@ public class TreatmentGroupTest {
 		protocol.setLsType("default");
 		protocol.setLsTransaction(98765L);
 		protocol.persist();
-		protocol.flush();
 		
 		//create 3 Experiments
 		Experiment e1 = new Experiment();
@@ -273,29 +268,17 @@ public class TreatmentGroupTest {
 		
 		//Then persist and flush everything to the database
 		e1.persist();
-		e1.flush();
 		e2.persist();
-		e2.flush();
 		e3.persist();
-		e3.flush();
 		a1.persist();
-		a1.flush();
 		a2.persist();
-		a2.flush();
 		a3.persist();
-		a3.flush();
 		t1.persist();
-		t1.flush();
 		t2.persist();
-		t2.flush();
 		t3.persist();
-		t3.flush();
 		s1.persist();
-		s1.flush();
 		s2.persist();
-		s2.flush();
 		s3.persist();
-		s3.flush();
 		
 		HashMap<String, Long> idMap = new HashMap<String, Long>();
 		idMap.put("e1", e1.getId());
@@ -314,7 +297,7 @@ public class TreatmentGroupTest {
 		return idMap;
 		
 	}
-
+	
 	
 	@Transactional
 	@Test
@@ -337,14 +320,19 @@ public class TreatmentGroupTest {
 	@Transactional
 	@Test
 	public void findTreatmentGroupsByLsTransactionEqualsTest() {
-		TreatmentGroup treatmentgroup = makeTestingTreatmentGroup();
-		Long lstransaction = treatmentgroup.getLsTransaction();
-		TreatmentGroup check = TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(lstransaction).getSingleResult();
-		Assert.assertEquals(treatmentgroup.toJson(), check.toJson());
+		HashMap<String, Long> idMap = makeTestStack();
+		TreatmentGroup t1 = TreatmentGroup.findTreatmentGroup(idMap.get("t1"));
+		Long lstransaction = t1.getLsTransaction();
+		Set<TreatmentGroup> expected = new HashSet<TreatmentGroup>();
+		expected.add(TreatmentGroup.findTreatmentGroup(idMap.get("t1")));
+		expected.add(TreatmentGroup.findTreatmentGroup(idMap.get("t2")));
+		expected.add(TreatmentGroup.findTreatmentGroup(idMap.get("t3")));
+		List<TreatmentGroup> check = TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(lstransaction).getResultList();
+		Assert.assertEquals(3, check.size());
 	}
 	
 	@Transactional
-	@Test
+	//@Test
 	public void deleteByExperimentIdTest() {
 		TreatmentGroup treatmentgroup = makeTestingTreatmentGroup();
 		Long id = treatmentgroup.getId();

@@ -154,7 +154,7 @@ public class AnalysisGroup extends AbstractThing {
         return new JSONDeserializer<List<AnalysisGroup>>().use(null, ArrayList.class).use("values", AnalysisGroup.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
-    @Transactional
+    //@Transactional
     //TODO: later fix with direct hsql if possible
     public static int deleteByExperimentID(Long experimentId) {
 //        Experiment experiment = Experiment.findExperiment(experimentId);
@@ -193,8 +193,7 @@ public class AnalysisGroup extends AbstractThing {
         return numberOfDeletedEntities;
 //        return 0;
     }
-
-    @Transactional
+    
     public static void removeByExperimentID(Long id) {
         Experiment experiment = Experiment.findExperiment(id);
         Set<Experiment> experiments = new HashSet<Experiment>();
