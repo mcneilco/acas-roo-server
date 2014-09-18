@@ -57,6 +57,12 @@ public class Protocol extends AbstractThing {
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinTable(name = "PROTOCOL_TAG", joinColumns = { @javax.persistence.JoinColumn(name = "protocol_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "tag_id") })
 	private Set<LsTag> lsTags = new HashSet<LsTag>();
+	
+	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "secondProtocol", fetch =  FetchType.LAZY, orphanRemoval = true)
+	private Set<ItxProtocolProtocol> firstProtocols = new HashSet<ItxProtocolProtocol>();
+
+	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "firstProtocol", fetch =  FetchType.LAZY, orphanRemoval = true)
+	private Set<ItxProtocolProtocol> secondProtocols = new HashSet<ItxProtocolProtocol>();
 
 	public Protocol(com.labsynch.labseer.domain.Protocol protocol) {
 		super.setRecordedBy(protocol.getRecordedBy());

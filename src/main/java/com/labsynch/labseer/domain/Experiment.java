@@ -2,6 +2,7 @@ package com.labsynch.labseer.domain;
 
 import java.io.Reader;
 import java.math.BigDecimal;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -11,6 +12,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -54,6 +56,12 @@ public class Experiment extends AbstractThing {
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
 	private Set<ExperimentState> lsStates = new HashSet<ExperimentState>();
+	
+	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "secondExperiment", fetch =  FetchType.LAZY, orphanRemoval=true)
+	private Set<ItxExperimentExperiment> firstExperiments = new HashSet<ItxExperimentExperiment>();
+
+	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "firstExperiment", fetch =  FetchType.LAZY, orphanRemoval=true)
+	private Set<ItxExperimentExperiment> secondExperiments = new HashSet<ItxExperimentExperiment>();
 
 	//@OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch =  FetchType.LAZY)
 	//private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
@@ -424,6 +432,20 @@ public class Experiment extends AbstractThing {
 		TypedQuery<Experiment> q = em.createQuery("DELETE FROM Experiment AS o WHERE o.lsTransaction = :lsTransaction", Experiment.class);
 		q.setParameter("lsTransaction", lsTransaction);
 		q.executeUpdate();
+	}
+	
+	@Transactional
+	public static void removeExperimentItxAware(Long id) {
+		Experiment experiment = findExperiment(id);
+		EntityManager em = Experiment.entityManager();
+		Query q1 = em.createNativeQuery("DELETE FROM itx_experiment_experiment o WHERE o.first_experiment_id = :id", ItxExperimentExperiment.class);
+		Query q2 = em.createNativeQuery("DELETE FROM itx_experiment_experiment o WHERE o.second_experiment_id = :id", ItxExperimentExperiment.class);
+		q1.setParameter("id", id);
+		q2.setParameter("id", id);
+		q1.executeUpdate();
+		q2.executeUpdate();
+		experiment.remove();
+		
 	}
 
 	public static long countExperiments() {

@@ -395,21 +395,28 @@ public class ExperimentTest {
 
 	}
 	
-	//@Transactional
+	@Transactional
 	@Test
 	public void removeExperimentTest() {
 		HashMap<String, Long> idMap = makeTestStack();
 		Long e1Id = idMap.get("e1");
+		Long e2Id = idMap.get("e2");
 		Experiment e1 = Experiment.findExperiment(e1Id);
+		Experiment e2 = Experiment.findExperiment(e2Id);
 		e1.remove();
+		e2.remove();
+//		Experiment.removeExperimentOrphanAware(e1Id);
+//		Experiment.removeExperimentOrphanAware(e1Id);
 		Assert.assertNull(Experiment.findExperiment(e1Id));
+		Assert.assertNull(Experiment.findExperiment(e2Id));
 	}
 	
 	@Transactional
-	@Test
+	//@Test
 	public void removeExperimentPostTest() {
 		logger.debug("AG 1 experiments are: " + AnalysisGroup.findAnalysisGroup(626299L).getExperiments());
 	}
+	
 	
 	//Delete SQL query is now invalid
 	@Transactional

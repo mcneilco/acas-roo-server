@@ -486,6 +486,10 @@ public class AnalysisGroupTest {
 		Assert.assertEquals(null,checkafter);
 	}
 	
+	//@Test
+//	public void removeOrphansTest() {
+//		AnalysisGroup.removeOrphans();
+//	}
 	
 	@Transactional
 	//@Test

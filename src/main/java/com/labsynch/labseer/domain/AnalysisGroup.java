@@ -207,6 +207,17 @@ public class AnalysisGroup extends AbstractThing {
 //        return 0;
     }
     
+//    public static int removeOrphans() {
+//    	Set<Experiment> emptySet = new HashSet<Experiment>();
+//    	emptySet.add(null);
+//    	List<AnalysisGroup> orphansList = AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(emptySet, !false).getResultList();
+//    	int numberOfOrphans = orphansList.size();
+//    	for (AnalysisGroup orphan: orphansList) {
+//    		orphan.remove();
+//    	}
+//    	return numberOfOrphans;
+//    }
+    
     //@Transactional
     public static void removeByExperimentID(Long id) {
         Experiment experiment = Experiment.findExperiment(id);

@@ -389,7 +389,7 @@ public class SubjectTest {
 	}
 	
 	@Transactional
-	@Test
+	//@Test
 	public void findSubjectsByTreatmentGroupsSingleTest() {
 		Subject subject = makeTestingSubject();
 		Set<TreatmentGroup> treatmentgroups = new HashSet<TreatmentGroup>();

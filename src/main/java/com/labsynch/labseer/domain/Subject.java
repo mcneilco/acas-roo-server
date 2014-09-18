@@ -53,8 +53,8 @@ public class Subject extends AbstractThing {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "subject", fetch =  FetchType.LAZY)
 	private Set<SubjectState> lsStates = new HashSet<SubjectState>();
 
-//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "subject", fetch =  FetchType.EAGER)
-//	private Set<ItxSubjectContainer> containers = new HashSet<ItxSubjectContainer>();
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "subject", fetch =  FetchType.LAZY, orphanRemoval = true)
+	private Set<ItxSubjectContainer> containers = new HashSet<ItxSubjectContainer>();
 
 	//constructor to instantiate a new sample from nested json objects
 	public Subject(Subject subject) {
@@ -70,9 +70,9 @@ public class Subject extends AbstractThing {
         super.setLsKind(subject.getLsKind());
         super.setLsTypeAndKind(subject.getLsTypeAndKind());
         
-//        this.setSubjectLabels(subject.getSubjectLabels());
-//        this.setSubjectStates(subject.getSubjectStates());
-//        this.setContainers(subject.getContainers());
+        this.setLsLabels(subject.getLsLabels());
+        this.setLsStates(subject.getLsStates());
+        this.setContainers(subject.getContainers());
 
 	}
 
