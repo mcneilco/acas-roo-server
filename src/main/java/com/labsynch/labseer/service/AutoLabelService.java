@@ -26,6 +26,8 @@ public interface AutoLabelService {
 
 	String getDataDictionaryCodeName();
 
+	String getProtocolCodeName();
+
 	
 	
 	
