@@ -13,6 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.domain.LsSeqContainer;
+import com.labsynch.labseer.domain.LsSeqExpt;
+import com.labsynch.labseer.domain.LsSeqItxCntrCntr;
+import com.labsynch.labseer.domain.LsSeqItxExperimentExperiment;
+import com.labsynch.labseer.domain.LsSeqItxProtocolProtocol;
+import com.labsynch.labseer.domain.LsSeqItxSubjCntr;
+import com.labsynch.labseer.domain.LsSeqProtocol;
+import com.labsynch.labseer.domain.LsSeqSubject;
+import com.labsynch.labseer.domain.LsSeqTrtGrp;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
 
@@ -37,7 +46,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
 		LabelSequence labelSequence;
 		if(labelSequences.size() == 0) {
-			logger.info("Label sequence does not exist! Create new Sequence if possible.");
+			logger.info("Label sequence does not exist! Create new Sequence if possible." + thingTypeAndKind + "  " + labelTypeAndKind);
 			labelSequence = createLabelSequence(thingTypeAndKind, labelTypeAndKind);
 			if (labelSequence == null){
 				throw new NoResultException();
@@ -48,6 +57,250 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		} else {
 			labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	
 		}
+				
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+
+		if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("document_subject") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateSubjectLabels(labelSequence, numberOfLabels);			
+
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("document_treatment group") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateTreatmentGroupLabels(labelSequence, numberOfLabels);
+
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("document_analysis group") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateAnalysisGroupLabels(labelSequence, numberOfLabels);
+			
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("document_experiment") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateExperimentLabels(labelSequence, numberOfLabels);
+			
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("document_protocol") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateProtocolLabels(labelSequence, numberOfLabels);
+
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("material_container") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateContainerLabels(labelSequence, numberOfLabels);
+			
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("interaction_containerContainer") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateItxCntrCntrLabels(labelSequence, numberOfLabels);
+
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("interaction_subjectContainer") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateItxSubjCntrLabels(labelSequence, numberOfLabels);
+
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("interaction_protocolProtocol") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateItxProtProtLabels(labelSequence, numberOfLabels);
+			
+		} else if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("interaction_experimentExperiment") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
+			autoLabels = generateItxExptExptLabels(labelSequence, numberOfLabels);
+				
+		} else {		
+			autoLabels = generateAutoLabels(labelSequence, numberOfLabels);
+		}
+		
+
+		return autoLabels;
+	}
+
+	private List<AutoLabelDTO> generateItxExptExptLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqItxExperimentExperiment lsSeqObject = new LsSeqItxExperimentExperiment();
+			lsSeqObject.persist();
+			Long labelNumber = lsSeqObject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		
+		return autoLabels;
+	}
+
+	private List<AutoLabelDTO> generateItxProtProtLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqItxProtocolProtocol lsSeqObject = new LsSeqItxProtocolProtocol();
+			lsSeqObject.persist();
+			Long labelNumber = lsSeqObject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		
+		return autoLabels;
+	}
+
+	private List<AutoLabelDTO> generateItxSubjCntrLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqItxSubjCntr lsSeqItxSubjCntr = new LsSeqItxSubjCntr();
+			lsSeqItxSubjCntr.persist();
+			Long labelNumber = lsSeqItxSubjCntr.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		
+		return autoLabels;
+	}
+
+	private List<AutoLabelDTO> generateItxCntrCntrLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqItxCntrCntr lsSeqObject = new LsSeqItxCntrCntr();
+			lsSeqObject.persist();
+			Long labelNumber = lsSeqObject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		
+		return autoLabels;
+	}
+
+	private List<AutoLabelDTO> generateContainerLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqContainer lsSeqObject = new LsSeqContainer();
+			lsSeqObject.persist();
+			Long labelNumber = lsSeqObject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		
+		return autoLabels;
+	}
+
+	private String generateLabel(LabelSequence labelSequence, Long labelNumber) {
+		
+		String formatLabelNumber = "%";
+		formatLabelNumber = formatLabelNumber.concat("0").concat(labelSequence.getDigits().toString()).concat("d");
+		logger.debug("format corpNumber: " + formatLabelNumber);
+		String label = labelSequence.getLabelPrefix().concat(labelSequence.getLabelSeparator()).concat(String.format(formatLabelNumber, labelNumber));
+
+		return label;
+		
+	}
+	
+	private List<AutoLabelDTO> generateProtocolLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqProtocol lsSeqObject = new LsSeqProtocol();
+			lsSeqObject.persist();
+			Long labelNumber = lsSeqObject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		
+		return autoLabels;
+		
+	}
+
+	
+	private List<AutoLabelDTO> generateExperimentLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqExpt lsSeqObject = new LsSeqExpt();
+			lsSeqObject.persist();
+			Long labelNumber = lsSeqObject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		return autoLabels;
+		
+	}
+
+
+	private List<AutoLabelDTO> generateAnalysisGroupLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqTrtGrp lsSeqObject = new LsSeqTrtGrp();
+			lsSeqObject.persist();
+			Long labelNumber = lsSeqObject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		return autoLabels;
+		
+	}
+
+	
+	private List<AutoLabelDTO> generateTreatmentGroupLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqTrtGrp lsSeqObject = new LsSeqTrtGrp();
+			lsSeqObject.persist();
+			Long labelNumber = lsSeqObject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		return autoLabels;
+		
+	}
+	
+	private List<AutoLabelDTO> generateSubjectLabels(LabelSequence labelSequence, Long numberOfLabels) {
+		
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+		int counter = 0;
+		while (counter < numberOfLabels) {
+			LsSeqSubject lsSeqSubject = new LsSeqSubject();
+			lsSeqSubject.persist();
+			Long labelNumber = lsSeqSubject.getId();
+			String label = generateLabel(labelSequence, labelNumber); 
+			logger.debug("new label: " + label);
+			AutoLabelDTO autoLabel = new AutoLabelDTO();
+			autoLabel.setAutoLabel(label);
+			autoLabels.add(autoLabel);
+			counter++;
+		}
+		return autoLabels;
+		
+	}
+
+	private List<AutoLabelDTO> generateAutoLabels(LabelSequence labelSequence, Long numberOfLabels) {
+
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
 
 		long currentLastNumber = labelSequence.getLatestNumber();
 
@@ -62,7 +315,6 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		String formatLabelNumber = "%";
 		formatLabelNumber = formatLabelNumber.concat("0").concat(labelSequence.getDigits().toString()).concat("d");
 		logger.debug("format corpNumber: " + formatLabelNumber);
-		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
 		while (labelNumber <= endingNumber) {
 			String label = labelSequence.getLabelPrefix().concat(labelSequence.getLabelSeparator()).concat(String.format(formatLabelNumber, labelNumber));
 			logger.debug("new label: " + label);
@@ -71,8 +323,9 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 			autoLabels.add(autoLabel);
 			labelNumber++;
 		}
+		
+		return autoLabels;		
 
-		return autoLabels;
 	}
 
 	private LabelSequence createLabelSequence(String thingTypeAndKind, String labelTypeAndKind) {
@@ -109,6 +362,16 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 	@Override
 	public String getDataDictionaryCodeName() {
 		String thingTypeAndKind = "document_datadictionary";
+		String labelTypeAndKind = "id_codeName";
+		Long numberOfLabels = 1L;
+		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
+		return labels.get(0).getAutoLabel();		
+	}
+	
+	@Transactional
+	@Override
+	public String getProtocolCodeName() {
+		String thingTypeAndKind = "document_protocol";
 		String labelTypeAndKind = "id_codeName";
 		Long numberOfLabels = 1L;
 		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
