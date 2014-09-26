@@ -221,6 +221,16 @@ public class ExperimentServiceTests {
 
 	}
 	
+	@Test
+	@Transactional
+	public void RemoveExperimentTest(){
+		Long id = 136951L;
+		Experiment experiment = Experiment.findExperiment(id);
+		experiment.remove();
+		Assert.assertNull(Experiment.findExperiment(id));
+	}
+	
+	
 //	@Test
 	@Transactional
 	public void DeleteExperimentTest1(){

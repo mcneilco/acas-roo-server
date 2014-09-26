@@ -397,7 +397,7 @@ public class ItxTest {
 		return idMap;
 	}
 	
-	//@Transactional
+	@Transactional
 	@Test
 	public void itxExperimentRemoveTest() {
 		HashMap<String, Long> idMap = makeTestStack();
