@@ -1272,7 +1272,7 @@ public class ApiExperimentController {
 //            return new ResponseEntity<String>(headers, HttpStatus.OK);
         } else {
             logger.info("deleting entire experiment: " + id);
-            logger.info("BCF changes are in action");
+            //logger.info("BCF changes are in action");
 //            ItxSubjectContainerValue.deleteByExperimentID(id);
 //            ItxSubjectContainerState.deleteByExperimentID(id);
 //            int deletedItxValues = ItxSubjectContainer.deleteByExperimentID(id);

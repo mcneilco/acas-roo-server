@@ -184,5 +184,14 @@ public class AnalysisGroupServiceTests {
 		Assert.assertFalse("experiment should exist", output.getExperiments().isEmpty());
 		Assert.assertTrue("found experiment", output.getExperiments().contains(Experiment.findExperiment(55L)));
 	}
+	
+	@Test
+	//@Transactional
+	public void CreateAnalysisGroupFromCSV() {
+		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup.csv";
+		String treatmentGroupFilePath = "src/test/resources/csvUploadtreatmentGroup.csv";
+		String subjectFilePath = "src/test/resources/csvUploadSubject.csv";
+		Assert.assertTrue(analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath));
+	}
 
 }

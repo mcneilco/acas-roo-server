@@ -46,9 +46,9 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 			if (!val.isIgnored()) {
 				CodeTableDTO codeTable = new CodeTableDTO();
 				codeTable.setName(val.getLabelText());
-				codeTable.setCode(val.getCodeName());
+				codeTable.setCode(val.getShortName());
 				codeTable.setIgnored(val.isIgnored());
-				codeTable.setCodeName(val.getCodeName());
+				codeTable.setDisplayOrder(val.getDisplayOrder());
 				codeTableList.add(codeTable);
 			}
 		}
@@ -62,22 +62,23 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 			if (!val.isIgnored()) {
 				CodeTableDTO codeTable = new CodeTableDTO();
 				codeTable.setName(val.getLabelText());
-				codeTable.setCode(val.getCodeName());
+				codeTable.setCode(val.getShortName());
 				codeTable.setIgnored(val.isIgnored());
-				codeTable.setCodeName(val.getCodeName());
+				codeTable.setDisplayOrder(val.getDisplayOrder());
 				codeTableList.add(codeTable);
 			}
 		}
 		return codeTableList;
 	}
+	
 
 	@Override
 	public CodeTableDTO getDataDictionaryCodeTable(DDictValue dDictValue) {
 		CodeTableDTO codeTable = new CodeTableDTO();
 		codeTable.setName(dDictValue.getLabelText());
-		codeTable.setCode(dDictValue.getCodeName());
-		codeTable.setCodeName(dDictValue.getCodeName());
+		codeTable.setCode(dDictValue.getShortName());
 		codeTable.setIgnored(dDictValue.isIgnored());
+		codeTable.setDisplayOrder(dDictValue.getDisplayOrder());
 		return codeTable;
 	}
 
@@ -118,9 +119,9 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		for (DDictValue val : dDictResults) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setName(val.getLabelText());
-			codeTable.setCode(val.getCodeName());
+			codeTable.setCode(val.getShortName());
 			codeTable.setIgnored(val.isIgnored());
-			codeTable.setCodeName(val.getCodeName());
+			codeTable.setDisplayOrder(val.getDisplayOrder());
 			codeTableList.add(codeTable);
 		}
 		return codeTableList;	

@@ -374,6 +374,9 @@ public class SubjectServiceImpl implements SubjectService {
 					} else {
 						subject.merge();
 					}
+					TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId());
+					treatmentGroup.getSubjects().add(subject);
+					treatmentGroup.merge();
 					logger.debug("saved the new subject: ID: " + subject.getId() + " codeName" + subject.getCodeName());
 					logger.debug("saved the new subject: " + subject.toJson());
 					subjectMap = saveTempSubject(subject, subjectDTO, subjectMap);

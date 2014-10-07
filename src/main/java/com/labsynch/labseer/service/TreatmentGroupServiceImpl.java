@@ -309,6 +309,9 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 					} else {
 						treatmentGroup.merge();
 					}
+					AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
+					analysisGroup.getTreatmentGroups().add(treatmentGroup);
+					analysisGroup.merge();
 					logger.debug("saved the new treatment Group: ID: " + treatmentGroup.getId() + " codeName" + treatmentGroup.getCodeName());
 					logger.debug("saved the new treatment group: " + treatmentGroup.toJson());
 					treatmentGroupMap = saveTempTreatmentGroup(treatmentGroup, treatmentGroupDTO, treatmentGroupMap);
