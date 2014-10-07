@@ -302,6 +302,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 						analysisGroup.merge();
 					}
 					
+					
 					logger.debug("saved the new analysis group: " + analysisGroup.getId() + " " + analysisGroup.getCodeName());
 					logger.debug("saved the new analysis group: " + analysisGroup.toJson());
 
@@ -309,6 +310,9 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 ////				    	analysisGroup.flush();
 ////				    	analysisGroup.clear();
 ////				    }
+					Experiment experiment = Experiment.findExperiment(analysisGroupDTO.getParentId());
+					experiment.getAnalysisGroups().add(analysisGroup);
+					experiment.merge();
 					analysisGroupMap = saveTempAnalysisGroup(analysisGroup, analysisGroupDTO, analysisGroupMap);
 				}
 				
@@ -450,6 +454,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			}
 			Set<Experiment> experimentSet = new HashSet<Experiment>();
 			experimentSet.add(Experiment.findExperiment(analysisGroupDTO.getParentId()));
+			
 			if (analysisGroup.getExperiments() == null){
 				analysisGroup.setExperiments(experimentSet);
 			} else {
