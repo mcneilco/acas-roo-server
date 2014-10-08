@@ -61,18 +61,30 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 		boolean successfulLoad = true;
 		HashMap<String, TempThingDTO> output2 = null;
 		try {
+			long time1 = new Date().getTime();
 			HashMap<String, TempThingDTO> output = createAnalysisGroupsFromCSV(analysisGroupFilePath );
+			long time2 = new Date().getTime();
 			if (treatmentGroupFilePath != null && !treatmentGroupFilePath.equalsIgnoreCase("")) {
 				output2 = treatmentGroupService.createTreatmentGroupsFromCSV(treatmentGroupFilePath, output);
 			}
+			long time3 = new Date().getTime();
 			if (output2 != null && subjectFilePath != null && !subjectFilePath.equalsIgnoreCase("")){
 				HashMap<String, TempThingDTO> output3 = subjectService.createSubjectsFromCSV(subjectFilePath, output2);
 			}
+			long time4 = new Date().getTime();
+			logger.info("Speed Report");
+			long tdiff21 = time2 - time1;
+			logger.info("   time to load AG's: " + tdiff21 + " ms");
+			long tdiff32 = time3 - time2;
+			logger.info("   time to load TG's: " + tdiff32 + " ms");
+			long tdiff43 = time4 - time3;
+			logger.info("   time to load Subj's: " + tdiff43 + " ms");
+			long tdiff41 = time4 - time1;
+			logger.info("   total load time: " + tdiff41 + " ms");
 		} catch (IOException e) {
 			logger.error("Unable to open file " + e);
 			successfulLoad = false;
 		}
-
 		return successfulLoad;
 				
 	}
@@ -287,6 +299,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			// if both null -- then do not create an entry
 			
 			long rowIndex = 1;
+			Set<Experiment> experiments = new HashSet<Experiment>();
 			while( (analysisGroupDTO = beanReader.read(FlatThingCsvDTO.class, header, processors)) != null ) {
 				logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), analysisGroupDTO));
 
@@ -312,11 +325,9 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 ////				    }
 					Experiment experiment = Experiment.findExperiment(analysisGroupDTO.getParentId());
 					experiment.getAnalysisGroups().add(analysisGroup);
-					experiment.merge();
+					experiments.add(experiment);
 					analysisGroupMap = saveTempAnalysisGroup(analysisGroup, analysisGroupDTO, analysisGroupMap);
 				}
-				
-				
 			
 				if (analysisGroupDTO.getStateType() != null && analysisGroupDTO.getStateKind() != null){
 					if (analysisGroupDTO.getTempStateId() == null) analysisGroupDTO.setTempStateId(analysisGroupDTO.getStateId().toString());
@@ -352,6 +363,15 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 				
 				rowIndex++;
 			}
+			Long beforeMerge = new Date().getTime();
+			logger.info("Number of experiments to merge: "+ experiments.size());
+			for (Experiment experiment: experiments) {
+				experiment.merge();	
+			}
+			Long afterMerge = new Date().getTime();
+			Long mergeDuration = afterMerge - beforeMerge;
+			logger.info("Merging experiments took: "+ mergeDuration + " ms");
+			
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -452,14 +472,14 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			} else {
 				analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupDTO.getId());
 			}
-			Set<Experiment> experimentSet = new HashSet<Experiment>();
-			experimentSet.add(Experiment.findExperiment(analysisGroupDTO.getParentId()));
-			
-			if (analysisGroup.getExperiments() == null){
-				analysisGroup.setExperiments(experimentSet);
-			} else {
-				analysisGroup.getExperiments().addAll(experimentSet);
-			}
+//			Set<Experiment> experimentSet = new HashSet<Experiment>();
+//			experimentSet.add(Experiment.findExperiment(analysisGroupDTO.getParentId()));
+//			
+//			if (analysisGroup.getExperiments() == null){
+//				analysisGroup.setExperiments(experimentSet);
+//			} else {
+//				analysisGroup.getExperiments().addAll(experimentSet);
+//			}
 		} else {
 			logger.debug("skipping the previously saved analysisGroup --------- " + analysisGroupDTO.getCodeName());
 		}

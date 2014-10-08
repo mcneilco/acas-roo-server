@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import junit.framework.Assert;
 
@@ -186,12 +187,39 @@ public class AnalysisGroupServiceTests {
 	}
 	
 	@Test
-	//@Transactional
-	public void CreateAnalysisGroupFromCSV() {
+//	@Transactional
+	public void CreateAnalysisGroupFromCSVTest() {
 		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup.csv";
 		String treatmentGroupFilePath = "src/test/resources/csvUploadtreatmentGroup.csv";
 		String subjectFilePath = "src/test/resources/csvUploadSubject.csv";
-		Assert.assertTrue(analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath));
+		
+//		String treatmentGroupFilePath = null;
+//		String subjectFilePath = null;
+		
+		long startTime = new Date().getTime();
+		boolean dataLoaded = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
+		long endTime = new Date().getTime();
+		long totalTime = endTime - startTime;
+		logger.info("dataLoaded: " + dataLoaded + "   total elapsed time: " + totalTime + " ms");
+		Assert.assertTrue(dataLoaded);
+		
+		//timing notes: running locally
+		//AG - 0.9 s
+		//TG - 6.0 s
+		//S - 17.5 s
+		//Total: 24.4 s
+		
+		//Change: removing extra linking statements (Experiment is already being linked to AnalysisGroup)
+		//AG - 0.86 s
+		//TG - 5.8 s
+		//S - 13.0 s
+		//Total: 19.7 s
+		
+		//Combining merges into a list to be merged at the end
+		//AG - 0.74 s
+		//TG - 2.3 s
+		//S - 9.7 s
+		//Total: 12.7 s
 	}
 
 }
