@@ -147,5 +147,12 @@ public class ProtocolServiceTest {
 		logger.info(CodeTableDTO.toJsonArray(output));
 
 	}
+	
+	@Transactional
+	@Test
+	public void ProtocolToJsonTest(){
+		Protocol protocol = Protocol.findProtocol(1575L);
+		protocol.toJson();
+	}
 
 }

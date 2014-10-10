@@ -132,7 +132,8 @@ public class AnalysisGroup extends AbstractThing {
     }
 
     public String toJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol").include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
+    	//TODO: fix this method
+        return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiments.protocol").include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     public String toJsonStub() {

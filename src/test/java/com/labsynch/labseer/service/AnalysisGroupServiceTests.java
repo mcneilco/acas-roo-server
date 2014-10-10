@@ -7,21 +7,27 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONTokener;
@@ -52,8 +58,8 @@ public class AnalysisGroupServiceTests {
 		logger.info(output.toJson());
 	}
 	
-	//@Test
-	//@Transactional
+	@Test
+	@Transactional
 	public void CreateAnalysisGroupsFromNestedJson2(){
 		String json = "{ \"codeName\": \"AG-00000084\",\"kind\": \"Dose Response\",\"experiment\": { \"codeName\": \"EXPT-00000008\",\"id\":        97,\"ignored\": false,\"kind\": \"dose response\",\"lsTransaction\": { \"comments\": \"experiment 201 transactions\",\"id\":        10,\"recordedDate\":  1362077052000,\"version\":        0 },\"modifiedBy\": null,\"modifiedDate\": null,\"protocol\": { \"codeName\": \"PROT-00000003\",\"id\":        96,\"ignored\": false,\"kind\": null,\"lsTransaction\": { \"comments\": \"protocol 201 transactions\",\"id\":        9,\"recordedDate\":  1362077052000,\"version\":        0 },\"modifiedBy\": null,\"modifiedDate\": null,\"recordedBy\": \"userName\",\"recordedDate\":  1362077052000,\"shortDescription\": \"protocol short description goes here\",\"version\":        0 },\"recordedBy\": \"userName\",\"recordedDate\": null,\"shortDescription\": \"experiment short description\",\"version\":        0 },\"recordedBy\": \"userName\",\"lsTransaction\": null,\"treatmentGroups\": null,\"analysisGroupLabels\": null,\"analysisGroupStates\": [ { \"analysisGroupValues\": null,\"recordedBy\": \"userName\",\"stateType\": \"data\",\"stateKind\": \"inhibition\",\"comments\": \"\",\"lsTransaction\": { \"comments\": \"experiment 202 transactions\",\"id\":        37,\"recordedDate\":  1362113789000,\"version\":        0 },\"ignored\": false,\"recordedDate\":  1362116855000 } ],\"recordedDate\":  1362116856000,\"modifiedBy\": \"userName\",\"modifiedDate\":  1362116856000 }";
 		logger.info(AnalysisGroup.fromJsonToAnalysisGroup(json).toString());
@@ -220,6 +226,34 @@ public class AnalysisGroupServiceTests {
 		//TG - 2.3 s
 		//S - 9.7 s
 		//Total: 12.7 s
+	}
+	
+	@Transactional
+	@Test
+	public void fromJsonArrayTest() {
+		String json = "[{\"codeName\":\"AG-00017601\",\"lsType\":\"default\",\"lsKind\":\"default\",\"experiments\":[{\"id\":661993,\"version\":1}],\"recordedBy\":\"smeyer\",\"lsTransaction\":1694,\"treatmentGroups\":null,\"lsStates\":[{\"analysisGroup\":null,\"lsValues\":[{\"lsState\":null,\"lsType\":\"fileValue\",\"lsKind\":\"report file\",\"stringValue\":null,\"fileValue\":\"experiments/EXPT-00000208/3_Panel Screen.pdf\",\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":\"Panel Screen - Exp3\",\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"username\",\"recordedDate\":1412967173000,\"lsTransaction\":1694},{\"lsState\":null,\"lsType\":\"codeValue\",\"lsKind\":\"batch code\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":\"CMPD-0000001-01\",\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"username\",\"recordedDate\":1412967173000,\"lsTransaction\":1694}],\"recordedBy\":\"smeyer\",\"lsType\":\"metadata\",\"lsKind\":\"report locations\",\"comments\":\"\",\"lsTransaction\":1694,\"ignored\":false,\"recordedDate\":1412967173000}],\"recordedDate\":1412967173000}]";
+        List<IdCollectionDTO> idList = new ArrayList<IdCollectionDTO>();
+        IdCollectionDTO idDTO = null;
+        int i = 0;
+        BufferedReader br = null;
+        StringReader sr = null;
+//        try {
+            sr = new StringReader(json);
+            br = new BufferedReader(sr);
+            for (AnalysisGroup analysisGroup : AnalysisGroup.fromJsonArrayToAnalysisGroups(br)) {
+                logger.debug("saving analysis group number: " + i);
+                AnalysisGroup saved = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+                idDTO = new IdCollectionDTO();
+                idDTO.setId(saved.getId());
+                idDTO.setVersion(saved.getVersion());
+                idList.add(idDTO);
+                i++;
+            }
+            logger.info("saved!");
+//        }
+//        catch(Exception e) {
+//        	logger.info("Caught exception " + e);
+//        }
 	}
 
 }

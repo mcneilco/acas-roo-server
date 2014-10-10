@@ -263,6 +263,12 @@ public class Protocol extends AbstractThing {
 		}
 		return protocolList;
 	}
+	
+	public static Protocol findProtocol(Long id) {
+        if (id == null) return null;
+        else if (entityManager().find(Protocol.class, id).isIgnored()) return null;
+        return entityManager().find(Protocol.class, id);
+    }
 
 	@Transactional
 	public static List<com.labsynch.labseer.dto.CodeTableDTO> getProtocolCodeTable() {
