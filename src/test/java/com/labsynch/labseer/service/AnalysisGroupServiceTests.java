@@ -7,7 +7,9 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -237,7 +239,7 @@ public class AnalysisGroupServiceTests {
         int i = 0;
         BufferedReader br = null;
         StringReader sr = null;
-//        try {
+        try {
             sr = new StringReader(json);
             br = new BufferedReader(sr);
             for (AnalysisGroup analysisGroup : AnalysisGroup.fromJsonArrayToAnalysisGroups(br)) {
@@ -250,10 +252,39 @@ public class AnalysisGroupServiceTests {
                 i++;
             }
             logger.info("saved!");
-//        }
-//        catch(Exception e) {
-//        	logger.info("Caught exception " + e);
-//        }
+        }
+        catch(Exception e) {
+        	logger.info("Caught exception " + e);
+       }
+	}
+	
+	@Transactional
+	@Test
+	public void toJsonFromJsonTest() {
+		AnalysisGroup ag = AnalysisGroup.findAnalysisGroup(661669L);
+		Set<AnalysisGroup> agSet = new HashSet<AnalysisGroup>();
+		agSet.add(ag);
+		Assert.assertNotNull(ag);
+		//Testing the toJson methods
+		String fullJson = ag.toFullJson();
+		String prettyFullJson = ag.toPrettyFullJson();
+		String json = ag.toJson();
+		String jsonStub = ag.toJsonStub();
+		String prettyJson = ag.toPrettyJson();
+		String prettyJsonStub = ag.toPrettyJsonStub();
+		String jsonArray = AnalysisGroup.toJsonArray(agSet);
+		
+		//Testing the fromJson methods
+		BufferedReader br = null;
+        StringReader sr = null;
+		sr = new StringReader(json);
+        br = new BufferedReader(sr);
+		AnalysisGroup ag2 = AnalysisGroup.fromJsonToAnalysisGroup(json);
+		AnalysisGroup ag3 = AnalysisGroup.fromJsonToAnalysisGroup2(br);
+		sr = new StringReader(jsonArray);
+		br = new BufferedReader(sr);
+		Collection<AnalysisGroup> ags2 = AnalysisGroup.fromJsonArrayToAnalysisGroups(br);
+		Collection<AnalysisGroup> ags3 = AnalysisGroup.fromJsonArrayToAnalysisGroups(jsonArray);
 	}
 
 }
