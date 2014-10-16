@@ -311,9 +311,9 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 					} else {
 						treatmentGroup.merge();
 					}
-					AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
-					analysisGroup.getTreatmentGroups().add(treatmentGroup);
-					analysisGroups.add(analysisGroup);
+//					AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
+//					analysisGroup.getTreatmentGroups().add(treatmentGroup);
+//					analysisGroups.add(analysisGroup);
 					logger.debug("saved the new treatment Group: ID: " + treatmentGroup.getId() + " codeName" + treatmentGroup.getCodeName());
 					logger.debug("saved the new treatment group: " + treatmentGroup.toJson());
 					treatmentGroupMap = saveTempTreatmentGroup(treatmentGroup, treatmentGroupDTO, treatmentGroupMap);
@@ -349,14 +349,14 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 				rowIndex++;
 			}
-			Long beforeMerge = new Date().getTime();
-			logger.info("Number of AnalysisGroups to merge: "+ analysisGroups.size());
-			for (AnalysisGroup analysisGroup: analysisGroups) {
-				analysisGroup.merge();	
-			}
-			Long afterMerge = new Date().getTime();
-			Long mergeDuration = afterMerge - beforeMerge;
-			logger.info("Merging AnalysisGroups took: "+ mergeDuration + " ms");
+//			Long beforeMerge = new Date().getTime();
+//			logger.info("Number of AnalysisGroups to merge: "+ analysisGroups.size());
+//			for (AnalysisGroup analysisGroup: analysisGroups) {
+//				analysisGroup.merge();	
+//			}
+//			Long afterMerge = new Date().getTime();
+//			Long mergeDuration = afterMerge - beforeMerge;
+//			logger.info("Merging AnalysisGroups took: "+ mergeDuration + " ms");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -474,14 +474,14 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			} else {
 				treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupDTO.getId());
 			}
-//			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
-//			AnalysisGroup foundAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
-//			analysisGroups.add(foundAnalysisGroup);
-//			if (treatmentGroup.getAnalysisGroups() == null){
-//				treatmentGroup.setAnalysisGroups(analysisGroups);
-//			} else {
-//				treatmentGroup.getAnalysisGroups().addAll(analysisGroups);
-//			}
+			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+			AnalysisGroup foundAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
+			analysisGroups.add(foundAnalysisGroup);
+			if (treatmentGroup.getAnalysisGroups() == null){
+				treatmentGroup.setAnalysisGroups(analysisGroups);
+			} else {
+				treatmentGroup.getAnalysisGroups().addAll(analysisGroups);
+			}
 
 		} else {
 			logger.debug("skipping the previously saved treatmentGroup --------- " + treatmentGroupDTO.getCodeName());

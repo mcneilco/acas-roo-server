@@ -15,8 +15,10 @@ public interface ProtocolService {
 
 	Protocol updateProtocol(Protocol protocol);
 
-	Collection<Protocol> findProtocolsByMetadataJson(String json);
+//	Collection<Protocol> findProtocolsByMetadataJson(String json);
+
+	Collection<Protocol> findProtocolsByGenericMetaDataSearch(String query);
 	
-	
+	Collection<Long> findProtocolIdByMetadata(String queryString, String searchBy);
 	
 }

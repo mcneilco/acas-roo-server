@@ -10,6 +10,8 @@ import org.springframework.roo.addon.tostring.RooToString;
 public class StringCollectionDTO {
 	
 	private String name;
+	
+	private String code;
 
 }
 

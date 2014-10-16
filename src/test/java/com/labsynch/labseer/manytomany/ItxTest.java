@@ -411,6 +411,7 @@ public class ItxTest {
 		Assert.assertNull(check);
 	}
 	
+	@Transactional
 	@Test
 	public void itxFullRemoveTest() {
 		HashMap<String, Long> idMap = makeTestStack();

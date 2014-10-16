@@ -375,9 +375,9 @@ public class SubjectServiceImpl implements SubjectService {
 					} else {
 						subject.merge();
 					}
-					TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId());
-					treatmentGroup.getSubjects().add(subject);
-					treatmentGroups.add(treatmentGroup);
+//					TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId());
+//					treatmentGroup.getSubjects().add(subject);
+//					treatmentGroups.add(treatmentGroup);
 					logger.debug("saved the new subject: ID: " + subject.getId() + " codeName" + subject.getCodeName());
 					logger.debug("saved the new subject: " + subject.toJson());
 					subjectMap = saveTempSubject(subject, subjectDTO, subjectMap);
@@ -413,14 +413,20 @@ public class SubjectServiceImpl implements SubjectService {
 
 				rowIndex++;
 			}
-			Long beforeMerge = new Date().getTime();
-			logger.info("Number of TreatmentGroups to merge: "+ treatmentGroups.size());
-			for (TreatmentGroup treatmentGroup: treatmentGroups) {
-				treatmentGroup.merge();	
-			}
-			Long afterMerge = new Date().getTime();
-			Long mergeDuration = afterMerge - beforeMerge;
-			logger.info("Merging TreatmentGroups took: "+ mergeDuration + " ms");
+//			Long beforeMerge = new Date().getTime();
+//			logger.info("Number of TreatmentGroups to merge: "+ treatmentGroups.size());
+//			for (TreatmentGroup treatmentGroup: treatmentGroups) {
+//				logger.debug("merging treatment group:" + treatmentGroup.getCodeName());
+////				try {
+////					logger.debug(treatmentGroup.toJson());
+////				} catch (Exception e) {
+////					logger.debug("Found exception: " + e);
+////				}
+//				treatmentGroup.merge();	
+//			}
+//			Long afterMerge = new Date().getTime();
+//			Long mergeDuration = afterMerge - beforeMerge;
+//			logger.info("Merging TreatmentGroups took: "+ mergeDuration + " ms");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -536,13 +542,13 @@ public class SubjectServiceImpl implements SubjectService {
 			} else {
 				subject = Subject.findSubject(subjectDTO.getId());
 			}
-//			Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
-//			treatmentGroups.add(TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId()));
-//			if (subject.getTreatmentGroups() == null){
-//				subject.setTreatmentGroups(treatmentGroups);
-//			} else {
-//				subject.getTreatmentGroups().addAll(treatmentGroups);
-//			}			
+			Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+			treatmentGroups.add(TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId()));
+			if (subject.getTreatmentGroups() == null){
+				subject.setTreatmentGroups(treatmentGroups);
+			} else {
+				subject.getTreatmentGroups().addAll(treatmentGroups);
+			}			
 		} else {
 			logger.debug("skipping the previously saved subject --------- " + subjectDTO.getCodeName());
 		}

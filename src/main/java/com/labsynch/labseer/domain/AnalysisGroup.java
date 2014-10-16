@@ -43,13 +43,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class AnalysisGroup extends AbstractThing {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalysisGroup.class);
-
-//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-//    @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") })
-//    private Set<Experiment> experiments = new HashSet<Experiment>();
     
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")  
+    //Subject is grandparent
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") })
     private Set<Experiment> experiments = new HashSet<Experiment>();
+    
+    //Experiment is grandparent
+//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")  
+//    private Set<Experiment> experiments = new HashSet<Experiment>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
     private Set<AnalysisGroupLabel> lsLabels = new HashSet<AnalysisGroupLabel>();
@@ -57,14 +59,16 @@ public class AnalysisGroup extends AbstractThing {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
     private Set<AnalysisGroupState> lsStates = new HashSet<AnalysisGroupState>();
 
-//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")
-//    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
-
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
-	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
-	joinColumns={@JoinColumn(name="analysis_group_id")}, 
-	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
+    //Subject is grandparent
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")
     private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+
+    //Experiment is grandparent
+//	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
+//	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
+//	joinColumns={@JoinColumn(name="analysis_group_id")}, 
+//	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
+//    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
     
     public AnalysisGroup() {
     }
@@ -132,7 +136,7 @@ public class AnalysisGroup extends AbstractThing {
     }
 
     public String toJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiments.protocol").include("lsLabels", "lsValues", "treatmentGroups.lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiments.protocol").include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsStates.lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     public String toJsonStub() {
@@ -140,7 +144,7 @@ public class AnalysisGroup extends AbstractThing {
     }
 
     public String toPrettyJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol").include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol").include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     public String toPrettyJsonStub() {

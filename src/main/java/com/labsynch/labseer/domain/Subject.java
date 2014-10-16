@@ -37,15 +37,17 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(finders = { "findSubjectsByTreatmentGroups", "findSubjectsByLsTransactionEquals", "findSubjectsByCodeNameEquals" })
 @RooJson
 public class Subject extends AbstractThing {
-
-//	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
-//	@JoinTable(name="TREATMENTGROUP_SUBJECT", 
-//	joinColumns={@JoinColumn(name="subject_id")}, 
-//	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
-//    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 	
-	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "subjects")  
+	//This direction: Subject is grandparent
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
+	@JoinTable(name="TREATMENTGROUP_SUBJECT", 
+	joinColumns={@JoinColumn(name="subject_id")}, 
+	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
     private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+	
+	//This direction: Experiment is grandparent
+//	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "subjects")  
+//    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "subject", fetch =  FetchType.LAZY)
     private Set<SubjectLabel> lsLabels = new HashSet<SubjectLabel>();

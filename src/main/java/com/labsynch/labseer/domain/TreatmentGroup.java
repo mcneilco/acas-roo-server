@@ -43,23 +43,27 @@ public class TreatmentGroup extends AbstractThing {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
 	private Set<TreatmentGroupState> lsStates = new HashSet<TreatmentGroupState>();
 	
-//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "treatmentGroups")  
+	//Subject is grandparent
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "treatmentGroups")  
+    private Set<Subject> subjects = new HashSet<Subject>();
+	
+	//Experiment is grandparent
+//	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
+//	@JoinTable(name="TREATMENTGROUP_SUBJECT", 
+//	joinColumns={@JoinColumn(name="treatment_group_id")}, 
+//	inverseJoinColumns={@JoinColumn(name="subject_id")})
 //    private Set<Subject> subjects = new HashSet<Subject>();
 	
+	//Subject is grandparent
 	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
-	@JoinTable(name="TREATMENTGROUP_SUBJECT", 
+	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
 	joinColumns={@JoinColumn(name="treatment_group_id")}, 
-	inverseJoinColumns={@JoinColumn(name="subject_id")})
-    private Set<Subject> subjects = new HashSet<Subject>();
- 
-//	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
-//	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
-//	joinColumns={@JoinColumn(name="treatment_group_id")}, 
-//	inverseJoinColumns={@JoinColumn(name="analysis_group_id")})
-//    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
-	
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "treatmentGroups")
+	inverseJoinColumns={@JoinColumn(name="analysis_group_id")})
     private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+	
+	//Experiment is grandparent
+//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "treatmentGroups")
+//    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
     
     public TreatmentGroup() {
     }

@@ -93,7 +93,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 	@Override
 	public AnalysisGroup saveLsAnalysisGroup(AnalysisGroup analysisGroup){
 
-		logger.debug("incoming meta analysisGroup: " + analysisGroup.toJson());
+//		logger.debug("incoming meta analysisGroup: " + analysisGroup.toJson());
 		Date recordedDate = new Date();
 
 		AnalysisGroup newAnalysisGroup = null;
@@ -323,9 +323,9 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 ////				    	analysisGroup.flush();
 ////				    	analysisGroup.clear();
 ////				    }
-					Experiment experiment = Experiment.findExperiment(analysisGroupDTO.getParentId());
-					experiment.getAnalysisGroups().add(analysisGroup);
-					experiments.add(experiment);
+//					Experiment experiment = Experiment.findExperiment(analysisGroupDTO.getParentId());
+//					experiment.getAnalysisGroups().add(analysisGroup);
+//					experiments.add(experiment);
 					analysisGroupMap = saveTempAnalysisGroup(analysisGroup, analysisGroupDTO, analysisGroupMap);
 				}
 			
@@ -363,14 +363,14 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 				
 				rowIndex++;
 			}
-			Long beforeMerge = new Date().getTime();
-			logger.info("Number of experiments to merge: "+ experiments.size());
-			for (Experiment experiment: experiments) {
-				experiment.merge();	
-			}
-			Long afterMerge = new Date().getTime();
-			Long mergeDuration = afterMerge - beforeMerge;
-			logger.info("Merging experiments took: "+ mergeDuration + " ms");
+//			Long beforeMerge = new Date().getTime();
+//			logger.info("Number of experiments to merge: "+ experiments.size());
+//			for (Experiment experiment: experiments) {
+//				experiment.merge();	
+//			}
+//			Long afterMerge = new Date().getTime();
+//			Long mergeDuration = afterMerge - beforeMerge;
+//			logger.info("Merging experiments took: "+ mergeDuration + " ms");
 			
 
 		} catch (IOException e) {
@@ -472,14 +472,14 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			} else {
 				analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupDTO.getId());
 			}
-//			Set<Experiment> experimentSet = new HashSet<Experiment>();
-//			experimentSet.add(Experiment.findExperiment(analysisGroupDTO.getParentId()));
-//			
-//			if (analysisGroup.getExperiments() == null){
-//				analysisGroup.setExperiments(experimentSet);
-//			} else {
-//				analysisGroup.getExperiments().addAll(experimentSet);
-//			}
+			Set<Experiment> experimentSet = new HashSet<Experiment>();
+			experimentSet.add(Experiment.findExperiment(analysisGroupDTO.getParentId()));
+			
+			if (analysisGroup.getExperiments() == null){
+				analysisGroup.setExperiments(experimentSet);
+			} else {
+				analysisGroup.getExperiments().addAll(experimentSet);
+			}
 		} else {
 			logger.debug("skipping the previously saved analysisGroup --------- " + analysisGroupDTO.getCodeName());
 		}

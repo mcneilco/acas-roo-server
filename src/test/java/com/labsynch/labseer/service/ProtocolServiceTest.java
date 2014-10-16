@@ -155,4 +155,45 @@ public class ProtocolServiceTest {
 		protocol.toJson();
 	}
 
+	//Testing protocol browser search
+	//TODO: make this test pass!
+	//Fields that can be searched for:
+	//Protocol Name
+	//Code
+	//Kind
+	//Assay Tree Rule
+	//Scientist
+	//Date
+	//Notebook
+	//Key Words (Tags)
+	//Assay Activity
+	//Molecular Target
+	//Target Origin
+	//Assay Type
+	//Assay Technology/Kit Name
+	//Cell Line
+	//Assay Stage
+	@Transactional
+	@Test
+	public void protocolBrowserSearchTest() {
+		String name = "FLIPR target A biochemical";
+		String code = "PROT-00000005";
+		String scientist = "smeyer";
+		String kind = "flipr screening assay";
+		String date;
+		String notebook = "NB 1234-123";
+		String keyWords;
+		String assayActivity;
+		String molecularTarget;
+		String targetOrigin;
+		String assayType;
+		String assayTech;
+		String cellLine;
+		String assayStage;
+		String query = name + " " + code + " " + kind  + " " + notebook;
+		logger.info("Searching with the query: "+ query);
+		Collection<Protocol> resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultProtocols.toString());
+		Assert.assertNotNull(resultProtocols);
+	}
 }

@@ -56,20 +56,20 @@ public class ApiProtocolController {
     @Autowired
     private PropertiesUtilService propertiesUtilService;
     
-    @Transactional
-	@RequestMapping(value = "/find=bymetadata", method = RequestMethod.GET, headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<java.lang.String> findProtocolsByMetadata(
-			@RequestBody String json,
-			@RequestParam(value = "with", required = false) String with) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        
-		Collection<Protocol> protocols = protocolService.findProtocolsByMetadataJson(json);
-
-        
-        return new ResponseEntity<String>(Protocol.toJsonArray(protocols), headers, HttpStatus.OK);
-    }
+//    @Transactional
+//	@RequestMapping(value = "/find=bymetadata", method = RequestMethod.GET, headers = "Accept=application/json")
+//    @ResponseBody
+//    public ResponseEntity<java.lang.String> findProtocolsByMetadata(
+//			@RequestBody String json,
+//			@RequestParam(value = "with", required = false) String with) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json; charset=utf-8");
+//        
+//		Collection<Protocol> protocols = protocolService.findProtocolsByMetadataJson(json);
+//
+//        
+//        return new ResponseEntity<String>(Protocol.toJsonArray(protocols), headers, HttpStatus.OK);
+//    }
 
 
     @Transactional
@@ -436,4 +436,13 @@ public class ApiProtocolController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
     }
+	
+	@RequestMapping(value = "/search")
+	@ResponseBody
+	public ResponseEntity<String> protocolBrowserSearch(@RequestParam("q") String searchQuery) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		return new ResponseEntity<String>(Protocol.toJsonArray(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
+	}
+	
 }

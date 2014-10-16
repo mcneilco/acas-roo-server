@@ -586,8 +586,8 @@ public class ExperimentController {
 //            logger.info("deleted number of AnalysisGroupState: " + ag2);
 //            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
 //            logger.info("deleted number of AnalysisGroup: " + ag4);
-            experiment.remove();
-            if (Experiment.findExperiment(id) == null) {
+            experiment.logicalDelete();
+            if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored()) {
                 logger.info("Did not find the experiment after delete");
                 return new ResponseEntity<String>(headers, HttpStatus.OK);
             } else {
@@ -671,7 +671,8 @@ public class ExperimentController {
         if (protocolId != null && protocolId != 0) {
             experiments = Experiment.findExperimentByExperimentNameAndProtocolId(experimentName, protocolId);
         } else {
-            experiments = Experiment.findExperimentByExperimentName(experimentName);
+        	//TODO make new finder that returns list of experiments and respects ignore flag
+            experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
         }
         if (with != null) {
             logger.debug("incoming with param is " + with);
@@ -792,7 +793,7 @@ public class ExperimentController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         Experiment experiment = Experiment.findExperiment(id);
-        experiment.remove();
+        experiment.logicalDelete();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());

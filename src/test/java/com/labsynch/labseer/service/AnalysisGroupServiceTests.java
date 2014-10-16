@@ -197,9 +197,12 @@ public class AnalysisGroupServiceTests {
 	@Test
 //	@Transactional
 	public void CreateAnalysisGroupFromCSVTest() {
-		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup.csv";
-		String treatmentGroupFilePath = "src/test/resources/csvUploadtreatmentGroup.csv";
-		String subjectFilePath = "src/test/resources/csvUploadSubject.csv";
+		String analysisGroupFilePath = "src/test/resources/csvUpload1830388d839b.txt";
+		String treatmentGroupFilePath = "src/test/resources/csvUpload183052bb521e.csv";
+		String subjectFilePath = "src/test/resources/csvUpload183080c5a01.csv";
+//		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup.csv";
+//		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup.csv";
+//		String subjectFilePath = "src/test/resources/csvUploadSubject.csv";
 		
 //		String treatmentGroupFilePath = null;
 //		String subjectFilePath = null;
@@ -261,7 +264,7 @@ public class AnalysisGroupServiceTests {
 	@Transactional
 	@Test
 	public void toJsonFromJsonTest() {
-		AnalysisGroup ag = AnalysisGroup.findAnalysisGroup(661669L);
+		AnalysisGroup ag = AnalysisGroup.findAnalysisGroup(662214L);
 		Set<AnalysisGroup> agSet = new HashSet<AnalysisGroup>();
 		agSet.add(ag);
 		Assert.assertNotNull(ag);
@@ -269,6 +272,7 @@ public class AnalysisGroupServiceTests {
 		String fullJson = ag.toFullJson();
 		String prettyFullJson = ag.toPrettyFullJson();
 		String json = ag.toJson();
+		logger.info(json);
 		String jsonStub = ag.toJsonStub();
 		String prettyJson = ag.toPrettyJson();
 		String prettyJsonStub = ag.toPrettyJsonStub();
