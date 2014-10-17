@@ -4,6 +4,8 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.TreatmentGroup;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -22,6 +24,22 @@ privileged aspect Subject_Roo_Finder {
         EntityManager em = Subject.entityManager();
         TypedQuery<Subject> q = em.createQuery("SELECT o FROM Subject AS o WHERE o.lsTransaction = :lsTransaction", Subject.class);
         q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
+    public static TypedQuery<Subject> Subject.findSubjectsByTreatmentGroups(Set<TreatmentGroup> treatmentGroups) {
+        if (treatmentGroups == null) throw new IllegalArgumentException("The treatmentGroups argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Subject AS o WHERE");
+        for (int i = 0; i < treatmentGroups.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :treatmentGroups_item").append(i).append(" MEMBER OF o.treatmentGroups");
+        }
+        TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
+        int treatmentGroupsIndex = 0;
+        for (TreatmentGroup _treatmentgroup: treatmentGroups) {
+            q.setParameter("treatmentGroups_item" + treatmentGroupsIndex++, _treatmentgroup);
+        }
         return q;
     }
     

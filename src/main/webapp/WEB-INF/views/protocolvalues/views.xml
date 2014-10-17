@@ -19,4 +19,13 @@
 <definition extends="default" name="protocolvalues/findProtocolValuesByLsTransactionEquals">
         <put-attribute name="body" value="/WEB-INF/views/protocolvalues/findProtocolValuesByLsTransactionEquals.jspx"/>
     </definition>
+<definition extends="default" name="protocolvalues/findProtocolValuesByLsKindEqualsAndCodeValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/protocolvalues/findProtocolValuesByLsKindEqualsAndCodeValueLike.jspx"/>
+    </definition>
+<definition extends="default" name="protocolvalues/findProtocolValuesByLsKindEqualsAndDateValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/protocolvalues/findProtocolValuesByLsKindEqualsAndDateValueLike.jspx"/>
+    </definition>
+<definition extends="default" name="protocolvalues/findProtocolValuesByLsKindEqualsAndStringValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/protocolvalues/findProtocolValuesByLsKindEqualsAndStringValueLike.jspx"/>
+    </definition>
 </tiles-definitions>

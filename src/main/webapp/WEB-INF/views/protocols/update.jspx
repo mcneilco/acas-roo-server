@@ -19,5 +19,7 @@
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_Protocol_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Protocol State" z="VF5qxZE8ByolsmtFiAhAjA5eB9E="/>
         <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_Protocol_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Protocol Label" z="yvQXkrTRsSljEbcpeg3BeH0/V50="/>
         <field:select field="lsTags" id="c_com_labsynch_labseer_domain_Protocol_lsTags" itemValue="id" items="${lstags}" multiple="true" path="/lstags" z="dI/njSzpg1LET1k/s96ULTeiURc="/>
+        <field:simple field="firstProtocols" id="c_com_labsynch_labseer_domain_Protocol_firstProtocols" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Protocol Protocol" z="IY1kKVetMhz9vPm95yqiUazeKeA="/>
+        <field:simple field="secondProtocols" id="c_com_labsynch_labseer_domain_Protocol_secondProtocols" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Protocol Protocol" z="h9HUw1ZOXVJXhZxz/0nPBNTzpa4="/>
     </form:update>
 </div>

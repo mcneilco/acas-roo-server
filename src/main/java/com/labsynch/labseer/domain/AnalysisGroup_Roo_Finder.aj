@@ -27,6 +27,24 @@ privileged aspect AnalysisGroup_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(Set<Experiment> experiments, boolean ignored) {
+        if (experiments == null) throw new IllegalArgumentException("The experiments argument is required");
+        EntityManager em = AnalysisGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+        queryBuilder.append(" AND");
+        for (int i = 0; i < experiments.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :experiments_item").append(i).append(" MEMBER OF o.experiments");
+        }
+        TypedQuery<AnalysisGroup> q = em.createQuery(queryBuilder.toString(), AnalysisGroup.class);
+        int experimentsIndex = 0;
+        for (Experiment _experiment: experiments) {
+            q.setParameter("experiments_item" + experimentsIndex++, _experiment);
+        }
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
     public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = AnalysisGroup.entityManager();

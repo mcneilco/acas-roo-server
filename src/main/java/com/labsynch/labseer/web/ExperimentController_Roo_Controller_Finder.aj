@@ -24,6 +24,28 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
         return "experiments/list";
     }
     
+    @RequestMapping(params = { "find=ByCodeNameLike", "form" }, method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByCodeNameLikeForm(Model uiModel) {
+        return "experiments/findExperimentsByCodeNameLike";
+    }
+    
+    @RequestMapping(params = "find=ByCodeNameLike", method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByCodeNameLike(@RequestParam("codeName") String codeName, Model uiModel) {
+        uiModel.addAttribute("experiments", Experiment.findExperimentsByCodeNameLike(codeName).getResultList());
+        return "experiments/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindLike", "form" }, method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByLsKindLikeForm(Model uiModel) {
+        return "experiments/findExperimentsByLsKindLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindLike", method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByLsKindLike(@RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsKindLike(lsKind).getResultList());
+        return "experiments/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsTransaction", "form" }, method = RequestMethod.GET)
     public String ExperimentController.findExperimentsByLsTransactionForm(Model uiModel) {
         return "experiments/findExperimentsByLsTransaction";

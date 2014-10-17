@@ -15,4 +15,12 @@ privileged aspect StringCollectionDTO_Roo_JavaBean {
         this.name = name;
     }
     
+    public String StringCollectionDTO.getCode() {
+        return this.code;
+    }
+    
+    public void StringCollectionDTO.setCode(String code) {
+        this.code = code;
+    }
+    
 }

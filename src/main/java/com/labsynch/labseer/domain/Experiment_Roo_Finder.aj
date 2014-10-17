@@ -9,6 +9,36 @@ import javax.persistence.TypedQuery;
 
 privileged aspect Experiment_Roo_Finder {
     
+    public static TypedQuery<Experiment> Experiment.findExperimentsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Experiment.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+    
+    public static TypedQuery<Experiment> Experiment.findExperimentsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Experiment.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
     public static TypedQuery<Experiment> Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
         if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");

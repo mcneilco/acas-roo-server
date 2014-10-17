@@ -22,4 +22,7 @@
 <definition extends="default" name="subjects/findSubjectsByTreatmentGroup">
         <put-attribute name="body" value="/WEB-INF/views/subjects/findSubjectsByTreatmentGroup.jspx"/>
     </definition>
+<definition extends="default" name="subjects/findSubjectsByTreatmentGroups">
+        <put-attribute name="body" value="/WEB-INF/views/subjects/findSubjectsByTreatmentGroups.jspx"/>
+    </definition>
 </tiles-definitions>

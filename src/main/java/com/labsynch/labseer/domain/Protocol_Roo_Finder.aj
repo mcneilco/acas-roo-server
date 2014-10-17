@@ -32,6 +32,21 @@ privileged aspect Protocol_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<Protocol> Protocol.findProtocolsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Protocol.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
     public static TypedQuery<Protocol> Protocol.findProtocolsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = Protocol.entityManager();
@@ -63,6 +78,36 @@ privileged aspect Protocol_Roo_Finder {
         TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Protocol.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
+    public static TypedQuery<Protocol> Protocol.findProtocolsByLsTypeLike(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        lsType = lsType.replace('*', '%');
+        if (lsType.charAt(0) != '%') {
+            lsType = "%" + lsType;
+        }
+        if (lsType.charAt(lsType.length() - 1) != '%') {
+            lsType = lsType + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Protocol.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
+    public static TypedQuery<Protocol> Protocol.findProtocolsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Protocol.class);
+        q.setParameter("recordedBy", recordedBy);
         return q;
     }
     

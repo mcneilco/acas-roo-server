@@ -7,6 +7,7 @@
             <menu:item id="i_analysisgroup_new" messageCode="global_menu_new" url="/analysisgroups?form" z="X9jRijQ+XKj10kDbLotTpYYe/ys="/>
             <menu:item id="i_analysisgroup_list" messageCode="global_menu_list" url="/analysisgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dMhUOKH445lv1mKn1yfZmyxOZ98="/>
             <menu:item id="fi_analysisgroup_experiments" messageCode="global_menu_find" url="/analysisgroups?find=ByExperiments&amp;form" z="Y40E6UBp3Tu3sgYLiSLPaBoSXws="/>
+            <menu:item id="fi_analysisgroup_experimentsandignorednot" messageCode="global_menu_find" url="/analysisgroups?find=ByExperimentsAndIgnoredNot&amp;form" z="i4QrmoJWOsZN6d6Vj6nZeEeTSok="/>
             <menu:item id="fi_analysisgroup_lstransactionequals" messageCode="global_menu_find" url="/analysisgroups?find=ByLsTransactionEquals&amp;form" z="ZM5JaF4c4zMnbS0GOOUFidz8F0o="/>
         </menu:category>
         <menu:category id="c_subjectvalue" z="6SMWPdUodXL01WGzx30fZs5ZIOk=">
@@ -70,10 +71,13 @@
             <menu:item id="fi_protocol_codenameequals" messageCode="global_menu_find" url="/protocols?find=ByCodeNameEquals&amp;form" z="eZk8W07xyYACaoYnLwsGBQgaf5o="/>
             <menu:item id="fi_protocol_ignorednot" messageCode="global_menu_find" url="/protocols?find=ByIgnoredNot&amp;form" z="n8WbkgpMIWKtOIHBMuOvRAG/hAc="/>
             <menu:item id="fi_protocol_lskindequals" messageCode="global_menu_find" url="/protocols?find=ByLsKindEquals&amp;form" z="DCXxhtLWkzj1dgYgbeOD5TNUwCQ="/>
+            <menu:item id="fi_protocol_lskindlike" messageCode="global_menu_find" url="/protocols?find=ByLsKindLike&amp;form" z="B1Z0yNyElCY6mg4fu0OGkWuvrhs="/>
             <menu:item id="fi_protocol_lstransactionequals" messageCode="global_menu_find" url="/protocols?find=ByLsTransactionEquals&amp;form" z="scoxt39forcp9cJMcStj7YrjwQE="/>
             <menu:item id="fi_protocol_lstypeandkindequals" messageCode="global_menu_find" url="/protocols?find=ByLsTypeAndKindEquals&amp;form" z="gWxQh+RIMVpIzly7panC6mcnT7A="/>
             <menu:item id="fi_protocol_lstypeequals" messageCode="global_menu_find" url="/protocols?find=ByLsTypeEquals&amp;form" z="9Tj3k1LHgXRZziz2D4Ou7gqlXTc="/>
             <menu:item id="fi_protocol_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/protocols?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="oC0Aj0Jmz8KtqfN9n2rxPkxcCZk="/>
+            <menu:item id="fi_protocol_lstypelike" messageCode="global_menu_find" url="/protocols?find=ByLsTypeLike&amp;form" z="GyPkp8uC+5PJddU6EKFesGz1G7U="/>
+            <menu:item id="fi_protocol_recordedbylike" messageCode="global_menu_find" url="/protocols?find=ByRecordedByLike&amp;form" z="3spa/6ibTv5gNZ2g5TpkwyM79ok="/>
         </menu:category>
         <menu:category id="c_labeltype" z="N8HQyjbykD6W9LoCKQZIeZH669c=">
             <menu:item id="i_labeltype_new" messageCode="global_menu_new" url="/labeltypes?form" z="NA0WmB9TJCcpOjZtG3BmHvySe3I="/>
@@ -107,12 +111,14 @@
         <menu:category id="c_treatmentgroup" z="ktUYfUrpZ7HfqyFfY/J0m/tpOoo=">
             <menu:item id="i_treatmentgroup_new" messageCode="global_menu_new" url="/treatmentgroups?form" z="v3FU/ZE1lF1a2skcKvCNuIjLj/U="/>
             <menu:item id="i_treatmentgroup_list" messageCode="global_menu_list" url="/treatmentgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="hd7pnyrJiPjfIeF0QjdyN+25FT4="/>
+            <menu:item id="fi_treatmentgroup_analysisgroups" messageCode="global_menu_find" url="/treatmentgroups?find=ByAnalysisGroups&amp;form" z="aCmP4gDqzmxAuh8QpMemXrqV7l8="/>
             <menu:item id="fi_treatmentgroup_lstransactionequals" messageCode="global_menu_find" url="/treatmentgroups?find=ByLsTransactionEquals&amp;form" z="2s/GJeWUCASFrWp34UPFUUqiD34="/>
         </menu:category>
         <menu:category id="c_experimentlabel" z="/OtfTArcZoLVbM+za1A3M+tikNU=">
             <menu:item id="i_experimentlabel_new" messageCode="global_menu_new" url="/experimentlabels?form" z="AUJwaIFjrQj6C0qw/IP+IOeWGQU="/>
             <menu:item id="i_experimentlabel_list" messageCode="global_menu_list" url="/experimentlabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="oO1z+PebW0K/PEf8XDbfx1/E1I4="/>
             <menu:item id="fi_experimentlabel_experiment" messageCode="global_menu_find" url="/experimentlabels?find=ByExperiment&amp;form" z="2U3TP8VIBSMAEtbdpkQlN1gfnCw="/>
+            <menu:item id="fi_experimentlabel_labeltextlike" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLike&amp;form" z="PYv94k7Dol6QPVhe3R86cGR/bbg="/>
             <menu:item id="fi_experimentlabel_labeltextlikeandlstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="FECyIQ2Y8ja5GASA260VwxPRI2s="/>
             <menu:item id="fi_experimentlabel_lstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="n6BVW2/nOYW6PDMTJXM0WCF5ImM="/>
         </menu:category>
@@ -131,6 +137,9 @@
             <menu:item id="i_experimentvalue_list" messageCode="global_menu_list" url="/experimentvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="Qui9XKTtYE1Dsym9RpQJEF66oek="/>
             <menu:item id="fi_experimentvalue_lsstate" messageCode="global_menu_find" url="/experimentvalues?find=ByLsState&amp;form" z="9GTDsaIh52NGmUSF7Nmpi7Y11+o="/>
             <menu:item id="fi_experimentvalue_lsstateandignorednotandlskindequalsandlstypeequalsandstringvalueequals" messageCode="global_menu_find" url="/experimentvalues?find=ByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals&amp;form" z="7er6Ts6GhGJENszpULj1IVCpeR8="/>
+            <menu:item id="fi_experimentvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="TkQpcyXT3kCx8QtfIhMU1s1sVJQ="/>
+            <menu:item id="fi_experimentvalue_lskindequalsanddatevaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndDateValueLike&amp;form" z="lkP4GGK96OnwCs/NlzKSOIN3WaA="/>
+            <menu:item id="fi_experimentvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="6Qb9CBQGfKxEpfaKiiWPzblfnN8="/>
         </menu:category>
         <menu:category id="c_itxsubjectcontainerstate" z="mlbpXhpw+dPookWsn6xL3DWl+Eg=">
             <menu:item id="i_itxsubjectcontainerstate_new" messageCode="global_menu_new" url="/itxsubjectcontainerstates?form" z="Wo/7xJ/02ah0rzPycINQdhlSUuU="/>
@@ -145,6 +154,7 @@
             <menu:item id="i_subject_list" messageCode="global_menu_list" url="/subjects?page=1&amp;size=${empty param.size ? 10 : param.size}" z="EQd4RQgsWkj2hqqLFZF+zKoYy0I="/>
             <menu:item id="fi_subject_codenameequals" messageCode="global_menu_find" url="/subjects?find=ByCodeNameEquals&amp;form" z="zovGgLy8KbWDsVN34u8z9Yr8AjM="/>
             <menu:item id="fi_subject_lstransactionequals" messageCode="global_menu_find" url="/subjects?find=ByLsTransactionEquals&amp;form" z="dTm5hB6bXbJCNWpPupcDtlGTyT4="/>
+            <menu:item id="fi_subject_treatmentgroups" messageCode="global_menu_find" url="/subjects?find=ByTreatmentGroups&amp;form" z="xB6TKpOaOtaF+vc30Nlu2lDwPek="/>
         </menu:category>
         <menu:category id="c_valuekind" z="9viZJ2aDVXUdiNwMWfcWAHDyag8=">
             <menu:item id="i_valuekind_new" messageCode="global_menu_new" url="/valuekinds?form" z="2E2vA03Cv0nAAWiQXa0SyezClro="/>
@@ -179,6 +189,9 @@
             <menu:item id="i_protocolvalue_list" messageCode="global_menu_list" url="/protocolvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="FRB+41kwl8e6u9QTlycPPNaiMM8="/>
             <menu:item id="fi_protocolvalue_lsstate" messageCode="global_menu_find" url="/protocolvalues?find=ByLsState&amp;form" z="iC+uW+zryi1hkuwjmqaql0Z+5Vo="/>
             <menu:item id="fi_protocolvalue_lstransactionequals" messageCode="global_menu_find" url="/protocolvalues?find=ByLsTransactionEquals&amp;form" z="LKaa2qhqdvo5/47t358DbHVR/+4="/>
+            <menu:item id="fi_protocolvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="MMmLU1imye2s/Ru3VFyUIJZSVvI="/>
+            <menu:item id="fi_protocolvalue_lskindequalsanddatevaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndDateValueLike&amp;form" z="CiOFltInilp+BOvRezHC0gGifrk="/>
+            <menu:item id="fi_protocolvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="mchkxsc/6HRGLW4mZyX+nlSMCcM="/>
         </menu:category>
         <menu:category id="c_itxcontainercontainerstate" z="pVrwYbMfrIyTLw8/EDoEJlCImAM=">
             <menu:item id="i_itxcontainercontainerstate_new" messageCode="global_menu_new" url="/itxcontainercontainerstates?form" z="x0m5N12+E9xJh0q4ERVNJP9Gs7U="/>
@@ -202,6 +215,8 @@
             <menu:item id="i_experiment_new" messageCode="global_menu_new" url="/experiments?form" z="EVZT/gaNGpJpHt/Gjzy7RqeROmw="/>
             <menu:item id="i_experiment_list" messageCode="global_menu_list" url="/experiments?page=1&amp;size=${empty param.size ? 10 : param.size}" z="x3HHZQOwFIYuEEtmv/C3xfJRZo8="/>
             <menu:item id="fi_experiment_codenameequals" messageCode="global_menu_find" url="/experiments?find=ByCodeNameEquals&amp;form" z="Ywq9sw9wKzMLv7cGL6eUcKGVVfk="/>
+            <menu:item id="fi_experiment_codenamelike" messageCode="global_menu_find" url="/experiments?find=ByCodeNameLike&amp;form" z="7c3fTOCDLJUG0K+5e6dR4cu4SCM="/>
+            <menu:item id="fi_experiment_lskindlike" messageCode="global_menu_find" url="/experiments?find=ByLsKindLike&amp;form" z="8u1bsbx8wEbG9+g4M1vftB07MVo="/>
             <menu:item id="fi_experiment_lstransaction" messageCode="global_menu_find" url="/experiments?find=ByLsTransaction&amp;form" z="pzO1es0ls0TpI6XCT8VgpFQ+fgw="/>
             <menu:item id="fi_experiment_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/experiments?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="ZPdIKu3y4iGFu48vz+317ZMFXqo="/>
             <menu:item id="fi_experiment_protocol" messageCode="global_menu_find" url="/experiments?find=ByProtocol&amp;form" z="1PJ4oFTXiolPLQMloNTsiixAQ28="/>

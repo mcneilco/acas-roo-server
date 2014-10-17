@@ -4,7 +4,9 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.web.SubjectController;
+import java.util.Set;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +33,18 @@ privileged aspect SubjectController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
     public String SubjectController.findSubjectsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
         uiModel.addAttribute("subjects", Subject.findSubjectsByLsTransactionEquals(lsTransaction).getResultList());
+        return "subjects/list";
+    }
+    
+    @RequestMapping(params = { "find=ByTreatmentGroups", "form" }, method = RequestMethod.GET)
+    public String SubjectController.findSubjectsByTreatmentGroupsForm(Model uiModel) {
+        uiModel.addAttribute("treatmentgroups", TreatmentGroup.findAllTreatmentGroups());
+        return "subjects/findSubjectsByTreatmentGroups";
+    }
+    
+    @RequestMapping(params = "find=ByTreatmentGroups", method = RequestMethod.GET)
+    public String SubjectController.findSubjectsByTreatmentGroups(@RequestParam("treatmentGroups") Set<TreatmentGroup> treatmentGroups, Model uiModel) {
+        uiModel.addAttribute("subjects", Subject.findSubjectsByTreatmentGroups(treatmentGroups).getResultList());
         return "subjects/list";
     }
     

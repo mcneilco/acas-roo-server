@@ -6,12 +6,49 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.web.ProtocolValueController;
+import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 privileged aspect ProtocolValueController_Roo_Controller_Finder {
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndCodeValueLike", "form" }, method = RequestMethod.GET)
+    public String ProtocolValueController.findProtocolValuesByLsKindEqualsAndCodeValueLikeForm(Model uiModel) {
+        return "protocolvalues/findProtocolValuesByLsKindEqualsAndCodeValueLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndCodeValueLike", method = RequestMethod.GET)
+    public String ProtocolValueController.findProtocolValuesByLsKindEqualsAndCodeValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("codeValue") String codeValue, Model uiModel) {
+        uiModel.addAttribute("protocolvalues", ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike(lsKind, codeValue).getResultList());
+        return "protocolvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndDateValueLike", "form" }, method = RequestMethod.GET)
+    public String ProtocolValueController.findProtocolValuesByLsKindEqualsAndDateValueLikeForm(Model uiModel) {
+        addDateTimeFormatPatterns(uiModel);
+        return "protocolvalues/findProtocolValuesByLsKindEqualsAndDateValueLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLike", method = RequestMethod.GET)
+    public String ProtocolValueController.findProtocolValuesByLsKindEqualsAndDateValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue, Model uiModel) {
+        uiModel.addAttribute("protocolvalues", ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike(lsKind, dateValue).getResultList());
+        addDateTimeFormatPatterns(uiModel);
+        return "protocolvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndStringValueLike", "form" }, method = RequestMethod.GET)
+    public String ProtocolValueController.findProtocolValuesByLsKindEqualsAndStringValueLikeForm(Model uiModel) {
+        return "protocolvalues/findProtocolValuesByLsKindEqualsAndStringValueLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndStringValueLike", method = RequestMethod.GET)
+    public String ProtocolValueController.findProtocolValuesByLsKindEqualsAndStringValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue, Model uiModel) {
+        uiModel.addAttribute("protocolvalues", ProtocolValue.findProtocolValuesByLsKindEqualsAndStringValueLike(lsKind, stringValue).getResultList());
+        return "protocolvalues/list";
+    }
     
     @RequestMapping(params = { "find=ByLsState", "form" }, method = RequestMethod.GET)
     public String ProtocolValueController.findProtocolValuesByLsStateForm(Model uiModel) {

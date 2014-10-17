@@ -17,11 +17,6 @@ privileged aspect ProtocolLabel_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ProtocolLabel o", ProtocolLabel.class).getResultList();
     }
     
-    public static ProtocolLabel ProtocolLabel.findProtocolLabel(Long id) {
-        if (id == null) return null;
-        return entityManager().find(ProtocolLabel.class, id);
-    }
-    
     public static List<ProtocolLabel> ProtocolLabel.findProtocolLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ProtocolLabel o", ProtocolLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }

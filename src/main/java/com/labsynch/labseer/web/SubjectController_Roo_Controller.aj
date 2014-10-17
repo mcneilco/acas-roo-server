@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
@@ -100,6 +101,7 @@ privileged aspect SubjectController_Roo_Controller {
     void SubjectController.populateEditForm(Model uiModel, Subject subject) {
         uiModel.addAttribute("subject", subject);
         addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("itxsubjectcontainers", ItxSubjectContainer.findAllItxSubjectContainers());
         uiModel.addAttribute("subjectlabels", SubjectLabel.findAllSubjectLabels());
         uiModel.addAttribute("subjectstates", SubjectState.findAllSubjectStates());
         uiModel.addAttribute("thingpages", ThingPage.findAllThingPages());

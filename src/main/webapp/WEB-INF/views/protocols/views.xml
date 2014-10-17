@@ -34,4 +34,13 @@
 <definition extends="default" name="protocols/findProtocolsByLsTransactionEquals">
         <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByLsTransactionEquals.jspx"/>
     </definition>
+<definition extends="default" name="protocols/findProtocolsByLsKindLike">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByLsKindLike.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByLsTypeLike">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByLsTypeLike.jspx"/>
+    </definition>
+<definition extends="default" name="protocols/findProtocolsByRecordedByLike">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByRecordedByLike.jspx"/>
+    </definition>
 </tiles-definitions>

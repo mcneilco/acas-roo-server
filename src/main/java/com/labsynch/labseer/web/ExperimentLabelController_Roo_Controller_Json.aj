@@ -23,6 +23,14 @@ privileged aspect ExperimentLabelController_Roo_Controller_Json {
         return new ResponseEntity<String>(ExperimentLabel.toJsonArray(ExperimentLabel.findExperimentLabelsByExperiment(experiment).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLabelTextLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ExperimentLabelController.jsonFindExperimentLabelsByLabelTextLike(@RequestParam("labelText") String labelText) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ExperimentLabel.toJsonArray(ExperimentLabel.findExperimentLabelsByLabelTextLike(labelText).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ExperimentLabelController.jsonFindExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(@RequestParam("labelText") String labelText, @RequestParam("lsTypeAndKind") String lsTypeAndKind, @RequestParam(value = "preferred", required = false) boolean preferred, @RequestParam(value = "ignored", required = false) boolean ignored) {

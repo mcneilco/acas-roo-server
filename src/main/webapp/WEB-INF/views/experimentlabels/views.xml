@@ -25,4 +25,7 @@
 <definition extends="default" name="experimentlabels/findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot">
         <put-attribute name="body" value="/WEB-INF/views/experimentlabels/findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot.jspx"/>
     </definition>
+<definition extends="default" name="experimentlabels/findExperimentLabelsByLabelTextLike">
+        <put-attribute name="body" value="/WEB-INF/views/experimentlabels/findExperimentLabelsByLabelTextLike.jspx"/>
+    </definition>
 </tiles-definitions>

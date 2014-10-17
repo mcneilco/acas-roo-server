@@ -22,4 +22,7 @@
 <definition extends="default" name="analysisgroups/findAnalysisGroupsByExperiments">
         <put-attribute name="body" value="/WEB-INF/views/analysisgroups/findAnalysisGroupsByExperiments.jspx"/>
     </definition>
+<definition extends="default" name="analysisgroups/findAnalysisGroupsByExperimentsAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroups/findAnalysisGroupsByExperimentsAndIgnoredNot.jspx"/>
+    </definition>
 </tiles-definitions>

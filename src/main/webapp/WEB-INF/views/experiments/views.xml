@@ -25,4 +25,10 @@
 <definition extends="default" name="experiments/findExperimentsByLsTypeEqualsAndLsKindEquals">
         <put-attribute name="body" value="/WEB-INF/views/experiments/findExperimentsByLsTypeEqualsAndLsKindEquals.jspx"/>
     </definition>
+<definition extends="default" name="experiments/findExperimentsByCodeNameLike">
+        <put-attribute name="body" value="/WEB-INF/views/experiments/findExperimentsByCodeNameLike.jspx"/>
+    </definition>
+<definition extends="default" name="experiments/findExperimentsByLsKindLike">
+        <put-attribute name="body" value="/WEB-INF/views/experiments/findExperimentsByLsKindLike.jspx"/>
+    </definition>
 </tiles-definitions>

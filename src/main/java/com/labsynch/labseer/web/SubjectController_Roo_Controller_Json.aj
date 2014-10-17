@@ -4,7 +4,9 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.web.SubjectController;
+import java.util.Set;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,14 @@ privileged aspect SubjectController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Subject.toJsonArray(Subject.findSubjectsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByTreatmentGroups", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> SubjectController.jsonFindSubjectsByTreatmentGroups(@RequestParam("treatmentGroups") Set<TreatmentGroup> treatmentGroups) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Subject.toJsonArray(Subject.findSubjectsByTreatmentGroups(treatmentGroups).getResultList()), headers, HttpStatus.OK);
     }
     
 }

@@ -26,6 +26,18 @@ privileged aspect AnalysisGroupController_Roo_Controller_Finder {
         return "analysisgroups/list";
     }
     
+    @RequestMapping(params = { "find=ByExperimentsAndIgnoredNot", "form" }, method = RequestMethod.GET)
+    public String AnalysisGroupController.findAnalysisGroupsByExperimentsAndIgnoredNotForm(Model uiModel) {
+        uiModel.addAttribute("experiments", Experiment.findAllExperiments());
+        return "analysisgroups/findAnalysisGroupsByExperimentsAndIgnoredNot";
+    }
+    
+    @RequestMapping(params = "find=ByExperimentsAndIgnoredNot", method = RequestMethod.GET)
+    public String AnalysisGroupController.findAnalysisGroupsByExperimentsAndIgnoredNot(@RequestParam("experiments") Set<Experiment> experiments, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
+        uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(experiments, ignored).getResultList());
+        return "analysisgroups/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsTransactionEquals", "form" }, method = RequestMethod.GET)
     public String AnalysisGroupController.findAnalysisGroupsByLsTransactionEqualsForm(Model uiModel) {
         return "analysisgroups/findAnalysisGroupsByLsTransactionEquals";

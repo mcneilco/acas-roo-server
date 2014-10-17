@@ -7,6 +7,7 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.ExperimentState;
+import com.labsynch.labseer.domain.ItxExperimentExperiment;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.Protocol;
 import java.util.Set;
@@ -35,6 +36,22 @@ privileged aspect Experiment_Roo_JavaBean {
     
     public void Experiment.setLsStates(Set<ExperimentState> lsStates) {
         this.lsStates = lsStates;
+    }
+    
+    public Set<ItxExperimentExperiment> Experiment.getFirstExperiments() {
+        return this.firstExperiments;
+    }
+    
+    public void Experiment.setFirstExperiments(Set<ItxExperimentExperiment> firstExperiments) {
+        this.firstExperiments = firstExperiments;
+    }
+    
+    public Set<ItxExperimentExperiment> Experiment.getSecondExperiments() {
+        return this.secondExperiments;
+    }
+    
+    public void Experiment.setSecondExperiments(Set<ItxExperimentExperiment> secondExperiments) {
+        this.secondExperiments = secondExperiments;
     }
     
     public Set<AnalysisGroup> Experiment.getAnalysisGroups() {

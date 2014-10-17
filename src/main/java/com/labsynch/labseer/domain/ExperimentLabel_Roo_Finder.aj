@@ -18,6 +18,21 @@ privileged aspect ExperimentLabel_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<ExperimentLabel> ExperimentLabel.findExperimentLabelsByLabelTextLike(String labelText) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = ExperimentLabel.entityManager();
+        TypedQuery<ExperimentLabel> q = em.createQuery("SELECT o FROM ExperimentLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)", ExperimentLabel.class);
+        q.setParameter("labelText", labelText);
+        return q;
+    }
+    
     public static TypedQuery<ExperimentLabel> ExperimentLabel.findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(String labelText, String lsTypeAndKind, boolean preferred, boolean ignored) {
         if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
         labelText = labelText.replace('*', '%');

@@ -20,6 +20,8 @@
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_Experiment_lsKind" required="true" z="LJF1kR7Ozy3Cymor7VOam+O2suo="/>
         <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_Experiment_lsTypeAndKind" z="AjF4xMOv0aSVdfIcJK5CgHEXOKI="/>
         <field:select field="lsTags" id="c_com_labsynch_labseer_domain_Experiment_lsTags" itemValue="id" items="${lstags}" multiple="true" path="/lstags" z="7ZO2doMe33rF0pY2EgkqT/HwGLw="/>
+        <field:simple field="firstExperiments" id="c_com_labsynch_labseer_domain_Experiment_firstExperiments" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Experiment Experiment" z="+TTuc3LQS6zadOjHQBZ2Bl6/BRM="/>
+        <field:simple field="secondExperiments" id="c_com_labsynch_labseer_domain_Experiment_secondExperiments" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Experiment Experiment" z="LN4kQJEqSoQT/iQ5phpXyTVkJA4="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_Experiment" render="${not empty dependencies}" z="UK7CzvIawZohR+xMT8cRdGDIknQ="/>
 </div>

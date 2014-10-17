@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.domain;
 
+import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
@@ -33,6 +34,14 @@ privileged aspect Subject_Roo_JavaBean {
     
     public void Subject.setLsStates(Set<SubjectState> lsStates) {
         this.lsStates = lsStates;
+    }
+    
+    public Set<ItxSubjectContainer> Subject.getContainers() {
+        return this.containers;
+    }
+    
+    public void Subject.setContainers(Set<ItxSubjectContainer> containers) {
+        this.containers = containers;
     }
     
 }

@@ -4,6 +4,7 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
@@ -50,6 +51,22 @@ privileged aspect Protocol_Roo_JavaBean {
     
     public void Protocol.setLsTags(Set<LsTag> lsTags) {
         this.lsTags = lsTags;
+    }
+    
+    public Set<ItxProtocolProtocol> Protocol.getFirstProtocols() {
+        return this.firstProtocols;
+    }
+    
+    public void Protocol.setFirstProtocols(Set<ItxProtocolProtocol> firstProtocols) {
+        this.firstProtocols = firstProtocols;
+    }
+    
+    public Set<ItxProtocolProtocol> Protocol.getSecondProtocols() {
+        return this.secondProtocols;
+    }
+    
+    public void Protocol.setSecondProtocols(Set<ItxProtocolProtocol> secondProtocols) {
+        this.secondProtocols = secondProtocols;
     }
     
 }

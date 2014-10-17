@@ -39,4 +39,20 @@ privileged aspect CodeTableDTO_Roo_JavaBean {
         this.ignored = ignored;
     }
     
+    public Integer CodeTableDTO.getDisplayOrder() {
+        return this.displayOrder;
+    }
+    
+    public void CodeTableDTO.setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+    
+    public Long CodeTableDTO.getId() {
+        return this.id;
+    }
+    
+    public void CodeTableDTO.setId(Long id) {
+        this.id = id;
+    }
+    
 }

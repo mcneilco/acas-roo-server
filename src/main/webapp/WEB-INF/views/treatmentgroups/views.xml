@@ -19,4 +19,7 @@
 <definition extends="default" name="treatmentgroups/findTreatmentGroupsByLsTransactionEquals">
         <put-attribute name="body" value="/WEB-INF/views/treatmentgroups/findTreatmentGroupsByLsTransactionEquals.jspx"/>
     </definition>
+<definition extends="default" name="treatmentgroups/findTreatmentGroupsByAnalysisGroups">
+        <put-attribute name="body" value="/WEB-INF/views/treatmentgroups/findTreatmentGroupsByAnalysisGroups.jspx"/>
+    </definition>
 </tiles-definitions>

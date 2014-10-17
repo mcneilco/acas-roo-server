@@ -19,4 +19,13 @@
 <definition extends="default" name="experimentvalues/findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals">
         <put-attribute name="body" value="/WEB-INF/views/experimentvalues/findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals.jspx"/>
     </definition>
+<definition extends="default" name="experimentvalues/findExperimentValuesByLsKindEqualsAndCodeValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/experimentvalues/findExperimentValuesByLsKindEqualsAndCodeValueLike.jspx"/>
+    </definition>
+<definition extends="default" name="experimentvalues/findExperimentValuesByLsKindEqualsAndDateValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/experimentvalues/findExperimentValuesByLsKindEqualsAndDateValueLike.jspx"/>
+    </definition>
+<definition extends="default" name="experimentvalues/findExperimentValuesByLsKindEqualsAndStringValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/experimentvalues/findExperimentValuesByLsKindEqualsAndStringValueLike.jspx"/>
+    </definition>
 </tiles-definitions>

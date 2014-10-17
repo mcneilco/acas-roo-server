@@ -30,6 +30,14 @@ privileged aspect ProtocolController_Roo_Controller_Json {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsKindLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ProtocolController.jsonFindProtocolsByLsKindLike(@RequestParam("lsKind") String lsKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsKindLike(lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ProtocolController.jsonFindProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
@@ -60,6 +68,22 @@ privileged aspect ProtocolController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ProtocolController.jsonFindProtocolsByLsTypeLike(@RequestParam("lsType") String lsType) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeLike(lsType).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByRecordedByLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ProtocolController.jsonFindProtocolsByRecordedByLike(@RequestParam("recordedBy") String recordedBy) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByRecordedByLike(recordedBy).getResultList()), headers, HttpStatus.OK);
     }
     
 }

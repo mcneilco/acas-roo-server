@@ -45,6 +45,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
         return "protocols/list";
     }
     
+    @RequestMapping(params = { "find=ByLsKindLike", "form" }, method = RequestMethod.GET)
+    public String ProtocolController.findProtocolsByLsKindLikeForm(Model uiModel) {
+        return "protocols/findProtocolsByLsKindLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindLike", method = RequestMethod.GET)
+    public String ProtocolController.findProtocolsByLsKindLike(@RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsKindLike(lsKind).getResultList());
+        return "protocols/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsTransactionEquals", "form" }, method = RequestMethod.GET)
     public String ProtocolController.findProtocolsByLsTransactionEqualsForm(Model uiModel) {
         return "protocols/findProtocolsByLsTransactionEquals";
@@ -86,6 +97,28 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
     public String ProtocolController.findProtocolsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
         uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+        return "protocols/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsTypeLike", "form" }, method = RequestMethod.GET)
+    public String ProtocolController.findProtocolsByLsTypeLikeForm(Model uiModel) {
+        return "protocols/findProtocolsByLsTypeLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeLike", method = RequestMethod.GET)
+    public String ProtocolController.findProtocolsByLsTypeLike(@RequestParam("lsType") String lsType, Model uiModel) {
+        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeLike(lsType).getResultList());
+        return "protocols/list";
+    }
+    
+    @RequestMapping(params = { "find=ByRecordedByLike", "form" }, method = RequestMethod.GET)
+    public String ProtocolController.findProtocolsByRecordedByLikeForm(Model uiModel) {
+        return "protocols/findProtocolsByRecordedByLike";
+    }
+    
+    @RequestMapping(params = "find=ByRecordedByLike", method = RequestMethod.GET)
+    public String ProtocolController.findProtocolsByRecordedByLike(@RequestParam("recordedBy") String recordedBy, Model uiModel) {
+        uiModel.addAttribute("protocols", Protocol.findProtocolsByRecordedByLike(recordedBy).getResultList());
         return "protocols/list";
     }
     

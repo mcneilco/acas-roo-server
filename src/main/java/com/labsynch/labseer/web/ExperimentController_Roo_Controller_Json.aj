@@ -27,6 +27,22 @@ privileged aspect ExperimentController_Roo_Controller_Json {
         return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByCodeNameLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ExperimentController.jsonFindExperimentsByCodeNameLike(@RequestParam("codeName") String codeName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByCodeNameLike(codeName).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ExperimentController.jsonFindExperimentsByLsKindLike(@RequestParam("lsKind") String lsKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByLsKindLike(lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ExperimentController.jsonFindExperimentsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
