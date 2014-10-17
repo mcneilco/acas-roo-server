@@ -175,7 +175,7 @@ public class SubjectValueServiceTest {
 	@Test
 	@Transactional
 	public void QuerySubjectValueByExpIdAndStateTypeKindWithCodeName() {
-		String experimentCodeName = "EXPT-00000004";
+		String experimentCodeName = "EXPT-00000152";
 		String stateType = "data";
 		String stateKind = "test compound treatment";
 		Experiment experiment = null;
@@ -214,7 +214,7 @@ public class SubjectValueServiceTest {
 	@Test
 	@Transactional
 	public void SubjectValuesToCsv() {
-		List<SubjectValue> subjectValues = subjectValueService.getSubjectValuesBySubjectId(17l);
+		List<SubjectValue> subjectValues = subjectValueService.getSubjectValuesBySubjectId(685408L);
 		String csvString = subjectValueService.getCsvList(subjectValues);
 		assert(csvString != null && csvString.compareTo("") != 0);
 		logger.info(csvString);

@@ -85,7 +85,7 @@ public class TreatmentGroupValueServiceTest {
 	@Test
 	@Transactional
 	public void QueryTreatmentGroupValueByExpIdAndStateTypeKindWithCodeName() {
-		String experimentCodeName = "EXPT-00000004";
+		String experimentCodeName = "EXPT-00000152";
 		String stateType = "data";
 		String stateKind = "test compound treatment";
 		Experiment experiment = null;

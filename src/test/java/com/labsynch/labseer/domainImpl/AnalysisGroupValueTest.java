@@ -25,7 +25,7 @@ public class AnalysisGroupValueTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueTest.class);
 	
-	//@Test
+	@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
 			
@@ -112,4 +112,6 @@ public class AnalysisGroupValueTest {
 		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind).getResultList();
 		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
+	
+	
 }

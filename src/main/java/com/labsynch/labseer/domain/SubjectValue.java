@@ -107,8 +107,8 @@ public class SubjectValue extends AbstractValue {
 	@Transactional
 	public String toJson() {
 		return new JSONSerializer()
-			.include("lsState.subject.treatmentGroup")
-			.exclude("*.class", "lsState.subject.treatmentGroup.analysisGroup")
+			.include("lsState.subject.treatmentGroups")
+			.exclude("*.class", "lsState.subject.treatmentGroups.analysisGroups")
 			.transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
@@ -124,8 +124,8 @@ public class SubjectValue extends AbstractValue {
 	@Transactional
 	public static String toJsonArray(Collection<com.labsynch.labseer.domain.SubjectValue> collection) {
 		return new JSONSerializer()
-			.include("lsState.subject.treatmentGroup")
-			.exclude("*.class", "lsState.subject.treatmentGroup.analysisGroup")
+			.include("lsState.subject.treatmentGroups")
+			.exclude("*.class", "lsState.subject.treatmentGroups.analysisGroups")
 			.transform(new ExcludeNulls(), void.class).serialize(collection);
 	}
 
@@ -215,7 +215,7 @@ public class SubjectValue extends AbstractValue {
 	public static int deleteByExperimentID(Long experimentId) {
 		if (experimentId == null) return 0;
 		EntityManager em = SubjectValue.entityManager();
-		String deleteSQL = "DELETE FROM SubjectValue oo WHERE id in (select o.id from SubjectValue o where o.lsState.subject.treatmentGroup.analysisGroup.experiment.id = :experimentId)";
+		String deleteSQL = "DELETE FROM SubjectValue oo WHERE id in (select o.id from SubjectValue o where o.lsState.subject.treatmentGroups.analysisGroups.experiments.id = :experimentId)";
 		Query q = em.createQuery(deleteSQL);
 		q.setParameter("experimentId", experimentId);
 		int numberOfDeletedEntities = q.executeUpdate();
@@ -237,9 +237,9 @@ public class SubjectValue extends AbstractValue {
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState svs " +
 				"JOIN svs.subject s " + 
-				"JOIN s.treatmentGroup tg " +
-				"JOIN tg.analysisGroup ag " +
-				"JOIN ag.experiment exp " +
+				"JOIN s.treatmentGroups tg " +
+				"JOIN tg.analysisGroups ag " +
+				"JOIN ag.experiments exp " +
 				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored IS NOT :ignored " +
 				"AND sv.ignored IS NOT :ignored " +
 				"AND s.ignored IS NOT :ignored " +
@@ -265,9 +265,9 @@ public class SubjectValue extends AbstractValue {
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState svs " +
 				"JOIN svs.subject s " + 
-				"JOIN s.treatmentGroup tg " +
-				"JOIN tg.analysisGroup ag " +
-				"JOIN ag.experiment exp " +
+				"JOIN s.treatmentGroups tg " +
+				"JOIN tg.analysisGroups ag " +
+				"JOIN ag.experiments exp " +
 				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored IS NOT :ignored " +
 				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored IS NOT :ignored " +
 				"AND s.ignored IS NOT :ignored " +
@@ -292,8 +292,8 @@ public class SubjectValue extends AbstractValue {
 		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
 				"JOIN sv.lsState svs " +
 				"JOIN svs.subject s " + 
-				"JOIN s.treatmentGroup tg " +
-				"JOIN tg.analysisGroup ag " +
+				"JOIN s.treatmentGroups tg " +
+				"JOIN tg.analysisGroups ag " +
 				"WHERE svs.lsType = :stateType AND svs.lsKind = :stateKind AND svs.ignored IS NOT :ignored " +
 				"AND sv.ignored IS NOT :ignored " +
 				"AND s.ignored IS NOT :ignored " +

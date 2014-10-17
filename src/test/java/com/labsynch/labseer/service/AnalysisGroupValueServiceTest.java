@@ -349,7 +349,7 @@ public class AnalysisGroupValueServiceTest {
 
 	}
 	
-	//@Test
+	@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
 			
@@ -361,7 +361,7 @@ public class AnalysisGroupValueServiceTest {
 		assert(results.size() == 11);
 	}
 	
-	//@Test
+	@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 9L;
@@ -376,10 +376,10 @@ public class AnalysisGroupValueServiceTest {
 		assert(results.size() == 0);
 	}
 	
-	//@Test
+	@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithCodeName() {
-		String experimentCodeName = "EXPT-00000003";
+		String experimentCodeName = "EXPT-00000184";
 		String stateType = "data";
 		String stateKind = "Generic";
 		Experiment experiment = null;
@@ -401,7 +401,7 @@ public class AnalysisGroupValueServiceTest {
 		if(!didCatch) assert(results.size() == 11);
 	}
 	
-	//@Test
+	@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindAndValueTypeKind(){
 			
@@ -454,7 +454,7 @@ public class AnalysisGroupValueServiceTest {
 	@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByAnalysisGroupIdAndStateTypeKindWithCodeName() {
-		String analysisGroupCodeName = "AG-00000008";
+		String analysisGroupCodeName = "AG-00190427";
 		String stateType = "data";
 		String stateKind = "Generic";
 		AnalysisGroup analysisGroup = null;

@@ -395,7 +395,7 @@ public class ExperimentTest {
 
 	}
 	
-//	@Transactional
+	@Transactional
 	@Test
 	public void removeExperimentTest() {
 		HashMap<String, Long> idMap = makeTestStack();

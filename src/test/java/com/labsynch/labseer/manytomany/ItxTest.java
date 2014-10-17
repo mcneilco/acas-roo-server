@@ -413,7 +413,7 @@ public class ItxTest {
 	}
 	
 	@Test
-//	@Transactional
+	@Transactional
 	public void runMakeTestStack() {
 		HashMap<String, Long> idMap = makeTestStack();
 //		Collection<Long> experimentIds = new HashSet<Long>();
