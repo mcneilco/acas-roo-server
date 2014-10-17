@@ -1,5 +1,6 @@
 package com.labsynch.labseer.manytomany;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -409,6 +410,22 @@ public class ItxTest {
 		e1.remove();
 		Experiment check = Experiment.findExperiment(idMap.get("e1"));
 		Assert.assertNull(check);
+	}
+	
+	@Test
+//	@Transactional
+	public void runMakeTestStack() {
+		HashMap<String, Long> idMap = makeTestStack();
+//		Collection<Long> experimentIds = new HashSet<Long>();
+//		experimentIds.add(idMap.get("e1"));
+//		experimentIds.add(idMap.get("e2"));
+//		experimentIds.add(idMap.get("e3"));
+//		for (Long id: experimentIds) {
+//			Collection<Long> analysisGroups = Experiment.removeExperimentCascadeAware(id);
+//	        Collection<Long> treatmentGroups = AnalysisGroup.removeOrphans(analysisGroups);
+//	        Collection<Long> subjects = TreatmentGroup.removeOrphans(treatmentGroups);
+//	        Subject.removeOrphans(subjects);
+//		}
 	}
 	
 	@Transactional

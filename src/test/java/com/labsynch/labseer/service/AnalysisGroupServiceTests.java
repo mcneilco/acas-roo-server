@@ -197,9 +197,9 @@ public class AnalysisGroupServiceTests {
 	@Test
 //	@Transactional
 	public void CreateAnalysisGroupFromCSVTest() {
-		String analysisGroupFilePath = "src/test/resources/csvUpload1830388d839b.txt";
-		String treatmentGroupFilePath = "src/test/resources/csvUpload183052bb521e.csv";
-		String subjectFilePath = "src/test/resources/csvUpload183080c5a01.csv";
+		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup100curves.csv";
+		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup100curves.csv";
+		String subjectFilePath = "src/test/resources/csvUploadSubject100curves.csv";
 //		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup.csv";
 //		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup.csv";
 //		String subjectFilePath = "src/test/resources/csvUploadSubject.csv";
