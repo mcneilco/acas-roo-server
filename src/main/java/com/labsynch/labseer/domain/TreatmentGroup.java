@@ -157,6 +157,37 @@ public class TreatmentGroup extends AbstractThing {
 		//return numberOfDeletedEntities;
 		return 0;
 	}
+	
+	@Transactional
+	public static Collection<Long> removeOrphans(Collection<Long> treatmentGroupIds) {
+		Collection<Long> subjectIds = new HashSet<Long>();
+		for (Long id: treatmentGroupIds) {
+			TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
+			if (treatmentGroup.getAnalysisGroups().isEmpty()) {
+				subjectIds.addAll(TreatmentGroup.removeCascadeAware(id));
+			}
+		}
+		
+		return subjectIds;
+	}
+	
+	@Transactional
+	private static Collection<Long> removeCascadeAware(Long id) {
+		TreatmentGroup treatmentGroup = findTreatmentGroup(id);
+        Collection<Subject> subjects = treatmentGroup.getSubjects();
+        Set<Long> subjectIds = new HashSet<Long>();
+        for (Subject subject : subjects) {
+        	subjectIds.add(subject.getId());
+        }
+        subjects.clear();
+        EntityManager em = TreatmentGroup.entityManager();
+        Query q1 = em.createNativeQuery("DELETE FROM treatmentGroup_subject o WHERE o.treatment_group_id = :id", TreatmentGroup.class);
+        q1.setParameter("id", id);
+        q1.executeUpdate();
+        treatmentGroup.remove();
+        return subjectIds;
+		
+	}
 
 
 

@@ -848,6 +848,34 @@ public class ApiExperimentController {
 //        experiment.remove();
 //        return new ResponseEntity<String>(headers, HttpStatus.OK);
 //    }
+	@RequestMapping(value = "/seldelete/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> trueDeleteById(@PathVariable("id") Long id) {
+        Experiment experiment = Experiment.findExperiment(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (experiment == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        long startTime = new Date().getTime();
+        Experiment.removeExperimentFullCascade(id);
+		long endTime = new Date().getTime();
+		long totalTime = endTime - startTime;
+		logger.info("   total elapsed time: " + totalTime + " ms");
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+	
+//	@RequestMapping(value = "/exptbrowserdelete/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+//    public ResponseEntity<String> logicalDeleteById(@PathVariable("id") Long id) {
+//        Experiment experiment = Experiment.findExperiment(id);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json");
+//        if (experiment == null) {
+//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+//        }
+//        //TODO: implement logical delete
+//        experiment.statusDelete();
+//        return new ResponseEntity<String>(headers, HttpStatus.OK);
+//    }
 
 	@RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
     @ResponseBody

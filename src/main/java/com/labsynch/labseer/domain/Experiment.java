@@ -75,7 +75,7 @@ public class Experiment extends AbstractThing {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "experiment", fetch = FetchType.LAZY)
     private Set<ExperimentLabel> lsLabels = new HashSet<ExperimentLabel>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinTable(name = "EXPERIMENT_TAG", joinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "tag_id") })
     private Set<LsTag> lsTags = new HashSet<LsTag>();
 
@@ -378,17 +378,31 @@ public class Experiment extends AbstractThing {
         q.executeUpdate();
     }
 
+    public static void removeExperimentFullCascade(Long experimentId) {
+    	Collection<Long> analysisGroups = Experiment.removeExperimentCascadeAware(experimentId);
+        logger.debug("Checking AnalysisGroups: " + analysisGroups.toString());
+        Collection<Long> treatmentGroups = AnalysisGroup.removeOrphans(analysisGroups);
+        logger.debug("Checking TreatmentGroups: " + treatmentGroups.toString());
+        Collection<Long> subjects = TreatmentGroup.removeOrphans(treatmentGroups);
+        logger.debug("Checking Subjects: " + subjects.toString());
+        Subject.removeOrphans(subjects);
+    }
+    
     @Transactional
-    public static void removeExperimentItxAware(Long id) {
+    public static Collection<Long> removeExperimentCascadeAware(Long id) {
         Experiment experiment = findExperiment(id);
+        Collection<AnalysisGroup> analysisGroups = experiment.getAnalysisGroups(id, false);
+        Set<Long> analysisGroupIds = new HashSet<Long>();
+        for (AnalysisGroup analysisGroup : analysisGroups) {
+        	analysisGroupIds.add(analysisGroup.getId());
+        }
+        analysisGroups.clear();
         EntityManager em = Experiment.entityManager();
-        Query q1 = em.createNativeQuery("DELETE FROM itx_experiment_experiment o WHERE o.first_experiment_id = :id", ItxExperimentExperiment.class);
-        Query q2 = em.createNativeQuery("DELETE FROM itx_experiment_experiment o WHERE o.second_experiment_id = :id", ItxExperimentExperiment.class);
+        Query q1 = em.createNativeQuery("DELETE FROM experiment_analysisgroup o WHERE o.experiment_id = :id", Experiment.class);
         q1.setParameter("id", id);
-        q2.setParameter("id", id);
         q1.executeUpdate();
-        q2.executeUpdate();
         experiment.remove();
+        return analysisGroupIds;
     }
 
     public static long countExperiments() {
@@ -490,4 +504,12 @@ public class Experiment extends AbstractThing {
         q.setParameter("lsKind", lsKind);
         return q;
     }
+
+//	public void statusDelete() {
+//		Long id = this.getId();
+//		Collection<ExperimentValue> statuses = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(id, "metadata", "experiment_metadata", "stringValue", "status").getResultList();
+//		if (statuses.isEmpty()) {
+//			{"clobValue":null,"codeKind":null,"codeOrigin":null,"codeType":null,"codeTypeAndKind":"null_null","codeValue":null,"comments":null,"dateValue":null,"fileValue":null,"id":15066,"ignored":false,"lsKind":"status","lsState":{"comments":null,"experiment":{"codeName":"EXPT-00000015","id":2165,"ignored":false,"lsKind":"default","lsTransaction":20,"lsType":"default","lsTypeAndKind":"default_default","modifiedBy":null,"modifiedDate":null,"protocol":{"codeName":"PROT-00000010","id":1599,"ignored":false,"lsKind":"default","lsTransaction":15,"lsType":"default","lsTypeAndKind":"default_default","modifiedBy":null,"modifiedDate":null,"recordedBy":"nouser","recordedDate":1396423362000,"shortDescription":"protocol created by generic data parser","version":1},"recordedBy":"nouser","recordedDate":1396590049000,"shortDescription":"experiment created by generic data parser","version":1},"id":2987,"ignored":false,"lsKind":"experiment metadata","lsTransaction":20,"lsType":"metadata","lsTypeAndKind":"metadata_experiment metadata","modifiedBy":null,"modifiedDate":null,"recordedBy":"nouser","recordedDate":1396590049000,"version":1},"lsTransaction":20,"lsType":"stringValue","lsTypeAndKind":"stringValue_status","modifiedBy":null,"modifiedDate":null,"numberOfReplicates":null,"numericValue":null,"operatorKind":null,"operatorType":null,"operatorTypeAndKind":"null_null","publicData":true,"recordedBy":"nouser","recordedDate":1396590049000,"sigFigs":null,"stringValue":"Approved","uncertainty":null,"uncertaintyType":null,"unitKind":null,"unitType":null,"unitTypeAndKind":"null_null","urlValue":null,"version":0}
+//		}
+//	}
 }

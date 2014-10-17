@@ -261,4 +261,35 @@ public class AnalysisGroup extends AbstractThing {
         q.setParameter("codeName", codeName);
         return q;
     }
+
+	@Transactional
+    public static Collection<Long> removeOrphans(Collection<Long> analysisGroupIds) {
+		Collection<Long> treatmentGroupIds = new HashSet<Long>();
+		for (Long id: analysisGroupIds) {
+			AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
+			if (analysisGroup.getExperiments().isEmpty()) {
+				treatmentGroupIds.addAll(AnalysisGroup.removeCascadeAware(id));
+			}
+		}
+		
+		return treatmentGroupIds;
+	}
+
+	@Transactional
+	private static Collection<Long> removeCascadeAware(Long id) {
+		AnalysisGroup analysisGroup = findAnalysisGroup(id);
+        Collection<TreatmentGroup> treatmentGroups = analysisGroup.getTreatmentGroups();
+        Set<Long> treatmentGroupIds = new HashSet<Long>();
+        for (TreatmentGroup treatmentGroup : treatmentGroups) {
+        	treatmentGroupIds.add(treatmentGroup.getId());
+        }
+        treatmentGroups.clear();
+        EntityManager em = AnalysisGroup.entityManager();
+        Query q1 = em.createNativeQuery("DELETE FROM analysisGroup_treatmentgroup o WHERE o.analysis_Group_id = :id", AnalysisGroup.class);
+        q1.setParameter("id", id);
+        q1.executeUpdate();
+        analysisGroup.remove();
+        return treatmentGroupIds;
+		
+	}
 }

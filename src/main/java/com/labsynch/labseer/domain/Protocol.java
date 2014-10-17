@@ -215,7 +215,9 @@ public class Protocol extends AbstractThing {
     }
 
     public static com.labsynch.labseer.domain.Protocol findProtocol(Long id) {
-        if (id == null) return null; else if (entityManager().find(Protocol.class, id).isIgnored()) return null;
+        if (id == null) return null;
+        else if (entityManager().find(Protocol.class, id) == null) return null;
+        else if (entityManager().find(Protocol.class, id).isIgnored()) return null;
         return entityManager().find(Protocol.class, id);
     }
 
