@@ -157,7 +157,7 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 					codeTable.setName(val.getStringValue());
 				}
 				codeTable.setCode(val.getId().toString());
-				codeTable.setCodeName(val.getId().toString());
+				//codeTable.setCodeName(val.getId().toString());
 				codeTable.setIgnored(val.isIgnored());
 				codeTableList.add(codeTable);			
 			}

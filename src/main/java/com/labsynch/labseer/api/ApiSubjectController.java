@@ -29,6 +29,7 @@ public class ApiSubjectController {
 	
 	@Autowired
 	private SubjectValueService subjectValueService;
+	
 
 	@RequestMapping(value = "/{SubjectIdOrCodeName}/values/{SubjectValueId}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -219,11 +220,11 @@ public class ApiSubjectController {
         return new ResponseEntity<String>(Subject.toJsonArray(Subject.findSubjectsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByTreatmentGroup", headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> jsonFindSubjectsByTreatmentGroup(@RequestParam("treatmentGroup") TreatmentGroup treatmentGroup) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Subject.toJsonArray(Subject.findSubjectsByTreatmentGroup(treatmentGroup).getResultList()), headers, HttpStatus.OK);
-    }
+//	@RequestMapping(params = "find=ByTreatmentGroup", headers = "Accept=application/json")
+//    @ResponseBody
+//    public ResponseEntity<String> jsonFindSubjectsByTreatmentGroup(@RequestParam("treatmentGroup") TreatmentGroup treatmentGroup) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json; charset=utf-8");
+//        return new ResponseEntity<String>(Subject.toJsonArray(Subject.findSubjectsByTreatmentGroups(treatmentGroup).getResultList()), headers, HttpStatus.OK);
+//    }
 }

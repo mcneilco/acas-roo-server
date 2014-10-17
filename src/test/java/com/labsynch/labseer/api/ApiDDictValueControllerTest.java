@@ -77,7 +77,7 @@ public class ApiDDictValueControllerTest {
 
         request.setRequestURI(requestUri);
         
-        expectedHandlerMethod = new HandlerMethod(controller, "findByTypeAndKind", String.class);
+        expectedHandlerMethod = new HandlerMethod(controller, "findByTypeAndKind", String.class, String.class, String.class);
         handler = this.getHandler(request);
         
         // For the most part we will be expecting HandlerMethod objects to be returned for our controllers.

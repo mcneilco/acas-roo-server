@@ -10,7 +10,6 @@
         <field:display field="clobValue" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_clobValue" object="${analysisgroupvalue}" z="GWtLsh2dwnlMQTvp13GW83+g8aU="/>
         <field:display field="blobValue" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_blobValue" object="${analysisgroupvalue}" z="G6hER4XpX49TnCfSrAT3VZskng0="/>
         <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_sigFigs" object="${analysisgroupvalue}" z="yqhedKenljBstcMmCrz7RCIyRVw="/>
-        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_uncertainty" object="${analysisgroupvalue}" z="saMYP48Gt064d72lrj2f2ihhy5g="/>
         <field:display field="comments" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_comments" object="${analysisgroupvalue}" z="D8TU3+XxIkyft9wO5LFN8McGxbM="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_ignored" object="${analysisgroupvalue}" z="NCoqKlWmbJwtxd1UhhLBrEB4wp8="/>
         <field:display date="true" dateTimePattern="${analysisGroupValue_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_recordedDate" object="${analysisgroupvalue}" z="+gRgU5z66bF1XrevyOgO/R4kI3w="/>
@@ -36,6 +35,7 @@
         <field:display field="codeType" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeType" object="${analysisgroupvalue}" z="0ZqEEklI/x6qVvLTesFn7A4UXlA="/>
         <field:display field="codeKind" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeKind" object="${analysisgroupvalue}" z="qskR5iqYxljY0DQ51LAGfxvyBnU="/>
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeTypeAndKind" object="${analysisgroupvalue}" z="NbSj8E0YZJOOtDy/gDXzm7Shr38="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_uncertainty" object="${analysisgroupvalue}" z="saMYP48Gt064d72lrj2f2ihhy5g="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeOrigin" object="${analysisgroupvalue}" z="+CuEl6nOTkVlK8M+4T9aWo7/R+g="/>
     </page:show>
 </div>

@@ -12,7 +12,7 @@
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_Experiment_lsTransaction" validationMessageCode="field_invalid_integer" z="3bxKbqnom0WB8Ah+BJA+PnAbxEs="/>
         <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_Experiment_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="SWClQdSAmR5CmuDeR59xz4XrFTA="/>
         <field:textarea field="shortDescription" id="c_com_labsynch_labseer_domain_Experiment_shortDescription" z="XEEHBSCgMx7+9JamxsybESjdDy4="/>
-        <field:simple field="analysisGroups" id="c_com_labsynch_labseer_domain_Experiment_analysisGroups" messageCode="entity_reference_not_managed" messageCodeAttribute="Analysis Group" z="9UFLg8KpBfuohw4bJnnVv8fWsh0="/>
+        <field:select field="analysisGroups" id="c_com_labsynch_labseer_domain_Experiment_analysisGroups" itemValue="id" items="${analysisgroups}" multiple="true" path="/analysisgroups" z="FTshVE+Y/GBBaJMOh/2HWm2PJ6s="/>
         <field:select field="protocol" id="c_com_labsynch_labseer_domain_Experiment_protocol" itemValue="id" items="${protocols}" path="/protocols" required="true" z="lcMTCLeLJDlRKVtFo+K/fhFmJbk="/>
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_Experiment_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Experiment State" z="dZbxv88VJ0W26zIITLfcqqiYDuY="/>
         <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_Experiment_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Experiment Label" z="+1eSxIqLj79+ert3NhBtKQNnzXw="/>

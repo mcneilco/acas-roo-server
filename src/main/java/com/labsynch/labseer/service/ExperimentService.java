@@ -8,6 +8,7 @@ import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
@@ -38,6 +39,9 @@ public interface ExperimentService {
 			Collection<String> codeValues);
 
 	public Collection<Experiment> findExperimentsByMetadataJson(String json);
+	
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query);
 
+	public Collection<Experiment> findExperimentsByMetadata(String queryString, String searchBy);
 	
 }

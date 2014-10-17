@@ -4,6 +4,9 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.CodeOrigin;
+import com.labsynch.labseer.domain.ItxExperimentExperiment;
+import com.labsynch.labseer.domain.ItxExperimentExperimentState;
+import com.labsynch.labseer.domain.ItxExperimentExperimentValue;
 import com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
 
@@ -29,6 +32,78 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.CodeOrigin>() {
             public com.labsynch.labseer.domain.CodeOrigin convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), CodeOrigin.class);
+            }
+        };
+    }
+    
+    public Converter<ItxExperimentExperiment, String> ApplicationConversionServiceFactoryBean.getItxExperimentExperimentToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.ItxExperimentExperiment, java.lang.String>() {
+            public String convert(ItxExperimentExperiment itxExperimentExperiment) {
+                return new StringBuilder().append(itxExperimentExperiment.getLsType()).append(' ').append(itxExperimentExperiment.getLsKind()).append(' ').append(itxExperimentExperiment.getLsTypeAndKind()).append(' ').append(itxExperimentExperiment.getCodeName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, ItxExperimentExperiment> ApplicationConversionServiceFactoryBean.getIdToItxExperimentExperimentConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.ItxExperimentExperiment>() {
+            public com.labsynch.labseer.domain.ItxExperimentExperiment convert(java.lang.Long id) {
+                return ItxExperimentExperiment.findItxExperimentExperiment(id);
+            }
+        };
+    }
+    
+    public Converter<String, ItxExperimentExperiment> ApplicationConversionServiceFactoryBean.getStringToItxExperimentExperimentConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ItxExperimentExperiment>() {
+            public com.labsynch.labseer.domain.ItxExperimentExperiment convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), ItxExperimentExperiment.class);
+            }
+        };
+    }
+    
+    public Converter<ItxExperimentExperimentState, String> ApplicationConversionServiceFactoryBean.getItxExperimentExperimentStateToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.ItxExperimentExperimentState, java.lang.String>() {
+            public String convert(ItxExperimentExperimentState itxExperimentExperimentState) {
+                return new StringBuilder().append(itxExperimentExperimentState.getRecordedBy()).append(' ').append(itxExperimentExperimentState.getRecordedDate()).append(' ').append(itxExperimentExperimentState.getModifiedBy()).append(' ').append(itxExperimentExperimentState.getModifiedDate()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, ItxExperimentExperimentState> ApplicationConversionServiceFactoryBean.getIdToItxExperimentExperimentStateConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.ItxExperimentExperimentState>() {
+            public com.labsynch.labseer.domain.ItxExperimentExperimentState convert(java.lang.Long id) {
+                return ItxExperimentExperimentState.findItxExperimentExperimentState(id);
+            }
+        };
+    }
+    
+    public Converter<String, ItxExperimentExperimentState> ApplicationConversionServiceFactoryBean.getStringToItxExperimentExperimentStateConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ItxExperimentExperimentState>() {
+            public com.labsynch.labseer.domain.ItxExperimentExperimentState convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), ItxExperimentExperimentState.class);
+            }
+        };
+    }
+    
+    public Converter<ItxExperimentExperimentValue, String> ApplicationConversionServiceFactoryBean.getItxExperimentExperimentValueToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.ItxExperimentExperimentValue, java.lang.String>() {
+            public String convert(ItxExperimentExperimentValue itxExperimentExperimentValue) {
+                return new StringBuilder().append(itxExperimentExperimentValue.getLsType()).append(' ').append(itxExperimentExperimentValue.getLsKind()).append(' ').append(itxExperimentExperimentValue.getLsTypeAndKind()).append(' ').append(itxExperimentExperimentValue.getCodeOrigin()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, ItxExperimentExperimentValue> ApplicationConversionServiceFactoryBean.getIdToItxExperimentExperimentValueConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.ItxExperimentExperimentValue>() {
+            public com.labsynch.labseer.domain.ItxExperimentExperimentValue convert(java.lang.Long id) {
+                return ItxExperimentExperimentValue.findItxExperimentExperimentValue(id);
+            }
+        };
+    }
+    
+    public Converter<String, ItxExperimentExperimentValue> ApplicationConversionServiceFactoryBean.getStringToItxExperimentExperimentValueConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ItxExperimentExperimentValue>() {
+            public com.labsynch.labseer.domain.ItxExperimentExperimentValue convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), ItxExperimentExperimentValue.class);
             }
         };
     }

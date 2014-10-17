@@ -63,7 +63,7 @@ public class ApiDDictValueController {
 		}
 
 		if(format.equalsIgnoreCase("codeTable")) {
-			List<CodeTableDTO> results = dataDictionaryService.getDataDictionaryCodeTableListByType(lsType); 
+			List<CodeTableDTO> results = dataDictionaryService.convertToCodeTables(ddictValues); 
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(results), headers, HttpStatus.OK);
 		} else if (format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(ddictValues);

@@ -9,10 +9,10 @@
         <field:display date="true" dateTimePattern="${subject_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_Subject_modifiedDate" object="${subject}" z="XeGdtOIHImDtFiJdC1Er/76z28k="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_Subject_ignored" object="${subject}" z="dzL1wcBwP5sORP/uGWbJJh0muoY="/>
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_Subject_lsTransaction" object="${subject}" z="+VUQ7WnyJI3ENGWkWg9li7e+5To="/>
-        <field:display field="treatmentGroup" id="s_com_labsynch_labseer_domain_Subject_treatmentGroup" object="${subject}" z="0JdF6z/uCUgFehwN7fSVHYGkMUw="/>
         <field:display field="codeName" id="s_com_labsynch_labseer_domain_Subject_codeName" object="${subject}" z="J8jFhDGl8xpe4EUC2rnl54QRICo="/>
         <field:display field="lsType" id="s_com_labsynch_labseer_domain_Subject_lsType" object="${subject}" z="9iYAcX+pRDtZF4ILvEDjyxYxojg="/>
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_Subject_lsKind" object="${subject}" z="bQGEHMRaID3qaFTImfOaj53XD/0="/>
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_Subject_lsTypeAndKind" object="${subject}" z="B3WnDuCziy+meAnvJHXJ5azImLk="/>
+        <field:display field="treatmentGroups" id="s_com_labsynch_labseer_domain_Subject_treatmentGroups" object="${subject}" z="oU4Ytr0iaYulP/tTrlhvVo8v/eU="/>
     </page:show>
 </div>

@@ -16,7 +16,7 @@ import com.labsynch.labseer.domain.ThingKind;
 import com.labsynch.labseer.domain.ThingType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext.xml")
+@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")
 @Configurable
 public class InitialSetupTest {
 

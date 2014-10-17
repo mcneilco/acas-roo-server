@@ -13,10 +13,10 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -34,14 +34,20 @@ import flexjson.JSONSerializer;
 @Entity
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(finders = { "findSubjectsByTreatmentGroup", "findSubjectsByLsTransactionEquals", "findSubjectsByCodeNameEquals" })
+@RooJpaActiveRecord(finders = { "findSubjectsByTreatmentGroups", "findSubjectsByLsTransactionEquals", "findSubjectsByCodeNameEquals" })
 @RooJson
 public class Subject extends AbstractThing {
-
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "treatment_group_id")
-	private TreatmentGroup treatmentGroup;
+	
+	//This direction: Subject is grandparent
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
+	@JoinTable(name="TREATMENTGROUP_SUBJECT", 
+	joinColumns={@JoinColumn(name="subject_id")}, 
+	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
+    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+	
+	//This direction: Experiment is grandparent
+//	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "subjects")  
+//    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "subject", fetch =  FetchType.LAZY)
     private Set<SubjectLabel> lsLabels = new HashSet<SubjectLabel>();
@@ -49,8 +55,8 @@ public class Subject extends AbstractThing {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "subject", fetch =  FetchType.LAZY)
 	private Set<SubjectState> lsStates = new HashSet<SubjectState>();
 
-//	@OneToMany(cascade = CascadeType.ALL, mappedBy = "subject", fetch =  FetchType.EAGER)
-//	private Set<ItxSubjectContainer> containers = new HashSet<ItxSubjectContainer>();
+	@OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "subject", fetch =  FetchType.LAZY, orphanRemoval = true)
+	private Set<ItxSubjectContainer> containers = new HashSet<ItxSubjectContainer>();
 
 	//constructor to instantiate a new sample from nested json objects
 	public Subject(Subject subject) {
@@ -66,9 +72,9 @@ public class Subject extends AbstractThing {
         super.setLsKind(subject.getLsKind());
         super.setLsTypeAndKind(subject.getLsTypeAndKind());
         
-//        this.setSubjectLabels(subject.getSubjectLabels());
-//        this.setSubjectStates(subject.getSubjectStates());
-//        this.setContainers(subject.getContainers());
+        this.setLsLabels(subject.getLsLabels());
+        this.setLsStates(subject.getLsStates());
+        this.setContainers(subject.getContainers());
 
 	}
 
@@ -159,11 +165,12 @@ public class Subject extends AbstractThing {
 	public static int deleteByExperimentID(Long experimentId) {
 		if (experimentId == null) return 0;
 		EntityManager em = ItxSubjectContainer.entityManager();
-		String deleteSQL = "DELETE FROM Subject oo WHERE id in (select o.id from Subject o where o.treatmentGroup.analysisGroup.experiment.id = :experimentId)";
+		String deleteSQL = "DELETE FROM Subject s WHERE Subject IN (SELECT s FROM Subject s JOIN s.treatmentGroups t JOIN t.analysisGroups a JOIN a.experiments e WHERE e.id = :experimentId)";
 		Query q = em.createQuery(deleteSQL);
 		q.setParameter("experimentId", experimentId);
-		int numberOfDeletedEntities = q.executeUpdate();
-		return numberOfDeletedEntities;
+		//int numberOfDeletedEntities = q.executeUpdate();
+		//return numberOfDeletedEntities;
+		return 0;
 	}
 
 

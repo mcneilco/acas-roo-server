@@ -4,11 +4,8 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.web.AnalysisGroupController;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.joda.time.format.DateTimeFormat;
@@ -38,11 +35,6 @@ privileged aspect AnalysisGroupController_Roo_Controller {
     @RequestMapping(params = "form", produces = "text/html")
     public String AnalysisGroupController.createForm(Model uiModel) {
         populateEditForm(uiModel, new AnalysisGroup());
-        List<String[]> dependencies = new ArrayList<String[]>();
-        if (Experiment.countExperiments() == 0) {
-            dependencies.add(new String[] { "experiment", "experiments" });
-        }
-        uiModel.addAttribute("dependencies", dependencies);
         return "analysisgroups/create";
     }
     

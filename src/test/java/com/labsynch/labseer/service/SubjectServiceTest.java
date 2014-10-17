@@ -26,7 +26,7 @@ import com.labsynch.labseer.dto.SubjectStateDTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext.xml")
+@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
 public class SubjectServiceTest {
 	
@@ -124,7 +124,7 @@ public class SubjectServiceTest {
 	
 	@Test
 	public void SimpleTest_5(){
-		Subject subject = Subject.findSubject(75228L);
+		Subject subject = Subject.findSubject(499834L);
 		logger.info(SubjectLabel.toJsonArray(SubjectLabel.findSubjectLabelsBySubject(subject).getResultList()));
 		logger.info(subject.toJson());
 	}

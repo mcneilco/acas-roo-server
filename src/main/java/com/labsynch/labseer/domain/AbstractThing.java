@@ -123,7 +123,7 @@ public abstract class AbstractThing {
 		if (this.recordedDate == null) this.recordedDate = new Date();
 		this.entityManager.persist(this);
 	}
-
+		
 	@Transactional
 	public AbstractThing merge() {
 		if (this.entityManager == null) this.entityManager = entityManager();

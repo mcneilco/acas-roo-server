@@ -10,7 +10,6 @@
         <field:display field="clobValue" id="s_com_labsynch_labseer_domain_ExperimentValue_clobValue" object="${experimentvalue}" z="Ld+biMNYhWvgdetYGHZMg49D1wQ="/>
         <field:display field="blobValue" id="s_com_labsynch_labseer_domain_ExperimentValue_blobValue" object="${experimentvalue}" z="t6Sy3EmAxAfYP2IUYW7LgehSKP0="/>
         <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_ExperimentValue_sigFigs" object="${experimentvalue}" z="jOw9aawIJSfyvR7OcoiZvhR2TdM="/>
-        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_ExperimentValue_uncertainty" object="${experimentvalue}" z="+Aq/V4YJZo/EE8USi22FuFhL6H0="/>
         <field:display field="comments" id="s_com_labsynch_labseer_domain_ExperimentValue_comments" object="${experimentvalue}" z="W6jmJBEqXjuY5mb/qvYeb4I6eYc="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_ExperimentValue_ignored" object="${experimentvalue}" z="hpILxE3OUYq9hFUGMltUJn8eHpA="/>
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ExperimentValue_lsTransaction" object="${experimentvalue}" z="FbbiiSHM9BSqx8W23/7jbSt+JpQ="/>
@@ -36,6 +35,7 @@
         <field:display field="codeType" id="s_com_labsynch_labseer_domain_ExperimentValue_codeType" object="${experimentvalue}" z="FD/HQIOmoJCH7F9FNW2rxPuxaQ4="/>
         <field:display field="codeKind" id="s_com_labsynch_labseer_domain_ExperimentValue_codeKind" object="${experimentvalue}" z="4nZPLy56IsY+xa/+3y4gm00eeJU="/>
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_ExperimentValue_codeTypeAndKind" object="${experimentvalue}" z="YqDHbfw5RxafSSL/i6XBcgufcyg="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_ExperimentValue_uncertainty" object="${experimentvalue}" z="+Aq/V4YJZo/EE8USi22FuFhL6H0="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_ExperimentValue_codeOrigin" object="${experimentvalue}" z="ifrboUs1bYBVSIuJjw+xz+4lf3U="/>
     </page:show>
 </div>

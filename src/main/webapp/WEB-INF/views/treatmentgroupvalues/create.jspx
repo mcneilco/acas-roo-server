@@ -10,7 +10,6 @@
         <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_clobValue" z="Z6IhFZbdBnyjP1ID7hsTeoJEgm4="/>
         <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_blobValue" z="ogSc/gLVYq3iDAwHN1fVU8/CTRs="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_sigFigs" validationMessageCode="field_invalid_integer" z="tqxPU0d7m9/ZlYBympXY6Qaz6jM="/>
-        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_uncertainty" validationMessageCode="field_invalid_number" z="qUdHnRN7ZvHrWGNJhiAJtKeWvc4="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_comments" z="Nufz9P/ZJJlnDHy+o3+RtX3babo="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_ignored" z="4TwkE4oaIK0Dgy4Jm/05YgWvvbI="/>
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_lsTransaction" validationMessageCode="field_invalid_integer" z="z/ATbtcSL8kpbXjb+MGS+Evok5c="/>
@@ -36,6 +35,7 @@
         <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeType" z="OtsD3NnPc71kikzADHNTHfC6om0="/>
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeKind" z="HMTnhpGKMdhMbzggO2umBBABueQ="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeTypeAndKind" z="WsyUIZFOYKfbfPp5M9X4IDm4EqU="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_uncertainty" validationMessageCode="field_invalid_number" z="qUdHnRN7ZvHrWGNJhiAJtKeWvc4="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeOrigin" z="1B5R4a2U7gTmgDPLHY3eTtT8zhk="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_TreatmentGroupValue" render="${not empty dependencies}" z="iZTWqiGKFrIHQESzDGG3HpIL9gg="/>

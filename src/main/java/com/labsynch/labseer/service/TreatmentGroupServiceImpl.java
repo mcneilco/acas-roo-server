@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
@@ -48,25 +50,86 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 	private SubjectService subjectService;
 
 	@Override
-	@Transactional
+	public void saveLsTreatmentGroups(AnalysisGroup newAnalysisGroup, Set<TreatmentGroup> treatmentGroups,
+			Date recordedDate) {
+		Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+		analysisGroups.add(newAnalysisGroup);
+		if (treatmentGroups != null){
+			int j = 0;
+			for (TreatmentGroup treatmentGroup : treatmentGroups){
+				TreatmentGroup newTreatmentGroup = saveLsTreatmentGroup(analysisGroups, treatmentGroup, recordedDate);
+				if ( j % propertiesUtilService.getBatchSize() == 0 ) { 
+					newTreatmentGroup.flush();
+					newTreatmentGroup.clear();
+				}
+				j++;
+			}
+		}		
+	}
+
+	@Override
 	public TreatmentGroup saveLsTreatmentGroup(TreatmentGroup treatmentGroup){
 
 		logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
-		int batchSize = propertiesUtilService.getBatchSize();
-		Date recordedDate = new Date();
-		TreatmentGroup newTreatmentGroup = new TreatmentGroup(treatmentGroup);
-		newTreatmentGroup.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(treatmentGroup.getAnalysisGroup().getId()));
-		newTreatmentGroup.persist();
-		logger.debug("persisted the newTreatmentGroup: " + newTreatmentGroup.toJson());
+		Date recordedDate = new Date();		
+		return saveLsTreatmentGroup(treatmentGroup.getAnalysisGroups(), treatmentGroup, recordedDate);
 
-		if (treatmentGroup.getLsLabels() != null) {
-			for(TreatmentGroupLabel treatmentGroupLabel : treatmentGroup.getLsLabels()){
-				TreatmentGroupLabel newTreatmentGroupLabel = new TreatmentGroupLabel(treatmentGroupLabel);
-				newTreatmentGroupLabel.setTreatmentGroup(newTreatmentGroup);
-				if (newTreatmentGroupLabel.getRecordedDate() == null) {newTreatmentGroupLabel.setRecordedDate(recordedDate);}
-				newTreatmentGroupLabel.persist();	
-			}		
+	}
+
+	@Override
+	@Transactional
+	public TreatmentGroup saveLsTreatmentGroup(Set<AnalysisGroup> analysisGroups, TreatmentGroup treatmentGroup, Date recordedDate){
+
+		//logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
+		TreatmentGroup newTreatmentGroup = null;
+
+		if (treatmentGroup.getId() == null){
+			newTreatmentGroup = new TreatmentGroup(treatmentGroup);
+			if (newTreatmentGroup.getCodeName() == null){
+				newTreatmentGroup.setCodeName(autoLabelService.getTreatmentGroupCodeName());
+			}
+			if (newTreatmentGroup.getRecordedDate() == null){
+				newTreatmentGroup.setRecordedDate(recordedDate);
+			}
+
+			for (AnalysisGroup analysisGroup : analysisGroups){
+				newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));				
+			}
+			newTreatmentGroup.persist();
+			logger.debug("persisted the new treatmentGroup: " + newTreatmentGroup.toJson());
+
+			saveLabels(treatmentGroup, newTreatmentGroup, recordedDate);
+			saveStates(treatmentGroup, newTreatmentGroup, recordedDate);
+
+			logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(treatmentGroup.getSubjects()));
+			saveSubjects(newTreatmentGroup, treatmentGroup.getSubjects(), recordedDate);
+
+
+		} else {
+			newTreatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroup.getId());
+			for (AnalysisGroup analysisGroup : analysisGroups){
+				newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));				
+			}
+			newTreatmentGroup.merge();
+			logger.debug("updated the treatmentGroup: -------------- " + newTreatmentGroup.toJson());
+			if (treatmentGroup.getSubjects() != null){
+				logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(newTreatmentGroup.getSubjects()));
+				saveSubjects(newTreatmentGroup, newTreatmentGroup.getSubjects(), recordedDate);				
+			}
 		}
+
+		return newTreatmentGroup;
+	}
+
+	private void saveSubjects(TreatmentGroup treatmentGroup,
+			Set<Subject> subjects, Date recordedDate) {
+		if (treatmentGroup.getSubjects().size() > 0){
+			subjectService.saveSubjects(treatmentGroup, subjects, recordedDate);
+		}		
+	}
+
+	private void saveStates(TreatmentGroup treatmentGroup,
+			TreatmentGroup newTreatmentGroup, Date recordedDate) {
 		if (treatmentGroup.getLsStates() != null){
 			for(TreatmentGroupState treatmentGroupState : treatmentGroup.getLsStates()){
 				TreatmentGroupState newTreatmentGroupState = new TreatmentGroupState(treatmentGroupState);
@@ -80,22 +143,19 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 					}										
 				}
 			}					
-		}
+		}		
+	}
 
-		if (treatmentGroup.getSubjects() != null){
-			int j = 0;
-			for(Subject subject : treatmentGroup.getSubjects()){
-				Subject newSubject = subjectService.saveSubject(subject);
-				if ( j % batchSize == 0 ) { 
-					newSubject.flush();
-					newSubject.clear();
-				}
-				j++;
-			}
-		}
-
-
-		return TreatmentGroup.findTreatmentGroup(newTreatmentGroup.getId());
+	private void saveLabels(TreatmentGroup treatmentGroup,
+			TreatmentGroup newTreatmentGroup, Date recordedDate) {
+		if (treatmentGroup.getLsLabels() != null) {
+			for(TreatmentGroupLabel treatmentGroupLabel : treatmentGroup.getLsLabels()){
+				TreatmentGroupLabel newTreatmentGroupLabel = new TreatmentGroupLabel(treatmentGroupLabel);
+				newTreatmentGroupLabel.setTreatmentGroup(newTreatmentGroup);
+				if (newTreatmentGroupLabel.getRecordedDate() == null) {newTreatmentGroupLabel.setRecordedDate(recordedDate);}
+				newTreatmentGroupLabel.persist();	
+			}		
+		}		
 	}
 
 	@Override
@@ -130,6 +190,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 					treatmentGroupState.setId(newTreatmentGroupState.getId());
 				} else {
 					TreatmentGroupState updatedTreatmentGroupState = TreatmentGroupState.update(treatmentGroupState);
+					logger.debug(updatedTreatmentGroupState.toJson());
 				}
 				if (treatmentGroupState.getLsValues() != null){
 					for(TreatmentGroupValue treatmentGroupValue : treatmentGroupState.getLsValues()){
@@ -139,6 +200,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 							treatmentGroupValue.persist();
 						} else {
 							TreatmentGroupValue updatedTreatmentGroupValue = TreatmentGroupValue.update(treatmentGroupValue);
+							logger.debug(updatedTreatmentGroupValue.toJson());
 						}
 
 					}				
@@ -150,7 +212,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			for(Subject subject : treatmentGroup.getSubjects()){
 				if (subject.getId() == null){
 					Subject newSubject = new Subject(subject);
-					newSubject.setTreatmentGroup(treatmentGroup);
+					newSubject.getTreatmentGroups().add(treatmentGroup);
 					newSubject.persist();							
 				} else {
 					subject = Subject.update(subject);
@@ -165,13 +227,13 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 	@Override
 	public HashMap<String, TempThingDTO> createLsTreatmentGroupsFromCSV(
 			HashMap<String, TempThingDTO> analysisGroupMap,
-			String treatmentGroupCSV, String subjectCSV) {
+			String treatmentGroupCSV, String subjectCSV) throws IOException {
 
-		HashMap<String, TempThingDTO> treatmentGroupMap = createTreatmentGroupsFromCSV(analysisGroupMap, treatmentGroupCSV);
+		HashMap<String, TempThingDTO> treatmentGroupMap = createTreatmentGroupsFromCSV(treatmentGroupCSV, analysisGroupMap);
 
 		if (subjectCSV != null){
 
-			//HashMap<String, TempThingDTO> subjectGroupMap = treatmentGroupService.createLsTreatmentGroupsFromCSV(analysisGroupMap, treatmentGroupCSV, subjectCSV);
+			HashMap<String, TempThingDTO> subjectGroupMap = subjectService.createSubjectsFromCSV(subjectCSV, treatmentGroupMap);
 
 		}
 
@@ -179,14 +241,14 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 	}
 
-	private HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
-			HashMap<String, TempThingDTO> analysisGroupMap,
-			String treatmentGroupCSV) {
-
-
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	private HashMap<String, TempThingDTO> createTreatmentGroupsFromCSV(
+//			HashMap<String, TempThingDTO> analysisGroupMap,
+//			String treatmentGroupCSV) {
+//
+//
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
 	@Transactional
@@ -234,6 +296,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			TreatmentGroupValue treatmentGroupValue;
 
 			long rowIndex = 1;
+			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 			while( (treatmentGroupDTO = beanReader.read(FlatThingCsvDTO.class, header, processors)) != null ) {
 				logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), treatmentGroupDTO));
 
@@ -243,7 +306,14 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 				treatmentGroup = getOrCreateTreatmentGroup(treatmentGroupDTO, treatmentGroupMap, analysisGroupMap);
 				if (treatmentGroup != null){
-					treatmentGroup.persist();
+					if (treatmentGroup.getId() == null){
+						treatmentGroup.persist();
+					} else {
+						treatmentGroup.merge();
+					}
+//					AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
+//					analysisGroup.getTreatmentGroups().add(treatmentGroup);
+//					analysisGroups.add(analysisGroup);
 					logger.debug("saved the new treatment Group: ID: " + treatmentGroup.getId() + " codeName" + treatmentGroup.getCodeName());
 					logger.debug("saved the new treatment group: " + treatmentGroup.toJson());
 					treatmentGroupMap = saveTempTreatmentGroup(treatmentGroup, treatmentGroupDTO, treatmentGroupMap);
@@ -279,6 +349,14 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 
 				rowIndex++;
 			}
+//			Long beforeMerge = new Date().getTime();
+//			logger.info("Number of AnalysisGroups to merge: "+ analysisGroups.size());
+//			for (AnalysisGroup analysisGroup: analysisGroups) {
+//				analysisGroup.merge();	
+//			}
+//			Long afterMerge = new Date().getTime();
+//			Long mergeDuration = afterMerge - beforeMerge;
+//			logger.info("Merging AnalysisGroups took: "+ mergeDuration + " ms");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -385,7 +463,6 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			if (treatmentGroupDTO.getId() == null){
 				if (treatmentGroupDTO.getTempParentId() != null && !treatmentGroupDTO.getTempParentId().equalsIgnoreCase("null")){
 					treatmentGroup = new TreatmentGroup(treatmentGroupDTO);
-					treatmentGroup.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId()));
 					if (treatmentGroup.getCodeName() == null){
 						String newCodeName = autoLabelService.getTreatmentGroupCodeName();
 						logger.debug("------------------ new codeName: " + newCodeName);
@@ -397,6 +474,15 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			} else {
 				treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupDTO.getId());
 			}
+			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+			AnalysisGroup foundAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
+			analysisGroups.add(foundAnalysisGroup);
+			if (treatmentGroup.getAnalysisGroups() == null){
+				treatmentGroup.setAnalysisGroups(analysisGroups);
+			} else {
+				treatmentGroup.getAnalysisGroups().addAll(analysisGroups);
+			}
+
 		} else {
 			logger.debug("skipping the previously saved treatmentGroup --------- " + treatmentGroupDTO.getCodeName());
 		}

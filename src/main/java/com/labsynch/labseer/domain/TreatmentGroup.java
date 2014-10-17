@@ -13,15 +13,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
@@ -31,24 +32,39 @@ import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(finders = { "findTreatmentGroupsByAnalysisGroup", "findTreatmentGroupsByLsTransactionEquals" })
+@RooJpaActiveRecord(finders = { "findTreatmentGroupsByAnalysisGroups", "findTreatmentGroupsByLsTransactionEquals" })
 @RooJson
 public class TreatmentGroup extends AbstractThing {
-
-	@NotNull
-	@ManyToOne
-	@JoinColumn(name = "analysis_group_id")
-	private AnalysisGroup analysisGroup;
+	
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
     private Set<TreatmentGroupLabel> lsLabels = new HashSet<TreatmentGroupLabel>();
   
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
 	private Set<TreatmentGroupState> lsStates = new HashSet<TreatmentGroupState>();
- 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "treatmentGroup", fetch =  FetchType.LAZY)
-	private Set<Subject> subjects = new HashSet<Subject>();
-
+	
+	//Subject is grandparent
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "treatmentGroups")  
+    private Set<Subject> subjects = new HashSet<Subject>();
+	
+	//Experiment is grandparent
+//	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
+//	@JoinTable(name="TREATMENTGROUP_SUBJECT", 
+//	joinColumns={@JoinColumn(name="treatment_group_id")}, 
+//	inverseJoinColumns={@JoinColumn(name="subject_id")})
+//    private Set<Subject> subjects = new HashSet<Subject>();
+	
+	//Subject is grandparent
+	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
+	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
+	joinColumns={@JoinColumn(name="treatment_group_id")}, 
+	inverseJoinColumns={@JoinColumn(name="analysis_group_id")})
+    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+	
+	//Experiment is grandparent
+//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "treatmentGroups")
+//    private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+    
     public TreatmentGroup() {
     }
     
@@ -97,7 +113,7 @@ public class TreatmentGroup extends AbstractThing {
 	public String toJson() {
 		return new JSONSerializer()
 		.include("lsLabels","lsStates.lsValues", "subjects")
-		.exclude("*.class", "analysisGroup.experiment", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroup")
+		.exclude("*.class", "analysisGroups.experiments", "lsStates.treatmentGroup", "lsLabels.treatmentGroup", "subjects.treatmentGroups")
 		.serialize(this);
 	}
 
@@ -134,12 +150,12 @@ public class TreatmentGroup extends AbstractThing {
 	public static int deleteByExperimentID(Long experimentId) {
 		if (experimentId == null) return 0;
 		EntityManager em = SubjectValue.entityManager();
-		String deleteSQL = "DELETE FROM TreatmentGroup oo WHERE id in (select o.id from TreatmentGroup o where o.analysisGroup.experiment.id = :experimentId)";
-
+		String deleteSQL = "DELETE FROM TreatmentGroup t WHERE TreatmentGroup IN (SELECT t FROM TreatmentGroup t JOIN t.analysisGroups a JOIN a.experiments e WHERE e.id = :experimentId)";
 		Query q = em.createQuery(deleteSQL);
 		q.setParameter("experimentId", experimentId);
-		int numberOfDeletedEntities = q.executeUpdate();
-		return numberOfDeletedEntities;
+		//int numberOfDeletedEntities = q.executeUpdate();
+		//return numberOfDeletedEntities;
+		return 0;
 	}
 
 

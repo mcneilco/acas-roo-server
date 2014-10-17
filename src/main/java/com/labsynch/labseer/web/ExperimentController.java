@@ -524,70 +524,70 @@ public class ExperimentController {
         if (experiment == null) {
             logger.info("Did not find the experiment before delete");
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        if (with != null && with.equalsIgnoreCase("analysisgroups")) {
-            logger.info("deleting analysis groups within an experiment: " + id);
-            ItxSubjectContainerValue.deleteByExperimentID(id);
-            ItxSubjectContainerState.deleteByExperimentID(id);
-            int deletedItxValues = ItxSubjectContainer.deleteByExperimentID(id);
-            logger.debug("deleted number of ItxSubjectContainers: " + deletedItxValues);
-            int deletedValues = SubjectValue.deleteByExperimentID(id);
-            logger.debug("deleted number of subject values: " + deletedValues);
-            int deletedLabels = SubjectLabel.deleteByExperimentID(id);
-            logger.debug("deleted number of subject labels: " + deletedLabels);
-            int numberOfStates = SubjectState.deleteByExperimentID(id);
-            logger.debug("deleted number of numberOfStates: " + numberOfStates);
-            int deletedSubjects = Subject.deleteByExperimentID(id);
-            logger.debug("deleted number of subjects: " + deletedSubjects);
-            int tt2 = TreatmentGroupValue.deleteByExperimentID(id);
-            logger.debug("deleted number of TreatmentGroupValue: " + tt2);
-            int tt1 = TreatmentGroupState.deleteByExperimentID(id);
-            logger.debug("deleted number of TreatmentGroupState: " + tt1);
-            int tt3 = TreatmentGroupLabel.deleteByExperimentID(id);
-            logger.debug("deleted number of TreatmentGroupLabel: " + tt3);
-            int tt = TreatmentGroup.deleteByExperimentID(id);
-            logger.debug("deleted number of TreatmentGroups: " + tt);
-            int ag1 = AnalysisGroupValue.deleteByExperimentID(id);
-            int ag2 = AnalysisGroupState.deleteByExperimentID(id);
-            int ag3 = AnalysisGroupLabel.deleteByExperimentID(id);
-            int ag4 = AnalysisGroup.deleteByExperimentID(id);
-            logger.info("deleted number of AnalysisGroupValue: " + ag1);
-            logger.info("deleted number of AnalysisGroupState: " + ag2);
-            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
-            logger.info("deleted number of AnalysisGroup: " + ag4);
-            return new ResponseEntity<String>(headers, HttpStatus.OK);
+//        }
+//        if (with != null && with.equalsIgnoreCase("analysisgroups")) {
+//            logger.info("deleting analysis groups within an experiment: " + id);
+//            ItxSubjectContainerValue.deleteByExperimentID(id);
+//            ItxSubjectContainerState.deleteByExperimentID(id);
+//            int deletedItxValues = ItxSubjectContainer.deleteByExperimentID(id);
+//            logger.debug("deleted number of ItxSubjectContainers: " + deletedItxValues);
+//            int deletedValues = SubjectValue.deleteByExperimentID(id);
+//            logger.debug("deleted number of subject values: " + deletedValues);
+//            int deletedLabels = SubjectLabel.deleteByExperimentID(id);
+//            logger.debug("deleted number of subject labels: " + deletedLabels);
+//            int numberOfStates = SubjectState.deleteByExperimentID(id);
+//            logger.debug("deleted number of numberOfStates: " + numberOfStates);
+//            int deletedSubjects = Subject.deleteByExperimentID(id);
+//            logger.debug("deleted number of subjects: " + deletedSubjects);
+//            int tt2 = TreatmentGroupValue.deleteByExperimentID(id);
+//            logger.debug("deleted number of TreatmentGroupValue: " + tt2);
+//            int tt1 = TreatmentGroupState.deleteByExperimentID(id);
+//            logger.debug("deleted number of TreatmentGroupState: " + tt1);
+//            int tt3 = TreatmentGroupLabel.deleteByExperimentID(id);
+//            logger.debug("deleted number of TreatmentGroupLabel: " + tt3);
+//            int tt = TreatmentGroup.deleteByExperimentID(id);
+//            logger.debug("deleted number of TreatmentGroups: " + tt);
+//            int ag1 = AnalysisGroupValue.deleteByExperimentID(id);
+//            int ag2 = AnalysisGroupState.deleteByExperimentID(id);
+//            int ag3 = AnalysisGroupLabel.deleteByExperimentID(id);
+//            int ag4 = AnalysisGroup.deleteByExperimentID(id);
+//            logger.info("deleted number of AnalysisGroupValue: " + ag1);
+//            logger.info("deleted number of AnalysisGroupState: " + ag2);
+//            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
+//            logger.info("deleted number of AnalysisGroup: " + ag4);
+//            return new ResponseEntity<String>(headers, HttpStatus.OK);
         } else {
             logger.info("deleting entire experiment: " + id);
-            ItxSubjectContainerValue.deleteByExperimentID(id);
-            ItxSubjectContainerState.deleteByExperimentID(id);
-            int deletedItxValues = ItxSubjectContainer.deleteByExperimentID(id);
-            logger.debug("deleted number of ItxSubjectContainers: " + deletedItxValues);
-            int deletedValues = SubjectValue.deleteByExperimentID(id);
-            logger.debug("deleted number of subject values: " + deletedValues);
-            int deletedLabels = SubjectLabel.deleteByExperimentID(id);
-            logger.debug("deleted number of subject labels: " + deletedLabels);
-            int numberOfStates = SubjectState.deleteByExperimentID(id);
-            logger.debug("deleted number of numberOfStates: " + numberOfStates);
-            int deletedSubjects = Subject.deleteByExperimentID(id);
-            logger.debug("deleted number of subjects: " + deletedSubjects);
-            int tt2 = TreatmentGroupValue.deleteByExperimentID(id);
-            logger.debug("deleted number of TreatmentGroupValue: " + tt2);
-            int tt1 = TreatmentGroupState.deleteByExperimentID(id);
-            logger.debug("deleted number of TreatmentGroupState: " + tt1);
-            int tt3 = TreatmentGroupLabel.deleteByExperimentID(id);
-            logger.debug("deleted number of TreatmentGroupLabel: " + tt3);
-            int tt = TreatmentGroup.deleteByExperimentID(id);
-            logger.debug("deleted number of TreatmentGroups: " + tt);
-            int ag1 = AnalysisGroupValue.deleteByExperimentID(id);
-            int ag2 = AnalysisGroupState.deleteByExperimentID(id);
-            int ag3 = AnalysisGroupLabel.deleteByExperimentID(id);
-            int ag4 = AnalysisGroup.deleteByExperimentID(id);
-            logger.info("deleted number of AnalysisGroupValue: " + ag1);
-            logger.info("deleted number of AnalysisGroupState: " + ag2);
-            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
-            logger.info("deleted number of AnalysisGroup: " + ag4);
-            experiment.remove();
-            if (Experiment.findExperiment(id) == null) {
+//            ItxSubjectContainerValue.deleteByExperimentID(id);
+//            ItxSubjectContainerState.deleteByExperimentID(id);
+//            int deletedItxValues = ItxSubjectContainer.deleteByExperimentID(id);
+//            logger.debug("deleted number of ItxSubjectContainers: " + deletedItxValues);
+//            int deletedValues = SubjectValue.deleteByExperimentID(id);
+//            logger.debug("deleted number of subject values: " + deletedValues);
+//            int deletedLabels = SubjectLabel.deleteByExperimentID(id);
+//            logger.debug("deleted number of subject labels: " + deletedLabels);
+//            int numberOfStates = SubjectState.deleteByExperimentID(id);
+//            logger.debug("deleted number of numberOfStates: " + numberOfStates);
+//            int deletedSubjects = Subject.deleteByExperimentID(id);
+//            logger.debug("deleted number of subjects: " + deletedSubjects);
+//            int tt2 = TreatmentGroupValue.deleteByExperimentID(id);
+//            logger.debug("deleted number of TreatmentGroupValue: " + tt2);
+//            int tt1 = TreatmentGroupState.deleteByExperimentID(id);
+//            logger.debug("deleted number of TreatmentGroupState: " + tt1);
+//            int tt3 = TreatmentGroupLabel.deleteByExperimentID(id);
+//            logger.debug("deleted number of TreatmentGroupLabel: " + tt3);
+//            int tt = TreatmentGroup.deleteByExperimentID(id);
+//            logger.debug("deleted number of TreatmentGroups: " + tt);
+//            int ag1 = AnalysisGroupValue.deleteByExperimentID(id);
+//            int ag2 = AnalysisGroupState.deleteByExperimentID(id);
+//            int ag3 = AnalysisGroupLabel.deleteByExperimentID(id);
+//            int ag4 = AnalysisGroup.deleteByExperimentID(id);
+//            logger.info("deleted number of AnalysisGroupValue: " + ag1);
+//            logger.info("deleted number of AnalysisGroupState: " + ag2);
+//            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
+//            logger.info("deleted number of AnalysisGroup: " + ag4);
+            experiment.logicalDelete();
+            if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored()) {
                 logger.info("Did not find the experiment after delete");
                 return new ResponseEntity<String>(headers, HttpStatus.OK);
             } else {
@@ -671,7 +671,8 @@ public class ExperimentController {
         if (protocolId != null && protocolId != 0) {
             experiments = Experiment.findExperimentByExperimentNameAndProtocolId(experimentName, protocolId);
         } else {
-            experiments = Experiment.findExperimentByExperimentName(experimentName);
+        	//TODO make new finder that returns list of experiments and respects ignore flag
+            experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
         }
         if (with != null) {
             logger.debug("incoming with param is " + with);
@@ -792,7 +793,7 @@ public class ExperimentController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         Experiment experiment = Experiment.findExperiment(id);
-        experiment.remove();
+        experiment.logicalDelete();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
@@ -807,7 +808,7 @@ public class ExperimentController {
     void populateEditForm(Model uiModel, Experiment experiment) {
         uiModel.addAttribute("experiment", experiment);
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("lstags", LsTag.findAllLsTags());
+        uiModel.addAttribute("lsTags", LsTag.findAllLsTags());
         List<Protocol> protocols = new ArrayList<Protocol>();
         protocols.add(Protocol.findProtocol(experiment.getProtocol().getId()));
         uiModel.addAttribute("protocols", protocols);

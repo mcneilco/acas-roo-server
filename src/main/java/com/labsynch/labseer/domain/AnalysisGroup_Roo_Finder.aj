@@ -5,16 +5,25 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 privileged aspect AnalysisGroup_Roo_Finder {
     
-    public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByExperiment(Experiment experiment) {
-        if (experiment == null) throw new IllegalArgumentException("The experiment argument is required");
+    public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByExperiments(Set<Experiment> experiments) {
+        if (experiments == null) throw new IllegalArgumentException("The experiments argument is required");
         EntityManager em = AnalysisGroup.entityManager();
-        TypedQuery<AnalysisGroup> q = em.createQuery("SELECT o FROM AnalysisGroup AS o WHERE o.experiment = :experiment", AnalysisGroup.class);
-        q.setParameter("experiment", experiment);
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroup AS o WHERE");
+        for (int i = 0; i < experiments.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :experiments_item").append(i).append(" MEMBER OF o.experiments");
+        }
+        TypedQuery<AnalysisGroup> q = em.createQuery(queryBuilder.toString(), AnalysisGroup.class);
+        int experimentsIndex = 0;
+        for (Experiment _experiment: experiments) {
+            q.setParameter("experiments_item" + experimentsIndex++, _experiment);
+        }
         return q;
     }
     

@@ -204,9 +204,9 @@ public class DDictValue {
 			if (!val.ignored) {
 				CodeTableDTO codeTable = new CodeTableDTO();
 				codeTable.setName(val.labelText);
-				codeTable.setCode(val.getCodeName());
-				codeTable.setCodeName(val.getCodeName());
+				codeTable.setCode(val.getShortName());
 				codeTable.setIgnored(val.ignored);
+				codeTable.setDisplayOrder(val.displayOrder);
 				codeTableList.add(codeTable);
 			}
 		}
@@ -220,9 +220,9 @@ public class DDictValue {
 		for (DDictValue val : dDicts) {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setName(val.labelText);
-			codeTable.setCodeName(val.getCodeName());
-			codeTable.setCode(val.getCodeName());
+			codeTable.setCode(val.getShortName());
 			codeTable.setIgnored(val.ignored);
+			codeTable.setDisplayOrder(val.displayOrder);
 			codeTableList.add(codeTable);
 		}
 		return codeTableList;
@@ -232,6 +232,7 @@ public class DDictValue {
 		String[] headerColumns = new String[] {
 				"id", 
 				"codeName",
+				"shortName",
 				"lsType",
 				"lsKind",
 				"labelText",
@@ -246,6 +247,7 @@ public class DDictValue {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),

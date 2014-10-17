@@ -44,6 +44,7 @@ public class Container extends AbstractThing {
 		this.setLsKind(container.getLsKind());
 		this.setLsType(container.getLsType());
 		this.setLsTypeAndKind(container.getLsTypeAndKind());
+		this.setSubjects(container.getSubjects());
 		this.locationId = container.getLocationId();
 	}
 
@@ -70,13 +71,13 @@ public class Container extends AbstractThing {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "container", fetch =  FetchType.LAZY)
 	private Set<ContainerState> lsStates = new HashSet<ContainerState>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "secondContainer", fetch =  FetchType.LAZY)
+	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "secondContainer", fetch =  FetchType.LAZY, orphanRemoval = true)
 	private Set<ItxContainerContainer> firstContainers = new HashSet<ItxContainerContainer>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "firstContainer", fetch =  FetchType.LAZY)
+	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "firstContainer", fetch =  FetchType.LAZY, orphanRemoval = true)
 	private Set<ItxContainerContainer> secondContainers = new HashSet<ItxContainerContainer>();
 
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "container", fetch =  FetchType.LAZY)
+	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "container", fetch =  FetchType.LAZY, orphanRemoval = true)
 	private Set<ItxSubjectContainer> subjects = new HashSet<ItxSubjectContainer>();
 
 	public String toJson() {

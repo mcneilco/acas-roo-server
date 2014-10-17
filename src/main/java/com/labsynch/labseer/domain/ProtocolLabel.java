@@ -65,6 +65,12 @@ public class ProtocolLabel extends AbstractLabel {
         return updatedProtocolLabel;
     }
     
+    public static ProtocolLabel findProtocolLabel(Long id) {
+        if (id == null) return null;
+        else if(entityManager().find(ProtocolLabel.class, id).isIgnored()) return null;
+        return entityManager().find(ProtocolLabel.class, id);
+    }
+    
 	public static TypedQuery<ProtocolLabel> findProtocolPreferredName(Long protocolId) {
 		
 		if (protocolId == null || protocolId == 0) {

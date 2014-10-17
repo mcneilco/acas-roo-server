@@ -91,8 +91,9 @@ public class TreatmentGroupValue extends AbstractValue {
 		return this.lsState.getTreatmentGroup().getId();
 	}
 	
+	//TODO: work out a different strategy with the many to many
 	public Long getAnalysisGroupId() {
-		return this.lsState.getTreatmentGroup().getAnalysisGroup().getId();
+		return 0L;
 	}
 	
 

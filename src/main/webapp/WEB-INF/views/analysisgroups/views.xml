@@ -19,4 +19,7 @@
 <definition extends="default" name="analysisgroups/findAnalysisGroupsByLsTransactionEquals">
         <put-attribute name="body" value="/WEB-INF/views/analysisgroups/findAnalysisGroupsByLsTransactionEquals.jspx"/>
     </definition>
+<definition extends="default" name="analysisgroups/findAnalysisGroupsByExperiments">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroups/findAnalysisGroupsByExperiments.jspx"/>
+    </definition>
 </tiles-definitions>

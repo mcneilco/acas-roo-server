@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="itxexperimentexperimentstates/list">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperimentstates/list.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperimentstates/show">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperimentstates/show.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperimentstates/create">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperimentstates/create.jspx"/>
+    </definition>
+<definition extends="default" name="itxexperimentexperimentstates/update">
+        <put-attribute name="body" value="/WEB-INF/views/itxexperimentexperimentstates/update.jspx"/>
+    </definition>
+</tiles-definitions>

@@ -6,7 +6,7 @@
         <menu:category id="c_analysisgroup" z="iopiwKdmsxTqwIsacT4c426gzBk=">
             <menu:item id="i_analysisgroup_new" messageCode="global_menu_new" url="/analysisgroups?form" z="X9jRijQ+XKj10kDbLotTpYYe/ys="/>
             <menu:item id="i_analysisgroup_list" messageCode="global_menu_list" url="/analysisgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dMhUOKH445lv1mKn1yfZmyxOZ98="/>
-            <menu:item id="fi_analysisgroup_experiment" messageCode="global_menu_find" url="/analysisgroups?find=ByExperiment&amp;form" z="KLQ/RbT5SjkBhtHTkIdQ90Q19mE="/>
+            <menu:item id="fi_analysisgroup_experiments" messageCode="global_menu_find" url="/analysisgroups?find=ByExperiments&amp;form" z="Y40E6UBp3Tu3sgYLiSLPaBoSXws="/>
             <menu:item id="fi_analysisgroup_lstransactionequals" messageCode="global_menu_find" url="/analysisgroups?find=ByLsTransactionEquals&amp;form" z="ZM5JaF4c4zMnbS0GOOUFidz8F0o="/>
         </menu:category>
         <menu:category id="c_subjectvalue" z="6SMWPdUodXL01WGzx30fZs5ZIOk=">
@@ -107,7 +107,6 @@
         <menu:category id="c_treatmentgroup" z="ktUYfUrpZ7HfqyFfY/J0m/tpOoo=">
             <menu:item id="i_treatmentgroup_new" messageCode="global_menu_new" url="/treatmentgroups?form" z="v3FU/ZE1lF1a2skcKvCNuIjLj/U="/>
             <menu:item id="i_treatmentgroup_list" messageCode="global_menu_list" url="/treatmentgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="hd7pnyrJiPjfIeF0QjdyN+25FT4="/>
-            <menu:item id="fi_treatmentgroup_analysisgroup" messageCode="global_menu_find" url="/treatmentgroups?find=ByAnalysisGroup&amp;form" z="vq3Ni9E5Q1KIsbDohEs7nXU1n3A="/>
             <menu:item id="fi_treatmentgroup_lstransactionequals" messageCode="global_menu_find" url="/treatmentgroups?find=ByLsTransactionEquals&amp;form" z="2s/GJeWUCASFrWp34UPFUUqiD34="/>
         </menu:category>
         <menu:category id="c_experimentlabel" z="/OtfTArcZoLVbM+za1A3M+tikNU=">
@@ -146,7 +145,6 @@
             <menu:item id="i_subject_list" messageCode="global_menu_list" url="/subjects?page=1&amp;size=${empty param.size ? 10 : param.size}" z="EQd4RQgsWkj2hqqLFZF+zKoYy0I="/>
             <menu:item id="fi_subject_codenameequals" messageCode="global_menu_find" url="/subjects?find=ByCodeNameEquals&amp;form" z="zovGgLy8KbWDsVN34u8z9Yr8AjM="/>
             <menu:item id="fi_subject_lstransactionequals" messageCode="global_menu_find" url="/subjects?find=ByLsTransactionEquals&amp;form" z="dTm5hB6bXbJCNWpPupcDtlGTyT4="/>
-            <menu:item id="fi_subject_treatmentgroup" messageCode="global_menu_find" url="/subjects?find=ByTreatmentGroup&amp;form" z="3XCoVHeMR7NwRGjtvvqr/q86odo="/>
         </menu:category>
         <menu:category id="c_valuekind" z="9viZJ2aDVXUdiNwMWfcWAHDyag8=">
             <menu:item id="i_valuekind_new" messageCode="global_menu_new" url="/valuekinds?form" z="2E2vA03Cv0nAAWiQXa0SyezClro="/>
@@ -433,6 +431,21 @@
         <menu:category id="c_ddicttype" z="chrlf5slxhLU69oRtw0p3eAUcO8=">
             <menu:item id="i_ddicttype_new" messageCode="global_menu_new" url="/ddicttypes?form" z="rNkCTFSaQ+VZ5Iw6eE8XjLb6O/Q="/>
             <menu:item id="i_ddicttype_list" messageCode="global_menu_list" url="/ddicttypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KgBIOkyA9YuvjIhRyd+WcD6nejM="/>
+        </menu:category>
+        <menu:category id="c_itxexperimentexperiment" z="Sdn4GgIls6zJg8Di/AxrnTiSXk8=">
+            <menu:item id="i_itxexperimentexperiment_new" messageCode="global_menu_new" url="/itxexperimentexperiments?form" z="AMWVqwXle8FO2ihlo6mF17HFRnA="/>
+            <menu:item id="i_itxexperimentexperiment_list" messageCode="global_menu_list" url="/itxexperimentexperiments?page=1&amp;size=${empty param.size ? 10 : param.size}" z="vb5ZE7C5evruWlqzVReMq9prrUM="/>
+            <menu:item id="fi_itxexperimentexperiment_firstexperiment" messageCode="global_menu_find" url="/itxexperimentexperiments?find=ByFirstExperiment&amp;form" z="awRaEl7NGdb4Ey/IvOpPNkDdQ4I="/>
+            <menu:item id="fi_itxexperimentexperiment_lstransactionequals" messageCode="global_menu_find" url="/itxexperimentexperiments?find=ByLsTransactionEquals&amp;form" z="LmSbmf+33EdJEfrTYpcucBotDnY="/>
+            <menu:item id="fi_itxexperimentexperiment_secondexperiment" messageCode="global_menu_find" url="/itxexperimentexperiments?find=BySecondExperiment&amp;form" z="O+6fUbXunsl/3bimwRnMRda8ZO0="/>
+        </menu:category>
+        <menu:category id="c_itxexperimentexperimentvalue" z="Aeo0RR7U+fLNyS6TzQCRpXi9ulY=">
+            <menu:item id="i_itxexperimentexperimentvalue_new" messageCode="global_menu_new" url="/itxexperimentexperimentvalues?form" z="jM/hi+0hzXfIqUBD/jOxw4lh26M="/>
+            <menu:item id="i_itxexperimentexperimentvalue_list" messageCode="global_menu_list" url="/itxexperimentexperimentvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="fq39w6t2JIM3o1taR06tBd3omG4="/>
+        </menu:category>
+        <menu:category id="c_itxexperimentexperimentstate" z="w15kS3YrfxKIudnbAwP1ajFMQag=">
+            <menu:item id="i_itxexperimentexperimentstate_new" messageCode="global_menu_new" url="/itxexperimentexperimentstates?form" z="LnR4C38cHoHF+LFlVamM1HyEego="/>
+            <menu:item id="i_itxexperimentexperimentstate_list" messageCode="global_menu_list" url="/itxexperimentexperimentstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="BN7SOiV9ZrlJ1lwIIaTuF7r2Kpo="/>
         </menu:category>
         <menu:category id="c_codeorigin" z="YIlul8nVnnFkXmJTSwjIrUaiCbk=">
             <menu:item id="i_codeorigin_new" messageCode="global_menu_new" url="/codeorigins?form" z="4YkihonA/OS0RucT6PxNTrBF264="/>

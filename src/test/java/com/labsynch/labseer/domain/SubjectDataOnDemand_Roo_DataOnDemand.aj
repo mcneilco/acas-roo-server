@@ -5,8 +5,6 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectDataOnDemand;
-import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.domain.TreatmentGroupDataOnDemand;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,7 +15,6 @@ import java.util.List;
 import java.util.Random;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 privileged aspect SubjectDataOnDemand_Roo_DataOnDemand {
@@ -27,9 +24,6 @@ privileged aspect SubjectDataOnDemand_Roo_DataOnDemand {
     private Random SubjectDataOnDemand.rnd = new SecureRandom();
     
     private List<Subject> SubjectDataOnDemand.data;
-    
-    @Autowired
-    TreatmentGroupDataOnDemand SubjectDataOnDemand.treatmentGroupDataOnDemand;
     
     public Subject SubjectDataOnDemand.getNewTransientSubject(int index) {
         Subject obj = new Subject();
@@ -43,7 +37,6 @@ privileged aspect SubjectDataOnDemand_Roo_DataOnDemand {
         setModifiedDate(obj, index);
         setRecordedBy(obj, index);
         setRecordedDate(obj, index);
-        setTreatmentGroup(obj, index);
         return obj;
     }
     
@@ -113,11 +106,6 @@ privileged aspect SubjectDataOnDemand_Roo_DataOnDemand {
     public void SubjectDataOnDemand.setRecordedDate(Subject obj, int index) {
         Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
-    }
-    
-    public void SubjectDataOnDemand.setTreatmentGroup(Subject obj, int index) {
-        TreatmentGroup treatmentGroup = treatmentGroupDataOnDemand.getRandomTreatmentGroup();
-        obj.setTreatmentGroup(treatmentGroup);
     }
     
     public Subject SubjectDataOnDemand.getSpecificSubject(int index) {

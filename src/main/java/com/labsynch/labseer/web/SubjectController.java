@@ -112,10 +112,10 @@ public class SubjectController {
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
         Subject subject = Subject.fromJsonToSubject(json);
-        subject.persist();
+        Subject saved = subjectService.saveSubject(subject);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(subject.toJson(), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(saved.toJson(), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/jsonArrayParseOld", method = RequestMethod.POST, headers = "Accept=application/json")

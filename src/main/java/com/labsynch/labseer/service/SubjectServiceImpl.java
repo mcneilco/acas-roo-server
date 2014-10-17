@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +23,8 @@ import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
+import com.labsynch.labseer.domain.AbstractThing;
+import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
@@ -42,17 +45,17 @@ public class SubjectServiceImpl implements SubjectService {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
-	
+
 	@Autowired
 	private AutoLabelService autoLabelService;
-	
+
 	@Override
 	public Set<Subject> ignoreAllSubjectStates(Set<Subject> subjects) {
 		//mark subject and all states and values as ignore 
 		int batchSize = propertiesUtilService.getBatchSize();
-        int i = 0;
-        int j = 0;
-        Set<Subject> subjectSet = new HashSet<Subject>();
+		int i = 0;
+		int j = 0;
+		Set<Subject> subjectSet = new HashSet<Subject>();
 		for (Subject subject : subjects){
 			Subject subj = Subject.findSubject(subject.getId());			
 			for (SubjectState subjectState : SubjectState.findSubjectStatesBySubject(subj).getResultList()){
@@ -80,7 +83,7 @@ public class SubjectServiceImpl implements SubjectService {
 		return(subjectSet);
 
 	}
-	
+
 	@Override
 	public SubjectDTO getSubject(Subject subject) {
 		Subject subj = Subject.findSubject(subject.getId());			
@@ -172,22 +175,72 @@ public class SubjectServiceImpl implements SubjectService {
 		return(subjectListDTO);
 
 	}
-	
+
+	@Override
+	@Transactional
+	public void saveSubjects(TreatmentGroup treatmentGroup, Set<Subject> subjects, Date recordedDate){
+		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+		treatmentGroups.add(treatmentGroup);
+		int j = 0;
+		logger.debug("number of incoming subjects: " + subjects.size());
+		for (Subject subject : subjects){
+			Subject newSubject = saveSubject(treatmentGroups, subject, recordedDate);
+			if ( j % propertiesUtilService.getBatchSize() == 0 ) { 
+				newSubject.flush();
+				newSubject.clear();
+			}
+			j++;
+		}
+	}
+
 	@Override
 	@Transactional
 	public Subject saveSubject(Subject subject){
 		logger.debug("incoming meta subject: " + subject.toJson());
+		Date recordedDate = new Date();
 
-		Subject newSubject = new Subject(subject);
-		newSubject.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(subject.getTreatmentGroup().getId()));
-		newSubject.persist();
-		if (subject.getLsLabels() != null) {
-			for(SubjectLabel subjectLabel : subject.getLsLabels()){
-				SubjectLabel newSubjectLabel = new SubjectLabel(subjectLabel);
-				newSubjectLabel.setSubject(newSubject);
-				newSubjectLabel.persist();	
-			}		
+		return saveSubject(subject.getTreatmentGroups(), subject, recordedDate);
+	}
+
+
+	@Override
+	public Subject saveSubject(Set<TreatmentGroup> treatmentGroups, Subject subject, Date recordedDate){
+		logger.debug("incoming meta subject: " + subject.toJson());
+		Subject newSubject = null;
+
+		if (subject.getId() == null){
+			newSubject = new Subject(subject);
+			if (newSubject.getCodeName() == null){
+				newSubject.setCodeName(autoLabelService.getSubjectCodeName());
+			}
+			if (newSubject.getRecordedDate() == null){
+				newSubject.setRecordedDate(recordedDate);
+			}
+
+			for (TreatmentGroup treatmentGroup : treatmentGroups){
+				newSubject.getTreatmentGroups().add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));
+			}
+
+			newSubject.persist();
+			saveLabels(subject, newSubject, recordedDate );
+			saveStates(subject, newSubject, recordedDate );
+
+		} else {
+			logger.debug("this is an existing subject -----------");
+			newSubject = Subject.findSubject(subject.getId());
+			for (TreatmentGroup treatmentGroup : treatmentGroups){
+				logger.debug("incoming treatment group: ------------ " + treatmentGroup.toJson());
+				newSubject.getTreatmentGroups().add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));
+			}
+
+			newSubject.merge();
+
 		}
+		return Subject.findSubject(newSubject.getId());
+	}
+
+
+	private void saveStates(Subject subject, Subject newSubject, Date recordedDate) {
 		if (subject.getLsStates() != null){
 			for(SubjectState subjectState : subject.getLsStates()){
 				SubjectState newSubjectState = new SubjectState(subjectState);
@@ -200,11 +253,20 @@ public class SubjectServiceImpl implements SubjectService {
 					}								
 				}
 			}
-		}
-		
-		return Subject.findSubject(newSubject.getId());
+		}		
 	}
 
+	private void saveLabels(Subject subject, Subject newSubject, Date recordedDate) {
+		if (subject.getLsLabels() != null) {
+			for(SubjectLabel subjectLabel : subject.getLsLabels()){
+				SubjectLabel newSubjectLabel = new SubjectLabel(subjectLabel);
+				newSubjectLabel.setSubject(newSubject);
+				newSubjectLabel.setRecordedDate(recordedDate);
+				newSubjectLabel.setRecordedBy(newSubject.getRecordedBy());
+				newSubjectLabel.persist();	
+			}		
+		}		
+	}
 
 	@Override
 	@Transactional
@@ -248,10 +310,10 @@ public class SubjectServiceImpl implements SubjectService {
 				}
 			}
 		}
-		
+
 		return Subject.findSubject(subject.getId());
 	}
-	
+
 	@Override
 	@Transactional
 	public HashMap<String, TempThingDTO> createSubjectsFromCSV(
@@ -297,6 +359,7 @@ public class SubjectServiceImpl implements SubjectService {
 			SubjectValue subjectValue;
 
 			long rowIndex = 1;
+			Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 			while( (subjectDTO = beanReader.read(FlatThingCsvDTO.class, header, processors)) != null ) {
 				logger.debug("-------------working on rowIndex: " + rowIndex + "--------------------");
 				logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), subjectDTO));
@@ -307,7 +370,14 @@ public class SubjectServiceImpl implements SubjectService {
 
 				subject = getOrCreateSubject(subjectDTO, subjectMap, treatmentGroupMap);
 				if (subject != null){
-					subject.persist();
+					if (subject.getId() == null){
+						subject.persist();
+					} else {
+						subject.merge();
+					}
+//					TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId());
+//					treatmentGroup.getSubjects().add(subject);
+//					treatmentGroups.add(treatmentGroup);
 					logger.debug("saved the new subject: ID: " + subject.getId() + " codeName" + subject.getCodeName());
 					logger.debug("saved the new subject: " + subject.toJson());
 					subjectMap = saveTempSubject(subject, subjectDTO, subjectMap);
@@ -343,6 +413,20 @@ public class SubjectServiceImpl implements SubjectService {
 
 				rowIndex++;
 			}
+//			Long beforeMerge = new Date().getTime();
+//			logger.info("Number of TreatmentGroups to merge: "+ treatmentGroups.size());
+//			for (TreatmentGroup treatmentGroup: treatmentGroups) {
+//				logger.debug("merging treatment group:" + treatmentGroup.getCodeName());
+////				try {
+////					logger.debug(treatmentGroup.toJson());
+////				} catch (Exception e) {
+////					logger.debug("Found exception: " + e);
+////				}
+//				treatmentGroup.merge();	
+//			}
+//			Long afterMerge = new Date().getTime();
+//			Long mergeDuration = afterMerge - beforeMerge;
+//			logger.info("Merging TreatmentGroups took: "+ mergeDuration + " ms");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -446,7 +530,6 @@ public class SubjectServiceImpl implements SubjectService {
 			if (subjectDTO.getId() == null){
 				if (subjectDTO.getTempParentId() != null && !subjectDTO.getTempParentId().equalsIgnoreCase("null")){
 					subject = new Subject(subjectDTO);
-					subject.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId()));
 					if (subject.getCodeName() == null){
 						logger.debug("incoming subject codeName: " + subjectDTO.getCodeName());
 						String newCodeName = autoLabelService.getSubjectCodeName();
@@ -459,6 +542,13 @@ public class SubjectServiceImpl implements SubjectService {
 			} else {
 				subject = Subject.findSubject(subjectDTO.getId());
 			}
+			Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
+			treatmentGroups.add(TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId()));
+			if (subject.getTreatmentGroups() == null){
+				subject.setTreatmentGroups(treatmentGroups);
+			} else {
+				subject.getTreatmentGroups().addAll(treatmentGroups);
+			}			
 		} else {
 			logger.debug("skipping the previously saved subject --------- " + subjectDTO.getCodeName());
 		}
