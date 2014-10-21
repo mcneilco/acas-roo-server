@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.SubjectValueDTO;
+import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
 
 
 @Service
@@ -111,7 +114,10 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 			final CellProcessor[] processors = SubjectValue.getProcessors();
 			beanWriter.writeHeader(header);
 			for (final SubjectValue subjectValue : subjectValues) {
-				beanWriter.write(subjectValue, header, processors);
+				Collection<SubjectValueDTO> subjectValueDTOs = subjectValue.makeDTOsByTreatmentGroupIds();
+				for (SubjectValueDTO subjectValueDTO : subjectValueDTOs) {
+					beanWriter.write(subjectValueDTO, header, processors);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

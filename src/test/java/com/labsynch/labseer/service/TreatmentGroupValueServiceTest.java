@@ -15,6 +15,8 @@ import java.util.Set;
 
 import javax.persistence.NoResultException;
 
+import junit.framework.Assert;
+
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -127,6 +129,15 @@ public class TreatmentGroupValueServiceTest {
 		List<TreatmentGroupValue> treatmentGroupValues = treatmentGroupValueService.getTreatmentGroupValuesByExperimentIdAndStateTypeKind(9l, "metadata", "experiment metadata");
 		String csvString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
 		assert(csvString != null && csvString.compareTo("") != 0);
+		logger.info(csvString);
+	}
+	
+	@Test
+	@Transactional
+	public void TreatmentGroupValuesToCsvForCurveFit() {
+		List<TreatmentGroupValue> treatmentGroupValues = treatmentGroupValueService.getTreatmentGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(54375L, "data", "results", "numericValue", "Response");
+		String csvString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
+		Assert.assertNotNull(csvString);
 		logger.info(csvString);
 	}
 

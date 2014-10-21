@@ -27,6 +27,8 @@ import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
+import com.labsynch.labseer.dto.SubjectValueDTO;
+import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -399,6 +401,19 @@ public class SubjectValue extends AbstractValue {
 		};
 
 		return processors;
+	}
+
+
+	public Collection<SubjectValueDTO> makeDTOsByTreatmentGroupIds() {
+		Collection<SubjectValueDTO> subjectValueDTOs = new HashSet<SubjectValueDTO>();
+		Collection<TreatmentGroup> analysisGroups = Subject.findSubject(this.getSubjectId()).getTreatmentGroups();
+		for (TreatmentGroup analysisGroup: analysisGroups) {
+			SubjectValueDTO subjectValueDTO = new SubjectValueDTO(this);
+			subjectValueDTO.setTreatmentGroupId(analysisGroup.getId());
+			subjectValueDTOs.add(subjectValueDTO);
+		}
+		
+		return subjectValueDTOs;
 	}
 
 }

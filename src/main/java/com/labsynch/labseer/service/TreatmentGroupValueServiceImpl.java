@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import com.labsynch.labseer.domain.AbstractValue;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
 
 
 @Service
@@ -49,7 +51,10 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 			final CellProcessor[] processors = TreatmentGroupValue.getProcessors();
 			beanWriter.writeHeader(header);
 			for (final TreatmentGroupValue treatmentGroupValue : treatmentGroupValues) {
-				beanWriter.write(treatmentGroupValue, header, processors);
+				Collection<TreatmentGroupValueDTO> treatmentGroupValueDTOs = treatmentGroupValue.makeDTOsByAnalysisGroupIds();
+				for (TreatmentGroupValueDTO treatmentGroupValueDTO : treatmentGroupValueDTOs) {
+					beanWriter.write(treatmentGroupValueDTO, header, processors);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
