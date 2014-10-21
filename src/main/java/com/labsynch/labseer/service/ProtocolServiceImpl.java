@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsTag;
@@ -328,13 +329,20 @@ public class ProtocolServiceImpl implements ProtocolService {
 			tags.clear();
 		}
 		if (searchBy == "ASSAY ACTIVITY" || searchBy == "MOLECULAR TARGET" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
-			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike(searchBy.toLowerCase(), queryString).getResultList();
-			if (!protocolValues.isEmpty()) {
-				for (ProtocolValue protocolValue : protocolValues) {
-					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+			Collection<DDictValue> ddictValues = DDictValue.findDDictValuesByLabelTextLike(queryString).getResultList();
+			if (!ddictValues.isEmpty()) {
+				for (DDictValue ddictvalue : ddictValues) {
+					if (ddictvalue.getShortName() != null) {
+						Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike(searchBy.toLowerCase(), ddictvalue.getShortName()).getResultList();
+						if (!protocolValues.isEmpty()) {
+							for (ProtocolValue protocolValue : protocolValues) {
+								protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+							}
+						}
+						protocolValues.clear();
+					}
 				}
 			}
-			protocolValues.clear();
 		}
 		
 		return protocolIdList;

@@ -183,7 +183,7 @@ public class ProtocolServiceTest {
 		String date;
 		String notebook = "NB 1234-123";
 		String keyWords;
-		String assayActivity;
+		String assayActivity = "Fluorescence";
 		String molecularTarget;
 		String targetOrigin;
 		String assayType;

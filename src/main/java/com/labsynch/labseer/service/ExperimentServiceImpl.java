@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.ExperimentState;
@@ -881,13 +882,20 @@ public class ExperimentServiceImpl implements ExperimentService {
 			tags.clear();
 		}
 		if (searchBy == "ASSAY ACTIVITY" || searchBy == "MOLECULAR TARGET" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
-			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike(searchBy.toLowerCase(), queryString).getResultList();
-			if (!experimentValues.isEmpty()) {
-				for (ExperimentValue experimentValue : experimentValues) {
-					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
+			Collection<DDictValue> ddictValues = DDictValue.findDDictValuesByLabelTextLike(queryString).getResultList();
+			if (!ddictValues.isEmpty()) {
+				for (DDictValue ddictvalue : ddictValues) {
+					if (ddictvalue.getShortName() != null) {
+						Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike(searchBy.toLowerCase(), ddictvalue.getShortName()).getResultList();
+						if (!experimentValues.isEmpty()) {
+							for (ExperimentValue experimentValue : experimentValues) {
+								experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
+							}
+						}
+						experimentValues.clear();
+					}
 				}
 			}
-			experimentValues.clear();
 		}
 		
 		return experimentIdList;
