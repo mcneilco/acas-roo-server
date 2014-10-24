@@ -4,7 +4,7 @@
     <jsp:output omit-xml-declaration="yes"/>
     <form:update id="fu_com_labsynch_labseer_domain_LsRole" modelAttribute="lsRole" path="/roles" versionField="Version" z="c83tYCdpB5uO1JP4pPp/N999nzA=">
         <field:input field="roleName" id="c_com_labsynch_labseer_domain_LsRole_roleName" min="1" required="true" z="QdQpVTw5MvkEog65cob+4TS/KDo="/>
-        <field:textarea field="roleDescription" id="c_com_labsynch_labseer_domain_LsRole_roleDescription" required="true" z="jC+jWbBMkyP9UVbMt43dZGzaLXE="/>
+        <field:textarea field="roleDescription" id="c_com_labsynch_labseer_domain_LsRole_roleDescription" z="X6Ua5aln4PWWg1nRI43kjCcl6os="/>
         <field:simple field="authorRoles" id="c_com_labsynch_labseer_domain_LsRole_authorRoles" messageCode="entity_reference_not_managed" messageCodeAttribute="Author Role" z="TjEJUhNHtQ7b726dUyHLP/alA0o="/>
     </form:update>
 </div>
