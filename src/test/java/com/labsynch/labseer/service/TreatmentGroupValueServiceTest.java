@@ -39,6 +39,7 @@ import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -139,6 +140,20 @@ public class TreatmentGroupValueServiceTest {
 		String csvString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
 		Assert.assertNotNull(csvString);
 		logger.info(csvString);
+	}
+	
+	@Test
+	@Transactional
+	public void updateTreatmentGroupValueTest() {
+		String idOrCodeName = "35";
+		String stateType = "data";
+		String stateKind = "results";
+		String valueType = "stringValue";
+		String valueKind = "status";
+		String value = "Deleted";
+		TreatmentGroupValue treatmentGroupValue = treatmentGroupValueService.updateTreatmentGroupValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(treatmentGroupValue);
+		logger.info(treatmentGroupValue.toJson());
 	}
 
 }

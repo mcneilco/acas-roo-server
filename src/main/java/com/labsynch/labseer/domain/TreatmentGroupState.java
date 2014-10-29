@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -191,5 +192,24 @@ public class TreatmentGroupState extends AbstractState {
 		int numberOfDeletedEntities = q.executeUpdate();
 		return numberOfDeletedEntities;
 	}
+
+	public static TypedQuery<TreatmentGroupState> findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(Long treatmentGroupId, 
+			String stateType, 
+			String stateKind) {
+			if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+			if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+			
+			EntityManager em = entityManager();
+			String hsqlQuery = "SELECT ags FROM TreatmentGroupState AS ags " +
+			"JOIN ags.treatmentGroup ag " +
+			"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+			"AND ag.id = :treatmentGroupId ";
+			TypedQuery<TreatmentGroupState> q = em.createQuery(hsqlQuery, TreatmentGroupState.class);
+			q.setParameter("treatmentGroupId", treatmentGroupId);
+			q.setParameter("stateType", stateType);
+			q.setParameter("stateKind", stateKind);
+			q.setParameter("ignored", true);
+			return q;
+		}
 	
 }

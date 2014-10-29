@@ -5,6 +5,8 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -13,10 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.ExperimentState;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -94,5 +98,16 @@ public class AnalysisGroupStateServiceTest {
 			logger.info(analysisGroupState.toJson());
 		}
 
+	}
+	
+	@Test
+	@Transactional
+	public void createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKindTest() {
+		Long analysisGroupId = 3L;
+		String lsType = "metadata";
+		String lsKind = "analysisGroup metadata";
+		AnalysisGroupState analysisGroupState = analysisGroupStateService.createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKind(analysisGroupId, lsType, lsKind);
+		Assert.assertNotNull(analysisGroupState);
+		logger.info(analysisGroupState.toJson());
 	}
 }

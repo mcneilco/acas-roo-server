@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -81,6 +83,17 @@ public class ExperimentStateServiceTests {
 			didCatch = true;
 		}
 		if(!didCatch) assert(results.size() == 5);
+	}
+	
+	@Test
+	@Transactional
+	public void createExperimentStateByExperimentIdAndStateTypeKindTest() {
+		Long experimentId = 2L;
+		String lsType = "metadata";
+		String lsKind = "experiment metadata";
+		ExperimentState exptState = experimentStateService.createExperimentStateByExperimentIdAndStateTypeKind(experimentId, lsType, lsKind);
+		Assert.assertNotNull(exptState);
+		logger.info(exptState.toJson());
 	}
 	
 }

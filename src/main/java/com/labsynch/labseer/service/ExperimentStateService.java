@@ -13,5 +13,8 @@ public interface ExperimentStateService {
 			String stateKind);
 
 	public String getCsvList(List<ExperimentState> experimentStates);
+
+	public ExperimentState createExperimentStateByExperimentIdAndStateTypeKind(
+			Long experimentId, String stateType, String stateKind);
 	
 }

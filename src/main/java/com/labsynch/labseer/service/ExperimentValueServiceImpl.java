@@ -7,6 +7,9 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -25,6 +28,9 @@ import com.labsynch.labseer.dto.StateValueDTO;
 @Service
 @Transactional
 public class ExperimentValueServiceImpl implements ExperimentValueService {
+	
+	@Autowired
+	private ExperimentStateService experimentStateService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentValueServiceImpl.class);
 
@@ -163,5 +169,74 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 			}
 		}
 		return codeTableList;	
+	}
+	
+	@Override
+	public ExperimentValue updateExperimentValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
+		//fetch the entity
+		Experiment experiment;
+		if(isNumeric(idOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(idOrCodeName));
+		} else {		
+			try {
+				experiment = Experiment.findExperimentsByCodeNameEquals(idOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				experiment = null;
+			}
+		}
+		//fetch the state, and if it doesn't exist, create it
+		List<ExperimentState> experimentStates;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			experimentStates = experimentStateService.getExperimentStatesByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind);
+			if (experimentStates.isEmpty()) {
+				//create the state
+				experimentStates.add(experimentStateService.createExperimentStateByExperimentIdAndStateTypeKind(experimentId, stateType, stateKind));
+				logger.debug("Created the experiment state: " + experimentStates.get(0).toJson());
+			}
+		}
+		//fetch the value, update it if it exists, and if it doesn't exist, create it
+		List<ExperimentValue> experimentValues;
+		ExperimentValue experimentValue = null;
+		if(experiment != null) {
+			Long experimentId = experiment.getId();
+			experimentValues = getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
+			if (experimentValues.size() > 1){
+				logger.error("Error: multiple experiment statuses found");
+			}
+			else if (experimentValues.size() == 1){
+				experimentValue = experimentValues.get(0);
+				experimentValue.setStringValue(value);
+				experimentValue.merge();
+				logger.debug("Updated the experiment value: " + experimentValue.toJson());
+			}
+			else if (experimentValues.isEmpty()){
+				experimentValue = createExperimentValueByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind, value);
+				logger.debug("Created the experiment value: " + experimentValue.toJson());
+			}
+		}
+		return experimentValue;
+	}
+	
+	private ExperimentValue createExperimentValueByExperimentIdAndStateTypeKindAndValueTypeKind(
+			Long experimentId, String stateType, String stateKind,
+			String valueType, String valueKind, String value) {
+		ExperimentValue experimentValue = new ExperimentValue();
+		ExperimentState experimentState = ExperimentState.findExperimentStatesByExptIDAndStateTypeKind(experimentId, stateType, stateKind).getSingleResult();
+		experimentValue.setLsState(experimentState);
+		experimentValue.setLsType(valueType);
+		experimentValue.setLsKind(valueKind);
+		experimentValue.setStringValue(value);
+		experimentValue.setRecordedBy("bob");
+		//TODO: figure out who to record as RecordedBy
+		experimentValue.persist();
+		return experimentValue;
+	}
+
+	private static boolean isNumeric(String str) {
+		for (char c : str.toCharArray()) {
+			if (!Character.isDigit(c)) return false;
+		}
+		return true;
 	}
 }
