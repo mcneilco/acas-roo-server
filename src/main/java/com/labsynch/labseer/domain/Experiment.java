@@ -1,5 +1,6 @@
 package com.labsynch.labseer.domain;
 
+import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -32,6 +33,7 @@ import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -45,6 +47,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class Experiment extends AbstractThing {
 
     private static final Logger logger = LoggerFactory.getLogger(Experiment.class);
+    
+    @Autowired
+    private static ExperimentService experimentService;
 
     @Size(max = 1024)
     private String shortDescription;
@@ -185,7 +190,7 @@ public class Experiment extends AbstractThing {
             experimentList.add(experiment);
         }
         for (Experiment experiment: experimentList) {
-        	if (experiment.isIgnored()) experimentList.remove(experiment);
+        	if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experimentList.remove(experiment);
         }
         return experimentList;
     }

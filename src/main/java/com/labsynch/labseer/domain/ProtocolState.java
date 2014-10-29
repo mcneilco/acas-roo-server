@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -89,4 +91,23 @@ public class ProtocolState extends AbstractState {
     public static Collection<ProtocolState> fromJsonArrayToProtocolStates(Reader json) {
         return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
+
+	public static TypedQuery<ProtocolState> findProtocolStatesByProtocolIDAndStateTypeKind(
+			Long protocolId, String stateType, String stateKind) {
+
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT ps FROM ProtocolState AS ps " +
+		"JOIN ps.protocol p " +
+		"WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
+		"AND p.id = :protocolId ";
+		TypedQuery<ProtocolState> q = em.createQuery(hsqlQuery, ProtocolState.class);
+		q.setParameter("protocolId", protocolId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 }

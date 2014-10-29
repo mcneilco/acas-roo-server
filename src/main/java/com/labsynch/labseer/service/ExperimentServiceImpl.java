@@ -62,6 +62,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Autowired
 	private AutoLabelService autoLabelService;
+	
+	@Autowired
+	private ExperimentValueService experimentValueService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentServiceImpl.class);
 
@@ -944,6 +947,18 @@ public class ExperimentServiceImpl implements ExperimentService {
 			}
 		}
 		return experimentList;
+	}
+
+
+	@Override
+	public boolean isSoftDeleted(Experiment experiment) {
+		Long experimentId = experiment.getId();
+		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, "metadata", "experiment metadata", "stringValue", "status");
+		boolean isSoftDeleted = false;
+		for (ExperimentValue experimentValue : experimentValues) {
+			if (experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
+		}
+		return isSoftDeleted;
 	}
 
 }

@@ -29,6 +29,7 @@ import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
@@ -43,6 +44,7 @@ import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.service.LsThingValueService;
+import com.labsynch.labseer.service.ProtocolValueService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
 
@@ -54,6 +56,9 @@ import com.labsynch.labseer.service.TreatmentGroupValueService;
 public class ApiValueController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiValueController.class);
+	
+	@Autowired
+	private ProtocolValueService protocolValueService;
 	
 	@Autowired
 	private ExperimentService experimentService;
@@ -104,6 +109,10 @@ public class ApiValueController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		//this if/else if block controls which lsThing is being hit
 		logger.debug("ENTITY IS: " + entity);
+		if (entity.equals("protocol")) {
+			ProtocolValue protocolValue = protocolValueService.updateProtocolValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+			return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
+		}
 		if (entity.equals("experiment")) {
 			ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
 			return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
