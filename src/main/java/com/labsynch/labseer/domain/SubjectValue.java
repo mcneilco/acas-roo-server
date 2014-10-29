@@ -416,4 +416,32 @@ public class SubjectValue extends AbstractValue {
 		return subjectValueDTOs;
 	}
 
+
+	public static TypedQuery<SubjectValue> findSubjectValuesBySubjectIDAndStateTypeKindAndValueTypeKind(
+			Long subjectId, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
+				"JOIN sv.lsState ss " +
+				"JOIN ss.subject s " +
+				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored " +
+				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored IS NOT :ignored " +
+				"AND s.ignored IS NOT :ignored " +
+				"AND s.id = :subjectId ";
+		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
+		q.setParameter("subjectId", subjectId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+
 }

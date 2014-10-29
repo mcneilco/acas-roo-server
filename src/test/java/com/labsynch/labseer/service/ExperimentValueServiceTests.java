@@ -5,6 +5,7 @@ package com.labsynch.labseer.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -201,6 +202,20 @@ public class ExperimentValueServiceTests {
 		String csvString = experimentValueService.getCsvList(experimentValues);
 		assert(csvString != null && csvString.compareTo("") != 0);
 		logger.info(csvString);
+	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentValueTest() {
+		String idOrCodeName = "EXPT-00000001";
+		String stateType = "metadata";
+		String stateKind = "experiment metadata";
+		String valueType = "stringValue";
+		String valueKind = "status";
+		String value = "Created";
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(experimentValue);
+		logger.info(experimentValue.toJson());
 	}
 	
 }

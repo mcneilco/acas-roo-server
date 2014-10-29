@@ -1,6 +1,7 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,12 @@ import com.labsynch.labseer.domain.AnalysisGroupState;
 public interface AnalysisGroupStateService {
 
 	Collection<AnalysisGroupState> ignoreAllAnalysisGroupStates(Collection<AnalysisGroupState> analysisGroupStates);
+
+	AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKind(
+			Long analysisGroupId, String stateType, String stateKind);
+
+	List<AnalysisGroupState> getAnalysisGroupStatesByAnalysisGroupIdAndStateTypeKind(
+			Long analysisGroupId, String stateType, String stateKind);
 
 	
 	

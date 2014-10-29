@@ -21,6 +21,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -35,6 +36,7 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.SubjectValue;
@@ -474,6 +476,20 @@ public class AnalysisGroupValueServiceTest {
 			didCatch = true;
 		}
 		if(!didCatch) assert(results.size() == 11);
+	}
+	
+	@Test
+	@Transactional
+	public void updateAnalysisGroupValueTest() {
+		String idOrCodeName = "3";
+		String stateType = "data";
+		String stateKind = "results";
+		String valueType = "stringValue";
+		String valueKind = "status";
+		String value = "Deleted";
+		AnalysisGroupValue analysisGroupValue = analysisGroupValueService.updateAnalysisGroupValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(analysisGroupValue);
+		logger.info(analysisGroupValue.toJson());
 	}
 
 }
