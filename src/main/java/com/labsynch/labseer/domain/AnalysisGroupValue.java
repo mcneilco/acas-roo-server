@@ -17,6 +17,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -526,6 +527,10 @@ public class AnalysisGroupValue extends AbstractValue {
         CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
         Root<AnalysisGroupValue> agvRoot = criteria.from(AnalysisGroupValue.class);
         Root<AnalysisGroupValue> agvRoot2 = criteria.from(AnalysisGroupValue.class);
+        
+        Join<AnalysisGroupValue, AnalysisGroupState> agState = agvRoot.join("lsState");
+        Join<AnalysisGroupState, AnalysisGroup> ag = agState.join("analysisGroup");
+        Join<AnalysisGroup, Experiment> experiments = ag.join("experiments");
         criteria.distinct(true);
         criteria.select(agvRoot2.<String>get("codeValue"));
         Predicate[] predicates = new Predicate[0];
@@ -542,7 +547,7 @@ public class AnalysisGroupValue extends AbstractValue {
             predicateList.add(predicate03);
         }
         if (experimentCodeList != null && experimentCodeList.size() > 0) {
-            Expression<String> exp04 = agvRoot.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName");
+            Expression<String> exp04 = experiments.<String>get("codeName");
             Predicate predicate04 = exp04.in(experimentCodeList);
             predicateList.add(predicate04);
         }
@@ -551,7 +556,7 @@ public class AnalysisGroupValue extends AbstractValue {
             predicateList.add(predicate1);
             Predicate predicate2 = criteriaBuilder.equal(agvRoot.<String>get("lsKind"), searchFilter.getLsKind());
             predicateList.add(predicate2);
-            Predicate predicate3 = criteriaBuilder.equal(agvRoot.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName"), searchFilter.getExperimentCode());
+            Predicate predicate3 = criteriaBuilder.equal(experiments.<String>get("codeName"), searchFilter.getExperimentCode());
             predicateList.add(predicate3);
             if (searchFilter.getLsType().equalsIgnoreCase("numericValue")) {
                 Predicate predicate4 = null;
