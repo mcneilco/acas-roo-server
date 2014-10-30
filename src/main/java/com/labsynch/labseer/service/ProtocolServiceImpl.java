@@ -347,4 +347,15 @@ public class ProtocolServiceImpl implements ProtocolService {
 		
 		return protocolIdList;
 	}
+	
+	public Collection<Protocol> findProtocolsByMetadata(String queryString, String searchBy) {
+		Collection<Protocol> protocolList = new HashSet<Protocol>();
+		Collection<Long> protocolIdList = findProtocolIdsByMetadata(queryString, searchBy);
+		if (!protocolIdList.isEmpty()) {
+			for (Long id: protocolIdList) {
+				protocolList.add(Protocol.findProtocol(id));
+			}
+		}
+		return protocolList;
+	}
 }
