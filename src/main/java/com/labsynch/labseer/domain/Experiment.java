@@ -41,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "analysisGroups", "lsLabels" })
 @RooJson
-@RooJpaActiveRecord(finders = { "findExperimentsByCodeNameEquals", "findExperimentsByLsTransaction", "findExperimentsByProtocol", "findExperimentsByLsTypeEqualsAndLsKindEquals", "findExperimentsByLsKindLike", "findExperimentsByCodeNameLike" })
+@RooJpaActiveRecord(finders = { "findExperimentsByCodeNameEquals", "findExperimentsByLsTransaction", "findExperimentsByProtocol", "findExperimentsByLsTypeEqualsAndLsKindEquals", "findExperimentsByLsKindLike", "findExperimentsByLsTypeLike", "findExperimentsByCodeNameLike" })
 public class Experiment extends AbstractThing {
 
     private static final Logger logger = LoggerFactory.getLogger(Experiment.class);

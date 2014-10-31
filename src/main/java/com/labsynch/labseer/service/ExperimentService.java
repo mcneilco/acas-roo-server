@@ -2,6 +2,8 @@ package com.labsynch.labseer.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.TypedQuery;
 
@@ -43,5 +45,8 @@ public interface ExperimentService {
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query);
 
 	public Collection<Experiment> findExperimentsByMetadata(String queryString, String searchBy);
+
+	public Set<Experiment> findExperimentsByRequestMetadata(
+			Map<String, String> requestParams);
 	
 }

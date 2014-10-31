@@ -186,7 +186,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 //			}
 //			
 //			//finding by code
-//			protocols = findProtocolByMetadata(metaData.getCode(), "CODE");
+//			protocols = findProtocolByMetadata(metaData.getCode(), "CODENAME");
 //			if (protocols.size() > 0){
 //				protocolList.addAll(protocols);
 //			}
@@ -207,21 +207,21 @@ public class ProtocolServiceImpl implements ProtocolService {
 		//Make the Map of terms and HashSets of protocol id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "CODE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "NAME"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "SCIENTIST"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "TYPE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "KIND"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "DATE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "NOTEBOOK"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "KEYWORD"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "ASSAY ACTIVITY"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "MOLECULAR TARGET"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "ASSAY TYPE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "ASSAY TECHNOLOGY"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "CELL LINE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "TARGET ORIGIN"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "ASSAY STAGE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "CODENAME"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NAME"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "SCIENTIST"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TYPE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KIND"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "DATE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NOTEBOOK"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KEYWORD"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "ASSAY ACTIVITY"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "MOLECULAR TARGET"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "ASSAY TYPE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "ASSAY TECHNOLOGY"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "CELL LINE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TARGET ORIGIN"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "ASSAY STAGE"));
 			
 			resultsByTerm.put(term, new HashSet<Long>(protocolIdList));
 			protocolAllIdList.addAll(protocolIdList);
@@ -235,9 +235,9 @@ public class ProtocolServiceImpl implements ProtocolService {
 		return protocolList;
 	}
 
-	public Collection<Long> findProtocolIdByMetadata(String queryString, String searchBy) {
+	public Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy) {
 		Collection<Long> protocolIdList = new HashSet<Long>();
-		if (searchBy == "CODE") {
+		if (searchBy == "CODENAME") {
 			List<Protocol> protocols = Protocol.findProtocolsByCodeNameEquals(queryString).getResultList();
 			if (!protocols.isEmpty()){
 				for (Protocol protocol:protocols) {
@@ -357,5 +357,40 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}
 		}
 		return protocolList;
+	}
+	
+	@Override
+	public Set<Protocol> findProtocolsByRequestMetadata(
+			Map<String, String> requestParams) {
+		
+        Set<Protocol> result = new HashSet<Protocol>();
+        
+        if (requestParams.isEmpty()) {
+        	result.addAll(Protocol.findAllProtocols());
+        	return result;
+        }
+        
+        Set<Protocol> resultByKind = new HashSet<Protocol>();
+        Set<Protocol> resultByType = new HashSet<Protocol>();
+        Set<Protocol> resultByName = new HashSet<Protocol>();
+        Set<Protocol> resultByCodeName = new HashSet<Protocol>();
+        
+        if (requestParams.containsKey("kind"))resultByKind.addAll(findProtocolsByMetadata(requestParams.get("kind"), "KIND"));
+        if (requestParams.containsKey("type")) resultByType.addAll(findProtocolsByMetadata(requestParams.get("type"), "TYPE"));
+        if (requestParams.containsKey("name")) resultByName.addAll(findProtocolsByMetadata(requestParams.get("name"), "NAME"));
+        if (requestParams.containsKey("codeName")) resultByCodeName.addAll(findProtocolsByMetadata(requestParams.get("codeName"), "CODENAME"));
+
+        result.addAll(resultByKind);
+        result.addAll(resultByType);
+        result.addAll(resultByName);
+        result.addAll(resultByCodeName);
+        
+
+        if (requestParams.containsKey("kind")) result.retainAll(resultByKind);
+        if (requestParams.containsKey("type")) result.retainAll(resultByType);
+        if (requestParams.containsKey("name")) result.retainAll(resultByName);
+        if (requestParams.containsKey("codeName")) result.retainAll(resultByCodeName);
+        
+        return result;
 	}
 }

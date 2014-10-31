@@ -1,6 +1,8 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public interface ProtocolService {
 
 	Collection<Protocol> findProtocolsByGenericMetaDataSearch(String query);
 	
-	Collection<Long> findProtocolIdByMetadata(String queryString, String searchBy);
+	Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy);
+
+	Set<Protocol> findProtocolsByRequestMetadata(
+			Map<String, String> requestParams);
 	
 }

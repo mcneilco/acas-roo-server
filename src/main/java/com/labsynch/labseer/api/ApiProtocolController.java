@@ -5,7 +5,10 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -35,6 +38,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.service.ProtocolService;
@@ -438,6 +442,21 @@ public class ApiProtocolController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+	
+    @RequestMapping(params = "find=ByMetadata", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<java.lang.String> listJsonByMetadata(@RequestParam Map<String,String> requestParams) {
+//example url: http://localhost:8080/acas/api/v1/protocols/?find=ByMetadata&name=Target%20Y&codeName=PROT-00000004&type=default&kind=default
+    	//Filter parameters supported: type, kind, name, codeName
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        Set<Protocol> result = new HashSet<Protocol>();
+        
+        result = protocolService.findProtocolsByRequestMetadata(requestParams);
+        
+        return new ResponseEntity<String>(Protocol.toJsonArrayStub(result), headers, HttpStatus.OK);
     }
 	
 	@RequestMapping(value = "/search")

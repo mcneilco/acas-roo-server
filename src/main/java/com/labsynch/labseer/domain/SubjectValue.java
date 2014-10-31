@@ -406,10 +406,10 @@ public class SubjectValue extends AbstractValue {
 
 	public Collection<SubjectValueDTO> makeDTOsByTreatmentGroupIds() {
 		Collection<SubjectValueDTO> subjectValueDTOs = new HashSet<SubjectValueDTO>();
-		Collection<TreatmentGroup> analysisGroups = Subject.findSubject(this.getSubjectId()).getTreatmentGroups();
-		for (TreatmentGroup analysisGroup: analysisGroups) {
+		Collection<TreatmentGroup> treatmentGroups = Subject.findSubject(this.getSubjectId()).getTreatmentGroups();
+		for (TreatmentGroup treatmentGroup: treatmentGroups) {
 			SubjectValueDTO subjectValueDTO = new SubjectValueDTO(this);
-			subjectValueDTO.setTreatmentGroupId(analysisGroup.getId());
+			subjectValueDTO.setTreatmentGroupId(treatmentGroup.getId());
 			subjectValueDTOs.add(subjectValueDTO);
 		}
 		
