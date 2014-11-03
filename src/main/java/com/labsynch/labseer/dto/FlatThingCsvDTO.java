@@ -152,10 +152,16 @@ public class FlatThingCsvDTO {
 			this.dateValue = null;
 		} else {
 			try {
-				DateFormat df = new SimpleDateFormat("mm/dd/yyyy");
+				DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
 				this.dateValue = df.parse(dateValue);
 			} catch(Exception e) {
-				this.dateValue = new Date(Long.parseLong(dateValue));
+				try {
+					this.dateValue = new Date(Long.parseLong(dateValue));
+				} catch(Exception e2) {
+					DateFormat df = new SimpleDateFormat("mm/dd/yyyy");
+					this.dateValue = df.parse(dateValue);
+				}
+				
 			}
 		}
 	}
