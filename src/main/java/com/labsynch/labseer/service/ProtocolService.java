@@ -19,6 +19,6 @@ public interface ProtocolService {
 
 	Collection<Protocol> findProtocolsByGenericMetaDataSearch(String query);
 	
-	Collection<Long> findProtocolIdByMetadata(String queryString, String searchBy);
+	Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy);
 	
 }

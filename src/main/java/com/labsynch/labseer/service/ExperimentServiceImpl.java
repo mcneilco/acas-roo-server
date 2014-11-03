@@ -791,7 +791,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentValues.clear();
 		}
 		if (searchBy == "PROTOCOL KIND") {
-			Collection<Long> protocolIds = protocolService.findProtocolIdByMetadata(queryString, "KIND");
+			Collection<Long> protocolIds = protocolService.findProtocolIdsByMetadata(queryString, "KIND");
 			Set<Experiment> experiments = new HashSet<Experiment>();
 			if (!protocolIds.isEmpty()) {
 				for (Long id: protocolIds) {
@@ -806,7 +806,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experiments.clear();
 		}
 		if (searchBy == "PROTOCOL NAME") {
-			Collection<Long> protocolIds = protocolService.findProtocolIdByMetadata(queryString, "NAME");
+			Collection<Long> protocolIds = protocolService.findProtocolIdsByMetadata(queryString, "NAME");
 			Set<Experiment> experiments = new HashSet<Experiment>();
 			if (!protocolIds.isEmpty()) {
 				for (Long id: protocolIds) {
@@ -821,7 +821,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experiments.clear();
 		}
 		if (searchBy == "PROTOCOL TYPE") {
-			Collection<Long> protocolIds = protocolService.findProtocolIdByMetadata(queryString, "TYPE");
+			Collection<Long> protocolIds = protocolService.findProtocolIdsByMetadata(queryString, "TYPE");
 			Set<Experiment> experiments = new HashSet<Experiment>();
 			if (!protocolIds.isEmpty()) {
 				for (Long id: protocolIds) {

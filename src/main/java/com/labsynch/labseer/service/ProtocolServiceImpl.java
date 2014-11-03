@@ -207,21 +207,21 @@ public class ProtocolServiceImpl implements ProtocolService {
 		//Make the Map of terms and HashSets of protocol id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "CODE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "NAME"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "SCIENTIST"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "TYPE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "KIND"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "DATE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "NOTEBOOK"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "KEYWORD"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "ASSAY ACTIVITY"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "MOLECULAR TARGET"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "ASSAY TYPE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "ASSAY TECHNOLOGY"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "CELL LINE"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "TARGET ORIGIN"));
-			protocolIdList.addAll(findProtocolIdByMetadata(term, "ASSAY STAGE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "CODE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NAME"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "SCIENTIST"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TYPE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KIND"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "DATE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NOTEBOOK"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KEYWORD"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "ASSAY ACTIVITY"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "MOLECULAR TARGET"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "ASSAY TYPE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "ASSAY TECHNOLOGY"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "CELL LINE"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TARGET ORIGIN"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "ASSAY STAGE"));
 			
 			resultsByTerm.put(term, new HashSet<Long>(protocolIdList));
 			protocolAllIdList.addAll(protocolIdList);
@@ -235,7 +235,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 		return protocolList;
 	}
 
-	public Collection<Long> findProtocolIdByMetadata(String queryString, String searchBy) {
+	public Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy) {
 		Collection<Long> protocolIdList = new HashSet<Long>();
 		if (searchBy == "CODE") {
 			List<Protocol> protocols = Protocol.findProtocolsByCodeNameEquals(queryString).getResultList();

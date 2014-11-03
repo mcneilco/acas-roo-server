@@ -151,8 +151,12 @@ public class FlatThingCsvDTO {
 		if (dateValue.equalsIgnoreCase("NULL")){
 			this.dateValue = null;
 		} else {
-			DateFormat df = new SimpleDateFormat("mm/dd/yyyy");
-			this.dateValue = df.parse(dateValue);
+			try {
+				DateFormat df = new SimpleDateFormat("mm/dd/yyyy");
+				this.dateValue = df.parse(dateValue);
+			} catch(Exception e) {
+				this.dateValue = new Date(Long.parseLong(dateValue));
+			}
 		}
 	}
 
