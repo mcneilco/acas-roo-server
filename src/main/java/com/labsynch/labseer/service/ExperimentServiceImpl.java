@@ -1047,15 +1047,4 @@ public class ExperimentServiceImpl implements ExperimentService {
 	}
 
 
-	@Override
-	public boolean isSoftDeleted(Experiment experiment) {
-		Long experimentId = experiment.getId();
-		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, "metadata", "experiment metadata", "stringValue", "status");
-		boolean isSoftDeleted = false;
-		for (ExperimentValue experimentValue : experimentValues) {
-			if (experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
-		}
-		return isSoftDeleted;
-	}
-
 }
