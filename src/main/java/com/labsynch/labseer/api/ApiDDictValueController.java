@@ -64,6 +64,7 @@ public class ApiDDictValueController {
 
 		if(format.equalsIgnoreCase("codeTable")) {
 			List<CodeTableDTO> results = dataDictionaryService.convertToCodeTables(ddictValues); 
+			results = CodeTableDTO.sortCodeTables(results);
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(results), headers, HttpStatus.OK);
 		} else if (format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(ddictValues);
@@ -254,6 +255,7 @@ public class ApiDDictValueController {
 
 		if(format != null && format.equalsIgnoreCase("codeTable")) {
 			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
+			codeTables = CodeTableDTO.sortCodeTables(codeTables);
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else if (format != null && format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(dDictResults);
@@ -274,6 +276,7 @@ public class ApiDDictValueController {
 
 		if(format != null && format.equalsIgnoreCase("codeTable")) {
 			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
+			codeTables = CodeTableDTO.sortCodeTables(codeTables);
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else if (format != null && format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(dDictResults);
@@ -301,6 +304,7 @@ public class ApiDDictValueController {
 
 		if(format != null && format.equalsIgnoreCase("codeTable")) {
 			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
+			codeTables = CodeTableDTO.sortCodeTables(codeTables);
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else if (format != null && format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(dDictResults);
@@ -328,6 +332,7 @@ public class ApiDDictValueController {
 
 		if(format != null && format.equalsIgnoreCase("codeTable")) {
 			List<CodeTableDTO> results = dataDictionaryService.getDataDictionaryCodeTableListByType(lsType); 
+			results = CodeTableDTO.sortCodeTables(results);
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(results), headers, HttpStatus.OK);
 		} else if (format != null && format.equalsIgnoreCase("csv")) {
 			String outputString = dataDictionaryService.getCsvList(dDictResults);

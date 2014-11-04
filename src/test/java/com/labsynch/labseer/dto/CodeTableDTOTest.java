@@ -5,6 +5,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class CodeTableDTOTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CodeTableDTOTest.class);
 
-	
+	@Test
 	public void mergesortTest() {
 		List<CodeTableDTO> unsorted = new ArrayList<CodeTableDTO>();
 		List<CodeTableDTO> sortedCheck = new ArrayList<CodeTableDTO>();
@@ -36,9 +37,9 @@ public class CodeTableDTOTest {
 		CodeTableDTO a = new CodeTableDTO();
 		a.setName("a");
 		CodeTableDTO b = new CodeTableDTO();
-		a.setName("b");
+		b.setName("b");
 		CodeTableDTO c = new CodeTableDTO();
-		a.setName("c");
+		c.setName("c");
 		
 		unsorted.add(c);
 		unsorted.add(three);
