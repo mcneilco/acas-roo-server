@@ -223,4 +223,23 @@ public class SubjectState extends AbstractState {
     public String toJsonStub() {
         return new JSONSerializer().exclude("*.class", "subject").transform(new ExcludeNulls(), void.class).serialize(this);
     }
+
+	public static TypedQuery<SubjectState> findSubjectStatesBySubjectIDAndStateTypeKind(
+			Long subjectId, String stateType, String stateKind) {
+		
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT ss FROM SubjectState AS ss " +
+		"JOIN ss.subject s " +
+		"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored " +
+		"AND s.id = :subjectId ";
+		TypedQuery<SubjectState> q = em.createQuery(hsqlQuery, SubjectState.class);
+		q.setParameter("subjectId", subjectId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 }

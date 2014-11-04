@@ -30,13 +30,12 @@ public interface ExperimentService {
 
 	Collection<JSTreeNodeDTO> getExperimentNodes(Collection<String> codeValues);
 
-
-
 	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest);
 
 	public Collection<ExperimentFilterDTO> getExperimentFilters(Collection<String> experimentCodes);
 
-
+	public boolean isSoftDeleted(Experiment experiment);
+	
 	public Collection<JSTreeNodeDTO> getExperimentNodesByProtocolTree(
 			Collection<String> codeValues);
 

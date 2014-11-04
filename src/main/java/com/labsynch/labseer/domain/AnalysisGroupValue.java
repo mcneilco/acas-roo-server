@@ -677,9 +677,9 @@ public class AnalysisGroupValue extends AbstractValue {
 		
 		EntityManager em = entityManager();
 		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
-				"JOIN agv.lsState evs " +
-				"JOIN evs.analysisGroup ag " +
-				"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+				"JOIN agv.lsState ags " +
+				"JOIN ags.analysisGroup ag " +
+				"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
 				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
 				"AND ag.ignored IS NOT :ignored " +
 				"AND ag.id = :analysisGroupId ";

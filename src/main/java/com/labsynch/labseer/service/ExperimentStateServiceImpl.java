@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 
 
@@ -25,5 +26,16 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 	public String getCsvList(List<ExperimentState> experimentStates) {
 		// TODO Auto-generated method stub
 		return "NEED TO IMPLEMENT";
+	}
+	
+	@Override
+	public ExperimentState createExperimentStateByExperimentIdAndStateTypeKind(Long experimentId, String stateType, String stateKind) {
+		ExperimentState experimentState = new ExperimentState();
+		Experiment experiment = Experiment.findExperiment(experimentId);
+		experimentState.setExperiment(experiment);
+		experimentState.setLsType(stateType);
+		experimentState.setLsKind(stateKind);
+		experimentState.persist();
+		return experimentState;
 	}
 }

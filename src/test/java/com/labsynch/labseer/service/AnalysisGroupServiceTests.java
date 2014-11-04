@@ -197,17 +197,17 @@ public class AnalysisGroupServiceTests {
 	@Test
 //	@Transactional
 	public void CreateAnalysisGroupFromCSVTest() {
-		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroupDateValueTest.csv";
+//		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroupDateValueTest.csv";
 
-//		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup100curves.csv";
-//		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup100curves.csv";
-//		String subjectFilePath = "src/test/resources/csvUploadSubject100curves.csv";
+		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup100curves.csv";
+		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup100curves.csv";
+		String subjectFilePath = "src/test/resources/csvUploadSubject100curves.csv";
 //		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup.csv";
 //		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup.csv";
 //		String subjectFilePath = "src/test/resources/csvUploadSubject.csv";
 		
-		String treatmentGroupFilePath = null;
-		String subjectFilePath = null;
+//		String treatmentGroupFilePath = null;
+//		String subjectFilePath = null;
 		
 		long startTime = new Date().getTime();
 		boolean dataLoaded = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);

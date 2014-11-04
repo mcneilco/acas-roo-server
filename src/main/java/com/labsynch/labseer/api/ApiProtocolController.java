@@ -39,9 +39,12 @@ import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.service.ProtocolService;
+import com.labsynch.labseer.service.ProtocolValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @RooWebJson(jsonObject = Protocol.class)
@@ -56,6 +59,9 @@ public class ApiProtocolController {
 
     @Autowired
     private ProtocolService protocolService;
+    
+    @Autowired
+    private ProtocolValueService protocolValueService;
 
     @Autowired
     private PropertiesUtilService propertiesUtilService;
@@ -242,6 +248,18 @@ public class ApiProtocolController {
         }
         protocol.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/browser/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> softDeleteById(@PathVariable("id") Long id) {
+        Protocol protocol = Protocol.findProtocol(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (protocol == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        ProtocolValue protocolValue = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "stringValue", "status", "Deleted");
+		return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
     }
 
     @Transactional

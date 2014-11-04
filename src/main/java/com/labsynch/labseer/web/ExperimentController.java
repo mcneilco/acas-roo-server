@@ -671,7 +671,6 @@ public class ExperimentController {
         if (protocolId != null && protocolId != 0) {
             experiments = Experiment.findExperimentByExperimentNameAndProtocolId(experimentName, protocolId);
         } else {
-        	//TODO make new finder that returns list of experiments and respects ignore flag
             experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
         }
         if (with != null) {

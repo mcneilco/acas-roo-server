@@ -344,7 +344,7 @@ public class ApiAnalysisGroupController {
 		List<AnalysisGroupValue> analysisGroupValues;
 		if(analysisGroup != null) {
 			Long analysisGroupId = analysisGroup.getId();
-			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByAnalysiGroupIdAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind);
+			analysisGroupValues = analysisGroupValueService.getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind);
 		} else {
 			analysisGroupValues = new ArrayList<AnalysisGroupValue>();
 		}

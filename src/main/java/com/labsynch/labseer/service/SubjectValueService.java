@@ -25,5 +25,13 @@ public interface SubjectValueService {
 	public String getCsvList(List<SubjectValue> subjectValues);
 	
 	public List<SubjectValue> getSubjectValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind);
+
+	public SubjectValue updateSubjectValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind, String value);
+
+	List<SubjectValue> getSubjectValuesBySubjectIdAndStateTypeKindAndValueTypeKind(
+			Long subjectId, String stateType, String stateKind,
+			String valueType, String valueKind);
 	
 }

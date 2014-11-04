@@ -19,8 +19,12 @@ public interface AnalysisGroupValueService {
 	
 	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKind(Long analysisGroupId, String stateType, String stateKind);
 	
-	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysiGroupIdAndStateTypeKindAndValueTypeKind(Long analysisGroupId, String stateType, 
+	public List<AnalysisGroupValue> getAnalysisGroupValuesByAnalysisGroupIdAndStateTypeKindAndValueTypeKind(Long analysisGroupId, String stateType, 
 			String stateKind, String valueType, String valueKind);
+
+	public AnalysisGroupValue updateAnalysisGroupValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind, String value);
 
 	
 }
