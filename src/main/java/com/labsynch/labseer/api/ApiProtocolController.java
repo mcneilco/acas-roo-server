@@ -178,6 +178,7 @@ public class ApiProtocolController {
         }else {
             result = Protocol.getProtocolCodeTable();
         }
+        result = CodeTableDTO.sortCodeTables(result);
         return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
     }
 

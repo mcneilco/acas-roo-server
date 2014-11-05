@@ -419,6 +419,7 @@ public class ApiExperimentController {
 			return new ResponseEntity<String>(StateValueDTO.toJsonArray(stateValues), headers, HttpStatus.OK);
 		} else if(format != null && format.equalsIgnoreCase("codeTable")) {				
 			List<CodeTableDTO> codeTables = experimentValueService.convertToCodeTables(experimentValues);
+			codeTables = CodeTableDTO.sortCodeTables(codeTables);
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else {
 			//default format is json
