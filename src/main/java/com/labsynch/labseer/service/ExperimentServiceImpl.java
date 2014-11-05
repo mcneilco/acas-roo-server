@@ -1033,7 +1033,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         
         return result;
 	}
-
+	
 
 	@Override
 	public boolean isSoftDeleted(Experiment experiment) {
@@ -1041,10 +1041,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, "metadata", "experiment metadata", "stringValue", "status");
 		boolean isSoftDeleted = false;
 		for (ExperimentValue experimentValue : experimentValues) {
-			if (experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
+			if (experimentValue.getStringValue() != null && experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
 		}
 		return isSoftDeleted;
 	}
+	
 
 
 }

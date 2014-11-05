@@ -1413,8 +1413,14 @@ public class ApiExperimentController {
         List<Experiment> experiments;
         if (protocolId != null && protocolId != 0) {
             experiments = Experiment.findExperimentByExperimentNameAndProtocolId(experimentName, protocolId);
+            for (Experiment experiment: experiments){
+    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
+    		}
         } else {
             experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
+            for (Experiment experiment: experiments){
+    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
+    		}
         }
         if (with != null) {
             logger.debug("incoming with param is " + with);
