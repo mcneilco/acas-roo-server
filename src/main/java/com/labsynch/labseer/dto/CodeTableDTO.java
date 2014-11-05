@@ -7,10 +7,24 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
+import com.labsynch.labseer.domain.DDictValue;
+
 @RooJavaBean
 @RooToString
 @RooJson
 public class CodeTableDTO {
+
+	public CodeTableDTO() {
+	}
+
+	
+	public CodeTableDTO(DDictValue dDictVal) {
+		this.setId(dDictVal.getId());
+		this.setCode(dDictVal.getShortName());
+		this.setName(dDictVal.getLabelText());
+		this.setIgnored(dDictVal.isIgnored());
+		this.setDisplayOrder(dDictVal.getDisplayOrder());
+	}
 
 	private String code;
 
