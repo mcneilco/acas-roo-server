@@ -2,6 +2,9 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -131,7 +134,13 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 			}
 			else if (analysisGroupValues.size() == 1){
 				analysisGroupValue = analysisGroupValues.get(0);
-				analysisGroupValue.setStringValue(value);
+				if (valueType.equals("stringValue")) analysisGroupValue.setStringValue(value);
+				if (valueType.equals("fileValue")) analysisGroupValue.setFileValue(value);
+				if (valueType.equals("clobValue")) analysisGroupValue.setClobValue(value);
+				if (valueType.equals("blobValue")) analysisGroupValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+				if (valueType.equals("numericValue")) analysisGroupValue.setNumericValue(new BigDecimal(value));
+				if (valueType.equals("dateValue")) analysisGroupValue.setDateValue(new Date(Long.parseLong(value)));
+				if (valueType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
 				analysisGroupValue.merge();
 				logger.debug("Updated the analysisGroup value: " + analysisGroupValue.toJson());
 			}
@@ -152,8 +161,14 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		analysisGroupValue.setLsState(analysisGroupState);
 		analysisGroupValue.setLsType(valueType);
 		analysisGroupValue.setLsKind(valueKind);
-		analysisGroupValue.setStringValue(value);
-		analysisGroupValue.setRecordedBy("bob");
+		if (valueType.equals("stringValue")) analysisGroupValue.setStringValue(value);
+		if (valueType.equals("fileValue")) analysisGroupValue.setFileValue(value);
+		if (valueType.equals("clobValue")) analysisGroupValue.setClobValue(value);
+		if (valueType.equals("blobValue")) analysisGroupValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+		if (valueType.equals("numericValue")) analysisGroupValue.setNumericValue(new BigDecimal(value));
+		if (valueType.equals("dateValue")) analysisGroupValue.setDateValue(new Date(Long.parseLong(value)));
+		if (valueType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
+		analysisGroupValue.setRecordedBy("default");
 		analysisGroupValue.persist();
 		return analysisGroupValue;
 	}

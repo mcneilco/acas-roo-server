@@ -2,7 +2,10 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -202,11 +205,17 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 			Long experimentId = experiment.getId();
 			experimentValues = getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind);
 			if (experimentValues.size() > 1){
-				logger.error("Error: multiple experiment statuses found");
+				logger.error("Error: multiple experiment values of same type and kind found for the same experiment");
 			}
 			else if (experimentValues.size() == 1){
 				experimentValue = experimentValues.get(0);
-				experimentValue.setStringValue(value);
+				if (valueType.equals("stringValue")) experimentValue.setStringValue(value);
+				if (valueType.equals("fileValue")) experimentValue.setFileValue(value);
+				if (valueType.equals("clobValue")) experimentValue.setClobValue(value);
+				if (valueType.equals("blobValue")) experimentValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+				if (valueType.equals("numericValue")) experimentValue.setNumericValue(new BigDecimal(value));
+				if (valueType.equals("dateValue")) experimentValue.setDateValue(new Date(Long.parseLong(value)));
+				if (valueType.equals("codeValue")) experimentValue.setCodeValue(value);
 				experimentValue.merge();
 				logger.debug("Updated the experiment value: " + experimentValue.toJson());
 			}
@@ -226,8 +235,14 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		experimentValue.setLsState(experimentState);
 		experimentValue.setLsType(valueType);
 		experimentValue.setLsKind(valueKind);
-		experimentValue.setStringValue(value);
-		experimentValue.setRecordedBy("bob");
+		if (valueType.equals("stringValue")) experimentValue.setStringValue(value);
+		if (valueType.equals("fileValue")) experimentValue.setFileValue(value);
+		if (valueType.equals("clobValue")) experimentValue.setClobValue(value);
+		if (valueType.equals("blobValue")) experimentValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+		if (valueType.equals("numericValue")) experimentValue.setNumericValue(new BigDecimal(value));
+		if (valueType.equals("dateValue")) experimentValue.setDateValue(new Date(Long.parseLong(value)));
+		if (valueType.equals("codeValue")) experimentValue.setCodeValue(value);
+		experimentValue.setRecordedBy("default");
 		//TODO: figure out who to record as RecordedBy
 		experimentValue.persist();
 		return experimentValue;

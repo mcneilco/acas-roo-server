@@ -93,7 +93,7 @@ public class ApiValueController {
 	@Autowired
 	private LsThingValueService lsThingValueService;
 
-	@RequestMapping(value = "/{entity}/{idOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/{value}", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/{entity}/{idOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> putlsThingValueByJson (
@@ -103,7 +103,7 @@ public class ApiValueController {
 			@PathVariable("stateKind") String stateKind,
 			@PathVariable("valueType") String valueType,
 			@PathVariable("valueKind") String valueKind,
-			@PathVariable("value") String value) {
+			@RequestBody String value) {
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
