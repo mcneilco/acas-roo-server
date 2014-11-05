@@ -3,11 +3,15 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -122,8 +126,79 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 			codeTable.setCode(val.getShortName());
 			codeTable.setIgnored(val.isIgnored());
 			codeTable.setDisplayOrder(val.getDisplayOrder());
+			codeTable.setCodeName(val.getCodeName());
+			codeTable.setId(val.getId());
 			codeTableList.add(codeTable);
 		}
 		return codeTableList;	
 	}
+
+
+	@Override
+	public CodeTableDTO saveCodeTableValue(String lsType, String lsKind, String json) {
+		//TODO: fix this method or service to guard against creating duplicate entries
+		CodeTableDTO codeTableValue = CodeTableDTO.fromJsonToCodeTableDTO(json);	
+		return saveCodeTableValue(lsType, lsKind, codeTableValue);
+	}
+
+	@Override
+	public CodeTableDTO saveCodeTableValue(String lsType, String lsKind, CodeTableDTO codeTableValue) {
+		//TODO: fix this method or service to guard against creating duplicate entries
+		DDictValue dDictVal = new DDictValue();
+		dDictVal.setLsType(lsType);
+		dDictVal.setLsKind(lsKind);
+		dDictVal.setShortName(codeTableValue.getCode());
+		dDictVal.setLabelText(codeTableValue.getName());
+		dDictVal.persist();
+		
+		return new CodeTableDTO(dDictVal);
+	}
+	
+
+	@Override
+	public Collection<CodeTableDTO> saveCodeTableValueArray(String lsType, String lsKind, String json) {
+		Collection<CodeTableDTO> codeTableValues = CodeTableDTO.fromJsonArrayToCoes(json);
+		Collection<CodeTableDTO> newCodeTableValues = new HashSet<CodeTableDTO>();
+		for (CodeTableDTO codeTableValue : codeTableValues){
+			CodeTableDTO newCodeTableValue = saveCodeTableValue(lsType, lsKind, codeTableValue);
+			newCodeTableValues.add(newCodeTableValue);
+		}
+		return newCodeTableValues;
+	}
+
+
+	@Override
+	public CodeTableDTO updateCodeTableValue(String lsType, String lsKind, String json) {
+		CodeTableDTO codeTableValue = CodeTableDTO.fromJsonToCodeTableDTO(json);	
+		return updateCodeTableValue(lsType, lsKind, codeTableValue);
+	}
+
+
+	@Override
+	public CodeTableDTO updateCodeTableValue(String lsType, String lsKind, CodeTableDTO codeTableValue) {	
+		DDictValue oldDDictValue = DDictValue.findDDictValue(codeTableValue.getId());
+		if (oldDDictValue == null){
+			return null;
+		} else {
+			oldDDictValue.setShortName(codeTableValue.getCode());
+			oldDDictValue.setLabelText(codeTableValue.getName());
+			oldDDictValue.merge();
+			return new CodeTableDTO(oldDDictValue);			
+		}
+	}
+
+
+	@Override
+	public Collection<CodeTableDTO> updateCodeTableValueArray(String lsType, String lsKind, String json) {
+		Collection<CodeTableDTO> codeTableValues = CodeTableDTO.fromJsonArrayToCoes(json);
+		Collection<CodeTableDTO> updatedCodeTableValues = new HashSet<CodeTableDTO>();
+		for (CodeTableDTO codeTableValue : codeTableValues){
+			CodeTableDTO updatedCodeTableValue = updateCodeTableValue(lsType, lsKind, codeTableValue);
+			updatedCodeTableValues.add(updatedCodeTableValue);
+		}
+		return updatedCodeTableValues;
+	}
+
+
+
 }
