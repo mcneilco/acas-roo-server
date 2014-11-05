@@ -2,8 +2,11 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -132,7 +135,13 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 			}
 			else if (protocolValues.size() == 1){
 				protocolValue = protocolValues.get(0);
-				protocolValue.setStringValue(value);
+				if (valueType.equals("stringValue")) protocolValue.setStringValue(value);
+				if (valueType.equals("fileValue")) protocolValue.setFileValue(value);
+				if (valueType.equals("clobValue")) protocolValue.setClobValue(value);
+				if (valueType.equals("blobValue")) protocolValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+				if (valueType.equals("numericValue")) protocolValue.setNumericValue(new BigDecimal(value));
+				if (valueType.equals("dateValue")) protocolValue.setDateValue(new Date(Long.parseLong(value)));
+				if (valueType.equals("codeValue")) protocolValue.setCodeValue(value);
 				protocolValue.merge();
 				logger.debug("Updated the protocol value: " + protocolValue.toJson());
 			}
@@ -153,8 +162,14 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 		protocolValue.setLsState(protocolState);
 		protocolValue.setLsType(valueType);
 		protocolValue.setLsKind(valueKind);
-		protocolValue.setStringValue(value);
-		protocolValue.setRecordedBy("bob");
+		if (valueType.equals("stringValue")) protocolValue.setStringValue(value);
+		if (valueType.equals("fileValue")) protocolValue.setFileValue(value);
+		if (valueType.equals("clobValue")) protocolValue.setClobValue(value);
+		if (valueType.equals("blobValue")) protocolValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+		if (valueType.equals("numericValue")) protocolValue.setNumericValue(new BigDecimal(value));
+		if (valueType.equals("dateValue")) protocolValue.setDateValue(new Date(Long.parseLong(value)));
+		if (valueType.equals("codeValue")) protocolValue.setCodeValue(value);
+		protocolValue.setRecordedBy("default");
 		protocolValue.persist();
 		return protocolValue;
 	}

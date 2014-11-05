@@ -2,8 +2,11 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -199,7 +202,13 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 			}
 			else if (subjectValues.size() == 1){
 				subjectValue = subjectValues.get(0);
-				subjectValue.setStringValue(value);
+				if (valueType.equals("stringValue")) subjectValue.setStringValue(value);
+				if (valueType.equals("fileValue")) subjectValue.setFileValue(value);
+				if (valueType.equals("clobValue")) subjectValue.setClobValue(value);
+				if (valueType.equals("blobValue")) subjectValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+				if (valueType.equals("numericValue")) subjectValue.setNumericValue(new BigDecimal(value));
+				if (valueType.equals("dateValue")) subjectValue.setDateValue(new Date(Long.parseLong(value)));
+				if (valueType.equals("codeValue")) subjectValue.setCodeValue(value);
 				subjectValue.merge();
 				logger.debug("Updated the subject value: " + subjectValue.toJson());
 			}
@@ -220,8 +229,14 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 		subjectValue.setLsState(subjectState);
 		subjectValue.setLsType(valueType);
 		subjectValue.setLsKind(valueKind);
-		subjectValue.setStringValue(value);
-		subjectValue.setRecordedBy("bob");
+		if (valueType.equals("stringValue")) subjectValue.setStringValue(value);
+		if (valueType.equals("fileValue")) subjectValue.setFileValue(value);
+		if (valueType.equals("clobValue")) subjectValue.setClobValue(value);
+		if (valueType.equals("blobValue")) subjectValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+		if (valueType.equals("numericValue")) subjectValue.setNumericValue(new BigDecimal(value));
+		if (valueType.equals("dateValue")) subjectValue.setDateValue(new Date(Long.parseLong(value)));
+		if (valueType.equals("codeValue")) subjectValue.setCodeValue(value);
+		subjectValue.setRecordedBy("default");
 		subjectValue.persist();
 		return subjectValue;
 	}

@@ -2,8 +2,11 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -132,7 +135,13 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 			}
 			else if (lsThingValues.size() == 1){
 				lsThingValue = lsThingValues.get(0);
-				lsThingValue.setStringValue(value);
+				if (valueType.equals("stringValue")) lsThingValue.setStringValue(value);
+				if (valueType.equals("fileValue")) lsThingValue.setFileValue(value);
+				if (valueType.equals("clobValue")) lsThingValue.setClobValue(value);
+				if (valueType.equals("blobValue")) lsThingValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+				if (valueType.equals("numericValue")) lsThingValue.setNumericValue(new BigDecimal(value));
+				if (valueType.equals("dateValue")) lsThingValue.setDateValue(new Date(Long.parseLong(value)));
+				if (valueType.equals("codeValue")) lsThingValue.setCodeValue(value);
 				lsThingValue.merge();
 				logger.debug("Updated the lsThing value: " + lsThingValue.toJson());
 			}
@@ -153,8 +162,14 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 		lsThingValue.setLsState(lsThingState);
 		lsThingValue.setLsType(valueType);
 		lsThingValue.setLsKind(valueKind);
-		lsThingValue.setStringValue(value);
-		lsThingValue.setRecordedBy("bob");
+		if (valueType.equals("stringValue")) lsThingValue.setStringValue(value);
+		if (valueType.equals("fileValue")) lsThingValue.setFileValue(value);
+		if (valueType.equals("clobValue")) lsThingValue.setClobValue(value);
+		if (valueType.equals("blobValue")) lsThingValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+		if (valueType.equals("numericValue")) lsThingValue.setNumericValue(new BigDecimal(value));
+		if (valueType.equals("dateValue")) lsThingValue.setDateValue(new Date(Long.parseLong(value)));
+		if (valueType.equals("codeValue")) lsThingValue.setCodeValue(value);
+		lsThingValue.setRecordedBy("default");
 		lsThingValue.persist();
 		return lsThingValue;
 	}

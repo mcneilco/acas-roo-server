@@ -2,7 +2,10 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -132,7 +135,13 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 			}
 			else if (treatmentGroupValues.size() == 1){
 				treatmentGroupValue = treatmentGroupValues.get(0);
-				treatmentGroupValue.setStringValue(value);
+				if (valueType.equals("stringValue")) treatmentGroupValue.setStringValue(value);
+				if (valueType.equals("fileValue")) treatmentGroupValue.setFileValue(value);
+				if (valueType.equals("clobValue")) treatmentGroupValue.setClobValue(value);
+				if (valueType.equals("blobValue")) treatmentGroupValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+				if (valueType.equals("numericValue")) treatmentGroupValue.setNumericValue(new BigDecimal(value));
+				if (valueType.equals("dateValue")) treatmentGroupValue.setDateValue(new Date(Long.parseLong(value)));
+				if (valueType.equals("codeValue")) treatmentGroupValue.setCodeValue(value);
 				treatmentGroupValue.merge();
 				logger.debug("Updated the treatmentGroup value: " + treatmentGroupValue.toJson());
 			}
@@ -152,8 +161,14 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 		treatmentGroupValue.setLsState(treatmentGroupState);
 		treatmentGroupValue.setLsType(valueType);
 		treatmentGroupValue.setLsKind(valueKind);
-		treatmentGroupValue.setStringValue(value);
-		treatmentGroupValue.setRecordedBy("bob");
+		if (valueType.equals("stringValue")) treatmentGroupValue.setStringValue(value);
+		if (valueType.equals("fileValue")) treatmentGroupValue.setFileValue(value);
+		if (valueType.equals("clobValue")) treatmentGroupValue.setClobValue(value);
+		if (valueType.equals("blobValue")) treatmentGroupValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+		if (valueType.equals("numericValue")) treatmentGroupValue.setNumericValue(new BigDecimal(value));
+		if (valueType.equals("dateValue")) treatmentGroupValue.setDateValue(new Date(Long.parseLong(value)));
+		if (valueType.equals("codeValue")) treatmentGroupValue.setCodeValue(value);
+		treatmentGroupValue.setRecordedBy("default");
 		treatmentGroupValue.persist();
 		return treatmentGroupValue;
 	}
