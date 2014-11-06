@@ -875,7 +875,8 @@ public class ApiExperimentController {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
-		return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
+		experiment.setIgnored(true);
+        return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
@@ -1400,7 +1401,7 @@ public class ApiExperimentController {
         String experimentName = restOfTheUrl.split("experimentname\\/")[1].replaceAll("/$", "");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentByExperimentName(experimentName)), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName)), headers, HttpStatus.OK);
     }
 
     @Transactional
@@ -1412,9 +1413,15 @@ public class ApiExperimentController {
         logger.debug("incoming experiment name is " + experimentName);
         List<Experiment> experiments;
         if (protocolId != null && protocolId != 0) {
-            experiments = Experiment.findExperimentByExperimentNameAndProtocolId(experimentName, protocolId);
+            experiments = Experiment.findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(experimentName, protocolId);
+//            for (Experiment experiment: experiments){
+//    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
+//    		}
         } else {
             experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
+//            for (Experiment experiment: experiments){
+//    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
+//    		}
         }
         if (with != null) {
             logger.debug("incoming with param is " + with);
@@ -1442,9 +1449,9 @@ public class ApiExperimentController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<Experiment> experiments;
         if (protocolId != null && protocolId != 0) {
-            experiments = Experiment.findExperimentByExperimentNameAndProtocolId(name, protocolId);
+            experiments = Experiment.findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(name, protocolId);
         } else {
-            experiments = Experiment.findExperimentByExperimentName(name);
+            experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(name);
         }
         if (with != null) {
             if (with.equalsIgnoreCase("analysisgroups")) {

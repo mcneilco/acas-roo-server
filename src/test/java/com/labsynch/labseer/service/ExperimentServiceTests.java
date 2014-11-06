@@ -59,6 +59,9 @@ public class ExperimentServiceTests {
 
 	@Autowired
 	private ExperimentService experimentService;
+	
+	@Autowired
+	private ExperimentValueService experimentValueService;
 
 	// @Test
 	@Transactional
@@ -576,5 +579,37 @@ public class ExperimentServiceTests {
 		requestParams.remove("name");
 		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, experiments.size());
+	}
+	
+	@Test
+	public void softDeletedTest() {
+		Long id = 14L;
+		Experiment experiment = Experiment.findExperiment(id);
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+
+	}
+	
+	@Test
+	@Transactional
+	public void softDeletedTest2() {
+		Long id = 14L;
+		Experiment experiment = Experiment.findExperiment(id);
+		List<Experiment> experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot("Expt On1");
+		for (Experiment e: experiments){
+			if (e.isIgnored() || experimentService.isSoftDeleted(e)) experiments.remove(e);
+		}
+		logger.debug(experiments.toString());
+		experiment.logicalDelete();
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+		Assert.assertTrue(experiment.isIgnored());
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+
 	}
 }
