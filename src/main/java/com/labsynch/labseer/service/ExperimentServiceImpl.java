@@ -231,7 +231,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	public Experiment getFullExperiment(Experiment queryExperiment){
 		Experiment experiment = Experiment.findExperiment(queryExperiment.getId());
 		Set<ExperimentLabel> lsLabels = new HashSet<ExperimentLabel>();
-		for (ExperimentLabel experimentLabel : ExperimentLabel.findExperimentLabelsByExperiment(experiment).getResultList()){
+		for (ExperimentLabel experimentLabel : ExperimentLabel.findExperimentLabelsByExperimentAndIgnoredNot(experiment, true).getResultList()){
 			lsLabels.add(experimentLabel);
 		}
 		experiment.setLsLabels(lsLabels);

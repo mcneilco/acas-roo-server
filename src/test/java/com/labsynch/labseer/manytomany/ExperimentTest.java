@@ -381,6 +381,15 @@ public class ExperimentTest {
 	
 	@Transactional
 	@Test
+	public void findExperimentByExperimentNameAndProtocolIdAndIgnoredNotTest () {
+		String experimentName = "Test Load 102";
+		Long protocolId = 1006L;
+		List<Experiment> experiments = Experiment.findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(experimentName, protocolId);
+		assert(experiments.get(0).getId() == 1007);
+	}
+	
+	@Transactional
+	@Test
 	public void findExperimentByNameAndProtocolIdTest () {
 		String experimentLabelText = "Test Load 102";
 		Long protocolId = 1006L;

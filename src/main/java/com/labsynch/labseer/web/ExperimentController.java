@@ -657,7 +657,7 @@ public class ExperimentController {
         String experimentName = restOfTheUrl.split("experimentname\\/")[1].replaceAll("/$", "");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentByExperimentName(experimentName)), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName)), headers, HttpStatus.OK);
     }
 
     @Transactional
@@ -707,7 +707,7 @@ public class ExperimentController {
         if (protocolId != null && protocolId != 0) {
             experiments = Experiment.findExperimentByExperimentNameAndProtocolId(name, protocolId);
         } else {
-            experiments = Experiment.findExperimentByExperimentName(name);
+            experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(name);
         }
         if (with != null) {
             if (with.equalsIgnoreCase("analysisgroups")) {
