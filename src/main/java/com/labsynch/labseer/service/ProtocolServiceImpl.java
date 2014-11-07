@@ -232,6 +232,12 @@ public class ProtocolServiceImpl implements ProtocolService {
 			protocolAllIdList.retainAll(resultsByTerm.get(term));
 		}
 		for (Long id: protocolAllIdList) protocolList.add(Protocol.findProtocol(id));
+        //This method uses finders that will find everything, whether or not it is ignored or deleted
+        for (Protocol protocol: protocolList) {
+        	//For Experiment Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+        	if (protocol.isDeleted()) protocolList.remove(protocol);
+        	logger.debug("removing a deleted experiment from the results");
+        }
 		return protocolList;
 	}
 

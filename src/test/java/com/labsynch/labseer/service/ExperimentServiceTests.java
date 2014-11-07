@@ -587,29 +587,61 @@ public class ExperimentServiceTests {
 		Experiment experiment = Experiment.findExperiment(id);
 		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
 		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experiment.setIgnored(true);
 		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
 		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
+		experiment.setIgnored(false);
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experiment.setIgnored(true);
+		experiment.setDeleted(true);
 		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
 
 	}
 	
 	@Test
-	@Transactional
-	public void softDeletedTest2() {
-		Long id = 14L;
+//	@Transactional
+	public void browserFinderDeleteTest() {
+		Long id = 2123L;
+		String query = "EXPERIMENT 4 EXPT-00000006";
 		Experiment experiment = Experiment.findExperiment(id);
-		List<Experiment> experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot("Expt On1");
-		for (Experiment e: experiments){
-			if (e.isIgnored() || experimentService.isSoftDeleted(e)) experiments.remove(e);
-		}
-		logger.debug(experiments.toString());
-		experiment.logicalDelete();
-		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
-		Assert.assertTrue(experiment.isIgnored());
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Assert.assertEquals(1, experiments.size());
+		Assert.assertEquals(experiment.getId(), experiments.iterator().next().getId());
+		experiments.clear();
+		
 		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
-		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
-		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
-		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
-
+		experiment.setIgnored(true);
+		experiment.merge();
+		experiment.flush();
+		experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Assert.assertEquals(1, experiments.size());
+		Assert.assertEquals(experiment.getId(), experiments.iterator().next().getId());
+		experiments.clear();
+	}
+	
+	@Test
+	public void browserFinderDeleteTest2() {
+		Long id = 2123L;
+		String query = "EXPERIMENT 4 EXPT-00000006";
+		Experiment experiment = Experiment.findExperiment(id);
+		experiment.setDeleted(true);
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experiment.setIgnored(true);
+		experiment.merge();
+		experiment.flush();
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Assert.assertEquals(0, experiments.size());
+		
+	}
+	
+	@Test
+	public void browserFinderDeleteTest3() {
+		Long id = 2123L;
+		Experiment experiment = Experiment.findExperiment(id);
+		experiment.setIgnored(false);
+		experiment.setDeleted(false);
+		experiment.merge();
+		experiment.flush();
 	}
 }
