@@ -81,6 +81,9 @@ public abstract class AbstractThing {
 	@org.hibernate.annotations.Index(name="_IGN_IDX")
 	@NotNull
 	private boolean ignored;
+	
+	@NotNull
+	private boolean deleted;
 
 	@org.hibernate.annotations.Index(name="_TRXN_IDX")
 	private Long lsTransaction;
@@ -161,6 +164,12 @@ public abstract class AbstractThing {
             AbstractThing attached = AbstractThing.findAbstractThing(this.id);
             this.entityManager.remove(attached);
         }
+    }
+	
+    @Transactional
+    public void logicalDelete() {
+    	this.setIgnored(true);
+    	this.setDeleted(true);
     }
 
 

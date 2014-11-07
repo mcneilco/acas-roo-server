@@ -251,7 +251,9 @@ public class ApiProtocolController {
         if (protocol == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        protocol.remove();
+//        protocol.remove();
+        protocol.setIgnored(true);
+        protocol.setDeleted(true);
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     

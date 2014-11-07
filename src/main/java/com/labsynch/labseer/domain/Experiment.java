@@ -329,18 +329,6 @@ public class Experiment extends AbstractThing {
             attached.remove();
         }
     }
-
-    @Transactional
-    public void logicalDelete() {
-    	if (!this.isIgnored()) this.setIgnored(true);
-//    	Collection<ExperimentLabel> labels = ExperimentLabel.findExperimentLabelsByExperimentAndIgnoredNot(this, true).getResultList();
-//    	labels.size();
-//    	if (!labels.isEmpty()) {
-//    		for (ExperimentLabel label: labels) {
-//        		label.setIgnored(true);
-//        	}
-//    	}
-    }
     
     @Transactional
     public static void deleteExperiment(Long experimentId) {

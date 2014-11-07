@@ -1329,7 +1329,7 @@ public class ApiExperimentController {
 //            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
 //            logger.info("deleted number of AnalysisGroup: " + ag4);
             experiment.logicalDelete();
-            if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored() ||experimentService.isSoftDeleted(Experiment.findExperiment(id))) {
+            if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored()) {
                 logger.info("Did not find the experiment after delete");
                 return new ResponseEntity<String>(headers, HttpStatus.OK);
             } else {
