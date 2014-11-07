@@ -45,7 +45,11 @@ import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.service.ProtocolService;
 import com.labsynch.labseer.service.ProtocolValueService;
+import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
+import flexjson.JSON;
+import flexjson.JSONSerializer;
 
 @RooWebJson(jsonObject = Protocol.class)
 @Controller
@@ -89,7 +93,7 @@ public class ApiProtocolController {
         Protocol protocol = Protocol.findProtocol(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (protocol == null) {
+        if (protocol == null || protocol.isIgnored()) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.OK);
@@ -260,7 +264,8 @@ public class ApiProtocolController {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         ProtocolValue protocolValue = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "stringValue", "status", "Deleted");
-		return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
+		protocol.setIgnored(true);
+        return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
     }
 
     @Transactional
@@ -278,7 +283,7 @@ public class ApiProtocolController {
     public ResponseEntity<java.lang.String> jsonFindProtocolsByCodeNameEqualsRoute(@PathVariable("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, true).getResultList()), headers, HttpStatus.OK);
     }
 
     @Transactional
@@ -287,7 +292,7 @@ public class ApiProtocolController {
     public ResponseEntity<java.lang.String> jsonFindProtocolsByCodeNameEquals(@RequestParam("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, true).getResultList()), headers, HttpStatus.OK);
     }
 
     @Transactional
@@ -478,12 +483,22 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArrayStub(result), headers, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "/search")
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<String> protocolBrowserSearch(@RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(Protocol.toJsonArray(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
+		return new ResponseEntity<String>(Protocol.toJsonArrayStub(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value= "/experimentCount/{codeName}", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> experimentCount(@PathVariable String codeName) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		int numberOfExperiments = Protocol.findProtocolsByCodeNameEquals(codeName).getSingleResult().getExperiments().size();
+        String result = new JSONSerializer().serialize(numberOfExperiments);
+		return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 	}
 	
 }
