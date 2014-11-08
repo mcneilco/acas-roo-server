@@ -32,7 +32,6 @@ public class LsRole {
     @Size(min = 1)
     private String roleName;
 
-    @NotNull
     @Size(max = 200)
     private String roleDescription;
 
@@ -74,6 +73,7 @@ public class LsRole {
 		if (lsRoles.size() == 0){
 			LsRole newRole = new LsRole();
 			newRole.setRoleName(roleName);
+			newRole.setRoleDescription(roleName);
 			newRole.persist();
 			return newRole;
 		} else {
