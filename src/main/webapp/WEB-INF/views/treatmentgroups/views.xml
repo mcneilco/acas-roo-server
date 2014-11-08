@@ -22,4 +22,7 @@
 <definition extends="default" name="treatmentgroups/findTreatmentGroupsByAnalysisGroups">
         <put-attribute name="body" value="/WEB-INF/views/treatmentgroups/findTreatmentGroupsByAnalysisGroups.jspx"/>
     </definition>
+<definition extends="default" name="treatmentgroups/findTreatmentGroupsByCodeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/treatmentgroups/findTreatmentGroupsByCodeNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

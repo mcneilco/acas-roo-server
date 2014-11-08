@@ -68,6 +68,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
         return "experiments/list";
     }
     
+    @RequestMapping(params = { "find=ByLsTypeLike", "form" }, method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByLsTypeLikeForm(Model uiModel) {
+        return "experiments/findExperimentsByLsTypeLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeLike", method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByLsTypeLike(@RequestParam("lsType") String lsType, Model uiModel) {
+        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeLike(lsType).getResultList());
+        return "experiments/list";
+    }
+    
     @RequestMapping(params = { "find=ByProtocol", "form" }, method = RequestMethod.GET)
     public String ExperimentController.findExperimentsByProtocolForm(Model uiModel) {
         uiModel.addAttribute("protocols", Protocol.findAllProtocols());

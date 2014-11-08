@@ -39,6 +39,7 @@ import flexjson.JSONSerializer;
 //@RooToString(excludeFields = { "password", "modifiedDate", "activationKey", "activationDate", "emailAddress", "recordedDate", "modifiedDate", "enabled", "locked" })
 //@RooToString(excludeFields = { "password", "authorRoles"})
 
+
 @RooJpaActiveRecord(sequenceName = "AUTHOR_PKSEQ", finders = { "findAuthorsByUserName", "findAuthorsByEmailAddress", "findAuthorsByActivationKeyAndEmailAddress" })
 public class Author {
 

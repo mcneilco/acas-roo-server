@@ -51,4 +51,12 @@ privileged aspect ExperimentController_Roo_Controller_Json {
         return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsTypeLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ExperimentController.jsonFindExperimentsByLsTypeLike(@RequestParam("lsType") String lsType) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByLsTypeLike(lsType).getResultList()), headers, HttpStatus.OK);
+    }
+    
 }

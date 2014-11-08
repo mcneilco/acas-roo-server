@@ -109,6 +109,14 @@ privileged aspect DDictValueController_Roo_Controller_Json {
         return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByIgnoredNot(ignored).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLabelTextLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> DDictValueController.jsonFindDDictValuesByLabelTextLike(@RequestParam("labelText") String labelText) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByLabelTextLike(labelText).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLsKindEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> DDictValueController.jsonFindDDictValuesByLsKindEquals(@RequestParam("lsKind") String lsKind) {
