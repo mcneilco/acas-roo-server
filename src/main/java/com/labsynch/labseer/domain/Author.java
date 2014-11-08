@@ -71,7 +71,8 @@ public class Author {
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "MM")
     private Date modifiedDate;
-	
+
+    
 
     /**
      */
@@ -90,13 +91,11 @@ public class Author {
     /**
      */
     private Boolean locked;
-    
-
+        
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntry", fetch =  FetchType.LAZY)
 	private Set<AuthorRole> authorRoles = new HashSet<AuthorRole>();
 
-
-
+	
 	public String toString() {
 		 return new StringBuilder().append(this.id).append(' ').append(this.userName).toString();
 //        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("password", "authorRoles").toString();
