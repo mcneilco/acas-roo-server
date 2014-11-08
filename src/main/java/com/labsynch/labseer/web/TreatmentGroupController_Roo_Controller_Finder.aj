@@ -26,6 +26,17 @@ privileged aspect TreatmentGroupController_Roo_Controller_Finder {
         return "treatmentgroups/list";
     }
     
+    @RequestMapping(params = { "find=ByCodeNameEquals", "form" }, method = RequestMethod.GET)
+    public String TreatmentGroupController.findTreatmentGroupsByCodeNameEqualsForm(Model uiModel) {
+        return "treatmentgroups/findTreatmentGroupsByCodeNameEquals";
+    }
+    
+    @RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET)
+    public String TreatmentGroupController.findTreatmentGroupsByCodeNameEquals(@RequestParam("codeName") String codeName, Model uiModel) {
+        uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByCodeNameEquals(codeName).getResultList());
+        return "treatmentgroups/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsTransactionEquals", "form" }, method = RequestMethod.GET)
     public String TreatmentGroupController.findTreatmentGroupsByLsTransactionEqualsForm(Model uiModel) {
         return "treatmentgroups/findTreatmentGroupsByLsTransactionEquals";

@@ -24,6 +24,14 @@ privileged aspect TreatmentGroupController_Roo_Controller_Json {
         return new ResponseEntity<String>(TreatmentGroup.toJsonArray(TreatmentGroup.findTreatmentGroupsByAnalysisGroups(analysisGroups).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> TreatmentGroupController.jsonFindTreatmentGroupsByCodeNameEquals(@RequestParam("codeName") String codeName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(TreatmentGroup.toJsonArray(TreatmentGroup.findTreatmentGroupsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> TreatmentGroupController.jsonFindTreatmentGroupsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {

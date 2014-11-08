@@ -25,6 +25,18 @@ privileged aspect ExperimentLabelController_Roo_Controller_Finder {
         return "experimentlabels/list";
     }
     
+    @RequestMapping(params = { "find=ByExperimentAndIgnoredNot", "form" }, method = RequestMethod.GET)
+    public String ExperimentLabelController.findExperimentLabelsByExperimentAndIgnoredNotForm(Model uiModel) {
+        uiModel.addAttribute("experiments", Experiment.findAllExperiments());
+        return "experimentlabels/findExperimentLabelsByExperimentAndIgnoredNot";
+    }
+    
+    @RequestMapping(params = "find=ByExperimentAndIgnoredNot", method = RequestMethod.GET)
+    public String ExperimentLabelController.findExperimentLabelsByExperimentAndIgnoredNot(@RequestParam("experiment") Experiment experiment, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
+        uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByExperimentAndIgnoredNot(experiment, ignored).getResultList());
+        return "experimentlabels/list";
+    }
+    
     @RequestMapping(params = { "find=ByLabelTextLike", "form" }, method = RequestMethod.GET)
     public String ExperimentLabelController.findExperimentLabelsByLabelTextLikeForm(Model uiModel) {
         return "experimentlabels/findExperimentLabelsByLabelTextLike";

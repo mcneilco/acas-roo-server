@@ -112,12 +112,14 @@
             <menu:item id="i_treatmentgroup_new" messageCode="global_menu_new" url="/treatmentgroups?form" z="v3FU/ZE1lF1a2skcKvCNuIjLj/U="/>
             <menu:item id="i_treatmentgroup_list" messageCode="global_menu_list" url="/treatmentgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="hd7pnyrJiPjfIeF0QjdyN+25FT4="/>
             <menu:item id="fi_treatmentgroup_analysisgroups" messageCode="global_menu_find" url="/treatmentgroups?find=ByAnalysisGroups&amp;form" z="aCmP4gDqzmxAuh8QpMemXrqV7l8="/>
+            <menu:item id="fi_treatmentgroup_codenameequals" messageCode="global_menu_find" url="/treatmentgroups?find=ByCodeNameEquals&amp;form" z="Eh4WFxl3lGeTWWVfmn+kXSAROvc="/>
             <menu:item id="fi_treatmentgroup_lstransactionequals" messageCode="global_menu_find" url="/treatmentgroups?find=ByLsTransactionEquals&amp;form" z="2s/GJeWUCASFrWp34UPFUUqiD34="/>
         </menu:category>
         <menu:category id="c_experimentlabel" z="/OtfTArcZoLVbM+za1A3M+tikNU=">
             <menu:item id="i_experimentlabel_new" messageCode="global_menu_new" url="/experimentlabels?form" z="AUJwaIFjrQj6C0qw/IP+IOeWGQU="/>
             <menu:item id="i_experimentlabel_list" messageCode="global_menu_list" url="/experimentlabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="oO1z+PebW0K/PEf8XDbfx1/E1I4="/>
             <menu:item id="fi_experimentlabel_experiment" messageCode="global_menu_find" url="/experimentlabels?find=ByExperiment&amp;form" z="2U3TP8VIBSMAEtbdpkQlN1gfnCw="/>
+            <menu:item id="fi_experimentlabel_experimentandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByExperimentAndIgnoredNot&amp;form" z="mcIgBlrdh24WXE8RUOwQYUMTTZM="/>
             <menu:item id="fi_experimentlabel_labeltextlike" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLike&amp;form" z="PYv94k7Dol6QPVhe3R86cGR/bbg="/>
             <menu:item id="fi_experimentlabel_labeltextlikeandlstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="FECyIQ2Y8ja5GASA260VwxPRI2s="/>
             <menu:item id="fi_experimentlabel_lstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="n6BVW2/nOYW6PDMTJXM0WCF5ImM="/>
@@ -219,6 +221,7 @@
             <menu:item id="fi_experiment_lskindlike" messageCode="global_menu_find" url="/experiments?find=ByLsKindLike&amp;form" z="8u1bsbx8wEbG9+g4M1vftB07MVo="/>
             <menu:item id="fi_experiment_lstransaction" messageCode="global_menu_find" url="/experiments?find=ByLsTransaction&amp;form" z="pzO1es0ls0TpI6XCT8VgpFQ+fgw="/>
             <menu:item id="fi_experiment_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/experiments?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="ZPdIKu3y4iGFu48vz+317ZMFXqo="/>
+            <menu:item id="fi_experiment_lstypelike" messageCode="global_menu_find" url="/experiments?find=ByLsTypeLike&amp;form" z="1JlKmuvQXXfwG65yQ4aXM+9QUcI="/>
             <menu:item id="fi_experiment_protocol" messageCode="global_menu_find" url="/experiments?find=ByProtocol&amp;form" z="1PJ4oFTXiolPLQMloNTsiixAQ28="/>
         </menu:category>
         <menu:category id="c_statetype" z="Mx6S70LGMuIptspjTVNIP+xCAPo=">
@@ -435,6 +438,7 @@
             <menu:item id="i_ddictvalue_list" messageCode="global_menu_list" url="/ddictvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="xmGlnyJ/6c5Fuax8ETox1f+dGzM="/>
             <menu:item id="fi_ddictvalue_codenameequals" messageCode="global_menu_find" url="/ddictvalues?find=ByCodeNameEquals&amp;form" z="zdrMtruwFsFlTU8ExAO3HVdqNjE="/>
             <menu:item id="fi_ddictvalue_ignorednot" messageCode="global_menu_find" url="/ddictvalues?find=ByIgnoredNot&amp;form" z="s/eTBpRm5jJR+UYNSjHKb+3iS9Y="/>
+            <menu:item id="fi_ddictvalue_labeltextlike" messageCode="global_menu_find" url="/ddictvalues?find=ByLabelTextLike&amp;form" z="6mBSFWcmndyhEqA4h1LRvC+jUCA="/>
             <menu:item id="fi_ddictvalue_lskindequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsKindEquals&amp;form" z="uj2KVoztgITKChOyu5a/e6QbxDo="/>
             <menu:item id="fi_ddictvalue_lstypeequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEquals&amp;form" z="RElPZg2kR/YHutT5s+iE9ijh9/Y="/>
             <menu:item id="fi_ddictvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="q7iZ5coIZEBVrxCOcYulJugpQ2c="/>

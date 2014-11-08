@@ -18,6 +18,15 @@ privileged aspect ExperimentLabel_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<ExperimentLabel> ExperimentLabel.findExperimentLabelsByExperimentAndIgnoredNot(Experiment experiment, boolean ignored) {
+        if (experiment == null) throw new IllegalArgumentException("The experiment argument is required");
+        EntityManager em = ExperimentLabel.entityManager();
+        TypedQuery<ExperimentLabel> q = em.createQuery("SELECT o FROM ExperimentLabel AS o WHERE o.experiment = :experiment AND o.ignored IS NOT :ignored", ExperimentLabel.class);
+        q.setParameter("experiment", experiment);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
     public static TypedQuery<ExperimentLabel> ExperimentLabel.findExperimentLabelsByLabelTextLike(String labelText) {
         if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
         labelText = labelText.replace('*', '%');

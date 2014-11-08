@@ -48,7 +48,7 @@
 	<beans:bean
 		class="org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder"
 		id="messageDigestPasswordEncoder">
-		<beans:constructor-arg value="sha-256" />
+		<beans:constructor-arg value="sha-1" />
 	</beans:bean>
 		
 </beans:beans>

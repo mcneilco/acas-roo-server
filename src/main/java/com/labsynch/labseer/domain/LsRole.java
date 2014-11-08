@@ -27,6 +27,7 @@ import org.springframework.roo.addon.json.RooJson;
 @RooJpaActiveRecord(sequenceName = "LSROLE_PKSEQ", finders = { "findLsRolesByRoleNameEquals" })
 public class LsRole {
 
+	
     @NotNull
     @Column(unique = true)
     @Size(min = 1)

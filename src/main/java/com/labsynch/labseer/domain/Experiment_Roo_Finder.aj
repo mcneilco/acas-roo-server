@@ -49,4 +49,19 @@ privileged aspect Experiment_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<Experiment> Experiment.findExperimentsByLsTypeLike(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        lsType = lsType.replace('*', '%');
+        if (lsType.charAt(0) != '%') {
+            lsType = "%" + lsType;
+        }
+        if (lsType.charAt(lsType.length() - 1) != '%') {
+            lsType = lsType + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Experiment.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
 }

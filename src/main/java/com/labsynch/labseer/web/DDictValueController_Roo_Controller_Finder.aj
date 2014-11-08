@@ -34,6 +34,17 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
         return "ddictvalues/list";
     }
     
+    @RequestMapping(params = { "find=ByLabelTextLike", "form" }, method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByLabelTextLikeForm(Model uiModel) {
+        return "ddictvalues/findDDictValuesByLabelTextLike";
+    }
+    
+    @RequestMapping(params = "find=ByLabelTextLike", method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByLabelTextLike(@RequestParam("labelText") String labelText, Model uiModel) {
+        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLabelTextLike(labelText).getResultList());
+        return "ddictvalues/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsKindEquals", "form" }, method = RequestMethod.GET)
     public String DDictValueController.findDDictValuesByLsKindEqualsForm(Model uiModel) {
         return "ddictvalues/findDDictValuesByLsKindEquals";

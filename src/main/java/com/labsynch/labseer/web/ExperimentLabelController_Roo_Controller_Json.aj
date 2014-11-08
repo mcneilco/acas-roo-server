@@ -23,6 +23,14 @@ privileged aspect ExperimentLabelController_Roo_Controller_Json {
         return new ResponseEntity<String>(ExperimentLabel.toJsonArray(ExperimentLabel.findExperimentLabelsByExperiment(experiment).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByExperimentAndIgnoredNot", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ExperimentLabelController.jsonFindExperimentLabelsByExperimentAndIgnoredNot(@RequestParam("experiment") Experiment experiment, @RequestParam(value = "ignored", required = false) boolean ignored) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ExperimentLabel.toJsonArray(ExperimentLabel.findExperimentLabelsByExperimentAndIgnoredNot(experiment, ignored).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLabelTextLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ExperimentLabelController.jsonFindExperimentLabelsByLabelTextLike(@RequestParam("labelText") String labelText) {
