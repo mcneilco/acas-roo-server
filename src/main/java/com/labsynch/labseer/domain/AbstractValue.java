@@ -130,6 +130,9 @@ public abstract class AbstractValue {
 	@org.hibernate.annotations.Index(name="_IGN_IDX")
 	private boolean ignored;
 	
+	@NotNull
+	private boolean deleted;
+	
 	@org.hibernate.annotations.Index(name="_TRXN_IDX")
 	private Long lsTransaction;
 

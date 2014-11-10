@@ -753,6 +753,13 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentAllIdList.retainAll(resultsByTerm.get(term));
 		}
 		for (Long id: experimentAllIdList) experimentList.add(Experiment.findExperiment(id));
+		
+        //This method uses finders that will find everything, whether or not it is ignored or deleted
+        for (Experiment experiment: experimentList) {
+        	//For Experiment Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+        	if (experiment.isDeleted()) experimentList.remove(experiment);
+        	logger.debug("removing a deleted experiment from the results");
+        }
 		return experimentList;
 	}
 
@@ -1031,19 +1038,23 @@ public class ExperimentServiceImpl implements ExperimentService {
         if (requestParams.containsKey("name")) result.retainAll(resultByName);
         if (requestParams.containsKey("codeName")) result.retainAll(resultByCodeName);
         
+        
         return result;
 	}
 	
 
 	@Override
 	public boolean isSoftDeleted(Experiment experiment) {
-		Long experimentId = experiment.getId();
-		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, "metadata", "experiment metadata", "stringValue", "status");
 		boolean isSoftDeleted = false;
-		for (ExperimentValue experimentValue : experimentValues) {
-			if (experimentValue.getStringValue() != null && experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
-		}
+		if (experiment.isIgnored() && !experiment.isDeleted()) isSoftDeleted = true;
 		return isSoftDeleted;
+//		Long experimentId = experiment.getId();
+//		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, "metadata", "experiment metadata", "stringValue", "status");
+//		boolean isSoftDeleted = false;
+//		for (ExperimentValue experimentValue : experimentValues) {
+//			if (experimentValue.getStringValue() != null && experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
+//		}
+//		return isSoftDeleted;
 	}
 	
 

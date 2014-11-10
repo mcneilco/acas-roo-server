@@ -1329,7 +1329,7 @@ public class ApiExperimentController {
 //            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
 //            logger.info("deleted number of AnalysisGroup: " + ag4);
             experiment.logicalDelete();
-            if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored() ||experimentService.isSoftDeleted(Experiment.findExperiment(id))) {
+            if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored()) {
                 logger.info("Did not find the experiment after delete");
                 return new ResponseEntity<String>(headers, HttpStatus.OK);
             } else {
@@ -1478,7 +1478,7 @@ public class ApiExperimentController {
     public ResponseEntity<java.lang.String> jsonFindExperimentsByProtocolCodeName(@PathVariable("codeName") String codeName, @RequestParam(value = "with", required = false) String with) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<Protocol> protocols = Protocol.findProtocolsByCodeNameEquals(codeName).getResultList();
+        List<Protocol> protocols = Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, true).getResultList();
         if (protocols.size() == 1) {
             return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentsByProtocol(protocols.get(0)).getResultList()), headers, HttpStatus.OK);
         } else if (protocols.size() > 1) {
@@ -1496,7 +1496,7 @@ public class ApiExperimentController {
 	public ResponseEntity<String> experimentBrowserSearch(@RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(Experiment.toJsonArray(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
+		return new ResponseEntity<String>(Experiment.toJsonArrayStub(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
 	}
     
     @RequestMapping(params = "find=ByMetadata", method = RequestMethod.GET, headers = "Accept=application/json")
