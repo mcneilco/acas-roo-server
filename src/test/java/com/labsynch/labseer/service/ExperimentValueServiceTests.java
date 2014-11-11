@@ -235,7 +235,7 @@ public class ExperimentValueServiceTests {
 	@Test
 	@Transactional
 	public void updateExperimentValueTest3() {
-		String idOrCodeName = "EXPT-00000001";
+		String idOrCodeName = "EXPT-00000002";
 		String stateType = "metadata";
 		String stateKind = "experiment metadata";
 		String valueType = "codeValue";
@@ -247,18 +247,20 @@ public class ExperimentValueServiceTests {
 	}
 	
 	@Test
-	@Transactional
+//	@Transactional
 	public void updateExperimentValueTest4() {
-		String idOrCodeName = "EXPT-00000001";
+		String idOrCodeName = "EXPT-00000002";
 		String stateType = "metadata";
 		String stateKind = "experiment metadata";
 		String valueType = "dateValue";
 		String valueKind = "completion date";
-		String value = "1398322800000";
+		String value = "1398344800000";
 		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
 		Assert.assertNotNull(experimentValue);
 		logger.info(experimentValue.toJson());
 	}
+	
+	
 	
 	
 }

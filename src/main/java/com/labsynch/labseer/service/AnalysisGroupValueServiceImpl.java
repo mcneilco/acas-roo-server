@@ -24,6 +24,9 @@ import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.domain.TreatmentGroupState;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
 
 
 @Service
@@ -97,6 +100,21 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 				stateKind, valueType, valueKind).getResultList();
 		
 		return analysisGroupValues;
+	}
+	
+	@Override
+	public AnalysisGroupValue updateAnalysisGroupValue(AnalysisGroupValue analysisGroupValue) {
+		if (analysisGroupValue.getLsState().getId() == null) {
+			AnalysisGroupState analysisGroupState = new AnalysisGroupState(analysisGroupValue.getLsState());
+			analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupValue.getLsState().getAnalysisGroup().getId()));
+			analysisGroupState.persist();
+			analysisGroupValue.setLsState(analysisGroupState); 
+		} else {
+			analysisGroupValue.setLsState(AnalysisGroupState.findAnalysisGroupState(analysisGroupValue.getLsState().getId()));
+		}
+		analysisGroupValue.setVersion(AnalysisGroupValue.findAnalysisGroupValue(analysisGroupValue.getId()).getVersion());
+		analysisGroupValue.merge();
+		return analysisGroupValue;
 	}
 	
 	@Override

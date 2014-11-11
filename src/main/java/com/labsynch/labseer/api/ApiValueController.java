@@ -96,7 +96,7 @@ public class ApiValueController {
 	@RequestMapping(value = "/{entity}/{idOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> putlsThingValueByJson (
+	public ResponseEntity<String> putValueByPath (
 			@PathVariable("entity") String entity,
 			@PathVariable("idOrCodeName") String idOrCodeName,
 			@PathVariable("stateType") String stateType,
@@ -132,6 +132,125 @@ public class ApiValueController {
 		if (entity.equals("lsThing")) {
 			LsThingValue lsThingValue = lsThingValueService.updateLsThingValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
 			return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "/{entity}/", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> putValueByJson (
+			@PathVariable("entity") String entity,
+			@RequestBody String json) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//this if/else if block controls which lsThing is being hit
+		logger.debug("ENTITY IS: " + entity);
+		if (entity.equals("protocol")) {
+			ProtocolValue protocolValue = ProtocolValue.fromJsonToProtocolValue(json);
+			if (ProtocolValue.findProtocolValue(protocolValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			protocolValue = protocolValueService.updateProtocolValue(protocolValue);
+	        return new ResponseEntity<String>(protocolValue.toJson(),headers, HttpStatus.OK);
+		}
+		if (entity.equals("experiment")) {
+			ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+			if (ExperimentValue.findExperimentValue(experimentValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			experimentValue = experimentValueService.updateExperimentValue(experimentValue);
+	        return new ResponseEntity<String>(experimentValue.toJson(),headers, HttpStatus.OK);
+		}
+		if (entity.equals("analysisGroup")) {
+			AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
+			if (AnalysisGroupValue.findAnalysisGroupValue(analysisGroupValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			analysisGroupValue = analysisGroupValueService.updateAnalysisGroupValue(analysisGroupValue);
+	        return new ResponseEntity<String>(analysisGroupValue.toJson(),headers, HttpStatus.OK);
+		}
+		if (entity.equals("treatmentGroup")) {
+			TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.fromJsonToTreatmentGroupValue(json);
+			if (TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			treatmentGroupValue = treatmentGroupValueService.updateTreatmentGroupValue(treatmentGroupValue);
+	        return new ResponseEntity<String>(treatmentGroupValue.toJson(),headers, HttpStatus.OK);
+		}
+		if (entity.equals("subject")) {
+			SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
+			if (SubjectValue.findSubjectValue(subjectValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			subjectValue = subjectValueService.updateSubjectValue(subjectValue);
+	        return new ResponseEntity<String>(subjectValue.toJson(),headers, HttpStatus.OK);
+		}
+		if (entity.equals("lsThing")) {
+			LsThingValue lsThingValue = LsThingValue.fromJsonToLsThingValue(json);
+			if (LsThingValue.findLsThingValue(lsThingValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			lsThingValue = lsThingValueService.updateLsThingValue(lsThingValue);
+	        return new ResponseEntity<String>(lsThingValue.toJson(),headers, HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "/{entity}/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> getValueById (
+			@PathVariable("entity") String entity,
+			@PathVariable("id") Long id) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		logger.debug("ENTITY IS: " + entity);
+		if (entity.equals("protocol")) {
+			ProtocolValue protocolValue = ProtocolValue.findProtocolValue(id);
+	        if (protocolValue == null || protocolValue.isIgnored()) {
+	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	        }
+	        return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("experiment")) {
+			ExperimentValue experimentValue = ExperimentValue.findExperimentValue(id);
+	        if (experimentValue == null || experimentValue.isIgnored()) {
+	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	        }
+	        return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("analysisGroup")) {
+			AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
+	        if (analysisGroupValue == null || analysisGroupValue.isIgnored()) {
+	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	        }
+	        return new ResponseEntity<String>(analysisGroupValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("treatmentGroup")) {
+			TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.findTreatmentGroupValue(id);
+	        if (treatmentGroupValue == null || treatmentGroupValue.isIgnored()) {
+	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	        }
+	        return new ResponseEntity<String>(treatmentGroupValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("subject")) {
+			SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
+	        if (subjectValue == null || subjectValue.isIgnored()) {
+	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	        }
+	        return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("lsThing")) {
+			LsThingValue lsThingValue = LsThingValue.findLsThingValue(id);
+	        if (lsThingValue == null || lsThingValue.isIgnored()) {
+	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	        }
+	        return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);

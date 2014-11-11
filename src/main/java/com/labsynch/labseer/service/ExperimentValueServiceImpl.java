@@ -48,7 +48,8 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 			experimentValue.setLsState(experimentState); 
 		} else {
 			experimentValue.setLsState(ExperimentState.findExperimentState(experimentValue.getLsState().getId()));
-		}		
+		}
+		experimentValue.setVersion(ExperimentValue.findExperimentValue(experimentValue.getId()).getVersion());
 		experimentValue.merge();
 		return experimentValue;
 	}

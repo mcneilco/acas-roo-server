@@ -25,6 +25,7 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
@@ -59,7 +60,8 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 			subjectValue.setLsState(subjectState); 
 		} else {
 			subjectValue.setLsState(SubjectState.findSubjectState(subjectValue.getLsState().getId()));
-		}		
+		}
+		subjectValue.setVersion(SubjectValue.findSubjectValue(subjectValue.getId()).getVersion());
 		subjectValue.merge();
 		return subjectValue;
 	}

@@ -24,6 +24,9 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolState;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
@@ -87,6 +90,21 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 		}
 
 		return outFile.toString();
+	}
+	
+	@Override
+	public TreatmentGroupValue updateTreatmentGroupValue(TreatmentGroupValue treatmentGroupValue) {
+		if (treatmentGroupValue.getLsState().getId() == null) {
+			TreatmentGroupState treatmentGroupState = new TreatmentGroupState(treatmentGroupValue.getLsState());
+			treatmentGroupState.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupValue.getLsState().getTreatmentGroup().getId()));
+			treatmentGroupState.persist();
+			treatmentGroupValue.setLsState(treatmentGroupState); 
+		} else {
+			treatmentGroupValue.setLsState(TreatmentGroupState.findTreatmentGroupState(treatmentGroupValue.getLsState().getId()));
+		}
+		treatmentGroupValue.setVersion(TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupValue.getId()).getVersion());
+		treatmentGroupValue.merge();
+		return treatmentGroupValue;
 	}
 
 	@Override

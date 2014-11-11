@@ -53,7 +53,8 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 			protocolValue.setLsState(protocolState); 
 		} else {
 			protocolValue.setLsState(ProtocolState.findProtocolState(protocolValue.getLsState().getId()));
-		}		
+		}
+		protocolValue.setVersion(ProtocolValue.findProtocolValue(protocolValue.getId()).getVersion());
 		protocolValue.merge();
 		return protocolValue;
 	}
