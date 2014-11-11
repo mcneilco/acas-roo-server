@@ -43,6 +43,7 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ProtocolDTO;
 import com.labsynch.labseer.service.ProtocolService;
 import com.labsynch.labseer.service.ProtocolValueService;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -490,7 +491,8 @@ public class ApiProtocolController {
 	public ResponseEntity<String> protocolBrowserSearch(@RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(Protocol.toJsonArrayStub(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
+		Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery));
+		return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value= "/experimentCount/{codeName}", method = RequestMethod.GET)
