@@ -22,5 +22,8 @@ public interface TreatmentGroupValueService {
 	public TreatmentGroupValue updateTreatmentGroupValue(String idOrCodeName,
 			String stateType, String stateKind, String valueType,
 			String valueKind, String value);
+
+	TreatmentGroupValue updateTreatmentGroupValue(
+			TreatmentGroupValue treatmentGroupValue);
 	
 }

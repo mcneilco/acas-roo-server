@@ -26,5 +26,8 @@ public interface AnalysisGroupValueService {
 			String stateType, String stateKind, String valueType,
 			String valueKind, String value);
 
+	AnalysisGroupValue updateAnalysisGroupValue(
+			AnalysisGroupValue analysisGroupValue);
+
 	
 }

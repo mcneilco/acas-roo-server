@@ -150,45 +150,51 @@ public class ApiValueController {
 		logger.debug("ENTITY IS: " + entity);
 		if (entity.equals("protocol")) {
 			ProtocolValue protocolValue = ProtocolValue.fromJsonToProtocolValue(json);
-	        if (protocolValue.merge() == null) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(headers, HttpStatus.OK);
+			if (ProtocolValue.findProtocolValue(protocolValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			protocolValue = protocolValueService.updateProtocolValue(protocolValue);
+	        return new ResponseEntity<String>(protocolValue.toJson(),headers, HttpStatus.OK);
 		}
 		if (entity.equals("experiment")) {
 			ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-	        if (experimentValue.merge() == null) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(headers, HttpStatus.OK);
+			if (ExperimentValue.findExperimentValue(experimentValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			experimentValue = experimentValueService.updateExperimentValue(experimentValue);
+	        return new ResponseEntity<String>(experimentValue.toJson(),headers, HttpStatus.OK);
 		}
 		if (entity.equals("analysisGroup")) {
 			AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
-	        if (analysisGroupValue.merge() == null) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(headers, HttpStatus.OK);
+			if (AnalysisGroupValue.findAnalysisGroupValue(analysisGroupValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			analysisGroupValue = analysisGroupValueService.updateAnalysisGroupValue(analysisGroupValue);
+	        return new ResponseEntity<String>(analysisGroupValue.toJson(),headers, HttpStatus.OK);
 		}
 		if (entity.equals("treatmentGroup")) {
 			TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.fromJsonToTreatmentGroupValue(json);
-	        if (treatmentGroupValue.merge() == null) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(headers, HttpStatus.OK);
+			if (TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			treatmentGroupValue = treatmentGroupValueService.updateTreatmentGroupValue(treatmentGroupValue);
+	        return new ResponseEntity<String>(treatmentGroupValue.toJson(),headers, HttpStatus.OK);
 		}
 		if (entity.equals("subject")) {
 			SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
-	        if (subjectValue.merge() == null) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(headers, HttpStatus.OK);
+			if (SubjectValue.findSubjectValue(subjectValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			subjectValue = subjectValueService.updateSubjectValue(subjectValue);
+	        return new ResponseEntity<String>(subjectValue.toJson(),headers, HttpStatus.OK);
 		}
 		if (entity.equals("lsThing")) {
 			LsThingValue lsThingValue = LsThingValue.fromJsonToLsThingValue(json);
-	        if (lsThingValue.merge() == null) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(headers, HttpStatus.OK);
+			if (LsThingValue.findLsThingValue(lsThingValue.getId()) == null) {
+				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			}
+			lsThingValue = lsThingValueService.updateLsThingValue(lsThingValue);
+	        return new ResponseEntity<String>(lsThingValue.toJson(),headers, HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);

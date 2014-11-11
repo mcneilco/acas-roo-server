@@ -89,4 +89,18 @@ public class ExperimentValueTest {
 		}
 		if(!didCatch) assert(results.size() == 8);
 	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentValueTest() {
+		String json = "{\"clobValue\":\"hello world 3\",\"codeKind\":null,\"codeOrigin\":null,\"codeType\":null,\"codeTypeAndKind\":\"null_null\",\"codeValue\":null,\"comments\":null,\"dateValue\":null,\"deleted\":false,\"fileValue\":null,\"id\":1,\"ignored\":false,\"lsKind\":\"status\",\"lsState\":{\"comments\":null,\"deleted\":false,\"experiment\":{\"codeName\":\"EXPT-00000001\",\"deleted\":false,\"id\":2,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"modifiedBy\":null,\"modifiedDate\":null,\"protocol\":{\"codeName\":\"PROT-00000001\",\"deleted\":false,\"id\":1,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"bob\",\"recordedDate\":1414185360000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":1},\"recordedBy\":\"bob\",\"recordedDate\":1414185360000,\"shortDescription\":\"experiment created by generic data parser\",\"version\":1},\"id\":1,\"ignored\":false,\"lsKind\":\"experiment metadata\",\"lsTransaction\":1,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_experiment metadata\",\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"bob\",\"recordedDate\":1414185360000,\"version\":1},\"lsTransaction\":1,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_status\",\"modifiedBy\":null,\"modifiedDate\":null,\"numberOfReplicates\":null,\"numericValue\":null,\"operatorKind\":null,\"operatorType\":null,\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1414185360000,\"sigFigs\":null,\"stringValue\":\"Approved\",\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null,\"unitType\":null,\"unitTypeAndKind\":\"null_null\",\"urlValue\":null,\"version\":null}";
+		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+		ExperimentValue ev2 = ExperimentValue.findExperimentValue(experimentValue.getId());
+		experimentValue.setVersion(ev2.getVersion());
+		experimentValue.merge();
+		experimentValue.flush();
+		ExperimentValue ev3 = ExperimentValue.findExperimentValue(experimentValue.getId());
+		logger.debug(ev3.toJson());
+	}
+	
 }

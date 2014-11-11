@@ -28,6 +28,7 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
 
@@ -53,7 +54,8 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 			lsThingValue.setLsState(lsThingState); 
 		} else {
 			lsThingValue.setLsState(LsThingState.findLsThingState(lsThingValue.getLsState().getId()));
-		}		
+		}
+		lsThingValue.setVersion(LsThingValue.findLsThingValue(lsThingValue.getId()).getVersion());
 		lsThingValue.merge();
 		return lsThingValue;
 	}
