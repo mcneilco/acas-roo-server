@@ -44,6 +44,7 @@ import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ProtocolDTO;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ProtocolService;
 import com.labsynch.labseer.service.ProtocolValueService;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -189,7 +190,7 @@ public class ApiProtocolController {
 
     @Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) throws UniqueNameException {
         Protocol protocol = protocolService.saveLsProtocol(Protocol.fromJsonToProtocol(json));
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -198,7 +199,7 @@ public class ApiProtocolController {
 
     @Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) throws UniqueNameException {
         Collection<Protocol> savedProtocols = new ArrayList<Protocol>();
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
@@ -273,7 +274,7 @@ public class ApiProtocolController {
 
     @Transactional
     @RequestMapping(value = "/lsprotocols", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createLsProtocolFromJson(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> createLsProtocolFromJson(@RequestBody String json) throws UniqueNameException {
         Protocol protocol = protocolService.saveLsProtocol(Protocol.fromJsonToProtocol(json));
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");

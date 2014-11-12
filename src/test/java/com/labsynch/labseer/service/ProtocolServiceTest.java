@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -94,8 +95,15 @@ public class ProtocolServiceTest {
 		Protocol protocol = Protocol.fromJsonToProtocol(json);
 		logger.info("initial json values: " + protocol.toJson());
 		
-		Protocol output = protocolService.saveLsProtocol(protocol);
-		logger.info(output.toJson());
+		Protocol output;
+		try {
+			output = protocolService.saveLsProtocol(protocol);
+			logger.info(output.toJson());
+		} catch (UniqueNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 //		output = protocolService.saveLsProtocol(Protocol.fromJsonToProtocol(json));
 //		logger.info(output.toJson());
@@ -116,8 +124,15 @@ public class ProtocolServiceTest {
 		
 		Protocol protocol = Protocol.fromJsonToProtocol(json);
 		logger.info("initial json values: " + protocol.toJson());
-		Protocol output = protocolService.saveLsProtocol(protocol);
-		logger.info(output.toJson());
+		Protocol output;
+		try {
+			output = protocolService.saveLsProtocol(protocol);
+			logger.info(output.toJson());
+		} catch (UniqueNameException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 	}
 
@@ -232,5 +247,18 @@ public class ProtocolServiceTest {
 		protocols = protocolService.findProtocolsByRequestMetadata(requestParams);
 		Assert.assertEquals(1, protocols.size());
 		
+	}
+	
+	@Test
+	@Transactional
+	public void uniqueProtocolNameExceptionTest() throws UniqueNameException {
+		String name = "APMS";
+		String json = "{\"codeName\":null,\"deleted\":false,\"experiments\":[],\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"deleted\":false,\"id\":null,\"ignored\":false,\"labelText\":\"APMS\",\"lsKind\":\"protocol name\",\"lsTransaction\":5,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_protocol name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1395708972000,\"version\":null}],\"lsStates\":[],\"lsTags\":[],\"lsTransaction\":5,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":1395708972000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":null}";
+		Protocol protocol = Protocol.fromJsonToProtocol(json);
+		try {
+			protocolService.saveLsProtocol(protocol);
+		} catch (UniqueNameException e) {
+			Assert.assertNotNull(e);
+		}
 	}
 }

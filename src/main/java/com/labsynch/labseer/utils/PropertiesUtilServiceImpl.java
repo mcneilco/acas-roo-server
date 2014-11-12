@@ -83,9 +83,22 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	@Value("${uniqueExperimentName}")
 	public void setUniqueExperimentName(String uniqueExperimentName) {
 	    this.uniqueExperimentName = uniqueExperimentName;
-	}	
+	}
+	
 	@Override
 	public Boolean getUniqueExperimentName() {
 	    return Boolean.parseBoolean(this.uniqueExperimentName);
+	}
+	
+	String uniqueProtocolName;
+
+	@Value("${uniqueProtocolName}")
+	public void setUniqueProtocolName(String uniqueProtocolName) {
+	    this.uniqueExperimentName = uniqueProtocolName;
+	}
+	
+	@Override
+	public Boolean getUniqueProtocolName() {
+	    return Boolean.parseBoolean(this.uniqueProtocolName);
 	}
 }

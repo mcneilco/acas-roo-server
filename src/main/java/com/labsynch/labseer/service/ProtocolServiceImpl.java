@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.Protocol;
@@ -28,6 +29,7 @@ import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -52,8 +54,31 @@ public class ProtocolServiceImpl implements ProtocolService {
 	//    }
 
 	@Override
-	public Protocol saveLsProtocol(Protocol protocol){
+	public Protocol saveLsProtocol(Protocol protocol) throws UniqueNameException{
 		logger.debug("incoming meta protocol: " + protocol.toJson() + "\n");
+		
+		//check if protocol with the same name exists
+				boolean checkProtocolName = propertiesUtilService.getUniqueProtocolName();
+				if (checkProtocolName){
+					boolean protocolExists = false;
+					Set<ProtocolLabel> protLabels = protocol.getLsLabels();
+					for (ProtocolLabel label : protLabels){
+						String labelText = label.getLabelText();
+						List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
+						for (ProtocolLabel pl : protocolLabels){
+							Protocol pro = pl.getProtocol();
+							//if the protocol is not hard deleted or soft deleted, there is a name conflict
+							if (!pro.isIgnored()){
+								protocolExists = true;
+							}
+						}
+					}
+
+					if (protocolExists){
+						throw new UniqueNameException("Protocol with the same name exists");							
+					}
+				}
+		
 		Protocol newProtocol = new Protocol(protocol);
 		if (newProtocol.getCodeName() == null){
 			

@@ -2,16 +2,20 @@ package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ProtocolService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.apache.commons.io.IOUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
@@ -148,7 +152,7 @@ public class ProtocolController {
 
     @Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) throws UniqueNameException {
         Protocol protocol = protocolService.saveLsProtocol(Protocol.fromJsonToProtocol(json));
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -157,7 +161,7 @@ public class ProtocolController {
 
     @Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) throws UniqueNameException {
         Collection<Protocol> savedProtocols = new ArrayList<Protocol>();
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
@@ -217,7 +221,7 @@ public class ProtocolController {
 
     @Transactional
     @RequestMapping(value = "/lsprotocols", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createLsProtocolFromJson(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> createLsProtocolFromJson(@RequestBody String json) throws UniqueNameException {
         Protocol protocol = protocolService.saveLsProtocol(Protocol.fromJsonToProtocol(json));
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");

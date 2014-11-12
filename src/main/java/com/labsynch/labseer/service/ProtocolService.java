@@ -7,11 +7,12 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
 public interface ProtocolService {
 
-	Protocol saveLsProtocol(Protocol protocol);
+	Protocol saveLsProtocol(Protocol protocol) throws UniqueNameException;
 
 	Protocol getFullProtocol(Protocol protocol);
 
