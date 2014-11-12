@@ -28,6 +28,7 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
@@ -73,6 +74,15 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 		}		
 		lsThingValue.persist();
 		return lsThingValue;
+	}
+	
+	@Override
+	@Transactional
+	public Collection<LsThingValue> saveLsThingValues(Collection<LsThingValue> lsThingValues) {
+		for (LsThingValue lsThingValue: lsThingValues) {
+			lsThingValue = saveLsThingValue(lsThingValue);
+		}
+		return lsThingValues;
 	}
 
 	@Override

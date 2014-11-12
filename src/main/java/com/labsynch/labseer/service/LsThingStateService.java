@@ -16,4 +16,9 @@ public interface LsThingStateService {
 	LsThingState createLsThingStateByLsThingIdAndStateTypeKind(Long lsThingId,
 			String stateType, String stateKind);
 
+	LsThingState saveLsThingState(LsThingState lsThingState);
+
+	Collection<LsThingState> saveLsThingStates(
+			Collection<LsThingState> lsThingStates);
+
 }

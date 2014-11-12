@@ -18,6 +18,12 @@ public interface AnalysisGroupStateService {
 	List<AnalysisGroupState> getAnalysisGroupStatesByAnalysisGroupIdAndStateTypeKind(
 			Long analysisGroupId, String stateType, String stateKind);
 
+	AnalysisGroupState saveAnalysisGroupState(
+			AnalysisGroupState analysisGroupState);
+
+	Collection<AnalysisGroupState> saveAnalysisGroupStates(
+			Collection<AnalysisGroupState> analysisGroupStates);
+
 	
 	
 }

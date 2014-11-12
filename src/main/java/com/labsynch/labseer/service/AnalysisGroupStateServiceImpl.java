@@ -65,5 +65,22 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 		return analysisGroupState;
 	}
 
+	@Override
+	public AnalysisGroupState saveAnalysisGroupState(
+			AnalysisGroupState analysisGroupState) {
+		analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupState.getAnalysisGroup().getId()));		
+		analysisGroupState.persist();
+		return analysisGroupState;
+	}
+
+	@Override
+	public Collection<AnalysisGroupState> saveAnalysisGroupStates(
+			Collection<AnalysisGroupState> analysisGroupStates) {
+		for (AnalysisGroupState analysisGroupState: analysisGroupStates) {
+			analysisGroupState = saveAnalysisGroupState(analysisGroupState);
+		}
+		return analysisGroupStates;
+	}
+
 
 }

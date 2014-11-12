@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
@@ -67,5 +68,21 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 		return treatmentGroupState;
 	}
 
+	@Override
+	public TreatmentGroupState saveTreatmentGroupState(
+			TreatmentGroupState treatmentGroupState) {
+		treatmentGroupState.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupState.getTreatmentGroup().getId()));		
+		treatmentGroupState.persist();
+		return treatmentGroupState;
+	}
+
+	@Override
+	public Collection<TreatmentGroupState> saveTreatmentGroupStates(
+			Collection<TreatmentGroupState> treatmentGroupStates) {
+		for (TreatmentGroupState treatmentGroupState: treatmentGroupStates) {
+			treatmentGroupState = saveTreatmentGroupState(treatmentGroupState);
+		}
+		return treatmentGroupStates;
+	}
 
 }

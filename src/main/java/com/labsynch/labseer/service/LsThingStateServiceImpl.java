@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
@@ -69,5 +71,20 @@ public class LsThingStateServiceImpl implements LsThingStateService {
 		return lsThingState;
 	}
 
+	@Override
+	public LsThingState saveLsThingState(
+			LsThingState lsThingState) {
+		lsThingState.setLsThing(LsThing.findLsThing(lsThingState.getLsThing().getId()));		
+		lsThingState.persist();
+		return lsThingState;
+	}
 
+	@Override
+	public Collection<LsThingState> saveLsThingStates(
+			Collection<LsThingState> lsThingStates) {
+		for (LsThingState lsThingState: lsThingStates) {
+			lsThingState = saveLsThingState(lsThingState);
+		}
+		return lsThingStates;
+	}
 }

@@ -93,6 +93,30 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 	}
 	
 	@Override
+	@Transactional
+	public TreatmentGroupValue saveTreatmentGroupValue(TreatmentGroupValue treatmentGroupValue) {
+		if (treatmentGroupValue.getLsState().getId() == null) {
+			TreatmentGroupState treatmentGroupState = new TreatmentGroupState(treatmentGroupValue.getLsState());
+			treatmentGroupState.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupValue.getLsState().getTreatmentGroup().getId()));
+			treatmentGroupState.persist();
+			treatmentGroupValue.setLsState(treatmentGroupState); 
+		} else {
+			treatmentGroupValue.setLsState(TreatmentGroupState.findTreatmentGroupState(treatmentGroupValue.getLsState().getId()));
+		}		
+		treatmentGroupValue.persist();
+		return treatmentGroupValue;
+	}
+	
+	@Override
+	@Transactional
+	public Collection<TreatmentGroupValue> saveTreatmentGroupValues(Collection<TreatmentGroupValue> treatmentGroupValues) {
+		for (TreatmentGroupValue treatmentGroupValue: treatmentGroupValues) {
+			treatmentGroupValue = saveTreatmentGroupValue(treatmentGroupValue);
+		}
+		return treatmentGroupValues;
+	}
+	
+	@Override
 	public TreatmentGroupValue updateTreatmentGroupValue(TreatmentGroupValue treatmentGroupValue) {
 		if (treatmentGroupValue.getLsState().getId() == null) {
 			TreatmentGroupState treatmentGroupState = new TreatmentGroupState(treatmentGroupValue.getLsState());

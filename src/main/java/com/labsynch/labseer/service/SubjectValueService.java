@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -33,5 +34,8 @@ public interface SubjectValueService {
 	List<SubjectValue> getSubjectValuesBySubjectIdAndStateTypeKindAndValueTypeKind(
 			Long subjectId, String stateType, String stateKind,
 			String valueType, String valueKind);
+
+	Collection<SubjectValue> saveSubjectValues(
+			Collection<SubjectValue> subjectValues);
 	
 }

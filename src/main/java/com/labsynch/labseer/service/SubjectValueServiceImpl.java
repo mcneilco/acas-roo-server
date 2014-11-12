@@ -80,6 +80,15 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 		subjectValue.persist();
 		return subjectValue;
 	}
+	
+	@Override
+	@Transactional
+	public Collection<SubjectValue> saveSubjectValues(Collection<SubjectValue> subjectValues) {
+		for (SubjectValue subjectValue: subjectValues) {
+			subjectValue = saveSubjectValue(subjectValue);
+		}
+		return subjectValues;
+	}
 
 	@Override
 	public List<SubjectValue> getSubjectValuesBySubjectId(Long id){	
