@@ -21,5 +21,7 @@ public interface PropertiesUtilService {
 
 	Boolean getUniqueProtocolName();
 
+	boolean getCreateKindsOnTheFly();
+
 	
 }

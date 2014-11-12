@@ -23,6 +23,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
         return "protocols/list";
     }
     
+    @RequestMapping(params = { "find=ByCodeNameEqualsAndIgnoredNot", "form" }, method = RequestMethod.GET)
+    public String ProtocolController.findProtocolsByCodeNameEqualsAndIgnoredNotForm(Model uiModel) {
+        return "protocols/findProtocolsByCodeNameEqualsAndIgnoredNot";
+    }
+    
+    @RequestMapping(params = "find=ByCodeNameEqualsAndIgnoredNot", method = RequestMethod.GET)
+    public String ProtocolController.findProtocolsByCodeNameEqualsAndIgnoredNot(@RequestParam("codeName") String codeName, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
+        uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, ignored).getResultList());
+        return "protocols/list";
+    }
+    
     @RequestMapping(params = { "find=ByIgnoredNot", "form" }, method = RequestMethod.GET)
     public String ProtocolController.findProtocolsByIgnoredNotForm(Model uiModel) {
         return "protocols/findProtocolsByIgnoredNot";

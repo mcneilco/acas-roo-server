@@ -26,8 +26,13 @@ import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.domain.StateKind;
+import com.labsynch.labseer.domain.StateType;
+import com.labsynch.labseer.domain.ValueKind;
+import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
 @Service
@@ -36,6 +41,9 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 	
 	@Autowired
 	private ExperimentStateService experimentStateService;
+	
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentValueServiceImpl.class);
 
@@ -199,6 +207,15 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 				experiment = null;
 			}
 		}
+		//Verify state and value kinds exist. If not, create them.
+		if (propertiesUtilService.getCreateKindsOnTheFly()) {
+			StateType stateLsType = StateType.findStateTypesByTypeNameEquals(stateType).getSingleResult();
+			StateKind.getOrCreate(stateLsType, stateKind);
+			
+			ValueType valueLsType = ValueType.findValueTypesByTypeNameEquals(valueType).getSingleResult();
+			ValueKind.getOrCreate(valueLsType, valueKind);
+		}
+		
 		//fetch the state, and if it doesn't exist, create it
 		List<ExperimentState> experimentStates;
 		if(experiment != null) {
