@@ -16,4 +16,9 @@ public interface ProtocolStateService {
 	ProtocolState createProtocolStateByProtocolIdAndStateTypeKind(Long protocolId,
 			String stateType, String stateKind);
 
+	ProtocolState saveProtocolState(ProtocolState protocolState);
+
+	Collection<ProtocolState> saveProtocolStates(
+			Collection<ProtocolState> protocolStates);
+
 }

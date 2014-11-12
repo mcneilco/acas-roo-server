@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -22,8 +23,10 @@ import com.labsynch.labseer.domain.AbstractValue;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
@@ -99,6 +102,30 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType,
 				stateKind, valueType, valueKind).getResultList();
 		
+		return analysisGroupValues;
+	}
+	
+	@Override
+	@Transactional
+	public AnalysisGroupValue saveAnalysisGroupValue(AnalysisGroupValue analysisGroupValue) {
+		if (analysisGroupValue.getLsState().getId() == null) {
+			AnalysisGroupState analysisGroupState = new AnalysisGroupState(analysisGroupValue.getLsState());
+			analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupValue.getLsState().getAnalysisGroup().getId()));
+			analysisGroupState.persist();
+			analysisGroupValue.setLsState(analysisGroupState); 
+		} else {
+			analysisGroupValue.setLsState(AnalysisGroupState.findAnalysisGroupState(analysisGroupValue.getLsState().getId()));
+		}		
+		analysisGroupValue.persist();
+		return analysisGroupValue;
+	}
+	
+	@Override
+	@Transactional
+	public Collection<AnalysisGroupValue> saveAnalysisGroupValues(Collection<AnalysisGroupValue> analysisGroupValues) {
+		for (AnalysisGroupValue analysisGroupValue: analysisGroupValues) {
+			analysisGroupValue = saveAnalysisGroupValue(analysisGroupValue);
+		}
 		return analysisGroupValues;
 	}
 	

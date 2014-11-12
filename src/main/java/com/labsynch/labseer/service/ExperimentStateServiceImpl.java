@@ -1,10 +1,13 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 
@@ -37,5 +40,22 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 		experimentState.setLsKind(stateKind);
 		experimentState.persist();
 		return experimentState;
+	}
+	
+	@Override
+	public ExperimentState saveExperimentState(
+			ExperimentState experimentState) {
+		experimentState.setExperiment(Experiment.findExperiment(experimentState.getExperiment().getId()));		
+		experimentState.persist();
+		return experimentState;
+	}
+
+	@Override
+	public Collection<ExperimentState> saveExperimentStates(
+			Collection<ExperimentState> experimentStates) {
+		for (ExperimentState experimentState: experimentStates) {
+			experimentState = saveExperimentState(experimentState);
+		}
+		return experimentStates;
 	}
 }

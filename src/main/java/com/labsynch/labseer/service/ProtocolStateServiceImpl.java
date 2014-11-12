@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
@@ -69,5 +71,21 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 		return protocolState;
 	}
 
+	@Override
+	public ProtocolState saveProtocolState(
+			ProtocolState protocolState) {
+		protocolState.setProtocol(Protocol.findProtocol(protocolState.getProtocol().getId()));		
+		protocolState.persist();
+		return protocolState;
+	}
+
+	@Override
+	public Collection<ProtocolState> saveProtocolStates(
+			Collection<ProtocolState> protocolStates) {
+		for (ProtocolState protocolState: protocolStates) {
+			protocolState = saveProtocolState(protocolState);
+		}
+		return protocolStates;
+	}
 
 }

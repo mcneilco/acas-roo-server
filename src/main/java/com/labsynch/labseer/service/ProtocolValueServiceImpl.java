@@ -73,6 +73,15 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 		protocolValue.persist();
 		return protocolValue;
 	}
+	
+	@Override
+	@Transactional
+	public Collection<ProtocolValue> saveProtocolValues(Collection<ProtocolValue> protocolValues) {
+		for (ProtocolValue protocolValue: protocolValues) {
+			protocolValue = saveProtocolValue(protocolValue);
+		}
+		return protocolValues;
+	}
 
 	@Override
 	public List<ProtocolValue> getProtocolValuesByProtocolId(Long id){	

@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
@@ -66,5 +68,21 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 		return subjectState;
 	}
 
+	@Override
+	public SubjectState saveSubjectState(
+			SubjectState subjectState) {
+		subjectState.setSubject(Subject.findSubject(subjectState.getSubject().getId()));		
+		subjectState.persist();
+		return subjectState;
+	}
+
+	@Override
+	public Collection<SubjectState> saveSubjectStates(
+			Collection<SubjectState> subjectStates) {
+		for (SubjectState subjectState: subjectStates) {
+			subjectState = saveSubjectState(subjectState);
+		}
+		return subjectStates;
+	}
 
 }
