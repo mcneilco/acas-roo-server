@@ -25,7 +25,7 @@ import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
-import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import flexjson.JSONDeserializer;
@@ -447,7 +447,7 @@ public class ExperimentController {
         Experiment experiment = null;
         try {
             experiment = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
-        } catch (UniqueExperimentNameException e) {
+        } catch (UniqueNameException e) {
             logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
             ErrorMessage error = new ErrorMessage();
             error.setErrorLevel("error");

@@ -15,12 +15,12 @@ import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
-import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
 public interface ExperimentService {
 
-	public Experiment saveLsExperiment(Experiment experiment) throws UniqueExperimentNameException;
+	public Experiment saveLsExperiment(Experiment experiment) throws UniqueNameException;
 
 	public void deleteLsExperiment(Experiment experiment);
 

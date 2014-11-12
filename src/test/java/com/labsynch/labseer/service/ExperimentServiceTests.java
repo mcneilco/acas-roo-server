@@ -45,7 +45,7 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -205,7 +205,7 @@ public class ExperimentServiceTests {
 	// @Test
 	// @Transactional
 	public void CreateProtocolFromSimpleJson_3()
-			throws UniqueExperimentNameException {
+			throws UniqueNameException {
 		String json = "{\"protocol\":{\"codeName\":\"PROT-00000007\",\"id\":14,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"id\":9,\"ignored\":false,\"imageFile\":null,\"labelText\":\"test\",\"lsKind\":\"protocol name\",\"lsTransaction\":10,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_protocol name\",\"modifiedDate\":null,\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"smeyer\",\"recordedDate\":1371828671000,\"version\":0}],\"lsStates\":[],\"lsTransaction\":10,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"smeyer\",\"recordedDate\":1371828794000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":1},\"codeName\":\"EXPT-00000004\",\"lsType\":\"default\",\"lsKind\":\"default\",\"shortDescription\":\"experiment created by generic data parser\",\"recordedBy\":\"smeyer\",\"lsTransaction\":10,\"lsLabels\":[],\"lsStates\":[]}";
 		Experiment experiment = experimentService.saveLsExperiment(Experiment
 				.fromJsonToExperiment(json));
@@ -216,7 +216,7 @@ public class ExperimentServiceTests {
 	// @Test
 	// @Transactional
 	public void CreateProtocolFromNestedJson()
-			throws UniqueExperimentNameException {
+			throws UniqueNameException {
 		// String json =
 		// "{ \"name\": \"\",\"shortDescription\": \"\",\"lsTransaction\": null,\"protocolStates\": [ { \"protocolValues\": [ { \"valueType\": \"stringValue\",\"valueKind\": \"reader instrument\",\"stringValue\": \"Molecular Dynamics FLIPR\",\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\": null,\"sigFigs\": null,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve min\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":                0,\"sigFigs\":                2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve max\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":              100,\"sigFigs\":                2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 } ],\"recordedBy\": \"userName\",\"stateType\": \"metadata\",\"stateKind\": \"protocol parameters\",\"comments\": \"\",\"lsTransaction\": null,\"ignored\": false,\"recordedDate\":    1353216427000 } ] }";
 		String json = "{\"kind\":\"primary analysis\",\"recordedBy\":\"jmcneil\",\"recordedDate\":1363503600000,\"shortDescription\":\"primary 7:34\",\"description\":\"\", \"experimentLabels\":[{\"labelType\":\"name\",\"labelKind\":\"experiment name\",\"labelText\":\"john 7:34\",\"ignored\":false,\"preferred\":true,\"recordedDate\":1363503600000,\"recordedBy\":\"jmcneil\",\"physicallyLabled\":false,\"imageFile\":null}],\"experimentStates\":[], \"protocol\":{\"kind\":\"primary analysis\",\"recordedBy\":\"username\",\"shortDescription\":\"primary analysis\",\"description\":\"\", \"codeName\":\"PROT-00000003\",\"id\":96,\"ignored\":false,\"lsTransaction\":{\"comments\":\"primary analysis protocol transactions\",\"id\":87,\"recordedDate\":1363388477000,\"version\":0},\"modifiedBy\":null,\"modifiedDate\":null,\"recordedDate\":1363388477000,\"version\":1}}";
@@ -267,7 +267,7 @@ public class ExperimentServiceTests {
 
 	// @Test
 	@Transactional
-	public void createExperiment_test2() throws UniqueExperimentNameException {
+	public void createExperiment_test2() throws UniqueNameException {
 		String json = "";
 		Experiment experiment = experimentService.saveLsExperiment(Experiment
 				.fromJsonToExperiment(json));
@@ -472,7 +472,7 @@ public class ExperimentServiceTests {
 		Experiment experiment = null;
 		try {
 			experiment = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
-		} catch (UniqueExperimentNameException e) {
+		} catch (UniqueNameException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -492,7 +492,7 @@ public class ExperimentServiceTests {
 		try {
 			experiment = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
 			experiment.persist();
-		} catch (UniqueExperimentNameException e) {
+		} catch (UniqueNameException e) {
 			caughtException = true;
 		}
 		Assert.assertTrue(caughtException);
@@ -643,5 +643,18 @@ public class ExperimentServiceTests {
 		experiment.setDeleted(false);
 		experiment.merge();
 		experiment.flush();
+	}
+	
+	@Test
+	@Transactional
+	public void uniqueNameExceptionTest() throws UniqueNameException{
+		String experimentName = "Test Load 102";
+		String json = "{\"codeName\":null,\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"deleted\":false,\"id\":null,\"ignored\":false,\"labelText\":\"Test Load 102\",\"lsKind\":\"experiment name\",\"lsTransaction\":5,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_experiment name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1395708973000,\"version\":null}],\"lsStates\":[],\"lsTransaction\":5,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000002\",\"deleted\":false,\"id\":1006,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":5,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":1395708972000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":null},\"recordedBy\":\"nouser\",\"recordedDate\":1395708973000,\"shortDescription\":\"NA\",\"version\":null}";
+		Experiment experiment = Experiment.fromJsonToExperiment(json);
+		try {
+			experimentService.saveLsExperiment(experiment);
+		} catch (UniqueNameException e){
+			Assert.assertNotNull(e);
+		}
 	}
 }

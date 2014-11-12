@@ -19,5 +19,7 @@ public interface PropertiesUtilService {
 
 	String getSecurityProperties();
 
+	Boolean getUniqueProtocolName();
+
 	
 }

@@ -45,7 +45,7 @@ import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
-import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
@@ -138,7 +138,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Override
 	@Transactional
-	public Experiment saveLsExperiment(Experiment experiment) throws UniqueExperimentNameException{
+	public Experiment saveLsExperiment(Experiment experiment) throws UniqueNameException{
 		logger.debug("incoming meta experiment: " + experiment.toJson());
 
 		//check if experiment with the same name exists
@@ -148,10 +148,10 @@ public class ExperimentServiceImpl implements ExperimentService {
 			Set<ExperimentLabel> exptLabels = experiment.getLsLabels();
 			for (ExperimentLabel label : exptLabels){
 				String labelText = label.getLabelText();
-				long protocolId = experiment.getProtocol().getId();
-				List<ExperimentLabel> experimentLabels = ExperimentLabel.findExperimentLabelsByNameAndProtocol(labelText, protocolId).getResultList();	
+				List<ExperimentLabel> experimentLabels = ExperimentLabel.findExperimentLabelsByName(labelText).getResultList();	
 				for (ExperimentLabel el : experimentLabels){
 					Experiment exp = el.getExperiment();
+					//if the experiment is not hard deleted or soft deleted, there is a name conflict
 					if (!exp.isIgnored()){
 						experimentExists = true;
 					}
@@ -159,7 +159,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			}
 
 			if (experimentExists){
-				throw new UniqueExperimentNameException("Experiment with the same name exists");							
+				throw new UniqueNameException("Experiment with the same name exists");							
 			}
 		}
 
