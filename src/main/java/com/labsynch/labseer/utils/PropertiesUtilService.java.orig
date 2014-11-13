@@ -19,9 +19,11 @@ public interface PropertiesUtilService {
 
 	String getSecurityProperties();
 
+<<<<<<< Updated upstream
 	Boolean getUniqueProtocolName();
-
-	Boolean getAutoCreateKinds();
+=======
+	boolean getCreateKindsOnTheFly();
+>>>>>>> Stashed changes
 
 	
 }

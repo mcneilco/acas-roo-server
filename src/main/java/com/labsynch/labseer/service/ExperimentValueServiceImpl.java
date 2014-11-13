@@ -208,7 +208,7 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 			}
 		}
 		//Verify state and value kinds exist. If not, create them.
-		if (propertiesUtilService.getCreateKindsOnTheFly()) {
+		if (propertiesUtilService.getAutoCreateKinds()) {
 			StateType stateLsType = StateType.findStateTypesByTypeNameEquals(stateType).getSingleResult();
 			StateKind.getOrCreate(stateLsType, stateKind);
 			

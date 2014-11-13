@@ -67,6 +67,7 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 		protocolState.setProtocol(protocol);
 		protocolState.setLsType(stateType);
 		protocolState.setLsKind(stateKind);
+		protocolState.setRecordedBy("default");
 		protocolState.persist();
 		return protocolState;
 	}

@@ -61,6 +61,7 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 		analysisGroupState.setAnalysisGroup(analysisGroup);
 		analysisGroupState.setLsType(stateType);
 		analysisGroupState.setLsKind(stateKind);
+		analysisGroupState.setRecordedBy("default");
 		analysisGroupState.persist();
 		return analysisGroupState;
 	}

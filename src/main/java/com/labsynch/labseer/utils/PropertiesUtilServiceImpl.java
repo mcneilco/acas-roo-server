@@ -101,4 +101,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public Boolean getUniqueProtocolName() {
 	    return Boolean.parseBoolean(this.uniqueProtocolName);
 	}
+	
+	String autoCreateKinds;
+
+	@Value("${autoCreateKinds}")
+	public void setAutoCreateKinds(String autoCreateKinds) {
+	    this.uniqueExperimentName = autoCreateKinds;
+	}
+	
+	@Override
+	public Boolean getAutoCreateKinds() {
+	    return Boolean.parseBoolean(this.autoCreateKinds);
+	}
 }

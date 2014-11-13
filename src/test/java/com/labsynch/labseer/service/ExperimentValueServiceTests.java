@@ -260,6 +260,20 @@ public class ExperimentValueServiceTests {
 		logger.info(experimentValue.toJson());
 	}
 	
+	@Test
+	@Transactional
+	public void updateExperimentValueTest_NewKinds() {
+		String idOrCodeName = "EXPT-00000002";
+		String stateType = "metadata";
+		String stateKind = "brian test metadata";
+		String valueType = "stringValue";
+		String valueKind = "brian comment";
+		String value = "Hooray!";
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(experimentValue);
+		logger.info(experimentValue.toJson());
+	}
+	
 	
 	
 	

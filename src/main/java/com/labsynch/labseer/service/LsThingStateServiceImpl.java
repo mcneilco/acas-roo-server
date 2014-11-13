@@ -67,6 +67,7 @@ public class LsThingStateServiceImpl implements LsThingStateService {
 		lsThingState.setLsThing(lsThing);
 		lsThingState.setLsType(stateType);
 		lsThingState.setLsKind(stateKind);
+		lsThingState.setRecordedBy("default");
 		lsThingState.persist();
 		return lsThingState;
 	}
