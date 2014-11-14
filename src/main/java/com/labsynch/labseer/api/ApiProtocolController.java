@@ -53,10 +53,10 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 import flexjson.JSON;
 import flexjson.JSONSerializer;
 
-@RooWebJson(jsonObject = Protocol.class)
+//@RooWebJson(jsonObject = Protocol.class)
 @Controller
 @RequestMapping("api/v1/protocols")
-@RooWebFinder
+//@RooWebFinder
 @Transactional
 public class ApiProtocolController {
 
@@ -282,7 +282,7 @@ public class ApiProtocolController {
     }
 
     @Transactional
-    @RequestMapping(value = "/codename/{codeName}", headers = "Accept=application/json")
+    @RequestMapping(value = "/codename/{codeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindProtocolsByCodeNameEqualsRoute(@PathVariable("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
@@ -291,7 +291,7 @@ public class ApiProtocolController {
     }
 
     @Transactional
-    @RequestMapping(params = "FindByCodeName", headers = "Accept=application/json")
+    @RequestMapping(params = "FindByCodeName", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindProtocolsByCodeNameEquals(@RequestParam("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
@@ -300,7 +300,7 @@ public class ApiProtocolController {
     }
 
     @Transactional
-    @RequestMapping(value = "/protocolname/**", headers = "Accept=application/json")
+    @RequestMapping(value = "/protocolname/**", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindProtocolsByProtocolNameEqualsRoute(HttpServletRequest request) {
         String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
@@ -341,14 +341,14 @@ public class ApiProtocolController {
     }
 
     @Transactional
-    @RequestMapping(params = "form", produces = "text/html")
+    @RequestMapping(params = "form", method = RequestMethod.GET, produces = "text/html")
     public String createForm(Model uiModel) {
         populateEditForm(uiModel, new Protocol());
         return "protocols/create";
     }
 
     @Transactional
-    @RequestMapping(value = "/{id}", produces = "text/html")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "text/html")
     public String show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("protocol", Protocol.findProtocol(id));
@@ -357,7 +357,7 @@ public class ApiProtocolController {
     }
 
     @Transactional
-    @RequestMapping(produces = "text/html")
+    @RequestMapping( method = RequestMethod.GET, produces = "text/html")
     public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
@@ -385,7 +385,7 @@ public class ApiProtocolController {
     }
 
     @Transactional
-    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, params = "form", produces = "text/html")
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
         populateEditForm(uiModel, Protocol.findProtocol(id));
         return "protocols/update";
@@ -424,7 +424,7 @@ public class ApiProtocolController {
         return pathSegment;
     }
 
-	@RequestMapping(params = "find=ByIgnoredNot", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored) {
         HttpHeaders headers = new HttpHeaders();
@@ -432,7 +432,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByIgnoredNot(ignored).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsKindEquals(@RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
@@ -440,7 +440,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
@@ -448,7 +448,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeAndKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeAndKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind) {
         HttpHeaders headers = new HttpHeaders();
@@ -456,7 +456,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeAndKindEquals(lsTypeAndKind).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsTypeEquals(@RequestParam("lsType") String lsType) {
         HttpHeaders headers = new HttpHeaders();
@@ -464,7 +464,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();

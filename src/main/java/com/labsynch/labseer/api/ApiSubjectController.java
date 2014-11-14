@@ -24,7 +24,7 @@ import com.labsynch.labseer.service.SubjectValueService;
 @Controller
 @RequestMapping("api/v1/subjects")
 @Transactional
-@RooWebJson(jsonObject = Subject.class)
+//@RooWebJson(jsonObject = Subject.class)
 public class ApiSubjectController {
 	
 	@Autowired
@@ -129,7 +129,7 @@ public class ApiSubjectController {
 	    return true;
 	}
 
-	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
         Subject subject = Subject.findSubject(id);
@@ -141,7 +141,7 @@ public class ApiSubjectController {
         return new ResponseEntity<String>(subject.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listJson() {
         HttpHeaders headers = new HttpHeaders();
@@ -204,7 +204,7 @@ public class ApiSubjectController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindSubjectsByCodeNameEquals(@RequestParam("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
@@ -212,7 +212,7 @@ public class ApiSubjectController {
         return new ResponseEntity<String>(Subject.toJsonArray(Subject.findSubjectsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindSubjectsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();

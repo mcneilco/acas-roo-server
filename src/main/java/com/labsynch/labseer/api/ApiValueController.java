@@ -51,9 +51,9 @@ import com.labsynch.labseer.service.TreatmentGroupValueService;
 
 @Controller
 @RequestMapping("api/v1/values")
-@RooWebFinder
+//@RooWebFinder
 @Transactional
-@RooWebJson(jsonObject = AbstractValue.class)
+//@RooWebJson(jsonObject = AbstractValue.class)
 public class ApiValueController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiValueController.class);
@@ -138,7 +138,7 @@ public class ApiValueController {
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = {"/{entity}", "/{entity}/"}, method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/{entity}", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> putValueByJson (
@@ -257,7 +257,7 @@ public class ApiValueController {
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = {"/{entity}", "/{entity}/"}, method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/{entity}", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> postValueByJson (
