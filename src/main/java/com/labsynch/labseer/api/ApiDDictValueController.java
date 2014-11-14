@@ -29,8 +29,8 @@ import com.labsynch.labseer.service.DataDictionaryService;
 @Transactional
 @RequestMapping("api/v1/ddictvalues")
 @Controller
-@RooWebFinder
-@RooWebJson(jsonObject = DDictValue.class)
+//@RooWebFinder
+//@RooWebJson(jsonObject = DDictValue.class)
 
 public class ApiDDictValueController {
 
@@ -220,7 +220,7 @@ public class ApiDDictValueController {
 		return new ResponseEntity<String>(headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(params = "find=ByLsKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> jsonFindDDictValuesByLsKindEquals(@RequestParam("lsKind") String lsKind) {
 		HttpHeaders headers = new HttpHeaders();
@@ -228,7 +228,7 @@ public class ApiDDictValueController {
 		return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(params = "find=ByLsTypeEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> jsonFindDDictValuesByLsTypeEquals(@RequestParam("lsType") String lsType) {
 		HttpHeaders headers = new HttpHeaders();
@@ -236,7 +236,7 @@ public class ApiDDictValueController {
 		return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> jsonFindDDictValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
 		HttpHeaders headers = new HttpHeaders();
@@ -354,7 +354,7 @@ public class ApiDDictValueController {
 		return true;
 	}
 
-	@RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindDDictValuesByCodeNameEquals(@RequestParam("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
@@ -362,7 +362,7 @@ public class ApiDDictValueController {
         return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByIgnoredNot", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindDDictValuesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored) {
         HttpHeaders headers = new HttpHeaders();
