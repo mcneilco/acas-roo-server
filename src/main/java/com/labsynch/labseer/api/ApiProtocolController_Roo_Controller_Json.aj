@@ -14,6 +14,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect ApiProtocolController_Roo_Controller_Json {
     
+    @RequestMapping(params = "find=ByCodeNameEqualsAndIgnoredNot", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ApiProtocolController.jsonFindProtocolsByCodeNameEqualsAndIgnoredNot(@RequestParam("codeName") String codeName, @RequestParam(value = "ignored", required = false) boolean ignored) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, ignored).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLsKindLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ApiProtocolController.jsonFindProtocolsByLsKindLike(@RequestParam("lsKind") String lsKind) {

@@ -64,6 +64,7 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 		subjectState.setSubject(subject);
 		subjectState.setLsType(stateType);
 		subjectState.setLsKind(stateKind);
+		subjectState.setRecordedBy("default");
 		subjectState.persist();
 		return subjectState;
 	}

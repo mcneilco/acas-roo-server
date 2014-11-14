@@ -38,6 +38,7 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 		experimentState.setExperiment(experiment);
 		experimentState.setLsType(stateType);
 		experimentState.setLsKind(stateKind);
+		experimentState.setRecordedBy("default");
 		experimentState.persist();
 		return experimentState;
 	}

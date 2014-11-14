@@ -64,6 +64,7 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 		treatmentGroupState.setTreatmentGroup(treatmentGroup);
 		treatmentGroupState.setLsType(stateType);
 		treatmentGroupState.setLsKind(stateKind);
+		treatmentGroupState.setRecordedBy("default");
 		treatmentGroupState.persist();
 		return treatmentGroupState;
 	}
