@@ -24,8 +24,8 @@ import com.labsynch.labseer.domain.DDictKind;
 @Transactional
 @RequestMapping("api/v1/ddictkinds")
 @Controller
-@RooWebFinder
-@RooWebJson(jsonObject = DDictKind.class)
+//@RooWebFinder
+//@RooWebJson(jsonObject = DDictKind.class)
 
 public class ApiDDictKindController {
 
@@ -33,7 +33,7 @@ public class ApiDDictKindController {
 
 
 
-	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
         DDictKind DDictKind_ = DDictKind.findDDictKind(id);
@@ -45,7 +45,7 @@ public class ApiDDictKindController {
         return new ResponseEntity<String>(DDictKind_.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listJson() {
         HttpHeaders headers = new HttpHeaders();

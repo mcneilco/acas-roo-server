@@ -24,8 +24,8 @@ import com.labsynch.labseer.domain.DDictType;
 @Transactional
 @RequestMapping("api/v1/ddicttypes")
 @Controller
-@RooWebFinder
-@RooWebJson(jsonObject = DDictType.class)
+//@RooWebFinder
+//@RooWebJson(jsonObject = DDictType.class)
 
 public class ApiDDictTypeController {
 

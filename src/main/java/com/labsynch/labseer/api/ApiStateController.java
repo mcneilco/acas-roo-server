@@ -36,9 +36,9 @@ import com.labsynch.labseer.service.TreatmentGroupStateService;
 
 @Controller
 @RequestMapping("api/v1/states")
-@RooWebFinder
+//@RooWebFinder
 @Transactional
-@RooWebJson(jsonObject = AbstractState.class)
+//@RooWebJson(jsonObject = AbstractState.class)
 public class ApiStateController {
 private static final Logger logger = LoggerFactory.getLogger(ApiStateController.class);
 
@@ -116,7 +116,7 @@ private LsThingStateService lsThingStateService;
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = {"/{entity}", "/{entity}/"}, method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/{entity}", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> postStateByJson (

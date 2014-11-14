@@ -23,7 +23,7 @@ import com.labsynch.labseer.domain.AnalysisGroupValue;
 @Controller
 @RequestMapping("api/v1/analysisgroupvalues")
 @Transactional
-@RooWebJson(jsonObject = AnalysisGroupValue.class)
+//@RooWebJson(jsonObject = AnalysisGroupValue.class)
 public class ApiAnalysisGroupValueController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupValueController.class);
@@ -31,7 +31,7 @@ public class ApiAnalysisGroupValueController {
 	
 
 
-	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
         AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
@@ -43,7 +43,7 @@ public class ApiAnalysisGroupValueController {
         return new ResponseEntity<String>(analysisGroupValue.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listJson() {
         HttpHeaders headers = new HttpHeaders();
@@ -106,7 +106,7 @@ public class ApiAnalysisGroupValueController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByCodeValueEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByCodeValueEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindAnalysisGroupValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue) {
         HttpHeaders headers = new HttpHeaders();
@@ -114,7 +114,7 @@ public class ApiAnalysisGroupValueController {
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByCodeValueEquals(codeValue).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue) {
         HttpHeaders headers = new HttpHeaders();
@@ -122,7 +122,7 @@ public class ApiAnalysisGroupValueController {
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsState", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsState", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindAnalysisGroupValuesByLsState(@RequestParam("lsState") AnalysisGroupState lsState) {
         HttpHeaders headers = new HttpHeaders();
@@ -130,7 +130,7 @@ public class ApiAnalysisGroupValueController {
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsState(lsState).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindAnalysisGroupValuesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
@@ -138,7 +138,7 @@ public class ApiAnalysisGroupValueController {
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();

@@ -39,9 +39,9 @@ import com.labsynch.labseer.service.TreatmentGroupValueService;
 
 @Controller
 @RequestMapping("api/v1/analysisgroups")
-@RooWebFinder
+//@RooWebFinder
 @Transactional
-@RooWebJson(jsonObject = AnalysisGroup.class)
+//@RooWebJson(jsonObject = AnalysisGroup.class)
 public class ApiAnalysisGroupController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupController.class);
@@ -64,7 +64,7 @@ public class ApiAnalysisGroupController {
 	@Autowired
 	private SubjectValueService subjectValueService;
 
-	@RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
+	@RequestMapping(value = "/subjectsstatus/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> findSubjectValues(
 			@PathVariable("id") Long id,
@@ -106,7 +106,7 @@ public class ApiAnalysisGroupController {
 
 
 
-	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
         AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
@@ -118,7 +118,7 @@ public class ApiAnalysisGroupController {
         return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(headers = "Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listJson() {
         HttpHeaders headers = new HttpHeaders();
@@ -190,7 +190,7 @@ public class ApiAnalysisGroupController {
 //        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(AnalysisGroup.findAnalysisGroupsByExperiments(experiment).getResultList()), headers, HttpStatus.OK);
 //    }
 
-	@RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindAnalysisGroupsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();

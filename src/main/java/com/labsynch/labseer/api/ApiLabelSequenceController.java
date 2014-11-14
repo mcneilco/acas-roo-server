@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RooWebJson(jsonObject = LabelSequence.class)
+//@RooWebJson(jsonObject = LabelSequence.class)
 @Controller
 @RequestMapping("/api/v1/labelsequences")
-@RooWebFinder
+//@RooWebFinder
 public class ApiLabelSequenceController {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiLabelSequenceController.class);
@@ -65,7 +65,7 @@ public class ApiLabelSequenceController {
         return new ResponseEntity<String>(AutoLabelDTO.toJsonArray(autoLabels), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(params = "getNextLabelSequences", headers = "Accept=application/json")
+    @RequestMapping(params = "getNextLabelSequences", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindLabelSequencesByThingAndLabel(@RequestParam("thingTypeAndKind") String thingTypeAndKind, @RequestParam("labelTypeAndKind") String labelTypeAndKind, @RequestParam("numberOfLabels") long numberOfLabels) {
         HttpHeaders headers = new HttpHeaders();
