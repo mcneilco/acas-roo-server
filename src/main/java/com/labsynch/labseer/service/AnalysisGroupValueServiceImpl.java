@@ -30,6 +30,7 @@ import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -148,7 +149,7 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 	public AnalysisGroupValue updateAnalysisGroupValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
 		//fetch the entity
 		AnalysisGroup analysisGroup;
-		if(ApiValueController.isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -216,5 +217,14 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		analysisGroupValue.setRecordedBy("default");
 		analysisGroupValue.persist();
 		return analysisGroupValue;
+	}
+
+	@Override
+	public Collection<AnalysisGroupValue> updateAnalysisGroupValues(
+			Collection<AnalysisGroupValue> analysisGroupValues) {
+		for (AnalysisGroupValue analysisGroupValue: analysisGroupValues) {
+			analysisGroupValue = updateAnalysisGroupValue(analysisGroupValue);
+		}
+		return analysisGroupValues;
 	}
 }

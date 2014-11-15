@@ -31,6 +31,7 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -146,7 +147,7 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 			String valueKind, String value) {
 		//fetch the entity
 		TreatmentGroup treatmentGroup;
-		if(ApiValueController.isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			treatmentGroup = TreatmentGroup.findTreatmentGroup(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -221,6 +222,15 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 		List<TreatmentGroupValue> treatmentGroupValues = TreatmentGroupValue.findTreatmentGroupValuesByTreatmentGroupIDAndStateTypeKindAndValueTypeKind(treatmentGroupId, stateType,
 				stateKind, valueType, valueKind).getResultList();
 		
+		return treatmentGroupValues;
+	}
+	
+	@Override
+	public Collection<TreatmentGroupValue> updateTreatmentGroupValues(
+			Collection<TreatmentGroupValue> treatmentGroupValues) {
+		for (TreatmentGroupValue treatmentGroupValue: treatmentGroupValues) {
+			treatmentGroupValue = updateTreatmentGroupValue(treatmentGroupValue);
+		}
 		return treatmentGroupValues;
 	}
 

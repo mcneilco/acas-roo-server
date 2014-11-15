@@ -32,6 +32,7 @@ import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -116,7 +117,7 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 	public LsThingValue updateLsThingValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
 		//fetch the entity
 		LsThing lsThing;
-		if(ApiValueController.isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			lsThing = LsThing.findLsThing(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -184,5 +185,14 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 		lsThingValue.setRecordedBy("default");
 		lsThingValue.persist();
 		return lsThingValue;
+	}
+	
+	@Override
+	public Collection<LsThingValue> updateLsThingValues(
+			Collection<LsThingValue> lsThingValues) {
+		for (LsThingValue lsThingValue: lsThingValues) {
+			lsThingValue = updateLsThingValue(lsThingValue);
+		}
+		return lsThingValues;
 	}
 }
