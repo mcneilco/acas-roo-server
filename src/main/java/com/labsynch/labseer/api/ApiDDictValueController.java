@@ -25,6 +25,7 @@ import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
 import com.labsynch.labseer.service.DataDictionaryService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Transactional
 @RequestMapping("api/v1/ddictvalues")
@@ -88,7 +89,7 @@ public class ApiDDictValueController {
 		
 		DDictValue dDictValue = null;
 		List<DDictValue> dDictValues = null;
-		if (isNumeric(idOrCodeName)){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
 			dDictValue = DDictValue.findDDictValue(Long.valueOf(idOrCodeName));
 		} else {
 			dDictValues = DDictValue.findDDictValuesByCodeNameEquals(idOrCodeName).getResultList();
@@ -129,7 +130,7 @@ public class ApiDDictValueController {
 		
 		DDictValue dDictValue = null;
 		List<DDictValue> dDictValues = null;
-		if (isNumeric(idOrCodeName)){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
 			dDictValue = DDictValue.findDDictValue(Long.valueOf(idOrCodeName));
 		} else {
 			dDictValues = DDictValue.findDDictValuesByCodeNameEquals(idOrCodeName).getResultList();

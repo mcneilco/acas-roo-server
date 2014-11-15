@@ -36,6 +36,7 @@ import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Controller
 @RequestMapping("api/v1/analysisgroups")
@@ -211,7 +212,7 @@ public class ApiAnalysisGroupController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		AnalysisGroup analysisGroup;
-		if(isNumeric(analysisGroupIdOrCodeName)) {
+		if(SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
 		} else {		
 			try {
@@ -250,7 +251,7 @@ public class ApiAnalysisGroupController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		AnalysisGroup analysisGroup;
-		if(isNumeric(analysisGroupIdOrCodeName)) {
+		if(SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
 		} else {		
 			try {
@@ -289,7 +290,7 @@ public class ApiAnalysisGroupController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		AnalysisGroup analysisGroup;
-		if(isNumeric(analysisGroupIdOrCodeName)) {
+		if(SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
 		} else {		
 			try {
@@ -331,7 +332,7 @@ public class ApiAnalysisGroupController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		AnalysisGroup analysisGroup;
-		if(isNumeric(analysisGroupIdOrCodeName)) {
+		if(SimpleUtil.isNumeric(analysisGroupIdOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(analysisGroupIdOrCodeName));
 		} else {		
 			try {
@@ -357,13 +358,6 @@ public class ApiAnalysisGroupController {
 		}
 	}
 
-	
-	private static boolean isNumeric(String str) {
-		for (char c : str.toCharArray()) {
-			if (!Character.isDigit(c)) return false;
-		}
-		return true;
-	}
 
 	
 }

@@ -50,7 +50,7 @@ import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
 
 @Controller
-@RequestMapping("api/v1/values")
+@RequestMapping("api/v1")
 //@RooWebFinder
 @Transactional
 //@RooWebJson(jsonObject = AbstractValue.class)
@@ -94,6 +94,8 @@ public class ApiValueController {
 	@Autowired
 	private LsThingValueService lsThingValueService;
 
+	//special path
+	
 	@RequestMapping(value = "/{entity}/{idOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
@@ -138,220 +140,438 @@ public class ApiValueController {
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
 	}
 	
-	@RequestMapping(value = "/{entity}", method = RequestMethod.PUT, headers = "Accept=application/json")
-	@ResponseBody
-	@Transactional
-	public ResponseEntity<String> putValueByJson (
-			@PathVariable("entity") String entity,
-			@RequestBody String json) {
-
+	//List values as jsonArray (GET)
+	
+	@RequestMapping(value = "/protocolValues", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> listProtocolValuesJsonArray() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<ProtocolValue> result = ProtocolValue.findAllProtocolValues();
+        for (ProtocolValue protocolValue: result) {
+        	if (protocolValue.isIgnored()) result.remove(protocolValue);
+        }
+        return new ResponseEntity<String>(ProtocolValue.toJsonArray(result), headers, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/experimentValues", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> listExperimentValuesJsonArray() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<ExperimentValue> result = ExperimentValue.findAllExperimentValues();
+        for (ExperimentValue experimentValue: result) {
+        	if (experimentValue.isIgnored()) result.remove(experimentValue);
+        }
+        return new ResponseEntity<String>(ExperimentValue.toJsonArray(result), headers, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/analysisGroupValues", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> listAnalysisGroupValuesJsonArray() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<AnalysisGroupValue> result = AnalysisGroupValue.findAllAnalysisGroupValues();
+        for (AnalysisGroupValue analysisGroupValue: result) {
+        	if (analysisGroupValue.isIgnored()) result.remove(analysisGroupValue);
+        }
+        return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(result), headers, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/treatmentGroupValues", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> listTreatmentGroupValuesJsonArray() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<TreatmentGroupValue> result = TreatmentGroupValue.findAllTreatmentGroupValues();
+        for (TreatmentGroupValue treatmentGroupValue: result) {
+        	if (treatmentGroupValue.isIgnored()) result.remove(treatmentGroupValue);
+        }
+        return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(result), headers, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/subjectValues", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> listSubjectValuesJsonArray() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<SubjectValue> result = SubjectValue.findAllSubjectValues();
+        for (SubjectValue subjectValue: result) {
+        	if (subjectValue.isIgnored()) result.remove(subjectValue);
+        }
+        return new ResponseEntity<String>(SubjectValue.toJsonArray(result), headers, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/lsThingValues", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> listLsThingValuesJsonArray() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<LsThingValue> result = LsThingValue.findAllLsThingValues();
+        for (LsThingValue lsThingValue: result) {
+        	if (lsThingValue.isIgnored()) result.remove(lsThingValue);
+        }
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(result), headers, HttpStatus.OK);
+    }
+	
+	//Show value json by id (GET)
+	
+		@RequestMapping(value = "/protocolValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+		@ResponseBody
+		@Transactional
+	public ResponseEntity<String> showProtocolValueJson (@PathVariable("id") Long id) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//this if/else if block controls which lsThing is being hit
-		logger.debug("ENTITY IS: " + entity);
-		if (entity.equals("protocol")) {
-			ProtocolValue protocolValue = ProtocolValue.fromJsonToProtocolValue(json);
-			if (ProtocolValue.findProtocolValue(protocolValue.getId()) == null) {
-				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-			}
-			protocolValue = protocolValueService.updateProtocolValue(protocolValue);
-	        return new ResponseEntity<String>(protocolValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("experiment")) {
-			ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-			if (ExperimentValue.findExperimentValue(experimentValue.getId()) == null) {
-				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-			}
-			experimentValue = experimentValueService.updateExperimentValue(experimentValue);
-	        return new ResponseEntity<String>(experimentValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("analysisGroup")) {
-			AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
-			if (AnalysisGroupValue.findAnalysisGroupValue(analysisGroupValue.getId()) == null) {
-				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-			}
-			analysisGroupValue = analysisGroupValueService.updateAnalysisGroupValue(analysisGroupValue);
-	        return new ResponseEntity<String>(analysisGroupValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("treatmentGroup")) {
-			TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.fromJsonToTreatmentGroupValue(json);
-			if (TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupValue.getId()) == null) {
-				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-			}
-			treatmentGroupValue = treatmentGroupValueService.updateTreatmentGroupValue(treatmentGroupValue);
-	        return new ResponseEntity<String>(treatmentGroupValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("subject")) {
-			SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
-			if (SubjectValue.findSubjectValue(subjectValue.getId()) == null) {
-				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-			}
-			subjectValue = subjectValueService.updateSubjectValue(subjectValue);
-	        return new ResponseEntity<String>(subjectValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("lsThing")) {
-			LsThingValue lsThingValue = LsThingValue.fromJsonToLsThingValue(json);
-			if (LsThingValue.findLsThingValue(lsThingValue.getId()) == null) {
-				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-			}
-			lsThingValue = lsThingValueService.updateLsThingValue(lsThingValue);
-	        return new ResponseEntity<String>(lsThingValue.toJson(),headers, HttpStatus.OK);
-		}
-		
-		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+		ProtocolValue protocolValue = ProtocolValue.findProtocolValue(id);
+        if (protocolValue == null || protocolValue.isIgnored()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/{entity}/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/experimentValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> getValueById (
-			@PathVariable("entity") String entity,
-			@PathVariable("id") Long id) {
-
+	public ResponseEntity<String> showExperimentValueJson (@PathVariable("id") Long id) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		logger.debug("ENTITY IS: " + entity);
-		if (entity.equals("protocol")) {
-			ProtocolValue protocolValue = ProtocolValue.findProtocolValue(id);
-	        if (protocolValue == null || protocolValue.isIgnored()) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
-		}
-		if (entity.equals("experiment")) {
-			ExperimentValue experimentValue = ExperimentValue.findExperimentValue(id);
-	        if (experimentValue == null || experimentValue.isIgnored()) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
-		}
-		if (entity.equals("analysisGroup")) {
-			AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
-	        if (analysisGroupValue == null || analysisGroupValue.isIgnored()) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(analysisGroupValue.toJson(), headers, HttpStatus.OK);
-		}
-		if (entity.equals("treatmentGroup")) {
-			TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.findTreatmentGroupValue(id);
-	        if (treatmentGroupValue == null || treatmentGroupValue.isIgnored()) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(treatmentGroupValue.toJson(), headers, HttpStatus.OK);
-		}
-		if (entity.equals("subject")) {
-			SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
-	        if (subjectValue == null || subjectValue.isIgnored()) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
-		}
-		if (entity.equals("lsThing")) {
-			LsThingValue lsThingValue = LsThingValue.findLsThingValue(id);
-	        if (lsThingValue == null || lsThingValue.isIgnored()) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-	        return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
-		}
-		
-		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+		ExperimentValue experimentValue = ExperimentValue.findExperimentValue(id);
+        if (experimentValue == null || experimentValue.isIgnored()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/{entity}", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisGroupValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> postValueByJson (
-			@PathVariable("entity") String entity,
-			@RequestBody String json) {
-
+	public ResponseEntity<String> showAnalysisGroupValueJson (@PathVariable("id") Long id) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//this if/else if block controls which lsThing is being hit
-		logger.debug("ENTITY IS: " + entity);
-		if (entity.equals("protocol")) {
-			ProtocolValue protocolValue = ProtocolValue.fromJsonToProtocolValue(json);
-			protocolValue = protocolValueService.saveProtocolValue(protocolValue);
-	        return new ResponseEntity<String>(protocolValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("experiment")) {
-			ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-			experimentValue = experimentValueService.saveExperimentValue(experimentValue);
-	        return new ResponseEntity<String>(experimentValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("analysisGroup")) {
-			AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
-			analysisGroupValue = analysisGroupValueService.saveAnalysisGroupValue(analysisGroupValue);
-	        return new ResponseEntity<String>(analysisGroupValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("treatmentGroup")) {
-			TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.fromJsonToTreatmentGroupValue(json);
-			treatmentGroupValue = treatmentGroupValueService.saveTreatmentGroupValue(treatmentGroupValue);
-	        return new ResponseEntity<String>(treatmentGroupValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("subject")) {
-			SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
-			subjectValue = subjectValueService.saveSubjectValue(subjectValue);
-	        return new ResponseEntity<String>(subjectValue.toJson(),headers, HttpStatus.OK);
-		}
-		if (entity.equals("lsThing")) {
-			LsThingValue lsThingValue = LsThingValue.fromJsonToLsThingValue(json);
-			lsThingValue = lsThingValueService.saveLsThingValue(lsThingValue);
-	        return new ResponseEntity<String>(lsThingValue.toJson(),headers, HttpStatus.OK);
-		}
-		
-		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+		AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
+        if (analysisGroupValue == null || analysisGroupValue.isIgnored()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<String>(analysisGroupValue.toJson(), headers, HttpStatus.OK);
 	}
-	
-	@RequestMapping(value = "/{entity}/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+
+	@RequestMapping(value = "/treatmentGroupValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> postValueByJsonArray (
-			@PathVariable("entity") String entity,
-			@RequestBody String json) {
-
+	public ResponseEntity<String> showTreatmentGroupValueJson (@PathVariable("id") Long id) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		//this if/else if block controls which lsThing is being hit
-		logger.debug("ENTITY IS: " + entity);
-		if (entity.equals("protocol")) {
-			Collection<ProtocolValue> protocolValues = ProtocolValue.fromJsonArrayToProtocolValues(json);
-			protocolValues = protocolValueService.saveProtocolValues(protocolValues);
-	        return new ResponseEntity<String>(ProtocolValue.toJsonArray(protocolValues),headers, HttpStatus.OK);
-		}
-		if (entity.equals("experiment")) {
-			Collection<ExperimentValue> experimentValues = ExperimentValue.fromJsonArrayToExperimentValues(json);
-			experimentValues = experimentValueService.saveExperimentValues(experimentValues);
-	        return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues),headers, HttpStatus.OK);
-		}
-		if (entity.equals("analysisGroup")) {
-			Collection<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json);
-			analysisGroupValues = analysisGroupValueService.saveAnalysisGroupValues(analysisGroupValues);
-	        return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues),headers, HttpStatus.OK);
-		}
-		if (entity.equals("treatmentGroup")) {
-			Collection<TreatmentGroupValue> treatmentGroupValues = TreatmentGroupValue.fromJsonArrayToTreatmentGroupValues(json);
-			treatmentGroupValues = treatmentGroupValueService.saveTreatmentGroupValues(treatmentGroupValues);
-	        return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues),headers, HttpStatus.OK);
-		}
-		if (entity.equals("subject")) {
-			Collection<SubjectValue> subjectValues = SubjectValue.fromJsonArrayToSubjectValues(json);
-			subjectValues = subjectValueService.saveSubjectValues(subjectValues);
-	        return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues),headers, HttpStatus.OK);
-		}
-		if (entity.equals("lsThing")) {
-			Collection<LsThingValue> lsThingValues = LsThingValue.fromJsonArrayToLsThingValues(json);
-			lsThingValues = lsThingValueService.saveLsThingValues(lsThingValues);
-	        return new ResponseEntity<String>(LsThingValue.toJsonArray(lsThingValues),headers, HttpStatus.OK);
-		}
-		
-		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+		TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.findTreatmentGroupValue(id);
+        if (treatmentGroupValue == null || treatmentGroupValue.isIgnored()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<String>(treatmentGroupValue.toJson(), headers, HttpStatus.OK);
 	}
 	
-	public static boolean isNumeric(String str) {
-		for (char c : str.toCharArray()) {
-			if (!Character.isDigit(c)) return false;
-		}
-		return true;
+	@RequestMapping(value = "/subjectValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> showSubjectValueJson (@PathVariable("id") Long id) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
+        if (subjectValue == null || subjectValue.isIgnored()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/lsThingValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> showLsThingValueJson (@PathVariable("id") Long id) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		LsThingValue lsThingValue = LsThingValue.findLsThingValue(id);
+        if (lsThingValue == null || lsThingValue.isIgnored()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
+	}	
+	
+	
+	//Update value from json (PUT)
+	@RequestMapping(value = "/protocolValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateProtocolValueFromJson (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		ProtocolValue protocolValue = ProtocolValue.fromJsonToProtocolValue(json);
+		if (ProtocolValue.findProtocolValue(protocolValue.getId()) == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		protocolValue = protocolValueService.updateProtocolValue(protocolValue);
+        return new ResponseEntity<String>(protocolValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/experimentValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateExperimentValueFromJson (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+		if (ExperimentValue.findExperimentValue(experimentValue.getId()) == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		experimentValue = experimentValueService.updateExperimentValue(experimentValue);
+        return new ResponseEntity<String>(experimentValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/analysisGroupValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateAnalysisGroupValueFromJson (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
+		if (AnalysisGroupValue.findAnalysisGroupValue(analysisGroupValue.getId()) == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		analysisGroupValue = analysisGroupValueService.updateAnalysisGroupValue(analysisGroupValue);
+        return new ResponseEntity<String>(analysisGroupValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/treatmentGroupValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateTreatmentGroupValueFromJson (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.fromJsonToTreatmentGroupValue(json);
+		if (TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupValue.getId()) == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		treatmentGroupValue = treatmentGroupValueService.updateTreatmentGroupValue(treatmentGroupValue);
+        return new ResponseEntity<String>(treatmentGroupValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/subjectValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateSubjectValueFromJson (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
+		if (SubjectValue.findSubjectValue(subjectValue.getId()) == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		subjectValue = subjectValueService.updateSubjectValue(subjectValue);
+        return new ResponseEntity<String>(subjectValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/lsThingValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateLsThingValueFromJson (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		LsThingValue lsThingValue = LsThingValue.fromJsonToLsThingValue(json);
+		if (LsThingValue.findLsThingValue(lsThingValue.getId()) == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		lsThingValue = lsThingValueService.updateLsThingValue(lsThingValue);
+        return new ResponseEntity<String>(lsThingValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	//Update values from jsonArray (PUT)
+	
+	@RequestMapping(value = "/protocolValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateProtocolValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<ProtocolValue> protocolValues = ProtocolValue.fromJsonArrayToProtocolValues(json);
+		protocolValues = protocolValueService.updateProtocolValues(protocolValues);
+        return new ResponseEntity<String>(ProtocolValue.toJsonArray(protocolValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/experimentValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateExperimentValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<ExperimentValue> experimentValues = ExperimentValue.fromJsonArrayToExperimentValues(json);
+		experimentValues = experimentValueService.updateExperimentValues(experimentValues);
+        return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/analysisGroupValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateAnalysisGroupValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json);
+		analysisGroupValues = analysisGroupValueService.updateAnalysisGroupValues(analysisGroupValues);
+        return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/treatmentGroupValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateTreatmentGroupValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<TreatmentGroupValue> treatmentGroupValues = TreatmentGroupValue.fromJsonArrayToTreatmentGroupValues(json);
+		treatmentGroupValues = treatmentGroupValueService.updateTreatmentGroupValues(treatmentGroupValues);
+        return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/subjectValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateSubjectValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<SubjectValue> subjectValues = SubjectValue.fromJsonArrayToSubjectValues(json);
+		subjectValues = subjectValueService.updateSubjectValues(subjectValues);
+        return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/lsThingValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> updateLsThingValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<LsThingValue> lsThingValues = LsThingValue.fromJsonArrayToLsThingValues(json);
+		lsThingValues = lsThingValueService.updateLsThingValues(lsThingValues);
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(lsThingValues),headers, HttpStatus.OK);
+	}
+	
+	
+	//Create value from json (POST)
+	
+	@RequestMapping(value = "/protocolValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createProtocolValueFromJson (@RequestBody String json) {
+		ProtocolValue protocolValue = ProtocolValue.fromJsonToProtocolValue(json);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		protocolValue = protocolValueService.saveProtocolValue(protocolValue);
+        return new ResponseEntity<String>(protocolValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/experimentValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createExperimentValueFromJson (@RequestBody String json) {
+		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		experimentValue = experimentValueService.saveExperimentValue(experimentValue);
+        return new ResponseEntity<String>(experimentValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/analysisGroupValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createAnalysisGroupValueFromJson (@RequestBody String json) {
+		AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		analysisGroupValue = analysisGroupValueService.saveAnalysisGroupValue(analysisGroupValue);
+        return new ResponseEntity<String>(analysisGroupValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/treatmentGroupValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createTreatmentGroupValueFromJson (@RequestBody String json) {
+		TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.fromJsonToTreatmentGroupValue(json);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		treatmentGroupValue = treatmentGroupValueService.saveTreatmentGroupValue(treatmentGroupValue);
+        return new ResponseEntity<String>(treatmentGroupValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/subjectValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createSubjectValueFromJson (@RequestBody String json) {
+		SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		subjectValue = subjectValueService.saveSubjectValue(subjectValue);
+        return new ResponseEntity<String>(subjectValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/lsThingValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createLsThingValueFromJson (@RequestBody String json) {
+		LsThingValue lsThingValue = LsThingValue.fromJsonToLsThingValue(json);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		lsThingValue = lsThingValueService.saveLsThingValue(lsThingValue);
+        return new ResponseEntity<String>(lsThingValue.toJson(),headers, HttpStatus.OK);
+	}
+	
+	//Create values from jsonArray (POST)
+	
+	@RequestMapping(value = "/protocolValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createProtocolValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<ProtocolValue> protocolValues = ProtocolValue.fromJsonArrayToProtocolValues(json);
+		protocolValues = protocolValueService.saveProtocolValues(protocolValues);
+        return new ResponseEntity<String>(ProtocolValue.toJsonArray(protocolValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/experimentValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createExperimentValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<ExperimentValue> experimentValues = ExperimentValue.fromJsonArrayToExperimentValues(json);
+		experimentValues = experimentValueService.saveExperimentValues(experimentValues);
+        return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/analysisGroupValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createAnalysisGroupValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json);
+		analysisGroupValues = analysisGroupValueService.saveAnalysisGroupValues(analysisGroupValues);
+        return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/treatmentGroupValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createTreatmentGroupValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<TreatmentGroupValue> treatmentGroupValues = TreatmentGroupValue.fromJsonArrayToTreatmentGroupValues(json);
+		treatmentGroupValues = treatmentGroupValueService.saveTreatmentGroupValues(treatmentGroupValues);
+        return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/subjectValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createSubjectValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<SubjectValue> subjectValues = SubjectValue.fromJsonArrayToSubjectValues(json);
+		subjectValues = subjectValueService.saveSubjectValues(subjectValues);
+        return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues),headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/lsThingValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createLsThingValuesFromJsonArray (@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		Collection<LsThingValue> lsThingValues = LsThingValue.fromJsonArrayToLsThingValues(json);
+		lsThingValues = lsThingValueService.saveLsThingValues(lsThingValues);
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(lsThingValues),headers, HttpStatus.OK);
+	}
+	
 	
 }

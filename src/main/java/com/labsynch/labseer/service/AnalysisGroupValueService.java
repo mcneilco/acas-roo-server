@@ -36,5 +36,8 @@ public interface AnalysisGroupValueService {
 	Collection<AnalysisGroupValue> saveAnalysisGroupValues(
 			Collection<AnalysisGroupValue> analysisGroupValues);
 
+	public Collection<AnalysisGroupValue> updateAnalysisGroupValues(
+			Collection<AnalysisGroupValue> analysisGroupValues);
+
 	
 }

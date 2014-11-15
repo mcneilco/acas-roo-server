@@ -38,5 +38,8 @@ public interface ExperimentValueService {
 
 	Collection<ExperimentValue> saveExperimentValues(
 			Collection<ExperimentValue> experimentValues);
+
+	public Collection<ExperimentValue> updateExperimentValues(
+			Collection<ExperimentValue> experimentValues);
 	
 }

@@ -73,6 +73,7 @@ import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
 
@@ -673,20 +674,20 @@ public class ApiExperimentController {
 
 	}
 
-	@RequestMapping(value = "/{IdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{idOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> getExperimentValuesForExperimentByIdOrCodeName (
-			@PathVariable("IdOrCodeName") String IdOrCodeName) {		
+			@PathVariable("idOrCodeName") String idOrCodeName) {		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		List<ExperimentValue> experimentValues = null;
 		Long id = null;
-		if(isNumeric(IdOrCodeName)) {
-			id = Long.valueOf(IdOrCodeName);
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
+			id = Long.valueOf(idOrCodeName);
 		} else {
-			id = Experiment.findExperimentsByCodeNameEquals(IdOrCodeName).getSingleResult().getId();
+			id = Experiment.findExperimentsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
 		}
 
 		if(id != null) {
