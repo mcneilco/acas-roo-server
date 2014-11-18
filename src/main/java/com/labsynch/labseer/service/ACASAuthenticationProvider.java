@@ -134,7 +134,7 @@ AbstractUserDetailsAuthenticationProvider {
 
 		UserDetails user = null;
 		String expectedPassword = null;
-		Boolean enabled = null;
+		Boolean enabled = true;
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		
 		if (adminUser == null){
