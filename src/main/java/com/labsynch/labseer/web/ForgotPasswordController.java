@@ -74,8 +74,8 @@ public class ForgotPasswordController {
         		User.merge();
         		SimpleMailMessage mail = new SimpleMailMessage();
         		mail.setTo(form.getEmailAddress());
-        		mail.setSubject("Password Recover");
-        		mail.setText("Hi "+User.getFirstName()+",\n. You had requested for password recovery. Your password is "+newPassword+". \n Thanks Tyical Security Admin");
+        		mail.setSubject("ACAS Password Recovery");
+        		mail.setText("Hi "+User.getFirstName()+",\n"+"You recently requested for your password to be reset. Your new password is "+newPassword+". \n"+"Thank you, \nAdmin");
         		mailSender.send(mail);
         	}
 

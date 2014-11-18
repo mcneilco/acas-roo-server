@@ -113,4 +113,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public Boolean getAutoCreateKinds() {
 	    return Boolean.parseBoolean(this.autoCreateKinds);
 	}
+	
+	String guiPath;
+
+	@Value("${acas.gui.fullpath}")
+	public void setGuiPath(String guiPath) {
+	    this.guiPath = guiPath;
+	}
+	
+	@Override
+	public String getGuiPath() {
+	    return this.guiPath;
+	}
 }
