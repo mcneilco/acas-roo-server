@@ -114,15 +114,15 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	    return Boolean.parseBoolean(this.autoCreateKinds);
 	}
 	
-	String guiPath;
+	String clientFullPath;
 
-	@Value("${acas.gui.fullpath}")
-	public void setGuiPath(String guiPath) {
-	    this.guiPath = guiPath;
+	@Value("${client.fullpath}")
+	public void setClientFullPath(String clientFullPath) {
+	    this.clientFullPath = clientFullPath;
 	}
 	
 	@Override
-	public String getGuiPath() {
-	    return this.guiPath;
+	public String getClientFullPath() {
+	    return this.clientFullPath;
 	}
 }

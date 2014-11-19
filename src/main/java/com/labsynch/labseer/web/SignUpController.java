@@ -71,7 +71,7 @@ public class SignUpController {
         	User.setActivationDate(new Date());
         	User.setEnabled(true);
         	User.merge();
-        	String redirectUrl=propertiesUtilService.getGuiPath();
+        	String redirectUrl=propertiesUtilService.getClientFullPath();
         	return "redirect:"+redirectUrl;
         }
         else{

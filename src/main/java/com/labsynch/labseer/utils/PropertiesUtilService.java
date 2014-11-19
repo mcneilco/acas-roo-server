@@ -23,7 +23,7 @@ public interface PropertiesUtilService {
 
 	Boolean getAutoCreateKinds();
 
-	String getGuiPath();
+	String getClientFullPath();
 
 	
 }
