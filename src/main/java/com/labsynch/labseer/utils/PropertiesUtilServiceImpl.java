@@ -113,4 +113,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public Boolean getAutoCreateKinds() {
 	    return Boolean.parseBoolean(this.autoCreateKinds);
 	}
+	
+	String clientFullPath;
+
+	@Value("${client.fullpath}")
+	public void setClientFullPath(String clientFullPath) {
+	    this.clientFullPath = clientFullPath;
+	}
+	
+	@Override
+	public String getClientFullPath() {
+	    return this.clientFullPath;
+	}
 }

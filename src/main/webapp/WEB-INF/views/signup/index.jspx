@@ -8,7 +8,7 @@
         <field:input field="lastName" id="c_com_labsynch_labseer_domain_Author_lastName" required="true" z="LN9JI6g+rvU3ip6ug3rG5N6PtW0="/>
         <field:input field="userName" id="c_com_labsynch_labseer_domain_Author_userName" required="true" z="NGyLkXmGZf6sexoin1eSzcne7S0="/>
         <field:input field="emailAddress" id="c_com_labsynch_labseer_domain_Author_emailAddress" min="1" required="true" validationMessageCode="field_invalid_email" z=""/>
-        <field:input field="password" id="c_com_labsynch_labseer_domain_Author_password" required="true" z="gCq40rVJ58SRCe1R592vFrcQbMA="/>
+        <field:input field="password" id="c_com_labsynch_labseer_domain_Author_password" required="true" type="password"/>
                 <field:input field="repeatPassword" id="c_com_labsynch_labseer_domain_Author_password" min="1" required="true" type="password"/>
         
         ${captcha_form}

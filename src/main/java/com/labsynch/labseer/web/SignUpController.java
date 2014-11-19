@@ -71,7 +71,8 @@ public class SignUpController {
         	User.setActivationDate(new Date());
         	User.setEnabled(true);
         	User.merge();
-        	return "login";
+        	String redirectUrl=propertiesUtilService.getClientFullPath();
+        	return "redirect:"+redirectUrl;
         }
         else{
         	return "signup/error";
@@ -125,10 +126,10 @@ public class SignUpController {
             
             SimpleMailMessage mail = new SimpleMailMessage();
     		mail.setTo(author.getEmailAddress());
-    		mail.setSubject("User Activaton");
+    		mail.setSubject("User Activation");
     		
 //    		mail.setText("Hi "+ author.getFirstName() + ",\n. You just registered with us. Please click on this link to activate your account - <a href=\"" + propertiesUtilService.getHostPath() +  "signup?emailAddress="+author.getEmailAddress()+"&activate="+activationKey+"\">Activate Link</a>. \n Thanks Typical Security Admin");
-    		mail.setText("Hi "+ author.getFirstName() + ",\n. You just created a new ACAS account to track your assay results. Please click on this link to access your account - <a href=\"" + propertiesUtilService.getClientPath() +  "/geneIdQuery\">Access ACAS Link</a>. \n Thanks ACAS Admin");
+    		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your account: " + propertiesUtilService.getHostPath()+"signup?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +  "\nThank you, \nACAS Admin");
             mailSender.send(mail);
             return "signup/thanks";
         }
