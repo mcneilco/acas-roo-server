@@ -47,7 +47,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findAnalysisGroupValuesByLsState", "findAnalysisGroupValuesByLsTransactionEquals", "findAnalysisGroupValuesByCodeValueEquals", "findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals", "findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals" })
+@RooJpaActiveRecord(finders = { "findAnalysisGroupValuesByLsState", "findAnalysisGroupValuesByLsTransactionEquals", "findAnalysisGroupValuesByCodeValueEquals", "findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals", "findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals", "findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLike" })
 public class AnalysisGroupValue extends AbstractValue {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValue.class);
