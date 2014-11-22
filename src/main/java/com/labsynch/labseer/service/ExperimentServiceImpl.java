@@ -58,26 +58,26 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Autowired
 	private AnalysisGroupService analysisGroupService;
-	
+
 	@Autowired
 	private ProtocolService protocolService;
 
 	@Autowired
 	private AutoLabelService autoLabelService;
-	
+
 	@Autowired
 	private ExperimentValueService experimentValueService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentServiceImpl.class);
 
-	
+
 	@Override
 	public void deleteLsExperiment(Experiment experiment){
 		logger.debug("incoming meta experiment: " + experiment.toJson());
 
 	}
 
-	
+
 	@Override
 	@Transactional
 	public Experiment updateExperiment(Experiment jsonExperiment){
@@ -381,21 +381,63 @@ public class ExperimentServiceImpl implements ExperimentService {
 				protocolLabel = protocolNames.get(0).getLabelText();
 			}
 
-			JSTreeNodeDTO node = new JSTreeNodeDTO();
-			node.setId(prot.getCodeName());
-			node.setDescription(prot.getShortDescription());
-			node.setParent(prot.getLsKind());
-			node.setLsTags(prot.getLsTags());
-			node.setText(new StringBuilder().append(protocolLabel).toString());
 
-			nodes.add(node);
+			//			JSTreeNodeDTO protocolKindNode = new JSTreeNodeDTO();
+			//			protocolKindNode.setId(prot.getLsKind());
+			//			protocolKindNode.setParent("Root Node");
+			//			protocolKindNode.setText(prot.getLsKind());
+			//			protocolKindNode.setDescription("Protocol Kind");
+			//			nodes.add(protocolKindNode);
+			//			
 
-			JSTreeNodeDTO protocolKindNode = new JSTreeNodeDTO();
-			protocolKindNode.setId(prot.getLsKind());
-			protocolKindNode.setParent("Root Node");
-			protocolKindNode.setText(prot.getLsKind());
-			protocolKindNode.setDescription("Protocol Kind");
-			nodes.add(protocolKindNode);
+			List<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(prot.getId(), "metadata", "protocol metadata", "stringValue", "assay tree rule").getResultList();
+			String assayFolderRule = "";
+			for (ProtocolValue value : protocolValues){
+				if (!value.getStringValue().equalsIgnoreCase("")){
+					assayFolderRule = value.getStringValue();
+				}
+				logger.info(value.toJson());
+
+				boolean useAssayFolderRules = false;
+				boolean firstFolder = true;
+				String[] assayFolderRules= assayFolderRule.split("/");
+				for (int i = 1; i < assayFolderRules.length; i++){
+					String assayFolder = assayFolderRules[i];
+					logger.info("assay folder: " + assayFolder);	
+					JSTreeNodeDTO assayFolderNode = new JSTreeNodeDTO();
+					if (firstFolder){
+						assayFolderNode.setId(assayFolder);
+						assayFolderNode.setText(assayFolder);
+						assayFolderNode.setDescription(assayFolder);
+						assayFolderNode.setParent("Root Node");
+						firstFolder = false;
+						useAssayFolderRules = true;
+					} else {
+						assayFolderNode.setId(assayFolder);
+						assayFolderNode.setText(assayFolder);
+						assayFolderNode.setDescription(assayFolder);
+						assayFolderNode.setParent(assayFolderRules[i-1]);
+					}
+					nodes.add(assayFolderNode);
+				}
+				
+				JSTreeNodeDTO node = new JSTreeNodeDTO();
+				node.setId(prot.getCodeName());
+				node.setDescription(prot.getShortDescription());
+				node.setLsTags(prot.getLsTags());
+				node.setText(new StringBuilder().append(protocolLabel).toString());
+
+				if (useAssayFolderRules){
+					node.setParent(assayFolderRules[assayFolderRules.length-1]);
+
+				} else {
+					node.setParent("Root Node");
+
+				}
+				nodes.add(node);
+
+			}
+
 		}
 
 		logger.debug("number of nodes made: " + nodes.size());
@@ -743,7 +785,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "CELL LINE"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "TARGET ORIGIN"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ASSAY STAGE"));
-			
+
 			resultsByTerm.put(term, new HashSet<Long>(experimentIdList));
 			experimentAllIdList.addAll(experimentIdList);
 			experimentIdList.clear();
@@ -753,13 +795,13 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentAllIdList.retainAll(resultsByTerm.get(term));
 		}
 		for (Long id: experimentAllIdList) experimentList.add(Experiment.findExperiment(id));
-		
-        //This method uses finders that will find everything, whether or not it is ignored or deleted
-        for (Experiment experiment: experimentList) {
-        	//For Experiment Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
-        	if (experiment.isDeleted()) experimentList.remove(experiment);
-        	logger.debug("removing a deleted experiment from the results");
-        }
+
+		//This method uses finders that will find everything, whether or not it is ignored or deleted
+		for (Experiment experiment: experimentList) {
+			//For Experiment Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+			if (experiment.isDeleted()) experimentList.remove(experiment);
+			logger.debug("removing a deleted experiment from the results");
+		}
 		return experimentList;
 	}
 
@@ -801,7 +843,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			}
 			experimentLabels.clear();
 		}
-		
+
 		if (searchBy == "SCIENTIST") {
 			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndStringValueLike("scientist", queryString).getResultList();
 			if (!experimentValues.isEmpty()){
@@ -942,10 +984,10 @@ public class ExperimentServiceImpl implements ExperimentService {
 				}
 			}
 		}
-		
+
 		return experimentIdList;
 	}
-	
+
 
 	@Override
 	public Collection<Experiment> findExperimentsByMetadataJson(String json) {
@@ -957,29 +999,29 @@ public class ExperimentServiceImpl implements ExperimentService {
 				experimentList.addAll(experiments);
 			}
 		}
-		
+
 		return experimentList;
 	}
 
 
 	private Collection<Experiment> findExperimentByMetadata(String queryString) {
 		Collection<Experiment> experimentList = new HashSet<Experiment>();
-		
+
 		//find by experiment codeName
 		List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(queryString).getResultList();
 		if (!experiments.isEmpty()){
 			experimentList.addAll(experiments);
 		}
-		
+
 		//find by experiment name
 		Collection<Experiment> experimentsByName = Experiment.findExperimentByName(queryString);
 		if (!experimentsByName.isEmpty()){
 			experimentList.addAll(experimentsByName);
 		}
-		
+
 		return experimentList;
 	}
-	
+
 	public Collection<Experiment> findExperimentsByMetadata(String queryString, String searchBy) {
 		Collection<Experiment> experimentList = new HashSet<Experiment>();
 		Collection<Long> experimentIdList = findExperimentIdsByMetadata(queryString, searchBy);
@@ -995,68 +1037,68 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@Override
 	public Set<Experiment> findExperimentsByRequestMetadata(
 			Map<String, String> requestParams) {
-		
-        Set<Experiment> result = new HashSet<Experiment>();
-        
-        if (requestParams.isEmpty()) {
-        	result.addAll(Experiment.findAllExperiments());
-        	return result;
-        }
-        
-		Set<Experiment> resultByProtocolKind = new HashSet<Experiment>();
-        Set<Experiment> resultByProtocolType = new HashSet<Experiment>();
-        Set<Experiment> resultByProtocolName = new HashSet<Experiment>();
-        Set<Experiment> resultByProtocolCodeName = new HashSet<Experiment>();
-        Set<Experiment> resultByKind = new HashSet<Experiment>();
-        Set<Experiment> resultByType = new HashSet<Experiment>();
-        Set<Experiment> resultByName = new HashSet<Experiment>();
-        Set<Experiment> resultByCodeName = new HashSet<Experiment>();
-        if (requestParams.containsKey("protocolKind"))resultByProtocolKind.addAll(findExperimentsByMetadata(requestParams.get("protocolKind"), "PROTOCOL KIND"));
-        if (requestParams.containsKey("protocolType")) resultByProtocolType.addAll(findExperimentsByMetadata(requestParams.get("protocolType"), "PROTOCOL TYPE"));
-        if (requestParams.containsKey("protocolName")) resultByProtocolName.addAll(findExperimentsByMetadata(requestParams.get("protocolName"), "PROTOCOL NAME"));
-        if (requestParams.containsKey("protocolCodeName")) resultByProtocolCodeName.addAll(findExperimentsByMetadata(requestParams.get("protocolCodeName"), "PROTOCOL CODENAME"));
-        if (requestParams.containsKey("kind"))resultByKind.addAll(findExperimentsByMetadata(requestParams.get("kind"), "KIND"));
-        if (requestParams.containsKey("type")) resultByType.addAll(findExperimentsByMetadata(requestParams.get("type"), "TYPE"));
-        if (requestParams.containsKey("name")) resultByName.addAll(findExperimentsByMetadata(requestParams.get("name"), "NAME"));
-        if (requestParams.containsKey("codeName")) resultByCodeName.addAll(findExperimentsByMetadata(requestParams.get("codeName"), "CODENAME"));
 
-        result.addAll(resultByProtocolKind);
-        result.addAll(resultByProtocolType);
-        result.addAll(resultByProtocolName);
-        result.addAll(resultByProtocolCodeName);
-        result.addAll(resultByKind);
-        result.addAll(resultByType);
-        result.addAll(resultByName);
-        result.addAll(resultByCodeName);
-        
-        if (requestParams.containsKey("protocolKind")) result.retainAll(resultByProtocolKind);
-        if (requestParams.containsKey("protocolType")) result.retainAll(resultByProtocolType);
-        if (requestParams.containsKey("protocolName")) result.retainAll(resultByProtocolName);
-        if (requestParams.containsKey("protocolCodeName")) result.retainAll(resultByProtocolCodeName);
-        if (requestParams.containsKey("kind")) result.retainAll(resultByKind);
-        if (requestParams.containsKey("type")) result.retainAll(resultByType);
-        if (requestParams.containsKey("name")) result.retainAll(resultByName);
-        if (requestParams.containsKey("codeName")) result.retainAll(resultByCodeName);
-        
-        
-        return result;
+		Set<Experiment> result = new HashSet<Experiment>();
+
+		if (requestParams.isEmpty()) {
+			result.addAll(Experiment.findAllExperiments());
+			return result;
+		}
+
+		Set<Experiment> resultByProtocolKind = new HashSet<Experiment>();
+		Set<Experiment> resultByProtocolType = new HashSet<Experiment>();
+		Set<Experiment> resultByProtocolName = new HashSet<Experiment>();
+		Set<Experiment> resultByProtocolCodeName = new HashSet<Experiment>();
+		Set<Experiment> resultByKind = new HashSet<Experiment>();
+		Set<Experiment> resultByType = new HashSet<Experiment>();
+		Set<Experiment> resultByName = new HashSet<Experiment>();
+		Set<Experiment> resultByCodeName = new HashSet<Experiment>();
+		if (requestParams.containsKey("protocolKind"))resultByProtocolKind.addAll(findExperimentsByMetadata(requestParams.get("protocolKind"), "PROTOCOL KIND"));
+		if (requestParams.containsKey("protocolType")) resultByProtocolType.addAll(findExperimentsByMetadata(requestParams.get("protocolType"), "PROTOCOL TYPE"));
+		if (requestParams.containsKey("protocolName")) resultByProtocolName.addAll(findExperimentsByMetadata(requestParams.get("protocolName"), "PROTOCOL NAME"));
+		if (requestParams.containsKey("protocolCodeName")) resultByProtocolCodeName.addAll(findExperimentsByMetadata(requestParams.get("protocolCodeName"), "PROTOCOL CODENAME"));
+		if (requestParams.containsKey("kind"))resultByKind.addAll(findExperimentsByMetadata(requestParams.get("kind"), "KIND"));
+		if (requestParams.containsKey("type")) resultByType.addAll(findExperimentsByMetadata(requestParams.get("type"), "TYPE"));
+		if (requestParams.containsKey("name")) resultByName.addAll(findExperimentsByMetadata(requestParams.get("name"), "NAME"));
+		if (requestParams.containsKey("codeName")) resultByCodeName.addAll(findExperimentsByMetadata(requestParams.get("codeName"), "CODENAME"));
+
+		result.addAll(resultByProtocolKind);
+		result.addAll(resultByProtocolType);
+		result.addAll(resultByProtocolName);
+		result.addAll(resultByProtocolCodeName);
+		result.addAll(resultByKind);
+		result.addAll(resultByType);
+		result.addAll(resultByName);
+		result.addAll(resultByCodeName);
+
+		if (requestParams.containsKey("protocolKind")) result.retainAll(resultByProtocolKind);
+		if (requestParams.containsKey("protocolType")) result.retainAll(resultByProtocolType);
+		if (requestParams.containsKey("protocolName")) result.retainAll(resultByProtocolName);
+		if (requestParams.containsKey("protocolCodeName")) result.retainAll(resultByProtocolCodeName);
+		if (requestParams.containsKey("kind")) result.retainAll(resultByKind);
+		if (requestParams.containsKey("type")) result.retainAll(resultByType);
+		if (requestParams.containsKey("name")) result.retainAll(resultByName);
+		if (requestParams.containsKey("codeName")) result.retainAll(resultByCodeName);
+
+
+		return result;
 	}
-	
+
 
 	@Override
 	public boolean isSoftDeleted(Experiment experiment) {
 		boolean isSoftDeleted = false;
 		if (experiment.isIgnored() && !experiment.isDeleted()) isSoftDeleted = true;
 		return isSoftDeleted;
-//		Long experimentId = experiment.getId();
-//		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, "metadata", "experiment metadata", "stringValue", "status");
-//		boolean isSoftDeleted = false;
-//		for (ExperimentValue experimentValue : experimentValues) {
-//			if (experimentValue.getStringValue() != null && experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
-//		}
-//		return isSoftDeleted;
+		//		Long experimentId = experiment.getId();
+		//		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, "metadata", "experiment metadata", "stringValue", "status");
+		//		boolean isSoftDeleted = false;
+		//		for (ExperimentValue experimentValue : experimentValues) {
+		//			if (experimentValue.getStringValue() != null && experimentValue.getStringValue().equals("Deleted")) isSoftDeleted = true;
+		//		}
+		//		return isSoftDeleted;
 	}
-	
+
 
 
 }
