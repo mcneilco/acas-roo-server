@@ -29,57 +29,6 @@ public class ApiSubjectValueController {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiSubjectValueController.class);
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
-        SubjectValue subjectValue = SubjectValue.findSubjectValue(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        if (subjectValue == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
-    }
-
-    @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> listJson() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        List<SubjectValue> result = SubjectValue.findAllSubjectValues();
-        return new ResponseEntity<String>(SubjectValue.toJsonArray(result), headers, HttpStatus.OK);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJson(@RequestBody String json) {
-        SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
-        subjectValue.persist();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-    }
-
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
-        for (SubjectValue subjectValue: SubjectValue.fromJsonArrayToSubjectValues(json)) {
-            subjectValue.persist();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-    }
-
-    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJson(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
-        if (subjectValue.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-    
     @RequestMapping(value = "/updatevalue/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> updateSubjectValue(
             @RequestParam("lsType") String lsType,
@@ -95,18 +44,6 @@ public class ApiSubjectValueController {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        for (SubjectValue subjectValue: SubjectValue.fromJsonArrayToSubjectValues(json)) {
-            if (subjectValue.merge() == null) {
-                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-            }
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
