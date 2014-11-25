@@ -24,6 +24,12 @@ public interface AnalysisGroupStateService {
 	Collection<AnalysisGroupState> saveAnalysisGroupStates(
 			Collection<AnalysisGroupState> analysisGroupStates);
 
+	AnalysisGroupState updateAnalysisGroupState(
+			AnalysisGroupState analysisGroupState);
+
+	Collection<AnalysisGroupState> updateAnalysisGroupStates(
+			Collection<AnalysisGroupState> analysisGroupStates);
+
 	
 	
 }

@@ -21,4 +21,9 @@ public interface ProtocolStateService {
 	Collection<ProtocolState> saveProtocolStates(
 			Collection<ProtocolState> protocolStates);
 
+	ProtocolState updateProtocolState(ProtocolState protocolState);
+
+	Collection<ProtocolState> updateProtocolStates(
+			Collection<ProtocolState> protocolStates);
+
 }

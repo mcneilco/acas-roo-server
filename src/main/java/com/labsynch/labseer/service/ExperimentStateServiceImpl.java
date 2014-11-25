@@ -59,4 +59,21 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 		}
 		return experimentStates;
 	}
+	
+	@Override
+	public ExperimentState updateExperimentState(
+			ExperimentState experimentState) {
+		experimentState.setVersion(ExperimentState.findExperimentState(experimentState.getId()).getVersion());
+		experimentState.merge();
+		return experimentState;
+	}
+
+	@Override
+	public Collection<ExperimentState> updateExperimentStates(
+			Collection<ExperimentState> experimentStates) {
+		for (ExperimentState experimentState : experimentStates){
+			experimentState = updateExperimentState(experimentState);
+		}
+		return null;
+	}
 }

@@ -85,5 +85,22 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 		}
 		return subjectStates;
 	}
+	
+	@Override
+	public SubjectState updateSubjectState(
+			SubjectState subjectState) {
+		subjectState.setVersion(SubjectState.findSubjectState(subjectState.getId()).getVersion());
+		subjectState.merge();
+		return subjectState;
+	}
+
+	@Override
+	public Collection<SubjectState> updateSubjectStates(
+			Collection<SubjectState> subjectStates) {
+		for (SubjectState subjectState : subjectStates){
+			subjectState = updateSubjectState(subjectState);
+		}
+		return null;
+	}
 
 }
