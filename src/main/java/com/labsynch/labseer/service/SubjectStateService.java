@@ -23,6 +23,11 @@ public interface SubjectStateService {
 	Collection<SubjectState> saveSubjectStates(
 			Collection<SubjectState> subjectStates);
 
+	SubjectState updateSubjectState(SubjectState subjectState);
+
+	Collection<SubjectState> updateSubjectStates(
+			Collection<SubjectState> subjectStates);
+
 	
 	
 }

@@ -32,5 +32,8 @@ public interface TreatmentGroupValueService {
 
 	Collection<TreatmentGroupValue> saveTreatmentGroupValues(
 			Collection<TreatmentGroupValue> treatmentGroupValues);
+
+	public Collection<TreatmentGroupValue> updateTreatmentGroupValues(
+			Collection<TreatmentGroupValue> treatmentGroupValues);
 	
 }

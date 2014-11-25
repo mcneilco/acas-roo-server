@@ -23,5 +23,8 @@ public interface LsThingValueService {
 	Collection<LsThingValue> saveLsThingValues(
 			Collection<LsThingValue> lsThingValues);
 
+	Collection<LsThingValue> updateLsThingValues(
+			Collection<LsThingValue> lsThingValues);
+
 
 }

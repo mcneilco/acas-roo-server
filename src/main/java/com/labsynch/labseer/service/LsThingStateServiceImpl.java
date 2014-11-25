@@ -88,4 +88,21 @@ public class LsThingStateServiceImpl implements LsThingStateService {
 		}
 		return lsThingStates;
 	}
+	
+	@Override
+	public LsThingState updateLsThingState(
+			LsThingState lsThingState) {
+		lsThingState.setVersion(LsThingState.findLsThingState(lsThingState.getId()).getVersion());
+		lsThingState.merge();
+		return lsThingState;
+	}
+
+	@Override
+	public Collection<LsThingState> updateLsThingStates(
+			Collection<LsThingState> lsThingStates) {
+		for (LsThingState lsThingState : lsThingStates){
+			lsThingState = updateLsThingState(lsThingState);
+		}
+		return null;
+	}
 }

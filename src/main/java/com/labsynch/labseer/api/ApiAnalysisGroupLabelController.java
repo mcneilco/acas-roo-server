@@ -24,16 +24,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.AnalysisGroupLabel;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
-@RooWebJson(jsonObject = AnalysisGroupLabel.class)
+//@RooWebJson(jsonObject = AnalysisGroupLabel.class)
 @Controller
 @RequestMapping("/api/v1/analysisgrouplabels")
-@RooWebFinder
+//@RooWebFinder
 public class ApiAnalysisGroupLabelController {
 
     @Autowired
     private PropertiesUtilService propertiesUtilService;
 
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
         AnalysisGroupLabel analysisGroupLabel = AnalysisGroupLabel.findAnalysisGroupLabel(id);
@@ -45,7 +45,7 @@ public class ApiAnalysisGroupLabelController {
         return new ResponseEntity<String>(analysisGroupLabel.toJson(), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> listJson() {
         HttpHeaders headers = new HttpHeaders();

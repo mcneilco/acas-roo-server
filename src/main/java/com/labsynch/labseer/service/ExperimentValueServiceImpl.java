@@ -22,6 +22,7 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AbstractValue;
+import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
@@ -33,6 +34,7 @@ import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -198,7 +200,7 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 	public ExperimentValue updateExperimentValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
 		//fetch the entity
 		Experiment experiment;
-		if(isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -276,11 +278,14 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		experimentValue.persist();
 		return experimentValue;
 	}
-
-	private static boolean isNumeric(String str) {
-		for (char c : str.toCharArray()) {
-			if (!Character.isDigit(c)) return false;
+	
+	@Override
+	public Collection<ExperimentValue> updateExperimentValues(
+			Collection<ExperimentValue> experimentValues) {
+		for (ExperimentValue experimentValue: experimentValues) {
+			experimentValue = updateExperimentValue(experimentValue);
 		}
-		return true;
+		return experimentValues;
 	}
+
 }
