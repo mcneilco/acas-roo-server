@@ -24,6 +24,12 @@ public interface TreatmentGroupStateService {
 	Collection<TreatmentGroupState> saveTreatmentGroupStates(
 			Collection<TreatmentGroupState> treatmentGroupStates);
 
+	TreatmentGroupState updateTreatmentGroupState(
+			TreatmentGroupState treatmentGroupState);
+
+	Collection<TreatmentGroupState> updateTreatmentGroupStates(
+			Collection<TreatmentGroupState> treatmentGroupStates);
+
 	
 	
 }

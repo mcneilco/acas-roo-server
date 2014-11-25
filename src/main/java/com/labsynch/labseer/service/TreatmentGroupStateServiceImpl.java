@@ -85,5 +85,22 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 		}
 		return treatmentGroupStates;
 	}
+	
+	@Override
+	public TreatmentGroupState updateTreatmentGroupState(
+			TreatmentGroupState treatmentGroupState) {
+		treatmentGroupState.setVersion(TreatmentGroupState.findTreatmentGroupState(treatmentGroupState.getId()).getVersion());
+		treatmentGroupState.merge();
+		return treatmentGroupState;
+	}
+
+	@Override
+	public Collection<TreatmentGroupState> updateTreatmentGroupStates(
+			Collection<TreatmentGroupState> treatmentGroupStates) {
+		for (TreatmentGroupState treatmentGroupState : treatmentGroupStates){
+			treatmentGroupState = updateTreatmentGroupState(treatmentGroupState);
+		}
+		return null;
+	}
 
 }
