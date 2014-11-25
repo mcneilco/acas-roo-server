@@ -11,7 +11,7 @@
     <mvc:annotation-driven conversion-service="applicationConversionService"/>
     
     <bean
-		class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
 	<!-- Configures view for returning JSON to the client -->
 	<bean
 		class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">

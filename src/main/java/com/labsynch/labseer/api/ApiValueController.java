@@ -142,7 +142,7 @@ public class ApiValueController {
 	
 	//List values as jsonArray (GET)
 	
-	@RequestMapping(value = "/protocolValues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/protocolvalues", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listProtocolValuesJsonArray() {
         HttpHeaders headers = new HttpHeaders();
@@ -154,7 +154,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(ProtocolValue.toJsonArray(result), headers, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "/experimentValues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/experimentvalues", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listExperimentValuesJsonArray() {
         HttpHeaders headers = new HttpHeaders();
@@ -166,7 +166,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(ExperimentValue.toJsonArray(result), headers, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "/analysisGroupValues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisgroupvalues", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listAnalysisGroupValuesJsonArray() {
         HttpHeaders headers = new HttpHeaders();
@@ -178,7 +178,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(result), headers, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "/treatmentGroupValues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/treatmentgroupvalues", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listTreatmentGroupValuesJsonArray() {
         HttpHeaders headers = new HttpHeaders();
@@ -190,7 +190,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(result), headers, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "/subjectValues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/subjectvalues", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listSubjectValuesJsonArray() {
         HttpHeaders headers = new HttpHeaders();
@@ -202,7 +202,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(SubjectValue.toJsonArray(result), headers, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "/lsThingValues", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/lsthingvalues", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> listLsThingValuesJsonArray() {
         HttpHeaders headers = new HttpHeaders();
@@ -216,7 +216,7 @@ public class ApiValueController {
 	
 	//Show value json by id (GET)
 	
-		@RequestMapping(value = "/protocolValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+		@RequestMapping(value = "/protocolvalues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 		@ResponseBody
 		@Transactional
 	public ResponseEntity<String> showProtocolValueJson (@PathVariable("id") Long id) {
@@ -227,7 +227,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/experimentValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/experimentvalues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> showExperimentValueJson (@PathVariable("id") Long id) {
@@ -238,7 +238,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/analysisGroupValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisgroupvalues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> showAnalysisGroupValueJson (@PathVariable("id") Long id) {
@@ -249,7 +249,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(analysisGroupValue.toJson(), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/treatmentGroupValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/treatmentgroupvalues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> showTreatmentGroupValueJson (@PathVariable("id") Long id) {
@@ -260,7 +260,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(treatmentGroupValue.toJson(), headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/subjectValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/subjectvalues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> showSubjectValueJson (@PathVariable("id") Long id) {
@@ -271,7 +271,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/lsThingValues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/lsthingvalues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> showLsThingValueJson (@PathVariable("id") Long id) {
@@ -284,7 +284,7 @@ public class ApiValueController {
 	
 	
 	//Update value from json (PUT)
-	@RequestMapping(value = "/protocolValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/protocolvalues", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateProtocolValueFromJson (@RequestBody String json) {
@@ -298,7 +298,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(protocolValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/experimentValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/experimentvalues", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateExperimentValueFromJson (@RequestBody String json) {
@@ -312,7 +312,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(experimentValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/analysisGroupValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisgroupvalues", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateAnalysisGroupValueFromJson (@RequestBody String json) {
@@ -326,7 +326,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(analysisGroupValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/treatmentGroupValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/treatmentgroupvalues", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateTreatmentGroupValueFromJson (@RequestBody String json) {
@@ -340,7 +340,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(treatmentGroupValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/subjectValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/subjectvalues", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateSubjectValueFromJson (@RequestBody String json) {
@@ -354,7 +354,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(subjectValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/lsThingValues", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/lsthingvalues", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateLsThingValueFromJson (@RequestBody String json) {
@@ -370,7 +370,7 @@ public class ApiValueController {
 	
 	//Update values from jsonArray (PUT)
 	
-	@RequestMapping(value = "/protocolValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/protocolvalues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateProtocolValuesFromJsonArray (@RequestBody String json) {
@@ -381,7 +381,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(ProtocolValue.toJsonArray(protocolValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/experimentValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/experimentvalues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateExperimentValuesFromJsonArray (@RequestBody String json) {
@@ -392,7 +392,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/analysisGroupValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisgroupvalues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateAnalysisGroupValuesFromJsonArray (@RequestBody String json) {
@@ -403,7 +403,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/treatmentGroupValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/treatmentgroupvalues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateTreatmentGroupValuesFromJsonArray (@RequestBody String json) {
@@ -414,7 +414,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/subjectValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/subjectvalues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateSubjectValuesFromJsonArray (@RequestBody String json) {
@@ -425,7 +425,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/lsThingValues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "/lsthingvalues/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> updateLsThingValuesFromJsonArray (@RequestBody String json) {
@@ -439,7 +439,7 @@ public class ApiValueController {
 	
 	//Create value from json (POST)
 	
-	@RequestMapping(value = "/protocolValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/protocolvalues", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createProtocolValueFromJson (@RequestBody String json) {
@@ -450,7 +450,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(protocolValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/experimentValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/experimentvalues", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createExperimentValueFromJson (@RequestBody String json) {
@@ -461,7 +461,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(experimentValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/analysisGroupValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisgroupvalues", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createAnalysisGroupValueFromJson (@RequestBody String json) {
@@ -472,7 +472,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(analysisGroupValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/treatmentGroupValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/treatmentgroupvalues", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createTreatmentGroupValueFromJson (@RequestBody String json) {
@@ -483,7 +483,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(treatmentGroupValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/subjectValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/subjectvalues", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createSubjectValueFromJson (@RequestBody String json) {
@@ -494,7 +494,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(subjectValue.toJson(),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/lsThingValues", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/lsthingvalues", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createLsThingValueFromJson (@RequestBody String json) {
@@ -507,7 +507,7 @@ public class ApiValueController {
 	
 	//Create values from jsonArray (POST)
 	
-	@RequestMapping(value = "/protocolValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/protocolvalues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createProtocolValuesFromJsonArray (@RequestBody String json) {
@@ -518,7 +518,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(ProtocolValue.toJsonArray(protocolValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/experimentValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/experimentvalues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createExperimentValuesFromJsonArray (@RequestBody String json) {
@@ -529,7 +529,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(ExperimentValue.toJsonArray(experimentValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/analysisGroupValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/analysisgroupvalues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createAnalysisGroupValuesFromJsonArray (@RequestBody String json) {
@@ -540,7 +540,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(analysisGroupValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/treatmentGroupValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/treatmentgroupvalues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createTreatmentGroupValuesFromJsonArray (@RequestBody String json) {
@@ -551,7 +551,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(TreatmentGroupValue.toJsonArray(treatmentGroupValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/subjectValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/subjectvalues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createSubjectValuesFromJsonArray (@RequestBody String json) {
@@ -562,7 +562,7 @@ public class ApiValueController {
         return new ResponseEntity<String>(SubjectValue.toJsonArray(subjectValues),headers, HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/lsThingValues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/lsthingvalues/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> createLsThingValuesFromJsonArray (@RequestBody String json) {

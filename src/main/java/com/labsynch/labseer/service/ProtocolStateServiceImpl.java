@@ -88,5 +88,22 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 		}
 		return protocolStates;
 	}
+	
+	@Override
+	public ProtocolState updateProtocolState(
+			ProtocolState protocolState) {
+		protocolState.setVersion(ProtocolState.findProtocolState(protocolState.getId()).getVersion());
+		protocolState.merge();
+		return protocolState;
+	}
+
+	@Override
+	public Collection<ProtocolState> updateProtocolStates(
+			Collection<ProtocolState> protocolStates) {
+		for (ProtocolState protocolState : protocolStates){
+			protocolState = updateProtocolState(protocolState);
+		}
+		return null;
+	}
 
 }

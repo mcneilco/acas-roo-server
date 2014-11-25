@@ -21,4 +21,9 @@ public interface LsThingStateService {
 	Collection<LsThingState> saveLsThingStates(
 			Collection<LsThingState> lsThingStates);
 
+	LsThingState updateLsThingState(LsThingState lsThingState);
+
+	Collection<LsThingState> updateLsThingStates(
+			Collection<LsThingState> lsThingStates);
+
 }
