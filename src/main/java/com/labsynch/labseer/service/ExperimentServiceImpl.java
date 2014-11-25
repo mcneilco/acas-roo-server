@@ -291,7 +291,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Collection<JSTreeNodeDTO> getExperimentNodes(Collection<String> codeValues){
+	public Collection<JSTreeNodeDTO> getExperimentNodesMod(Collection<String> codeValues){
 		List<Experiment> experiments;
 		if (codeValues == null || codeValues.size() == 0){
 			experiments = Experiment.findAllExperiments();
@@ -381,6 +381,129 @@ public class ExperimentServiceImpl implements ExperimentService {
 				protocolLabel = protocolNames.get(0).getLabelText();
 			}
 
+			JSTreeNodeDTO node = new JSTreeNodeDTO();
+			node.setId(prot.getCodeName());
+			node.setDescription(prot.getShortDescription());
+			node.setParent(prot.getLsKind());
+			node.setLsTags(prot.getLsTags());
+			node.setText(new StringBuilder().append(protocolLabel).toString());
+
+			nodes.add(node);
+
+			JSTreeNodeDTO protocolKindNode = new JSTreeNodeDTO();
+			protocolKindNode.setId(prot.getLsKind());
+			protocolKindNode.setParent("Root Node");
+			protocolKindNode.setText(prot.getLsKind());
+			protocolKindNode.setDescription("Protocol Kind");
+			nodes.add(protocolKindNode);
+		}
+
+		logger.debug("number of nodes made: " + nodes.size());
+		logger.debug(JSTreeNodeDTO.toPrettyJsonArray(nodes));
+
+		return nodes;
+	}
+
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<JSTreeNodeDTO> getExperimentNodes(Collection<String> codeValues){
+		List<Experiment> experiments;
+		if (codeValues == null || codeValues.size() == 0){
+			experiments = Experiment.findAllExperiments();
+		} else {
+			experiments = Experiment.findExperimentsByBatchCodes(codeValues).getResultList();
+		}
+
+		logger.debug("number of experiments found: " + experiments.size());
+
+		Set<Protocol> protocols = new LinkedHashSet<Protocol>();
+		Set<JSTreeNodeDTO> nodes = new LinkedHashSet<JSTreeNodeDTO>();
+		for (Experiment exp : experiments){
+			protocols.add(Protocol.findProtocol(exp.getProtocol().getId()));
+
+			String experimentLabel;
+			List<ExperimentLabel> experimentNames = ExperimentLabel.findExperimentPreferredName(exp.getId()).getResultList();
+			if (experimentNames.size() < 1){
+				String errorMessage = "expected a single preferred experiment name. Found " + experimentNames.size();
+				logger.error(errorMessage);
+				//throw new RuntimeException(errorMessage);
+				experimentLabel = "NO PREFERRED EXPERIMENT NAME";
+			} else if (experimentNames.size() > 1){
+				String errorMessage = "expected a single preferred experiment name. Found " + experimentNames.size();
+				logger.error(errorMessage);
+				//				throw new RuntimeException(errorMessage);
+				experimentLabel = "MULTIPLE PREFERRED EXPERIMENT NAME";
+			} else {
+				experimentLabel = experimentNames.get(0).getLabelText();
+			}
+
+			JSTreeNodeDTO node = new JSTreeNodeDTO();
+			node.setDescription(exp.getShortDescription());
+			node.setId(exp.getCodeName());
+			node.setParent(exp.getProtocol().getCodeName());
+			node.setLsTags(exp.getLsTags());
+			node.setText(new StringBuilder().append(exp.getCodeName()).append(" ").append(experimentLabel).toString());
+			nodes.add(node);
+
+			StringBuilder allTagText = new StringBuilder();
+			boolean firstTag = true;
+			for (LsTag tag : exp.getLsTags()){
+				if (firstTag){
+					allTagText.append("Keywords: ").append(tag.getTagText());
+					firstTag = false;
+				} else {
+					allTagText.append("; ").append(tag.getTagText());
+				}
+			}
+			if (exp.getLsTags().size() > 0){
+				JSTreeNodeDTO tagNode = new JSTreeNodeDTO();
+				tagNode.setId("tags_" + exp.getCodeName());
+				tagNode.setParent(exp.getCodeName());
+				tagNode.setText(allTagText.toString());
+				nodes.add(tagNode);
+			}
+
+			//			JSTreeNodeDTO descriptionNode = new JSTreeNodeDTO();
+			//			descriptionNode.setId("desc_" + exp.getCodeName());
+			//			descriptionNode.setParent(exp.getCodeName());
+			//			descriptionNode.setText(exp.getShortDescription());
+			//			nodes.add(descriptionNode);
+		}
+
+//		JSTreeNodeDTO rootNode = new JSTreeNodeDTO();
+//		rootNode.setId("Root Node");
+//		rootNode.setParent("#");
+//		rootNode.setText("All Protocols");
+//		rootNode.setDescription("Root Node for All Protocols");
+//		nodes.add(rootNode);
+//
+//		JSTreeNodeDTO defaultNode = new JSTreeNodeDTO();
+//		defaultNode.setId("Default Node");
+//		defaultNode.setParent("Root Node");
+//		defaultNode.setText("All Protocols Folder");
+//		defaultNode.setDescription("Root Node for All Protocol Folders");
+//		nodes.add(defaultNode);
+
+		logger.debug("number of protocols found: " + protocols.size());
+		for (Protocol prot : protocols){
+
+			String protocolLabel;
+			List<ProtocolLabel> protocolNames = ProtocolLabel.findProtocolPreferredName(prot.getId()).getResultList();
+			if (protocolNames.size() < 1){
+				String errorMessage = "expected a single preferred protocol name. Found " + protocolNames.size();
+				logger.error(errorMessage);
+				//throw new RuntimeException(errorMessage);
+				protocolLabel = "NO PREFERRED EXPERIMENT NAME";
+			} else if (protocolNames.size() > 1){
+				String errorMessage = "expected a single preferred protocol name. Found " + protocolNames.size();
+				logger.error(errorMessage);
+				//				throw new RuntimeException(errorMessage);
+				protocolLabel = "MULTIPLE PREFERRED PROTOCOL NAME";
+			} else {
+				protocolLabel = protocolNames.get(0).getLabelText();
+			}
+
 
 			//			JSTreeNodeDTO protocolKindNode = new JSTreeNodeDTO();
 			//			protocolKindNode.setId(prot.getLsKind());
@@ -392,15 +515,24 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 			List<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(prot.getId(), "metadata", "protocol metadata", "stringValue", "assay tree rule").getResultList();
 			String assayFolderRule = "";
+
+
 			for (ProtocolValue value : protocolValues){
 				if (!value.getStringValue().equalsIgnoreCase("")){
 					assayFolderRule = value.getStringValue();
 				}
 				logger.info(value.toJson());
+			}
 
-				boolean useAssayFolderRules = false;
-				boolean firstFolder = true;
-				String[] assayFolderRules= assayFolderRule.split("/");
+			JSTreeNodeDTO node = new JSTreeNodeDTO();
+			node.setId(prot.getCodeName());
+			node.setDescription(prot.getShortDescription());
+			node.setLsTags(prot.getLsTags());
+			node.setText(new StringBuilder().append(protocolLabel).toString());
+
+			boolean firstFolder = true;
+			String[] assayFolderRules= assayFolderRule.split("/");
+			if (assayFolderRules.length > 1){
 				for (int i = 1; i < assayFolderRules.length; i++){
 					String assayFolder = assayFolderRules[i];
 					logger.info("assay folder: " + assayFolder);	
@@ -409,9 +541,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 						assayFolderNode.setId(assayFolder);
 						assayFolderNode.setText(assayFolder);
 						assayFolderNode.setDescription(assayFolder);
-						assayFolderNode.setParent("Root Node");
+						assayFolderNode.setParent("#");
 						firstFolder = false;
-						useAssayFolderRules = true;
+						node.setParent(assayFolderRules[assayFolderRules.length-1]);
 					} else {
 						assayFolderNode.setId(assayFolder);
 						assayFolderNode.setText(assayFolder);
@@ -420,24 +552,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 					}
 					nodes.add(assayFolderNode);
 				}
-				
-				JSTreeNodeDTO node = new JSTreeNodeDTO();
-				node.setId(prot.getCodeName());
-				node.setDescription(prot.getShortDescription());
-				node.setLsTags(prot.getLsTags());
-				node.setText(new StringBuilder().append(protocolLabel).toString());
 
-				if (useAssayFolderRules){
-					node.setParent(assayFolderRules[assayFolderRules.length-1]);
-
-				} else {
-					node.setParent("Root Node");
-
-				}
-				nodes.add(node);
-
+			} else {
+				node.setParent("#");
 			}
-
+			nodes.add(node);
 		}
 
 		logger.debug("number of nodes made: " + nodes.size());
