@@ -26,6 +26,7 @@ import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.CurveFitDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.RawCurveDataDTO;
+import com.labsynch.labseer.dto.TgDataDTO;
 
 @Controller
 @RequestMapping("api/v1/curvefit")
@@ -63,6 +64,22 @@ public class ApiCurveFitController {
             return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(rawCurveDataDTOs), headers, HttpStatus.OK);
+        }
+	}
+	
+	@Transactional
+	@RequestMapping(value = "/tgdata", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> getTgDataByCurveId(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+		logger.debug("incoming json: " + json);
+		Collection<TgDataDTO> tgDataDTOs = TgDataDTO.fromJsonArrayToTgDataDTO(json);
+        tgDataDTOs = TgDataDTO.getTgData(tgDataDTOs);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+        	String outFileString = TgDataDTO.getCsvList(tgDataDTOs, format);
+            return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<String>(TgDataDTO.toJsonArray(tgDataDTOs), headers, HttpStatus.OK);
         }
 	}
 	

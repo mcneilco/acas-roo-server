@@ -112,6 +112,7 @@ public class RawCurveDataDTO {
 	}
 
 	public static List<RawCurveDataDTO> getRawCurveData(RawCurveDataDTO emptyRawCurveDataDTO){
+		//TODO: add flags
 		String curveId = emptyRawCurveDataDTO.getCurveId();
 		EntityManager em = SubjectValue.entityManager();
         TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( rsv.id as responseSubjectValueId, "
