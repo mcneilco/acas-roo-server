@@ -25,6 +25,7 @@ import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.CurveFitDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
+import com.labsynch.labseer.dto.RawCurveDataDTO;
 
 @Controller
 @RequestMapping("api/v1/curvefit")
@@ -49,5 +50,20 @@ public class ApiCurveFitController {
         }
     }
 	
+	@Transactional
+	@RequestMapping(value = "/rawdata", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> getCurveFitRawDataByCurveId(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+		logger.debug("incoming json: " + json);
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = RawCurveDataDTO.fromJsonArrayToRawCurveDataDTO(json);
+        rawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(rawCurveDataDTOs);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+        	String outFileString = RawCurveDataDTO.getCsvList(rawCurveDataDTOs, format);
+            return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(rawCurveDataDTOs), headers, HttpStatus.OK);
+        }
+	}
 	
 }
