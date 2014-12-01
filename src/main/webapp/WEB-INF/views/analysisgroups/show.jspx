@@ -15,5 +15,6 @@
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_AnalysisGroup_lsTransaction" object="${analysisgroup}" z="6Z3urlqQKUj/lCOGN2NC3FySrbI="/>
         <field:display field="treatmentGroups" id="s_com_labsynch_labseer_domain_AnalysisGroup_treatmentGroups" object="${analysisgroup}" z="Woiamlogadxm7jW2UUswlePA0Oc="/>
         <field:display field="experiments" id="s_com_labsynch_labseer_domain_AnalysisGroup_experiments" object="${analysisgroup}" z="9AAm36oPQ66p5PXd7rSBLZd57uw="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_AnalysisGroup_deleted" object="${analysisgroup}" z="PSXJK10GX01Xh/3h8ZlfX6/6Z9I="/>
     </page:show>
 </div>

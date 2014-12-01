@@ -471,19 +471,19 @@ public class ExperimentServiceImpl implements ExperimentService {
 			//			nodes.add(descriptionNode);
 		}
 
-//		JSTreeNodeDTO rootNode = new JSTreeNodeDTO();
-//		rootNode.setId("Root Node");
-//		rootNode.setParent("#");
-//		rootNode.setText("All Protocols");
-//		rootNode.setDescription("Root Node for All Protocols");
-//		nodes.add(rootNode);
-//
-//		JSTreeNodeDTO defaultNode = new JSTreeNodeDTO();
-//		defaultNode.setId("Default Node");
-//		defaultNode.setParent("Root Node");
-//		defaultNode.setText("All Protocols Folder");
-//		defaultNode.setDescription("Root Node for All Protocol Folders");
-//		nodes.add(defaultNode);
+		//		JSTreeNodeDTO rootNode = new JSTreeNodeDTO();
+		//		rootNode.setId("Root Node");
+		//		rootNode.setParent("#");
+		//		rootNode.setText("All Protocols");
+		//		rootNode.setDescription("Root Node for All Protocols");
+		//		nodes.add(rootNode);
+		//
+		//		JSTreeNodeDTO defaultNode = new JSTreeNodeDTO();
+		//		defaultNode.setId("Default Node");
+		//		defaultNode.setParent("Root Node");
+		//		defaultNode.setText("All Protocols Folder");
+		//		defaultNode.setDescription("Root Node for All Protocol Folders");
+		//		nodes.add(defaultNode);
 
 		logger.debug("number of protocols found: " + protocols.size());
 		for (Protocol prot : protocols){
@@ -534,21 +534,23 @@ public class ExperimentServiceImpl implements ExperimentService {
 			String[] assayFolderRules= assayFolderRule.split("/");
 			if (assayFolderRules.length > 1){
 				for (int i = 1; i < assayFolderRules.length; i++){
-					String assayFolder = assayFolderRules[i];
-					logger.info("assay folder: " + assayFolder);	
+					String assayFolder = getAssayFolderPath(assayFolderRules, i);
+					logger.info("assay folder: " + i + " " + assayFolder);	
 					JSTreeNodeDTO assayFolderNode = new JSTreeNodeDTO();
 					if (firstFolder){
 						assayFolderNode.setId(assayFolder);
-						assayFolderNode.setText(assayFolder);
-						assayFolderNode.setDescription(assayFolder);
+						assayFolderNode.setText(assayFolderRules[i]);
+						assayFolderNode.setDescription(assayFolderRules[i]);
 						assayFolderNode.setParent("#");
 						firstFolder = false;
-						node.setParent(assayFolderRules[assayFolderRules.length-1]);
+						node.setParent(getAssayFolderPath(assayFolderRules, assayFolderRules.length-1));
 					} else {
 						assayFolderNode.setId(assayFolder);
-						assayFolderNode.setText(assayFolder);
-						assayFolderNode.setDescription(assayFolder);
-						assayFolderNode.setParent(assayFolderRules[i-1]);
+						assayFolderNode.setText(assayFolderRules[i]);
+						assayFolderNode.setDescription(assayFolderRules[i]);
+						//						assayFolderNode.setParent(assayFolderRules[i-1]);
+						assayFolderNode.setParent(getAssayFolderPath(assayFolderRules, i-1));
+
 					}
 					nodes.add(assayFolderNode);
 				}
@@ -564,6 +566,22 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 		return nodes;
 	}
+
+	private String getAssayFolderPath(String[] assayFolderRules, int numberOfRules) {
+		StringBuilder sb = new StringBuilder();
+
+		int count = numberOfRules;
+		logger.debug("the counter is : " + count);
+		for (int i = 0; i < count; i++){
+			sb.append("_");
+			sb.append(assayFolderRules[i+1]);
+			logger.debug("building the assay folder: " + i + "  " + assayFolderRules[i+1]);
+		}
+
+		return sb.toString();
+
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@Override

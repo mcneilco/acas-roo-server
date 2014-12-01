@@ -14,5 +14,6 @@
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolState_ignored" object="${itxprotocolprotocolstate}" z="1jKj2AjPnaA11e5S7jYLQbPn6F0="/>
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolState_lsTransaction" object="${itxprotocolprotocolstate}" z="nERqJh48UvzmlZ+d65+RMAER5E4="/>
         <field:display field="itxProtocolProtocol" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolState_itxProtocolProtocol" object="${itxprotocolprotocolstate}" z="Lp2sLgPTM60W6gjPXg3f/kyvj3s="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolState_deleted" object="${itxprotocolprotocolstate}" z="Axh+OsNI5pn9cRnG6tHDoOnEv1E="/>
     </page:show>
 </div>

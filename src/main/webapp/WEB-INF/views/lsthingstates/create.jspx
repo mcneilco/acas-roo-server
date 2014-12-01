@@ -15,6 +15,7 @@
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_LsThingState_lsTransaction" validationMessageCode="field_invalid_integer" z="D5Dso8de+cbpZ7zfwEj3cvV7/m4="/>
         <field:select field="lsThing" id="c_com_labsynch_labseer_domain_LsThingState_lsThing" itemValue="id" items="${lsthings}" path="/lsthings" required="true" z="ljNAsKgt9URFGGzp2f7UBZVb3n8="/>
         <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_LsThingState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Ls Thing Value" z="KhJzwxSLdNhw+/q9KkHOn/jqWoY="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_LsThingState_deleted" z="UFUqA49t+abjmrqcu8F1lkaf4ic="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_LsThingState" render="${not empty dependencies}" z="nl8E8t9xoFUZfmzstwxmLUMFIo4="/>
 </div>

@@ -37,5 +37,6 @@
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_LsThingValue_codeTypeAndKind" object="${lsthingvalue}" z="VNxveSIcmw+3x6CT0yuSag9zGiw="/>
         <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_LsThingValue_uncertainty" object="${lsthingvalue}" z="oJFagxmkuPAJpPRMegMp1p+g5qk="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_LsThingValue_codeOrigin" object="${lsthingvalue}" z="FeNSVkPk23NBm3Qy7v+nlIyI1BE="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_LsThingValue_deleted" object="${lsthingvalue}" z="qkDCrKcpesrFevkFOlOgDrMvUNM="/>
     </page:show>
 </div>

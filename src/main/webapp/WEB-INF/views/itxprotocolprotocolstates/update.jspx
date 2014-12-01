@@ -15,5 +15,6 @@
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_lsTransaction" validationMessageCode="field_invalid_integer" z="cFArUcG8dxFJyTMFeknRKv1HZ2A="/>
         <field:select field="itxProtocolProtocol" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_itxProtocolProtocol" itemValue="id" items="${itxprotocolprotocols}" path="/itxprotocolprotocols" z="9VmWmChTBsIrVcQKXsJSL6vYRsw="/>
         <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Protocol Protocol Value" z="nSZxMTwEOt6f8qkB0RlvhAr3NOI="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolState_deleted" z="myZEp+ZzD2exHiY/We3P8nLAQ8w="/>
     </form:update>
 </div>

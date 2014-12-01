@@ -134,10 +134,11 @@ public class ProtocolServiceImpl implements ProtocolService {
 
 	@Override
 	public Protocol updateProtocol(Protocol protocol){
-		logger.debug("incoming meta protocol: " + protocol.toJson() + "\n");
+		logger.debug("UPDATE PROTOCOL --- incoming meta protocol: " + protocol.toJson() + "\n");
 		Protocol updatedProtocol = Protocol.update(protocol);
 		if (protocol.getLsLabels() != null){
 			for(ProtocolLabel protocolLabel : protocol.getLsLabels()){
+				logger.debug(protocolLabel.toJson());
 				if (protocolLabel.getId() == null){
 					ProtocolLabel newProtocolLabel = new ProtocolLabel(protocolLabel);
 					newProtocolLabel.setProtocol(updatedProtocol);

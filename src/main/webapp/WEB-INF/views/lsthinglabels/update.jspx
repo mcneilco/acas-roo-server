@@ -17,5 +17,6 @@
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_LsThingLabel_lsTransaction" validationMessageCode="field_invalid_integer" z="urYqPF7SOktgZSh6GmrAPj2oP3U="/>
         <field:select field="lsThing" id="c_com_labsynch_labseer_domain_LsThingLabel_lsThing" itemValue="id" items="${lsthings}" path="/lsthings" required="true" z="Dxf9PsLVhsMeWT2eE6lJG7p7Iuc="/>
         <field:input field="lsThingTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingLabel_lsThingTypeAndKind" z="sux6eKdSGI4jlKjI0WzrKjslCTI="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_LsThingLabel_deleted" z="75GZwRi/sAj6OmuusBNj5pwGYEI="/>
     </form:update>
 </div>

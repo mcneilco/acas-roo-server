@@ -14,5 +14,6 @@
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_LsThing_ignored" object="${lsthing}" z="urFNF2tGmw/0j99uxETtlZJuYJo="/>
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_LsThing_lsTransaction" object="${lsthing}" z="NlQL9XnCSzcJYMMC3r9JnerQswo="/>
         <field:display field="lsTags" id="s_com_labsynch_labseer_domain_LsThing_lsTags" object="${lsthing}" z="nVOJfjwMzcHl7uj7Obtyjw7mtpU="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_LsThing_deleted" object="${lsthing}" z="5UAGPOMMNEVGkouWXstNus91Nxk="/>
     </page:show>
 </div>

@@ -37,5 +37,6 @@
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_ProtocolValue_codeTypeAndKind" object="${protocolvalue}" z="ed/ZQt+bZGqHB3BNSHtAmmjfWxE="/>
         <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_ProtocolValue_uncertainty" object="${protocolvalue}" z="3p4Zp05pSxlRQ+M58/WE7xgGp/4="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_ProtocolValue_codeOrigin" object="${protocolvalue}" z="Q3X1xsz3PIifM5zhRgh9wzqE/k8="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ProtocolValue_deleted" object="${protocolvalue}" z="tC94hBysumx2uRELRJwBsEmFLck="/>
     </page:show>
 </div>

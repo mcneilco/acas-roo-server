@@ -47,5 +47,8 @@ public interface ExperimentService {
 
 	public Set<Experiment> findExperimentsByRequestMetadata(
 			Map<String, String> requestParams);
+
+	Collection<JSTreeNodeDTO> getExperimentNodesMod(
+			Collection<String> codeValues);
 	
 }

@@ -37,6 +37,7 @@
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingValue_codeTypeAndKind" z="64yDBrEf9AnzRAK0BIDQiP8YSkw="/>
         <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_LsThingValue_uncertainty" validationMessageCode="field_invalid_number" z="lEN56U1k4rMbfgPhe5Qkdg8BH0I="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_LsThingValue_codeOrigin" z="RZ1oQDIViL60GSjYSXWaTGJ8YXA="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_LsThingValue_deleted" z="YXijKzOUoJfyfuflGMRmKNyNOaM="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_LsThingValue" render="${not empty dependencies}" z="MObDxUKDpRTMdIPH4rh4TpxPfv0="/>
 </div>

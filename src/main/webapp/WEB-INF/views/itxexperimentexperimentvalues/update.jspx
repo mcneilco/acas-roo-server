@@ -37,5 +37,6 @@
         <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_publicData" z="4DADOkzJ90mz7hLqgpL285/gU40="/>
         <field:select field="lsState" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsState" itemValue="id" items="${itxexperimentexperimentstates}" path="/itxexperimentexperimentstates" z="55wyUN9XXMp6l1qcuIKnMp2Qb2g="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_codeOrigin" z="3f7CGOC29tNVPrH/9Cu4ny3qUGQ="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_deleted" z="MQmcQKivUcIztFVfTGz4juRfYpo="/>
     </form:update>
 </div>
