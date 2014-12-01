@@ -68,7 +68,7 @@ public class ProtocolDTO{
 		this.setLsTags(protocol.getLsTags());
 		this.setFirstProtocols(protocol.getFirstProtocols());
 		this.setSecondProtocols(protocol.getSecondProtocols());
-		this.setExperimentCount(protocol.getExperiments().size());
+		this.setExperimentCount(countExperiments(protocol));
     }
 
     private String shortDescription;
@@ -160,5 +160,14 @@ public class ProtocolDTO{
     @Transactional
     public static String toJsonArrayStub(Collection<ProtocolDTO> collection) {
         return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.protocol", "experiments.protocol", "lsLabels.protocol").include("lsTags", "lsLabels", "lsStates.lsValues").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
+    
+    private int countExperiments(Protocol protocol) {
+    	Collection<Experiment> experiments = protocol.getExperiments();
+    	int count = 0;
+    	for (Experiment experiment : experiments) {
+    		if (!experiment.isIgnored()) count++;
+    	}
+    	return count;
     }
 }
