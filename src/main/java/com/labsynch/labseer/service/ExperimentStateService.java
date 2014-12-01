@@ -22,5 +22,10 @@ public interface ExperimentStateService {
 
 	public Collection<ExperimentState> saveExperimentStates(
 			Collection<ExperimentState> experimentStates);
+
+	public ExperimentState updateExperimentState(ExperimentState experimentState);
+
+	public Collection<ExperimentState> updateExperimentStates(
+			Collection<ExperimentState> experimentStates);
 	
 }

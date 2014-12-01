@@ -37,5 +37,8 @@ public interface SubjectValueService {
 
 	Collection<SubjectValue> saveSubjectValues(
 			Collection<SubjectValue> subjectValues);
+
+	public Collection<SubjectValue> updateSubjectValues(
+			Collection<SubjectValue> subjectValues);
 	
 }

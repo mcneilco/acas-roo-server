@@ -23,5 +23,8 @@ public interface ProtocolValueService {
 	Collection<ProtocolValue> saveProtocolValues(
 			Collection<ProtocolValue> protocolValues);
 
+	Collection<ProtocolValue> updateProtocolValues(
+			Collection<ProtocolValue> protocolValues);
+
 
 }

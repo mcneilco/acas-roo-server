@@ -65,6 +65,8 @@ import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.dto.SubjectStateValueDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentService;
@@ -73,13 +75,14 @@ import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
 
 @Controller
 @RequestMapping("api/v1/experiments")
 @Transactional
-@RooWebJson(jsonObject = Experiment.class)
+//@RooWebJson(jsonObject = Experiment.class)
 public class ApiExperimentController {
 	private static final Logger logger = LoggerFactory.getLogger(ApiExperimentController.class);
 
@@ -248,7 +251,7 @@ public class ApiExperimentController {
 		return new ResponseEntity<String>(ExperimentGuiStubDTO.toJsonArray(result), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/subjectsstatus/{id}", headers = "Accept=application/json")
+	@RequestMapping(value = "/subjectsstatus/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> findSubjectValues(
     		@PathVariable("id") Long id,
@@ -673,20 +676,20 @@ public class ApiExperimentController {
 
 	}
 
-	@RequestMapping(value = "/{IdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{idOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> getExperimentValuesForExperimentByIdOrCodeName (
-			@PathVariable("IdOrCodeName") String IdOrCodeName) {		
+			@PathVariable("idOrCodeName") String idOrCodeName) {		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
 		List<ExperimentValue> experimentValues = null;
 		Long id = null;
-		if(isNumeric(IdOrCodeName)) {
-			id = Long.valueOf(IdOrCodeName);
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
+			id = Long.valueOf(idOrCodeName);
 		} else {
-			id = Experiment.findExperimentsByCodeNameEquals(IdOrCodeName).getSingleResult().getId();
+			id = Experiment.findExperimentsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
 		}
 
 		if(id != null) {
@@ -784,7 +787,7 @@ public class ApiExperimentController {
 		return true;
 	}
 
-	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
         Experiment experiment = Experiment.findExperiment(id);
@@ -796,15 +799,32 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJson(@RequestBody String json) {
-        Experiment experiment = Experiment.fromJsonToExperiment(json);
-        experiment.persist();
+	@Transactional
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+        logger.debug("----from the Experiment POST controller----");
+        logger.debug("incoming json " + json);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        Experiment experiment = null;
+        try {
+            experiment = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
+        } catch (UniqueNameException e) {
+            logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage("not unique experiment name");
+            errors.add(error);
+            errorsFound = true;
+        }
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+        } else {
+            return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.CREATED);
+        }
     }
-
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
         for (Experiment experiment: Experiment.fromJsonArrayToExperiments(json)) {
@@ -879,7 +899,7 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindExperimentsByCodeNameEquals(@RequestParam("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
@@ -887,7 +907,7 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTransaction", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTransaction", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindExperimentsByLsTransaction(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
@@ -895,7 +915,7 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByLsTransaction(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindExperimentsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
@@ -903,7 +923,7 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(Experiment.toJsonArray(Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByProtocol", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByProtocol", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindExperimentsByProtocol(@RequestParam("protocol") Protocol protocol) {
         HttpHeaders headers = new HttpHeaders();
@@ -1174,24 +1194,24 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/stub/{id}", headers = "Accept=application/json")
-    @ResponseBody
-    @Transactional
-    public ResponseEntity<java.lang.String> showJsonStub(@PathVariable("id") Long id, @RequestParam(value = "with", required = false) String with) {
-        Experiment experiment = Experiment.findExperiment(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        if (experiment == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        if (with.equalsIgnoreCase("prettyjson")) {
-            return new ResponseEntity<String>(experiment.toPrettyJsonStub(), headers, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<String>(experiment.toJsonStub(), headers, HttpStatus.OK);
-        }
-    }
+//    @RequestMapping(method = RequestMethod.GET, value = "/stub/{id}", headers = "Accept=application/json")
+//    @ResponseBody
+//    @Transactional
+//    public ResponseEntity<java.lang.String> showJsonStub(@PathVariable("id") Long id, @RequestParam(value = "with", required = false) String with) {
+//        Experiment experiment = Experiment.findExperiment(id);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json; charset=utf-8");
+//        if (experiment == null) {
+//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+//        }
+//        if (with.equalsIgnoreCase("prettyjson")) {
+//            return new ResponseEntity<String>(experiment.toPrettyJsonStub(), headers, HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<String>(experiment.toJsonStub(), headers, HttpStatus.OK);
+//        }
+//    }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/stub/{id}", headers = "Accept=application/json")
     @ResponseBody
     @Transactional
     public ResponseEntity<java.lang.String> showJsonStubWith(@PathVariable("id") Long id, @RequestParam(value = "with", required = false) String with) {
@@ -1340,7 +1360,7 @@ public class ApiExperimentController {
     }
 
     @Transactional
-    @RequestMapping(value = "/codename/{codeName}", headers = "Accept=application/json")
+    @RequestMapping(value = "/codename/{codeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindExperimentsByCodeNameEqualsRoute(@PathVariable("codeName") String codeName, @RequestParam(value = "with", required = false) String with) {
         HttpHeaders headers = new HttpHeaders();
@@ -1394,7 +1414,7 @@ public class ApiExperimentController {
     }
 
     @Transactional
-    @RequestMapping(value = "/experimentname/**", headers = "Accept=application/json")
+    @RequestMapping(value = "/experimentname/**", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindProtocolByExperimentNameEqualsRoute(HttpServletRequest request) {
         String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
@@ -1491,7 +1511,7 @@ public class ApiExperimentController {
     }
 
     
-    @RequestMapping(value = "/search")
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<String> experimentBrowserSearch(@RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();

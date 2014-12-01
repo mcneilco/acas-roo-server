@@ -30,6 +30,7 @@ import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -114,7 +115,7 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 	public ProtocolValue updateProtocolValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
 		//fetch the entity
 		Protocol protocol;
-		if(ApiValueController.isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			protocol = Protocol.findProtocol(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -182,5 +183,14 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 		protocolValue.setRecordedBy("default");
 		protocolValue.persist();
 		return protocolValue;
+	}
+	
+	@Override
+	public Collection<ProtocolValue> updateProtocolValues(
+			Collection<ProtocolValue> protocolValues) {
+		for (ProtocolValue protocolValue: protocolValues) {
+			protocolValue = updateProtocolValue(protocolValue);
+		}
+		return protocolValues;
 	}
 }

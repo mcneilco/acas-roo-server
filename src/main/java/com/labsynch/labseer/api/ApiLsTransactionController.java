@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@RooWebJson(jsonObject = LsTransaction.class)
+//@RooWebJson(jsonObject = LsTransaction.class)
 @Controller
 @RequestMapping("/api/v1/lstransactions")
 @Transactional
@@ -25,7 +25,7 @@ public class ApiLsTransactionController {
 	
 	//code below this line was copied and pasted from com.labsynch.labseer.web.LsTransactionController.java
 	
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
         LsTransaction lsTransaction = LsTransaction.findLsTransaction(id);
@@ -37,7 +37,7 @@ public class ApiLsTransactionController {
         return new ResponseEntity<String>(lsTransaction.toJson(), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> listJson() {
         HttpHeaders headers = new HttpHeaders();

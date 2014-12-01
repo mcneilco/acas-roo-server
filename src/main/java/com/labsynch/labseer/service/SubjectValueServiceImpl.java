@@ -32,6 +32,7 @@ import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.SubjectValueDTO;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -182,7 +183,7 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 	public SubjectValue updateSubjectValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
 		//fetch the entity
 		Subject subject;
-		if(ApiValueController.isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			subject = Subject.findSubject(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -250,5 +251,14 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 		subjectValue.setRecordedBy("default");
 		subjectValue.persist();
 		return subjectValue;
+	}
+	
+	@Override
+	public Collection<SubjectValue> updateSubjectValues(
+			Collection<SubjectValue> subjectValues) {
+		for (SubjectValue subjectValue: subjectValues) {
+			subjectValue = updateSubjectValue(subjectValue);
+		}
+		return subjectValues;
 	}
 }

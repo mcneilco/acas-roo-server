@@ -98,7 +98,7 @@ public class AnalysisGroupValueController {
 	public ResponseEntity<java.lang.String> getGeneCodeData(
 			@RequestBody String json, 
 			@RequestParam(value = "format", required = false) String format, 
-			@RequestParam(value = "hiddenData", required = false) String hiddenData, 
+			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData, 
 			@RequestParam(value = "page", required = false) Integer page, 
 			@RequestParam(value = "size", required = false) Integer size) {
 		logger.debug("incoming json: " + json);
@@ -109,16 +109,18 @@ public class AnalysisGroupValueController {
 		Set<String> geneCodeList = new HashSet<String>();
 		geneCodeList.addAll(batchCodes);
 
-		Boolean hiddenDataFlag = false;
-		if (hiddenData != null && hiddenData.equalsIgnoreCase("true")){
-			hiddenDataFlag = true;
+		Boolean publicData = false;
+		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+			publicData = true;
 		}
 
 		List<AnalysisGroupValueDTO> agValues = null;
 		try {
-			 //           agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(geneCodeList).getResultList();
-			agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(geneCodeList, hiddenDataFlag).getResultList();
-
+			if (publicData){
+				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(geneCodeList, publicData).getResultList();
+			} else {
+				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(geneCodeList).getResultList();
+			}
 		} catch (Exception e) {
 			logger.error(e.toString());
 		}
