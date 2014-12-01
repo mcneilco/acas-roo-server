@@ -136,7 +136,7 @@ public class CurveFitDTO {
 				"flagStatus",
 				"flagObservation",
 				"flagReason",
-				"flagComment",
+				"flagComment"
 				};
 
 		return headerColumns;
@@ -189,9 +189,8 @@ public class CurveFitDTO {
 	public static CurveFitDTO getFitData(CurveFitDTO curveFitDTO){
 		AnalysisGroupValue curveIdValue = AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLike("stringValue", "curve id", curveFitDTO.getCurveId()).getSingleResult();
 		AnalysisGroupState doseResponseState = AnalysisGroupState.findAnalysisGroupState(curveIdValue.getStateId());
-		List<AnalysisGroupValue> agValues = AnalysisGroupValue.findAnalysisGroupValuesByLsState(doseResponseState).getResultList();
-		//could I get this list out of the state rather than
-		//Collection<AnalysisGroupValue> agValues = doseResponseState.getLsValues();
+//		List<AnalysisGroupValue> agValues = AnalysisGroupValue.findAnalysisGroupValuesByLsState(doseResponseState).getResultList();
+		Collection<AnalysisGroupValue> agValues = doseResponseState.getLsValues();
 		HashMap<String, String> stringMap = new HashMap<String, String>();
 		HashMap<String, BigDecimal> numericMap = new HashMap<String, BigDecimal>();
 		for (AnalysisGroupValue agValue : agValues) {
