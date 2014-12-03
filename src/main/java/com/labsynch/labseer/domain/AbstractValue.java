@@ -123,6 +123,11 @@ public abstract class AbstractValue {
 	@org.hibernate.annotations.Index(name="_UNTK_IDX")
 	private String unitTypeAndKind;
 	
+	private Double concentration;
+	
+	@Size(max = 25)
+	private String concUnit;
+	
 	@Size(max = 512)
 	private String comments;
 
