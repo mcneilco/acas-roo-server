@@ -17,6 +17,7 @@
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ItxContainerContainer_lsKind" required="true" z="9wDaOZigYfKRtZLIR69LPKBv+x8="/>
         <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ItxContainerContainer_lsTypeAndKind" z="pPEEbSAraZ77nd7mpOzZQ/Y3wuI="/>
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_ItxContainerContainer_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Container Container State" z="TLS5Je6L4Nuc5CdWbH3rb/NNFcs="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxContainerContainer_deleted" z="Edt9FbhcXmnpgWQ0gjpQm4rMjHM="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ItxContainerContainer" render="${not empty dependencies}" z="eN+8EEzswUnSnXjzSuebfEw7bQg="/>
 </div>

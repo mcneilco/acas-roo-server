@@ -106,6 +106,7 @@ public class Protocol extends AbstractThing {
         }
         if (protocol.getLsTags() != null) {
             for (LsTag lsTag : protocol.getLsTags()) {
+            	logger.debug("udpating tags: " + lsTag);
                 List<LsTag> queryTags = LsTag.findLsTagsByTagTextEquals(lsTag.getTagText()).getResultList();
                 if (queryTags.size() < 1) {
                     LsTag newLsTag = new LsTag(lsTag);
@@ -116,7 +117,10 @@ public class Protocol extends AbstractThing {
                 }
             }
         }
+        logger.debug("attempting to merge protocol");
+        logger.debug(updatedProtocol.toPrettyJson());
         updatedProtocol.merge();
+        logger.debug("successfully merged protocol");
         return updatedProtocol;
     }
 

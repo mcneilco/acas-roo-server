@@ -18,6 +18,7 @@
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_Subject_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Subject State" z="bi05r8z5xTjjPwe4ovuL+1yhuWc="/>
         <field:select field="treatmentGroups" id="c_com_labsynch_labseer_domain_Subject_treatmentGroups" itemValue="id" items="${treatmentgroups}" multiple="true" path="/treatmentgroups" z="8loIl+9D3CRAINdCNPe6Q4aA2o4="/>
         <field:simple field="containers" id="c_com_labsynch_labseer_domain_Subject_containers" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Subject Container" z="cakakeNPMta13IS/WSvmOjzrio0="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_Subject_deleted" z="V82/IRSa/P0Ex5+hHBO9Z+NIQYM="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_Subject" render="${not empty dependencies}" z="0wZfomy5H/EUhR83K3hqz+nFY54="/>
 </div>

@@ -37,6 +37,7 @@
         <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeKind" z="jVMNtTlRAWHTNyUnTPZc+pyKcc8="/>
         <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeTypeAndKind" z="zmn0zYrta6oT79M2daU71tAcn1Y="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeOrigin" z="CeWGgurnczFuH5/Io+uVlstm2KQ="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_deleted" z="tfrE5qHEbBglFaX3f1hk1Yk9m8Q="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ItxSubjectContainerValue" render="${not empty dependencies}" z="9xH/6rM+75uh0zpd160sR2M7jOg="/>
 </div>

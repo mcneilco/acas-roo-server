@@ -16,5 +16,6 @@
         <field:display field="lsType" id="s_com_labsynch_labseer_domain_ExperimentLabel_lsType" object="${experimentlabel}" z="Ii8XIUMSo45SHFgZbancdurq/00="/>
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ExperimentLabel_lsKind" object="${experimentlabel}" z="H4SFBqUy0tWbiSYIHgx4efmiWW4="/>
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_ExperimentLabel_lsTypeAndKind" object="${experimentlabel}" z="i2ENJ6NoTLXPpDxD2pOK1Q3bOXk="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ExperimentLabel_deleted" object="${experimentlabel}" z="yuuC5n/g7ZbYwOsgmCrBJzyv1IU="/>
     </page:show>
 </div>

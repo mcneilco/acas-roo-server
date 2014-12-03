@@ -15,5 +15,6 @@
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ContainerState_lsTransaction" validationMessageCode="field_invalid_integer" z="qNhl2wR31bu7o5mO/4fkj82YZo4="/>
         <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_ContainerState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Container Value" z="F5CYxxWBNvSQ5JZTw4M+ha9GG4A="/>
         <field:input field="container" id="c_com_labsynch_labseer_domain_ContainerState_container" z="user-managed"/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ContainerState_deleted" z="+mBtj6auW5K8ZU9wG6GtYA+kwp8="/>
     </form:update>
 </div>

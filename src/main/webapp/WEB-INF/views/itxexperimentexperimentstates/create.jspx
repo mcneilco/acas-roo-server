@@ -15,6 +15,7 @@
         <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentState_lsTransaction" validationMessageCode="field_invalid_integer" z="ae2TBUExEJh/FAyEEmz0FsEGHq4="/>
         <field:select field="itxExperimentExperiment" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentState_itxExperimentExperiment" itemValue="id" items="${itxexperimentexperiments}" path="/itxexperimentexperiments" z="5u+qWhNaT7fYU7hAvLPAsdr9Tao="/>
         <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Experiment Experiment Value" z="oGMxTG25WPCFJokq5TOBJV9QoAQ="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentState_deleted" z="isuDaElFLpDcUAbT7Tcs2819NM8="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ItxExperimentExperimentState" render="${not empty dependencies}" z="KvqmNFvkU3ipnxcxsWiMXB2DgXc="/>
 </div>

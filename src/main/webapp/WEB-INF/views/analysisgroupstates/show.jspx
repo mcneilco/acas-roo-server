@@ -14,5 +14,6 @@
         <field:display field="lsType" id="s_com_labsynch_labseer_domain_AnalysisGroupState_lsType" object="${analysisgroupstate}" z="xtartZGrYJ0XNcsF3jRye++txFc="/>
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_AnalysisGroupState_lsKind" object="${analysisgroupstate}" z="11PDGL6Zs/vFc3gM2GuPqT3hwqg="/>
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_AnalysisGroupState_lsTypeAndKind" object="${analysisgroupstate}" z="JYcX7dzk8Bl6YMmuZTkJpwgp7PA="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_AnalysisGroupState_deleted" object="${analysisgroupstate}" z="i1Sr5XoJu2Pf9sSrYyP1z0Zl6sI="/>
     </page:show>
 </div>

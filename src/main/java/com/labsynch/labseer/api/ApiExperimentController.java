@@ -65,6 +65,8 @@ import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.dto.SubjectStateValueDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentService;
@@ -797,15 +799,32 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJson(@RequestBody String json) {
-        Experiment experiment = Experiment.fromJsonToExperiment(json);
-        experiment.persist();
+	@Transactional
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+        logger.debug("----from the Experiment POST controller----");
+        logger.debug("incoming json " + json);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        Experiment experiment = null;
+        try {
+            experiment = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
+        } catch (UniqueNameException e) {
+            logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage("not unique experiment name");
+            errors.add(error);
+            errorsFound = true;
+        }
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+        } else {
+            return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.CREATED);
+        }
     }
-
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
         for (Experiment experiment: Experiment.fromJsonArrayToExperiments(json)) {

@@ -15,5 +15,6 @@
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ExperimentState_lsKind" required="true" z="TUKuQ6caRos6XGHyJ+PGxI4F5W0="/>
         <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ExperimentState_lsTypeAndKind" z="pND/258gKTxi7W4kcZcp232jblM="/>
         <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_ExperimentState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Experiment Value" z="9UEKBr+HDkURwU/+WSJep3ZiQPo="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ExperimentState_deleted" z="3qTAbIIsoLM8ra0Mhy8Sh7LrXY8="/>
     </form:update>
 </div>

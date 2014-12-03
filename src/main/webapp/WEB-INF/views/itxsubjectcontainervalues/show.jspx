@@ -37,5 +37,6 @@
         <field:display field="codeKind" id="s_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeKind" object="${itxsubjectcontainervalue}" z="GULvvRS0s6D5wzyGeOwRyDqNGq4="/>
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeTypeAndKind" object="${itxsubjectcontainervalue}" z="q2JzdED0hnFsW7v2D+uG681IPL4="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_ItxSubjectContainerValue_codeOrigin" object="${itxsubjectcontainervalue}" z="vtCqjGAggDSkaXol0axaAeef3Uk="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ItxSubjectContainerValue_deleted" object="${itxsubjectcontainervalue}" z="iwXbhXSXzwt4qFnclUAjqcHZ7DE="/>
     </page:show>
 </div>

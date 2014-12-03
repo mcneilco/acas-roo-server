@@ -17,5 +17,6 @@
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_Experiment_lsTypeAndKind" object="${experiment}" z="D5Rndcz0rTKL6y6RCt5pRaz0ySw="/>
         <field:display field="lsTags" id="s_com_labsynch_labseer_domain_Experiment_lsTags" object="${experiment}" z="SMrJnEQHbmrJzKRwXIQLUnpIsXw="/>
         <field:display field="analysisGroups" id="s_com_labsynch_labseer_domain_Experiment_analysisGroups" object="${experiment}" z="nNrjflAcL4GD02X0eTNQeBhe40A="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_Experiment_deleted" object="${experiment}" z="nS5o/Ih2zgJnRCPzNIXi6uW1GfI="/>
     </page:show>
 </div>

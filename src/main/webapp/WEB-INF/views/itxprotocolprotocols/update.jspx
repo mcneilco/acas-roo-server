@@ -17,5 +17,6 @@
         <field:select field="firstProtocol" id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_firstProtocol" itemValue="id" items="${protocols}" path="/protocols" required="true" z="FFEiXTlu00RT/Z+b8OgfTLLoWhw="/>
         <field:select field="secondProtocol" id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_secondProtocol" itemValue="id" items="${protocols}" path="/protocols" required="true" z="dHkpNO0sMrV76sF5XE9GnrMu3xo="/>
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Protocol Protocol State" z="Oy7KAGSqy24DOiyJlJ/TBU9u88I="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_deleted" z="4FH7vwehZ5SUxG9RImVflDHDkQE="/>
     </form:update>
 </div>

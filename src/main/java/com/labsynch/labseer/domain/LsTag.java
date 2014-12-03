@@ -28,6 +28,7 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(sequenceName = "LS_TAG_PKSEQ", finders = { "findLsTagsByTagTextEquals", "findLsTagsByTagTextLike" })
 public class LsTag {
 
+	
     @Size(max = 255)
     private String tagText;
 

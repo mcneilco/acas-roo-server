@@ -43,4 +43,7 @@
 <definition extends="default" name="protocols/findProtocolsByRecordedByLike">
         <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByRecordedByLike.jspx"/>
     </definition>
+<definition extends="default" name="protocols/findProtocolsByCodeNameEqualsAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/protocols/findProtocolsByCodeNameEqualsAndIgnoredNot.jspx"/>
+    </definition>
 </tiles-definitions>

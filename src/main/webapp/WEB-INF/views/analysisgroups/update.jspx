@@ -18,5 +18,6 @@
         <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_AnalysisGroup_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Analysis Group Label" z="a8+acJib/Xn7ZfL0Hmx+Pl56+sc="/>
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_AnalysisGroup_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Analysis Group State" z="9YhCzAVknbXzGB7J7bbEsqizuvk="/>
         <field:select field="experiments" id="c_com_labsynch_labseer_domain_AnalysisGroup_experiments" itemValue="id" items="${experiments}" multiple="true" path="/experiments" z="XpN9vbeApCeaPGPPUYCRrXGtTds="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_AnalysisGroup_deleted" z="nuGzypv5y4z6wWgwoZ5c5xyUvUQ="/>
     </form:update>
 </div>

@@ -16,5 +16,6 @@
         <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_SubjectLabel_lsType" required="true" z="LbJ3ykOyc89Ak0xiBcIAQLcGAn4="/>
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_SubjectLabel_lsKind" required="true" z="tO+QQQdNrlGfuAk/uOQRsYHxLyU="/>
         <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_SubjectLabel_lsTypeAndKind" z="pPTupc3rY81iqlFoDNAPle2HU8U="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_SubjectLabel_deleted" z="2Ll5qoZ5uCnIz8Ej0XzmF17wtl4="/>
     </form:update>
 </div>

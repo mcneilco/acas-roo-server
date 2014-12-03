@@ -14,5 +14,6 @@
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentState_ignored" object="${itxexperimentexperimentstate}" z="ZzJcVZVNIkhppMUvtCULrZwHgKw="/>
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentState_lsTransaction" object="${itxexperimentexperimentstate}" z="iDCsk13OQNZWCGGm6aW9Rtj/UvY="/>
         <field:display field="itxExperimentExperiment" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentState_itxExperimentExperiment" object="${itxexperimentexperimentstate}" z="HfsQlrOxLniRIJOPa/lmk+cpEi0="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentState_deleted" object="${itxexperimentexperimentstate}" z="AFrrvsrrCulq9FeV2FwHeRFj0sk="/>
     </page:show>
 </div>

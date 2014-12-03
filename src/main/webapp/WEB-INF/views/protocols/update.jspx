@@ -21,5 +21,6 @@
         <field:select field="lsTags" id="c_com_labsynch_labseer_domain_Protocol_lsTags" itemValue="id" items="${lstags}" multiple="true" path="/lstags" z="dI/njSzpg1LET1k/s96ULTeiURc="/>
         <field:simple field="firstProtocols" id="c_com_labsynch_labseer_domain_Protocol_firstProtocols" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Protocol Protocol" z="IY1kKVetMhz9vPm95yqiUazeKeA="/>
         <field:simple field="secondProtocols" id="c_com_labsynch_labseer_domain_Protocol_secondProtocols" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Protocol Protocol" z="h9HUw1ZOXVJXhZxz/0nPBNTzpa4="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_Protocol_deleted" z="LRfgao3PkPxGufaNMssn6JeyNuQ="/>
     </form:update>
 </div>
