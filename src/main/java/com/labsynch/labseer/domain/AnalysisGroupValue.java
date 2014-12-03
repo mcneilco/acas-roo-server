@@ -57,8 +57,6 @@ public class AnalysisGroupValue extends AbstractValue {
     @JoinColumn(name = "analysis_state_id")
     private AnalysisGroupState lsState;
     
-    
-
     public AnalysisGroupValue(AnalysisGroupCsvDTO analysisGroupDTO) {
     	this.setCodeValue(analysisGroupDTO.getCodeValue());
     	this.setLsType(analysisGroupDTO.getValueType());
@@ -73,6 +71,8 @@ public class AnalysisGroupValue extends AbstractValue {
     	this.setUncertainty(analysisGroupDTO.getUncertainty());
     	this.setUncertaintyType(analysisGroupDTO.getUncertaintyType());
     	this.setUnitKind(analysisGroupDTO.getValueUnit());
+    	this.setConcentration(analysisGroupDTO.getConcentration());
+    	this.setConcUnit(analysisGroupDTO.getConcUnit());
     	this.setNumberOfReplicates(analysisGroupDTO.getNumberOfReplicates());
         this.setRecordedBy(analysisGroupDTO.getRecordedBy());
         this.setRecordedDate(analysisGroupDTO.getRecordedDate());
@@ -99,6 +99,8 @@ public class AnalysisGroupValue extends AbstractValue {
     	this.setUncertainty(analysisGroupDTO.getUncertainty());
     	this.setUncertaintyType(analysisGroupDTO.getUncertaintyType());
     	this.setUnitKind(analysisGroupDTO.getUnitKind());
+    	this.setConcentration(analysisGroupDTO.getConcentration());
+    	this.setConcUnit(analysisGroupDTO.getConcUnit());
     	this.setNumberOfReplicates(analysisGroupDTO.getNumberOfReplicates());
         this.setRecordedBy(analysisGroupDTO.getRecordedBy());
         this.setRecordedDate(analysisGroupDTO.getRecordedDate());
@@ -696,20 +698,18 @@ public class AnalysisGroupValue extends AbstractValue {
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
 				"analysisGroupId",
-				"analysisGroupCode",
-				
+				"analysisGroupCode",				
 				"stateId",
 				"stateType",
 				"stateKind",
-				
 				"id",
 				"lsType",
 				"lsKind",
 				"codeType",
 				"codeKind",
+				
 				"codeValue",
 				"stringValue",
-				
 				"fileValue",
 				"urlValue",
 				"dateValue",
@@ -718,23 +718,25 @@ public class AnalysisGroupValue extends AbstractValue {
 				"operatorKind",
 				"numericValue",
 				"sigFigs",
+
 				"uncertainty",
 				"numberOfReplicates",
-				
 				"uncertaintyType",
 				"unitType",
 				"unitKind",
+				"concentration",
+				"concUnit",
 				"comments",
 				"ignored",
 				"lsTransaction",
+
 				"recordedDate",
 				"recordedBy",
 				"modifiedDate",
 				"modifiedBy",
-				
 				"publicData"
 		};
-//31 columns
+//35 columns
 		return headerColumns;
 
 	}
@@ -743,21 +745,6 @@ public class AnalysisGroupValue extends AbstractValue {
 		final CellProcessor[] processors = new CellProcessor[] { 
 				new Optional(),
 				new Optional(),
-				
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-
-				new Optional(),
-				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -778,13 +765,25 @@ public class AnalysisGroupValue extends AbstractValue {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional()
-
-
 		};
 
 		return processors;
 	}
 	
-
 }

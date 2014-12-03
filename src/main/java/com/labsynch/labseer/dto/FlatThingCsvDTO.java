@@ -4,38 +4,15 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
-
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentLabel;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
-import com.labsynch.labseer.domain.Protocol;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -93,6 +70,8 @@ public class FlatThingCsvDTO {
 	private String uncertaintyType;
 	private String unitType;
 	private String unitKind;
+	private Double concentration;
+	private String concUnit;
 	private String comments;
 	private boolean ignored;
 	private Long lsTransaction;
@@ -227,6 +206,7 @@ public class FlatThingCsvDTO {
 				"stateId",
 				"tempStateId",
 				"stateType",
+				
 				"stateKind",
 				"tempValueId",
 				"valueType",
@@ -237,6 +217,7 @@ public class FlatThingCsvDTO {
 				"stringValue",
 				"fileValue",
 				"urlValue",
+				
 				"dateValue",
 				"clobValue",
 				"operatorType",
@@ -247,7 +228,10 @@ public class FlatThingCsvDTO {
 				"numberOfReplicates",
 				"uncertaintyType",
 				"unitType",
+				
 				"unitKind",
+				"concentration",
+				"concUnit",
 				"comments",
 				//				"ignored",
 				"lsTransaction",
@@ -256,7 +240,7 @@ public class FlatThingCsvDTO {
 				//				"modifiedDate",
 				//				"modifiedBy",
 				"publicData"
-				// 39 values
+				// 37 values
 		};
 
 		//		valueType,valueKind,numericValue,stringValue,dateValue,clobValue,urlValue,
@@ -303,6 +287,9 @@ public class FlatThingCsvDTO {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
+				new Optional(),
+				
 				new Optional(),
 				new Optional(),
 				new Optional(),

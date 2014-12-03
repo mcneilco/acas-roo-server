@@ -67,6 +67,8 @@ public class SubjectValue extends AbstractValue {
     	this.setUncertainty(subjectDTO.getUncertainty());
     	this.setUncertaintyType(subjectDTO.getUncertaintyType());
     	this.setUnitKind(subjectDTO.getUnitKind());
+    	this.setConcentration(subjectDTO.getConcentration());
+    	this.setConcUnit(subjectDTO.getConcUnit());
     	this.setNumberOfReplicates(subjectDTO.getNumberOfReplicates());
         this.setRecordedBy(subjectDTO.getRecordedBy());
         this.setRecordedDate(subjectDTO.getRecordedDate());
@@ -92,10 +94,10 @@ public class SubjectValue extends AbstractValue {
 	}
 
 	//TODO: work out a different strategy with the many to many
-	public Long getTreatmentGroupId() {
-		return 0L;
-	}
-	
+//	public Long getTreatmentGroupId() {
+//		return 0L;
+//	}
+//	
 	public Long getSubjectId() {
 		return this.lsState.getSubject().getId();
 	}
@@ -314,19 +316,17 @@ public class SubjectValue extends AbstractValue {
 		String[] headerColumns = new String[] {
 				"treatmentGroupId",
 				"subjectId",
-				
 				"stateId",
 				"stateType",
 				"stateKind",
-				
 				"id",
 				"lsType",
 				"lsKind",
 				"codeType",
 				"codeKind",
+
 				"codeValue",
 				"stringValue",
-				
 				"fileValue",
 				"urlValue",
 				"dateValue",
@@ -335,23 +335,25 @@ public class SubjectValue extends AbstractValue {
 				"operatorKind",
 				"numericValue",
 				"sigFigs",
+
 				"uncertainty",
 				"numberOfReplicates",
-				
 				"uncertaintyType",
 				"unitType",
 				"unitKind",
+				"concentration",
+				"concUnit",
 				"comments",
 				"ignored",
 				"lsTransaction",
+
 				"recordedDate",
 				"recordedBy",
 				"modifiedDate",
-				"modifiedBy",
-				
+				"modifiedBy",				
 				"publicData"
 		};
-//31 columns
+//35 columns
 		return headerColumns;
 
 	}
@@ -360,21 +362,6 @@ public class SubjectValue extends AbstractValue {
 		final CellProcessor[] processors = new CellProcessor[] { 
 				new Optional(),
 				new Optional(),
-				
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-
-				new Optional(),
-				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -395,6 +382,21 @@ public class SubjectValue extends AbstractValue {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional()
 
 
