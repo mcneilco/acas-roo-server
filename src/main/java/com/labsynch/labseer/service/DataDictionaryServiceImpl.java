@@ -10,8 +10,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -20,7 +18,6 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.DDictValue;
-import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 
 @Service
@@ -36,8 +33,16 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	@Override
 	public DDictValue saveDataDictionaryValue(DDictValue dDict) {
 		logger.debug("here is the incoming ddict value: " + dDict.toJson());
-		if (dDict.getCodeName() == null){
-			dDict.setCodeName(autoLabelService.getDataDictionaryCodeName());
+		
+		int dDictCount = DDictValue.findDDictValuesByCodeNameEquals(dDict.getCodeName()).getResultList().size();
+		
+		if (dDictCount == 0){
+			if (dDict.getCodeName() == null){
+				dDict.setCodeName(autoLabelService.getDataDictionaryCodeName());
+			}
+			dDict.persist();
+		} else {
+			dDict = null;
 		}
 		return dDict;
 	}

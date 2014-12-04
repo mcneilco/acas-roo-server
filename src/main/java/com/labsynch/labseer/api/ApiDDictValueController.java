@@ -157,16 +157,17 @@ public class ApiDDictValueController {
 		}
 	}
 
-
-
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJson(@RequestBody String json) {
 		DDictValue dDictValue = DDictValue.fromJsonToDDictValue(json);
 		dDictValue = dataDictionaryService.saveDataDictionaryValue(dDictValue);
-		dDictValue.persist();
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(dDictValue.toJson(), headers, HttpStatus.CREATED);
+		headers.add("Content-Type", "application/json");		
+		if (dDictValue == null){
+			return new ResponseEntity<String>("ERROR: DDictValue already exists", headers, HttpStatus.CONFLICT);
+		} else {
+			return new ResponseEntity<String>(dDictValue.toJson(), headers, HttpStatus.CREATED);
+		} 
 	}
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -174,7 +175,6 @@ public class ApiDDictValueController {
 		Collection<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
 		for (DDictValue dDictValue: DDictValue.fromJsonArrayToDDictValues(json)) {
 			dDictValue = dataDictionaryService.saveDataDictionaryValue(dDictValue);
-			dDictValue.persist();
 			savedDDictValues.add(dDictValue);
 		}
 		HttpHeaders headers = new HttpHeaders();
