@@ -1516,7 +1516,13 @@ public class ApiExperimentController {
 	public ResponseEntity<String> experimentBrowserSearch(@RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(Experiment.toJsonArrayStub(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
+		try {
+			String result = Experiment.toJsonArrayStub(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery));
+			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
+		} catch(Exception e){
+			String error = e.getMessage() + e.getStackTrace();
+			return new ResponseEntity<String>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
     
     @RequestMapping(params = "find=ByMetadata", method = RequestMethod.GET, headers = "Accept=application/json")

@@ -934,12 +934,16 @@ public class ExperimentServiceImpl implements ExperimentService {
 		for (Long id: experimentAllIdList) experimentList.add(Experiment.findExperiment(id));
 
 		//This method uses finders that will find everything, whether or not it is ignored or deleted
+		Collection<Experiment> result = new HashSet<Experiment>();
 		for (Experiment experiment: experimentList) {
 			//For Experiment Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
-			if (experiment.isDeleted()) experimentList.remove(experiment);
-			logger.debug("removing a deleted experiment from the results");
+			if (experiment.isDeleted()){
+				logger.debug("removing a deleted experiment from the results");
+			} else {
+				result.add(experiment);
+			}
 		}
-		return experimentList;
+		return result;
 	}
 
 	private Collection<Long> findExperimentIdsByMetadata(String queryString, String searchBy) {

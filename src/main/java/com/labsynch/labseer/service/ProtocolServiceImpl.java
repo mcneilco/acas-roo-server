@@ -259,12 +259,16 @@ public class ProtocolServiceImpl implements ProtocolService {
 		}
 		for (Long id: protocolAllIdList) protocolList.add(Protocol.findProtocol(id));
         //This method uses finders that will find everything, whether or not it is ignored or deleted
-        for (Protocol protocol: protocolList) {
-        	//For Experiment Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
-        	if (protocol.isDeleted()) protocolList.remove(protocol);
-        	logger.debug("removing a deleted experiment from the results");
-        }
-		return protocolList;
+		Collection<Protocol> result = new HashSet<Protocol>();
+		for (Protocol protocol: protocolList) {
+			//For Protocol Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+			if (protocol.isDeleted()){
+				logger.debug("removing a deleted protocol from the results");
+			} else {
+				result.add(protocol);
+			}
+		}
+		return result;
 	}
 
 	public Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy) {
