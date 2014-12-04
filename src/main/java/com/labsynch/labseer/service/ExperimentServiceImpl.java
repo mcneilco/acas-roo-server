@@ -259,7 +259,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		Collection<ExperimentFilterDTO> eftSet = new HashSet<ExperimentFilterDTO>();
 		for (String experimentCode : experimentCodes){
 			logger.debug("searching for : " + experimentCode);
-			List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(experimentCode).getResultList();
+			List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(experimentCode, false).getResultList();
 			Experiment experiment = null;
 			if (experiments.size() == 1){
 				experiment = experiments.get(0);
@@ -410,7 +410,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	public Collection<JSTreeNodeDTO> getExperimentNodes(Collection<String> codeValues){
 		List<Experiment> experiments;
 		if (codeValues == null || codeValues.size() == 0){
-			experiments = Experiment.findAllExperiments();
+			experiments = Experiment.findAllExperiments(false);
 		} else {
 			experiments = Experiment.findExperimentsByBatchCodes(codeValues).getResultList();
 		}
