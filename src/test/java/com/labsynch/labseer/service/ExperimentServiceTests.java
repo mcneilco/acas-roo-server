@@ -657,4 +657,12 @@ public class ExperimentServiceTests {
 			Assert.assertNotNull(e);
 		}
 	}
+	
+	@Transactional
+	@Test
+	public void searchTest2() {
+		String query = "EXPT-00000012";
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		logger.debug("RESULTS: "+"NUMBER OF EXPERIMENTS: "+experiments.size()+experiments.toString());
+	}
 }
