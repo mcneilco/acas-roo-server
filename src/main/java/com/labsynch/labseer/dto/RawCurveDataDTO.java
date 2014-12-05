@@ -122,7 +122,8 @@ public class RawCurveDataDTO {
         		+ "dsv.unitKind as doseUnits ) "
 //        		+ "flags"
         		+ "FROM AnalysisGroupValue agv "
-        		+ "JOIN agv.lsState.analysisGroup.treatmentGroups as treat "
+        		+ "JOIN agv.lsState as ags "
+        		+ "JOIN ags.analysisGroup.treatmentGroups as treat "
         		+ "JOIN treat.subjects as subj "
         		+ "JOIN subj.lsStates as rss "
         		+ "JOIN subj.lsStates as dss "
@@ -136,8 +137,10 @@ public class RawCurveDataDTO {
         		+ "AND dss.lsKind = 'test compound treatment' "
         		+ "AND dsv.lsType = 'numericValue' "
         		+ "AND dsv.lsKind = 'Dose' "
+        		+ "AND ags.ignored = false "
         		+ "AND agv.lsType = 'stringValue' "
         		+ "AND agv.lsKind = 'curve id' "
+        		+ "AND agv.ignored = false "
         		+ "AND agv.stringValue = :curveId", Map.class);
         q.setParameter("curveId", curveId);
         List<Map> queryResults = q.getResultList();

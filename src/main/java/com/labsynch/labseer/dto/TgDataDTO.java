@@ -110,14 +110,17 @@ public class TgDataDTO {
 		EntityManager em = SubjectValue.entityManager();
         TypedQuery<TreatmentGroupValue> q = em.createQuery("SELECT tgv "
         		+ "FROM AnalysisGroupValue agv "
-        		+ "JOIN agv.lsState.analysisGroup.treatmentGroups as treat "
+        		+ "JOIN agv.lsState as ags "
+        		+ "JOIN ags.analysisGroup.treatmentGroups as treat "
         		+ "JOIN treat.lsStates as tgs "
         		+ "JOIN tgs.lsValues as tgv "
         		+ "WHERE tgs.lsType = 'data' "
         		+ "AND tgs.lsKind = 'results' "
         		+ "AND tgv.lsType = 'numericValue' "
+        		+ "AND ags.ignored = false "
         		+ "AND agv.lsType = 'stringValue' "
         		+ "AND agv.lsKind = 'curve id' "
+        		+ "AND agv.ignored = false "
         		+ "AND agv.stringValue = :curveId", TreatmentGroupValue.class);
         q.setParameter("curveId", curveId);
         List<TreatmentGroupValue> queryResults = q.getResultList();
