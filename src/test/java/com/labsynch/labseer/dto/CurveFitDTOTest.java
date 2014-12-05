@@ -1,5 +1,8 @@
 package com.labsynch.labseer.dto;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -27,4 +30,40 @@ public class CurveFitDTOTest {
 		logger.debug(curveFitDTO.toJson());
 		Assert.assertNotNull(curveFitDTO.getRenderingHint());
 	}
+	
+	@Test
+	@Transactional
+	public void getFitDataThenSaveTest() {
+		String curveId = "AG-00344271_1640";
+		String analysisGroupCode = "AG-00344271";
+		String recordedBy = "bfielder";
+		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
+		curveFitDTO = CurveFitDTO.getFitData(curveFitDTO);
+		curveFitDTO.setAnalysisGroupCode(analysisGroupCode);
+		curveFitDTO.setRecordedBy(recordedBy);
+		logger.debug("initial: " + curveFitDTO.toJson());
+		Assert.assertNotNull(curveFitDTO.getRenderingHint());
+		Collection<CurveFitDTO> curveFitDTOCollection = new ArrayList<CurveFitDTO>();
+		curveFitDTOCollection.add(curveFitDTO);
+		CurveFitDTO.updateFitData(curveFitDTOCollection);
+//		CurveFitDTO curveFitDTO2 = new CurveFitDTO(curveId);
+//		curveFitDTO2 = CurveFitDTO.getFitData(curveFitDTO2);
+//		Assert.assertEquals(curveFitDTO.toJson(), curveFitDTO2.toJson());
+		
+	}
+	
+	@Test
+	@Transactional
+	public void getFitDataArrayTest() {
+		String curveId = "a_AG-00347957";
+		String curveId2 = "AG-00344271_1640";
+		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
+		CurveFitDTO curveFitDTO2 = new CurveFitDTO(curveId2);
+		Collection<CurveFitDTO> curveFitDTOs = new ArrayList<CurveFitDTO>();
+		curveFitDTOs.add(curveFitDTO);
+		curveFitDTOs.add(curveFitDTO2);
+		curveFitDTOs = CurveFitDTO.getFitData(curveFitDTOs);
+		logger.debug(CurveFitDTO.toJsonArray(curveFitDTOs));
+	}
+	
 }
