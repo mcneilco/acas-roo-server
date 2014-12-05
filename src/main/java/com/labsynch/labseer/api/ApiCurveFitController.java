@@ -83,4 +83,22 @@ public class ApiCurveFitController {
         }
 	}
 	
+	@Transactional
+    @RequestMapping( method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> updateFitDataFromJson(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+        logger.debug("incoming json: " + json);
+        Collection<CurveFitDTO> curveFitDTOs = CurveFitDTO.fromJsonArrayToCurveFitDTO(json);
+        CurveFitDTO.updateFitData(curveFitDTOs);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+//        if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+//        	String outFileString = CurveFitDTO.getCsvList(curveFitDTOs, format);
+//            return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<String>(CurveFitDTO.toJsonArray(curveFitDTOs), headers, HttpStatus.OK);
+//        }
+      return new ResponseEntity<String>(headers, HttpStatus.OK);
+
+    }
+	
 }
