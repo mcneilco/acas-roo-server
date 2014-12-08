@@ -98,9 +98,7 @@ public class AnalysisGroupValueController {
 	public ResponseEntity<java.lang.String> getGeneCodeData(
 			@RequestBody String json, 
 			@RequestParam(value = "format", required = false) String format, 
-			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData, 
-			@RequestParam(value = "page", required = false) Integer page, 
-			@RequestParam(value = "size", required = false) Integer size) {
+			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
 		logger.debug("incoming json: " + json);
 		Collection<String> batchCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class).use("values", String.class).deserialize(json);
 		for (String bc : batchCodes) {

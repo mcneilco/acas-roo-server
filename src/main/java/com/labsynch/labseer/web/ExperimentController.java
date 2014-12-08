@@ -28,7 +28,9 @@ import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import flexjson.JSONDeserializer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -39,8 +41,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.format.DateTimeFormat;
@@ -136,13 +140,22 @@ public class ExperimentController {
 
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
-        logger.debug("incoming json: " + json);
+    public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(
+    		@RequestBody String json, 
+    		@RequestParam(value = "format", required = false) String format,
+			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
+
+		Boolean publicData = false;
+		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+			publicData = true;
+		}
+		
+    	logger.debug("incoming json: " + json);
         ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
         logger.debug("converted json: " + searchRequest.toJson());
         List<AnalysisGroupValueDTO> agValues = null;
         try {
-            agValues = experimentService.getFilteredAGData(searchRequest);
+            agValues = experimentService.getFilteredAGData(searchRequest, publicData);
             logger.debug("number of agvalues found: " + agValues.size());
         } catch (Exception e) {
             logger.error(e.toString());
@@ -185,21 +198,31 @@ public class ExperimentController {
     @SuppressWarnings("unchecked")
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist/searchfilters/batchcodeArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getBatchCodesByBatchAndExperimentAndFilters(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+    public ResponseEntity<java.lang.String> getBatchCodesByBatchAndExperimentAndFilters(
+    		@RequestBody String json, 
+    		@RequestParam(value = "format", required = false) String format,
+    		@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
         logger.debug("incoming json: " + json);
         ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
         Set<String> uniqueBatchCodes = new HashSet<String>();
         List<String> secondBatchCodes = null;
         Collection<String> collectionOfCodes = null;
         try {
+        	
+    		Boolean publicData = false;
+    		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+    			publicData = true;
+    		}
+
+        	
             boolean firstPass = true;
             for (ExperimentFilterSearchDTO singleSearchFilter : searchRequest.getSearchFilters()) {
                 if (firstPass) {
-                    collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+                    collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, publicData).getResultList();
                     logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
                     firstPass = false;
                 } else {
-                    secondBatchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+                    secondBatchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, publicData).getResultList();
                     logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
                     logger.info("size of secondBatchCodes: " + secondBatchCodes.size());
                     if (searchRequest.getBooleanFilter().equalsIgnoreCase("AND")) {
@@ -262,12 +285,19 @@ public class ExperimentController {
 
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist/searchfilters", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getAgDataByBatchAndExperimentAndFilters(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+    public ResponseEntity<java.lang.String> getAgDataByBatchAndExperimentAndFilters(
+    		@RequestBody String json, 
+    		@RequestParam(value = "format", required = false) String format,
+    		@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
         logger.debug("incoming json: " + json);
         ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
         List<String> agValues = null;
         try {
-            agValues = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters()).getResultList();
+    		Boolean publicData = false;
+    		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+    			publicData = true;
+    		}
+            agValues = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters(), publicData).getResultList();
         } catch (Exception e) {
             logger.error(e.toString());
         }
