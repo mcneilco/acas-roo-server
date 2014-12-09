@@ -261,6 +261,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
+
 	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList) {
 		logger.debug("size for batchCodeList: " + batchCodeList.size());
 		logger.debug("size for experimentCodeList: " + experimentCodeList.size());
@@ -475,7 +476,20 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
-	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, Set<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters) {
+	
+	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, 
+			Set<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters,
+			boolean includeHiddenData) {
+
+		if (includeHiddenData){
+			return findBatchCodeBySearchFilters(batchCodeList, experimentCodeList, searchFilters, false);
+		} else {
+			return findBatchCodeBySearchFilters(batchCodeList, experimentCodeList, searchFilters, true);
+		}
+	}
+
+	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, 
+			Set<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters, Boolean excludeHiddenData) {
 		EntityManager em = AnalysisGroupValue.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
@@ -487,6 +501,12 @@ public class AnalysisGroupValue extends AbstractValue {
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"), agvRoot2.<Long>get("lsState").get("id"));
 		predicateList.add(predicate00);
+		
+		if (excludeHiddenData != null && excludeHiddenData == true) {
+			Predicate predicateHidden = criteriaBuilder.equal(agvRoot.<Boolean>get("publicData"), true);
+			predicateList.add(predicateHidden);
+		}
+		
 		if (batchCodeList != null && batchCodeList.size() > 0) {
 			Predicate predicate01 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
 			predicateList.add(predicate01);
@@ -513,6 +533,12 @@ public class AnalysisGroupValue extends AbstractValue {
 				Root<AnalysisGroupValue> agvRootNew = criteria.from(AnalysisGroupValue.class);
 				Predicate predicateNew = criteriaBuilder.equal(agvRoot2.<Long>get("lsState").get("id"), agvRootNew.<Long>get("lsState").get("id"));
 				predicateList.add(predicateNew);
+
+				if (excludeHiddenData != null && excludeHiddenData == true) {
+					Predicate predicateHidden = criteriaBuilder.equal(agvRootNew.<Boolean>get("publicData"), true);
+					predicateList.add(predicateHidden);
+				}
+				
 				Predicate predicate11 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
 				predicateList.add(predicate11);
 				Predicate predicate12 = criteriaBuilder.equal(agvRoot2.<String>get("lsKind"), "batch code");
@@ -566,8 +592,100 @@ public class AnalysisGroupValue extends AbstractValue {
 		TypedQuery<String> q = em.createQuery(criteria);
 		return q;
 	}
+	
+//	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilters(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, Set<com.labsynch.labseer.dto.ExperimentFilterSearchDTO> searchFilters) {
+//		EntityManager em = AnalysisGroupValue.entityManager();
+//		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+//		CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
+//		Root<AnalysisGroupValue> agvRoot = criteria.from(AnalysisGroupValue.class);
+//		Root<AnalysisGroupValue> agvRoot2 = criteria.from(AnalysisGroupValue.class);
+//		criteria.distinct(true);
+//		criteria.select(agvRoot2.<String>get("codeValue"));
+//		Predicate[] predicates = new Predicate[0];
+//		List<Predicate> predicateList = new ArrayList<Predicate>();
+//		Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"), agvRoot2.<Long>get("lsState").get("id"));
+//		predicateList.add(predicate00);
+//		if (batchCodeList != null && batchCodeList.size() > 0) {
+//			Predicate predicate01 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
+//			predicateList.add(predicate01);
+//			Predicate predicate02 = criteriaBuilder.equal(agvRoot2.<String>get("lsKind"), "batch code");
+//			predicateList.add(predicate02);
+//			Expression<String> exp03 = agvRoot2.get("codeValue");
+//			Predicate predicate03 = exp03.in(batchCodeList);
+//			predicateList.add(predicate03);
+//		} else {
+//			logger.debug("no batchCodeList present");
+//		}
+//		if (experimentCodeList != null && experimentCodeList.size() > 0) {
+//			Expression<String> exp04 = agvRoot.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName");
+//			Predicate predicate04 = exp04.in(experimentCodeList);
+//			predicateList.add(predicate04);
+//		} else {
+//			Predicate predicate04b = criteriaBuilder.equal(agvRoot.<Boolean>get("lsState").get("analysisGroup").get("experiment").get("ignored"), false);
+//			predicateList.add(predicate04b);
+//		}
+//		logger.debug("number of search filters: " + searchFilters.size());
+//		if (searchFilters != null && searchFilters.size() > 0) {
+//			for (ExperimentFilterSearchDTO searchFilter : searchFilters) {
+//				logger.debug(searchFilter.toJson());
+//				Root<AnalysisGroupValue> agvRootNew = criteria.from(AnalysisGroupValue.class);
+//				Predicate predicateNew = criteriaBuilder.equal(agvRoot2.<Long>get("lsState").get("id"), agvRootNew.<Long>get("lsState").get("id"));
+//				predicateList.add(predicateNew);
+//				Predicate predicate11 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");
+//				predicateList.add(predicate11);
+//				Predicate predicate12 = criteriaBuilder.equal(agvRoot2.<String>get("lsKind"), "batch code");
+//				predicateList.add(predicate12);
+//				Predicate predicate1 = criteriaBuilder.equal(agvRootNew.<String>get("lsType"), searchFilter.getLsType());
+//				predicateList.add(predicate1);
+//				Predicate predicate2 = criteriaBuilder.equal(agvRootNew.<String>get("lsKind"), searchFilter.getLsKind());
+//				predicateList.add(predicate2);
+//				Predicate predicate3 = criteriaBuilder.equal(agvRootNew.<String>get("lsState").get("analysisGroup").get("experiment").get("codeName"), searchFilter.getExperimentCode());
+//				predicateList.add(predicate3);
+//				if (searchFilter.getLsType().equalsIgnoreCase("numericValue")) {
+//					Predicate predicate4 = null;
+//					if (searchFilter.getOperator().equalsIgnoreCase(">")) {
+//						predicate4 = criteriaBuilder.gt(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+//					} else if (searchFilter.getOperator().equalsIgnoreCase("<")) {
+//						predicate4 = criteriaBuilder.lt(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+//					} else if (searchFilter.getOperator().equalsIgnoreCase("=")) {
+//						predicate4 = criteriaBuilder.equal(agvRootNew.<BigDecimal>get("numericValue"), new BigDecimal(searchFilter.getFilterValue()));
+//					}
+//					Predicate predicate5 = criteriaBuilder.isNull(agvRootNew.<BigDecimal>get("numericValue"));
+//					if (predicate4 != null) {
+//						Predicate predicate6 = criteriaBuilder.or(predicate5, predicate4);
+//						predicateList.add(predicate6);
+//					} else {
+//						Predicate predicate6 = criteriaBuilder.or(predicate5);
+//						predicateList.add(predicate6);
+//					}
+//				} else if (searchFilter.getLsType().equalsIgnoreCase("stringValue")) {
+//					logger.debug("stringValue search filter " + searchFilter.getFilterValue());
+//					Predicate predicate7 = null;
+//					if (searchFilter.getOperator().equalsIgnoreCase("equals")) {
+//						predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"), searchFilter.getFilterValue());
+//					} else if (searchFilter.getOperator().equalsIgnoreCase("contains")) {
+//						predicate7 = criteriaBuilder.like(agvRootNew.<String>get("stringValue"), "%" + searchFilter.getFilterValue() + "%");
+//					}
+//					Predicate predicate8 = criteriaBuilder.isNull(agvRootNew.<String>get("stringValue"));
+//					if (predicate7 != null) {
+//						Predicate predicate9 = criteriaBuilder.or(predicate8, predicate7);
+//						predicateList.add(predicate9);
+//					} else {
+//						Predicate predicate9 = criteriaBuilder.or(predicate8);
+//						predicateList.add(predicate9);
+//					}
+//				}
+//			}
+//		}
+//		for (Predicate p : predicateList) {
+//			logger.debug("predicate: " + p.toString());
+//		}
+//		criteria.where(criteriaBuilder.and(predicateList.toArray(predicates)));
+//		TypedQuery<String> q = em.createQuery(criteria);
+//		return q;
+//	}
 
-	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilter(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, ExperimentFilterSearchDTO searchFilter) {
+	public static TypedQuery<java.lang.String> findBatchCodeBySearchFilter(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList, ExperimentFilterSearchDTO searchFilter, Boolean excludeHiddenData) {
 		EntityManager em = AnalysisGroupValue.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<String> criteria = criteriaBuilder.createQuery(String.class);
@@ -581,6 +699,12 @@ public class AnalysisGroupValue extends AbstractValue {
 		criteria.select(agvRoot2.<String>get("codeValue"));
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
+		
+		if (excludeHiddenData != null && excludeHiddenData == true) {
+			Predicate predicateHidden = criteriaBuilder.equal(agvRoot.<Boolean>get("publicData"), true);
+			predicateList.add(predicateHidden);
+		}
+		
 		Predicate predicate00 = criteriaBuilder.equal(agvRoot.<Long>get("lsState").get("id"), agvRoot2.<Long>get("lsState").get("id"));
 		predicateList.add(predicate00);
 		Predicate predicate01 = criteriaBuilder.equal(agvRoot2.<String>get("lsType"), "codeValue");

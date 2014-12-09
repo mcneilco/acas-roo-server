@@ -745,7 +745,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@SuppressWarnings({ "unchecked", "null" })
 	@Override
-	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest){
+	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest, Boolean onlyPublicData){
 
 		searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
 		searchRequest.getExperimentCodeList().removeAll(Collections.singleton(null));
@@ -775,11 +775,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 			boolean firstPass = true;		
 			for (ExperimentFilterSearchDTO singleSearchFilter : searchRequest.getSearchFilters()){
 				if (firstPass){
-					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, onlyPublicData).getResultList();
 					logger.debug("size of firstBatchCodes: " + collectionOfCodes.size());
 					firstPass = false;
 				} else {
-					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, onlyPublicData).getResultList();
 					logger.debug("size of firstBatchCodes: " + collectionOfCodes.size());
 					logger.debug("size of secondBatchCodes: " + batchCodes.size());
 					if (searchRequest.getBooleanFilter().equalsIgnoreCase("AND")){

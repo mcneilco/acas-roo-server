@@ -5,7 +5,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +12,12 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,30 +33,21 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupLabel;
-import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.ItxSubjectContainer;
-import com.labsynch.labseer.domain.ItxSubjectContainerState;
-import com.labsynch.labseer.domain.ItxSubjectContainerValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.domain.TreatmentGroupLabel;
-import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.BatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
-import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
@@ -74,7 +62,6 @@ import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
@@ -979,15 +966,52 @@ public class ApiExperimentController {
         }
     }
 
+
+    
+    @Transactional
+    @RequestMapping(value = "/filters/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getExperimentFilters(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Collection<String> experimentCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class).use("values", String.class).deserialize(json);
+        Collection<ExperimentFilterDTO> results = experimentService.getExperimentFilters(experimentCodes);
+        return new ResponseEntity<String>(ExperimentFilterDTO.toJsonArray(results), headers, HttpStatus.OK);
+    }
+
+
+    @Transactional
+    @RequestMapping(value = "/jstreenodes/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getJsTreeNodes(@RequestBody String json) {
+    	logger.debug("getting tree nodes: " + json);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Collection<BatchCodeDTO> batchCodes = BatchCodeDTO.fromJsonArrayToBatchCoes(json);
+        Collection<String> codeValues = new HashSet<String>();
+        for (BatchCodeDTO batchCode : batchCodes) {
+            codeValues.add(batchCode.getBatchCode());
+        }
+        Collection<JSTreeNodeDTO> results = experimentService.getExperimentNodes(codeValues);
+        return new ResponseEntity<String>(JSTreeNodeDTO.toJsonArray(results), headers, HttpStatus.OK);
+    }
+
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
-        logger.debug("incoming json: " + json);
+    public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(
+    		@RequestBody String json, 
+    		@RequestParam(value = "format", required = false) String format,
+			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
+
+		Boolean publicData = false;
+		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+			publicData = true;
+		}
+		
+    	logger.debug("incoming json: " + json);
         ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
         logger.debug("converted json: " + searchRequest.toJson());
         List<AnalysisGroupValueDTO> agValues = null;
         try {
-            agValues = experimentService.getFilteredAGData(searchRequest);
+            agValues = experimentService.getFilteredAGData(searchRequest, publicData);
             logger.debug("number of agvalues found: " + agValues.size());
         } catch (Exception e) {
             logger.error(e.toString());
@@ -1027,160 +1051,7 @@ public class ApiExperimentController {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Transactional
-    @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist/searchfilters/batchcodeArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getBatchCodesByBatchAndExperimentAndFilters(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
-        logger.debug("incoming json: " + json);
-        ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
-        Set<String> uniqueBatchCodes = new HashSet<String>();
-        List<String> secondBatchCodes = null;
-        Collection<String> collectionOfCodes = null;
-        try {
-            boolean firstPass = true;
-            for (ExperimentFilterSearchDTO singleSearchFilter : searchRequest.getSearchFilters()) {
-                if (firstPass) {
-                    collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
-                    logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
-                    firstPass = false;
-                } else {
-                    secondBatchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
-                    logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
-                    logger.info("size of secondBatchCodes: " + secondBatchCodes.size());
-                    if (searchRequest.getBooleanFilter().equalsIgnoreCase("AND")) {
-                        collectionOfCodes = CollectionUtils.intersection(collectionOfCodes, secondBatchCodes);
-                    } else if (searchRequest.getBooleanFilter().equalsIgnoreCase("NOT")) {
-                        collectionOfCodes = CollectionUtils.subtract(collectionOfCodes, secondBatchCodes);
-                    } else if (searchRequest.getBooleanFilter().equalsIgnoreCase("OR")) {
-                        collectionOfCodes = CollectionUtils.union(collectionOfCodes, secondBatchCodes);
-                    } else {
-                        logger.error("boolean filter is neither AND, OR, NOT");
-                        collectionOfCodes = CollectionUtils.intersection(collectionOfCodes, secondBatchCodes);
-                    }
-                    logger.info("size of intersectCodes: " + collectionOfCodes.size());
-                }
-            }
-        } catch (Exception e) {
-            logger.error(e.toString());
-        }
-        uniqueBatchCodes.addAll(collectionOfCodes);
-        List<BatchCodeDTO> batchCodes = new ArrayList<BatchCodeDTO>();
-        for (String codeValue : uniqueBatchCodes) {
-            BatchCodeDTO bc = new BatchCodeDTO();
-            bc.setBatchCode(codeValue);
-            batchCodes.add(bc);
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        if (batchCodes == null || batchCodes.size() == 0) {
-            return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
-        }
-        if (format != null && format.equalsIgnoreCase("csv")) {
-            StringWriter outFile = new StringWriter();
-            ICsvBeanWriter beanWriter = null;
-            try {
-                beanWriter = new CsvBeanWriter(outFile, CsvPreference.STANDARD_PREFERENCE);
-                final String[] header = BatchCodeDTO.getColumns();
-                final CellProcessor[] processors = BatchCodeDTO.getProcessors();
-                beanWriter.writeHeader(header);
-                for (final BatchCodeDTO batchCode : batchCodes) {
-                    beanWriter.write(batchCode, header, processors);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (beanWriter != null) {
-                    try {
-                        beanWriter.close();
-                        outFile.flush();
-                        outFile.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return new ResponseEntity<String>(outFile.toString(), headers, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<String>(BatchCodeDTO.toJsonArray(batchCodes), headers, HttpStatus.OK);
-        }
-    }
-
-    @Transactional
-    @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist/searchfilters", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getAgDataByBatchAndExperimentAndFilters(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
-        logger.debug("incoming json: " + json);
-        ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
-        List<String> agValues = null;
-        try {
-            agValues = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters()).getResultList();
-        } catch (Exception e) {
-            logger.error(e.toString());
-        }
-        List<BatchCodeDTO> batchCodes = new ArrayList<BatchCodeDTO>();
-        for (String agValue : agValues) {
-            BatchCodeDTO bc = new BatchCodeDTO();
-            bc.setBatchCode(agValue);
-            batchCodes.add(bc);
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        if (batchCodes == null || batchCodes.size() == 0) {
-            return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
-        }
-        if (format != null && format.equalsIgnoreCase("csv")) {
-            StringWriter outFile = new StringWriter();
-            ICsvBeanWriter beanWriter = null;
-            try {
-                beanWriter = new CsvBeanWriter(outFile, CsvPreference.STANDARD_PREFERENCE);
-                final String[] header = BatchCodeDTO.getColumns();
-                final CellProcessor[] processors = BatchCodeDTO.getProcessors();
-                beanWriter.writeHeader(header);
-                for (final BatchCodeDTO batchCode : batchCodes) {
-                    beanWriter.write(batchCode, header, processors);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (beanWriter != null) {
-                    try {
-                        beanWriter.close();
-                        outFile.flush();
-                        outFile.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return new ResponseEntity<String>(outFile.toString(), headers, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<String>(BatchCodeDTO.toJsonArray(batchCodes), headers, HttpStatus.OK);
-        }
-    }
-
-    @Transactional
-    @RequestMapping(value = "/filters/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getExperimentFilters(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        Collection<String> experimentCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class).use("values", String.class).deserialize(json);
-        Collection<ExperimentFilterDTO> results = experimentService.getExperimentFilters(experimentCodes);
-        return new ResponseEntity<String>(ExperimentFilterDTO.toJsonArray(results), headers, HttpStatus.OK);
-    }
-
-    @Transactional
-    @RequestMapping(value = "/jstreenodes/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getJsTreeNodes(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        Collection<BatchCodeDTO> batchCodes = BatchCodeDTO.fromJsonArrayToBatchCoes(json);
-        Collection<String> codeValues = new HashSet<String>();
-        for (BatchCodeDTO batchCode : batchCodes) {
-            codeValues.add(batchCode.getBatchCode());
-        }
-        Collection<JSTreeNodeDTO> results = experimentService.getExperimentNodes(codeValues);
-        return new ResponseEntity<String>(JSTreeNodeDTO.toJsonArray(results), headers, HttpStatus.OK);
-    }
-
+    
     @RequestMapping(method = RequestMethod.GET, value = "/full/{id}", headers = "Accept=application/json")
     @ResponseBody
     @Transactional

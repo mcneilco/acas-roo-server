@@ -1,13 +1,18 @@
 package com.labsynch.labseer.api;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +21,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.io.ICsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+
+import flexjson.JSONDeserializer;
 
 @Controller
 @RequestMapping("api/v1/analysisgroupvalues")
@@ -79,4 +91,69 @@ public class ApiAnalysisGroupValueController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
     }
+	
+	// custom code for gene ID queries
+	@RequestMapping(value = "/geneCodeData", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getGeneCodeData(
+			@RequestBody String json, 
+			@RequestParam(value = "format", required = false) String format, 
+			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
+		logger.debug("incoming json: " + json);
+		Collection<String> batchCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class).use("values", String.class).deserialize(json);
+		for (String bc : batchCodes) {
+			logger.debug("batch code: " + bc);
+		}
+		Set<String> geneCodeList = new HashSet<String>();
+		geneCodeList.addAll(batchCodes);
+
+		Boolean publicData = false;
+		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+			publicData = true;
+		}
+
+		List<AnalysisGroupValueDTO> agValues = null;
+		try {
+			if (publicData){
+				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(geneCodeList, publicData).getResultList();
+			} else {
+				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(geneCodeList).getResultList();
+			}
+		} catch (Exception e) {
+			logger.error(e.toString());
+		}
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		if (agValues == null || agValues.size() == 0) {
+			return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
+		}
+		if (format != null && format.equalsIgnoreCase("csv")) {
+			StringWriter outFile = new StringWriter();
+			ICsvBeanWriter beanWriter = null;
+			try {
+				beanWriter = new CsvBeanWriter(outFile, CsvPreference.STANDARD_PREFERENCE);
+				final String[] header = AnalysisGroupValueDTO.getColumns();
+				final CellProcessor[] processors = AnalysisGroupValueDTO.getProcessors();
+				beanWriter.writeHeader(header);
+				for (final AnalysisGroupValueDTO agValue : agValues) {
+					beanWriter.write(agValue, header, processors);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (beanWriter != null) {
+					try {
+						beanWriter.close();
+						outFile.flush();
+						outFile.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			return new ResponseEntity<String>(outFile.toString(), headers, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<String>(AnalysisGroupValueDTO.toJsonArray(agValues), headers, HttpStatus.OK);
+		}
+	}
+
 }

@@ -122,6 +122,8 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 
 		List<PreferredNameDTO> lsThingLabelsList = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNameList).getResultList();
+		
+		logger.info("number of thing labels found: " + lsThingLabelsList.size());
 		MultiValueMap mvm = new MultiValueMap();
 		for (PreferredNameDTO pn : lsThingLabelsList){
 			mvm.put(pn.getRequestName(), pn);
@@ -153,6 +155,8 @@ public class LsThingServiceImpl implements LsThingService {
 		responseOutput.setResults(requests);
 		responseOutput.setErrorMessages(errors);
 
+		logger.info(responseOutput.toJson());
+		
 		return responseOutput;
 	}
 }
