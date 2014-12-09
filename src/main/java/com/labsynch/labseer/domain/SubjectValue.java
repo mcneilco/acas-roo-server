@@ -55,6 +55,9 @@ public class SubjectValue extends AbstractValue {
 	
 	public SubjectValue(FlatThingCsvDTO subjectDTO) {
     	this.setCodeValue(subjectDTO.getCodeValue());
+    	this.setCodeOrigin(subjectDTO.getCodeOrigin());
+    	this.setCodeType(subjectDTO.getCodeType());
+    	this.setCodeKind(subjectDTO.getCodeKind());
     	this.setLsType(subjectDTO.getValueType());
     	this.setLsKind(subjectDTO.getValueKind());
     	this.setStringValue(subjectDTO.getStringValue());
@@ -322,6 +325,7 @@ public class SubjectValue extends AbstractValue {
 				"id",
 				"lsType",
 				"lsKind",
+				"codeOrigin",
 				"codeType",
 				"codeKind",
 
@@ -393,6 +397,7 @@ public class SubjectValue extends AbstractValue {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),

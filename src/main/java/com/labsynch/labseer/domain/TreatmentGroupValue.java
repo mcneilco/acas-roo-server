@@ -49,6 +49,9 @@ public class TreatmentGroupValue extends AbstractValue {
     
     public TreatmentGroupValue(FlatThingCsvDTO inputDTO) {
     	this.setCodeValue(inputDTO.getCodeValue());
+    	this.setCodeOrigin(inputDTO.getCodeOrigin());
+    	this.setCodeType(inputDTO.getCodeType());
+    	this.setCodeKind(inputDTO.getCodeKind());
     	this.setLsType(inputDTO.getValueType());
     	this.setLsKind(inputDTO.getValueKind());
     	this.setStringValue(inputDTO.getStringValue());
@@ -315,6 +318,7 @@ public class TreatmentGroupValue extends AbstractValue {
 				"id",
 				"lsType",
 				"lsKind",
+				"codeOrigin",
 				"codeType",
 				"codeKind",
 
@@ -386,6 +390,7 @@ public class TreatmentGroupValue extends AbstractValue {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),

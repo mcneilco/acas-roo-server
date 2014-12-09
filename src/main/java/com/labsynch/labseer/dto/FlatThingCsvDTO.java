@@ -53,6 +53,7 @@ public class FlatThingCsvDTO {
 	private String tempValueId;	
 	private String valueType;
 	private String valueKind;
+	private String codeOrigin;
 	private String codeType;
 	private String codeKind;
 	protected String codeValue;
@@ -211,6 +212,7 @@ public class FlatThingCsvDTO {
 				"tempValueId",
 				"valueType",
 				"valueKind",
+				"codeOrigin",
 				"codeType",
 				"codeKind",
 				"codeValue",
@@ -287,6 +289,7 @@ public class FlatThingCsvDTO {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				

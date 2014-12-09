@@ -49,6 +49,7 @@ public class AnalysisGroupCsvDTO {
 	private Long valueId;	
 	private String valueType;
 	private String valueKind;
+	private String codeOrigin;
 	private String codeType;
 	private String codeKind;
 	private String stringValue;
