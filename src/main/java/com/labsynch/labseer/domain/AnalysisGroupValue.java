@@ -59,6 +59,9 @@ public class AnalysisGroupValue extends AbstractValue {
     
     public AnalysisGroupValue(AnalysisGroupCsvDTO analysisGroupDTO) {
     	this.setCodeValue(analysisGroupDTO.getCodeValue());
+    	this.setCodeOrigin(analysisGroupDTO.getCodeOrigin());
+    	this.setCodeType(analysisGroupDTO.getCodeType());
+    	this.setCodeKind(analysisGroupDTO.getCodeKind());
     	this.setLsType(analysisGroupDTO.getValueType());
     	this.setLsKind(analysisGroupDTO.getValueKind());
     	this.setStringValue(analysisGroupDTO.getStringValue());
@@ -87,6 +90,9 @@ public class AnalysisGroupValue extends AbstractValue {
 
 	public AnalysisGroupValue(FlatThingCsvDTO analysisGroupDTO) {
     	this.setCodeValue(analysisGroupDTO.getCodeValue());
+    	this.setCodeOrigin(analysisGroupDTO.getCodeOrigin());
+    	this.setCodeType(analysisGroupDTO.getCodeType());
+    	this.setCodeKind(analysisGroupDTO.getCodeKind());
     	this.setLsType(analysisGroupDTO.getValueType());
     	this.setLsKind(analysisGroupDTO.getValueKind());
     	this.setStringValue(analysisGroupDTO.getStringValue());
@@ -752,6 +758,7 @@ public class AnalysisGroupValue extends AbstractValue {
 				"id",
 				"lsType",
 				"lsKind",
+				"codeOrigin",
 				"codeType",
 				"codeKind",
 				
@@ -823,6 +830,7 @@ public class AnalysisGroupValue extends AbstractValue {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
