@@ -492,8 +492,13 @@ public class ApiProtocolController {
 	public ResponseEntity<String> protocolBrowserSearch(@RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
+		try {
 		Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery));
 		return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);
+		}catch(Exception e){
+			String error = e.getMessage() + e.getStackTrace();
+			return new ResponseEntity<String>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@RequestMapping(value= "/experimentCount/{codeName}", method = RequestMethod.GET)

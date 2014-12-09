@@ -30,7 +30,7 @@ public interface ExperimentService {
 
 	Collection<JSTreeNodeDTO> getExperimentNodes(Collection<String> codeValues);
 
-	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest);
+	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest, Boolean onlyPublicData);
 
 	public Collection<ExperimentFilterDTO> getExperimentFilters(Collection<String> experimentCodes);
 

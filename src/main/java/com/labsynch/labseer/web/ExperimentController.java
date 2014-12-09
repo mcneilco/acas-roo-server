@@ -28,7 +28,9 @@ import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import flexjson.JSONDeserializer;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -39,8 +41,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.format.DateTimeFormat;
@@ -134,72 +138,35 @@ public class ExperimentController {
         }
     }
 
-    @Transactional
-    @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
-        logger.debug("incoming json: " + json);
-        ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
-        logger.debug("converted json: " + searchRequest.toJson());
-        List<AnalysisGroupValueDTO> agValues = null;
-        try {
-            agValues = experimentService.getFilteredAGData(searchRequest);
-            logger.debug("number of agvalues found: " + agValues.size());
-        } catch (Exception e) {
-            logger.error(e.toString());
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        if (agValues == null || agValues.size() == 0) {
-            return new ResponseEntity<String>("[]", headers, HttpStatus.EXPECTATION_FAILED);
-        }
-        if (format != null && format.equalsIgnoreCase("csv")) {
-            StringWriter outFile = new StringWriter();
-            ICsvBeanWriter beanWriter = null;
-            try {
-                beanWriter = new CsvBeanWriter(outFile, CsvPreference.STANDARD_PREFERENCE);
-                final String[] header = AnalysisGroupValueDTO.getColumns();
-                final CellProcessor[] processors = AnalysisGroupValueDTO.getProcessors();
-                beanWriter.writeHeader(header);
-                for (final AnalysisGroupValueDTO agValue : agValues) {
-                    beanWriter.write(agValue, header, processors);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (beanWriter != null) {
-                    try {
-                        beanWriter.close();
-                        outFile.flush();
-                        outFile.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            return new ResponseEntity<String>(outFile.toString(), headers, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<String>(AnalysisGroupValueDTO.toJsonArray(agValues), headers, HttpStatus.OK);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist/searchfilters/batchcodeArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getBatchCodesByBatchAndExperimentAndFilters(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+    public ResponseEntity<java.lang.String> getBatchCodesByBatchAndExperimentAndFilters(
+    		@RequestBody String json, 
+    		@RequestParam(value = "format", required = false) String format,
+    		@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
         logger.debug("incoming json: " + json);
         ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
         Set<String> uniqueBatchCodes = new HashSet<String>();
         List<String> secondBatchCodes = null;
         Collection<String> collectionOfCodes = null;
         try {
+        	
+    		Boolean publicData = false;
+    		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+    			publicData = true;
+    		}
+
+        	
             boolean firstPass = true;
             for (ExperimentFilterSearchDTO singleSearchFilter : searchRequest.getSearchFilters()) {
                 if (firstPass) {
-                    collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+                    collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, publicData).getResultList();
                     logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
                     firstPass = false;
                 } else {
-                    secondBatchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+                    secondBatchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, publicData).getResultList();
                     logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
                     logger.info("size of secondBatchCodes: " + secondBatchCodes.size());
                     if (searchRequest.getBooleanFilter().equalsIgnoreCase("AND")) {
@@ -262,12 +229,19 @@ public class ExperimentController {
 
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist/searchfilters", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getAgDataByBatchAndExperimentAndFilters(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+    public ResponseEntity<java.lang.String> getAgDataByBatchAndExperimentAndFilters(
+    		@RequestBody String json, 
+    		@RequestParam(value = "format", required = false) String format,
+    		@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
         logger.debug("incoming json: " + json);
         ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
         List<String> agValues = null;
         try {
-            agValues = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters()).getResultList();
+    		Boolean publicData = false;
+    		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+    			publicData = true;
+    		}
+            agValues = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters(), publicData).getResultList();
         } catch (Exception e) {
             logger.error(e.toString());
         }
@@ -312,29 +286,7 @@ public class ExperimentController {
         }
     }
 
-    @Transactional
-    @RequestMapping(value = "/filters/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getExperimentFilters(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        Collection<String> experimentCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class).use("values", String.class).deserialize(json);
-        Collection<ExperimentFilterDTO> results = experimentService.getExperimentFilters(experimentCodes);
-        return new ResponseEntity<String>(ExperimentFilterDTO.toJsonArray(results), headers, HttpStatus.OK);
-    }
 
-    @Transactional
-    @RequestMapping(value = "/jstreenodes/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getJsTreeNodes(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        Collection<BatchCodeDTO> batchCodes = BatchCodeDTO.fromJsonArrayToBatchCoes(json);
-        Collection<String> codeValues = new HashSet<String>();
-        for (BatchCodeDTO batchCode : batchCodes) {
-            codeValues.add(batchCode.getBatchCode());
-        }
-        Collection<JSTreeNodeDTO> results = experimentService.getExperimentNodes(codeValues);
-        return new ResponseEntity<String>(JSTreeNodeDTO.toJsonArray(results), headers, HttpStatus.OK);
-    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/full/{id}", headers = "Accept=application/json")
     @ResponseBody

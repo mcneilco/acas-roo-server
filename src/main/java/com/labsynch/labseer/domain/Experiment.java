@@ -396,6 +396,14 @@ public class Experiment extends AbstractThing {
     }
 
     @Transactional
+    public static List<com.labsynch.labseer.domain.Experiment> findAllExperiments(boolean isIgnored) {
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment o WHERE o.ignored = :isIgnored", Experiment.class);
+        q.setParameter("isIgnored", isIgnored);
+        return q.getResultList();
+    }
+    
+    @Transactional
     public static com.labsynch.labseer.domain.Experiment findExperiment(Long id) {
         if (id == null) return null;
         return entityManager().find(Experiment.class, id);
@@ -427,6 +435,15 @@ public class Experiment extends AbstractThing {
         return q;
     }
 
+    public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByCodeNameEquals(String codeName, boolean isIgnored) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.codeName = :codeName AND o.ignored = :isIgnored", Experiment.class);
+        q.setParameter("codeName", codeName);
+        q.setParameter("isIgnored", isIgnored);
+        return q;
+    }
+    
     public static TypedQuery<com.labsynch.labseer.domain.Experiment> findExperimentsByLsTransaction(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = Experiment.entityManager();

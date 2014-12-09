@@ -259,7 +259,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		Collection<ExperimentFilterDTO> eftSet = new HashSet<ExperimentFilterDTO>();
 		for (String experimentCode : experimentCodes){
 			logger.debug("searching for : " + experimentCode);
-			List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(experimentCode).getResultList();
+			List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(experimentCode, false).getResultList();
 			Experiment experiment = null;
 			if (experiments.size() == 1){
 				experiment = experiments.get(0);
@@ -410,7 +410,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	public Collection<JSTreeNodeDTO> getExperimentNodes(Collection<String> codeValues){
 		List<Experiment> experiments;
 		if (codeValues == null || codeValues.size() == 0){
-			experiments = Experiment.findAllExperiments();
+			experiments = Experiment.findAllExperiments(false);
 		} else {
 			experiments = Experiment.findExperimentsByBatchCodes(codeValues).getResultList();
 		}
@@ -745,7 +745,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@SuppressWarnings({ "unchecked", "null" })
 	@Override
-	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest){
+	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest, Boolean onlyPublicData){
 
 		searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
 		searchRequest.getExperimentCodeList().removeAll(Collections.singleton(null));
@@ -775,11 +775,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 			boolean firstPass = true;		
 			for (ExperimentFilterSearchDTO singleSearchFilter : searchRequest.getSearchFilters()){
 				if (firstPass){
-					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, onlyPublicData).getResultList();
 					logger.debug("size of firstBatchCodes: " + collectionOfCodes.size());
 					firstPass = false;
 				} else {
-					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, onlyPublicData).getResultList();
 					logger.debug("size of firstBatchCodes: " + collectionOfCodes.size());
 					logger.debug("size of secondBatchCodes: " + batchCodes.size());
 					if (searchRequest.getBooleanFilter().equalsIgnoreCase("AND")){
@@ -934,12 +934,16 @@ public class ExperimentServiceImpl implements ExperimentService {
 		for (Long id: experimentAllIdList) experimentList.add(Experiment.findExperiment(id));
 
 		//This method uses finders that will find everything, whether or not it is ignored or deleted
+		Collection<Experiment> result = new HashSet<Experiment>();
 		for (Experiment experiment: experimentList) {
 			//For Experiment Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
-			if (experiment.isDeleted()) experimentList.remove(experiment);
-			logger.debug("removing a deleted experiment from the results");
+			if (experiment.isDeleted()){
+				logger.debug("removing a deleted experiment from the results");
+			} else {
+				result.add(experiment);
+			}
 		}
-		return experimentList;
+		return result;
 	}
 
 	private Collection<Long> findExperimentIdsByMetadata(String queryString, String searchBy) {
