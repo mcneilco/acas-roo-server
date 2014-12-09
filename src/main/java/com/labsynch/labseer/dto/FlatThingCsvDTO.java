@@ -162,6 +162,14 @@ public class FlatThingCsvDTO {
 		}
 	}
 	
+	public void setConcentration(String concentration) {
+		if (concentration.equalsIgnoreCase("NULL")){
+			this.concentration = null;
+		} else {
+			this.concentration = new Double(concentration);
+		}
+	}
+	
 	public void setId(String id) {
 		if (id.equalsIgnoreCase("NULL")){
 			this.id = null;
