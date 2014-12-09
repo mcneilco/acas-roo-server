@@ -172,11 +172,11 @@ public class ExperimentServiceTests2 {
 		} else if (searchRequest.getBooleanFilter() != null){
 			for (ExperimentFilterSearchDTO singleSearchFilter : searchFilters){
 				if (firstPass){
-					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, false).getResultList();
 					logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
 					firstPass = false;
 				} else {
-					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, false).getResultList();
 					logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
 					logger.info("size of secondBatchCodes: " + batchCodes.size());
 
@@ -208,7 +208,7 @@ public class ExperimentServiceTests2 {
 //		searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
 
 		logger.info("calling experiment service search: ");
-		List<AnalysisGroupValueDTO> agValues = experimentService.getFilteredAGData(searchRequest);
+		List<AnalysisGroupValueDTO> agValues = experimentService.getFilteredAGData(searchRequest, false);
 
 		logger.info("number of agValues found: " + agValues.size());
 
@@ -315,7 +315,7 @@ public class ExperimentServiceTests2 {
 	    logger.debug("converted json: " + searchRequest.toJson());
 	    List<AnalysisGroupValueDTO> agValues = null;
 	    try {
-	        agValues = experimentService.getFilteredAGData(searchRequest);
+	        agValues = experimentService.getFilteredAGData(searchRequest, false);
 	        logger.debug("number of agvalues found: " + agValues.size());
 	    } catch (Exception e) {
 	        logger.error(e.toString());

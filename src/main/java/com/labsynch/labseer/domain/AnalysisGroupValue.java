@@ -261,6 +261,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		return q;
 	}
 
+
 	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList) {
 		logger.debug("size for batchCodeList: " + batchCodeList.size());
 		logger.debug("size for experimentCodeList: " + experimentCodeList.size());
@@ -502,7 +503,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		predicateList.add(predicate00);
 		
 		if (excludeHiddenData != null && excludeHiddenData == true) {
-			Predicate predicateHidden = criteriaBuilder.equal(agvRoot.<Boolean>get("public"), "true");
+			Predicate predicateHidden = criteriaBuilder.equal(agvRoot.<Boolean>get("publicData"), true);
 			predicateList.add(predicateHidden);
 		}
 		
@@ -534,7 +535,7 @@ public class AnalysisGroupValue extends AbstractValue {
 				predicateList.add(predicateNew);
 
 				if (excludeHiddenData != null && excludeHiddenData == true) {
-					Predicate predicateHidden = criteriaBuilder.equal(agvRootNew.<Boolean>get("public"), "true");
+					Predicate predicateHidden = criteriaBuilder.equal(agvRootNew.<Boolean>get("publicData"), true);
 					predicateList.add(predicateHidden);
 				}
 				
@@ -700,7 +701,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		
 		if (excludeHiddenData != null && excludeHiddenData == true) {
-			Predicate predicateHidden = criteriaBuilder.equal(agvRoot.<Boolean>get("public"), "true");
+			Predicate predicateHidden = criteriaBuilder.equal(agvRoot.<Boolean>get("publicData"), true);
 			predicateList.add(predicateHidden);
 		}
 		
