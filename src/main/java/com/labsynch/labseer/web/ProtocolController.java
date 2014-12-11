@@ -138,15 +138,23 @@ public class ProtocolController {
     @Transactional
     @RequestMapping(value = "/codetable", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> listJsonCodeTable(@RequestParam(value = "with", required = false) String with, @RequestParam(value = "prettyjson", required = false) String prettyjson, @RequestParam(value = "lstype", required = false) String lsType, @RequestParam(value = "lskind", required = false) String lsKind) {
+    public ResponseEntity<java.lang.String> listJsonCodeTable(
+    		@RequestParam(value = "with", required = false) String with, 
+    		@RequestParam(value = "prettyjson", required = false) String prettyjson, 
+    		@RequestParam(value = "lstype", required = false) String lsType, 
+    		@RequestParam(value = "lskind", required = false) String lsKind, 
+    		@RequestParam(value = "protocolName", required = false) String protocolName) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<CodeTableDTO> result;
         if (lsKind != null) {
             result = Protocol.getProtocolCodeTableByKindEquals(lsKind);
-        } else {
+        } else if (protocolName != null) {
+        	result = Protocol.getProtocolCodeTableByNameLike(protocolName);
+        }else {
             result = Protocol.getProtocolCodeTable();
         }
+        result = CodeTableDTO.sortCodeTables(result);
         return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
     }
 

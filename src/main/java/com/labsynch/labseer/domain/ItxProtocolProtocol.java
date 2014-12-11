@@ -34,12 +34,12 @@ import flexjson.JSONSerializer;
 public class ItxProtocolProtocol extends AbstractThing {
 
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "first_protocol_id")
     private Protocol firstProtocol;
 
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "second_protocol_id")
     private Protocol secondProtocol;
 
