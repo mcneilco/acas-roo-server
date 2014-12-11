@@ -47,5 +47,19 @@ public class TgDataDTOTest {
 		}
 		
 	}
+	
+	@Test
+	@Transactional
+	public void getAllTgDataDataByExperimentTest() {
+		String experimentCodeName = "EXPT-00000060";
+		long startTime = System.currentTimeMillis();
+		Collection<TgDataDTO> results = TgDataDTO.getTgDataByExperiment(experimentCodeName);
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
+		logger.debug("total number of TreatmentGroups: " + results.size());
+//		logger.debug(results.toString());
+		Assert.assertTrue(!results.isEmpty());
+	}
 
 }

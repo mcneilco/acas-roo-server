@@ -34,8 +34,13 @@ import org.supercsv.prefs.CsvPreference;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.service.AnalysisGroupStateService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -66,6 +71,7 @@ public class CurveFitDTO {
 				this.category = stringMap.get("Category");
 				this.renderingHint = stringMap.get("Rendering Hint");
 				this.min = numericMap.get("Min");
+//				if (min == null) this.min = stringMap.get("Min");
 				this.max = numericMap.get("Max");
 				this.ec50 = numericMap.get("EC50");
 				this.minUnits = stringMap.get("Min units");
@@ -84,10 +90,8 @@ public class CurveFitDTO {
 				this.parameterStdErrorsClob = stringMap.get("parameterStdErrorsClob");
 				this.fitSettings = stringMap.get("fitSettings");
 				this.fitSummaryClob = stringMap.get("fitSummaryClob");
-				this.flagStatus = stringMap.get("flag status");
-				this.flagObservation = stringMap.get("flag observation");
-				this.flagReason = stringMap.get("flag reason");
-				this.flagComment = stringMap.get("flag comment");
+				this.userFlagStatus = stringMap.get("user flag status");
+				this.algorithmFlagStatus = stringMap.get("algorithm flag status");
 	}
 
 
@@ -116,10 +120,8 @@ public class CurveFitDTO {
 	private String parameterStdErrorsClob;
 	private String fitSettings;
 	private String fitSummaryClob;
-	private String flagStatus;
-	private String flagObservation;
-	private String flagReason;
-	private String flagComment;
+	private String userFlagStatus;
+	private String algorithmFlagStatus;
 	
 	
 
@@ -152,10 +154,8 @@ public class CurveFitDTO {
 				"parameterStdErrorsClob",
 				"fitSettings",
 				"fitSummaryClob",
-				"flagStatus",
-				"flagObservation",
-				"flagReason",
-				"flagComment"
+				"userFlagStatus",
+				"algorithmFlagStatus"
 				};
 
 		return headerColumns;
@@ -164,8 +164,6 @@ public class CurveFitDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
-				new Optional(),
-				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -222,15 +220,15 @@ public class CurveFitDTO {
 		for (AnalysisGroupValue agValue : agValues) {
 			if (agValue.getLsType().equals("stringValue")) {
 				stringMap.put(agValue.getLsKind(), agValue.getStringValue());
-			}
-			else if (agValue.getLsType().equals("clobValue")) {
+			} else if (agValue.getLsType().equals("clobValue")) {
 				stringMap.put(agValue.getLsKind(), agValue.getClobValue());
-			}
-			else if (agValue.getLsType().equals("numericValue")) {
+			} else if (agValue.getLsType().equals("numericValue")) {
 				numericMap.put(agValue.getLsKind(), agValue.getNumericValue());
 				if(agValue.getUnitKind() != null) {
 					stringMap.put(agValue.getUnitKind()+" units", agValue.getUnitKind());
 				}
+			} else if  (agValue.getLsType().equals("codeValue")) {
+				stringMap.put(agValue.getLsKind(), agValue.getCodeValue());
 			}
 		}
 		curveFitDTO = new CurveFitDTO(stringMap, numericMap);
@@ -286,91 +284,165 @@ public class CurveFitDTO {
 	
 	@Transactional
 	private static void saveFitData(AnalysisGroupState state, CurveFitDTO curveFitDTO) {
+		Collection<AnalysisGroupValue> newValues = new HashSet<AnalysisGroupValue>();
+		//non-optional fields
 		String recordedBy = curveFitDTO.getRecordedBy();
 		String batchCode = curveFitDTO.getBatchCode();
 		AnalysisGroupValue batchCodeValue = createCurveFitValue(state, "codeValue", "batch code", curveFitDTO.getBatchCode(), recordedBy);
-		AnalysisGroupValue curveIdValue = createCurveFitValue(state, "stringValue", "curve id", curveFitDTO.getCurveId(), recordedBy);
-		AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "Category", curveFitDTO.getCategory(), recordedBy);
-		AnalysisGroupValue renderingHintValue = createCurveFitValue(state, "stringValue", "Rendering Hint", curveFitDTO.getRenderingHint(), recordedBy);
-		AnalysisGroupValue minValue = createCurveFitValue(state, "numericValue", "Min", curveFitDTO.getMin(), recordedBy);
-		minValue.setUnitKind(curveFitDTO.getMinUnits());
-		AnalysisGroupValue maxValue = createCurveFitValue(state, "numericValue", "Max", curveFitDTO.getMax(), recordedBy);
-		maxValue.setUnitKind(curveFitDTO.getMaxUnits());
-		AnalysisGroupValue ec50Value = createCurveFitValue(state, "numericValue", "EC50", curveFitDTO.getEc50(), recordedBy);
-		ec50Value.setUnitKind(curveFitDTO.getEc50Units());
-		AnalysisGroupValue slopeValue = createCurveFitValue(state, "numericValue", "Slope", curveFitDTO.getSlope(), recordedBy);
-		AnalysisGroupValue fittedMinValue = createCurveFitValue(state, "numericValue", "Fitted Min", curveFitDTO.getFittedMin(), recordedBy);
-		AnalysisGroupValue fittedMaxValue = createCurveFitValue(state, "numericValue", "Fitted Max", curveFitDTO.getFittedMax(), recordedBy);
-		AnalysisGroupValue fittedEC50Value = createCurveFitValue(state, "numericValue", "Fitted EC50", curveFitDTO.getFittedEC50(), recordedBy);
-		AnalysisGroupValue fittedSlopeValue = createCurveFitValue(state, "numericValue", "Fitted Slope", curveFitDTO.getFittedSlope(), recordedBy);
-		AnalysisGroupValue sseValue = createCurveFitValue(state, "numericValue", "SSE", curveFitDTO.getSse(), recordedBy);
-		AnalysisGroupValue sstValue = createCurveFitValue(state, "numericValue", "SST", curveFitDTO.getSst(), recordedBy);
-		AnalysisGroupValue rSquaredValue = createCurveFitValue(state, "numericValue", "rSquared", curveFitDTO.getRSquared(), recordedBy);
-		//fill in batch code
-		curveIdValue.setCodeValue(batchCode);
-		categoryValue.setCodeValue(batchCode);
-		renderingHintValue.setCodeValue(batchCode);
-		minValue.setCodeValue(batchCode);
-		maxValue.setCodeValue(batchCode);
-		ec50Value.setCodeValue(batchCode);
-		slopeValue.setCodeValue(batchCode);
-		slopeValue.setCodeValue(batchCode);
-		fittedMinValue.setCodeValue(batchCode);
-		fittedMaxValue.setCodeValue(batchCode);
-		fittedEC50Value.setCodeValue(batchCode);
-		fittedSlopeValue.setCodeValue(batchCode);
-		sseValue.setCodeValue(batchCode);
-		sstValue.setCodeValue(batchCode);
-		rSquaredValue.setCodeValue(batchCode);
-		//clob values
-		AnalysisGroupValue curveErrorsClobValue = createCurveFitValue(state, "clobValue", "curveErrorsClob", curveFitDTO.getCurveErrorsClob(), recordedBy);
-		AnalysisGroupValue reportedValuesClobValue = createCurveFitValue(state, "clobValue", "reportedValuesClob", curveFitDTO.getReportedValuesClob(), recordedBy);
-		AnalysisGroupValue parameterStdErrorsClobValue = createCurveFitValue(state, "clobValue", "parameterStdErrorsClob", curveFitDTO.getParameterStdErrorsClob(), recordedBy);
-		AnalysisGroupValue fitSettingsClobValue = createCurveFitValue(state, "clobValue", "fitSettings", curveFitDTO.getFitSettings(), recordedBy);
-		AnalysisGroupValue fitSummaryClobValue = createCurveFitValue(state, "clobValue", "fitSummaryClob", curveFitDTO.getFitSummaryClob(), recordedBy);
-		//flags
-		String flagComment = curveFitDTO.getFlagComment();
-		AnalysisGroupValue flagStatusValue = createCurveFitValue(state, "codeValue", "flag status", curveFitDTO.getFlagStatus(), recordedBy);
-		AnalysisGroupValue flagObservationValue = createCurveFitValue(state, "codeValue", "flag observation", curveFitDTO.getFlagObservation(), recordedBy);
-		AnalysisGroupValue flagReasonValue = createCurveFitValue(state, "codeValue", "flag reason", curveFitDTO.getFlagReason(), recordedBy);
-		AnalysisGroupValue flagCommentValue = createCurveFitValue(state, "stringValue", "flag comment", curveFitDTO.getFlagComment(), recordedBy);
-		flagStatusValue.setComments(flagComment);
-		flagObservationValue.setComments(flagComment);
-		flagReasonValue.setComments(flagComment);
-		flagStatusValue.setCodeType("user well flags");
-		flagObservationValue.setCodeType("user well flags");
-		flagReasonValue.setCodeType("user well flags");
-		flagStatusValue.setCodeKind("flag status");
-		flagObservationValue.setCodeKind("flag observation");
-		flagReasonValue.setCodeKind("flag reason");
-		//TODO: ask Guy about codeOrigin
-		
-		//collect all the new values
-		Collection<AnalysisGroupValue> newValues = new HashSet<AnalysisGroupValue>();
 		newValues.add(batchCodeValue);
+		AnalysisGroupValue curveIdValue = createCurveFitValue(state, "stringValue", "curve id", curveFitDTO.getCurveId(), recordedBy);
 		newValues.add(curveIdValue);
-		newValues.add(categoryValue);
-		newValues.add(renderingHintValue);
-		newValues.add(minValue);
-		newValues.add(maxValue);
-		newValues.add(ec50Value);
-		newValues.add(slopeValue);
-		newValues.add(fittedMinValue);
-		newValues.add(fittedMaxValue);
-		newValues.add(fittedEC50Value);
-		newValues.add(fittedSlopeValue);
-		newValues.add(sseValue);
-		newValues.add(sstValue);
-		newValues.add(rSquaredValue);
-		newValues.add(curveErrorsClobValue);
-		newValues.add(reportedValuesClobValue);
-		newValues.add(parameterStdErrorsClobValue);
-		newValues.add(fitSettingsClobValue);
-		newValues.add(fitSummaryClobValue);
-		newValues.add(flagStatusValue);
-		newValues.add(flagObservationValue);
-		newValues.add(flagReasonValue);
-		newValues.add(flagCommentValue);
+		//all the rest of the fields (may be null)
+		String category = curveFitDTO.getCategory();
+		String renderingHint = curveFitDTO.getRenderingHint();
+		BigDecimal min = curveFitDTO.getMin();
+		BigDecimal max = curveFitDTO.getMax();
+		BigDecimal ec50 = curveFitDTO.getEc50();
+		BigDecimal slope = curveFitDTO.getSlope();
+		BigDecimal fittedMin = curveFitDTO.getFittedMin();
+		BigDecimal fittedMax = curveFitDTO.getFittedMax();
+		BigDecimal fittedEC50 = curveFitDTO.getFittedEC50();
+		BigDecimal fittedSlope = curveFitDTO.getFittedSlope();
+		BigDecimal sse = curveFitDTO.getSse();
+		BigDecimal sst = curveFitDTO.getSst();
+		BigDecimal rSquared = curveFitDTO.getRSquared();
+		String curveErrorsClob = curveFitDTO.getCurveErrorsClob();
+		String reportedValuesClob = curveFitDTO.getReportedValuesClob();
+		String parameterStdErrorsClob = curveFitDTO.getParameterStdErrorsClob();
+		String fitSettings = curveFitDTO.getFitSettings();
+		String fitSummaryClob = curveFitDTO.getFitSummaryClob();
+		String userFlagStatus = curveFitDTO.getUserFlagStatus();
+		String algorithmFlagStatus = curveFitDTO.getAlgorithmFlagStatus();
+		
+		//only create AnalysisGroupValues if they would not be empty/null
+
+		if (!(category==null)){
+			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "Category", category, recordedBy);
+			categoryValue.setCodeValue(batchCode);
+			newValues.add(categoryValue);
+		}
+		if (!(renderingHint==null)){
+			AnalysisGroupValue renderingHintValue = createCurveFitValue(state, "stringValue", "Rendering Hint", renderingHint, recordedBy);
+			renderingHintValue.setCodeValue(batchCode);
+			newValues.add(renderingHintValue);
+		}
+		//Min, Max, EC50, and Slope are special cases. They must be filled in with something for Seurat,
+		//so we fill in stringValue = "no fit" as an lsType = stringValue agValue if they have no numericValue
+		if (!(min==null)) {
+			AnalysisGroupValue minValue = createCurveFitValue(state, "numericValue", "Min", min, recordedBy);
+			minValue.setUnitKind(curveFitDTO.getMinUnits());
+			minValue.setCodeValue(batchCode);
+			newValues.add(minValue);
+		} else {
+			AnalysisGroupValue minValue = createCurveFitValue(state, "stringValue", "Min", "no fit", recordedBy);
+			minValue.setCodeValue(batchCode);
+			newValues.add(minValue);
+		}
+		if (!(max==null)) {
+			AnalysisGroupValue maxValue = createCurveFitValue(state, "numericValue", "Max", max, recordedBy);
+			maxValue.setUnitKind(curveFitDTO.getMaxUnits());
+			maxValue.setCodeValue(batchCode);
+			newValues.add(maxValue);
+		} else {
+			AnalysisGroupValue maxValue = createCurveFitValue(state, "stringValue", "Max", "no fit", recordedBy);
+			maxValue.setCodeValue(batchCode);
+			newValues.add(maxValue);
+		}
+		if (!(ec50==null)) {
+			AnalysisGroupValue ec50Value = createCurveFitValue(state, "numericValue", "EC50", ec50, recordedBy);
+			ec50Value.setUnitKind(curveFitDTO.getEc50Units());
+			ec50Value.setCodeValue(batchCode);
+			newValues.add(ec50Value);
+		} else {
+			AnalysisGroupValue ec50Value = createCurveFitValue(state, "stringValue", "EC50", "no fit", recordedBy);
+			ec50Value.setCodeValue(batchCode);
+			newValues.add(ec50Value);
+		}
+		if (!(slope==null)) {
+			AnalysisGroupValue slopeValue = createCurveFitValue(state, "numericValue", "Slope", slope, recordedBy);
+			slopeValue.setCodeValue(batchCode);
+			newValues.add(slopeValue);
+		} else {
+			AnalysisGroupValue slopeValue = createCurveFitValue(state, "stringValue", "Slope", "no fit", recordedBy);
+			slopeValue.setCodeValue(batchCode);
+			newValues.add(slopeValue);
+		}
+		//Remaining non-special numericValues
+		if (!(fittedMin==null)){
+			AnalysisGroupValue fittedMinValue = createCurveFitValue(state, "numericValue", "Fitted Min", fittedMin, recordedBy);
+			fittedMinValue.setCodeValue(batchCode);
+			newValues.add(fittedMinValue);
+		}
+		if (!(fittedMax==null)){
+			AnalysisGroupValue fittedMaxValue = createCurveFitValue(state, "numericValue", "Fitted Max", fittedMax, recordedBy);
+			fittedMaxValue.setCodeValue(batchCode);
+			newValues.add(fittedMaxValue);
+		}
+		if (!(fittedEC50==null)){
+			AnalysisGroupValue fittedEC50Value = createCurveFitValue(state, "numericValue", "Fitted EC50", fittedEC50, recordedBy);
+			fittedEC50Value.setCodeValue(batchCode);
+			newValues.add(fittedEC50Value);
+		}
+		if (!(fittedSlope==null)){
+			AnalysisGroupValue fittedSlopeValue = createCurveFitValue(state, "numericValue", "Fitted Slope", fittedSlope, recordedBy);
+			fittedSlopeValue.setCodeValue(batchCode);
+			newValues.add(fittedSlopeValue);
+		}
+		if (!(sse==null)){
+			AnalysisGroupValue sseValue = createCurveFitValue(state, "numericValue", "SSE", sse, recordedBy);
+			sseValue.setCodeValue(batchCode);
+			newValues.add(sseValue);
+		}
+		if (!(sst==null)){
+			AnalysisGroupValue sstValue = createCurveFitValue(state, "numericValue", "SST", sst, recordedBy);
+			sstValue.setCodeValue(batchCode);
+			newValues.add(sstValue);
+		}
+		if (!(rSquared==null)){
+			AnalysisGroupValue rSquaredValue = createCurveFitValue(state, "numericValue", "rSquared", rSquared, recordedBy);
+			rSquaredValue.setCodeValue(batchCode);
+			newValues.add(rSquaredValue);
+		}
+		//clob values
+		if (!(curveErrorsClob==null)){
+			AnalysisGroupValue curveErrorsClobValue = createCurveFitValue(state, "clobValue", "curveErrorsClob", curveErrorsClob, recordedBy);
+			curveErrorsClobValue.setCodeValue(batchCode);
+			newValues.add(curveErrorsClobValue);
+		}
+		if (!(reportedValuesClob==null)){
+			AnalysisGroupValue reportedValuesClobValue = createCurveFitValue(state, "clobValue", "reportedValuesClob", reportedValuesClob, recordedBy);
+			reportedValuesClobValue.setCodeValue(batchCode);
+			newValues.add(reportedValuesClobValue);
+		}
+		if (!(parameterStdErrorsClob==null)){
+			AnalysisGroupValue parameterStdErrorsClobValue = createCurveFitValue(state, "clobValue", "parameterStdErrorsClob", parameterStdErrorsClob, recordedBy);
+			parameterStdErrorsClobValue.setCodeValue(batchCode);
+			newValues.add(parameterStdErrorsClobValue);
+		}
+		if (!(fitSettings==null)){
+			AnalysisGroupValue fitSettingsValue = createCurveFitValue(state, "clobValue", "fitSettings", fitSettings, recordedBy);
+			fitSettingsValue.setCodeValue(batchCode);
+			newValues.add(fitSettingsValue);
+		}
+		if (!(fitSummaryClob==null)){
+			AnalysisGroupValue fitSummaryClobValue = createCurveFitValue(state, "clobValue", "fitSummaryClob", fitSummaryClob, recordedBy);
+			fitSummaryClobValue.setCodeValue(batchCode);
+			newValues.add(fitSummaryClobValue);
+		}
+		//flags
+		if (!(userFlagStatus==null)){
+			AnalysisGroupValue userFlagStatusValue = createCurveFitValue(state, "codeValue", "user flag status", userFlagStatus, recordedBy);
+			userFlagStatusValue.setCodeType("user well flags");
+			userFlagStatusValue.setCodeKind("flag status");
+			userFlagStatusValue.setCodeOrigin("ACAS Curve Curator");
+			newValues.add(userFlagStatusValue);
+		}
+		if (!(algorithmFlagStatus==null)){
+			AnalysisGroupValue algorithmFlagStatusValue = createCurveFitValue(state, "codeValue", "algorithm flag status", algorithmFlagStatus, recordedBy);
+			algorithmFlagStatusValue.setCodeType("algorithm well flags");
+			algorithmFlagStatusValue.setCodeKind("flag status");
+			algorithmFlagStatusValue.setCodeOrigin("ACAS Curve Fit Module");
+		}
 		
 		//persist and flush all the new values
 		for (AnalysisGroupValue value: newValues){
@@ -450,6 +522,128 @@ public class CurveFitDTO {
         	}
         	return new AnalysisGroupValue();
         }
+	}
+	
+	public static Collection<CurveFitDTO> getFitDataByExperiment(String experimentIdOrCodeName){
+		Collection<CurveFitDTO> curveFitDTOs = makeCurveFitDTOsFromCurveIdList(findAllCurveIdsByExperiment(experimentIdOrCodeName));
+		curveFitDTOs = getFitData(curveFitDTOs);
+		return curveFitDTOs;
+	}
+	
+	@Transactional
+	public static Collection<String> findAllCurveIdsByExperiment(String experimentIdOrCodeName){
+		Experiment experiment = null;
+		if(SimpleUtil.isNumeric(experimentIdOrCodeName)) {
+			experiment = Experiment.findExperiment(Long.valueOf(experimentIdOrCodeName));
+		} else {		
+			experiment = Experiment.findExperimentsByCodeNameEquals(experimentIdOrCodeName).getSingleResult();
+		}
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery<String> q = em.createQuery("SELECT agv.stringValue FROM AnalysisGroupValue AS agv "
+        		+ "JOIN agv.lsState AS state "
+        		+ "JOIN state.analysisGroup AS ag  "
+        		+ "JOIN ag.experiments AS exp "
+        		+ "WHERE exp = :experiment "
+        		+ "AND agv.lsType = :lsType  "
+        		+ "AND agv.lsKind = :lsKind  "
+        		+ "AND agv.ignored IS NOT :ignored "
+        		+ "AND state.ignored IS NOT :ignored "
+        		+ "AND state.lsType = :stateType "
+        		+ "AND state.lsKind = :stateKind", String.class);
+        q.setParameter("lsType", "stringValue");
+        q.setParameter("lsKind", "curve id");
+        q.setParameter("stateType", "data");
+        q.setParameter("stateKind", "dose response");
+        q.setParameter("experiment", experiment);
+        q.setParameter("ignored", true);
+        return q.getResultList();
+	}
+	
+	private static Collection<CurveFitDTO> makeCurveFitDTOsFromCurveIdList(Collection<String> curveIdList) {
+		Collection<CurveFitDTO> curveFitDTOs = new HashSet<CurveFitDTO>();
+		for (String curveId : curveIdList) {
+			curveFitDTOs.add(new CurveFitDTO(curveId));
+		}
+		return curveFitDTOs;
+	}
+
+	public static String findRenderingHint(TreatmentGroup treatmentGroup) {
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery<String> q = em.createQuery("SELECT value.stringValue "
+				+ "FROM TreatmentGroup AS treatmentGroup "
+				+ "JOIN treatmentGroup.analysisGroups AS analysisGroup "
+				+ "JOIN analysisGroup.lsStates AS state "
+				+ "JOIN state.lsValues AS value "
+				+ "WHERE treatmentGroup = :treatmentGroup "
+				+ "AND analysisGroup.ignored IS NOT :ignored "
+				+ "AND state.ignored IS NOT :ignored "
+				+ "AND state.lsType = :stateType "
+				+ "AND state.lsKind = :stateKind "
+				+ "AND value.lsType = :valueType "
+				+ "AND value.lsKind = :valueKind ", String.class);
+		
+		q.setParameter("stateType", "data");
+		q.setParameter("stateKind", "dose response");
+		q.setParameter("valueType", "stringValue");
+		q.setParameter("valueKind", "Rendering Hint");
+		q.setParameter("treatmentGroup", treatmentGroup);
+		q.setParameter("ignored", true);
+		return q.getSingleResult();
+	}
+	
+	public static String findRenderingHint(AnalysisGroup analysisGroup) {
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery<String> q = em.createQuery("SELECT value.stringValue "
+				+ "FROM AnalysisGroup AS analysisGroup "
+				+ "JOIN analysisGroup.lsStates AS state "
+				+ "JOIN state.lsValues AS value "
+				+ "WHERE analysisGroup = :analysisGroup "
+				+ "AND analysisGroup.ignored IS NOT :ignored "
+				+ "AND state.ignored IS NOT :ignored "
+				+ "AND state.lsType = :stateType "
+				+ "AND state.lsKind = :stateKind "
+				+ "AND value.lsType = :valueType "
+				+ "AND value.lsKind = :valueKind ", String.class);
+		
+		q.setParameter("stateType", "data");
+		q.setParameter("stateKind", "dose response");
+		q.setParameter("valueType", "stringValue");
+		q.setParameter("valueKind", "Rendering Hint");
+		q.setParameter("analysisGroup", analysisGroup);
+		q.setParameter("ignored", true);
+		return q.getSingleResult();
+	}
+
+
+	public static String findRenderingHint(Subject subject) {
+		EntityManager em = SubjectValue.entityManager();
+		TypedQuery<String> q = em.createQuery("SELECT value.stringValue "
+				+ "FROM Subject AS subject"
+				+ "JOIN subject.treatmentGroup AS treatmentGroup "
+				+ "JOIN treatmentGroup.analysisGroups AS analysisGroup "
+				+ "JOIN analysisGroup.lsStates AS state "
+				+ "JOIN state.lsValues AS value "
+				+ "WHERE subject = :subject "
+				+ "AND analysisGroup.ignored IS NOT :ignored "
+				+ "AND state.ignored IS NOT :ignored "
+				+ "AND state.lsType = :stateType "
+				+ "AND state.lsKind = :stateKind "
+				+ "AND value.lsType = :valueType "
+				+ "AND value.lsKind = :valueKind ", String.class);
+		
+		q.setParameter("stateType", "data");
+		q.setParameter("stateKind", "dose response");
+		q.setParameter("valueType", "stringValue");
+		q.setParameter("valueKind", "Rendering Hint");
+		q.setParameter("subject", subject);
+		q.setParameter("ignored", true);
+		return q.getSingleResult();
+	}
+	
+	public static String findRenderingHint(String curveId) {
+		AnalysisGroupValue curveIdValue = findCurveIdValue(curveId);
+		AnalysisGroup analysisGroup = curveIdValue.getLsState().getAnalysisGroup();
+		return findRenderingHint(analysisGroup);
 	}
 	
 }

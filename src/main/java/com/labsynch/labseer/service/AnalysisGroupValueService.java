@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 
 @Service
@@ -27,17 +28,22 @@ public interface AnalysisGroupValueService {
 			String stateType, String stateKind, String valueType,
 			String valueKind, String value);
 
-	AnalysisGroupValue updateAnalysisGroupValue(
+	public AnalysisGroupValue updateAnalysisGroupValue(
 			AnalysisGroupValue analysisGroupValue);
 
-	AnalysisGroupValue saveAnalysisGroupValue(
+	public AnalysisGroupValue saveAnalysisGroupValue(
 			AnalysisGroupValue analysisGroupValue);
 
-	Collection<AnalysisGroupValue> saveAnalysisGroupValues(
+	public Collection<AnalysisGroupValue> saveAnalysisGroupValues(
 			Collection<AnalysisGroupValue> analysisGroupValues);
+
 
 	public Collection<AnalysisGroupValue> updateAnalysisGroupValues(
 			Collection<AnalysisGroupValue> analysisGroupValues);
+
+	public AnalysisGroupValue createAnalysisGroupValueFromLsStateAndTypeAndKindAndValue(
+			AnalysisGroupState analysisGroupState, String lsType, String lsKind,
+			String value, String recordedBy);
 
 	
 }

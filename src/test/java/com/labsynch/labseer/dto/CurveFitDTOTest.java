@@ -2,6 +2,7 @@ package com.labsynch.labseer.dto;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import junit.framework.Assert;
 
@@ -66,4 +67,32 @@ public class CurveFitDTOTest {
 		logger.debug(CurveFitDTO.toJsonArray(curveFitDTOs));
 	}
 	
+	@Test
+	@Transactional
+	public void getAllCurveIdsByExperimentTest() {
+		String experimentCodeName = "EXPT-00000078";
+		long startTime = System.currentTimeMillis();
+		Collection<String> results = CurveFitDTO.findAllCurveIdsByExperiment(experimentCodeName);
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
+		logger.debug("total number of curves: " + results.size());
+		logger.debug(results.toString());
+		Assert.assertTrue(!results.isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void getAllCurveFitDataByExperimentTest() {
+		String experimentCodeName = "EXPT-00000060"; //18 curves
+//		String experimentCodeName = "EXPT-00000078"; //1000 curves
+		long startTime = System.currentTimeMillis();
+		Collection<CurveFitDTO> results = CurveFitDTO.getFitDataByExperiment(experimentCodeName);
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
+		logger.debug("total number of curves: " + results.size());
+		logger.debug(CurveFitDTO.toJsonArray(results));
+		Assert.assertTrue(!results.isEmpty());
+	}
 }

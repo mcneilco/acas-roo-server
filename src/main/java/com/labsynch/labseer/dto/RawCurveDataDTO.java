@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -49,9 +51,18 @@ public class RawCurveDataDTO {
 		this.responseUnits = (String) dataMap.get("responseUnits");
 		this.dose = (BigDecimal) dataMap.get("dose");
 		this.doseUnits = (String) dataMap.get("doseUnits");
-//		this.flagAlgorithm;
-//		this.flagOnLoad;
-//		this.flagUser;
+		this.algorithmFlagStatus = (String) dataMap.get("algorithmFlagStatus");
+		this.algorithmFlagObservation = (String) dataMap.get("algorithmFlagObservation");
+		this.algorithmFlagReason = (String) dataMap.get("algorithmFlagReason");
+		this.algorithmFlagComment = (String) dataMap.get("algorithmFlagComment");
+		this.preprocessFlagStatus = (String) dataMap.get("preprocessFlagStatus");
+		this.preprocessFlagObservation = (String) dataMap.get("preprocessFlagObservation");
+		this.preprocessFlagReason = (String) dataMap.get("preprocessFlagReason");
+		this.preprocessFlagComment = (String) dataMap.get("preprocessFlagComment");
+		this.userFlagStatus = (String) dataMap.get("userFlagStatus");
+		this.userFlagObservation = (String) dataMap.get("userFlagObservation");
+		this.userFlagReason = (String) dataMap.get("userFlagReason");
+		this.userFlagComment = (String) dataMap.get("userFlagComment");
 	}
 	
 
@@ -62,9 +73,18 @@ public class RawCurveDataDTO {
 	private String responseUnits; //location same as response, but in unitKind field
 	private BigDecimal dose; // location: subject value, SS: data_test compound treatment, SV: numericValue_Dose
 	private String doseUnits; //location, same as above, but in unitKind field
-	private String flagAlgorithm; //location: TODO:ask Guy
-	private String flagOnLoad;
-	private String flagUser;
+	private String algorithmFlagStatus;
+	private String algorithmFlagObservation;
+	private String algorithmFlagReason;
+	private String algorithmFlagComment;
+	private String preprocessFlagStatus;
+	private String preprocessFlagObservation;
+	private String preprocessFlagReason;
+	private String preprocessFlagComment;
+	private String userFlagStatus;
+	private String userFlagObservation;
+	private String userFlagReason;
+	private String userFlagComment;
 	
 	
 
@@ -77,9 +97,18 @@ public class RawCurveDataDTO {
 				"doseUnits",
 				"response",
 				"responseUnits",
-				"flagAlgorithm",
-				"flagOnLoad",
-				"flagUser"
+				"algorithmFlagStatus",
+				"algorithmFlagObservation",
+				"algorithmFlagReason",
+				"algorithmFlagComment",
+				"preprocessFlagStatus",
+				"preprocessFlagObservation",
+				"preprocessFlagReason",
+				"preprocessFlagComment",
+				"userFlagStatus",
+				"userFlagObservation",
+				"userFlagReason",
+				"userFlagComment"
 				};
 
 		return headerColumns;
@@ -88,6 +117,15 @@ public class RawCurveDataDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -106,43 +144,55 @@ public class RawCurveDataDTO {
 			Collection<RawCurveDataDTO> rawCurveDataDTOs) {
 		List<RawCurveDataDTO> resultList = new ArrayList<RawCurveDataDTO>();
 		for (RawCurveDataDTO rawCurveDataDTO : rawCurveDataDTOs) {
-			resultList.addAll(getRawCurveData(rawCurveDataDTO));
+			String renderingHint = CurveFitDTO.findRenderingHint(rawCurveDataDTO.getCurveId());
+			resultList.addAll(getRawCurveData(rawCurveDataDTO, renderingHint));
+		}
+		for (RawCurveDataDTO rawCurveDataDTO : resultList){
+			Long responseSubjectValueId = rawCurveDataDTO.getResponseSubjectValueId();
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("auto flag", "flag status", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("auto flag", "flag observation", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("auto flag", "flag comment", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagComment(getFlagComment("auto flag", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("preprocess flag", "flag status", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("preprocess flag", "flag observation", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("preprocess flag", "flag comment", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagComment(getFlagComment("preprocess flag", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("user flag", "flag status", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("user flag", "flag observation", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("user flag", "flag comment", responseSubjectValueId));
+			rawCurveDataDTO.setAlgorithmFlagComment(getFlagComment("user flag", responseSubjectValueId));
 		}
 		return resultList;
 	}
 
-	public static List<RawCurveDataDTO> getRawCurveData(RawCurveDataDTO emptyRawCurveDataDTO){
-		//TODO: add flags
+	public static List<RawCurveDataDTO> getRawCurveData(RawCurveDataDTO emptyRawCurveDataDTO, String renderingHint){
 		String curveId = emptyRawCurveDataDTO.getCurveId();
 		EntityManager em = SubjectValue.entityManager();
         TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( rsv.id as responseSubjectValueId, "
         		+ "rsv.numericValue as response, "
         		+ "rsv.unitKind as responseUnits, "
-        		+ "dsv.numericValue as dose, "
-        		+ "dsv.unitKind as doseUnits ) "
-//        		+ "flags"
+        		+ "bcsv.concentration as dose, "
+        		+ "bcsv.concUnit as doseUnits ) " 
         		+ "FROM AnalysisGroupValue agv "
         		+ "JOIN agv.lsState as ags "
         		+ "JOIN ags.analysisGroup.treatmentGroups as treat "
         		+ "JOIN treat.subjects as subj "
         		+ "JOIN subj.lsStates as rss "
-        		+ "JOIN subj.lsStates as dss "
         		+ "JOIN rss.lsValues as rsv "
-        		+ "JOIN dss.lsValues as dsv "
+        		+ "JOIN rss.lsValues as bcsv "
         		+ "WHERE rss.lsType = 'data' "
         		+ "AND rss.lsKind = 'results' "
         		+ "AND rsv.lsType = 'numericValue' "
-        		+ "AND rsv.lsKind = 'Response' "
-        		+ "AND dss.lsType = 'data' "
-        		+ "AND dss.lsKind = 'test compound treatment' "
-        		+ "AND dsv.lsType = 'numericValue' "
-        		+ "AND dsv.lsKind = 'Dose' "
+        		+ "AND rsv.lsKind = :responseKind "
+        		+ "AND bcsv.lsType = 'codeValue' "
+        		+ "AND bcsv.lsKind = 'batch code' "
         		+ "AND ags.ignored = false "
         		+ "AND agv.lsType = 'stringValue' "
         		+ "AND agv.lsKind = 'curve id' "
         		+ "AND agv.ignored = false "
         		+ "AND agv.stringValue = :curveId", Map.class);
         q.setParameter("curveId", curveId);
+        if (renderingHint.equalsIgnoreCase("4 parameter D-R")) q.setParameter("responseKind", "transformed efficacy");
         List<Map> queryResults = q.getResultList();
         List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
 		for (Map result : queryResults) {
@@ -150,6 +200,58 @@ public class RawCurveDataDTO {
 			rawCurveDataList.add(rawCurveDataDTO);
 		}
 		return rawCurveDataList;
+	}
+	
+	public static String getFlag(String flagType, String flagKind, Long responseSubjectValueId){
+		EntityManager em = SubjectValue.entityManager();
+        TypedQuery<String> q = em.createQuery("SELECT sv.codeValue " 
+        		+ "FROM Subjects as subj "
+        		+ "JOIN subj.lsStates as flagstate "
+        		+ "JOIN subj.lsStates as responsestate "
+        		+ "JOIN responsestate.lsValues as responseValue "
+        		+ "JOIN flagstate.lsValues as flagvalue "
+        		+ "WHERE flagstate.lsType = 'data' "
+        		+ "AND flagstate.lsKind = :flagType "
+        		+ "AND flagvalue.lsType = 'codeValue' "
+        		+ "AND flagvalue.lsKind = :flagKind "
+        		+ "AND responseValue.id = :responseSubjectValueId "
+        		+ "AND flagstate.ignored IS false ", String.class);
+        q.setParameter("flagType", flagType);
+        q.setParameter("flagKind", flagKind);
+        q.setParameter("responseSubjectValueId", responseSubjectValueId);
+        String queryResult = null;
+        try {
+        	queryResult = q.getSingleResult();
+        } catch (EmptyResultDataAccessException e){
+        	return null;
+        }
+		return queryResult;
+	}
+	
+	public static String getFlagComment(String flagType, Long responseSubjectValueId){
+		EntityManager em = SubjectValue.entityManager();
+        TypedQuery<String> q = em.createQuery("SELECT sv.stringValue " 
+        		+ "FROM Subjects as subj "
+        		+ "JOIN subj.lsStates as flagstate "
+        		+ "JOIN subj.lsStates as responsestate "
+        		+ "JOIN responsestate.lsValues as responseValue "
+        		+ "JOIN flagstate.lsValues as flagvalue "
+        		+ "WHERE flagstate.lsType = 'data' "
+        		+ "AND flagstate.lsKind = :flagType "
+        		+ "AND flagvalue.lsType = 'codeValue' "
+        		+ "AND flagvalue.lsKind = :flagKind "
+        		+ "AND responseValue.id = :responseSubjectValueId "
+        		+ "AND flagstate.ignored IS false ", String.class);
+        q.setParameter("flagType", flagType);
+        q.setParameter("flagKind", "comment");
+        q.setParameter("responseSubjectValueId", responseSubjectValueId);
+        String queryResult = null;
+        try {
+        	queryResult = q.getSingleResult();
+        } catch (EmptyResultDataAccessException e){
+        	return null;
+        }
+		return queryResult;
 	}
 	
 	public static String getCsvList(Collection<RawCurveDataDTO> rawCurveDataDTOs, String format) {
@@ -179,5 +281,19 @@ public class RawCurveDataDTO {
             }
         }
         return outFile.toString();
+	}
+	
+	public static Collection<RawCurveDataDTO> getRawCurveDataByExperiment(String experimentIdOrCodeName){
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = makeRawCurveDataDTOsFromCurveIdList(CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName));
+		rawCurveDataDTOs = getRawCurveData(rawCurveDataDTOs);
+		return rawCurveDataDTOs;
+	}
+	
+	private static Collection<RawCurveDataDTO> makeRawCurveDataDTOsFromCurveIdList(Collection<String> curveIdList) {
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = new HashSet<RawCurveDataDTO>();
+		for (String curveId : curveIdList) {
+			rawCurveDataDTOs.add(new RawCurveDataDTO(curveId));
+		}
+		return rawCurveDataDTOs;
 	}
 }
