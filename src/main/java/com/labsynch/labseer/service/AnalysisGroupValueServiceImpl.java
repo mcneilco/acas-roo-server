@@ -219,6 +219,7 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		return analysisGroupValue;
 	}
 
+
 	@Override
 	public Collection<AnalysisGroupValue> updateAnalysisGroupValues(
 			Collection<AnalysisGroupValue> analysisGroupValues) {
@@ -226,5 +227,24 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 			analysisGroupValue = updateAnalysisGroupValue(analysisGroupValue);
 		}
 		return analysisGroupValues;
+	}
+	
+	@Override
+	public AnalysisGroupValue createAnalysisGroupValueFromLsStateAndTypeAndKindAndValue(
+			AnalysisGroupState analysisGroupState, String lsType, String lsKind, String value, String recordedBy) {
+		AnalysisGroupValue analysisGroupValue = new AnalysisGroupValue();
+		analysisGroupValue.setLsState(analysisGroupState);
+		analysisGroupValue.setLsType(lsType);
+		analysisGroupValue.setLsKind(lsKind);
+		if (lsType.equals("stringValue")) analysisGroupValue.setStringValue(value);
+		if (lsType.equals("fileValue")) analysisGroupValue.setFileValue(value);
+		if (lsType.equals("clobValue")) analysisGroupValue.setClobValue(value);
+		if (lsType.equals("blobValue")) analysisGroupValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+		if (lsType.equals("numericValue")) analysisGroupValue.setNumericValue(new BigDecimal(value));
+		if (lsType.equals("dateValue")) analysisGroupValue.setDateValue(new Date(Long.parseLong(value)));
+		if (lsType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
+		analysisGroupValue.setRecordedBy(recordedBy);
+		analysisGroupValue.persist();
+		return analysisGroupValue;
 	}
 }

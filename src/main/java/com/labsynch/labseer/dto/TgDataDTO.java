@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,10 @@ public class TgDataDTO {
 	
 	public TgDataDTO(){
 		//empty constructor
+	}
+	
+	public TgDataDTO(String curveId){
+		this.curveId = curveId;
 	}
 	
 	public TgDataDTO(String curveId, TreatmentGroupValue result) {
@@ -161,4 +166,18 @@ public class TgDataDTO {
         return outFile.toString();
 	}
 
+	public static Collection<TgDataDTO> getTgDataByExperiment(String experimentIdOrCodeName){
+		Collection<TgDataDTO> tgDataDTOs = makeTgDataDTOsFromCurveIdList(CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName));
+		tgDataDTOs = getTgData(tgDataDTOs);
+		return tgDataDTOs;
+	}
+	
+	private static Collection<TgDataDTO> makeTgDataDTOsFromCurveIdList(Collection<String> curveIdList) {
+		Collection<TgDataDTO> tgDataDTOs = new HashSet<TgDataDTO>();
+		for (String curveId : curveIdList) {
+			tgDataDTOs.add(new TgDataDTO(curveId));
+		}
+		return tgDataDTOs;
+	}
+	
 }

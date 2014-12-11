@@ -1,5 +1,6 @@
 package com.labsynch.labseer.dto;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -29,11 +30,13 @@ public class RawCurveDataDTOTest {
 	@Test
 	@Transactional
 	public void getRawCurveDataTest() {
-		String curveId = "a_AG-00347957";
+		String curveId = "22_AG-00347669";
 		RawCurveDataDTO rawCurveDataDTO = new RawCurveDataDTO(curveId);
-		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(rawCurveDataDTO);
+		String renderingHint = CurveFitDTO.findRenderingHint(curveId);
+		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(rawCurveDataDTO, renderingHint);
 		logger.debug(resultList.toString());
 		for (RawCurveDataDTO result : resultList) {
+			logger.debug(result.toJson());
 			Assert.assertNotNull(result.getCurveId());
 			Assert.assertNotNull(result.getResponseSubjectValueId());
 			Assert.assertNotNull(result.getResponse());
@@ -42,6 +45,20 @@ public class RawCurveDataDTOTest {
 			Assert.assertNotNull(result.getDoseUnits());
 		}
 		
+	}
+	
+	@Test
+	@Transactional
+	public void getAllRawCurveDataDataByExperimentTest() {
+		String experimentCodeName = "EXPT-00000060";
+		long startTime = System.currentTimeMillis();
+		Collection<RawCurveDataDTO> results = RawCurveDataDTO.getRawCurveDataByExperiment(experimentCodeName);
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
+		logger.debug("total number of data points: " + results.size());
+//		logger.debug(results.toString());
+		Assert.assertTrue(!results.isEmpty());
 	}
 
 }
