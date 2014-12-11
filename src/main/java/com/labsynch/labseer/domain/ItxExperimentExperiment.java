@@ -34,12 +34,12 @@ import flexjson.JSONSerializer;
 public class ItxExperimentExperiment extends AbstractThing {
 
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "first_experiment_id")
     private Experiment firstExperiment;
 
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "second_experiment_id")
     private Experiment secondExperiment;
 
