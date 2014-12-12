@@ -49,7 +49,11 @@ public class RawCurveDataDTO {
 		this.responseSubjectValueId = (Long) dataMap.get("responseSubjectValueId");
 		this.response = (BigDecimal) dataMap.get("response");
 		this.responseUnits = (String) dataMap.get("responseUnits");
-		this.dose = (BigDecimal) dataMap.get("dose");
+		try {
+			this.dose = (BigDecimal) dataMap.get("dose");
+		}catch(ClassCastException e){
+			this.dose = BigDecimal.valueOf((Double) dataMap.get("dose"));
+		}
 		this.doseUnits = (String) dataMap.get("doseUnits");
 		this.algorithmFlagStatus = (String) dataMap.get("algorithmFlagStatus");
 		this.algorithmFlagObservation = (String) dataMap.get("algorithmFlagObservation");
@@ -204,8 +208,8 @@ public class RawCurveDataDTO {
 	
 	public static String getFlag(String flagType, String flagKind, Long responseSubjectValueId){
 		EntityManager em = SubjectValue.entityManager();
-        TypedQuery<String> q = em.createQuery("SELECT sv.codeValue " 
-        		+ "FROM Subjects as subj "
+        TypedQuery<String> q = em.createQuery("SELECT flagvalue.codeValue " 
+        		+ "FROM Subject as subj "
         		+ "JOIN subj.lsStates as flagstate "
         		+ "JOIN subj.lsStates as responsestate "
         		+ "JOIN responsestate.lsValues as responseValue "
@@ -230,8 +234,8 @@ public class RawCurveDataDTO {
 	
 	public static String getFlagComment(String flagType, Long responseSubjectValueId){
 		EntityManager em = SubjectValue.entityManager();
-        TypedQuery<String> q = em.createQuery("SELECT sv.stringValue " 
-        		+ "FROM Subjects as subj "
+        TypedQuery<String> q = em.createQuery("SELECT flagvalue.stringValue " 
+        		+ "FROM Subject as subj "
         		+ "JOIN subj.lsStates as flagstate "
         		+ "JOIN subj.lsStates as responsestate "
         		+ "JOIN responsestate.lsValues as responseValue "

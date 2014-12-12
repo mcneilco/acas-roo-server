@@ -25,7 +25,7 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getFitDataTest() {
-		String curveId = "a_AG-00347957";
+		String curveId = "15_AG-00348398";
 		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
 		curveFitDTO = CurveFitDTO.getFitData(curveFitDTO);
 		logger.debug(curveFitDTO.toJson());
@@ -35,8 +35,8 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getFitDataThenSaveTest() {
-		String curveId = "AG-00344271_1640";
-		String analysisGroupCode = "AG-00344271";
+		String curveId = "15_AG-00348398";
+		String analysisGroupCode = "AG-00348398";
 		String recordedBy = "bfielder";
 		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
 		curveFitDTO = CurveFitDTO.getFitData(curveFitDTO);
@@ -56,8 +56,8 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getFitDataArrayTest() {
-		String curveId = "a_AG-00347957";
-		String curveId2 = "AG-00344271_1640";
+		String curveId = "1_AG-00348384";
+		String curveId2 = "2_AG-00348385";
 		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
 		CurveFitDTO curveFitDTO2 = new CurveFitDTO(curveId2);
 		Collection<CurveFitDTO> curveFitDTOs = new ArrayList<CurveFitDTO>();
@@ -70,7 +70,7 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getAllCurveIdsByExperimentTest() {
-		String experimentCodeName = "EXPT-00000078";
+		String experimentCodeName = "EXPT-00000909";
 		long startTime = System.currentTimeMillis();
 		Collection<String> results = CurveFitDTO.findAllCurveIdsByExperiment(experimentCodeName);
 		long endTime = System.currentTimeMillis();
@@ -84,7 +84,7 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getAllCurveFitDataByExperimentTest() {
-		String experimentCodeName = "EXPT-00000060"; //18 curves
+		String experimentCodeName = "EXPT-00000909"; //29 curves
 //		String experimentCodeName = "EXPT-00000078"; //1000 curves
 		long startTime = System.currentTimeMillis();
 		Collection<CurveFitDTO> results = CurveFitDTO.getFitDataByExperiment(experimentCodeName);
