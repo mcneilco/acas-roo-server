@@ -30,7 +30,7 @@ public class RawCurveDataDTOTest {
 	@Test
 	@Transactional
 	public void getRawCurveDataTest() {
-		String curveId = "22_AG-00347669";
+		String curveId = "15_AG-00348398";
 		RawCurveDataDTO rawCurveDataDTO = new RawCurveDataDTO(curveId);
 		String renderingHint = CurveFitDTO.findRenderingHint(curveId);
 		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(rawCurveDataDTO, renderingHint);
@@ -40,7 +40,7 @@ public class RawCurveDataDTOTest {
 			Assert.assertNotNull(result.getCurveId());
 			Assert.assertNotNull(result.getResponseSubjectValueId());
 			Assert.assertNotNull(result.getResponse());
-			Assert.assertNotNull(result.getResponseUnits());
+//			Assert.assertNotNull(result.getResponseUnits());
 			Assert.assertNotNull(result.getDose());
 			Assert.assertNotNull(result.getDoseUnits());
 		}
@@ -50,14 +50,22 @@ public class RawCurveDataDTOTest {
 	@Test
 	@Transactional
 	public void getAllRawCurveDataDataByExperimentTest() {
-		String experimentCodeName = "EXPT-00000060";
+		String experimentCodeName = "EXPT-00000909";
 		long startTime = System.currentTimeMillis();
 		Collection<RawCurveDataDTO> results = RawCurveDataDTO.getRawCurveDataByExperiment(experimentCodeName);
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
 		logger.debug("total number of data points: " + results.size());
-//		logger.debug(results.toString());
+		for (RawCurveDataDTO result : results) {
+			logger.debug(result.toJson());
+			Assert.assertNotNull(result.getCurveId());
+			Assert.assertNotNull(result.getResponseSubjectValueId());
+			Assert.assertNotNull(result.getResponse());
+//			Assert.assertNotNull(result.getResponseUnits());
+			Assert.assertNotNull(result.getDose());
+			Assert.assertNotNull(result.getDoseUnits());
+		}
 		Assert.assertTrue(!results.isEmpty());
 	}
 
