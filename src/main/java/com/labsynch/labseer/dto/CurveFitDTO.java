@@ -273,7 +273,7 @@ public class CurveFitDTO {
 				AnalysisGroupState oldState = AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(analysisGroup, "data", "dose response", true).getSingleResult();
 				oldState.setIgnored(true);
 				oldState.merge();
-				oldState.flush();
+//				oldState.flush();
 			} catch(EmptyResultDataAccessException e) {
 				logger.debug("Old state of typekind data/dose response not found for AG Code " + curveFitDTO.getAnalysisGroupCode() + " , creating new one");
 			}
@@ -447,7 +447,7 @@ public class CurveFitDTO {
 		//persist and flush all the new values
 		for (AnalysisGroupValue value: newValues){
 			value.persist();
-			value.flush();
+//			value.flush();
 		}		
 	}
 	

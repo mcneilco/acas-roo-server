@@ -140,7 +140,7 @@ public class FlagWellDTO {
 					SubjectState oldAlgorithmFlagState = findAlgorithmFlagState(subject).getSingleResult();
 					oldAlgorithmFlagState.setIgnored(true);
 					oldAlgorithmFlagState.merge();
-					oldAlgorithmFlagState.flush();
+//					oldAlgorithmFlagState.flush();
 					logger.debug("Old algorithm flag state ignored.");
 				}catch(EmptyResultDataAccessException e) {
 					logger.debug("Old state of typekind data/auto flag not found for Subject " + subject.getCodeName() + " , creating new one");
@@ -154,7 +154,7 @@ public class FlagWellDTO {
 					SubjectState oldPreprocessFlagState = findPreprocessFlagState(subject).getSingleResult();
 					oldPreprocessFlagState.setIgnored(true);
 					oldPreprocessFlagState.merge();
-					oldPreprocessFlagState.flush();
+//					oldPreprocessFlagState.flush();
 					logger.debug("Old preprocess flag state ignored.");
 				}catch(EmptyResultDataAccessException e) {
 					logger.debug("Old state of typekind data/preprocess flag not found for Subject " + subject.getCodeName() + " , creating new one");
@@ -168,7 +168,7 @@ public class FlagWellDTO {
 					SubjectState oldUserFlagState = findUserFlagState(subject).getSingleResult();
 					oldUserFlagState.setIgnored(true);
 					oldUserFlagState.merge();
-					oldUserFlagState.flush();
+//					oldUserFlagState.flush();
 					logger.debug("Old user flag state ignored.");
 				}catch(EmptyResultDataAccessException e) {
 					logger.debug("Old state of typekind data/user flag not found for Subject " + subject.getCodeName() + " , creating new one");
@@ -195,7 +195,7 @@ public class FlagWellDTO {
 					TreatmentGroupState oldState = TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(treatmentGroup.getId(), "data", "results").getSingleResult();
 					oldState.setIgnored(true);
 					oldState.merge();
-					oldState.flush();
+//					oldState.flush();
 					logger.debug("Old TreatmentGroupState ignored.");
 				}catch(EmptyResultDataAccessException e){
 					logger.debug("No state data/results found. Creating a new state.");
@@ -213,7 +213,7 @@ public class FlagWellDTO {
 				newTransformedEfficacyTreatmentGroupValue.setUncertaintyType("standard deviation");
 				logger.debug("Calculated new mean and standard deviation: " + newTransformedEfficacyTreatmentGroupValue.toJson());
 				newTransformedEfficacyTreatmentGroupValue.merge();
-				newTransformedEfficacyTreatmentGroupValue.flush();
+//				newTransformedEfficacyTreatmentGroupValue.flush();
 			}
 			
 		}
@@ -432,7 +432,7 @@ public class FlagWellDTO {
 			value.setCodeOrigin("ACAS Curve Curator");
 			value.setRecordedBy(recordedBy);
 			value.persist();
-			value.flush();
+//			value.flush();
 		}		
 	}
 	
