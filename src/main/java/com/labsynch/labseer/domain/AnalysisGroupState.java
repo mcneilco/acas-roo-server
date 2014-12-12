@@ -37,7 +37,7 @@ import flexjson.JSONSerializer;
 @RooToString
 @RooJson
 @Transactional
-@RooJpaActiveRecord(finders = { "findAnalysisGroupStatesByLsTypeAndKindEquals", "findAnalysisGroupStatesByAnalysisGroup", "findAnalysisGroupStatesByLsTransactionEquals", "findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals" })
+@RooJpaActiveRecord(finders = { "findAnalysisGroupStatesByLsTypeAndKindEquals", "findAnalysisGroupStatesByAnalysisGroup", "findAnalysisGroupStatesByLsTransactionEquals", "findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals", "findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot" })
 public class AnalysisGroupState extends AbstractState {
 
 	@NotNull

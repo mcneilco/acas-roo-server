@@ -65,6 +65,18 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 		analysisGroupState.persist();
 		return analysisGroupState;
 	}
+	
+	@Override
+	public AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKindAndRecordedBy(Long analysisGroupId, String stateType, String stateKind, String recordedBy) {
+		AnalysisGroupState analysisGroupState = new AnalysisGroupState();
+		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupId);
+		analysisGroupState.setAnalysisGroup(analysisGroup);
+		analysisGroupState.setLsType(stateType);
+		analysisGroupState.setLsKind(stateKind);
+		analysisGroupState.setRecordedBy(recordedBy);
+		analysisGroupState.persist();
+		return analysisGroupState;
+	}
 
 	@Override
 	public AnalysisGroupState saveAnalysisGroupState(
