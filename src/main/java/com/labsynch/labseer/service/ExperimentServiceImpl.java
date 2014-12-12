@@ -91,7 +91,8 @@ public class ExperimentServiceImpl implements ExperimentService {
 				if (experimentLabel.getId() == null){
 					ExperimentLabel newExperimentLabel = new ExperimentLabel(experimentLabel);
 					newExperimentLabel.setExperiment(updatedExperiment);
-					newExperimentLabel.persist();						
+					newExperimentLabel.persist();
+					updatedExperiment.getLsLabels().add(newExperimentLabel);
 				} else {
 					ExperimentLabel updatedLabel = ExperimentLabel.update(experimentLabel);
 					logger.debug("updated experiment label " + updatedLabel.getId());
@@ -108,6 +109,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 					updatedExperimentState = new ExperimentState(experimentState);
 					updatedExperimentState.setExperiment(updatedExperiment);
 					updatedExperimentState.persist();
+					updatedExperiment.getLsStates().add(updatedExperimentState);
 				} else {
 					updatedExperimentState = ExperimentState.update(experimentState);
 					logger.debug("updated experiment state " + experimentState.getId());
@@ -120,6 +122,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 							updatedExperimentValue = ExperimentValue.create(experimentValue);
 							updatedExperimentValue.setLsState(ExperimentState.findExperimentState(experimentState.getId()));
 							updatedExperimentValue.persist();
+							updatedExperimentState.getLsValues().add(updatedExperimentValue);
 						} else {
 							updatedExperimentValue = ExperimentValue.update(experimentValue);
 							logger.debug("updated experiment value " + updatedExperimentValue.getId());

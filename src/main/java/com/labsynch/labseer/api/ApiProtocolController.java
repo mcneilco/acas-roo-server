@@ -267,7 +267,7 @@ public class ApiProtocolController {
         if (protocol == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        ProtocolValue protocolValue = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "stringValue", "status", "Deleted");
+        ProtocolValue protocolValue = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "codeValue", "status", "deleted");
 		protocol.setIgnored(true);
         return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
     }

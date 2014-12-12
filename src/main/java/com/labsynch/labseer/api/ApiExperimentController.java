@@ -857,21 +857,21 @@ public class ApiExperimentController {
 //        return new ResponseEntity<String>(headers, HttpStatus.OK);
 //    }
 	
-	@RequestMapping(value = "/seldelete/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public ResponseEntity<String> trueDeleteById(@PathVariable("id") Long id) {
-        Experiment experiment = Experiment.findExperiment(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        if (experiment == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        long startTime = new Date().getTime();
-        Experiment.removeExperimentFullCascade(id);
-		long endTime = new Date().getTime();
-		long totalTime = endTime - startTime;
-		logger.info("   total elapsed time: " + totalTime + " ms");
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
+//	@RequestMapping(value = "/seldelete/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+//    public ResponseEntity<String> trueDeleteById(@PathVariable("id") Long id) {
+//        Experiment experiment = Experiment.findExperiment(id);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json");
+//        if (experiment == null) {
+//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+//        }
+//        long startTime = new Date().getTime();
+//        Experiment.removeExperimentFullCascade(id);
+//		long endTime = new Date().getTime();
+//		long totalTime = endTime - startTime;
+//		logger.info("   total elapsed time: " + totalTime + " ms");
+//        return new ResponseEntity<String>(headers, HttpStatus.OK);
+//    }
 	
 	@RequestMapping(value = "/browser/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> softDeleteById(@PathVariable("id") Long id) {
@@ -881,7 +881,7 @@ public class ApiExperimentController {
         if (experiment == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+        ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "status", "deleted");
 		experiment.setIgnored(true);
         return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
     }

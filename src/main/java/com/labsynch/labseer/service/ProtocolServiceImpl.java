@@ -142,7 +142,8 @@ public class ProtocolServiceImpl implements ProtocolService {
 				if (protocolLabel.getId() == null){
 					ProtocolLabel newProtocolLabel = new ProtocolLabel(protocolLabel);
 					newProtocolLabel.setProtocol(updatedProtocol);
-					newProtocolLabel.persist();						
+					newProtocolLabel.persist();	
+					updatedProtocol.getLsLabels().add(newProtocolLabel);
 				} else {
 					ProtocolLabel.update(protocolLabel);
 				}
@@ -158,6 +159,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 					newProtocolState.setProtocol(updatedProtocol);
 					newProtocolState.persist();		
 					protocolState.setId(newProtocolState.getId());
+					updatedProtocol.getLsStates().add(newProtocolState);
 				} else {
 					ProtocolState updatedProtocolState = ProtocolState.update(protocolState);
 					logger.debug("updatedProtocolState: " + updatedProtocolState.toJson());
@@ -167,7 +169,8 @@ public class ProtocolServiceImpl implements ProtocolService {
 					for(ProtocolValue protocolValue : protocolState.getLsValues()){
 						if (protocolValue.getId() == null){
 							protocolValue.setLsState(ProtocolState.findProtocolState(protocolState.getId()));
-							protocolValue.persist();							
+							protocolValue.persist();
+							protocolState.getLsValues().add(protocolValue);
 						} else {
 							ProtocolValue updatedProtocolValue = ProtocolValue.update(protocolValue);
 							logger.debug("updatedProtocolValue: " + updatedProtocolValue.toJson());
