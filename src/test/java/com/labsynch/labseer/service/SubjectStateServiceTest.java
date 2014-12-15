@@ -2,6 +2,8 @@
 
 package com.labsynch.labseer.service;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -10,13 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext.xml")
+@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
 public class SubjectStateServiceTest {
 	
@@ -34,5 +38,16 @@ public class SubjectStateServiceTest {
 		logger.info(SubjectValue.toJsonArray(SubjectValue.findSubjectValuesByLsState(subjectState).getResultList()));
 		
 		logger.info(subjectState.toString());
+	}
+	
+	@Test
+	@Transactional
+	public void createSubjectStateBySubjectIdAndStateTypeKindTest() {
+		Long subjectId = 155L;
+		String lsType = "metadata";
+		String lsKind = "subject metadata";
+		SubjectState subjectState = subjectStateService.createSubjectStateBySubjectIdAndStateTypeKind(subjectId, lsType, lsKind);
+		Assert.assertNotNull(subjectState);
+		logger.info(subjectState.toJson());
 	}
 }

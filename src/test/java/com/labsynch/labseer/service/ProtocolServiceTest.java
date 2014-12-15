@@ -4,7 +4,10 @@ package com.labsynch.labseer.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -183,7 +186,7 @@ public class ProtocolServiceTest {
 		String date;
 		String notebook = "NB 1234-123";
 		String keyWords;
-		String assayActivity;
+		String assayActivity = "Fluorescence";
 		String molecularTarget;
 		String targetOrigin;
 		String assayType;
@@ -195,5 +198,39 @@ public class ProtocolServiceTest {
 		Collection<Protocol> resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
 		logger.info("Found: "+ resultProtocols.toString());
 		Assert.assertNotNull(resultProtocols);
+	}
+	
+	@Transactional
+	@Test
+	public void protocolBrowserFilterTest() {
+		String name = "PAMPA Buffer A";
+		String codeName = "PROT-00000001";
+		String type = "default";
+		String kind = "default";
+		
+		
+		Map<String, String> requestParams = new HashMap<String, String>();
+		requestParams.put("name", name);
+		
+		Set<Protocol> protocols = protocolService.findProtocolsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, protocols.size());
+		protocols.clear();
+		
+		requestParams.put("codeName", codeName);
+		protocols = protocolService.findProtocolsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, protocols.size());
+		protocols.clear();
+		
+		requestParams.put("type", type);
+		requestParams.put("kind", kind);
+		
+		protocols = protocolService.findProtocolsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, protocols.size());
+		protocols.clear();
+		
+		requestParams.remove("name");
+		protocols = protocolService.findProtocolsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, protocols.size());
+		
 	}
 }

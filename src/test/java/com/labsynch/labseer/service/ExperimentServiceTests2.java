@@ -292,19 +292,36 @@ public class ExperimentServiceTests2 {
 	}
 
 	@SuppressWarnings("unchecked")
-	//@Test
+	@Test
 	@Transactional
 	public void GetExprerimentsWithBatchCodes_1(){
 		Collection<String> codeValues = new HashSet<String>();
 		//		codeValues.add("CMPD-0000124-01");
 		//		codeValues.add("CMPD-0000125-01");
 		//		codeValues.add("GENE-000002");
-		//		codeValues.add("GENE-000017");
+				codeValues.add("GENE-004000");
 
 		Collection<JSTreeNodeDTO> results = experimentService.getExperimentNodes(codeValues);
 
 		logger.info(JSTreeNodeDTO.toPrettyJsonArray(results));
 	}
+	
+	@Test
+	@Transactional
+	public void geneIdQueryFromJson() {
+		String json = "{\"experimentCodeList\":[\"Root Node\",\"default\",\"PROT-00000002\",\"EXPT-00000002\",\"tags_EXPT-00000002\",\"PROT-00000003\",\"EXPT-00000003\",\"tags_EXPT-00000003\"],\"batchCodeList\":[],\"searchFilters\":[{\"termName\":\"Q1\",\"experimentCode\":\"EXPT-00000003\",\"lsKind\":\"18h Z-score diff.\",\"lsType\":\"numericValue\",\"operator\":\"=\",\"filterValue\":\"1.8\"},{\"termName\":\"Q2\",\"experimentCode\":\"EXPT-00000002\",\"lsKind\":\"Shapira hit\",\"lsType\":\"numericValue\",\"operator\":\"<\",\"filterValue\":\"10\"}],\"booleanFilter\":\"and\",\"advancedFilter\":\"\"}";
+		logger.debug("incoming json: " + json);
+	    ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
+	    logger.debug("converted json: " + searchRequest.toJson());
+	    List<AnalysisGroupValueDTO> agValues = null;
+	    try {
+	        agValues = experimentService.getFilteredAGData(searchRequest);
+	        logger.debug("number of agvalues found: " + agValues.size());
+	    } catch (Exception e) {
+	        logger.error(e.toString());
+	    }
+	}
+	
 
 
 	//@Test

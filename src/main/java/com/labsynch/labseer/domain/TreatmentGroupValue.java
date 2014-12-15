@@ -26,6 +26,7 @@ import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
+import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -174,7 +175,7 @@ public class TreatmentGroupValue extends AbstractValue {
 	public static int deleteByExperimentID(Long experimentId) {
 		if (experimentId == null) return 0;
 		EntityManager em = TreatmentGroupValue.entityManager();
-		String deleteSQL = "DELETE FROM TreatmentGroupValue oo WHERE id in (select o.id from TreatmentGroupValue o where o.lsState.treatmentGroup.analysisGroup.experiment.id = :experimentId)";
+		String deleteSQL = "DELETE FROM TreatmentGroupValue oo WHERE id in (select o.id from TreatmentGroupValue o where o.lsState.treatmentGroup.analysisGroups.experiments.id = :experimentId)";
 		Query q = em.createQuery(deleteSQL);
 		q.setParameter("experimentId", experimentId);
 		int numberOfDeletedEntities = q.executeUpdate();
@@ -207,8 +208,8 @@ public class TreatmentGroupValue extends AbstractValue {
 	@Transactional
     public String toJson() {
         return new JSONSerializer()
-				.exclude("*.class", "lsState.treatmentGroup.analysisGroup.experiment")
-				.include("lsState.treatmentGroup.analysisGroup")
+				.exclude("*.class", "lsState.treatmentGroup.analysisGroups.experiments")
+				.include("lsState.treatmentGroup.analysisGroups")
 				.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }
@@ -216,8 +217,8 @@ public class TreatmentGroupValue extends AbstractValue {
 	@Transactional
     public static String toJsonArray(Collection<TreatmentGroupValue> collection) {
         return new JSONSerializer()
-        		.exclude("*.class", "lsState.treatmentGroup.analysisGroup.experiment")
-        		.include("lsState.treatmentGroup.analysisGroup")
+        		.exclude("*.class", "lsState.treatmentGroup.analysisGroups.experiments")
+        		.include("lsState.treatmentGroup.analysisGroups")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
@@ -237,8 +238,8 @@ public class TreatmentGroupValue extends AbstractValue {
 		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
 		"JOIN tgv.lsState tvs " +
 		"JOIN tvs.treatmentGroup tg " +
-		"JOIN tg.analysisGroup ag " +
-		"JOIN ag.experiment exp " +
+		"JOIN tg.analysisGroups ag " +
+		"JOIN ag.experiments exp " +
 		"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored IS NOT :ignored " +
 		"AND tgv.ignored IS NOT :ignored " +
 		"AND tg.ignored IS NOT :ignored " +
@@ -260,7 +261,7 @@ public class TreatmentGroupValue extends AbstractValue {
 		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
 		"JOIN tgv.lsState tvs " +
 		"JOIN tvs.treatmentGroup tg " +
-		"JOIN tg.analysisGroup ag " +
+		"JOIN tg.analysisGroups ag " +
 		"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored IS NOT :ignored " +
 		"AND tgv.ignored IS NOT :ignored " +
 		"AND tg.ignored IS NOT :ignored " +
@@ -285,8 +286,8 @@ public class TreatmentGroupValue extends AbstractValue {
 		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
 				"JOIN tgv.lsState tvs " +
 				"JOIN tvs.treatmentGroup tg " +
-				"JOIN tg.analysisGroup ag " +
-				"JOIN ag.experiment exp " +
+				"JOIN tg.analysisGroups ag " +
+				"JOIN ag.experiments exp " +
 				"WHERE tvs.lsType = :stateType AND tvs.lsKind = :stateKind AND tvs.ignored IS NOT :ignored " +
 				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
 				"AND tg.ignored IS NOT :ignored " +
@@ -393,6 +394,44 @@ public class TreatmentGroupValue extends AbstractValue {
 		};
 
 		return processors;
+	}
+
+	public Collection<TreatmentGroupValueDTO> makeDTOsByAnalysisGroupIds() {
+		Collection<TreatmentGroupValueDTO> treatmentGroupValueDTOs = new HashSet<TreatmentGroupValueDTO>();
+		Collection<AnalysisGroup> analysisGroups = TreatmentGroup.findTreatmentGroup(this.getTreatmentGroupId()).getAnalysisGroups();
+		for (AnalysisGroup analysisGroup: analysisGroups) {
+			TreatmentGroupValueDTO treatmentGroupValueDTO = new TreatmentGroupValueDTO(this);
+			treatmentGroupValueDTO.setAnalysisGroupId(analysisGroup.getId());
+			treatmentGroupValueDTOs.add(treatmentGroupValueDTO);
+		}
+		
+		return treatmentGroupValueDTOs;
+	}
+
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByTreatmentGroupIDAndStateTypeKindAndValueTypeKind(
+			Long treatmentGroupId, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
+				"JOIN tgv.lsState tgs " +
+				"JOIN tgs.treatmentGroup tg " +
+				"WHERE tgs.lsType = :stateType AND tgs.lsKind = :stateKind AND tgs.ignored IS NOT :ignored " +
+				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
+				"AND tg.ignored IS NOT :ignored " +
+				"AND tg.id = :treatmentGroupId ";
+		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
+		q.setParameter("treatmentGroupId", treatmentGroupId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
 	}
 
 

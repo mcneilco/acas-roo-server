@@ -381,6 +381,15 @@ public class ExperimentTest {
 	
 	@Transactional
 	@Test
+	public void findExperimentByExperimentNameAndProtocolIdAndIgnoredNotTest () {
+		String experimentName = "Test Load 102";
+		Long protocolId = 1006L;
+		List<Experiment> experiments = Experiment.findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(experimentName, protocolId);
+		assert(experiments.get(0).getId() == 1007);
+	}
+	
+	@Transactional
+	@Test
 	public void findExperimentByNameAndProtocolIdTest () {
 		String experimentLabelText = "Test Load 102";
 		Long protocolId = 1006L;
@@ -400,15 +409,13 @@ public class ExperimentTest {
 	public void removeExperimentTest() {
 		HashMap<String, Long> idMap = makeTestStack();
 		Long e1Id = idMap.get("e1");
-		Long e2Id = idMap.get("e2");
+//		Long e2Id = idMap.get("e2");
 		Experiment e1 = Experiment.findExperiment(e1Id);
-		Experiment e2 = Experiment.findExperiment(e2Id);
-		e1.remove();
-		e2.remove();
-//		Experiment.removeExperimentOrphanAware(e1Id);
-//		Experiment.removeExperimentOrphanAware(e1Id);
+//		Experiment e2 = Experiment.findExperiment(e2Id);
+		Experiment.removeExperimentCascadeAware(e1Id);
+//		e2.remove();
 		Assert.assertNull(Experiment.findExperiment(e1Id));
-		Assert.assertNull(Experiment.findExperiment(e2Id));
+//		Assert.assertNull(Experiment.findExperiment(e2Id));
 	}
 	
 	@Transactional

@@ -15,6 +15,8 @@ import java.util.Set;
 
 import javax.persistence.NoResultException;
 
+import junit.framework.Assert;
+
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -37,6 +39,7 @@ import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -85,7 +88,7 @@ public class TreatmentGroupValueServiceTest {
 	@Test
 	@Transactional
 	public void QueryTreatmentGroupValueByExpIdAndStateTypeKindWithCodeName() {
-		String experimentCodeName = "EXPT-00000004";
+		String experimentCodeName = "EXPT-00000152";
 		String stateType = "data";
 		String stateKind = "test compound treatment";
 		Experiment experiment = null;
@@ -128,6 +131,29 @@ public class TreatmentGroupValueServiceTest {
 		String csvString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
 		assert(csvString != null && csvString.compareTo("") != 0);
 		logger.info(csvString);
+	}
+	
+	@Test
+	@Transactional
+	public void TreatmentGroupValuesToCsvForCurveFit() {
+		List<TreatmentGroupValue> treatmentGroupValues = treatmentGroupValueService.getTreatmentGroupValuesByExperimentIdAndStateTypeKindAndValueTypeKind(54375L, "data", "results", "numericValue", "Response");
+		String csvString = treatmentGroupValueService.getCsvList(treatmentGroupValues);
+		Assert.assertNotNull(csvString);
+		logger.info(csvString);
+	}
+	
+	@Test
+	@Transactional
+	public void updateTreatmentGroupValueTest() {
+		String idOrCodeName = "35";
+		String stateType = "data";
+		String stateKind = "results";
+		String valueType = "stringValue";
+		String valueKind = "status";
+		String value = "Deleted";
+		TreatmentGroupValue treatmentGroupValue = treatmentGroupValueService.updateTreatmentGroupValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(treatmentGroupValue);
+		logger.info(treatmentGroupValue.toJson());
 	}
 
 }

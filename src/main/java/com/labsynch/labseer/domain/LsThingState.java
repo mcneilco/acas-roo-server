@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -92,4 +94,23 @@ public class LsThingState extends AbstractState {
     public static Collection<LsThingState> fromJsonArrayToLsThingStates(Reader json) {
         return new JSONDeserializer<List<LsThingState>>().use(null, ArrayList.class).use("values", LsThingState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
+
+	public static TypedQuery<LsThingState> findLsThingStatesByLsThingIDAndStateTypeKind(
+			Long lsThingId, String stateType, String stateKind) {
+		
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT lsts FROM LsThingState AS lsts " +
+		"JOIN lsts.lsThing lst " +
+		"WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+		"AND lst.id = :lsThingId ";
+		TypedQuery<LsThingState> q = em.createQuery(hsqlQuery, LsThingState.class);
+		q.setParameter("lsThingId", lsThingId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 }

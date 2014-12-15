@@ -18,12 +18,15 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.api.ApiExperimentController;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -37,6 +40,8 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(finders = { "findSubjectsByTreatmentGroups", "findSubjectsByLsTransactionEquals", "findSubjectsByCodeNameEquals" })
 @RooJson
 public class Subject extends AbstractThing {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Subject.class);
 	
 	//This direction: Subject is grandparent
 	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
@@ -172,9 +177,25 @@ public class Subject extends AbstractThing {
 		//return numberOfDeletedEntities;
 		return 0;
 	}
+	
+	@Transactional
+	public static void removeOrphans(Collection<Long> subjectIds) {
+		for (Long id: subjectIds) {
+			Subject subject = Subject.findSubject(id);
+			if (subject.getTreatmentGroups().isEmpty()) {
+				subject.remove();
+//				Subject.removeCascadeAware(id);
+			}
+		}
+	}
 
-
-
+	@Transactional
+	private static void removeCascadeAware(Long id) {
+		Subject subject = findSubject(id);
+        EntityManager em = Subject.entityManager();
+        subject.remove();
+		
+	}
 
 	public Subject() {
 		

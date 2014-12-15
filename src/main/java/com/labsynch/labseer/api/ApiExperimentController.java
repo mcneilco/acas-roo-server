@@ -419,6 +419,7 @@ public class ApiExperimentController {
 			return new ResponseEntity<String>(StateValueDTO.toJsonArray(stateValues), headers, HttpStatus.OK);
 		} else if(format != null && format.equalsIgnoreCase("codeTable")) {				
 			List<CodeTableDTO> codeTables = experimentValueService.convertToCodeTables(experimentValues);
+			codeTables = CodeTableDTO.sortCodeTables(codeTables);
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 		} else {
 			//default format is json
@@ -848,6 +849,35 @@ public class ApiExperimentController {
 //        experiment.remove();
 //        return new ResponseEntity<String>(headers, HttpStatus.OK);
 //    }
+	
+	@RequestMapping(value = "/seldelete/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> trueDeleteById(@PathVariable("id") Long id) {
+        Experiment experiment = Experiment.findExperiment(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (experiment == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        long startTime = new Date().getTime();
+        Experiment.removeExperimentFullCascade(id);
+		long endTime = new Date().getTime();
+		long totalTime = endTime - startTime;
+		logger.info("   total elapsed time: " + totalTime + " ms");
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/browser/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> softDeleteById(@PathVariable("id") Long id) {
+        Experiment experiment = Experiment.findExperiment(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (experiment == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experiment.setIgnored(true);
+        return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
+    }
 
 	@RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
     @ResponseBody
@@ -1196,33 +1226,12 @@ public class ApiExperimentController {
     @ResponseBody
     @Transactional
     public ResponseEntity<java.lang.String> listJsonByProtocol(@RequestParam Map<String,String> requestParams) {
-    	//Search parameters supported: protocolKind, protocolType, protocolName, protocolCodeName
+    	//Filter parameters supported: type, kind, name, codeName, protocolKind, protocolType, protocolName, protocolCodeName
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         Set<Experiment> result = new HashSet<Experiment>();
-        if (requestParams.isEmpty()) {
-        	result.addAll(Experiment.findAllExperiments());
-        	return new ResponseEntity<String>(Experiment.toJsonArrayStub(result), headers, HttpStatus.OK);
-        }
-
-        Set<Experiment> resultByProtocolKind = new HashSet<Experiment>();
-        Set<Experiment> resultByProtocolType = new HashSet<Experiment>();
-        Set<Experiment> resultByProtocolName = new HashSet<Experiment>();
-        Set<Experiment> resultByProtocolCodeName = new HashSet<Experiment>();
-        if (requestParams.containsKey("protocolKind"))resultByProtocolKind.addAll(experimentService.findExperimentsByMetadata(requestParams.get("protocolKind"), "PROTOCOL KIND"));
-        if (requestParams.containsKey("protocolType")) resultByProtocolType.addAll(experimentService.findExperimentsByMetadata(requestParams.get("protocolType"), "PROTOCOL TYPE"));
-        if (requestParams.containsKey("protocolName")) resultByProtocolName.addAll(experimentService.findExperimentsByMetadata(requestParams.get("protocolName"), "PROTOCOL NAME"));
-        if (requestParams.containsKey("protocolCodeName")) resultByProtocolCodeName.addAll(experimentService.findExperimentsByMetadata(requestParams.get("protocolCodeName"), "PROTOCOL CODE"));
-
-        result.addAll(resultByProtocolKind);
-        result.addAll(resultByProtocolType);
-        result.addAll(resultByProtocolName);
-        result.addAll(resultByProtocolCodeName);
         
-        if (requestParams.containsKey("protocolKind")) result.retainAll(resultByProtocolKind);
-        if (requestParams.containsKey("protocolType")) result.retainAll(resultByProtocolType);
-        if (requestParams.containsKey("protocolName")) result.retainAll(resultByProtocolName);
-        if (requestParams.containsKey("protocolCodeName")) result.retainAll(resultByProtocolCodeName);
+        result = experimentService.findExperimentsByRequestMetadata(requestParams);
         
         return new ResponseEntity<String>(Experiment.toJsonArrayStub(result), headers, HttpStatus.OK);
     }
@@ -1289,7 +1298,7 @@ public class ApiExperimentController {
 //            logger.info("deleted number of AnalysisGroup: " + ag4);
 //            return new ResponseEntity<String>(headers, HttpStatus.OK);
         } else {
-            logger.info("deleting entire experiment: " + id);
+            logger.info("deleting the experiment: " + id);
             //logger.info("BCF changes are in action");
 //            ItxSubjectContainerValue.deleteByExperimentID(id);
 //            ItxSubjectContainerState.deleteByExperimentID(id);
@@ -1320,7 +1329,7 @@ public class ApiExperimentController {
 //            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
 //            logger.info("deleted number of AnalysisGroup: " + ag4);
             experiment.logicalDelete();
-            if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored()) {
+            if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored() ||experimentService.isSoftDeleted(Experiment.findExperiment(id))) {
                 logger.info("Did not find the experiment after delete");
                 return new ResponseEntity<String>(headers, HttpStatus.OK);
             } else {
@@ -1392,7 +1401,7 @@ public class ApiExperimentController {
         String experimentName = restOfTheUrl.split("experimentname\\/")[1].replaceAll("/$", "");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentByExperimentName(experimentName)), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName)), headers, HttpStatus.OK);
     }
 
     @Transactional
@@ -1404,9 +1413,15 @@ public class ApiExperimentController {
         logger.debug("incoming experiment name is " + experimentName);
         List<Experiment> experiments;
         if (protocolId != null && protocolId != 0) {
-            experiments = Experiment.findExperimentByExperimentNameAndProtocolId(experimentName, protocolId);
+            experiments = Experiment.findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(experimentName, protocolId);
+//            for (Experiment experiment: experiments){
+//    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
+//    		}
         } else {
             experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
+//            for (Experiment experiment: experiments){
+//    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
+//    		}
         }
         if (with != null) {
             logger.debug("incoming with param is " + with);
@@ -1430,13 +1445,13 @@ public class ApiExperimentController {
     @RequestMapping(params = "FindByName", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindExperimentByNameGet(@RequestParam("name") String name, @RequestParam(value = "with", required = false) String with, @RequestParam(value = "protocolId", required = false) Long protocolId) {
-        HttpHeaders headers = new HttpHeaders();
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<Experiment> experiments;
         if (protocolId != null && protocolId != 0) {
-            experiments = Experiment.findExperimentByExperimentNameAndProtocolId(name, protocolId);
+            experiments = Experiment.findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(name, protocolId);
         } else {
-            experiments = Experiment.findExperimentByExperimentName(name);
+            experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(name);
         }
         if (with != null) {
             if (with.equalsIgnoreCase("analysisgroups")) {
@@ -1455,7 +1470,7 @@ public class ApiExperimentController {
         }
     }
 
-
+    
 
     @Transactional
     @RequestMapping(value = "/protocol/{codeName}", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -1474,6 +1489,7 @@ public class ApiExperimentController {
             return new ResponseEntity<String>("[ ]", headers, HttpStatus.NOT_FOUND);
         }
     }
+
     
     @RequestMapping(value = "/search")
 	@ResponseBody
@@ -1482,4 +1498,19 @@ public class ApiExperimentController {
 		headers.add("Content-Type", "application/json");
 		return new ResponseEntity<String>(Experiment.toJsonArray(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
 	}
+    
+    @RequestMapping(params = "find=ByMetadata", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<java.lang.String> listJsonByMetadata(@RequestParam Map<String,String> requestParams) {
+//example url: http://localhost:8080/acas/api/v1/experiments?protocolName=PAMPA%20Buffer%20A&protocolType=default&protocolKind=default&protocolCodeName=PROT-00000001&name=Buffer%20A%20Test01&type=default&kind=default&codeName=EXPT-00000001
+    	//Filter parameters supported: type, kind, name, codeName
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        Set<Experiment> result = new HashSet<Experiment>();
+        
+        result = experimentService.findExperimentsByRequestMetadata(requestParams);
+        
+        return new ResponseEntity<String>(Experiment.toJsonArrayStub(result), headers, HttpStatus.OK);
+    }
 }

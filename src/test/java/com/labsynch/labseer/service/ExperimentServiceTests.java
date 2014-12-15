@@ -5,8 +5,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -57,6 +59,9 @@ public class ExperimentServiceTests {
 
 	@Autowired
 	private ExperimentService experimentService;
+	
+	@Autowired
+	private ExperimentValueService experimentValueService;
 
 	// @Test
 	@Transactional
@@ -514,5 +519,97 @@ public class ExperimentServiceTests {
 		String experimentName = "Test Experiment Brian";
 		List<Experiment> check1 = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
 		Assert.assertEquals(0, check1.size());
+	}
+	
+	@Transactional
+	@Test
+	public void experimentBrowserFilterTest() {
+		String protocolName = "PAMPA Buffer A";
+		String protocolCodeName = "PROT-00000001";
+		String protocolType = "default";
+		String protocolKind = "default";
+		String name = "Buffer A Test01";
+		String codeName = "EXPT-00000001";
+		String type = "default";
+		String kind = "default";
+		
+		Map<String, String> requestParams = new HashMap<String, String>();
+		requestParams.put("protocolName", protocolName);
+		
+		Set<Experiment> experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, experiments.size());
+		experiments.clear();
+		
+		requestParams.put("protocolCodeName", protocolCodeName);
+		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, experiments.size());
+		experiments.clear();
+		
+		requestParams.put("protocolType", protocolType);
+		requestParams.put("protocolKind", protocolKind);
+		
+		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, experiments.size());
+		experiments.clear();
+		
+		requestParams.remove("protocolName");
+		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, experiments.size());
+		
+		requestParams.clear();
+		
+		requestParams.put("name", name);
+		
+		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, experiments.size());
+		experiments.clear();
+		
+		requestParams.put("codeName", codeName);
+		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, experiments.size());
+		experiments.clear();
+		
+		requestParams.put("type", type);
+		requestParams.put("kind", kind);
+		
+		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, experiments.size());
+		experiments.clear();
+		
+		requestParams.remove("name");
+		experiments = experimentService.findExperimentsByRequestMetadata(requestParams);
+		Assert.assertEquals(1, experiments.size());
+	}
+	
+	@Test
+	public void softDeletedTest() {
+		Long id = 14L;
+		Experiment experiment = Experiment.findExperiment(id);
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+
+	}
+	
+	@Test
+	@Transactional
+	public void softDeletedTest2() {
+		Long id = 14L;
+		Experiment experiment = Experiment.findExperiment(id);
+		List<Experiment> experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot("Expt On1");
+		for (Experiment e: experiments){
+			if (e.isIgnored() || experimentService.isSoftDeleted(e)) experiments.remove(e);
+		}
+		logger.debug(experiments.toString());
+		experiment.logicalDelete();
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+		Assert.assertTrue(experiment.isIgnored());
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+
 	}
 }

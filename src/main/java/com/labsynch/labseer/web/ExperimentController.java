@@ -657,7 +657,7 @@ public class ExperimentController {
         String experimentName = restOfTheUrl.split("experimentname\\/")[1].replaceAll("/$", "");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentByExperimentName(experimentName)), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Experiment.toJsonArrayStub(Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName)), headers, HttpStatus.OK);
     }
 
     @Transactional
@@ -670,9 +670,14 @@ public class ExperimentController {
         List<Experiment> experiments;
         if (protocolId != null && protocolId != 0) {
             experiments = Experiment.findExperimentByExperimentNameAndProtocolId(experimentName, protocolId);
+            for (Experiment experiment: experiments){
+    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
+    		}
         } else {
-        	//TODO make new finder that returns list of experiments and respects ignore flag
             experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
+            for (Experiment experiment: experiments){
+    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
+    		}
         }
         if (with != null) {
             logger.debug("incoming with param is " + with);
@@ -702,7 +707,7 @@ public class ExperimentController {
         if (protocolId != null && protocolId != 0) {
             experiments = Experiment.findExperimentByExperimentNameAndProtocolId(name, protocolId);
         } else {
-            experiments = Experiment.findExperimentByExperimentName(name);
+            experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(name);
         }
         if (with != null) {
             if (with.equalsIgnoreCase("analysisgroups")) {

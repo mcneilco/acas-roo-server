@@ -11,6 +11,8 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
+import junit.framework.Assert;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -21,11 +23,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
@@ -175,7 +179,7 @@ public class SubjectValueServiceTest {
 	@Test
 	@Transactional
 	public void QuerySubjectValueByExpIdAndStateTypeKindWithCodeName() {
-		String experimentCodeName = "EXPT-00000004";
+		String experimentCodeName = "EXPT-00000152";
 		String stateType = "data";
 		String stateKind = "test compound treatment";
 		Experiment experiment = null;
@@ -214,9 +218,32 @@ public class SubjectValueServiceTest {
 	@Test
 	@Transactional
 	public void SubjectValuesToCsv() {
-		List<SubjectValue> subjectValues = subjectValueService.getSubjectValuesBySubjectId(17l);
+		List<SubjectValue> subjectValues = subjectValueService.getSubjectValuesBySubjectId(685408L);
 		String csvString = subjectValueService.getCsvList(subjectValues);
 		assert(csvString != null && csvString.compareTo("") != 0);
 		logger.info(csvString);
+	}
+	
+	@Test
+	@Transactional
+	public void SubjectValuesToCsvForCurveFit() {
+		List<SubjectValue> subjectValues = subjectValueService.getSubjectValuesByExperimentIdAndStateTypeKindAndValueTypeKind(54375L, "data", "results", "numericValue", "Response");
+		String csvString = subjectValueService.getCsvList(subjectValues);
+		Assert.assertNotNull(csvString);
+		logger.info(csvString);
+	}
+	
+	@Test
+	@Transactional
+	public void updateSubjectValueTest() {
+		String idOrCodeName = "155";
+		String stateType = "data";
+		String stateKind = "results";
+		String valueType = "stringValue";
+		String valueKind = "status";
+		String value = "Deleted";
+		SubjectValue subjectValue = subjectValueService.updateSubjectValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(subjectValue);
+		logger.info(subjectValue.toJson());
 	}
 }

@@ -5,7 +5,10 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -35,9 +38,13 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.service.ProtocolService;
+import com.labsynch.labseer.service.ProtocolValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @RooWebJson(jsonObject = Protocol.class)
@@ -52,6 +59,9 @@ public class ApiProtocolController {
 
     @Autowired
     private ProtocolService protocolService;
+    
+    @Autowired
+    private ProtocolValueService protocolValueService;
 
     @Autowired
     private PropertiesUtilService propertiesUtilService;
@@ -156,15 +166,19 @@ public class ApiProtocolController {
     		@RequestParam(value = "with", required = false) String with, 
     		@RequestParam(value = "prettyjson", required = false) String prettyjson, 
     		@RequestParam(value = "lstype", required = false) String lsType, 
-    		@RequestParam(value = "lskind", required = false) String lsKind) {
+    		@RequestParam(value = "lskind", required = false) String lsKind, 
+    		@RequestParam(value = "protocolName", required = false) String protocolName) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<CodeTableDTO> result;
         if (lsKind != null) {
             result = Protocol.getProtocolCodeTableByKindEquals(lsKind);
-        } else {
+        } else if (protocolName != null) {
+        	result = Protocol.getProtocolCodeTableByNameLike(protocolName);
+        }else {
             result = Protocol.getProtocolCodeTable();
         }
+        result = CodeTableDTO.sortCodeTables(result);
         return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
     }
 
@@ -235,6 +249,18 @@ public class ApiProtocolController {
         }
         protocol.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/browser/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> softDeleteById(@PathVariable("id") Long id) {
+        Protocol protocol = Protocol.findProtocol(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (protocol == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        ProtocolValue protocolValue = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "stringValue", "status", "Deleted");
+		return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
     }
 
     @Transactional
@@ -435,6 +461,21 @@ public class ApiProtocolController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+	
+    @RequestMapping(params = "find=ByMetadata", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    @Transactional
+    public ResponseEntity<java.lang.String> listJsonByMetadata(@RequestParam Map<String,String> requestParams) {
+//example url: http://localhost:8080/acas/api/v1/protocols/?find=ByMetadata&name=Target%20Y&codeName=PROT-00000004&type=default&kind=default
+    	//Filter parameters supported: type, kind, name, codeName
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        Set<Protocol> result = new HashSet<Protocol>();
+        
+        result = protocolService.findProtocolsByRequestMetadata(requestParams);
+        
+        return new ResponseEntity<String>(Protocol.toJsonArrayStub(result), headers, HttpStatus.OK);
     }
 	
 	@RequestMapping(value = "/search")

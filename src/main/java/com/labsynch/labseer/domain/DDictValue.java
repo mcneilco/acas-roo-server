@@ -1,9 +1,11 @@
 package com.labsynch.labseer.domain;
 
+import com.labsynch.labseer.dto.CodeTableDTO;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -15,7 +17,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import org.hibernate.annotations.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,16 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
-import com.labsynch.labseer.dto.CodeTableDTO;
-
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
-
 @Entity
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "DDICT_VALUE_PKSEQ", finders = { "findDDictValuesByCodeNameEquals", "findDDictValuesByLsTypeEqualsAndLsKindEquals", "findDDictValuesByLsTypeEquals", "findDDictValuesByLsKindEquals", "findDDictValuesByIgnoredNot" })
+@RooJpaActiveRecord(sequenceName = "DDICT_VALUE_PKSEQ", finders = { "findDDictValuesByCodeNameEquals", "findDDictValuesByLsTypeEqualsAndLsKindEquals", "findDDictValuesByLsTypeEquals", "findDDictValuesByLsKindEquals", "findDDictValuesByIgnoredNot", "findDDictValuesByLabelTextLike" })
 public class DDictValue {
 
     private static final Logger logger = LoggerFactory.getLogger(DDictValue.class);
@@ -58,7 +54,7 @@ public class DDictValue {
     @Size(max = 256)
     @Index(name = "DD_VALUE_SNAME_IDX")
     private String shortName;
-    
+
     @NotNull
     @Size(max = 512)
     private String labelText;
@@ -70,7 +66,7 @@ public class DDictValue {
     private String comments;
 
     @NotNull
-	private boolean ignored;
+    private boolean ignored;
 
     private Integer displayOrder;
 
@@ -115,9 +111,9 @@ public class DDictValue {
     public void setCodeName(String codeName) {
         this.codeName = codeName;
     }
-    
-    public boolean getIgnored(){
-    	return this.ignored;
+
+    public boolean getIgnored() {
+        return this.ignored;
     }
 
     public static final EntityManager entityManager() {
@@ -198,68 +194,43 @@ public class DDictValue {
         return new JSONDeserializer<List<DDictValue>>().use(null, ArrayList.class).use("values", DDictValue.class).deserialize(json);
     }
 
-    public static List<CodeTableDTO> getDDictValueCodeTableByKindEquals(String lsKind) {
-		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
-		for (DDictValue val : DDictValue.findDDictValuesByLsKindEquals(lsKind).getResultList()) {
-			if (!val.ignored) {
-				CodeTableDTO codeTable = new CodeTableDTO();
-				codeTable.setName(val.labelText);
-				codeTable.setCode(val.getShortName());
-				codeTable.setIgnored(val.ignored);
-				codeTable.setDisplayOrder(val.displayOrder);
-				codeTableList.add(codeTable);
-			}
-		}
-		return codeTableList;
-	}
+    public static List<com.labsynch.labseer.dto.CodeTableDTO> getDDictValueCodeTableByKindEquals(String lsKind) {
+        List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
+        for (DDictValue val : DDictValue.findDDictValuesByLsKindEquals(lsKind).getResultList()) {
+            if (!val.ignored) {
+                CodeTableDTO codeTable = new CodeTableDTO();
+                codeTable.setName(val.labelText);
+                codeTable.setCode(val.getShortName());
+                codeTable.setIgnored(val.ignored);
+                codeTable.setDisplayOrder(val.displayOrder);
+                codeTableList.add(codeTable);
+            }
+        }
+        return codeTableList;
+    }
 
-	@Transactional
-	public static List<com.labsynch.labseer.dto.CodeTableDTO> getDDictCodeTable() {
-		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
-		List<DDictValue> dDicts = DDictValue.findDDictValuesByIgnoredNot(true).getResultList();
-		for (DDictValue val : dDicts) {
-			CodeTableDTO codeTable = new CodeTableDTO();
-			codeTable.setName(val.labelText);
-			codeTable.setCode(val.getShortName());
-			codeTable.setIgnored(val.ignored);
-			codeTable.setDisplayOrder(val.displayOrder);
-			codeTableList.add(codeTable);
-		}
-		return codeTableList;
-	}
-	
-	public static String[] getColumns(){
-		String[] headerColumns = new String[] {
-				"id", 
-				"codeName",
-				"shortName",
-				"lsType",
-				"lsKind",
-				"labelText",
-				"description",
-				"comments",
-				"ignored",
-				"displayOrder"};
-		
-		return headerColumns;
+    @Transactional
+    public static List<com.labsynch.labseer.dto.CodeTableDTO> getDDictCodeTable() {
+        List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
+        List<DDictValue> dDicts = DDictValue.findDDictValuesByIgnoredNot(true).getResultList();
+        for (DDictValue val : dDicts) {
+            CodeTableDTO codeTable = new CodeTableDTO();
+            codeTable.setName(val.labelText);
+            codeTable.setCode(val.getShortName());
+            codeTable.setIgnored(val.ignored);
+            codeTable.setDisplayOrder(val.displayOrder);
+            codeTableList.add(codeTable);
+        }
+        return codeTableList;
+    }
 
-	}
+    public static String[] getColumns() {
+        String[] headerColumns = new String[] { "id", "codeName", "shortName", "lsType", "lsKind", "labelText", "description", "comments", "ignored", "displayOrder" };
+        return headerColumns;
+    }
 
-	public static CellProcessor[] getProcessors() {
-		final CellProcessor[] processors = new CellProcessor[] { 
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional()
-		};
-
-		return processors;
-	}
-
+    public static CellProcessor[] getProcessors() {
+        final CellProcessor[] processors = new CellProcessor[] { new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional() };
+        return processors;
+    }
 }

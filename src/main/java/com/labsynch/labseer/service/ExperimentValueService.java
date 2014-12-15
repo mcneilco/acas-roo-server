@@ -30,5 +30,9 @@ public interface ExperimentValueService {
 
 	List<CodeTableDTO> convertToCodeTables(
 			List<ExperimentValue> experimentValues);
+
+	ExperimentValue updateExperimentValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind, String value);
 	
 }

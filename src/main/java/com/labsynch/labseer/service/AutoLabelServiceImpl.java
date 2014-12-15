@@ -22,6 +22,7 @@ import com.labsynch.labseer.domain.LsSeqItxSubjCntr;
 import com.labsynch.labseer.domain.LsSeqProtocol;
 import com.labsynch.labseer.domain.LsSeqSubject;
 import com.labsynch.labseer.domain.LsSeqTrtGrp;
+import com.labsynch.labseer.domain.LsSeqAnlGrp;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
 
@@ -245,7 +246,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
 		int counter = 0;
 		while (counter < numberOfLabels) {
-			LsSeqTrtGrp lsSeqObject = new LsSeqTrtGrp();
+			LsSeqAnlGrp lsSeqObject = new LsSeqAnlGrp();
 			lsSeqObject.persist();
 			Long labelNumber = lsSeqObject.getId();
 			String label = generateLabel(labelSequence, labelNumber); 

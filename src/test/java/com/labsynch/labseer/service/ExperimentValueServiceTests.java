@@ -5,6 +5,7 @@ package com.labsynch.labseer.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -202,5 +203,62 @@ public class ExperimentValueServiceTests {
 		assert(csvString != null && csvString.compareTo("") != 0);
 		logger.info(csvString);
 	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentValueTest() {
+		String idOrCodeName = "EXPT-00000001";
+		String stateType = "metadata";
+		String stateKind = "experiment metadata";
+		String valueType = "stringValue";
+		String valueKind = "status";
+		String value = "Created";
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(experimentValue);
+		logger.info(experimentValue.toJson());
+	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentValueTest2() {
+		String idOrCodeName = "EXPT-00000001";
+		String stateType = "metadata";
+		String stateKind = "experiment metadata";
+		String valueType = "clobValue";
+		String valueKind = "analysis result html";
+		String value = "<p>Upload completed.</p> <h4>Summary</h4><p>Information:</p> <ul> <li>Transaction Id: 1618</li><li>Format: Dose Response</li><li>Protocol: Dose Response Protocol</li><li>Experiment: John test 8-29-14a</li><li>Scientist: jam</li><li>Notebook: 911</li><li>Page: 12</li><li>Assay Date: 2012-11-07</li><li>Rows of Data: 17</li><li>Columns of Data: 7</li><li>Unique Corporate Batch ID's: 11</li><li>Raw Results Data Points: 1324</li><li>Flagged Data Points: 2</li><li>Experiment Code Name: EXPT-00000532</li> </ul><a href=/\"http://host4.labsynch.com:9080/seurat/runseurat?cmd=newjob&AssayName=Dose%20Response%20Protocol&AssayProtocol=EXPT-00000532%3a%3aJohn%20test%208-29-14a/\" target=/\"_blank/\" class=/\"btn/\">Open Seurat Report*</a> <a href=/\"mailto:?subject=Seurat Live Report for Dose Response Protocol: John test 8-29-14a&body=Click the following link to run Live Report: http%3a%2f%2fhost4.labsynch.com%3a9080%2fseurat%2frunseurat%3fcmd%3dnewjob%26AssayName%3dDose%2520Response%2520Protocol%26AssayProtocol%3dEXPT-00000532%253a%253aJohn%2520test%25208-29-14a/\" class=/\"btn/\">Email Link to Seurat Report</a> <p>*Note: there may be a delay before data is visible in Seurat</p>";
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(experimentValue);
+		logger.info(experimentValue.toJson());
+	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentValueTest3() {
+		String idOrCodeName = "EXPT-00000001";
+		String stateType = "metadata";
+		String stateKind = "experiment metadata";
+		String valueType = "codeValue";
+		String valueKind = "previous experiment code";
+		String value = "EXPT-00000009";
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(experimentValue);
+		logger.info(experimentValue.toJson());
+	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentValueTest4() {
+		String idOrCodeName = "EXPT-00000001";
+		String stateType = "metadata";
+		String stateKind = "experiment metadata";
+		String valueType = "dateValue";
+		String valueKind = "completion date";
+		String value = "1398322800000";
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(experimentValue);
+		logger.info(experimentValue.toJson());
+	}
+	
 	
 }

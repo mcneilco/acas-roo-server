@@ -2,23 +2,19 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
-
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
-
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -30,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot", "findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot", "findExperimentLabelsByExperiment", "findExperimentLabelsByLabelTextLike" })
+@RooJpaActiveRecord(finders = { "findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot", "findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot", "findExperimentLabelsByExperiment", "findExperimentLabelsByLabelTextLike", "findExperimentLabelsByExperimentAndIgnoredNot" })
 public class ExperimentLabel extends AbstractLabel {
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentLabel.class);
@@ -153,10 +149,10 @@ public class ExperimentLabel extends AbstractLabel {
         q.setParameter("protocolId", protocolId);
         return q;
     }
-    
+
     @Transactional
     public void logicalDelete() {
-    	if (!this.isIgnored()) this.setIgnored(true);
+        if (!this.isIgnored()) this.setIgnored(true);
     }
 
     public String toJson() {
