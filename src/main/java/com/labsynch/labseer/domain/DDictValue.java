@@ -1,11 +1,14 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.dto.CodeTableDTO;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -17,6 +20,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import org.hibernate.annotations.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +36,14 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "DDICT_VALUE_PKSEQ", finders = { "findDDictValuesByCodeNameEquals", "findDDictValuesByLsTypeEqualsAndLsKindEquals", "findDDictValuesByLsTypeEquals", "findDDictValuesByLsKindEquals", "findDDictValuesByIgnoredNot", "findDDictValuesByLabelTextLike" })
+@RooJpaActiveRecord(sequenceName = "DDICT_VALUE_PKSEQ", finders = { "findDDictValuesByCodeNameEquals", 
+		"findDDictValuesByLsTypeEqualsAndLsKindEquals", "findDDictValuesByLsTypeEquals", 
+		"findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals",
+		"findDDictValuesByLsKindEquals", "findDDictValuesByIgnoredNot", "findDDictValuesByLabelTextLike" })
 public class DDictValue {
 
     private static final Logger logger = LoggerFactory.getLogger(DDictValue.class);
-
+    
     @NotNull
     @Index(name = "DD_VALUE_TYPE_IDX")
     @Size(max = 255)
@@ -88,7 +95,30 @@ public class DDictValue {
     @PersistenceContext
     transient EntityManager entityManager;
 
-    public Long getId() {
+    public DDictValue() {
+	}
+    
+    public DDictValue(DDictValue dDict) {
+		this.lsType = dDict.getLsType();
+		this.lsKind = dDict.getLsKind();
+		this.shortName = dDict.getShortName();
+		this.labelText = dDict.getLabelText();
+		this.description = dDict.getDescription();
+		this.comments = dDict.getComments();
+		this.displayOrder = dDict.getDisplayOrder();
+		this.ignored = dDict.getIgnored();
+	}
+
+	public DDictValue(CodeTableDTO codeTableValue, String lsType, String lsKind) {
+		this.lsType = lsType;
+		this.lsKind = lsKind;
+		this.shortName = codeTableValue.getCode();
+		this.labelText = codeTableValue.getName();
+		this.displayOrder = codeTableValue.getDisplayOrder();
+		}
+
+
+	public Long getId() {
         return this.id;
     }
 
@@ -214,11 +244,7 @@ public class DDictValue {
         List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
         List<DDictValue> dDicts = DDictValue.findDDictValuesByIgnoredNot(true).getResultList();
         for (DDictValue val : dDicts) {
-            CodeTableDTO codeTable = new CodeTableDTO();
-            codeTable.setName(val.labelText);
-            codeTable.setCode(val.getShortName());
-            codeTable.setIgnored(val.ignored);
-            codeTable.setDisplayOrder(val.displayOrder);
+            CodeTableDTO codeTable = new CodeTableDTO(val);
             codeTableList.add(codeTable);
         }
         return codeTableList;
@@ -233,4 +259,33 @@ public class DDictValue {
         final CellProcessor[] processors = new CellProcessor[] { new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional() };
         return processors;
     }
+
+	public static boolean validate(DDictValue dDict) {
+		boolean validLsType = validateLsType(dDict.getLsType());
+		boolean validLsKind = validateLsKind(dDict.getLsType(), dDict.getLsKind());
+		if (validLsType && validLsKind){
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private static boolean validateLsKind(String lsType, String lsKind) {
+		int dDictKinds = DDictKind.findDDictKindsByLsTypeEqualsAndNameEquals(lsType, lsKind).getMaxResults();
+		if (dDictKinds == 1){
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+
+	private static boolean validateLsType(String lsType) {
+		int dDictTypes = DDictType.findDDictTypesByNameEquals(lsType).getMaxResults();
+		if (dDictTypes == 1){
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

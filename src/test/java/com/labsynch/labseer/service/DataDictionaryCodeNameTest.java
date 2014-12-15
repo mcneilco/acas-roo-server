@@ -44,7 +44,7 @@ public class DataDictionaryCodeNameTest {
 		theValue.setLsKind("random");
 		theValue.setLabelText("random");
 		theValue.setIgnored(false);
-		dataDictionaryService.saveDataDictionaryValue(theValue);
+		dataDictionaryService.saveDataDictionaryValue(theValue, true);
 		theValue.persist();
 	}
 

@@ -21,7 +21,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
-@Entity
+
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord(sequenceName = "INTERACTION_KIND_PKSEQ")
