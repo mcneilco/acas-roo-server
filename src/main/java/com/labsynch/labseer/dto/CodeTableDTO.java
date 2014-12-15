@@ -24,12 +24,15 @@ public class CodeTableDTO {
 		this.setName(dDictVal.getLabelText());
 		this.setIgnored(dDictVal.isIgnored());
 		this.setDisplayOrder(dDictVal.getDisplayOrder());
+		this.setDescription(dDictVal.getDescription());
+		this.setComments(dDictVal.getComments());
 	}
 
 	private String code;
 
-	private String codeName;  //code and codeName should be the same. Prefer to use codeName but older client code may be using code.
-	//some classes use code, some use codeName
+//	private String codeName;  //code and codeName should be the same. Prefer to use codeName but older client code may be using code.
+//	//some classes use code, some use codeName
+
 	private String name;
 	
 	private boolean ignored;
@@ -37,6 +40,11 @@ public class CodeTableDTO {
 	private Integer displayOrder;
 	
 	private Long id;
+	
+	private String description;
+
+	private String comments;
+
 
 	
 	public static List<CodeTableDTO> sortCodeTables(List<CodeTableDTO> list){

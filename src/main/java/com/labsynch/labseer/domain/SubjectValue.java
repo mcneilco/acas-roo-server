@@ -35,7 +35,7 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@Entity
+
 @RooJavaBean
 @RooToString(excludeFields = { "lsState" })
 @RooJson

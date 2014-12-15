@@ -280,7 +280,6 @@ public class ExperimentServiceTests2 {
 			CodeTableDTO ct = new CodeTableDTO();
 			ct.setCode(code);
 			ct.setName(code);
-			ct.setCodeName(code);
 			codeTables.add(ct);
 		}
 

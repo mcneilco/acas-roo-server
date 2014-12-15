@@ -3,6 +3,7 @@
  */
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Test;
@@ -44,11 +45,11 @@ public class DataDictionaryCodeNameTest {
 		theValue.setLsKind("random");
 		theValue.setLabelText("random");
 		theValue.setIgnored(false);
-		dataDictionaryService.saveDataDictionaryValue(theValue);
+		dataDictionaryService.saveDataDictionaryValue(theValue, true);
 		theValue.persist();
 	}
 
-	@Test
+//	@Test
 	public void getValues() {
 		List<DDictValue> dDictValues = DDictValue.findAllDDictValues();
 		logger.info("---------------------" + DDictValue.toJsonArray(dDictValues));
@@ -59,9 +60,16 @@ public class DataDictionaryCodeNameTest {
 	}
 
 	@Test
-	public void createSequence() {
+	public void saveValues() {
+		String json = "[{\"shortName\":\"biochemical\",\"comments\":\"\",\"description\":\"\",\"displayOrder\":1,\"ignored\":false,\"labelText\":\"Biochemical\",\"lsKind\":\"type\",\"lsType\":\"assay\"},{\"shortName\":\"cellular\",\"comments\":\"\",\"description\":\"\",\"displayOrder\":2,\"ignored\":false,\"labelText\":\"Cellular\",\"lsKind\":\"type\",\"lsType\":\"assay\"}]";
 
+		Collection<DDictValue> dDictValues = DDictValue.fromJsonArrayToDDictValues(json);
+		Boolean createTypeAndKind = true;
+		Collection<DDictValue> output = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeAndKind);
+		
+		logger.info(DDictValue.toJsonArray(output));
 
 	}
 
+	
 }

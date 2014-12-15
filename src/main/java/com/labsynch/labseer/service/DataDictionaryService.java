@@ -11,7 +11,8 @@ import com.labsynch.labseer.dto.CodeTableDTO;
 @Service
 public interface DataDictionaryService {
 	
-	public DDictValue saveDataDictionaryValue(DDictValue dDict);
+	
+	public DDictValue saveDataDictionaryValue(DDictValue dDict, Boolean createTypeAndKind);
 
 	public List<CodeTableDTO> getDataDictionaryCodeTableListByTypeKind(String lsType, String lsKind);
 	
@@ -23,16 +24,19 @@ public interface DataDictionaryService {
 
 	public List<CodeTableDTO> convertToCodeTables(List<DDictValue> dDictResults);
 
-	public CodeTableDTO saveCodeTableValue(String lsType, String lsKind, String json);
-
-	public Collection<CodeTableDTO> saveCodeTableValueArray(String lsType, String lsKind, String json);
-
-	public CodeTableDTO saveCodeTableValue(String lsType, String lsKind, CodeTableDTO codeTableValue);
-
-	public CodeTableDTO updateCodeTableValue(String lsType, String lsKind, String json);
+	public CodeTableDTO saveCodeTableValue(String lsType, String lsKind, CodeTableDTO codeTableValue, Boolean createTypeAndKind);
 
 	public CodeTableDTO updateCodeTableValue(String lsType, String lsKind, CodeTableDTO codeTableValue);
 
-	public Collection<CodeTableDTO> updateCodeTableValueArray(String lsType, String lsKind, String json);
+	public Collection<CodeTableDTO> saveCodeTableValueArray(String lsType,
+			String lsKind, List<CodeTableDTO> codeTableDTOs, Boolean createTypeAndKind);
+	
+	public Collection<DDictValue> saveDataDictionaryValues(Collection<DDictValue> dDictValues, Boolean createTypeAndKind);
+
+	public Collection<CodeTableDTO> updateCodeTableValueArray(String lsType,
+			String lsKind, List<CodeTableDTO> codeTableDTOs);
+
+
+
 
 }
