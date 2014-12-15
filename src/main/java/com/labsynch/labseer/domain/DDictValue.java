@@ -16,7 +16,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -239,7 +241,16 @@ public class DDictValue {
         return codeTableList;
     }
 
-    @Transactional
+	
+    public static TypedQuery<DDictValue> findDDictValuesByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.lsKind = :lsKind", DDictValue.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	@Transactional
     public static List<com.labsynch.labseer.dto.CodeTableDTO> getDDictCodeTable() {
         List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
         List<DDictValue> dDicts = DDictValue.findDDictValuesByIgnoredNot(true).getResultList();
@@ -275,6 +286,7 @@ public class DDictValue {
 		if (dDictKinds == 1){
 			return true;
 		} else {
+			logger.error("Did not validate the DDictKind");
 			return false;
 		}
 	}
@@ -285,6 +297,7 @@ public class DDictValue {
 		if (dDictTypes == 1){
 			return true;
 		} else {
+			logger.error("Did not validate the DDictType");
 			return false;
 		}
 	}

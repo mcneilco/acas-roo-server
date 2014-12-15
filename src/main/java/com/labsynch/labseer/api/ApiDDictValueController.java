@@ -178,7 +178,10 @@ public class ApiDDictValueController {
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
-		if (createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
+		logger.info("incoming createTypeKindString " + createTypeKindString);
+		if (createTypeKindString.equalsIgnoreCase("true")){
+			createTypeKind = true;
+		}
 		Collection<DDictValue> savedDDictValues = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");

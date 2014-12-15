@@ -44,12 +44,14 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 			}
 			dDictVal = new DDictValue(dDict);
 			dDictVal.setCodeName(autoLabelService.getDataDictionaryCodeName());
-			if (DDictValue.validate(dDict)){
-				dDictVal.persist();						
-			} else {
-				logger.error("ERROR: invalid dDictVal." + dDictVal.toJson());
-				dDictVal = null;
-			}
+			dDictVal.persist();						
+
+//			if (DDictValue.validate(dDict)){
+//				dDictVal.persist();						
+//			} else {
+//				logger.error("ERROR: invalid dDictVal." + dDictVal.toJson());
+//				dDictVal = null;
+//			}
 		} else if (dDictVals.size() == 1){
 			dDictVal = dDictVals.get(0); 
 		} else {
