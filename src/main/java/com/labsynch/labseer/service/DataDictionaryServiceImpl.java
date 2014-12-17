@@ -3,7 +3,6 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,9 +35,11 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		logger.debug("here is the incoming ddict value: " + dDict.toJson());
 		List<DDictValue> dDictVals = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(dDict.getLsType(), dDict.getLsKind(), dDict.getShortName()).getResultList();
 		DDictValue dDictVal ;
-		
+		logger.debug("found the dDictVals size = " + dDictVals.size());
+		logger.debug("boolean flag = " + createTypeAndKind);
 		if (dDictVals.size() == 0){
 			if (createTypeAndKind){
+				logger.info("attemp to create type and kind");
 				getOrCreateDDictType(dDict.getLsType());
 				getOrCreateDDictKind(dDict.getLsType(), dDict.getLsKind());
 			}
@@ -64,7 +65,9 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	
 
 	private void getOrCreateDDictKind(String lsType, String lsKind) {
-		int dDictKindsSize = DDictKind.findDDictKindsByLsTypeEqualsAndNameEquals(lsType, lsKind).getMaxResults();
+		List<DDictKind> dDictKinds = DDictKind.findDDictKindsByLsTypeEqualsAndNameEquals(lsType, lsKind).getResultList();
+		int dDictKindsSize = dDictKinds.size();
+		logger.debug("the dDictKindsSize is  " + dDictKindsSize);
 		if (dDictKindsSize == 0){
 			DDictKind dDictKind = new DDictKind();
 			dDictKind.setLsType(lsType);
@@ -76,7 +79,10 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 
 
 	private void getOrCreateDDictType(String lsType) {
-		int dDictTypesSize = DDictType.findDDictTypesByNameEquals(lsType).getMaxResults();
+		List<DDictType> dDictTypes = DDictType.findDDictTypesByNameEquals(lsType).getResultList();
+		int dDictTypesSize = dDictTypes.size();
+		logger.debug("the dDictTypesSize is  " + dDictTypesSize);
+
 		if (dDictTypesSize == 0){
 			DDictType newDDictType = new DDictType();
 			newDDictType.setName(lsType);
@@ -86,7 +92,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	}
 	
 	@Override
-	public Collection<DDictValue> saveDataDictionaryValues(Collection<DDictValue> dDictValues, Boolean createTypeAndKind) {
+	public List<DDictValue> saveDataDictionaryValues(List<DDictValue> dDictValues, Boolean createTypeAndKind) {
 		List<DDictValue> newDDictValues = new ArrayList<DDictValue>();
 		for (DDictValue dDictVal : dDictValues){
 			DDictValue newDDictVal = saveDataDictionaryValue(dDictVal, createTypeAndKind);
@@ -175,13 +181,14 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 
 
 	@Override
-	public CodeTableDTO saveCodeTableValue(String lsType, String lsKind, CodeTableDTO codeTableValue, Boolean createTypeAndKind) {
-		List<DDictValue> dDictVals = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, codeTableValue.getCode()).getResultList();
-		
+	public CodeTableDTO saveCodeTableValue(CodeTableDTO codeTableValue, Boolean createTypeAndKind) {
+		List<DDictValue> dDictVals = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(codeTableValue.getCodeType(), codeTableValue.getCodeKind(), codeTableValue.getCode()).getResultList();
+		logger.info("attempting to save codeTable = " + codeTableValue.toJson());
 		DDictValue dDictVal ;
 		if (dDictVals.size() == 0){
-			dDictVal = new DDictValue(codeTableValue, lsType, lsKind);
+			dDictVal = new DDictValue(codeTableValue);
 			dDictVal = saveDataDictionaryValue(dDictVal, createTypeAndKind);
+			logger.info("saved the codeTable: " + dDictVal.toJson());
 		} else {
 			dDictVal = null;
 			logger.error("ERROR: found exisiting DDictValue entries: " + DDictValue.toJsonArray(dDictVals));
@@ -195,10 +202,10 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	}
 	
 	@Override
-	public Collection<CodeTableDTO> saveCodeTableValueArray(String lsType, String lsKind, List<CodeTableDTO> codeTableDTOs, Boolean createTypeAndKind) {
+	public List<CodeTableDTO> saveCodeTableValueArray(List<CodeTableDTO> codeTableDTOs, Boolean createTypeAndKind) {
 		List<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
 		for (CodeTableDTO codeTableDTO : codeTableDTOs){
-			CodeTableDTO codeTable = saveCodeTableValue(lsKind, lsKind, codeTableDTO, createTypeAndKind);
+			CodeTableDTO codeTable = saveCodeTableValue(codeTableDTO, createTypeAndKind);
 			if (codeTable != null){
 				codeTables.add(codeTable);
 			}
@@ -210,7 +217,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	
 
 	@Override
-	public CodeTableDTO updateCodeTableValue(String lsType, String lsKind, CodeTableDTO codeTableValue) {	
+	public CodeTableDTO updateCodeTableValue(CodeTableDTO codeTableValue) {	
 		DDictValue oldDDictValue = DDictValue.findDDictValue(codeTableValue.getId());
 		if (oldDDictValue == null){
 			return null;
@@ -224,10 +231,10 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 
 
 	@Override
-	public Collection<CodeTableDTO> updateCodeTableValueArray(String lsType, String lsKind, List<CodeTableDTO> codeTableDTOs) {
+	public List<CodeTableDTO> updateCodeTableValueArray(List<CodeTableDTO> codeTableDTOs) {
 		List<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
 		for (CodeTableDTO codeTableDTO : codeTableDTOs){
-			CodeTableDTO codeTable = updateCodeTableValue(lsKind, lsKind, codeTableDTO);
+			CodeTableDTO codeTable = updateCodeTableValue(codeTableDTO);
 			if (codeTable != null){
 				codeTables.add(codeTable);
 			}
@@ -235,10 +242,6 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		
 		return codeTables;
 	}
-
-
-
-
 
 
 }
