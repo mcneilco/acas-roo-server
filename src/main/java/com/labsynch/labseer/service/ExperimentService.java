@@ -15,6 +15,7 @@ import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
+import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
@@ -40,6 +41,9 @@ public interface ExperimentService {
 			Collection<String> codeValues);
 
 	public Collection<Experiment> findExperimentsByMetadataJson(String json);
+	
+	public Collection<Experiment> findExperimentsByMetadataJson(
+			List<StringCollectionDTO> metaDataList);
 	
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query);
 

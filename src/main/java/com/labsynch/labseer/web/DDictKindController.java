@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RooWebJson(jsonObject = DDictKind.class)
 public class DDictKindController {
 
-    void populateEditForm(Model uiModel, DDictKind DDictKind_) {
-        uiModel.addAttribute("DDictKind_", DDictKind_);
-        uiModel.addAttribute("ddicttypes", DDictType.findAllDDictTypes());
-    }
+//    void populateEditForm(Model uiModel, DDictKind DDictKind_) {
+//        uiModel.addAttribute("DDictKind_", DDictKind_);
+//        uiModel.addAttribute("ddicttypes", DDictType.findAllDDictTypes());
+//    }
 }

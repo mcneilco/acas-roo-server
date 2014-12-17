@@ -161,7 +161,7 @@ public class ApiDDictValueController {
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
-		if (createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
 		dDictValue = dataDictionaryService.saveDataDictionaryValue(dDictValue, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
@@ -174,12 +174,12 @@ public class ApiDDictValueController {
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJsonArray(
-			@RequestBody Collection<DDictValue> dDictValues,
+			@RequestBody List<DDictValue> dDictValues,
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
 		logger.info("incoming createTypeKindString " + createTypeKindString);
-		if (createTypeKindString.equalsIgnoreCase("true")){
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")){
 			createTypeKind = true;
 		}
 		Collection<DDictValue> savedDDictValues = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeKind);
@@ -197,7 +197,7 @@ public class ApiDDictValueController {
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
-		if (createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
 		
 		CodeTableDTO codeTableValue = dataDictionaryService.saveCodeTableValue(lsType, lsKind, codeTableDTO, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
@@ -216,7 +216,7 @@ public class ApiDDictValueController {
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
-		if (createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
 		
 		Collection<CodeTableDTO> savedCodeTableValues = dataDictionaryService.saveCodeTableValueArray(lsType, lsKind, codeTableDTOs, createTypeKind);
 
@@ -269,11 +269,11 @@ public class ApiDDictValueController {
 	}
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-	public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
+	public ResponseEntity<String> updateFromJsonArray(@RequestBody List<DDictValue> dDictValues) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		Collection<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
-		for (DDictValue dDictValue: DDictValue.fromJsonArrayToDDictValues(json)) {
+		for (DDictValue dDictValue: dDictValues) {
 			if (dDictValue.merge() == null) {
 				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 			}

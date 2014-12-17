@@ -10,6 +10,8 @@ import com.labsynch.labseer.domain.Container;
 public interface ContainerService {
 
 	Container saveLsContainer(Container container);
+	
+	Collection<Container> saveLsContainers(Collection<Container> containers);
 
 	Container updateContainer(Container fromJsonToContainer);
 

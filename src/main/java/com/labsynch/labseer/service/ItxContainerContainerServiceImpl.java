@@ -103,4 +103,14 @@ public class ItxContainerContainerServiceImpl implements ItxContainerContainerSe
 		
 		return savedItxContainerContainers;
 	}
+
+	@Override
+	public Collection<ItxContainerContainer> saveLsItxContainers(
+			Collection<ItxContainerContainer> itxContainerContainers) {
+		Collection<ItxContainerContainer> savedItxContainerContainers = new ArrayList<ItxContainerContainer>();
+		for (ItxContainerContainer itxContainerContainer : itxContainerContainers){
+			savedItxContainerContainers.add(saveLsItxContainer(itxContainerContainer));
+		}
+		return savedItxContainerContainers;
+	}
 }

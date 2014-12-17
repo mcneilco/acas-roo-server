@@ -17,6 +17,8 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.UpdateLog;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -100,6 +102,38 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 			throw new Exception(e.toString());
 		}
 		return lst;
+	}
+
+	@Override
+	public ContainerState updateContainerState(ContainerState containerState) {
+		containerState.setVersion(ContainerState.findContainerState(containerState.getId()).getVersion());
+		containerState.merge();
+		return containerState;
+	}
+
+	@Override
+	public Collection<ContainerState> updateContainerStates(
+			Collection<ContainerState> containerStates) {
+		for (ContainerState containerState : containerStates){
+			containerState = updateContainerState(containerState);
+		}
+		return null;
+	}
+
+	@Override
+	public ContainerState saveContainerState(ContainerState containerState) {
+		containerState.setContainer(Container.findContainer(containerState.getContainer().getId()));		
+		containerState.persist();
+		return containerState;
+	}
+
+	@Override
+	public Collection<ContainerState> saveContainerStates(
+			Collection<ContainerState> containerStates) {
+		for (ContainerState containerState: containerStates) {
+			containerState = saveContainerState(containerState);
+		}
+		return containerStates;
 	}
 
 
