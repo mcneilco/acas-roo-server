@@ -111,12 +111,16 @@ public class DDictValue {
 		this.ignored = dDict.getIgnored();
 	}
 
-	public DDictValue(CodeTableDTO codeTableValue, String lsType, String lsKind) {
-		this.lsType = lsType;
-		this.lsKind = lsKind;
+	public DDictValue(CodeTableDTO codeTableValue) {
+		this.lsType = codeTableValue.getCodeType();
+		this.lsKind = codeTableValue.getCodeKind();
 		this.shortName = codeTableValue.getCode();
 		this.labelText = codeTableValue.getName();
-		this.displayOrder = codeTableValue.getDisplayOrder();
+		this.displayOrder = codeTableValue.getDisplayOrder();	
+		this.description = codeTableValue.getDescription();
+		this.comments = codeTableValue.getComments();
+		this.ignored = codeTableValue.isIgnored();
+		
 		}
 
 

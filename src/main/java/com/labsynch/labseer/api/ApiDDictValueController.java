@@ -1,7 +1,6 @@
 package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -161,7 +160,7 @@ public class ApiDDictValueController {
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
-		if (createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
 		dDictValue = dataDictionaryService.saveDataDictionaryValue(dDictValue, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
@@ -174,32 +173,34 @@ public class ApiDDictValueController {
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createFromJsonArray(
-			@RequestBody Collection<DDictValue> dDictValues,
+			@RequestBody List<DDictValue> dDictValues,
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
 		logger.info("incoming createTypeKindString " + createTypeKindString);
-		if (createTypeKindString.equalsIgnoreCase("true")){
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")){
 			createTypeKind = true;
 		}
-		Collection<DDictValue> savedDDictValues = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeKind);
+		List<DDictValue> savedDDictValues = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		return new ResponseEntity<String>(DDictValue.toJsonArray(savedDDictValues), headers, HttpStatus.CREATED);
 	}
 	
 	
-	@RequestMapping(value = "/codetable/{lsType}/{lsKind}", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/codetable", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createCodeTableFromJson(
 			@RequestBody CodeTableDTO codeTableDTO,
-			@PathVariable("lsType") String lsType, 
-			@PathVariable("lsKind") String lsKind,
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
-		if (createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
 		
-		CodeTableDTO codeTableValue = dataDictionaryService.saveCodeTableValue(lsType, lsKind, codeTableDTO, createTypeKind);
+		logger.info("incoming lsType: " + codeTableDTO.getCodeType());
+		logger.info("incoming lsKind: " + codeTableDTO.getCodeKind());
+		logger.info("incoming codeTableDTO: " + codeTableDTO.toJson());
+
+		CodeTableDTO codeTableValue = dataDictionaryService.saveCodeTableValue(codeTableDTO, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		if (codeTableValue == null){
@@ -209,46 +210,40 @@ public class ApiDDictValueController {
 
 	}
 
-	@RequestMapping(value = "/codetable/{lsType}/{lsKind}/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/codetable/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createCodeTablesFromJsonArray(@RequestBody List<CodeTableDTO> codeTableDTOs,
-			@PathVariable("lsType") String lsType, 
-			@PathVariable("lsKind") String lsKind,
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
 		
 		Boolean createTypeKind = false;
-		if (createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
 		
-		Collection<CodeTableDTO> savedCodeTableValues = dataDictionaryService.saveCodeTableValueArray(lsType, lsKind, codeTableDTOs, createTypeKind);
+		List<CodeTableDTO> savedCodeTableValues = dataDictionaryService.saveCodeTableValueArray(codeTableDTOs, createTypeKind);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		return new ResponseEntity<String>(CodeTableDTO.toJsonArray(savedCodeTableValues), headers, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/codetable/{lsType}/{lsKind}/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
-	public ResponseEntity<String> updateCodeTableFromJson(@RequestBody CodeTableDTO codeTableDTO,
-			@PathVariable("lsType") String lsType, 
-			@PathVariable("lsKind") String lsKind) {
+	@RequestMapping(value = "/codetable/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+	public ResponseEntity<String> updateCodeTableFromJson(@RequestBody CodeTableDTO codeTableDTO) {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		
-		CodeTableDTO codeTableValue = dataDictionaryService.updateCodeTableValue(lsType, lsKind, codeTableDTO);
+		CodeTableDTO codeTableValue = dataDictionaryService.updateCodeTableValue( codeTableDTO);
 		if (codeTableValue == null){
 			return new ResponseEntity<String>("ERROR: unable to update entry", headers, HttpStatus.NOT_FOUND);			
 		} 
 		return new ResponseEntity<String>(codeTableValue.toJson(), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/codetable/{lsType}/{lsKind}/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-	public ResponseEntity<String> updateCodeTablesFromJsonArray(@RequestBody List<CodeTableDTO> codeTableDTOs,
-			@PathVariable("lsType") String lsType, 
-			@PathVariable("lsKind") String lsKind) {
+	@RequestMapping(value = "/codetable/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	public ResponseEntity<String> updateCodeTablesFromJsonArray(@RequestBody List<CodeTableDTO> codeTableDTOs) {
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		
-		Collection<CodeTableDTO> updatedCodeTableValues = dataDictionaryService.updateCodeTableValueArray(lsType, lsKind, codeTableDTOs);
+		List<CodeTableDTO> updatedCodeTableValues = dataDictionaryService.updateCodeTableValueArray(codeTableDTOs);
 		if (updatedCodeTableValues == null){
 			return new ResponseEntity<String>("ERROR: unable to update entry", headers, HttpStatus.NOT_FOUND);			
 		} 
@@ -272,7 +267,7 @@ public class ApiDDictValueController {
 	public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		Collection<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
+		List<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
 		for (DDictValue dDictValue: DDictValue.fromJsonArrayToDDictValues(json)) {
 			if (dDictValue.merge() == null) {
 				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);

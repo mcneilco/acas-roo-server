@@ -22,7 +22,7 @@ public class CodeTableDTO {
 		this.setId(dDictVal.getId());
 		this.setCode(dDictVal.getShortName());
 		this.setName(dDictVal.getLabelText());
-		this.setIgnored(dDictVal.isIgnored());
+		this.setIgnored(dDictVal.getIgnored());
 		this.setDisplayOrder(dDictVal.getDisplayOrder());
 		this.setDescription(dDictVal.getDescription());
 		this.setComments(dDictVal.getComments());
@@ -44,6 +44,12 @@ public class CodeTableDTO {
 	private String description;
 
 	private String comments;
+	
+	private String codeType;
+	
+	private String codeKind;
+	
+	private String codeOrigin;
 
 
 	
