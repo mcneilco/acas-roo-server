@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public interface DataDictionaryService {
 
 	public CodeTableDTO updateCodeTableValue(CodeTableDTO codeTableValue);
 
-	public List<DDictValue> saveDataDictionaryValues(List<DDictValue> dDictValues, Boolean createTypeAndKind);
+	public List<DDictValue> saveDataDictionaryValues(Collection<DDictValue> dDictValues, Boolean createTypeAndKind);
 
 	public List<CodeTableDTO> updateCodeTableValueArray(List<CodeTableDTO> codeTableDTOs);
 

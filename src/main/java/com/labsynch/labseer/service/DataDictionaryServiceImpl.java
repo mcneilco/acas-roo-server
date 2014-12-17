@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -92,7 +93,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 	}
 	
 	@Override
-	public List<DDictValue> saveDataDictionaryValues(List<DDictValue> dDictValues, Boolean createTypeAndKind) {
+	public List<DDictValue> saveDataDictionaryValues(Collection<DDictValue> dDictValues, Boolean createTypeAndKind) {
 		List<DDictValue> newDDictValues = new ArrayList<DDictValue>();
 		for (DDictValue dDictVal : dDictValues){
 			DDictValue newDDictVal = saveDataDictionaryValue(dDictVal, createTypeAndKind);

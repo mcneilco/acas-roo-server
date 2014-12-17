@@ -65,7 +65,7 @@ public class DataDictionaryCodeNameTest {
 
 		Collection<DDictValue> dDictValues = DDictValue.fromJsonArrayToDDictValues(json);
 		Boolean createTypeAndKind = true;
-		Collection<DDictValue> output = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeAndKind);
+		 List<DDictValue> output = dataDictionaryService.saveDataDictionaryValues(dDictValues, createTypeAndKind);
 		
 		logger.info(DDictValue.toJsonArray(output));
 
