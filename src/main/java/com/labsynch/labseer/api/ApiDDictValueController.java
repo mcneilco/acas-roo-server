@@ -264,11 +264,11 @@ public class ApiDDictValueController {
 	}
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-	public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
+	public ResponseEntity<String> updateFromJsonArray(@RequestBody List<DDictValue> dDictValues) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		List<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
-		for (DDictValue dDictValue: DDictValue.fromJsonArrayToDDictValues(json)) {
+		Collection<DDictValue> savedDDictValues = new ArrayList<DDictValue>();
+		for (DDictValue dDictValue: dDictValues) {
 			if (dDictValue.merge() == null) {
 				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 			}

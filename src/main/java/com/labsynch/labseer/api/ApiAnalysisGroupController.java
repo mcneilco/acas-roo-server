@@ -1,9 +1,13 @@
 package com.labsynch.labseer.api;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +33,7 @@ import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
@@ -107,16 +112,41 @@ public class ApiAnalysisGroupController {
 
 
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+//	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+//    @ResponseBody
+//    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
+//        AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json; charset=utf-8");
+//        if (analysisGroup == null) {
+//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
+//    }
+	
+	@Transactional
+    @RequestMapping(method = RequestMethod.GET, value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
+    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id, @RequestParam(value = "with", required = false) String with) {
         AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (analysisGroup == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
+        if (with != null) {
+            if (with.equalsIgnoreCase("fullobject")) {
+                return new ResponseEntity<String>(analysisGroup.toFullJson(), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("prettyjson")) {
+                return new ResponseEntity<String>(analysisGroup.toPrettyJson(), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("prettyjsonstub")) {
+                return new ResponseEntity<String>(analysisGroup.toPrettyJsonStub(), headers, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers, HttpStatus.NOT_IMPLEMENTED);
+            }
+        } else {
+            return new ResponseEntity<String>(analysisGroup.toJson(), headers, HttpStatus.OK);
+        }
     }
 
 	@RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
@@ -128,19 +158,28 @@ public class ApiAnalysisGroupController {
         return new ResponseEntity<String>(AnalysisGroup.toJsonArray(result), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJson(@RequestBody String json) {
-        AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
-        analysisGroup.persist();
+//	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+//    public ResponseEntity<String> createFromJson(@RequestBody String json) {
+//        AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
+//        analysisGroup.persist();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json");
+//        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+//    }
+	
+    @Transactional
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody AnalysisGroup analysisGroup) {
+        AnalysisGroup newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(newAnalysisGroup.toJson(), headers, HttpStatus.CREATED);
     }
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
-        for (AnalysisGroup analysisGroup: AnalysisGroup.fromJsonArrayToAnalysisGroups(json)) {
-            analysisGroup.persist();
+    public ResponseEntity<String> createFromJsonArray(@RequestBody List<AnalysisGroup> analysisGroups) {
+        for (AnalysisGroup analysisGroup: analysisGroups) {
+        	analysisGroupService.saveLsAnalysisGroup(analysisGroup);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -148,10 +187,9 @@ public class ApiAnalysisGroupController {
     }
 
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJson(@RequestBody String json) {
+    public ResponseEntity<String> updateFromJson(@RequestBody AnalysisGroup analysisGroup) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
         if (analysisGroup.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -159,10 +197,10 @@ public class ApiAnalysisGroupController {
     }
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
+    public ResponseEntity<String> updateFromJsonArray(@RequestBody List<AnalysisGroup> analysisGroups) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        for (AnalysisGroup analysisGroup: AnalysisGroup.fromJsonArrayToAnalysisGroups(json)) {
+        for (AnalysisGroup analysisGroup: analysisGroups) {
             if (analysisGroup.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }

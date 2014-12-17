@@ -35,10 +35,9 @@ public class ApiLabelSequenceController {
 
     //copied only the custom methods from the LabelSequenceController.java class
     @RequestMapping(value = "/getNextLabelSequences", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateLabelSequence(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> updateLabelSequence(@RequestBody LabelSequenceDTO lsDTO) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        LabelSequenceDTO lsDTO = LabelSequenceDTO.fromJsonToLabelSequenceDTO(json);
         logger.info("incoming label seq: " + lsDTO.toJson());
         List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind()).getResultList();
         if (labelSequences.size() != 1) {
@@ -53,12 +52,12 @@ public class ApiLabelSequenceController {
     }
 
     @RequestMapping(value = "/getLabels", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getAutoLabels(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> getAutoLabels(@RequestBody LabelSequenceDTO lsDTO) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         List<AutoLabelDTO> autoLabels;
         try {
-            autoLabels = autoLabelService.getAutoLabels(json);
+            autoLabels = autoLabelService.getAutoLabels(lsDTO);
         } catch (NonUniqueResultException e) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_ACCEPTABLE);
         }

@@ -252,4 +252,13 @@ public class ContainerServiceImpl implements ContainerService {
 		return saveLsContainer(Container.fromJsonToContainer(json));
 	}
 
+	@Override
+	public Collection<Container> saveLsContainers(
+			Collection<Container> containers) {
+		for (Container container : containers){
+			container = saveLsContainer(container);
+		}
+		return containers;
+	}
+
 }

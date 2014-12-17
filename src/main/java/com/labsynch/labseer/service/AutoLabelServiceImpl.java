@@ -40,6 +40,14 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 
 		return getAutoLabels(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind(), lsDTO.getNumberOfLabels());
 	}
+	
+	@Override
+	public List<AutoLabelDTO> getAutoLabels(LabelSequenceDTO lsDTO) {
+
+		logger.debug("incoming label seq: " + lsDTO.toJson());
+
+		return getAutoLabels(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind(), lsDTO.getNumberOfLabels());
+	}
 
 	@Override
 	public List<AutoLabelDTO> getAutoLabels(String thingTypeAndKind, String labelTypeAndKind, Long numberOfLabels) throws NonUniqueResultException {

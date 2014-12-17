@@ -1147,7 +1147,19 @@ public class ExperimentServiceImpl implements ExperimentService {
 		return experimentList;
 	}
 
+	@Override
+	public Collection<Experiment> findExperimentsByMetadataJson(List<StringCollectionDTO> metaDataList) {
+		Collection<Experiment> experimentList = new HashSet<Experiment>();
+		for (StringCollectionDTO metaData : metaDataList){
+			Collection<Experiment> experiments = findExperimentByMetadata(metaData.getName());
+			if (experiments.size() > 0){
+				experimentList.addAll(experiments);
+			}
+		}
 
+		return experimentList;
+	}
+	
 	private Collection<Experiment> findExperimentByMetadata(String queryString) {
 		Collection<Experiment> experimentList = new HashSet<Experiment>();
 

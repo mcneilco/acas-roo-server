@@ -2,8 +2,10 @@ package com.labsynch.labseer.api;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.FlagWellDTO;
 import com.labsynch.labseer.dto.RawCurveDataDTO;
 import com.labsynch.labseer.dto.TgDataDTO;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("api/v1/curvefit")
@@ -36,20 +39,19 @@ public class ApiCurveFitController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ApiCurveFitController.class);
 	
+	@ApiOperation(value="getFitDataByCurveId", notes="get fit data by curve id in format: [{\"curveid\":????????},{\"curveid\":????????}]")
 	@Transactional
     @RequestMapping(value = "/fitdata", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> getFitDataByCurveId(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+    public ResponseEntity<String> getFitDataByCurveId(@RequestBody List<CurveFitDTO> curveFitDTOs, @RequestParam(value = "format", required = false) String format) {
         try {
-			logger.debug("incoming json: " + json);
-			Collection<CurveFitDTO> curveFitDTOs = CurveFitDTO.fromJsonArrayToCurveFitDTO(json);
-			curveFitDTOs = CurveFitDTO.getFitData(curveFitDTOs);
+			Collection<CurveFitDTO> filledCurveFitDTOs = CurveFitDTO.getFitData(curveFitDTOs);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
-				String outFileString = CurveFitDTO.getCsvList(curveFitDTOs, format);
+				String outFileString = CurveFitDTO.getCsvList(filledCurveFitDTOs, format);
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
-			    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(curveFitDTOs), headers, HttpStatus.OK);
+			    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(filledCurveFitDTOs), headers, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			String error = e.getMessage() + e.getStackTrace();
@@ -58,20 +60,19 @@ public class ApiCurveFitController {
 		}
     }
 	
+	@ApiOperation(value="getRawCurveDataByCurveId", notes="get raw data by curve ids provided as: [{\"curveid\":????????},{\"curveid\":????????}]")
 	@Transactional
 	@RequestMapping(value = "/rawdata", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> getCurveFitRawDataByCurveId(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
-		logger.debug("incoming json: " + json);
+	public ResponseEntity<String> getRawCurveDataByCurveId(@RequestBody List<RawCurveDataDTO> rawCurveDataDTOs, @RequestParam(value = "format", required = false) String format) {
 		try {
-			Collection<RawCurveDataDTO> rawCurveDataDTOs = RawCurveDataDTO.fromJsonArrayToRawCurveDataDTO(json);
-			rawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(rawCurveDataDTOs);
+			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(rawCurveDataDTOs);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
-				String outFileString = RawCurveDataDTO.getCsvList(rawCurveDataDTOs, format);
+				String outFileString = RawCurveDataDTO.getCsvList(filledRawCurveDataDTOs, format);
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
-			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(rawCurveDataDTOs), headers, HttpStatus.OK);
+			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(filledRawCurveDataDTOs), headers, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			String error = e.getMessage() + e.getStackTrace();
@@ -82,18 +83,16 @@ public class ApiCurveFitController {
 	
 	@Transactional
 	@RequestMapping(value = "/tgdata", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> getTgDataByCurveId(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
-		logger.debug("incoming json: " + json);
+	public ResponseEntity<String> getTgDataByCurveId(@RequestBody List<TgDataDTO> tgDataDTOs, @RequestParam(value = "format", required = false) String format) {
 		try {
-			Collection<TgDataDTO> tgDataDTOs = TgDataDTO.fromJsonArrayToTgDataDTO(json);
-			tgDataDTOs = TgDataDTO.getTgData(tgDataDTOs);
+			Collection<TgDataDTO> filledTgDataDTOs = TgDataDTO.getTgData(tgDataDTOs);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
-				String outFileString = TgDataDTO.getCsvList(tgDataDTOs, format);
+				String outFileString = TgDataDTO.getCsvList(filledTgDataDTOs, format);
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
-			    return new ResponseEntity<String>(TgDataDTO.toJsonArray(tgDataDTOs), headers, HttpStatus.OK);
+			    return new ResponseEntity<String>(TgDataDTO.toJsonArray(filledTgDataDTOs), headers, HttpStatus.OK);
 			}
 		} catch (Exception e) {
 			String error = e.getMessage() + e.getStackTrace();
@@ -167,10 +166,8 @@ public class ApiCurveFitController {
 	
 	@Transactional
     @RequestMapping( method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFitDataFromJson(@RequestBody String json) {
-	    logger.debug("incoming json: " + json);
+    public ResponseEntity<String> updateFitDataFromJson(@RequestBody List<CurveFitDTO> curveFitDTOs) {
 	    try {
-			Collection<CurveFitDTO> curveFitDTOs = CurveFitDTO.fromJsonArrayToCurveFitDTO(json);
 			CurveFitDTO.updateFitData(curveFitDTOs);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
@@ -185,10 +182,7 @@ public class ApiCurveFitController {
 	
 	@Transactional
     @RequestMapping(value = "/flagWells", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> updateWellFlags(@RequestBody String json) {
-		//TODO: make this route update tg averages.
-	    logger.debug("incoming json: " + json);
-	    Collection<FlagWellDTO> flagWellDTOs = FlagWellDTO.fromJsonArrayToFlagWellDTO(json);
+    public ResponseEntity<String> updateWellFlags(@RequestBody List<FlagWellDTO> flagWellDTOs) {
 	    try {
 	    	FlagWellDTO.updateWellFlags(flagWellDTOs);
 	    	HttpHeaders headers = new HttpHeaders();

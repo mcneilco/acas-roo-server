@@ -1,6 +1,8 @@
 package com.labsynch.labseer.api;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +14,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +55,7 @@ import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
+import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.SubjectStateValueDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -62,6 +66,7 @@ import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
@@ -93,14 +98,16 @@ public class ApiExperimentController {
 
 	@Autowired
 	private SubjectValueService subjectValueService;
+	
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@Transactional	
 	@RequestMapping(value = "/analysisgroup/savefromtsv", method = RequestMethod.POST, headers = "Accept=application/json")
-	public @ResponseBody ResponseEntity<String> saveAnalysisGroupDataFromCsv(@RequestBody String json) {
+	public @ResponseBody ResponseEntity<String> saveAnalysisGroupDataFromCsv(@RequestBody ExperimentCsvDataDTO experimentCsvDataDTO) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 
-		ExperimentCsvDataDTO experimentCsvDataDTO = ExperimentCsvDataDTO.fromJsonToExperimentCsvDataDTO(json);
 		logger.info("loading data from csv files: " + experimentCsvDataDTO.toJson());
 		
 		String analysisGroupFilePath = experimentCsvDataDTO.getAnalysisGroupCsvFilePath();
@@ -124,12 +131,12 @@ public class ApiExperimentController {
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<java.lang.String> findExperimentsByMetadata(
-			@RequestBody String json,
+			@RequestBody List<StringCollectionDTO> metaDataList,
 			@RequestParam(value = "with", required = false) String with) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 
-		Collection<Experiment> experiments = experimentService.findExperimentsByMetadataJson(json);
+		Collection<Experiment> experiments = experimentService.findExperimentsByMetadataJson(metaDataList);
 
 		if (with != null) {
 			if (with.equalsIgnoreCase("analysisgroups")) {
@@ -715,57 +722,57 @@ public class ApiExperimentController {
 		return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
 	}
 
-	@Transactional
-	@RequestMapping(value = "/values", method = RequestMethod.POST, headers = "Accept=application/json")
-	public @ResponseBody ResponseEntity<String> saveExperimentFromJson(@RequestBody String json) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+//	@Transactional
+//	@RequestMapping(value = "/values", method = RequestMethod.POST, headers = "Accept=application/json")
+//	public @ResponseBody ResponseEntity<String> saveExperimentFromJson(@RequestBody String json) {
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Content-Type", "application/json");
+//
+//		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+//
+//		return (experimentValueService.saveExperimentValue(experimentValue) == null) ?
+//				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
+//					new ResponseEntity<String>(headers, HttpStatus.OK);
+//	}
 
-		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-
-		return (experimentValueService.saveExperimentValue(experimentValue) == null) ?
-				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
-					new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
-
-	@Transactional
-	@RequestMapping(value = "{IdOrCodeName}/values/{Id}", method = RequestMethod.PUT, headers = "Accept=application/json")
-	public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
-			@RequestBody String json,
-			@PathVariable("Id") String Id,
-			@PathVariable("IdOrCodeName") String IdOrCodeName) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-
-		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-		if(experimentValue.getId() == null) {
-			return (experimentValueService.saveExperimentValue(experimentValue) != null) ?
-					new ResponseEntity<String>(headers, HttpStatus.OK) :
-						new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
-		}      
-		return ((experimentValueService.updateExperimentValue(experimentValue)) == null) ? 
-				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
-					new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
-
-	@Transactional
-	@RequestMapping(value = "{IdOrCodeName}/values", method = RequestMethod.PUT, headers = "Accept=application/json")
-	public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
-			@RequestBody String json,
-			@PathVariable("IdOrCodeName") String IdOrCodeName) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-
-		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
-		if(experimentValue.getId() == null) {
-			return (experimentValueService.saveExperimentValue(experimentValue) != null) ?
-					new ResponseEntity<String>(headers, HttpStatus.OK) :
-						new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
-		}      
-		return ((experimentValueService.updateExperimentValue(experimentValue)) == null) ? 
-				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
-					new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
+//	@Transactional
+//	@RequestMapping(value = "{IdOrCodeName}/values/{Id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+//	public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
+//			@RequestBody String json,
+//			@PathVariable("Id") String Id,
+//			@PathVariable("IdOrCodeName") String IdOrCodeName) {
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Content-Type", "application/json");
+//
+//		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+//		if(experimentValue.getId() == null) {
+//			return (experimentValueService.saveExperimentValue(experimentValue) != null) ?
+//					new ResponseEntity<String>(headers, HttpStatus.OK) :
+//						new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+//		}      
+//		return ((experimentValueService.updateExperimentValue(experimentValue)) == null) ? 
+//				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
+//					new ResponseEntity<String>(headers, HttpStatus.OK);
+//	}
+//
+//	@Transactional
+//	@RequestMapping(value = "{IdOrCodeName}/values", method = RequestMethod.PUT, headers = "Accept=application/json")
+//	public @ResponseBody ResponseEntity<String> updateExperimentFromJsonWithId(
+//			@RequestBody String json,
+//			@PathVariable("IdOrCodeName") String IdOrCodeName) {
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Content-Type", "application/json");
+//
+//		ExperimentValue experimentValue = ExperimentValue.fromJsonToExperimentValue(json);
+//		if(experimentValue.getId() == null) {
+//			return (experimentValueService.saveExperimentValue(experimentValue) != null) ?
+//					new ResponseEntity<String>(headers, HttpStatus.OK) :
+//						new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+//		}      
+//		return ((experimentValueService.updateExperimentValue(experimentValue)) == null) ? 
+//				new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
+//					new ResponseEntity<String>(headers, HttpStatus.OK);
+//	}
 
 	private static boolean isNumeric(String str) {
 		for (char c : str.toCharArray()) {
@@ -788,16 +795,14 @@ public class ApiExperimentController {
 
 	@Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Experiment experiment) {
         logger.debug("----from the Experiment POST controller----");
-        logger.debug("incoming json " + json);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
-        Experiment experiment = null;
         try {
-            experiment = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
+            experiment = experimentService.saveLsExperiment(experiment);
         } catch (UniqueNameException e) {
             logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
             ErrorMessage error = new ErrorMessage();
@@ -812,37 +817,50 @@ public class ApiExperimentController {
             return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.CREATED);
         }
     }
-	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
-        for (Experiment experiment: Experiment.fromJsonArrayToExperiments(json)) {
-            experiment.persist();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-    }
-
-	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJson(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        Experiment experiment = Experiment.fromJsonToExperiment(json);
-        if (experiment.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-
-	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        for (Experiment experiment: Experiment.fromJsonArrayToExperiments(json)) {
-            if (experiment.merge() == null) {
-                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	
+	@Transactional
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<Experiment> experiments) {
+        for (Experiment experiment : experiments) {
+            try {
+                experiment = experimentService.saveLsExperiment(experiment);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(Experiment.toJsonArrayStub(experiments), headers, HttpStatus.CREATED);
+    }
+	
+	@Transactional
+    @RequestMapping(value = { "/{id}", "/" }, method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Experiment experiment) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        try {
+        	experiment = experimentService.updateExperiment(experiment);
+        } catch (Exception e) {
+        	e.printStackTrace();
+        	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (experiment.getId() == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(Experiment.findExperiment(experiment.getId()).toJsonStub(), headers, HttpStatus.OK);
+    }
+
+	
+	@Transactional
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<Experiment> experiments) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Collection<Experiment> updatedExperiments = new ArrayList<Experiment>();
+        for (Experiment experiment : experiments) {
+            updatedExperiments.add(experimentService.updateExperiment(experiment));
+        }
+        return new ResponseEntity<String>(Experiment.toJsonArrayStub(updatedExperiments), headers, HttpStatus.OK);
     }
 
 //	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -922,9 +940,7 @@ public class ApiExperimentController {
 	
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getGeneCodeData(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
-        logger.debug("incoming json: " + json);
-        ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
+    public ResponseEntity<java.lang.String> getGeneCodeData(@RequestBody ExperimentSearchRequestDTO searchRequest, @RequestParam(value = "format", required = false) String format) {
         List<AnalysisGroupValueDTO> agValues = null;
         try {
             agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(searchRequest.getBatchCodeList()).getResultList();
@@ -981,11 +997,10 @@ public class ApiExperimentController {
 
     @Transactional
     @RequestMapping(value = "/jstreenodes/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getJsTreeNodes(@RequestBody String json) {
-    	logger.debug("getting tree nodes: " + json);
+    public ResponseEntity<java.lang.String> getJsTreeNodes(@RequestBody List<BatchCodeDTO> batchCodes) {
+    	logger.debug("getting tree nodes: " + BatchCodeDTO.toJsonArray(batchCodes));
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        Collection<BatchCodeDTO> batchCodes = BatchCodeDTO.fromJsonArrayToBatchCoes(json);
         Collection<String> codeValues = new HashSet<String>();
         for (BatchCodeDTO batchCode : batchCodes) {
             codeValues.add(batchCode.getBatchCode());
@@ -997,7 +1012,7 @@ public class ApiExperimentController {
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(
-    		@RequestBody String json, 
+    		@RequestBody ExperimentSearchRequestDTO searchRequest, 
     		@RequestParam(value = "format", required = false) String format,
 			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
 
@@ -1006,8 +1021,6 @@ public class ApiExperimentController {
 			publicData = true;
 		}
 		
-    	logger.debug("incoming json: " + json);
-        ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
         logger.debug("converted json: " + searchRequest.toJson());
         List<AnalysisGroupValueDTO> agValues = null;
         try {
@@ -1064,23 +1077,6 @@ public class ApiExperimentController {
         }
         return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.OK);
     }
-
-//    @RequestMapping(method = RequestMethod.GET, value = "/stub/{id}", headers = "Accept=application/json")
-//    @ResponseBody
-//    @Transactional
-//    public ResponseEntity<java.lang.String> showJsonStub(@PathVariable("id") Long id, @RequestParam(value = "with", required = false) String with) {
-//        Experiment experiment = Experiment.findExperiment(id);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Type", "application/json; charset=utf-8");
-//        if (experiment == null) {
-//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-//        }
-//        if (with.equalsIgnoreCase("prettyjson")) {
-//            return new ResponseEntity<String>(experiment.toPrettyJsonStub(), headers, HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<String>(experiment.toJsonStub(), headers, HttpStatus.OK);
-//        }
-//    }
 
     @RequestMapping(method = RequestMethod.GET, value = "/stub/{id}", headers = "Accept=application/json")
     @ResponseBody
@@ -1156,69 +1152,8 @@ public class ApiExperimentController {
         if (experiment == null) {
             logger.info("Did not find the experiment before delete");
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-//        }
-//        if (with != null && with.equalsIgnoreCase("analysisgroups")) {
-//            logger.info("deleting analysis groups within an experiment: " + id);
-//            ItxSubjectContainerValue.deleteByExperimentID(id);
-//            ItxSubjectContainerState.deleteByExperimentID(id);
-//            int deletedItxValues = ItxSubjectContainer.deleteByExperimentID(id);
-//            logger.debug("deleted number of ItxSubjectContainers: " + deletedItxValues);
-//            int deletedValues = SubjectValue.deleteByExperimentID(id);
-//            logger.debug("deleted number of subject values: " + deletedValues);
-//            int deletedLabels = SubjectLabel.deleteByExperimentID(id);
-//            logger.debug("deleted number of subject labels: " + deletedLabels);
-//            int numberOfStates = SubjectState.deleteByExperimentID(id);
-//            logger.debug("deleted number of numberOfStates: " + numberOfStates);
-//            int deletedSubjects = Subject.deleteByExperimentID(id);
-//            logger.debug("deleted number of subjects: " + deletedSubjects);
-//            int tt2 = TreatmentGroupValue.deleteByExperimentID(id);
-//            logger.debug("deleted number of TreatmentGroupValue: " + tt2);
-//            int tt1 = TreatmentGroupState.deleteByExperimentID(id);
-//            logger.debug("deleted number of TreatmentGroupState: " + tt1);
-//            int tt3 = TreatmentGroupLabel.deleteByExperimentID(id);
-//            logger.debug("deleted number of TreatmentGroupLabel: " + tt3);
-//            int tt = TreatmentGroup.deleteByExperimentID(id);
-//            logger.debug("deleted number of TreatmentGroups: " + tt);
-//            int ag1 = AnalysisGroupValue.deleteByExperimentID(id);
-//            int ag2 = AnalysisGroupState.deleteByExperimentID(id);
-//            int ag3 = AnalysisGroupLabel.deleteByExperimentID(id);
-//            int ag4 = AnalysisGroup.deleteByExperimentID(id);
-//            logger.info("deleted number of AnalysisGroupValue: " + ag1);
-//            logger.info("deleted number of AnalysisGroupState: " + ag2);
-//            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
-//            logger.info("deleted number of AnalysisGroup: " + ag4);
-//            return new ResponseEntity<String>(headers, HttpStatus.OK);
         } else {
             logger.info("deleting the experiment: " + id);
-            //logger.info("BCF changes are in action");
-//            ItxSubjectContainerValue.deleteByExperimentID(id);
-//            ItxSubjectContainerState.deleteByExperimentID(id);
-//            int deletedItxValues = ItxSubjectContainer.deleteByExperimentID(id);
-//            logger.debug("deleted number of ItxSubjectContainers: " + deletedItxValues);
-//            int deletedValues = SubjectValue.deleteByExperimentID(id);
-//            logger.debug("deleted number of subject values: " + deletedValues);
-//            int deletedLabels = SubjectLabel.deleteByExperimentID(id);
-//            logger.debug("deleted number of subject labels: " + deletedLabels);
-//            int numberOfStates = SubjectState.deleteByExperimentID(id);
-//            logger.debug("deleted number of numberOfStates: " + numberOfStates);
-//            int deletedSubjects = Subject.deleteByExperimentID(id);
-//            logger.debug("deleted number of subjects: " + deletedSubjects);
-//            int tt2 = TreatmentGroupValue.deleteByExperimentID(id);
-//            logger.debug("deleted number of TreatmentGroupValue: " + tt2);
-//            int tt1 = TreatmentGroupState.deleteByExperimentID(id);
-//            logger.debug("deleted number of TreatmentGroupState: " + tt1);
-//            int tt3 = TreatmentGroupLabel.deleteByExperimentID(id);
-//            logger.debug("deleted number of TreatmentGroupLabel: " + tt3);
-//            int tt = TreatmentGroup.deleteByExperimentID(id);
-//            logger.debug("deleted number of TreatmentGroups: " + tt);
-//            int ag1 = AnalysisGroupValue.deleteByExperimentID(id);
-//            int ag2 = AnalysisGroupState.deleteByExperimentID(id);
-//            int ag3 = AnalysisGroupLabel.deleteByExperimentID(id);
-//            int ag4 = AnalysisGroup.deleteByExperimentID(id);
-//            logger.info("deleted number of AnalysisGroupValue: " + ag1);
-//            logger.info("deleted number of AnalysisGroupState: " + ag2);
-//            logger.info("deleted number of AnalysisGroupLabel: " + ag3);
-//            logger.info("deleted number of AnalysisGroup: " + ag4);
             experiment.logicalDelete();
             if (Experiment.findExperiment(id) == null || Experiment.findExperiment(id).isIgnored()) {
                 logger.info("Did not find the experiment after delete");
@@ -1305,14 +1240,8 @@ public class ApiExperimentController {
         List<Experiment> experiments;
         if (protocolId != null && protocolId != 0) {
             experiments = Experiment.findExperimentListByExperimentNameAndProtocolIdAndIgnoredNot(experimentName, protocolId);
-//            for (Experiment experiment: experiments){
-//    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
-//    		}
         } else {
             experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
-//            for (Experiment experiment: experiments){
-//    			if (experiment.isIgnored() || experimentService.isSoftDeleted(experiment)) experiments.remove(experiment);
-//    		}
         }
         if (with != null) {
             logger.debug("incoming with param is " + with);

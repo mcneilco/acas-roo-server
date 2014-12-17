@@ -20,6 +20,7 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.service.SubjectValueService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Controller
 @RequestMapping("api/v1/subjects")
@@ -31,20 +32,20 @@ public class ApiSubjectController {
 	private SubjectValueService subjectValueService;
 	
 
-	@RequestMapping(value = "/{SubjectIdOrCodeName}/values/{SubjectValueId}", method = RequestMethod.GET, headers = "Accept=application/json")
-	@ResponseBody
-	public ResponseEntity<String> getSubjectValueByIdOrCodeName (
-			@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName,
-			@PathVariable("SubjectValueId") Long subjectValueId) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json; charset=utf-8");
-
-		SubjectValue result = SubjectValue.findSubjectValue(subjectValueId);
-
-		return (result == null) ?
-			new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND) :
-			new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
-	}
+//	@RequestMapping(value = "/{SubjectIdOrCodeName}/values/{SubjectValueId}", method = RequestMethod.GET, headers = "Accept=application/json")
+//	@ResponseBody
+//	public ResponseEntity<String> getSubjectValueByIdOrCodeName (
+//			@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName,
+//			@PathVariable("SubjectValueId") Long subjectValueId) {
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.add("Content-Type", "application/json; charset=utf-8");
+//
+//		SubjectValue result = SubjectValue.findSubjectValue(subjectValueId);
+//
+//		return (result == null) ?
+//			new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND) :
+//			new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+//	}
 	
 	@RequestMapping(value = "/{SubjectIdOrCodeName}/values", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -54,7 +55,7 @@ public class ApiSubjectController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		
 		List<SubjectValue> subjectValues = null;
-		Long subjectId = isNumeric(subjectIdOrCodeName) ?
+		Long subjectId = SimpleUtil.isNumeric(subjectIdOrCodeName) ?
 				Long.valueOf(subjectIdOrCodeName) :
 				retrieveSubjectIdFromCodeName(subjectIdOrCodeName);
 		if(subjectId != null) {
@@ -73,61 +74,51 @@ public class ApiSubjectController {
 					subjects.get(0).getId();
 	}
 	
-	@RequestMapping(value = "/values", method = RequestMethod.POST, headers = "Accept=application/json")
-    public @ResponseBody ResponseEntity<String> saveSubjectFromJson(@RequestBody String json) {
-		HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-             
-        SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
-        
-	    return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
-	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
-	    	new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
+//	@RequestMapping(value = "/values", method = RequestMethod.POST, headers = "Accept=application/json")
+//    public @ResponseBody ResponseEntity<String> saveSubjectFromJson(@RequestBody SubjectValue subjectValue) {
+//		HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json");
+//                     
+//	    return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
+//	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
+//	    	new ResponseEntity<String>(headers, HttpStatus.OK);
+//    }
 
-	@RequestMapping(value = "{SubjectIdOrCodeName}/values/{SubjectValueId}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public @ResponseBody ResponseEntity<String> updateSubjectFromJsonWithId(
-    		@RequestBody String json,
-    		@PathVariable("SubjectValueId") String subjectValueId,
-    		@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        
-        SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
-        if(subjectValue.getId() == null) {
-        	return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
-        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
-        	    	new ResponseEntity<String>(headers, HttpStatus.OK);
-        }      
-        return ((subjectValueService.updateSubjectValue(subjectValue)) == null) ? 
-        		new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
-        		new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
+//	@RequestMapping(value = "{SubjectIdOrCodeName}/values/{SubjectValueId}", method = RequestMethod.PUT, headers = "Accept=application/json")
+//    public @ResponseBody ResponseEntity<String> updateSubjectFromJsonWithId(
+//    		@RequestBody SubjectValue subjectValue,
+//    		@PathVariable("SubjectValueId") String subjectValueId,
+//    		@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json");
+//        
+//        if(subjectValue.getId() == null) {
+//        	return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
+//        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
+//        	    	new ResponseEntity<String>(headers, HttpStatus.OK);
+//        }      
+//        return ((subjectValueService.updateSubjectValue(subjectValue)) == null) ? 
+//        		new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
+//        		new ResponseEntity<String>(headers, HttpStatus.OK);
+//    }
 	
-	@RequestMapping(value = "{SubjectIdOrCodeName}/values", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public @ResponseBody ResponseEntity<String> updateSubjectFromJsonWithId(
-    		@RequestBody String json,
-    		@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        
-        SubjectValue subjectValue = SubjectValue.fromJsonToSubjectValue(json);
-        if(subjectValue.getId() == null) {
-        	return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
-        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
-        	    	new ResponseEntity<String>(headers, HttpStatus.OK);
-        }      
-        return ((subjectValueService.updateSubjectValue(subjectValue)) == null) ? 
-        		new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
-        		new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
+//	@RequestMapping(value = "{SubjectIdOrCodeName}/values", method = RequestMethod.PUT, headers = "Accept=application/json")
+//    public @ResponseBody ResponseEntity<String> updateSubjectFromJsonWithId(
+//    		@RequestBody SubjectValue subjectValue,
+//    		@PathVariable("SubjectIdOrCodeName") String subjectIdOrCodeName) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json");
+//        
+//        if(subjectValue.getId() == null) {
+//        	return (subjectValueService.saveSubjectValue(subjectValue) == null) ?
+//        	    	new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) :
+//        	    	new ResponseEntity<String>(headers, HttpStatus.OK);
+//        }      
+//        return ((subjectValueService.updateSubjectValue(subjectValue)) == null) ? 
+//        		new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST) : 
+//        		new ResponseEntity<String>(headers, HttpStatus.OK);
+//    }
 	
-	private static boolean isNumeric(String str) {
-	    for (char c : str.toCharArray()) {
-	        if (!Character.isDigit(c)) return false;
-	    }
-	    return true;
-	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
