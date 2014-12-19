@@ -922,12 +922,24 @@ public class ApiExperimentController {
 	
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getGeneCodeData(@RequestBody String json, @RequestParam(value = "format", required = false) String format) {
+    public ResponseEntity<java.lang.String> getGeneCodeData(@RequestBody String json, 
+    		@RequestParam(value = "format", required = false) String format, 
+    		@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
         logger.debug("incoming json: " + json);
         ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
         List<AnalysisGroupValueDTO> agValues = null;
+        
+        Boolean publicData = false;
+		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
+			publicData = true;
+		}
+        
         try {
-            agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(searchRequest.getBatchCodeList()).getResultList();
+        	if (publicData){
+				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(searchRequest.getBatchCodeList(), publicData).getResultList();
+			} else {
+				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(searchRequest.getBatchCodeList()).getResultList();
+			}
         } catch (Exception e) {
             logger.error(e.toString());
         }
