@@ -47,4 +47,9 @@ public class LabelSequence {
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "MM")
     private Date modifiedDate;
+    
+    @Size(max = 10)
+    private String batchSeparator;
+    
+    private Integer batchNumber;
 }
