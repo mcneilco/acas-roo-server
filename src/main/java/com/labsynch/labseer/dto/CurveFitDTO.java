@@ -277,10 +277,11 @@ public class CurveFitDTO {
 
 	public static Collection<CurveFitDTO> getFitData(
 			Collection<CurveFitDTO> curveFitDTOs) {
+		Collection<CurveFitDTO> filledCurveFitDTOs = new HashSet<CurveFitDTO>();
 		for (CurveFitDTO curveFitDTO : curveFitDTOs) {
-			curveFitDTO = getFitData(curveFitDTO);
+			filledCurveFitDTOs.add(getFitData(curveFitDTO));
 		}
-		return curveFitDTOs;
+		return filledCurveFitDTOs;
 	}
 	
 	@Transactional
@@ -319,6 +320,7 @@ public class CurveFitDTO {
 			}
 		}
 		curveFitDTO = new CurveFitDTO(stringMap, numericMap);
+		curveFitDTO.setAnalysisGroupCode(doseResponseState.getAnalysisGroup().getCodeName());
 		return curveFitDTO;
 	}
 	
