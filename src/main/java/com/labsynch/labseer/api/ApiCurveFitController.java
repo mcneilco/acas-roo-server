@@ -60,12 +60,14 @@ public class ApiCurveFitController {
 		}
     }
 	
-	@ApiOperation(value="getRawCurveDataByCurveId", notes="get raw data by curve ids provided as: [{\"curveId\":????????},{\"curveId\":????????}]")
+	@ApiOperation(value="getRawCurveDataByCurveId")
 	@Transactional
 	@RequestMapping(value = "/rawdata", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> getRawCurveDataByCurveId(@RequestBody List<RawCurveDataDTO> rawCurveDataDTOs, @RequestParam(value = "format", required = false) String format) {
+	public ResponseEntity<String> getRawCurveDataByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format) {
 		try {
-			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(rawCurveDataDTOs);
+			//This route currently assumes that all the curveIds specified have the same rendering hint. It will not pull back the correct data if a mix of rendering hints is expected.
+			String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
+			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(curveIds, renderingHint);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {

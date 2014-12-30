@@ -69,6 +69,31 @@ public class RawCurveDataDTO {
 		this.userFlagComment = (String) dataMap.get("userFlagComment");
 	}
 	
+	public RawCurveDataDTO(Map dataMap) {
+		this.curveId = (String) dataMap.get("curveId");
+		this.responseSubjectValueId = (Long) dataMap.get("responseSubjectValueId");
+		this.response = (BigDecimal) dataMap.get("response");
+		this.responseUnits = (String) dataMap.get("responseUnits");
+		try {
+			this.dose = (BigDecimal) dataMap.get("dose");
+		}catch(ClassCastException e){
+			this.dose = BigDecimal.valueOf((Double) dataMap.get("dose"));
+		}
+		this.doseUnits = (String) dataMap.get("doseUnits");
+		this.algorithmFlagStatus = (String) dataMap.get("algorithmFlagStatus");
+		this.algorithmFlagObservation = (String) dataMap.get("algorithmFlagObservation");
+		this.algorithmFlagReason = (String) dataMap.get("algorithmFlagReason");
+		this.algorithmFlagComment = (String) dataMap.get("algorithmFlagComment");
+		this.preprocessFlagStatus = (String) dataMap.get("preprocessFlagStatus");
+		this.preprocessFlagObservation = (String) dataMap.get("preprocessFlagObservation");
+		this.preprocessFlagReason = (String) dataMap.get("preprocessFlagReason");
+		this.preprocessFlagComment = (String) dataMap.get("preprocessFlagComment");
+		this.userFlagStatus = (String) dataMap.get("userFlagStatus");
+		this.userFlagObservation = (String) dataMap.get("userFlagObservation");
+		this.userFlagReason = (String) dataMap.get("userFlagReason");
+		this.userFlagComment = (String) dataMap.get("userFlagComment");
+	}
+	
 
 
 	private String curveId; //location: provided
@@ -143,40 +168,31 @@ public class RawCurveDataDTO {
 
 		return processors;
 	}
-
-	public static Collection<RawCurveDataDTO> getRawCurveData(
-			Collection<RawCurveDataDTO> rawCurveDataDTOs) {
-		List<RawCurveDataDTO> resultList = new ArrayList<RawCurveDataDTO>();
-		for (RawCurveDataDTO rawCurveDataDTO : rawCurveDataDTOs) {
-			String renderingHint = CurveFitDTO.findRenderingHint(rawCurveDataDTO.getCurveId());
-			resultList.addAll(getRawCurveData(rawCurveDataDTO, renderingHint));
-		}
-		for (RawCurveDataDTO rawCurveDataDTO : resultList){
-			Long responseSubjectValueId = rawCurveDataDTO.getResponseSubjectValueId();
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("auto flag", "flag status", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("auto flag", "flag observation", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("auto flag", "flag comment", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagComment(getFlagComment("auto flag", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("preprocess flag", "flag status", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("preprocess flag", "flag observation", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("preprocess flag", "flag comment", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagComment(getFlagComment("preprocess flag", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("user flag", "flag status", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("user flag", "flag observation", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagStatus(getFlag("user flag", "flag comment", responseSubjectValueId));
-			rawCurveDataDTO.setAlgorithmFlagComment(getFlagComment("user flag", responseSubjectValueId));
-		}
-		return resultList;
-	}
-
-	public static List<RawCurveDataDTO> getRawCurveData(RawCurveDataDTO emptyRawCurveDataDTO, String renderingHint){
-		String curveId = emptyRawCurveDataDTO.getCurveId();
+	
+	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds, String renderingHint){
 		EntityManager em = SubjectValue.entityManager();
-        TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( rsv.id as responseSubjectValueId, "
+		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( rsv.id as responseSubjectValueId, "
         		+ "rsv.numericValue as response, "
         		+ "rsv.unitKind as responseUnits, "
         		+ "bcsv.concentration as dose, "
-        		+ "bcsv.concUnit as doseUnits ) " 
+        		+ "bcsv.concUnit as doseUnits, "
+        		+ "afsv.codeValue as algorithmFlagStatus, "
+        		+ "afov.codeValue as algorithmFlagObservation, "
+        		+ "afrv.codeValue as algorithmFlagReason, "
+        		+ "afcv.stringValue as algorithmFlagComment, "
+        		+ "pfsv.codeValue as preprocessFlagStatus, "
+        		+ "pfov.codeValue as preprocessFlagObservation, "
+        		+ "pfrv.codeValue as preprocessFlagReason, "
+        		+ "afs.lsKind as algorithmFlagLsKind, "
+        		+ "pfs.lsKind as preprocessFlagLsKind, "
+        		+ "ufs.lsKind as userFlagLsKind, "
+        		+ "pfcv.stringValue as preprocessFlagComment, "
+        		+ "ufsv.codeValue as userFlagStatus, "
+        		+ "ufov.codeValue as userFlagObservation, "
+        		+ "ufrv.codeValue as userFlagReason, "
+        		+ "ufcv.stringValue as userFlagComment,"
+        		+ "agv.stringValue as curveId "
+        		+ " ) " 
         		+ "FROM AnalysisGroupValue agv "
         		+ "JOIN agv.lsState as ags "
         		+ "JOIN ags.analysisGroup.treatmentGroups as treat "
@@ -184,6 +200,21 @@ public class RawCurveDataDTO {
         		+ "JOIN subj.lsStates as rss "
         		+ "JOIN rss.lsValues as rsv "
         		+ "JOIN rss.lsValues as bcsv "
+        		+ "LEFT JOIN subj.lsStates as afs WITH afs.lsKind = 'auto flag' AND afs.ignored = false "
+        		+ "LEFT JOIN afs.lsValues as afsv WITH afsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN afs.lsValues as afov WITH afov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN afs.lsValues as afrv WITH afrv.lsKind = 'flag reason' "
+        		+ "LEFT JOIN afs.lsValues as afcv WITH afcv.lsKind = 'comment' "
+        		+ "LEFT JOIN subj.lsStates as pfs WITH pfs.lsKind = 'preprocess flag' AND pfs.ignored = false "
+        		+ "LEFT JOIN pfs.lsValues as pfsv WITH pfsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN pfs.lsValues as pfov WITH pfov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN pfs.lsValues as pfrv WITH pfrv.lsKind = 'flag reason' "
+        		+ "LEFT JOIN pfs.lsValues as pfcv WITH pfcv.lsKind = 'comment' "
+        		+ "LEFT JOIN subj.lsStates as ufs WITH ufs.lsKind = 'user flag' AND ufs.ignored = false "
+        		+ "LEFT JOIN ufs.lsValues as ufsv WITH ufsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN ufs.lsValues as ufov WITH ufov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN ufs.lsValues as ufrv WITH ufrv.lsKind = 'flag reason' "
+        		+ "LEFT JOIN ufs.lsValues as ufcv WITH ufcv.lsKind = 'comment' "
         		+ "WHERE rss.lsType = 'data' "
         		+ "AND rss.lsKind = 'results' "
         		+ "AND rsv.lsType = 'numericValue' "
@@ -194,68 +225,16 @@ public class RawCurveDataDTO {
         		+ "AND agv.lsType = 'stringValue' "
         		+ "AND agv.lsKind = 'curve id' "
         		+ "AND agv.ignored = false "
-        		+ "AND agv.stringValue = :curveId", Map.class);
-        q.setParameter("curveId", curveId);
+        		+ "AND agv.stringValue IN :curveIds", Map.class);
+        q.setParameter("curveIds", curveIds);
         if (renderingHint.equalsIgnoreCase("4 parameter D-R")) q.setParameter("responseKind", "transformed efficacy");
         List<Map> queryResults = q.getResultList();
         List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
 		for (Map result : queryResults) {
-			RawCurveDataDTO rawCurveDataDTO = new RawCurveDataDTO(curveId, result);
+			RawCurveDataDTO rawCurveDataDTO = new RawCurveDataDTO(result);
 			rawCurveDataList.add(rawCurveDataDTO);
 		}
 		return rawCurveDataList;
-	}
-	
-	public static String getFlag(String flagType, String flagKind, Long responseSubjectValueId){
-		EntityManager em = SubjectValue.entityManager();
-        TypedQuery<String> q = em.createQuery("SELECT flagvalue.codeValue " 
-        		+ "FROM Subject as subj "
-        		+ "JOIN subj.lsStates as flagstate "
-        		+ "JOIN subj.lsStates as responsestate "
-        		+ "JOIN responsestate.lsValues as responseValue "
-        		+ "JOIN flagstate.lsValues as flagvalue "
-        		+ "WHERE flagstate.lsType = 'data' "
-        		+ "AND flagstate.lsKind = :flagType "
-        		+ "AND flagvalue.lsType = 'codeValue' "
-        		+ "AND flagvalue.lsKind = :flagKind "
-        		+ "AND responseValue.id = :responseSubjectValueId "
-        		+ "AND flagstate.ignored IS false ", String.class);
-        q.setParameter("flagType", flagType);
-        q.setParameter("flagKind", flagKind);
-        q.setParameter("responseSubjectValueId", responseSubjectValueId);
-        String queryResult = null;
-        try {
-        	queryResult = q.getSingleResult();
-        } catch (EmptyResultDataAccessException e){
-        	return null;
-        }
-		return queryResult;
-	}
-	
-	public static String getFlagComment(String flagType, Long responseSubjectValueId){
-		EntityManager em = SubjectValue.entityManager();
-        TypedQuery<String> q = em.createQuery("SELECT flagvalue.stringValue " 
-        		+ "FROM Subject as subj "
-        		+ "JOIN subj.lsStates as flagstate "
-        		+ "JOIN subj.lsStates as responsestate "
-        		+ "JOIN responsestate.lsValues as responseValue "
-        		+ "JOIN flagstate.lsValues as flagvalue "
-        		+ "WHERE flagstate.lsType = 'data' "
-        		+ "AND flagstate.lsKind = :flagType "
-        		+ "AND flagvalue.lsType = 'codeValue' "
-        		+ "AND flagvalue.lsKind = :flagKind "
-        		+ "AND responseValue.id = :responseSubjectValueId "
-        		+ "AND flagstate.ignored IS false ", String.class);
-        q.setParameter("flagType", flagType);
-        q.setParameter("flagKind", "comment");
-        q.setParameter("responseSubjectValueId", responseSubjectValueId);
-        String queryResult = null;
-        try {
-        	queryResult = q.getSingleResult();
-        } catch (EmptyResultDataAccessException e){
-        	return null;
-        }
-		return queryResult;
 	}
 	
 	public static String getCsvList(Collection<RawCurveDataDTO> rawCurveDataDTOs, String format) {
@@ -288,16 +267,17 @@ public class RawCurveDataDTO {
 	}
 	
 	public static Collection<RawCurveDataDTO> getRawCurveDataByExperiment(String experimentIdOrCodeName){
-		Collection<RawCurveDataDTO> rawCurveDataDTOs = makeRawCurveDataDTOsFromCurveIdList(CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName));
-		rawCurveDataDTOs = getRawCurveData(rawCurveDataDTOs);
-		return rawCurveDataDTOs;
-	}
-	
-	private static Collection<RawCurveDataDTO> makeRawCurveDataDTOsFromCurveIdList(Collection<String> curveIdList) {
-		Collection<RawCurveDataDTO> rawCurveDataDTOs = new HashSet<RawCurveDataDTO>();
-		for (String curveId : curveIdList) {
-			rawCurveDataDTOs.add(new RawCurveDataDTO(curveId));
-		}
+		long startTime = System.currentTimeMillis();
+		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
+		String renderingHint = CurveFitDTO.findRenderingHint(curveIds.iterator().next());
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		logger.debug("time to get curve id list and rendering hint = " + totalTime + " miliseconds.");
+		long startTime2 = System.currentTimeMillis();
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveData(curveIds, renderingHint);
+		long endTime2 = System.currentTimeMillis();
+		long totalTime2 = endTime2 - startTime2;
+		logger.debug("time to fill in raw curve data = " + totalTime2 + " miliseconds.");
 		return rawCurveDataDTOs;
 	}
 }
