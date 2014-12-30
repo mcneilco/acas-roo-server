@@ -78,10 +78,30 @@ public class CurveFitDTO {
 				this.maxUnits = stringMap.get("Max units");
 				this.ec50Units = stringMap.get("EC50 units");
 				this.slope = numericMap.get("Slope");
+				this.minUncertainty = numericMap.get("Min uncertainty");
+				this.maxUncertainty = numericMap.get("Max uncertainty");
+				this.ec50Uncertainty = numericMap.get("EC50 uncertainty");
+				this.slopeUncertainty = numericMap.get("Slope uncertainty");
+				this.minUncertaintyType = stringMap.get("Min uncertainty type");
+				this.maxUncertaintyType = stringMap.get("Max uncertainty type");
+				this.ec50UncertaintyType = stringMap.get("EC50 uncertainty type");
+				this.slopeUncertaintyType = stringMap.get("Slope uncertainty type");
+				this.minOperatorKind = stringMap.get("Min operator kind");
+				this.maxOperatorKind = stringMap.get("Max operator kind");
+				this.ec50OperatorKind = stringMap.get("EC50 operator kind");
+				this.slopeOperatorKind = stringMap.get("Slope operator kind");
 				this.fittedMin = numericMap.get("Fitted Min");
 				this.fittedMax = numericMap.get("Fitted Max");
 				this.fittedEC50 = numericMap.get("Fitted EC50");
 				this.fittedSlope = numericMap.get("Fitted Slope");
+				this.fittedMinUncertainty = numericMap.get("Fitted Min uncertainty");
+				this.fittedMaxUncertainty = numericMap.get("Fitted Max uncertainty");
+				this.fittedEc50Uncertainty = numericMap.get("Fitted EC50 uncertainty");
+				this.fittedSlopeUncertainty = numericMap.get("Fitted Slope uncertainty");
+				this.fittedMinUncertaintyType = stringMap.get("Fitted Min uncertainty type");
+				this.fittedMaxUncertaintyType = stringMap.get("Fitted Max uncertainty type");
+				this.fittedEc50UncertaintyType = stringMap.get("Fitted EC50 uncertainty type");
+				this.fittedSlopeUncertaintyType = stringMap.get("Fitted Slope uncertainty type");
 				this.sse = numericMap.get("SSE");
 				this.sst = numericMap.get("SST");
 				this.rSquared = numericMap.get("rSquared");
@@ -108,10 +128,30 @@ public class CurveFitDTO {
 	private String maxUnits;
 	private String ec50Units;
 	private BigDecimal slope;
+	private BigDecimal minUncertainty;
+	private BigDecimal maxUncertainty;
+	private BigDecimal ec50Uncertainty;
+	private BigDecimal slopeUncertainty;
+	private String minUncertaintyType;
+	private String maxUncertaintyType;
+	private String ec50UncertaintyType;
+	private String slopeUncertaintyType;
+	private String minOperatorKind;
+	private String maxOperatorKind;
+	private String ec50OperatorKind;
+	private String slopeOperatorKind;
 	private BigDecimal fittedMin;
 	private BigDecimal fittedMax;
 	private BigDecimal fittedEC50;
 	private BigDecimal fittedSlope;
+	private BigDecimal fittedMinUncertainty;
+	private BigDecimal fittedMaxUncertainty;
+	private BigDecimal fittedEc50Uncertainty;
+	private BigDecimal fittedSlopeUncertainty;
+	private String fittedMinUncertaintyType;
+	private String fittedMaxUncertaintyType;
+	private String fittedEc50UncertaintyType;
+	private String fittedSlopeUncertaintyType;
 	private BigDecimal sse;
 	private BigDecimal sst;
 	private BigDecimal rSquared;
@@ -128,7 +168,6 @@ public class CurveFitDTO {
 
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
-				"id", 
 				"curveId",
 				"analysisGroupCode",
 				"recordedBy",
@@ -142,10 +181,30 @@ public class CurveFitDTO {
 				"maxUnits",
 				"ec50Units",
 				"slope",
+				"minUncertainty",
+				"maxUncertainty",
+				"ec50Uncertainty",
+				"slopeUncertainty",
+				"minUncertaintyType",
+				"maxUncertaintyType",
+				"ec50UncertaintyType",
+				"slopeUncertaintyType",
+				"minOperatorKind",
+				"maxOperatorKind",
+				"ec50OperatorKind",
+				"slopeOperatorKind",
 				"fittedMin",
 				"fittedMax",
 				"fittedEC50",
 				"fittedSlope",
+				"fittedMinUncertainty",
+				"fittedMaxUncertainty",
+				"fittedEc50Uncertainty",
+				"fittedSlopeUncertainty",
+				"fittedMinUncertaintyType",
+				"fittedMaxUncertaintyType",
+				"fittedEc50UncertaintyType",
+				"fittedSlopeUncertaintyType",
 				"sse",
 				"sst",
 				"rSquared",
@@ -164,6 +223,25 @@ public class CurveFitDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -225,7 +303,16 @@ public class CurveFitDTO {
 			} else if (agValue.getLsType().equals("numericValue")) {
 				numericMap.put(agValue.getLsKind(), agValue.getNumericValue());
 				if(agValue.getUnitKind() != null) {
-					stringMap.put(agValue.getUnitKind()+" units", agValue.getUnitKind());
+					stringMap.put(agValue.getLsKind()+" units", agValue.getUnitKind());
+				}
+				if(agValue.getUncertainty() != null){
+					numericMap.put(agValue.getLsKind()+" uncertainty", agValue.getUncertainty());
+				}
+				if(agValue.getUncertaintyType() != null){
+					stringMap.put(agValue.getLsKind()+" uncertainty type", agValue.getUncertaintyType());
+				}
+				if(agValue.getOperatorKind() != null){
+					stringMap.put(agValue.getLsKind()+" operator kind", agValue.getOperatorKind());
 				}
 			} else if  (agValue.getLsType().equals("codeValue")) {
 				stringMap.put(agValue.getLsKind(), agValue.getCodeValue());
@@ -331,6 +418,9 @@ public class CurveFitDTO {
 		if (!(min==null)) {
 			AnalysisGroupValue minValue = createCurveFitValue(state, "numericValue", "Min", min, recordedBy);
 			minValue.setUnitKind(curveFitDTO.getMinUnits());
+			minValue.setUncertainty(curveFitDTO.getMinUncertainty());
+			minValue.setUncertaintyType(curveFitDTO.getMinUncertaintyType());
+			minValue.setOperatorKind(curveFitDTO.getMinOperatorKind());
 			minValue.setCodeValue(batchCode);
 			newValues.add(minValue);
 		} else {
@@ -341,6 +431,9 @@ public class CurveFitDTO {
 		if (!(max==null)) {
 			AnalysisGroupValue maxValue = createCurveFitValue(state, "numericValue", "Max", max, recordedBy);
 			maxValue.setUnitKind(curveFitDTO.getMaxUnits());
+			maxValue.setUncertainty(curveFitDTO.getMaxUncertainty());
+			maxValue.setUncertaintyType(curveFitDTO.getMaxUncertaintyType());
+			maxValue.setOperatorKind(curveFitDTO.getMaxOperatorKind());
 			maxValue.setCodeValue(batchCode);
 			newValues.add(maxValue);
 		} else {
@@ -351,6 +444,9 @@ public class CurveFitDTO {
 		if (!(ec50==null)) {
 			AnalysisGroupValue ec50Value = createCurveFitValue(state, "numericValue", "EC50", ec50, recordedBy);
 			ec50Value.setUnitKind(curveFitDTO.getEc50Units());
+			ec50Value.setUncertainty(curveFitDTO.getEc50Uncertainty());
+			ec50Value.setUncertaintyType(curveFitDTO.getEc50UncertaintyType());
+			ec50Value.setOperatorKind(curveFitDTO.getEc50OperatorKind());
 			ec50Value.setCodeValue(batchCode);
 			newValues.add(ec50Value);
 		} else {
@@ -361,6 +457,9 @@ public class CurveFitDTO {
 		if (!(slope==null)) {
 			AnalysisGroupValue slopeValue = createCurveFitValue(state, "numericValue", "Slope", slope, recordedBy);
 			slopeValue.setCodeValue(batchCode);
+			slopeValue.setUncertainty(curveFitDTO.getSlopeUncertainty());
+			slopeValue.setUncertaintyType(curveFitDTO.getSlopeUncertaintyType());
+			slopeValue.setOperatorKind(curveFitDTO.getSlopeOperatorKind());
 			newValues.add(slopeValue);
 		} else {
 			AnalysisGroupValue slopeValue = createCurveFitValue(state, "stringValue", "Slope", "no fit", recordedBy);
@@ -371,21 +470,29 @@ public class CurveFitDTO {
 		if (!(fittedMin==null)){
 			AnalysisGroupValue fittedMinValue = createCurveFitValue(state, "numericValue", "Fitted Min", fittedMin, recordedBy);
 			fittedMinValue.setCodeValue(batchCode);
+			fittedMinValue.setUncertainty(curveFitDTO.getFittedMinUncertainty());
+			fittedMinValue.setUncertaintyType(curveFitDTO.getFittedMinUncertaintyType());
 			newValues.add(fittedMinValue);
 		}
 		if (!(fittedMax==null)){
 			AnalysisGroupValue fittedMaxValue = createCurveFitValue(state, "numericValue", "Fitted Max", fittedMax, recordedBy);
 			fittedMaxValue.setCodeValue(batchCode);
+			fittedMaxValue.setUncertainty(curveFitDTO.getFittedMaxUncertainty());
+			fittedMaxValue.setUncertaintyType(curveFitDTO.getFittedMaxUncertaintyType());
 			newValues.add(fittedMaxValue);
 		}
 		if (!(fittedEC50==null)){
 			AnalysisGroupValue fittedEC50Value = createCurveFitValue(state, "numericValue", "Fitted EC50", fittedEC50, recordedBy);
 			fittedEC50Value.setCodeValue(batchCode);
+			fittedEC50Value.setUncertainty(curveFitDTO.getFittedEc50Uncertainty());
+			fittedEC50Value.setUncertaintyType(curveFitDTO.getFittedEc50UncertaintyType());
 			newValues.add(fittedEC50Value);
 		}
 		if (!(fittedSlope==null)){
 			AnalysisGroupValue fittedSlopeValue = createCurveFitValue(state, "numericValue", "Fitted Slope", fittedSlope, recordedBy);
 			fittedSlopeValue.setCodeValue(batchCode);
+			fittedSlopeValue.setUncertainty(curveFitDTO.getFittedSlopeUncertainty());
+			fittedSlopeValue.setUncertaintyType(curveFitDTO.getFittedSlopeUncertaintyType());
 			newValues.add(fittedSlopeValue);
 		}
 		if (!(sse==null)){

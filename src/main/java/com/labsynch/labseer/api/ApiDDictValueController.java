@@ -1,6 +1,7 @@
 package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.slf4j.Logger;

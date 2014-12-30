@@ -39,7 +39,7 @@ public class ApiCurveFitController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ApiCurveFitController.class);
 	
-	@ApiOperation(value="getFitDataByCurveId", notes="get fit data by curve id in format: [{\"curveid\":????????},{\"curveid\":????????}]")
+	@ApiOperation(value="getFitDataByCurveId", notes="get fit data by curve id in format: [{\"curveId\":????????},{\"curveId\":????????}]")
 	@Transactional
     @RequestMapping(value = "/fitdata", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> getFitDataByCurveId(@RequestBody List<CurveFitDTO> curveFitDTOs, @RequestParam(value = "format", required = false) String format) {
@@ -60,7 +60,7 @@ public class ApiCurveFitController {
 		}
     }
 	
-	@ApiOperation(value="getRawCurveDataByCurveId", notes="get raw data by curve ids provided as: [{\"curveid\":????????},{\"curveid\":????????}]")
+	@ApiOperation(value="getRawCurveDataByCurveId", notes="get raw data by curve ids provided as: [{\"curveId\":????????},{\"curveId\":????????}]")
 	@Transactional
 	@RequestMapping(value = "/rawdata", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> getRawCurveDataByCurveId(@RequestBody List<RawCurveDataDTO> rawCurveDataDTOs, @RequestParam(value = "format", required = false) String format) {
