@@ -48,6 +48,7 @@ public class RawCurveDataDTO {
 		this.curveId = curveId;
 		this.responseSubjectValueId = (Long) dataMap.get("responseSubjectValueId");
 		this.response = (BigDecimal) dataMap.get("response");
+		this.responseKind = (String) dataMap.get("responseKind");
 		this.responseUnits = (String) dataMap.get("responseUnits");
 		try {
 			this.dose = (BigDecimal) dataMap.get("dose");
@@ -73,6 +74,7 @@ public class RawCurveDataDTO {
 		this.curveId = (String) dataMap.get("curveId");
 		this.responseSubjectValueId = (Long) dataMap.get("responseSubjectValueId");
 		this.response = (BigDecimal) dataMap.get("response");
+		this.responseKind = (String) dataMap.get("responseKind");
 		this.responseUnits = (String) dataMap.get("responseUnits");
 		try {
 			this.dose = (BigDecimal) dataMap.get("dose");
@@ -99,6 +101,7 @@ public class RawCurveDataDTO {
 	private String curveId; //location: provided
 	private Long responseSubjectValueId; // location: subject value, SS: data_results, SV: numericValue_Response, id attribute
 	private BigDecimal response; // location: same as responseSubjectValueId, but in numericValue field
+	private String responseKind;
 	private String responseUnits; //location same as response, but in unitKind field
 	private BigDecimal dose; // location: subject value, SS: data_test compound treatment, SV: numericValue_Dose
 	private String doseUnits; //location, same as above, but in unitKind field
@@ -125,6 +128,7 @@ public class RawCurveDataDTO {
 				"dose",
 				"doseUnits",
 				"response",
+				"responseKind",
 				"responseUnits",
 				"algorithmFlagStatus",
 				"algorithmFlagObservation",
@@ -163,6 +167,7 @@ public class RawCurveDataDTO {
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				new Optional(),
 				new Optional()
 		};
 
@@ -174,6 +179,7 @@ public class RawCurveDataDTO {
 		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( rsv.id as responseSubjectValueId, "
         		+ "rsv.numericValue as response, "
         		+ "rsv.unitKind as responseUnits, "
+        		+ "rsv.lsKind as responseKind, "
         		+ "bcsv.concentration as dose, "
         		+ "bcsv.concUnit as doseUnits, "
         		+ "afsv.codeValue as algorithmFlagStatus, "

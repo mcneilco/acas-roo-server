@@ -49,6 +49,8 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = CurveFitDTO.getCsvList(filledCurveFitDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
+//				this very confusing regex replaces "" with \" to reverse an unintended conversion by supercsv.
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(filledCurveFitDTOs), headers, HttpStatus.OK);
@@ -72,6 +74,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = RawCurveDataDTO.getCsvList(filledRawCurveDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(filledRawCurveDataDTOs), headers, HttpStatus.OK);
@@ -92,6 +95,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = TgDataDTO.getCsvList(filledTgDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(TgDataDTO.toJsonArray(filledTgDataDTOs), headers, HttpStatus.OK);
@@ -113,6 +117,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = CurveFitDTO.getCsvList(curveFitDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(curveFitDTOs), headers, HttpStatus.OK);
@@ -134,6 +139,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = RawCurveDataDTO.getCsvList(rawCurveDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(rawCurveDataDTOs), headers, HttpStatus.OK);
@@ -155,6 +161,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = TgDataDTO.getCsvList(tgDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(TgDataDTO.toJsonArray(tgDataDTOs), headers, HttpStatus.OK);
