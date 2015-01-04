@@ -1,6 +1,5 @@
 package com.labsynch.labseer.dto;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
+import java.math.BigDecimal;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
@@ -74,7 +74,7 @@ public class AnalysisGroupValueDTO {
 			if (lsType.equals("stringValue")){
 				this.result=stringValue;				
 			} else if (numericValue != null) {
-				this.result = numericValue.toString();
+				this.result = String.valueOf(numericValue.doubleValue());
 			}			
 		}
 
