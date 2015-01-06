@@ -39,7 +39,7 @@ public class ApiCurveFitController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ApiCurveFitController.class);
 	
-	@ApiOperation(value="getFitDataByCurveId", notes="get fit data by curve id in format: [{\"curveid\":????????},{\"curveid\":????????}]")
+	@ApiOperation(value="getFitDataByCurveId", notes="get fit data by curve id in format: [{\"curveId\":????????},{\"curveId\":????????}]")
 	@Transactional
     @RequestMapping(value = "/fitdata", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> getFitDataByCurveId(@RequestBody List<CurveFitDTO> curveFitDTOs, @RequestParam(value = "format", required = false) String format) {
@@ -49,6 +49,8 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = CurveFitDTO.getCsvList(filledCurveFitDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
+//				this very confusing regex replaces "" with \" to reverse an unintended conversion by supercsv.
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(filledCurveFitDTOs), headers, HttpStatus.OK);
@@ -60,16 +62,19 @@ public class ApiCurveFitController {
 		}
     }
 	
-	@ApiOperation(value="getRawCurveDataByCurveId", notes="get raw data by curve ids provided as: [{\"curveid\":????????},{\"curveid\":????????}]")
+	@ApiOperation(value="getRawCurveDataByCurveId")
 	@Transactional
 	@RequestMapping(value = "/rawdata", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> getRawCurveDataByCurveId(@RequestBody List<RawCurveDataDTO> rawCurveDataDTOs, @RequestParam(value = "format", required = false) String format) {
+	public ResponseEntity<String> getRawCurveDataByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format) {
 		try {
-			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(rawCurveDataDTOs);
+			//This route currently assumes that all the curveIds specified have the same rendering hint. It will not pull back the correct data if a mix of rendering hints is expected.
+			String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
+			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(curveIds, renderingHint);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = RawCurveDataDTO.getCsvList(filledRawCurveDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(filledRawCurveDataDTOs), headers, HttpStatus.OK);
@@ -90,6 +95,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = TgDataDTO.getCsvList(filledTgDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(TgDataDTO.toJsonArray(filledTgDataDTOs), headers, HttpStatus.OK);
@@ -111,6 +117,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = CurveFitDTO.getCsvList(curveFitDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(curveFitDTOs), headers, HttpStatus.OK);
@@ -132,6 +139,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = RawCurveDataDTO.getCsvList(rawCurveDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(rawCurveDataDTOs), headers, HttpStatus.OK);
@@ -153,6 +161,7 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
 				String outFileString = TgDataDTO.getCsvList(tgDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
 			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
 			} else {
 			    return new ResponseEntity<String>(TgDataDTO.toJsonArray(tgDataDTOs), headers, HttpStatus.OK);

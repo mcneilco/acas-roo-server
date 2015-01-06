@@ -388,7 +388,7 @@ public class FlagWellDTO {
 			flagObservation = flagWellDTO.getAlgorithmFlagObservation();
 			flagReason = flagWellDTO.getAlgorithmFlagReason();
 			flagComment = flagWellDTO.getAlgorithmFlagComment();
-		} else if (stateLsKind.equals("preprocess")) {
+		} else if (stateLsKind.equals("preprocess flag")) {
 			flagType = "preprocess";
 			flagStatus = flagWellDTO.getPreprocessFlagStatus();
 			flagObservation = flagWellDTO.getPreprocessFlagObservation();

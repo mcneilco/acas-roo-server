@@ -1,5 +1,6 @@
 package com.labsynch.labseer.dto;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,10 @@ public class RawCurveDataDTOTest {
 	@Transactional
 	public void getRawCurveDataTest() {
 		String curveId = "15_AG-00348398";
-		RawCurveDataDTO rawCurveDataDTO = new RawCurveDataDTO(curveId);
+		List<String> curveIdList = new ArrayList<String>();
+		curveIdList.add(curveId);
 		String renderingHint = CurveFitDTO.findRenderingHint(curveId);
-		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(rawCurveDataDTO, renderingHint);
+		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(curveIdList, renderingHint);
 		logger.debug(resultList.toString());
 		for (RawCurveDataDTO result : resultList) {
 			logger.debug(result.toJson());

@@ -7,4 +7,11 @@ public class SimpleUtil {
 		}
 		return true;
 	}
+	
+	public static boolean isDecimalNumeric(String str) {
+		for (char c : str.toCharArray()) {
+			if (!Character.isDigit(c) && c != '-' && c!= '.') return false;
+		}
+		return true;
+	}
 }
