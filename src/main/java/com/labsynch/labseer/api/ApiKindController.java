@@ -710,13 +710,14 @@ public class ApiKindController {
     public ResponseEntity<String> updateUnitKindFromJsonArray(@RequestBody List<UnitKind> unitKinds) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+		Collection<UnitKind> newUnitKinds = new ArrayList<UnitKind>();
         for (UnitKind UnitKind_: unitKinds) {
             if (UnitKind_.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
-            unitKinds.add(UnitKind_);
+            newUnitKinds.add(UnitKind_);
         }
-        return new ResponseEntity<String>(UnitKind.toJsonArray(unitKinds), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(UnitKind.toJsonArray(newUnitKinds), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/unitkinds/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -762,13 +763,14 @@ public class ApiKindController {
 
 	@RequestMapping(value = "/valuekinds/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createValueKindFromJsonArray(@RequestBody List<ValueKind> valueKinds) {
+		Collection<ValueKind> newValueKinds = new ArrayList<ValueKind>();
         for (ValueKind ValueKind_: valueKinds) {
             ValueKind_.persist();
-            valueKinds.add(ValueKind_);
+            newValueKinds.add(ValueKind_);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(ValueKind.toJsonArray(valueKinds), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(ValueKind.toJsonArray(newValueKinds), headers, HttpStatus.CREATED);
     }
 
 	@RequestMapping(value = "/valuekinds/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -785,13 +787,14 @@ public class ApiKindController {
     public ResponseEntity<String> updateValueKindFromJsonArray(@RequestBody List<ValueKind> valueKinds) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+		Collection<ValueKind> newValueKinds = new ArrayList<ValueKind>();
         for (ValueKind ValueKind_: valueKinds) {
             if (ValueKind_.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
-            valueKinds.add(ValueKind_);
+            newValueKinds.add(ValueKind_);
         }
-        return new ResponseEntity<String>(ValueKind.toJsonArray(valueKinds), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(ValueKind.toJsonArray(newValueKinds), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/valuekinds/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -837,13 +840,14 @@ public class ApiKindController {
 
 	@RequestMapping(value = "/interactionkinds/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createInteractionKindFromJsonArray(@RequestBody List<InteractionKind> interactionKinds) {
+		Collection<InteractionKind> newInteractionKinds = new ArrayList<InteractionKind>();
         for (InteractionKind InteractionKind_: interactionKinds) {
             InteractionKind_.persist();
-            interactionKinds.add(InteractionKind_);
+            newInteractionKinds.add(InteractionKind_);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(InteractionKind.toJsonArray(interactionKinds), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(InteractionKind.toJsonArray(newInteractionKinds), headers, HttpStatus.CREATED);
     }
 
 	@RequestMapping(value = "/interactionkinds/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -860,13 +864,14 @@ public class ApiKindController {
     public ResponseEntity<String> updateInteractionKindFromJsonArray(@RequestBody List<InteractionKind> interactionKinds) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+		Collection<InteractionKind> newInteractionKinds = new ArrayList<InteractionKind>();
         for (InteractionKind InteractionKind_: interactionKinds) {
             if (InteractionKind_.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
-            interactionKinds.add(InteractionKind_);
+            newInteractionKinds.add(InteractionKind_);
         }
-        return new ResponseEntity<String>(InteractionKind.toJsonArray(interactionKinds), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(InteractionKind.toJsonArray(newInteractionKinds), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/interactionkinds/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")

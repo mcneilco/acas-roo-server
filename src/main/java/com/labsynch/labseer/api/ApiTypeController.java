@@ -712,13 +712,14 @@ public class ApiTypeController {
     public ResponseEntity<String> updateUnitTypeFromJsonArray(@RequestBody List<UnitType> unitTypes) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+		Collection<UnitType> newUnitTypes = new ArrayList<UnitType>();
         for (UnitType UnitType_: unitTypes) {
             if (UnitType_.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
             unitTypes.add(UnitType_);
         }
-        return new ResponseEntity<String>(UnitType.toJsonArray(unitTypes), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(UnitType.toJsonArray(newUnitTypes), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/unittypes/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -764,13 +765,14 @@ public class ApiTypeController {
 
 	@RequestMapping(value = "/valuetypes/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createValueTypeFromJsonArray(@RequestBody List<ValueType> valueTypes) {
+		Collection<ValueType> newValueTypes = new ArrayList<ValueType>();
         for (ValueType ValueType_: valueTypes) {
             ValueType_.persist();
-            valueTypes.add(ValueType_);
+            newValueTypes.add(ValueType_);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(ValueType.toJsonArray(valueTypes), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(ValueType.toJsonArray(newValueTypes), headers, HttpStatus.CREATED);
     }
 
 	@RequestMapping(value = "/valuetypes/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -787,13 +789,14 @@ public class ApiTypeController {
     public ResponseEntity<String> updateValueTypeFromJsonArray(@RequestBody List<ValueType> valueTypes) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+		Collection<ValueType> newValueTypes = new ArrayList<ValueType>();
         for (ValueType ValueType_: valueTypes) {
             if (ValueType_.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
-            valueTypes.add(ValueType_);
+            newValueTypes.add(ValueType_);
         }
-        return new ResponseEntity<String>(ValueType.toJsonArray(valueTypes), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(ValueType.toJsonArray(newValueTypes), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/valuetypes/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -863,13 +866,14 @@ public class ApiTypeController {
     public ResponseEntity<String> updateInteractionTypeFromJsonArray(@RequestBody List<InteractionType> interactionTypes) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+		Collection<InteractionType> newInteractionTypes = new ArrayList<InteractionType>();
         for (InteractionType InteractionType_: interactionTypes) {
             if (InteractionType_.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
-            interactionTypes.add(InteractionType_);
+            newInteractionTypes.add(InteractionType_);
         }
-        return new ResponseEntity<String>(InteractionType.toJsonArray(interactionTypes), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(InteractionType.toJsonArray(newInteractionTypes), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/interactiontypes/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
