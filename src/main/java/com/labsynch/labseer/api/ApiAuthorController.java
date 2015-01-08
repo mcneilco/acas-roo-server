@@ -118,17 +118,17 @@ public class ApiAuthorController {
         }
     }
     
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
-        Author author = Author.findAuthor(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        if (author == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.OK);
-    }
+//    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+//    @ResponseBody
+//    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
+//        Author author = Author.findAuthor(id);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("Content-Type", "application/json; charset=utf-8");
+//        if (author == null) {
+//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+//        }
+//        return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.OK);
+//    }
 
     @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
