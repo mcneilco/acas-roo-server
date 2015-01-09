@@ -28,6 +28,7 @@ import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.CurveFitDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.FlagWellDTO;
+import com.labsynch.labseer.dto.KiCurveFitDTO;
 import com.labsynch.labseer.dto.RawCurveDataDTO;
 import com.labsynch.labseer.dto.TgDataDTO;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -39,22 +40,42 @@ public class ApiCurveFitController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ApiCurveFitController.class);
 	
-	@ApiOperation(value="getFitDataByCurveId", notes="get fit data by curve id in format: [{\"curveId\":????????},{\"curveId\":????????}]")
+	@ApiOperation(value="getFitDataByCurveId")
 	@Transactional
     @RequestMapping(value = "/fitdata", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> getFitDataByCurveId(@RequestBody List<CurveFitDTO> curveFitDTOs, @RequestParam(value = "format", required = false) String format) {
-        try {
-			Collection<CurveFitDTO> filledCurveFitDTOs = CurveFitDTO.getFitData(curveFitDTOs);
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
-			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
-				String outFileString = CurveFitDTO.getCsvList(filledCurveFitDTOs, format);
-				outFileString = outFileString.replaceAll("\"\"", "\\\"");
-//				this very confusing regex replaces "" with \" to reverse an unintended conversion by supercsv.
-			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
-			} else {
-			    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(filledCurveFitDTOs), headers, HttpStatus.OK);
+    public ResponseEntity<String> getFitDataByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		try {
+        	//This route currently assumes that all the curveIds specified have the same rendering hint. It will not pull back the correct data if a mix of rendering hints is expected.
+			String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
+			if (renderingHint.equalsIgnoreCase("4 parameter D-R")){
+				Collection<CurveFitDTO> filledCurveFitDTOs = CurveFitDTO.getFitData(curveIds);
+				if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+					String outFileString = CurveFitDTO.getCsvList(filledCurveFitDTOs, format);
+					outFileString = outFileString.replaceAll("\"\"", "\\\"");
+//					this very confusing regex replaces "" with \" to reverse an unintended conversion by supercsv.
+				    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+				} else {
+				    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(filledCurveFitDTOs), headers, HttpStatus.OK);
+				}
 			}
+			else if (renderingHint.equalsIgnoreCase("Ki Fit")){
+				Collection<KiCurveFitDTO> filledKiCurveFitDTOs = KiCurveFitDTO.getFitData(curveIds);
+				if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+					String outFileString = KiCurveFitDTO.getCsvList(filledKiCurveFitDTOs, format);
+					outFileString = outFileString.replaceAll("\"\"", "\\\"");
+//					this very confusing regex replaces "" with \" to reverse an unintended conversion by supercsv.
+				    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+				} else {
+				    return new ResponseEntity<String>(KiCurveFitDTO.toJsonArray(filledKiCurveFitDTOs), headers, HttpStatus.OK);
+				}
+			} else {
+				String errorMessage = "ERROR: Rendering hint: " + renderingHint + " not recognized.";
+				logger.error(errorMessage);
+				return new ResponseEntity<String>(errorMessage, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
 		} catch (Exception e) {
 			String error = e.getMessage() + e.getStackTrace();
 	    	logger.error("Caught error: "+error);
@@ -88,9 +109,9 @@ public class ApiCurveFitController {
 	
 	@Transactional
 	@RequestMapping(value = "/tgdata", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> getTgDataByCurveId(@RequestBody List<TgDataDTO> tgDataDTOs, @RequestParam(value = "format", required = false) String format) {
+	public ResponseEntity<String> getTgDataByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format) {
 		try {
-			Collection<TgDataDTO> filledTgDataDTOs = TgDataDTO.getTgData(tgDataDTOs);
+			Collection<TgDataDTO> filledTgDataDTOs = TgDataDTO.getTgData(curveIds);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
@@ -111,17 +132,38 @@ public class ApiCurveFitController {
     @RequestMapping(value = "/fitdata", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> getFitDataByExperimentIdOrCodeName(@RequestParam(value = "experiment") String experimentIdOrCodeName, 
     		@RequestParam(value = "format", required = false) String format) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
         try {
-			Collection<CurveFitDTO> curveFitDTOs = CurveFitDTO.getFitDataByExperiment(experimentIdOrCodeName);
-			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-Type", "application/json");
-			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
-				String outFileString = CurveFitDTO.getCsvList(curveFitDTOs, format);
-				outFileString = outFileString.replaceAll("\"\"", "\\\"");
-			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
-			} else {
-			    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(curveFitDTOs), headers, HttpStatus.OK);
+        	List<String> curveIds = (List<String>) CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
+        	String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
+			if (renderingHint.equalsIgnoreCase("4 parameter D-R")){
+				Collection<CurveFitDTO> filledCurveFitDTOs = CurveFitDTO.getFitData(curveIds);
+				if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+					String outFileString = CurveFitDTO.getCsvList(filledCurveFitDTOs, format);
+					outFileString = outFileString.replaceAll("\"\"", "\\\"");
+//					this very confusing regex replaces "" with \" to reverse an unintended conversion by supercsv.
+				    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+				} else {
+				    return new ResponseEntity<String>(CurveFitDTO.toJsonArray(filledCurveFitDTOs), headers, HttpStatus.OK);
+				}
 			}
+			else if (renderingHint.equalsIgnoreCase("Ki Fit")){
+				Collection<KiCurveFitDTO> filledKiCurveFitDTOs = KiCurveFitDTO.getFitData(curveIds);
+				if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+					String outFileString = KiCurveFitDTO.getCsvList(filledKiCurveFitDTOs, format);
+					outFileString = outFileString.replaceAll("\"\"", "\\\"");
+//					this very confusing regex replaces "" with \" to reverse an unintended conversion by supercsv.
+				    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+				} else {
+				    return new ResponseEntity<String>(KiCurveFitDTO.toJsonArray(filledKiCurveFitDTOs), headers, HttpStatus.OK);
+				}
+			} else {
+				String errorMessage = "ERROR: Rendering hint: " + renderingHint + " not recognized.";
+				logger.error(errorMessage);
+				return new ResponseEntity<String>(errorMessage, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			
 		} catch (Exception e) {
 			String error = e.getMessage() + e.getStackTrace();
 	    	logger.error("Caught error: "+error);
@@ -178,6 +220,22 @@ public class ApiCurveFitController {
     public ResponseEntity<String> updateFitDataFromJson(@RequestBody List<CurveFitDTO> curveFitDTOs) {
 	    try {
 			CurveFitDTO.updateFitData(curveFitDTOs);
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Type", "application/json");
+			return new ResponseEntity<String>(headers, HttpStatus.OK);
+		} catch (Exception e) {
+	    	String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+error);
+	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+    }
+	
+	@Transactional
+    @RequestMapping(value = "/ki", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> updateKiFitDataFromJson(@RequestBody List<KiCurveFitDTO> curveFitDTOs) {
+	    try {
+			KiCurveFitDTO.updateFitData(curveFitDTOs);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
 			return new ResponseEntity<String>(headers, HttpStatus.OK);
