@@ -81,7 +81,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@Override
 	@Transactional
 	public Experiment updateExperiment(Experiment jsonExperiment){
-		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
+//		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
 		logger.debug("recorded by: " + jsonExperiment.getRecordedBy());
 
 		Experiment updatedExperiment = Experiment.update(jsonExperiment);
@@ -134,7 +134,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			}
 		}
 
-		logger.debug("updatedExperiment: " + updatedExperiment.toPrettyJson());
+//		logger.debug("updatedExperiment: " + updatedExperiment.toPrettyJson());
 		return updatedExperiment;
 
 	}
