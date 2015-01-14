@@ -109,7 +109,7 @@ public class ApiValueController {
 
 	//special path
 	
-	@RequestMapping(value = "/{entity}/{idOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/", method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value = "values/{entity}/{idOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/", method = RequestMethod.PUT, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
 	public ResponseEntity<String> putValueByPath (
