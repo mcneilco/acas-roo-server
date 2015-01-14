@@ -381,8 +381,10 @@ public class CurveFitDTO {
 		String recordedBy = curveFitDTO.getRecordedBy();
 		String batchCode = curveFitDTO.getBatchCode();
 		AnalysisGroupValue batchCodeValue = createCurveFitValue(state, "codeValue", "batch code", curveFitDTO.getBatchCode(), recordedBy);
+		batchCodeValue.setPublicData(true);
 		newValues.add(batchCodeValue);
 		AnalysisGroupValue curveIdValue = createCurveFitValue(state, "stringValue", "curve id", curveFitDTO.getCurveId(), recordedBy);
+		curveIdValue.setPublicData(true);
 		newValues.add(curveIdValue);
 		//all the rest of the fields (may be null)
 		String category = curveFitDTO.getCategory();
@@ -427,10 +429,12 @@ public class CurveFitDTO {
 			minValue.setUncertaintyType(curveFitDTO.getMinUncertaintyType());
 			minValue.setOperatorKind(curveFitDTO.getMinOperatorKind());
 			minValue.setCodeValue(batchCode);
+			minValue.setPublicData(true);
 			newValues.add(minValue);
 		} else {
 			AnalysisGroupValue minValue = createCurveFitValue(state, "stringValue", "Min", min, recordedBy);
 			minValue.setCodeValue(batchCode);
+			minValue.setPublicData(true);
 			newValues.add(minValue);
 		}
 		if (!(max==null) && SimpleUtil.isDecimalNumeric(max)) {
@@ -440,10 +444,12 @@ public class CurveFitDTO {
 			maxValue.setUncertaintyType(curveFitDTO.getMaxUncertaintyType());
 			maxValue.setOperatorKind(curveFitDTO.getMaxOperatorKind());
 			maxValue.setCodeValue(batchCode);
+			maxValue.setPublicData(true);
 			newValues.add(maxValue);
 		} else {
 			AnalysisGroupValue maxValue = createCurveFitValue(state, "stringValue", "Max", max, recordedBy);
 			maxValue.setCodeValue(batchCode);
+			maxValue.setPublicData(true);
 			newValues.add(maxValue);
 		}
 		if (!(ec50==null) && SimpleUtil.isDecimalNumeric(ec50)) {
@@ -453,10 +459,12 @@ public class CurveFitDTO {
 			ec50Value.setUncertaintyType(curveFitDTO.getEc50UncertaintyType());
 			ec50Value.setOperatorKind(curveFitDTO.getEc50OperatorKind());
 			ec50Value.setCodeValue(batchCode);
+			ec50Value.setPublicData(true);
 			newValues.add(ec50Value);
 		} else {
 			AnalysisGroupValue ec50Value = createCurveFitValue(state, "stringValue", "EC50", ec50, recordedBy);
 			ec50Value.setCodeValue(batchCode);
+			ec50Value.setPublicData(true);
 			newValues.add(ec50Value);
 		}
 		if (!(slope==null) && SimpleUtil.isDecimalNumeric(slope)) {
@@ -465,10 +473,12 @@ public class CurveFitDTO {
 			slopeValue.setUncertainty(curveFitDTO.getSlopeUncertainty());
 			slopeValue.setUncertaintyType(curveFitDTO.getSlopeUncertaintyType());
 			slopeValue.setOperatorKind(curveFitDTO.getSlopeOperatorKind());
+			slopeValue.setPublicData(true);
 			newValues.add(slopeValue);
 		} else {
 			AnalysisGroupValue slopeValue = createCurveFitValue(state, "stringValue", "Slope", slope, recordedBy);
 			slopeValue.setCodeValue(batchCode);
+			slopeValue.setPublicData(true);
 			newValues.add(slopeValue);
 		}
 		//Remaining non-special numericValues

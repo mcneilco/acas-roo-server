@@ -391,8 +391,10 @@ public class KiCurveFitDTO {
 		String recordedBy = curveFitDTO.getRecordedBy();
 		String batchCode = curveFitDTO.getBatchCode();
 		AnalysisGroupValue batchCodeValue = createCurveFitValue(state, "codeValue", "batch code", curveFitDTO.getBatchCode(), recordedBy);
+		batchCodeValue.setPublicData(true);
 		newValues.add(batchCodeValue);
 		AnalysisGroupValue curveIdValue = createCurveFitValue(state, "stringValue", "curve id", curveFitDTO.getCurveId(), recordedBy);
+		curveIdValue.setPublicData(true);
 		newValues.add(curveIdValue);
 		//all the rest of the fields (may be null)
 		String category = curveFitDTO.getCategory();
@@ -436,10 +438,12 @@ public class KiCurveFitDTO {
 			minValue.setUncertainty(curveFitDTO.getMinUncertainty());
 			minValue.setUncertaintyType(curveFitDTO.getMinUncertaintyType());
 			minValue.setOperatorKind(curveFitDTO.getMinOperatorKind());
+			minValue.setPublicData(true);
 			newValues.add(minValue);
 		} else {
 			AnalysisGroupValue minValue = createCurveFitValue(state, "stringValue", "Min", min, recordedBy);
 			minValue.setCodeValue(batchCode);
+			minValue.setPublicData(true);
 			newValues.add(minValue);
 		}
 		if (!(max==null) && SimpleUtil.isDecimalNumeric(max)) {
@@ -448,9 +452,11 @@ public class KiCurveFitDTO {
 			maxValue.setUncertainty(curveFitDTO.getMaxUncertainty());
 			maxValue.setUncertaintyType(curveFitDTO.getMaxUncertaintyType());
 			maxValue.setOperatorKind(curveFitDTO.getMaxOperatorKind());
+			maxValue.setPublicData(true);
 			newValues.add(maxValue);
 		} else {
 			AnalysisGroupValue maxValue = createCurveFitValue(state, "stringValue", "Max", max, recordedBy);
+			maxValue.setPublicData(true);
 			newValues.add(maxValue);
 		}
 		if (!(ki==null) && SimpleUtil.isDecimalNumeric(ki)) {
@@ -459,10 +465,12 @@ public class KiCurveFitDTO {
 			kiValue.setUncertainty(curveFitDTO.getKiUncertainty());
 			kiValue.setUncertaintyType(curveFitDTO.getKiUncertaintyType());
 			kiValue.setOperatorKind(curveFitDTO.getKiOperatorKind());
+			kiValue.setPublicData(true);
 			newValues.add(kiValue);
 		} else {
 			AnalysisGroupValue kiValue = createCurveFitValue(state, "stringValue", "Ki", ki, recordedBy);
 			kiValue.setCodeValue(batchCode);
+			kiValue.setPublicData(true);
 			newValues.add(kiValue);
 		}
 		//Remaining non-special numericValues
