@@ -179,5 +179,9 @@ public class TgDataDTO {
 		}
 		return tgDataDTOs;
 	}
+
+	public static Collection<TgDataDTO> getTgData(List<String> curveIds) {
+		return getTgData(makeTgDataDTOsFromCurveIdList(curveIds));
+	}
 	
 }
