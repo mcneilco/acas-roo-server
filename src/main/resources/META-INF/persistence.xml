@@ -20,9 +20,9 @@
 			<property name="hibernate.cache.use_query_cache" value="false" />			
 			<property name="hibernate.cache.use_second_level_cache" value="false" />			
 			<property name="hibernate.jdbc.fetch_size" value="25"/>
-			<property name="hibernate.jdbc.batch_size" value="25" />
-			<property name="hibernate.order_inserts" value="false" />
-			<property name="hibernate.order_updates" value="false" />
+			<property name="hibernate.jdbc.batch_size" value="250" />
+			<property name="hibernate.order_inserts" value="true" />
+			<property name="hibernate.order_updates" value="true" />
 			<!-- property name="optimistic-lock" value="none" / -->
 			<property name="hibernate.jdbc.batch_versioned_data" value="false" />
 			<property name="show_sql" value="true" />

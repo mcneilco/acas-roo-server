@@ -70,7 +70,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 	@Override
 	public TreatmentGroup saveLsTreatmentGroup(TreatmentGroup treatmentGroup){
 
-		logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
+		// logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
 		Date recordedDate = new Date();		
 		return saveLsTreatmentGroup(treatmentGroup.getAnalysisGroups(), treatmentGroup, recordedDate);
 
@@ -80,7 +80,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 	@Transactional
 	public TreatmentGroup saveLsTreatmentGroup(Set<AnalysisGroup> analysisGroups, TreatmentGroup treatmentGroup, Date recordedDate){
 
-		//logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
+		//// logger.debug("incoming meta treatmentGroup: " + treatmentGroup.toJson());
 		TreatmentGroup newTreatmentGroup = null;
 
 		if (treatmentGroup.getId() == null){
@@ -96,12 +96,12 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 				newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));				
 			}
 			newTreatmentGroup.persist();
-			logger.debug("persisted the new treatmentGroup: " + newTreatmentGroup.toJson());
+			// logger.debug("persisted the new treatmentGroup: " + newTreatmentGroup.toJson());
 
 			saveLabels(treatmentGroup, newTreatmentGroup, recordedDate);
 			saveStates(treatmentGroup, newTreatmentGroup, recordedDate);
 
-			logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(treatmentGroup.getSubjects()));
+			// logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(treatmentGroup.getSubjects()));
 			saveSubjects(newTreatmentGroup, treatmentGroup.getSubjects(), recordedDate);
 
 
@@ -111,9 +111,9 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 				newTreatmentGroup.getAnalysisGroups().add(AnalysisGroup.findAnalysisGroup(analysisGroup.getId()));				
 			}
 			newTreatmentGroup.merge();
-			logger.debug("updated the treatmentGroup: -------------- " + newTreatmentGroup.toJson());
+			// logger.debug("updated the treatmentGroup: -------------- " + newTreatmentGroup.toJson());
 			if (treatmentGroup.getSubjects() != null){
-				logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(newTreatmentGroup.getSubjects()));
+				// logger.debug("look at subjects: ------------------ " + Subject.toJsonArray(newTreatmentGroup.getSubjects()));
 				saveSubjects(newTreatmentGroup, newTreatmentGroup.getSubjects(), recordedDate);				
 			}
 		}
@@ -162,7 +162,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 	@Transactional
 	public TreatmentGroup updateTreatmentGroup(TreatmentGroup treatmentGroup){
 
-		logger.info("incoming meta treatmentGroup to update: " + treatmentGroup.toJson());
+		// logger.info("incoming meta treatmentGroup to update: " + treatmentGroup.toJson());
 
 		TreatmentGroup updatedTreatmentGroup = TreatmentGroup.update(treatmentGroup);
 
@@ -190,7 +190,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 					treatmentGroupState.setId(newTreatmentGroupState.getId());
 				} else {
 					TreatmentGroupState updatedTreatmentGroupState = TreatmentGroupState.update(treatmentGroupState);
-					logger.debug(updatedTreatmentGroupState.toJson());
+					// logger.debug(updatedTreatmentGroupState.toJson());
 				}
 				if (treatmentGroupState.getLsValues() != null){
 					for(TreatmentGroupValue treatmentGroupValue : treatmentGroupState.getLsValues()){
@@ -200,7 +200,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 							treatmentGroupValue.persist();
 						} else {
 							TreatmentGroupValue updatedTreatmentGroupValue = TreatmentGroupValue.update(treatmentGroupValue);
-							logger.debug(updatedTreatmentGroupValue.toJson());
+							// logger.debug(updatedTreatmentGroupValue.toJson());
 						}
 
 					}				
@@ -263,7 +263,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 		HashMap<String, TempThingDTO> treatmentValueMap = new HashMap<String, TempThingDTO>();
 
 		try {
-			logger.info("read csv delimited file");
+			// logger.info("read csv delimited file");
 			InputStream is = new FileInputStream(treatmentGroupFilePath);  
 			InputStreamReader isr = new InputStreamReader(is);  
 			BufferedReader br = new BufferedReader(isr);
@@ -274,17 +274,17 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			List<String> headerList = new ArrayList<String>();
 			int position = 0;
 			for (String head : headerText){
-				logger.info("header column: " + position + "  " + head);
+				// logger.info("header column: " + position + "  " + head);
 				headerList.add(head);
 				position++;
 			}
 
-			logger.info("size of header list  " + headerList.size());
+			// logger.info("size of header list  " + headerList.size());
 			String[] header = new String[headerList.size()];
 			headerList.toArray(header);
 
 			for (String head : header){
-				logger.debug("header column array : " + position + "  " + head);
+				// logger.debug("header column array : " + position + "  " + head);
 				position++;
 			}
 
@@ -298,7 +298,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			long rowIndex = 1;
 			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
 			while( (treatmentGroupDTO = beanReader.read(FlatThingCsvDTO.class, header, processors)) != null ) {
-				logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), treatmentGroupDTO));
+				// logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), treatmentGroupDTO));
 
 				if (treatmentGroupDTO.getLsType() == null) treatmentGroupDTO.setLsType("default");
 				if (treatmentGroupDTO.getLsKind() == null) treatmentGroupDTO.setLsKind("default");
@@ -314,19 +314,19 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 //					AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupMap.get(treatmentGroupDTO.getTempParentId()).getId());
 //					analysisGroup.getTreatmentGroups().add(treatmentGroup);
 //					analysisGroups.add(analysisGroup);
-					logger.debug("saved the new treatment Group: ID: " + treatmentGroup.getId() + " codeName" + treatmentGroup.getCodeName());
-					logger.debug("saved the new treatment group: " + treatmentGroup.toJson());
+					// logger.debug("saved the new treatment Group: ID: " + treatmentGroup.getId() + " codeName" + treatmentGroup.getCodeName());
+					// logger.debug("saved the new treatment group: " + treatmentGroup.toJson());
 					treatmentGroupMap = saveTempTreatmentGroup(treatmentGroup, treatmentGroupDTO, treatmentGroupMap);
 				}
 
 				if (treatmentGroupDTO.getStateType() != null && treatmentGroupDTO.getStateKind() != null){
 					if (treatmentGroupDTO.getTempStateId() == null) treatmentGroupDTO.setTempStateId(treatmentGroupDTO.getStateId().toString());
-					logger.debug("treatmentGroupDTO.getTempStateId() is " + treatmentGroupDTO.getTempStateId());
+					// logger.debug("treatmentGroupDTO.getTempStateId() is " + treatmentGroupDTO.getTempStateId());
 					treatmentGroupState = getOrCreateTreatmentState(treatmentGroupDTO, treatmentStateMap, treatmentGroupMap);
 					if (treatmentGroupState != null){
 						treatmentGroupState.persist();
-						logger.debug("saved the new treatment group state: " + treatmentGroupState.getId());
-						logger.debug("saved the new treatment group state: " + treatmentGroupState.toJson());
+						// logger.debug("saved the new treatment group state: " + treatmentGroupState.getId());
+						// logger.debug("saved the new treatment group state: " + treatmentGroupState.toJson());
 						treatmentStateMap = saveTempTreatmentState(treatmentGroupState, treatmentGroupDTO, treatmentStateMap);
 					}
 
@@ -335,7 +335,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 						treatmentGroupValue = getOrCreateTreatmentValue(treatmentGroupDTO, treatmentValueMap, treatmentStateMap);
 						if (treatmentGroupValue != null){
 							treatmentGroupValue.persist();
-							logger.debug("saved the treatment Group Value: " + treatmentGroupValue.toJson());
+							// logger.debug("saved the treatment Group Value: " + treatmentGroupValue.toJson());
 							if ( rowIndex % batchSize == 0 ) {
 								treatmentGroupValue.flush();
 								treatmentGroupValue.clear();
@@ -344,19 +344,19 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 						}
 					}
 				} else {
-					logger.debug("---------- not saving a new treatment group state: " + treatmentGroupDTO.getStateType());
+					// logger.debug("---------- not saving a new treatment group state: " + treatmentGroupDTO.getStateType());
 				}
 
 				rowIndex++;
 			}
 //			Long beforeMerge = new Date().getTime();
-//			logger.info("Number of AnalysisGroups to merge: "+ analysisGroups.size());
+//			// logger.info("Number of AnalysisGroups to merge: "+ analysisGroups.size());
 //			for (AnalysisGroup analysisGroup: analysisGroups) {
 //				analysisGroup.merge();	
 //			}
 //			Long afterMerge = new Date().getTime();
 //			Long mergeDuration = afterMerge - beforeMerge;
-//			logger.info("Merging AnalysisGroups took: "+ mergeDuration + " ms");
+//			// logger.info("Merging AnalysisGroups took: "+ mergeDuration + " ms");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -389,17 +389,17 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 		if (!treatmentValueMap.containsKey(treatmentGroupDTO.getTempValueId())){
 			if (treatmentGroupDTO.getValueId() == null){
 				treatmentGroupValue = new TreatmentGroupValue(treatmentGroupDTO);
-				logger.debug("query state: " + treatmentGroupDTO.getTempStateId());
+				// logger.debug("query state: " + treatmentGroupDTO.getTempStateId());
 				Set<String> treatmentStateKeys = treatmentStateMap.keySet();
 				for (String key : treatmentStateKeys){
-					logger.debug("treatmentStateKey: " + key);
+					// logger.debug("treatmentStateKey: " + key);
 				}
 				treatmentGroupValue.setLsState(TreatmentGroupState.findTreatmentGroupState(treatmentStateMap.get(treatmentGroupDTO.getTempStateId()).getId()));				
 			} else {
 				treatmentGroupValue = TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupDTO.getValueId());
 			}
 		} else {
-			logger.debug("skipping the saved treatmentGroupValue --------- " + treatmentGroupDTO.getValueId());
+			// logger.debug("skipping the saved treatmentGroupValue --------- " + treatmentGroupDTO.getValueId());
 		}
 
 		return treatmentGroupValue;
@@ -413,7 +413,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 		TempThingDTO tempThingDTO = new TempThingDTO();
 		tempThingDTO.setId(treatmentGroupState.getId());
 		tempThingDTO.setTempId(treatmentGroupDTO.getTempStateId());
-		logger.debug("saving the temp state: " + tempThingDTO.getTempId());
+		// logger.debug("saving the temp state: " + tempThingDTO.getTempId());
 		treatmentStateMap.put(treatmentGroupDTO.getTempStateId(), tempThingDTO);
 
 		return treatmentStateMap;		
@@ -433,7 +433,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 				treatmentGroupState = TreatmentGroupState.findTreatmentGroupState(treatmentGroupDTO.getStateId());
 			}
 		} else {
-			logger.debug("skipping the saved treatmentGroupState --------- " + treatmentGroupDTO.getStateId());
+			// logger.debug("skipping the saved treatmentGroupState --------- " + treatmentGroupDTO.getStateId());
 		}
 
 		return treatmentGroupState;
@@ -465,11 +465,11 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 					treatmentGroup = new TreatmentGroup(treatmentGroupDTO);
 					if (treatmentGroup.getCodeName() == null){
 						String newCodeName = autoLabelService.getTreatmentGroupCodeName();
-						logger.debug("------------------ new codeName: " + newCodeName);
+						// logger.debug("------------------ new codeName: " + newCodeName);
 						treatmentGroup.setCodeName(newCodeName);
 					}
 				} else {
-					logger.debug("the temp parent ID is null" + treatmentGroupDTO.getTempParentId());
+					// logger.debug("the temp parent ID is null" + treatmentGroupDTO.getTempParentId());
 				}
 			} else {
 				treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupDTO.getId());
@@ -484,7 +484,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 			}
 
 		} else {
-			logger.debug("skipping the previously saved treatmentGroup --------- " + treatmentGroupDTO.getCodeName());
+			// logger.debug("skipping the previously saved treatmentGroup --------- " + treatmentGroupDTO.getCodeName());
 		}
 		return treatmentGroup;
 	}
