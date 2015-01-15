@@ -1,5 +1,7 @@
 package com.labsynch.labseer.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
@@ -24,6 +26,10 @@ public interface LsThingService {
 	PreferredNameResultsDTO getPreferredNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind,
 			PreferredNameRequestDTO requestDTO);
+
+	boolean validateComponentName(String componentName);
+
+	boolean validateAssembly(List<String> componentCodeNames);
 	
 	
 	

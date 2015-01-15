@@ -130,6 +130,23 @@ public class ApiLsThingController {
 		}
     	return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/validatename/component", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> validateComponentName(@RequestBody String componentName) {
+    	boolean isValid = lsThingService.validateComponentName(componentName);
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(String.valueOf(isValid), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/validatename/assembly", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> validateAssembly(@RequestBody List<String> componentCodeNames) {
+    	boolean isValid = lsThingService.validateAssembly(componentCodeNames);
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(String.valueOf(isValid), headers, HttpStatus.OK);
+    }
+
 
 	
 }

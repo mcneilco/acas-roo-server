@@ -1,16 +1,20 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.CodeTableDTO;
@@ -247,5 +251,74 @@ public class LsThingServiceImpl implements LsThingService {
 		logger.info(responseOutput.toJson());
 		
 		return responseOutput;
+	}
+
+
+	@Override
+	public boolean validateComponentName(String componentName) {
+		Collection<LsThing> foundLsThings = null;
+		boolean isValid = true;
+		try{
+			foundLsThings = LsThing.findLsThingByLabelText(componentName).getResultList();
+		} catch (EmptyResultDataAccessException e){
+			return true;
+		}
+		if (foundLsThings!=null){
+			return false;
+		}
+		return isValid;
+	}
+
+
+	@Override
+	public boolean validateAssembly(List<String> componentCodeNames) {
+		HashSet<LsThing> assemblySet = null;
+		int order = 0;
+		boolean isValid = true;
+		for (String componentCodeName : componentCodeNames){
+			LsThing component = LsThing.findLsThingsByCodeNameEquals(componentCodeName).getSingleResult();
+			order+=1;
+			if (assemblySet == null){
+				//on the first component, instantiate the HashSet, add all the assemblies with component and order (order in list, starting with 1)
+				assemblySet = new HashSet<LsThing>();
+				assemblySet.addAll(findAssembliesByComponentAndOrder(component, order));
+			} else{
+				//otherwise, filter the existing list to be the intersection of the results of this component/order with those from the last
+				assemblySet.retainAll(findAssembliesByComponentAndOrder(component, order));
+			}
+		}
+		if (assemblySet != null & !assemblySet.isEmpty()){
+			//if anything remains, it was found for every component with the correct order.
+			//It's a match, which means the assembly described by componentCodeNames is not unique
+			return false;
+		}
+		//iterate through the list backwards and do the same, in case the order was simply reversed (not a unique assembly)
+		order = 0;
+		ListIterator<String> li = componentCodeNames.listIterator(componentCodeNames.size());
+		while(li.hasPrevious()) {
+			String componentCodeName = li.previous();
+			LsThing component = LsThing.findLsThingsByCodeNameEquals(componentCodeName).getSingleResult();
+			order+=1;
+			if (assemblySet == null){
+				assemblySet = new HashSet<LsThing>();
+				assemblySet.addAll(findAssembliesByComponentAndOrder(component, order));
+			} else{
+				assemblySet.retainAll(findAssembliesByComponentAndOrder(component, order));
+			}
+		}
+		if (assemblySet != null & !assemblySet.isEmpty()){
+			return false;
+		}
+		
+		return isValid;
+	}
+	
+	private static Collection<LsThing> findAssembliesByComponentAndOrder(LsThing component, int order){
+		Collection<ItxLsThingLsThing> interactions = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals("incorporates", "assembly_component", component).getResultList();
+		Collection<LsThing> assemblies = new HashSet<LsThing>();
+		for (ItxLsThingLsThing interaction : interactions){
+			if (interaction.getOrder() == order) assemblies.add(interaction.getFirstLsThing());
+		}
+		return assemblies;
 	}
 }

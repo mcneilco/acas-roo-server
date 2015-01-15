@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
@@ -69,7 +70,34 @@ public class LsThingServiceTests {
 		
 	}
 	
+	@Test
+	@Transactional
+	public void findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndFirstLsThingEquals(){
+		//TODO
+	}
 	
+	@Test
+	@Transactional
+	public void findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals(){
+		//TODO
+	}
 	
+	@Test
+	@Transactional
+	public void getOrder(){
+		//TODO
+	}
+	
+	@Test
+	@Transactional
+	public void validateComponent(){
+		//TODO
+	}
+	
+	@Test
+	@Transactional
+	public void validateAssembly(){
+		//TODO
+	}
 
 }
