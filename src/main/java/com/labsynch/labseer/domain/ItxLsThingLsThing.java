@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -100,5 +103,73 @@ public class ItxLsThingLsThing extends AbstractThing {
         		.use("values", ItxLsThingLsThing.class)
         		.use(BigDecimal.class, new CustomBigDecimalFactory())
         		.deserialize(json);
+    }
+    
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndFirstLsThingEquals(String lsType, String lsKind, LsThing firstLsThing){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND o.firstLsThing = :firstLsThing ";
+        
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("firstLsThing", firstLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals(String lsType, String lsKind, LsThing secondLsThing){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND o.secondLsThing = :secondLsThing ";
+        
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public int getOrder() {
+    	EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT v.numericValue FROM ItxLsThingLsThingValue v " +
+				"JOIN v.lsState s " + 
+				"JOIN s.itxLsThingLsThing iltilt " +
+				"WHERE s.lsType = 'metadata' " +
+				"AND s.lsKind = 'composition' " +
+				"AND v.lsType = 'numericValue' " +
+				"AND v.lsKind = 'order' " +
+				"AND iltilt = :itxLsThingLsThing ";
+        
+        TypedQuery<Integer> q = em.createQuery(query, Integer.class);
+        q.setParameter("itxLsThingLsThing", this); 
+        int order;
+        try {
+        	order = q.getSingleResult();
+        } catch (EmptyResultDataAccessException e){
+        	order = -1;
+        }
+    	return order;
     }
 }
