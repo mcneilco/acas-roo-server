@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "experiments", "lsLabels" })
 @RooJson
-@RooJpaActiveRecord(finders = { "findProtocolsByCodeNameEquals", "findProtocolsByIgnoredNot", "findProtocolsByLsKindEquals", "findProtocolsByLsTypeEquals", "findProtocolsByLsTypeEqualsAndLsKindEquals", "findProtocolsByLsTypeAndKindEquals", "findProtocolsByLsTransactionEquals", "findProtocolsByRecordedByLike", "findProtocolsByLsKindLike", "findProtocolsByLsTypeLike", "findProtocolsByCodeNameEqualsAndIgnoredNot" })
+@RooJpaActiveRecord(finders = { "findProtocolsByCodeNameEquals", "findProtocolsByCodeNameLike", "findProtocolsByIgnoredNot", "findProtocolsByLsKindEquals", "findProtocolsByLsTypeEquals", "findProtocolsByLsTypeEqualsAndLsKindEquals", "findProtocolsByLsTypeAndKindEquals", "findProtocolsByLsTransactionEquals", "findProtocolsByRecordedByLike", "findProtocolsByLsKindLike", "findProtocolsByLsTypeLike", "findProtocolsByCodeNameEqualsAndIgnoredNot" })
 public class Protocol extends AbstractThing {
 
     private static final Logger logger = LoggerFactory.getLogger(Protocol.class);

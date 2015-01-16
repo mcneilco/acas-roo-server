@@ -277,7 +277,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 	public Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy) {
 		Collection<Long> protocolIdList = new HashSet<Long>();
 		if (searchBy == "CODENAME") {
-			List<Protocol> protocols = Protocol.findProtocolsByCodeNameEquals(queryString).getResultList();
+			List<Protocol> protocols = Protocol.findProtocolsByCodeNameLike(queryString).getResultList();
 			if (!protocols.isEmpty()){
 				for (Protocol protocol:protocols) {
 					protocolIdList.add(protocol.getId());

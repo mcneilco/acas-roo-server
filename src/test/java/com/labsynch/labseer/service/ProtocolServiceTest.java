@@ -192,7 +192,7 @@ public class ProtocolServiceTest {
 	//Cell Line
 	//Assay Stage
 	@Transactional
-	//@Test
+	@Test
 	public void protocolBrowserSearchTest() {
 		String name = "FLIPR target A biochemical";
 		String code = "PROT-00000005";
@@ -211,6 +211,12 @@ public class ProtocolServiceTest {
 		String query = name + " " + code + " " + kind  + " " + notebook;
 		logger.info("Searching with the query: "+ query);
 		Collection<Protocol> resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultProtocols.toString());
+		Assert.assertNotNull(resultProtocols);
+		code = "PROT-";
+		query = code;
+		logger.info("Searching with the query: "+ query);
+		resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
 		logger.info("Found: "+ resultProtocols.toString());
 		Assert.assertNotNull(resultProtocols);
 	}
