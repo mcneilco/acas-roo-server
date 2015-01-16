@@ -125,4 +125,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public String getClientFullPath() {
 	    return this.clientFullPath;
 	}
+
+	String uniqueLsThingName;
+	
+	@Value("${uniqueLsThingName}")
+	public void setUniqueLsThingName(String uniqueLsThingName) {
+	    this.uniqueLsThingName = uniqueLsThingName;
+	}
+	
+	@Override
+	public boolean getUniqueLsThingName() {
+		return Boolean.parseBoolean(this.uniqueLsThingName);
+	}
 }

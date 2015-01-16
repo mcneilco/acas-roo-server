@@ -1,7 +1,10 @@
 package com.labsynch.labseer.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -13,15 +16,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.domain.ExperimentState;
+import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.ItxLsThingLsThingState;
+import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.LsThingState;
+import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.exceptions.UniqueNameException;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
 public class LsThingServiceImpl implements LsThingService {
@@ -30,6 +46,9 @@ public class LsThingServiceImpl implements LsThingService {
 
 	@Autowired
 	private AutoLabelService autoLabelService;
+	
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@Override
 	public String getProjectCodes(){
@@ -268,6 +287,17 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		return isValid;
 	}
+	
+	@Override
+	public boolean validateComponentName(LsThing lsThing) {
+		boolean isValid = true;
+		Set<LsThingLabel> lsThingLabels = lsThing.getLsLabels();
+		for (LsThingLabel label : lsThingLabels){
+			String labelText = label.getLabelText();
+			if (!label.isIgnored()) isValid = validateComponentName(labelText);
+		}
+		return isValid;
+	}
 
 
 	@Override
@@ -313,6 +343,11 @@ public class LsThingServiceImpl implements LsThingService {
 		return isValid;
 	}
 	
+	@Override
+	public boolean validateAssembly(LsThing assembly){
+		return validateAssembly(getComponentCodeNamesFromNewAssembly(assembly));
+	}
+	
 	private static Collection<LsThing> findAssembliesByComponentAndOrder(LsThing component, int order){
 		Collection<ItxLsThingLsThing> interactions = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals("incorporates", "assembly_component", component).getResultList();
 		Collection<LsThing> assemblies = new HashSet<LsThing>();
@@ -320,5 +355,284 @@ public class LsThingServiceImpl implements LsThingService {
 			if (interaction.getOrder() == order) assemblies.add(interaction.getFirstLsThing());
 		}
 		return assemblies;
+	}
+	
+	public List<String> getComponentCodeNamesFromNewAssembly(LsThing assembly){
+		String componentsClob = getComponentsClobFromAssembly(assembly);
+		List<String> componentCodeNames = parseComponentsClob(componentsClob);
+		return componentCodeNames;
+	}
+	
+	private List<String> parseComponentsClob(String componentsClob) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	private static String getComponentsClobFromAssembly(LsThing assembly){
+		Collection<LsThingState> states = assembly.getLsStates();
+		Collection<LsThingValue> values = new HashSet<LsThingValue>();
+		for (LsThingState state : states ){
+			if (state.getLsType().equals("metadata")){
+				values.addAll(state.getLsValues());
+			}
+		}
+		for (LsThingValue value : values){
+			if (value.getLsType().equals("clobValue") && value.getLsKind().equals("components")){
+				String componentsClob = value.getClobValue();
+				return componentsClob;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	@Transactional
+	public LsThing updateLsThing(LsThing jsonLsThing){
+		logger.debug("incoming meta lsThing: " + jsonLsThing.toPrettyJson());
+		logger.debug("recorded by: " + jsonLsThing.getRecordedBy());
+
+		LsThing updatedLsThing = LsThing.update(jsonLsThing);
+		if (jsonLsThing.getLsLabels() != null) {
+			for(LsThingLabel lsThingLabel : jsonLsThing.getLsLabels()){
+				logger.debug("Label in hand: " + lsThingLabel.getLabelText());			
+				if (lsThingLabel.getId() == null){
+					LsThingLabel newLsThingLabel = new LsThingLabel(lsThingLabel);
+					newLsThingLabel.setLsThing(updatedLsThing);
+					newLsThingLabel.persist();
+					updatedLsThing.getLsLabels().add(newLsThingLabel);
+				} else {
+					LsThingLabel updatedLabel = LsThingLabel.update(lsThingLabel);
+					logger.debug("updated lsThing label " + updatedLabel.getId());
+				}
+			}			
+		} else {
+			logger.debug("No lsThing labels to update");
+		}
+
+		if(jsonLsThing.getLsStates() != null){
+			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
+				LsThingState updatedLsThingState;
+				if (lsThingState.getId() == null){
+					updatedLsThingState = new LsThingState(lsThingState);
+					updatedLsThingState.setLsThing(updatedLsThing);
+					updatedLsThingState.persist();
+					updatedLsThing.getLsStates().add(updatedLsThingState);
+				} else {
+					updatedLsThingState = LsThingState.update(lsThingState);
+					logger.debug("updated lsThing state " + lsThingState.getId());
+
+				}
+				if (lsThingState.getLsValues() != null){
+					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
+						LsThingValue updatedLsThingValue;
+						if (lsThingValue.getId() == null){
+							updatedLsThingValue = LsThingValue.create(lsThingValue);
+							updatedLsThingValue.setLsState(LsThingState.findLsThingState(lsThingState.getId()));
+							updatedLsThingValue.persist();
+							updatedLsThingState.getLsValues().add(updatedLsThingValue);
+						} else {
+							updatedLsThingValue = LsThingValue.update(lsThingValue);
+							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
+						}
+					}	
+				} else {
+					logger.debug("No lsThing values to update");
+				}
+			}
+		}
+
+		logger.debug("updatedLsThing: " + updatedLsThing.toPrettyJson());
+		return updatedLsThing;
+
+	}
+
+	@Override
+	@Transactional
+	public LsThing saveLsThing(LsThing lsThing) throws UniqueNameException{
+		boolean checkLsThingName = propertiesUtilService.getUniqueLsThingName();
+		return saveLsThing(lsThing, checkLsThingName);
+	}
+	
+	@Override
+	@Transactional
+	public LsThing saveLsThing(LsThing lsThing, boolean checkLsThingName) throws UniqueNameException{
+		logger.debug("incoming meta lsThing: " + lsThing.toJson());
+
+		//check if lsThing with the same name exists
+		if (checkLsThingName){
+			boolean lsThingExists = false;
+			Set<LsThingLabel> lsThingLabels = lsThing.getLsLabels();
+			for (LsThingLabel label : lsThingLabels){
+				String labelText = label.getLabelText();
+				List<LsThingLabel> foundLsThingLabels = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot(labelText, true).getResultList();	
+				for (LsThingLabel foundLabel : foundLsThingLabels){
+					LsThing foundLsThing = foundLabel.getLsThing();
+					//if the lsThing is not hard deleted or soft deleted, there is a name conflict
+					if (!foundLsThing.isIgnored()){
+						lsThingExists = true;
+					}
+				}
+			}
+
+			if (lsThingExists){
+				throw new UniqueNameException("LsThing with the same name exists");							
+			}
+		}
+
+		LsThing newLsThing = new LsThing(lsThing);
+
+		newLsThing.persist();
+		logger.debug("persisted the newLsThing: " + newLsThing.toJson());
+
+
+		if (lsThing.getLsLabels() != null) {
+			Set<LsThingLabel> lsLabels = new HashSet<LsThingLabel>();
+			for(LsThingLabel lsThingLabel : lsThing.getLsLabels()){
+				LsThingLabel newLsThingLabel = new LsThingLabel(lsThingLabel);
+				newLsThingLabel.setLsThing(newLsThing);
+				logger.debug("here is the newLsThingLabel before save: " + newLsThingLabel.toJson());
+				newLsThingLabel.persist();
+				lsLabels.add(newLsThingLabel);
+			}
+			newLsThing.setLsLabels(lsLabels);
+		} else {
+			logger.debug("No lsThing labels to save");
+		}
+
+		if(lsThing.getLsStates() != null){
+			Set<LsThingState> lsStates = new HashSet<LsThingState>();
+			for(LsThingState lsThingState : lsThing.getLsStates()){
+				LsThingState newLsThingState = new LsThingState(lsThingState);
+				newLsThingState.setLsThing(newLsThing);
+				logger.debug("here is the newLsThingState before save: " + newLsThingState.toJson());
+				newLsThingState.persist();
+				logger.debug("persisted the newLsThingState: " + newLsThingState.toJson());
+				if (lsThingState.getLsValues() != null){
+					Set<LsThingValue> lsValues = new HashSet<LsThingValue>();
+					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
+						logger.debug("lsThingValue: " + lsThingValue.toJson());
+						lsThingValue.setLsState(newLsThingState);
+						lsThingValue.persist();
+						lsValues.add(lsThingValue);
+						logger.debug("persisted the lsThingValue: " + lsThingValue.toJson());
+					}	
+					newLsThingState.setLsValues(lsValues);
+				} else {
+					logger.debug("No lsThing values to save");
+				}
+				lsStates.add(newLsThingState);
+			}
+			newLsThing.setLsStates(lsStates);
+		}
+
+		return newLsThing;
+	}
+	
+	@Override
+	@Transactional
+	public LsThing saveLsThing(LsThing lsThing, boolean isParent, boolean isBatch, boolean isAssembly, boolean isComponent, Long parentId) throws UniqueNameException{
+		//only check that the name is unique upon save if it's a parent and a component
+		boolean checkUniqueLsThingName = (isParent & isComponent);
+		LsThing savedLsThing = saveLsThing(lsThing, checkUniqueLsThingName);
+		//after saving the lsThing, save the necessary interactions
+		if (isBatch){
+			LsThing parent = LsThing.findLsThing(parentId);
+			saveItxLsThingLsThing("instantiates", "batch_parent", lsThing, parent, lsThing.getRecordedBy(), lsThing.getRecordedDate());
+		}
+		if (isAssembly){
+			List<String> componentCodeNames = getComponentCodeNamesFromNewAssembly(lsThing);
+			int order = 1;
+			for (String componentCodeName: componentCodeNames){
+				LsThing component = LsThing.findLsThingsByCodeNameEquals(componentCodeName).getSingleResult();
+				saveItxLsThingLsThing("incorporates", "assembly_component", lsThing, component, order, lsThing.getRecordedBy(), lsThing.getRecordedDate());
+			}
+		}
+		return savedLsThing;
+	}
+	
+	private void saveItxLsThingLsThing(String lsType, String lsKind,
+			LsThing firstLsThing, LsThing secondLsThing, int order, String recordedBy,
+			Date recordedDate) {
+		ItxLsThingLsThing itxLsThingLsThing = new ItxLsThingLsThing();
+		itxLsThingLsThing.setLsType(lsType);
+		itxLsThingLsThing.setLsKind(lsKind);
+		itxLsThingLsThing.setFirstLsThing(firstLsThing);
+		itxLsThingLsThing.setSecondLsThing(secondLsThing);
+		itxLsThingLsThing.setRecordedBy(recordedBy);
+		itxLsThingLsThing.setRecordedDate(recordedDate);
+		ItxLsThingLsThingState itxLsThingLsThingState = new ItxLsThingLsThingState();
+		itxLsThingLsThingState.setItxLsThingLsThing(itxLsThingLsThing);
+		itxLsThingLsThingState.setLsType("metadata");
+		itxLsThingLsThingState.setLsKind("composition");
+		itxLsThingLsThingState.setRecordedBy(recordedBy);
+		itxLsThingLsThingState.setRecordedDate(recordedDate);
+		ItxLsThingLsThingValue itxLsThingLsThingValue = new ItxLsThingLsThingValue();
+		itxLsThingLsThingValue.setLsState(itxLsThingLsThingState);
+		itxLsThingLsThingValue.setLsType("numericValue");
+		itxLsThingLsThingValue.setLsKind("order");
+		itxLsThingLsThingValue.setRecordedBy(recordedBy);
+		itxLsThingLsThingValue.setRecordedDate(recordedDate);
+		itxLsThingLsThingValue.setNumericValue(new BigDecimal(order));
+		itxLsThingLsThing.getLsStates().add(itxLsThingLsThingState);
+		itxLsThingLsThingState.getLsValues().add(itxLsThingLsThingValue);
+		itxLsThingLsThing.persist();
+		itxLsThingLsThingState.persist();
+		itxLsThingLsThingValue.persist();
+		
+	}
+
+
+	private void saveItxLsThingLsThing(String lsType, String lsKind,
+			LsThing firstLsThing, LsThing secondLsThing, String recordedBy, Date recordedDate) {
+		ItxLsThingLsThing itxLsThingLsThing = new ItxLsThingLsThing();
+		itxLsThingLsThing.setLsType(lsType);
+		itxLsThingLsThing.setLsKind(lsKind);
+		itxLsThingLsThing.setFirstLsThing(firstLsThing);
+		itxLsThingLsThing.setSecondLsThing(secondLsThing);
+		itxLsThingLsThing.setRecordedBy(recordedBy);
+		itxLsThingLsThing.setRecordedDate(recordedDate);
+		itxLsThingLsThing.persist();
+	}
+
+
+	@Override
+	public String generateBatchCodeName(LsThing parent){
+		String parentCodeName = parent.getCodeName();
+		int batchNumber = getBatchNumber(parent);
+		String batchCodeName = parentCodeName.concat(String.valueOf(batchNumber));
+		return batchCodeName;
+	}
+
+
+	private int getBatchNumber(LsThing parent) {
+		Collection<LsThingState> states = parent.getLsStates();
+		Collection<LsThingValue> values = new HashSet<LsThingValue>();
+		for (LsThingState state : states ){
+			if (state.getLsType().equals("metadata")){
+				values.addAll(state.getLsValues());
+			}
+		}
+		for (LsThingValue value : values){
+			if (value.getLsType().equals("numericValue") && value.getLsKind().equals("batch number")){
+				int batchNumber = value.getNumericValue().intValue();
+				batchNumber += 1;
+				value.setNumericValue(new BigDecimal(batchNumber));
+				return batchNumber;
+			}
+		}
+		return 0;
+	}
+
+
+	@Override
+	public Collection<LsThing> findBatchesByParentEquals(LsThing parent) {
+		Collection<LsThing> batches;
+		try{
+			batches = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("instantiates", "batch_parent", parent).getResultList();
+		} catch (EmptyResultDataAccessException e){
+			batches = null;
+		}
+		return batches;
 	}
 }

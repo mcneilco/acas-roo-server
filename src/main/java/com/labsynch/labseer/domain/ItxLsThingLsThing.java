@@ -44,7 +44,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "second_ls_thing_id")
-    private Container secondLsThing;
+    private LsThing secondLsThing;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itxLsThingLsThing", fetch = FetchType.LAZY)
     private Set<ItxLsThingLsThingState> lsStates = new HashSet<ItxLsThingLsThingState>();

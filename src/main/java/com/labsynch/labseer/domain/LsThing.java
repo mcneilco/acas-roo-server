@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -396,6 +397,83 @@ public class LsThing extends AbstractThing {
         
         return q;
 	}
+	
+	public static TypedQuery<LsThing> findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals(String lsType,
+			String lsKind, LsThing secondLsThing) {
+		if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = LsThing.entityManager();
+		String query = "SELECT DISTINCT itx.firstLsThing FROM LsThing secondLsThing " +
+				"JOIN secondLsThing.firstLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind " +
+				"WHERE secondLsThing.ignored IS NOT :ignored " +
+				"AND secondLsThing = :secondLsThing ";
+		
+        TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
+	
+	public static TypedQuery<LsThing> findSecondLsThingsByItxTypeKindEqualsAndFirstLsThingEquals(String lsType,
+			String lsKind, LsThing firstLsThing) {
+		if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = LsThing.entityManager();
+		String query = "SELECT DISTINCT itx.secondLsThing FROM LsThing firstLsThing " +
+				"JOIN firstLsThing.secondLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind " +
+				"WHERE firstLsThing.ignored IS NOT :ignored " +
+				"AND firstLsThing = :firstLsThing ";
+		
+        TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("firstLsThing", firstLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
+	
+	public static com.labsynch.labseer.domain.LsThing update(com.labsynch.labseer.domain.LsThing lsThing) {
+        LsThing updatedLsThing = LsThing.findLsThing(lsThing.getId());
+        updatedLsThing.setRecordedBy(lsThing.getRecordedBy());
+        updatedLsThing.setRecordedDate(lsThing.getRecordedDate());
+        updatedLsThing.setLsTransaction(lsThing.getLsTransaction());
+        updatedLsThing.setModifiedBy(lsThing.getModifiedBy());
+        updatedLsThing.setModifiedDate(new Date());
+        updatedLsThing.setCodeName(lsThing.getCodeName());
+        updatedLsThing.setLsType(lsThing.getLsType());
+        updatedLsThing.setLsKind(lsThing.getLsKind());
+        updatedLsThing.setLsTypeAndKind(lsThing.getLsTypeAndKind());
+        updatedLsThing.setIgnored(lsThing.isIgnored());
+        if (updatedLsThing.getLsTags() != null) {
+            updatedLsThing.getLsTags().clear();
+        }
+        if (lsThing.getLsTags() != null) {
+            for (LsTag lsTag : lsThing.getLsTags()) {
+                List<LsTag> queryTags = LsTag.findLsTagsByTagTextEquals(lsTag.getTagText()).getResultList();
+                if (queryTags.size() < 1) {
+                    LsTag newLsTag = new LsTag(lsTag);
+                    newLsTag.persist();
+                    updatedLsThing.getLsTags().add(newLsTag);
+                } else {
+                    updatedLsThing.getLsTags().add(queryTags.get(0));
+                }
+            }
+        }
+        updatedLsThing.merge();
+        return updatedLsThing;
+    }
 
 
 }
