@@ -899,7 +899,7 @@ public class ApiExperimentController {
         if (experiment == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "status", "deleted");
+        ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "experiment status", "deleted");
 		experiment.setIgnored(true);
         return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
     }
