@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
@@ -35,6 +36,9 @@ public class ProtocolServiceTest {
 	
 	@Autowired
 	private ProtocolService protocolService;
+	
+	@Autowired
+    private ProtocolValueService protocolValueService;
 	
 	//@Test
 	public void FindProtocolByName_Test10(){
@@ -277,5 +281,31 @@ public class ProtocolServiceTest {
 		} catch (UniqueNameException e) {
 			Assert.assertNotNull(e);
 		}
+	}
+	
+	@Test
+//	@Transactional
+	public void createProtocolStatusTest() {
+		Protocol protocol = Protocol.findProtocol(702987L);
+		ProtocolValue protocolValue = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "codeValue", "protocol status", "created");
+		String createdProtocolStatus = protocolValue.getCodeValue();
+		Assert.assertEquals("created", createdProtocolStatus);		
+	}
+	
+	@Test
+	@Transactional
+	public void updateProtocolStatusTest() {
+		Protocol protocol = Protocol.findProtocol(702987L);
+		ProtocolValue protocolValue = ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(702987L, "metadata", "protocol metadata", "codeValue", "protocol status").getSingleResult();
+		String originalProtocolStatus = protocolValue.getCodeValue();
+		Assert.assertTrue(!originalProtocolStatus.equals("deleted"));
+		ProtocolValue protocolValue2 = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "codeValue", "protocol status", "deleted");
+		protocol.setIgnored(true);
+		String deletedProtocolStatus = protocolValue2.getCodeValue();
+		ProtocolValue protocolValue3 = ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(702987L, "metadata", "protocol metadata", "codeValue", "protocol status").getSingleResult();
+		String checkDeletedProtocolStatus = protocolValue3.getCodeValue();
+		Assert.assertEquals("deleted", deletedProtocolStatus);
+		Assert.assertEquals("deleted", checkDeletedProtocolStatus);
+		
 	}
 }
