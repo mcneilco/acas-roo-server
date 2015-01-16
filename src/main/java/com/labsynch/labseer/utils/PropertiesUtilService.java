@@ -25,5 +25,7 @@ public interface PropertiesUtilService {
 
 	String getClientFullPath();
 
+	boolean getUniqueLsThingName();
+
 	
 }

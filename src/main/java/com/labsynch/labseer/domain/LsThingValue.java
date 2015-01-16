@@ -129,4 +129,9 @@ public class LsThingValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+	
+	public static com.labsynch.labseer.domain.LsThingValue create(com.labsynch.labseer.domain.LsThingValue lsThingValue) {
+        LsThingValue newLsThingValue = new JSONDeserializer<LsThingValue>().use(null, LsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new LsThingValue());
+        return newLsThingValue;
+    }
 }
