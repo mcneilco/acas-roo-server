@@ -665,4 +665,30 @@ public class ExperimentServiceTests {
 		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
 		logger.debug("RESULTS: "+"NUMBER OF EXPERIMENTS: "+experiments.size()+experiments.toString());
 	}
+	
+	@Test
+//	@Transactional
+	public void createExperimentStatusTest() {
+		Experiment experiment = Experiment.findExperiment(7585L);
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "experiment status", "created");
+		String createdExperimentStatus = experimentValue.getCodeValue();
+		Assert.assertEquals("created", createdExperimentStatus);		
+	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentStatusTest() {
+		Experiment experiment = Experiment.findExperiment(7585L);
+		ExperimentValue experimentValue = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experiment.getId(), "metadata", "experiment metadata", "codeValue", "experiment status").getSingleResult();
+		String originalExperimentStatus = experimentValue.getCodeValue();
+		Assert.assertTrue(!originalExperimentStatus.equals("deleted"));
+		ExperimentValue experimentValue2 = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "experiment status", "deleted");
+		experiment.setIgnored(true);
+		String deletedExperimentStatus = experimentValue2.getCodeValue();
+		ExperimentValue experimentValue3 = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experiment.getId(), "metadata", "experiment metadata", "codeValue", "experiment status").getSingleResult();
+		String checkDeletedExperimentStatus = experimentValue3.getCodeValue();
+		Assert.assertEquals("deleted", deletedExperimentStatus);
+		Assert.assertEquals("deleted", checkDeletedExperimentStatus);
+		
+	}
 }
