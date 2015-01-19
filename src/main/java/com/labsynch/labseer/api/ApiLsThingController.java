@@ -202,18 +202,20 @@ public class ApiLsThingController {
     }
     
 
-	@Transactional
+//	@Transactional
     @RequestMapping(value="/{lsType}/{lsKind}", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
     		@RequestParam(value="parentIdOrCodeName", required = false) String parentIdOrCodeName,
-    		@RequestBody LsThing lsThing) {
+    		@RequestBody String json) {
        //headers and setup
 		logger.debug("----from the LsThing POST controller----");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
+        Long parentId = null;
+        LsThing lsThing = LsThing.fromJsonToLsThing(json);
         //decide what kind of validation we need to do
         boolean isParent = false;
         boolean isBatch = false;
@@ -267,29 +269,21 @@ public class ApiLsThingController {
     			}
     		}
             lsThing.setCodeName(lsThingService.generateBatchCodeName(parent));
+            parentId = parent.getId();
         }
         //if all's well so far, go ahead with the save
         if (!errorsFound){
-        	//if it's a batch or an assembly, we don't care about name uniqueness
-        	if (isAssembly | isBatch){
         		try {
-            		lsThing = lsThingService.saveLsThing(lsThing, false);
-            	} catch (UniqueNameException e) {}
-        	}
-        	//otherwise, decide whether to check for uniqueness based on property in properties file (in saveLsThing method)
-        	else {
-        		try {
-                    lsThing = lsThingService.saveLsThing(lsThing);
-                } catch (UniqueNameException e) {
-                    logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+        			lsThing = lsThingService.saveLsThing(lsThing, isParent, isBatch, isAssembly, isComponent, parentId);
+                } catch (Exception e) {
+                    logger.error("----from the POST controller----" + e.getMessage().toString() + " whole message  " + e.toString());
                     ErrorMessage error = new ErrorMessage();
                     error.setErrorLevel("error");
-                    error.setMessage("not unique lsThing name");
+                    error.setMessage("error occurred during saving");
                     errors.add(error);
                     errorsFound = true;
                 }
         	}	
-        }
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
         } else {
@@ -326,13 +320,14 @@ public class ApiLsThingController {
     public ResponseEntity<java.lang.String> updateFromJson(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
     		@PathVariable("idOrCodeName") String idOrCodeName,
-    		@RequestBody LsThing lsThing) {
+    		@RequestBody String json) {
        //headers and setup
 		logger.debug("----from the LsThing PUT controller----");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
+        LsThing lsThing = LsThing.fromJsonToLsThing(json);
         //decide what kind of validation we need to do
         boolean isAssembly = false;
         boolean isComponent = false;

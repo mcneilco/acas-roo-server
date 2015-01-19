@@ -282,7 +282,7 @@ public class LsThingServiceImpl implements LsThingService {
 		} catch (EmptyResultDataAccessException e){
 			return true;
 		}
-		if (foundLsThings!=null){
+		if (foundLsThings!=null && !foundLsThings.isEmpty()){
 			return false;
 		}
 		return isValid;
@@ -512,10 +512,11 @@ public class LsThingServiceImpl implements LsThingService {
 					Set<LsThingValue> lsValues = new HashSet<LsThingValue>();
 					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
 						logger.debug("lsThingValue: " + lsThingValue.toJson());
-						lsThingValue.setLsState(newLsThingState);
-						lsThingValue.persist();
-						lsValues.add(lsThingValue);
-						logger.debug("persisted the lsThingValue: " + lsThingValue.toJson());
+						LsThingValue newLsThingValue = new LsThingValue(lsThingValue);
+						newLsThingValue.setLsState(newLsThingState);
+						newLsThingValue.persist();
+						lsValues.add(newLsThingValue);
+						logger.debug("persisted the lsThingValue: " + newLsThingValue.toJson());
 					}	
 					newLsThingState.setLsValues(lsValues);
 				} else {
@@ -538,14 +539,14 @@ public class LsThingServiceImpl implements LsThingService {
 		//after saving the lsThing, save the necessary interactions
 		if (isBatch){
 			LsThing parent = LsThing.findLsThing(parentId);
-			saveItxLsThingLsThing("instantiates", "batch_parent", lsThing, parent, lsThing.getRecordedBy(), lsThing.getRecordedDate());
+			saveItxLsThingLsThing("instantiates", "batch_parent", savedLsThing, parent, lsThing.getRecordedBy(), lsThing.getRecordedDate());
 		}
 		if (isAssembly){
 			List<String> componentCodeNames = getComponentCodeNamesFromNewAssembly(lsThing);
 			int order = 1;
 			for (String componentCodeName: componentCodeNames){
 				LsThing component = LsThing.findLsThingsByCodeNameEquals(componentCodeName).getSingleResult();
-				saveItxLsThingLsThing("incorporates", "assembly_component", lsThing, component, order, lsThing.getRecordedBy(), lsThing.getRecordedDate());
+				saveItxLsThingLsThing("incorporates", "assembly_component", savedLsThing, component, order, lsThing.getRecordedBy(), lsThing.getRecordedDate());
 			}
 		}
 		return savedLsThing;
@@ -600,28 +601,18 @@ public class LsThingServiceImpl implements LsThingService {
 	public String generateBatchCodeName(LsThing parent){
 		String parentCodeName = parent.getCodeName();
 		int batchNumber = getBatchNumber(parent);
-		String batchCodeName = parentCodeName.concat(String.valueOf(batchNumber));
+		String batchCodeName = parentCodeName.concat("-"+ String.valueOf(batchNumber));
 		return batchCodeName;
 	}
 
 
 	private int getBatchNumber(LsThing parent) {
-		Collection<LsThingState> states = parent.getLsStates();
-		Collection<LsThingValue> values = new HashSet<LsThingValue>();
-		for (LsThingState state : states ){
-			if (state.getLsType().equals("metadata")){
-				values.addAll(state.getLsValues());
-			}
-		}
-		for (LsThingValue value : values){
-			if (value.getLsType().equals("numericValue") && value.getLsKind().equals("batch number")){
-				int batchNumber = value.getNumericValue().intValue();
-				batchNumber += 1;
-				value.setNumericValue(new BigDecimal(batchNumber));
-				return batchNumber;
-			}
-		}
-		return 0;
+		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+		int batchNumber = batchNumberValue.getNumericValue().intValue();
+		batchNumber += 1;
+		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
+		batchNumberValue.merge();
+		return batchNumber;
 	}
 
 

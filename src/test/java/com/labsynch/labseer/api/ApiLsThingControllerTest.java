@@ -5,6 +5,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.Collection;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +14,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.LsThing;
@@ -40,16 +44,152 @@ public class ApiLsThingControllerTest {
     public void setup() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
+    
+    @Test
+    public void registerComponentParentTest() throws Exception {
+    	String json = "{\"codeName\":\"LSM000001\",\"ignored\":false,\"lsKind\":\"linker small molecule\",\"lsLabels\":[{\"ignored\":false,\"imageFile\":null,\"labelText\":\"Ad\",\"lsKind\":\"linker small molecule\",\"lsTransaction\":1,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_linker small molecule\",\"modifiedDate\":null,\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"jane\",\"recordedDate\":1375141504000}],\"lsStates\":[{\"comments\":null,\"ignored\":false,\"lsKind\":\"linker small molecule parent\",\"lsTransaction\":1,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_linker small molecule parent\",\"lsValues\":[{\"clobValue\":null,\"codeValue\":null,\"comments\":null,\"dateValue\":1342080000000,\"fileValue\":null,\"ignored\":false,\"lsTransaction\":128,\"modifiedDate\":null,\"numericValue\":null,\"publicData\":true,\"recordedDate\":1363388477000,\"recordedBy\":\"jane\",\"sigFigs\":null,\"stringValue\":null,\"uncertainty\":null,\"urlValue\":null,\"lsKind\":\"completion date\",\"valueOperator\":null,\"lsType\":\"dateValue\",\"lsTypeAndKind\":\"dateValue_completion date\",\"valueUnit\":null},{\"clobValue\":null,\"codeValue\":null,\"comments\":null,\"dateValue\":null,\"fileValue\":null,\"ignored\":false,\"lsTransaction\":127,\"modifiedDate\":null,\"numericValue\":null,\"publicData\":true,\"recordedDate\":1363388477000,\"recordedBy\":\"jane\",\"sigFigs\":null,\"stringValue\":\"Notebook 1\",\"uncertainty\":null,\"urlValue\":null,\"lsKind\":\"notebook\",\"valueOperator\":null,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook\",\"valueUnit\":null},{\"clobValue\":null,\"codeValue\":null,\"comments\":null,\"dateValue\":null,\"fileValue\":null,\"ignored\":false,\"lsTransaction\":128,\"modifiedDate\":null,\"numericValue\":231,\"publicData\":true,\"recordedDate\":1363388477000,\"recordedBy\":\"jane\",\"sigFigs\":null,\"stringValue\":null,\"uncertainty\":null,\"urlValue\":null,\"lsKind\":\"molecular weight\",\"valueOperator\":null,\"lsType\":\"numericValue\",\"lsTypeAndKind\":\"numericValue_molecular weight\",\"unitKind\":\"g/mol\",\"unitType\":\"molecular weight\",\"valueUnit\":null},{\"clobValue\":null,\"codeValue\":null,\"comments\":null,\"dateValue\":null,\"fileValue\":null,\"ignored\":false,\"lsTransaction\":128,\"modifiedDate\":null,\"numericValue\":0,\"publicData\":true,\"recordedDate\":1363388477000,\"recordedBy\":\"jane\",\"sigFigs\":null,\"stringValue\":null,\"uncertainty\":null,\"urlValue\":null,\"lsKind\":\"batch number\",\"valueOperator\":null,\"lsType\":\"numericValue\",\"lsTypeAndKind\":\"numericValue_batch number\",\"unitKind\":null,\"unitType\":null,\"valueUnit\":null}],\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"jane\",\"recordedDate\":1375141460000}],\"lsTransaction\":1,\"lsType\":\"parent\",\"lsTypeAndKind\":\"parent_linker small molecule\",\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"jane\",\"recordedDate\":1375141508000,\"shortDescription\":\" \"}";
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/lsthings/parent/linker small molecule")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isCreated())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	LsThing postedLsThing = LsThing.fromJsonToLsThing(responseJson);
+    	logger.info(postedLsThing.toJson());
+    }
+    
+    @Test
+    public void registerComponentBatchTest() throws Exception {
+    	String json = "{\"codeName\":null,\"id\":11,\"ignored\":false,\"lsKind\":\"linker small molecule\",\"lsStates\":[{\"comments\":null,\"id\":11,\"ignored\":false,\"lsKind\":\"linker small molecule batch\",\"lsTransaction\":1,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_linker small molecule batch\",\"lsValues\":[{\"clobValue\":null,\"codeValue\":null,\"comments\":null,\"dateValue\":1342080000000,\"fileValue\":null,\"id\":12,\"ignored\":false,\"lsTransaction\":128,\"modifiedDate\":null,\"numericValue\":null,\"publicData\":true,\"recordedDate\":1363388477000,\"recordedBy\":\"jane\",\"sigFigs\":null,\"stringValue\":null,\"uncertainty\":null,\"urlValue\":null,\"lsKind\":\"completion date\",\"valueOperator\":null,\"lsType\":\"dateValue\",\"lsTypeAndKind\":\"dateValue_completion date\",\"valueUnit\":null,\"version\":0},{\"clobValue\":null,\"codeValue\":null,\"comments\":null,\"dateValue\":null,\"fileValue\":null,\"id\":13,\"ignored\":false,\"lsTransaction\":127,\"modifiedDate\":null,\"numericValue\":null,\"publicData\":true,\"recordedDate\":1363388477000,\"recordedBy\":\"jane\",\"sigFigs\":null,\"stringValue\":\"Notebook 1\",\"uncertainty\":null,\"urlValue\":null,\"lsKind\":\"notebook\",\"valueOperator\":null,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook\",\"valueUnit\":null,\"version\":0}],\"recordedDate\":1363388477000,\"recordedBy\":\"jane\"},{\"comments\":null,\"id\":111,\"ignored\":false,\"lsKind\":\"inventory\",\"lsTransaction\":1,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_inventory\",\"lsValues\":[{\"clobValue\":null,\"codeValue\":null,\"comments\":null,\"dateValue\":null,\"fileValue\":null,\"id\":14,\"ignored\":false,\"lsTransaction\":128,\"modifiedDate\":null,\"numericValue\":2.3,\"publicData\":true,\"recordedDate\":1363388477000,\"recordedBy\":\"jane\",\"sigFigs\":null,\"stringValue\":null,\"uncertainty\":null,\"urlValue\":null,\"lsKind\":\"amount\",\"valueOperator\":null,\"lsType\":\"numericValue\",\"lsTypeAndKind\":\"numericValue_amount\",\"unitKind\":\"g\",\"unitType\":\"mass\",\"valueUnit\":null,\"version\":0},{\"clobValue\":null,\"codeValue\":null,\"comments\":null,\"dateValue\":null,\"fileValue\":null,\"id\":15,\"ignored\":false,\"lsTransaction\":127,\"modifiedDate\":null,\"numericValue\":null,\"publicData\":true,\"recordedDate\":1363388477000,\"recordedBy\":\"jane\",\"sigFigs\":null,\"stringValue\":\"Cabinet 1\",\"uncertainty\":null,\"urlValue\":null,\"lsKind\":\"location\",\"valueOperator\":null,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_location\",\"valueUnit\":null,\"version\":0}],\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"jane\",\"recordedDate\":1375141460000,\"version\":0}],\"lsTransaction\":1,\"lsType\":\"batch\",\"lsTypeAndKind\":\"batch_linker small molecule\",\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"jane\",\"recordedDate\":1375141508000,\"shortDescription\":\" \",\"version\":0}";
+    	String responseJson = this.mockMvc.perform(post("/api/v1/lsthings/batch/linker small molecule?parentIdOrCodeName=LSM000001")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isCreated())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson);
+    	LsThing postedLsThing = LsThing.fromJsonToLsThing(responseJson);
+    	logger.info(postedLsThing.toJson());
+    }
+    
+    //@Test
+    public void registerAssemblyParentTest() throws Exception {
+    	String json = "";
+    	String responseJson = this.mockMvc.perform(post("/api/v1/lsthings/parent/internalization agent")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isCreated())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson);
+    	LsThing postedLsThing = LsThing.fromJsonToLsThing(responseJson);
+    	logger.info(postedLsThing.toJson());
+    }
+    
+    //@Test
+    public void registerAssemblyBatchTest() throws Exception {
+    	String json = "";
+    	String responseJson = this.mockMvc.perform(post("/api/v1/lsthings/batch/internalization agent?parentIdOrCodeName=")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isCreated())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson);
+    	LsThing postedLsThing = LsThing.fromJsonToLsThing(responseJson);
+    	logger.info(postedLsThing.toJson());
+    }
+    
+    @Test
+    public void validateInvalidComponentNameTest() throws Exception {
+    	String componentName = "[\"Ad\"]";
+    	String response = this.mockMvc.perform(post("/api/v1/lsthings/validatename?lsKind=protein")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(componentName)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(response);
+    	Assert.assertEquals(false, Boolean.parseBoolean(response)); 
+    }
+    
+    @Test
+    public void validateValidComponentNameTest() throws Exception {
+    	String componentName = "[\"valid name\"]";
+    	String response = this.mockMvc.perform(post("/api/v1/lsthings/validatename?lsKind=protein")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(componentName)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(response);
+    	Assert.assertEquals(true, Boolean.parseBoolean(response)); 
+    }
+    
+    //@Test
+    public void validateInvalidAssemblyTest() throws Exception {
+    	String componentNameList = "[\"CMPT-00001\", \"CMPT-00002\", \"CMPT-00003\"]";
+    	String response = this.mockMvc.perform(post("/api/v1/lsthings/validatename?lsKind=internalization agent")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(componentNameList)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(response);
+    	Assert.assertEquals(false, Boolean.parseBoolean(response)); 
+    }
+    
+    //@Test
+    public void validateValidAssemblyTest() throws Exception {
+    	String componentNameList = "[\"CMPT-00001\", \"CMPT-00002\", \"CMPT-00003\"]";
+    	String response = this.mockMvc.perform(post("/api/v1/lsthings/validatename?lsKind=internalization agent")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(componentNameList)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(response);
+    	Assert.assertEquals(true, Boolean.parseBoolean(response)); 
+    }
 
     @Test
-    public void getTestTestLsThing() throws Exception {
-        String json = this.mockMvc.perform(get("/api/v1/lsthings/gene/entrez gene").accept(MediaType.APPLICATION_JSON))
-          .andExpect(status().isOk())
-          .andExpect(content().contentType("application/json;charset=utf-8"))
-          .andReturn().getResponse().getContentAsString();
+    public void getLsThing() throws Exception {
+        String json = this.mockMvc.perform(get("/api/v1/lsthings/parent/linker small molecule/LSM000001")
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
         
         logger.info(json);
-//        Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+        LsThing lsThing = LsThing.fromJsonToLsThing(json);
+        logger.info(lsThing.toJson());
     }
+    
+    @Test
+    public void getComponentBatches() throws Exception {
+        String json = this.mockMvc.perform(get("/api/v1/lsthings/parent/linker small molecule/getbatches/LSM000001")
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        
+        logger.info(json);
+        Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+        Assert.assertEquals(1, lsThings.size());
+        logger.info(LsThing.toJsonArray(lsThings));
+    }
+    
 
 }

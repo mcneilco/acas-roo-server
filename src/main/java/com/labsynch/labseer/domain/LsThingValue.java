@@ -40,7 +40,50 @@ public class LsThingValue extends AbstractValue {
     @JoinColumn(name = "lsthing_state_id")
     private LsThingState lsState;
     
-    public static LsThingValue fromJsonToLsThingValue(String json) {
+    public LsThingValue(LsThingValue lsThingValue) {
+        super.setBlobValue(lsThingValue.getBlobValue());
+        super.setClobValue(lsThingValue.getClobValue());
+        super.setCodeKind(lsThingValue.getCodeKind());
+        super.setCodeOrigin(lsThingValue.getCodeOrigin());
+        super.setCodeType(lsThingValue.getCodeType());
+        super.setCodeTypeAndKind(lsThingValue.getCodeTypeAndKind());
+        super.setCodeValue(lsThingValue.getCodeValue());
+        super.setComments(lsThingValue.getComments());
+        super.setConcentration(lsThingValue.getConcentration());
+        super.setConcUnit(lsThingValue.getConcUnit());
+        super.setDateValue(lsThingValue.getDateValue());
+        super.setDeleted(lsThingValue.isDeleted());
+        super.setFileValue(lsThingValue.getFileValue());
+        super.setIgnored(lsThingValue.isIgnored());
+        super.setLsKind(lsThingValue.getLsKind());
+        super.setLsTransaction(lsThingValue.getLsTransaction());
+        super.setLsType(lsThingValue.getLsType());
+        super.setLsTypeAndKind(lsThingValue.getLsTypeAndKind());
+        super.setModifiedBy(lsThingValue.getModifiedBy());
+        super.setModifiedDate(lsThingValue.getModifiedDate());
+        super.setNumberOfReplicates(lsThingValue.getNumberOfReplicates());
+        super.setNumericValue(lsThingValue.getNumericValue());
+        super.setOperatorKind(lsThingValue.getOperatorKind());
+        super.setOperatorType(lsThingValue.getOperatorType());
+        super.setOperatorTypeAndKind(lsThingValue.getOperatorTypeAndKind());
+        super.setPublicData(lsThingValue.isPublicData());
+        super.setRecordedBy(lsThingValue.getRecordedBy());
+        super.setRecordedDate(lsThingValue.getRecordedDate());
+        super.setSigFigs(lsThingValue.getSigFigs());
+        super.setStringValue(lsThingValue.getStringValue());
+        super.setUncertainty(lsThingValue.getUncertainty());
+        super.setUncertaintyType(lsThingValue.getUncertaintyType());
+        super.setUnitKind(lsThingValue.getUnitKind());
+        super.setUnitType(lsThingValue.getUnitType());
+        super.setUnitTypeAndKind(lsThingValue.getUnitTypeAndKind());
+        super.setUrlValue(lsThingValue.getUrlValue());
+        super.setVersion(lsThingValue.getVersion());
+        
+	}
+    public LsThingValue() {
+    }
+
+	public static LsThingValue fromJsonToLsThingValue(String json) {
         return new JSONDeserializer<LsThingValue>().
         		use(null, LsThingValue.class).
         		use(BigDecimal.class, new CustomBigDecimalFactory()).
