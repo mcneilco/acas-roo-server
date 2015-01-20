@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -309,6 +310,47 @@ public class LsThingLabel extends AbstractLabel {
 		q.setParameter("preferred", true);
 		q.setParameter("ignored", true);
 		return q;
+	}
+	
+	public static LsThingLabel pickBestLabel(Collection<LsThingLabel> labels) {
+		if (labels.isEmpty()) return null;
+		Collection<LsThingLabel> preferredLabels = new HashSet<LsThingLabel>();
+		for (LsThingLabel label : labels){
+			if (label.isPreferred()) preferredLabels.add(label);
+		}
+		if (!preferredLabels.isEmpty()){
+			LsThingLabel bestLabel = preferredLabels.iterator().next();
+			for (LsThingLabel preferredLabel : preferredLabels){
+				if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+			}
+			return bestLabel;
+		} else {
+			Collection<LsThingLabel> nameLabels = new HashSet<LsThingLabel>();
+			for (LsThingLabel label : labels){
+				if (label.getLsType().equals("name")) nameLabels.add(label);
+			}
+			if (!nameLabels.isEmpty()){
+				LsThingLabel bestLabel = preferredLabels.iterator().next();
+				for (LsThingLabel preferredLabel : preferredLabels){
+					if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+				}
+				return bestLabel;
+			} else {
+				Collection<LsThingLabel> notIgnoredLabels = new HashSet<LsThingLabel>();
+				for (LsThingLabel label : labels){
+					if (!label.isIgnored()) notIgnoredLabels.add(label);
+				}
+				if (!notIgnoredLabels.isEmpty()){
+					LsThingLabel bestLabel = preferredLabels.iterator().next();
+					for (LsThingLabel preferredLabel : preferredLabels){
+						if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+					}
+					return bestLabel;
+				} else {
+					return labels.iterator().next();
+				}
+			}
+		}
 	}
 
 	

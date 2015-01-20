@@ -24,6 +24,7 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
@@ -105,6 +106,21 @@ public class ApiLsThingController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(lsThingService.getProjectCodes(), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/codetable", method = RequestMethod.GET, headers = "Accept=application/json")
+    public ResponseEntity<String> getCodeTableLsThings(@RequestParam(value = "lsType", required = true) String lsType,
+    		@RequestParam(value = "lsKind", required = true) String lsKind){
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.add("Content-Type", "application/json; charset=utf-8");
+    	try{
+        	Collection<CodeTableDTO> codeTableLsThings = lsThingService.getCodeTableLsThings(lsType, lsKind, true);
+            return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTableLsThings), headers, HttpStatus.OK);
+    	} catch (Exception e){
+    		logger.error(e.toString());
+    		return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    	
     }
     
     @RequestMapping(value = "/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
