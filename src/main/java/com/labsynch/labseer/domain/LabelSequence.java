@@ -48,8 +48,4 @@ public class LabelSequence {
     @DateTimeFormat(style = "MM")
     private Date modifiedDate;
     
-    @Size(max = 10)
-    private String batchSeparator;
-    
-    private Integer batchNumber;
 }

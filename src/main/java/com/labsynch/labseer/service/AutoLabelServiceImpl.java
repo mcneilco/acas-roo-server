@@ -427,4 +427,12 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		return labels.get(0).getAutoLabel();		
 	}
 
+	@Override
+	public String getLsThingCodeName(String lsTypeAndKind) {
+		String labelTypeAndKind = "id_codeName";
+		Long numberOfLabels = 1L;
+		List<AutoLabelDTO> labels = getAutoLabels(lsTypeAndKind, labelTypeAndKind, numberOfLabels );
+		return labels.get(0).getAutoLabel();
+	}
+
 }
