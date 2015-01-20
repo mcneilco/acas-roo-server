@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -136,5 +137,11 @@ public class LsThingServiceTests {
 		Assert.assertEquals(1, batches.size());
 	}
 	
+	@Test
+	public void findLsThingLabels() {
+		String queryString ="linker";
+		Collection<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingLabelsByLabelTextLike(queryString).getResultList();
+		logger.info(LsThingLabel.toJsonArray(lsThingLabels));
+	}
 
 }

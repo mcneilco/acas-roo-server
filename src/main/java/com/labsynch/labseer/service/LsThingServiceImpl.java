@@ -1,13 +1,18 @@
 package com.labsynch.labseer.service;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.MultiValueMap;
@@ -19,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.ExperimentState;
@@ -26,6 +32,7 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
+import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
@@ -357,6 +364,7 @@ public class LsThingServiceImpl implements LsThingService {
 		return assemblies;
 	}
 	
+	@Override
 	public List<String> getComponentCodeNamesFromNewAssembly(LsThing assembly){
 		String componentsClob = getComponentsClobFromAssembly(assembly);
 		List<String> componentCodeNames = parseComponentsClob(componentsClob);
@@ -389,9 +397,6 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	@Transactional
 	public LsThing updateLsThing(LsThing jsonLsThing){
-		logger.debug("incoming meta lsThing: " + jsonLsThing.toPrettyJson());
-		logger.debug("recorded by: " + jsonLsThing.getRecordedBy());
-
 		LsThing updatedLsThing = LsThing.update(jsonLsThing);
 		if (jsonLsThing.getLsLabels() != null) {
 			for(LsThingLabel lsThingLabel : jsonLsThing.getLsLabels()){
@@ -442,7 +447,6 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 		}
 
-		logger.debug("updatedLsThing: " + updatedLsThing.toPrettyJson());
 		return updatedLsThing;
 
 	}
@@ -481,7 +485,9 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 
 		LsThing newLsThing = new LsThing(lsThing);
-
+		if (newLsThing.getCodeName() == null){
+			newLsThing.setCodeName(autoLabelService.getLsThingCodeName(newLsThing.getLsTypeAndKind()));
+		}
 		newLsThing.persist();
 		logger.debug("persisted the newLsThing: " + newLsThing.toJson());
 
@@ -625,5 +631,149 @@ public class LsThingServiceImpl implements LsThingService {
 			batches = null;
 		}
 		return batches;
+	}
+
+
+	@Override
+	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
+			String queryString) {
+		//make our HashSets: lsThingIdList will be filled/cleared/refilled for each term
+		//lsThingList is the final search result
+		HashSet<Long> lsThingIdList = new HashSet<Long>();
+		HashSet<Long> lsThingAllIdList = new HashSet<Long>();
+		Collection<LsThing> lsThingList = new HashSet<LsThing>();
+		//Split the query up on spaces
+		String[] splitQuery = queryString.split("\\s+");
+		logger.debug("Number of search terms: " + splitQuery.length);
+		//Make the Map of terms and HashSets of lsThing id's then fill. We will run intersect logic later.
+		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
+		for (String term : splitQuery) {
+			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "CODENAME"));
+			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "PARENT NAME"));
+			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "SCIENTIST"));
+			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "LSKIND"));
+			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "DATE"));
+			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "NOTEBOOK"));
+
+			resultsByTerm.put(term, new HashSet<Long>(lsThingIdList));
+			lsThingAllIdList.addAll(lsThingIdList);
+			lsThingIdList.clear();
+		}
+		//Here is the intersect logic
+		for (String term: splitQuery) {
+			lsThingAllIdList.retainAll(resultsByTerm.get(term));
+		}
+		for (Long id: lsThingAllIdList) lsThingList.add(LsThing.findLsThing(id));
+
+		//This method uses finders that will find everything, whether or not it is ignored or deleted
+		Collection<LsThing> result = new HashSet<LsThing>();
+		for (LsThing lsThing: lsThingList) {
+			//For LsThing Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+			if (lsThing.isDeleted()){
+				logger.debug("removing a deleted lsThing from the results");
+			} else {
+				result.add(lsThing);
+			}
+		}
+		return result;
+	}
+
+
+	private Collection<? extends Long> findLsThingIdsByMetadata(String queryString,
+			String searchBy) {
+		Collection<Long> lsThingIdList = new HashSet<Long>();
+		if (searchBy == "CODENAME") {
+			List<LsThing> lsThings = LsThing.findLsThingsByCodeNameLike(queryString).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing:lsThings) {
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+		}
+		if (searchBy == "LSKIND") {
+			List<LsThing> lsThings = LsThing.findLsThingsByLsKindLike(queryString).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing:lsThings) {
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+		}
+		if (searchBy == "PARENT NAME") {
+			Collection<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingLabelsByLabelTextLike(queryString).getResultList();
+			if (!lsThingLabels.isEmpty()) {
+				for (LsThingLabel lsThingLabel: lsThingLabels) {
+					LsThing parent = lsThingLabel.getLsThing();
+					Collection<LsThing> batches = findBatchesByParentEquals(parent);
+					for (LsThing batch : batches){
+						lsThingIdList.add(batch.getId());
+					}
+					lsThingIdList.add(parent.getId());
+				}
+			}
+			lsThingLabels.clear();
+		}
+
+		if (searchBy == "SCIENTIST") {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike("scientist", queryString).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+
+		if (searchBy == "DATE") {
+			Collection<LsThingValue> lsThingValues = new HashSet<LsThingValue>();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+			try {
+				Date date = df.parse(queryString);
+				lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLike("completion date", date).getResultList();
+			} catch (Exception e) {
+				try {
+					Date date = df2.parse(queryString);
+					lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLike("completion date", date).getResultList();
+				} catch (Exception e2) {
+					//do nothing
+				}
+			}
+			if (!lsThingValues.isEmpty()) {
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (searchBy == "NOTEBOOK") {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike("notebook", queryString).getResultList();
+			if (!lsThingValues.isEmpty()) {
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+
+		return lsThingIdList;
+	}
+
+
+	@Override
+	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
+			String lsType, String queryString) {
+		Collection<LsThing> searchResults = findLsThingsByGenericMetaDataSearch(queryString);
+		if (lsType != null){
+			Collection<LsThing> filteredResults = new HashSet<LsThing>();
+			for (LsThing result : searchResults){
+				if (result.getLsType().equals(lsType)) filteredResults.add(result);
+			}
+			return filteredResults;
+		} else {
+			return searchResults;
+		}
+		
 	}
 }

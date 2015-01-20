@@ -31,6 +31,8 @@ public interface AutoLabelService {
 
 	String getProtocolCodeName();
 
+	String getLsThingCodeName(String lsTypeAndKind);
+
 	
 	
 	

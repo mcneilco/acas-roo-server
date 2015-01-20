@@ -52,6 +52,13 @@ public interface LsThingService {
 	LsThing saveLsThing(LsThing lsThing, boolean isParent, boolean isBatch,
 			boolean isAssembly, boolean isComponent, Long parentId)
 			throws UniqueNameException;
+
+	Collection<LsThing> findLsThingsByGenericMetaDataSearch(String searchQuery);
+
+	Collection<LsThing> findLsThingsByGenericMetaDataSearch(String lsType,
+			String searchQuery);
+
+	List<String> getComponentCodeNamesFromNewAssembly(LsThing lsThing);
 	
 	
 	

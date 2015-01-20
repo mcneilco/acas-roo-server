@@ -18,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
@@ -49,6 +51,20 @@ public class ApiLsThingController {
 
     @Autowired
     private PropertiesUtilService propertiesUtilService;
+    
+    @RequestMapping(value = "/search", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> genericLsThingSearch(@RequestParam(value="lsType", required = false) String lsType, @RequestParam("q") String searchQuery) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		try {
+			String result = LsThing.toJsonArrayStub(lsThingService.findLsThingsByGenericMetaDataSearch(lsType, searchQuery));
+			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
+		} catch(Exception e){
+			String error = e.getMessage() + e.getStackTrace();
+			return new ResponseEntity<String>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
     
     @RequestMapping(value = "/getGeneCodeNameFromNameRequest", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getGeneCodeNameFromName(@RequestBody PreferredNameRequestDTO requestDTO) {
@@ -337,21 +353,40 @@ public class ApiLsThingController {
         if (componentKinds.contains(lsKind)) isComponent=true;
         //do required validation
         if (isComponent){
-        	if (!lsThingService.validateComponentName(lsThing)){
-	            ErrorMessage error = new ErrorMessage();
-	            error.setErrorLevel("error");
-	            error.setMessage("not unique lsThing name");
-	            errors.add(error);
-	            errorsFound = true;
+        	Collection<String> oldLabelTexts = new ArrayList<String>();
+        	for (LsThingLabel label : LsThing.findLsThing(lsThing.getId()).getLsLabels()){
+        		oldLabelTexts.add(label.getLabelText());
+        	}
+        	Collection<String> newLabelTexts = new ArrayList<String>();
+        	for (LsThingLabel label : lsThing.getLsLabels()){
+        		newLabelTexts.add(label.getLabelText());
+        	}
+        	boolean nameChanged = false;
+        	for (String newLabelText : newLabelTexts){
+        		if (!oldLabelTexts.contains(newLabelText)) nameChanged=true;
+        	}
+        	if (nameChanged){
+        		if (!lsThingService.validateComponentName(lsThing)){
+    	            ErrorMessage error = new ErrorMessage();
+    	            error.setErrorLevel("error");
+    	            error.setMessage("not unique lsThing name");
+    	            errors.add(error);
+    	            errorsFound = true;
+            	}
         	}
         } else if(isAssembly){
-        	if (!lsThingService.validateAssembly(lsThing)){
-                ErrorMessage error = new ErrorMessage();
-                error.setErrorLevel("error");
-                error.setMessage("not unique assembly lsThing");
-                errors.add(error);
-                errorsFound = true;
-            }
+        	List<String> oldComponents = lsThingService.getComponentCodeNamesFromNewAssembly(LsThing.findLsThing(lsThing.getId()));
+        	List<String> newComponents = lsThingService.getComponentCodeNamesFromNewAssembly(lsThing);
+        	boolean componentsChanged = (!oldComponents.equals(newComponents));
+        	if (componentsChanged) {
+        		if (!lsThingService.validateAssembly(lsThing)){
+                    ErrorMessage error = new ErrorMessage();
+                    error.setErrorLevel("error");
+                    error.setMessage("not unique assembly lsThing");
+                    errors.add(error);
+                    errorsFound = true;
+                }
+        	}
         }
         //if all's well so far, go ahead with the save
         if (!errorsFound){
@@ -372,7 +407,7 @@ public class ApiLsThingController {
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         } else {
-            return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.CREATED);
+            return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
         }
     }
 
