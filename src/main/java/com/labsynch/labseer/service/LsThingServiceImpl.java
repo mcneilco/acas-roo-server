@@ -776,4 +776,43 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		
 	}
+
+
+	@Override
+	public Collection<CodeTableDTO> getCodeTableLsThings(String lsType,
+			String lsKind, boolean includeIgnored) {
+		Collection<LsThing> lsThings = findLsThingsByLsTypeAndLsKindAndIncludeIgnored(lsType, lsKind, includeIgnored);
+		Collection<CodeTableDTO> codeTables = new HashSet<CodeTableDTO>();
+		for (LsThing lsThing : lsThings){
+			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setCode(lsThing.getCodeName());
+			codeTable.setName(pickBestLabel(lsThing));
+			codeTable.setIgnored(lsThing.isIgnored());
+			codeTables.add(codeTable);
+		}
+		
+		return codeTables;
+	}
+	
+	private String pickBestLabel(LsThing lsThing) {
+		Collection<LsThingLabel> labels = lsThing.getLsLabels();
+		return LsThingLabel.pickBestLabel(labels).getLabelText();
+	}
+
+
+	@Override
+	public Collection<LsThing> findLsThingsByLsTypeAndLsKindAndIncludeIgnored(String lsType, String lsKind, boolean includeIgnored){
+		Collection<LsThing> searchResults = new HashSet<LsThing>();
+		if (includeIgnored){
+			try{
+				searchResults = LsThing.findLsThingsByLsTypeAndKindEquals(lsType+"_"+lsKind).getResultList();
+			} catch (EmptyResultDataAccessException e){}
+		}
+		else {
+			try{
+				searchResults = LsThing.findLsThing(lsType, lsKind).getResultList();
+			} catch (EmptyResultDataAccessException e){}
+		}
+		return searchResults;
+	}
 }

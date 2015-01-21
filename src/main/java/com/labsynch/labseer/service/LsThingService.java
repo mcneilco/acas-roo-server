@@ -6,6 +6,7 @@ import java.util.Collection;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -59,6 +60,11 @@ public interface LsThingService {
 			String searchQuery);
 
 	List<String> getComponentCodeNamesFromNewAssembly(LsThing lsThing);
+
+	Collection<CodeTableDTO> getCodeTableLsThings(String lsType, String lsKind, boolean includeIgnored);
+
+	Collection<LsThing> findLsThingsByLsTypeAndLsKindAndIncludeIgnored(
+			String lsType, String lsKind, boolean includeIgnored);
 	
 	
 	

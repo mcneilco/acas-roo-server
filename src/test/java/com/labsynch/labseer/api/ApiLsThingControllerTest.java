@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.dto.CodeTableDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -235,6 +236,17 @@ public class ApiLsThingControllerTest {
         Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
         Assert.assertEquals(1, lsThings.size());
         logger.info(LsThing.toJsonArray(lsThings));
+    }
+    
+    @Test
+    public void getCodeTableLsThings() throws Exception {
+    	String json = this.mockMvc.perform(get("/api/v1/lsthings/codetable?lsType=parent&lsKind=linker small molecule")
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json;charset=utf-8"))
+        		.andReturn().getResponse().getContentAsString();
+    	logger.info(json);
     }
     
 
