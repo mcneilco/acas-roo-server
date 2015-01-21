@@ -4,9 +4,12 @@ import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
 import com.labsynch.labseer.service.AutoLabelService;
+
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.NonUniqueResultException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +65,15 @@ public class ApiLabelSequenceController {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_ACCEPTABLE);
         }
         return new ResponseEntity<String>(AutoLabelDTO.toJsonArray(autoLabels), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> listJson() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<LabelSequence> result = LabelSequence.findAllLabelSequences();
+        return new ResponseEntity<String>(LabelSequence.toJsonArray(result), headers, HttpStatus.OK);
     }
 
     @RequestMapping(params = "getNextLabelSequences", method = RequestMethod.GET, headers = "Accept=application/json")
