@@ -107,6 +107,9 @@ public class SubjectValueDTO {
 	private String stateType;
 	private String stateKind;
 	
+	private BigDecimal concentration;
+	private String concUnit;
+	
 	public boolean getIgnored() {
 		return this.isIgnored();
 	}

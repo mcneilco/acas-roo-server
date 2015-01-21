@@ -123,6 +123,18 @@ public class AnalysisGroupValue extends AbstractValue {
 		return this.lsState.getId();
 	}
 	
+	public boolean getIgnored() {
+		return this.isIgnored();
+	}
+	
+	public boolean getDeleted() {
+		return this.isDeleted();
+	}
+	
+	public boolean getPublicData() {
+		return this.isPublicData();
+	}
+	
 	public String getStateType() {
 		return this.lsState.getLsType();
 	}
