@@ -201,7 +201,7 @@ public class RawCurveDataDTO {
         		+ " ) " 
         		+ "FROM AnalysisGroupValue agv "
         		+ "JOIN agv.lsState as ags "
-        		+ "JOIN ags.analysisGroup as ag"
+        		+ "JOIN ags.analysisGroup as ag "
         		+ "JOIN ags.analysisGroup.treatmentGroups as treat "
         		+ "JOIN treat.subjects as subj "
         		+ "JOIN subj.lsStates as rss "
