@@ -54,5 +54,7 @@ public interface ExperimentService {
 
 	Collection<JSTreeNodeDTO> getExperimentNodesMod(
 			Collection<String> codeValues);
+
+	public boolean deleteAnalysisGroupsByExperiment(Experiment experiment);
 	
 }

@@ -1256,5 +1256,21 @@ public class ExperimentServiceImpl implements ExperimentService {
 	}
 
 
+	@Override
+	public boolean deleteAnalysisGroupsByExperiment(Experiment experiment) {
+		boolean successfullyDeleted = true;
+		try {
+			for (AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
+				analysisGroup.logicalDelete();
+				analysisGroup.merge();
+			}
+		} catch (Exception e) {
+			successfullyDeleted = false;
+			logger.error("Error in deleting analysis groups by experiment: " + e.toString());
+		}
+		return successfullyDeleted;
+	}
+
+
 
 }

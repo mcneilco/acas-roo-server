@@ -13,6 +13,9 @@ public class ValueTypeKindDTO {
 	
 	private String lsKind;
 
+	public ValueTypeKindDTO(){
+		
+	}
 	
 	public ValueTypeKindDTO(
 			String lsType, 

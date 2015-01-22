@@ -625,7 +625,7 @@ public class CurveFitDTO {
             curveId = curveId + "%";
         }
         EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored AND state.ignored IS NOT :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind", AnalysisGroupValue.class);
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state JOIN state.analysisGroup AS ag WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored AND state.ignored IS NOT :ignored AND ag.ignored IS NOT :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind", AnalysisGroupValue.class);
         q.setParameter("lsType", "stringValue");
         q.setParameter("lsKind", "curve id");
         q.setParameter("stateType", "data");
@@ -670,6 +670,7 @@ public class CurveFitDTO {
         		+ "AND agv.lsKind = :lsKind  "
         		+ "AND agv.ignored IS NOT :ignored "
         		+ "AND state.ignored IS NOT :ignored "
+        		+ "AND ag.ignored IS NOT :ignored "
         		+ "AND state.lsType = :stateType "
         		+ "AND state.lsKind = :stateKind", String.class);
         q.setParameter("lsType", "stringValue");

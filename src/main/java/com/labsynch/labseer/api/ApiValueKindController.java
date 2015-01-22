@@ -32,8 +32,9 @@ public class ApiValueKindController {
 	private static final Logger logger = LoggerFactory.getLogger(ApiValueKindController.class);
 
 	@RequestMapping(value = "/valuekinds/getOrCreate/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> getOrCreateValueKinds(@RequestBody List<ValueTypeKindDTO> valueTypeKindDTOs ){
-        Collection<ValueKind> valueKinds = new HashSet<ValueKind>();
+	public ResponseEntity<String> getOrCreateValueKinds(@RequestBody String json ){
+		Collection<ValueTypeKindDTO> valueTypeKindDTOs = ValueTypeKindDTO.fromJsonArrayToValueTypeKindDTO(json);
+		Collection<ValueKind> valueKinds = new HashSet<ValueKind>();
         for (ValueTypeKindDTO typeKind : valueTypeKindDTOs){
         	String lsType = typeKind.getLsType();
         	String lsKind = typeKind.getLsKind();

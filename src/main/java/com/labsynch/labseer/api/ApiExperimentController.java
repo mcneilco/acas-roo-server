@@ -1164,6 +1164,22 @@ public class ApiExperimentController {
             }
         }
     }
+    
+    @Transactional
+    @RequestMapping(value = "/{id}/deleteChildren", method = RequestMethod.DELETE, headers  = "Accept=application/json")
+    public ResponseEntity<String> deleteAnalysisGroupsByExperiment(@PathVariable("id") Long id){
+    	Experiment experiment = Experiment.findExperiment(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (experiment == null) {
+            logger.info("Did not find the experiment before delete");
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        } else if (experimentService.deleteAnalysisGroupsByExperiment(experiment)) {
+        	return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } else {
+        	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     @Transactional
     @RequestMapping(value = "/codename/{codeName}", method = RequestMethod.GET, headers = "Accept=application/json")

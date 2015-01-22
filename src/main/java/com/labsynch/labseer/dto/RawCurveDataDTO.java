@@ -201,6 +201,7 @@ public class RawCurveDataDTO {
         		+ " ) " 
         		+ "FROM AnalysisGroupValue agv "
         		+ "JOIN agv.lsState as ags "
+        		+ "JOIN ags.analysisGroup as ag"
         		+ "JOIN ags.analysisGroup.treatmentGroups as treat "
         		+ "JOIN treat.subjects as subj "
         		+ "JOIN subj.lsStates as rss "
@@ -231,6 +232,9 @@ public class RawCurveDataDTO {
         		+ "AND agv.lsType = 'stringValue' "
         		+ "AND agv.lsKind = 'curve id' "
         		+ "AND agv.ignored = false "
+        		+ "AND ag.ignored = false "
+        		+ "AND treat.ignored = false "
+        		+ "AND subj.ignored = false "
         		+ "AND agv.stringValue IN :curveIds", Map.class);
         q.setParameter("curveIds", curveIds);
 //        if (renderingHint.equalsIgnoreCase("4 parameter D-R")) 
