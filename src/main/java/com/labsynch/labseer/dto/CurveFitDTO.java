@@ -68,7 +68,7 @@ public class CurveFitDTO {
 		//TODO: finalize these kinds, make sure they match exactly what is being used.
 				this.curveId = stringMap.get("curve id");
 				this.batchCode = stringMap.get("batch code");
-				this.category = stringMap.get("Category");
+				this.category = stringMap.get("category");
 				this.renderingHint = stringMap.get("Rendering Hint");
 				this.min = String.valueOf(numericMap.get("Min"));
 				if (this.min.equals("null")) this.min = stringMap.get("Min");
@@ -175,7 +175,7 @@ public class CurveFitDTO {
 				"analysisGroupCode",
 				"recordedBy",
 				"batchCode",
-				"Category",
+				"category",
 				"renderingHint",
 				"min",
 				"max",
@@ -411,7 +411,7 @@ public class CurveFitDTO {
 		//only create AnalysisGroupValues if they would not be empty/null
 
 		if (!(category==null)){
-			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "Category", category, recordedBy);
+			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "category", category, recordedBy);
 			categoryValue.setCodeValue(batchCode);
 			newValues.add(categoryValue);
 		}

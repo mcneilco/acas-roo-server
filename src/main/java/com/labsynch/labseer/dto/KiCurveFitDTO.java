@@ -67,7 +67,7 @@ public class KiCurveFitDTO {
 		// These keys must be exactly the same as what is used in the database. Case sensitive.
 				this.curveId = stringMap.get("curve id");
 				this.batchCode = stringMap.get("batch code");
-				this.category = stringMap.get("Category");
+				this.category = stringMap.get("category");
 				this.renderingHint = stringMap.get("Rendering Hint");
 				this.min = String.valueOf(numericMap.get("Min"));
 				if (this.min.equals("null")) this.min = stringMap.get("Min");
@@ -179,7 +179,7 @@ public class KiCurveFitDTO {
 				"analysisGroupCode",
 				"recordedBy",
 				"batchCode",
-				"Category",
+				"category",
 				"renderingHint",
 				"min",
 				"max",
@@ -421,7 +421,7 @@ public class KiCurveFitDTO {
 		//only create AnalysisGroupValues if they would not be empty/null
 
 		if (!(category==null)){
-			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "Category", category, recordedBy);
+			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "category", category, recordedBy);
 			categoryValue.setCodeValue(batchCode);
 			newValues.add(categoryValue);
 		}
