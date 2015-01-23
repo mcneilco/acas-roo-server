@@ -910,6 +910,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "CODENAME"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "NAME"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "SCIENTIST"));
+			experimentIdList.addAll(findExperimentIdsByMetadata(term, "RECORDEDBY"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "KIND"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "STATUS"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL TYPE"));
@@ -996,6 +997,15 @@ public class ExperimentServiceImpl implements ExperimentService {
 				}
 			}
 			experimentValues.clear();
+		}
+		if (searchBy == "RECORDEDBY") {
+			List<Experiment> experiments = Experiment.findExperimentsByRecordedByLike(queryString).getResultList();
+			if (!experiments.isEmpty()){
+				for (Experiment experiment:experiments) {
+					experimentIdList.add(experiment.getId());
+				}
+			}
+			experiments.clear();
 		}
 		if (searchBy == "STATUS") {
 			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndStringValueLike("status", queryString).getResultList();

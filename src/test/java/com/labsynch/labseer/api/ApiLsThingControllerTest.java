@@ -249,5 +249,21 @@ public class ApiLsThingControllerTest {
     	logger.info(json);
     }
     
+    @Test
+    public void searchByScientist() throws Exception {
+    	String searchString = "jane";
+        String json = this.mockMvc.perform(get("/api/v1/lsthings/search?q="+searchString)
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        
+        logger.info(json);
+        Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+        Assert.assertFalse(lsThings.isEmpty());
+        logger.info(LsThing.toJsonArray(lsThings));
+    }
+    
 
 }
