@@ -67,7 +67,7 @@ public class KiCurveFitDTO {
 		// These keys must be exactly the same as what is used in the database. Case sensitive.
 				this.curveId = stringMap.get("curve id");
 				this.batchCode = stringMap.get("batch code");
-				this.category = stringMap.get("Category");
+				this.category = stringMap.get("category");
 				this.renderingHint = stringMap.get("Rendering Hint");
 				this.min = String.valueOf(numericMap.get("Min"));
 				if (this.min.equals("null")) this.min = stringMap.get("Min");
@@ -179,7 +179,7 @@ public class KiCurveFitDTO {
 				"analysisGroupCode",
 				"recordedBy",
 				"batchCode",
-				"Category",
+				"category",
 				"renderingHint",
 				"min",
 				"max",
@@ -421,7 +421,7 @@ public class KiCurveFitDTO {
 		//only create AnalysisGroupValues if they would not be empty/null
 
 		if (!(category==null)){
-			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "Category", category, recordedBy);
+			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "category", category, recordedBy);
 			categoryValue.setCodeValue(batchCode);
 			newValues.add(categoryValue);
 		}
@@ -624,7 +624,7 @@ public class KiCurveFitDTO {
             curveId = curveId + "%";
         }
         EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored AND state.ignored IS NOT :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind", AnalysisGroupValue.class);
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state JOIN state.analysisGroup AS ag WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored AND state.ignored IS NOT :ignored AND ag.ignored IS NOT :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind", AnalysisGroupValue.class);
         q.setParameter("lsType", "stringValue");
         q.setParameter("lsKind", "curve id");
         q.setParameter("stateType", "data");
@@ -669,6 +669,7 @@ public class KiCurveFitDTO {
         		+ "AND agv.lsKind = :lsKind  "
         		+ "AND agv.ignored IS NOT :ignored "
         		+ "AND state.ignored IS NOT :ignored "
+        		+ "AND ag.ignored IS NOT :ignored "
         		+ "AND state.lsType = :stateType "
         		+ "AND state.lsKind = :stateKind", String.class);
         q.setParameter("lsType", "stringValue");

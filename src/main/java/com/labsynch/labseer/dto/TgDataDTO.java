@@ -116,7 +116,8 @@ public class TgDataDTO {
         TypedQuery<TreatmentGroupValue> q = em.createQuery("SELECT tgv "
         		+ "FROM AnalysisGroupValue agv "
         		+ "JOIN agv.lsState as ags "
-        		+ "JOIN ags.analysisGroup.treatmentGroups as treat "
+        		+ "JOIN ags.analysisGroup as ag "
+        		+ "JOIN ag.treatmentGroups as treat "
         		+ "JOIN treat.lsStates as tgs "
         		+ "JOIN tgs.lsValues as tgv "
         		+ "WHERE tgs.lsType = 'data' "
@@ -126,6 +127,8 @@ public class TgDataDTO {
         		+ "AND agv.lsType = 'stringValue' "
         		+ "AND agv.lsKind = 'curve id' "
         		+ "AND agv.ignored = false "
+        		+ "AND ag.ignored IS NOT :ignored "
+        		+ "AND treat.ignored IS NOT :ignored "
         		+ "AND agv.stringValue = :curveId", TreatmentGroupValue.class);
         q.setParameter("curveId", curveId);
         List<TreatmentGroupValue> queryResults = q.getResultList();

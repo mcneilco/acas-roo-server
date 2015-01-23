@@ -311,27 +311,6 @@ public class ApiDDictValueController {
 			return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResults), headers, HttpStatus.OK);
 		}
 	}
-	
-	@RequestMapping(value = "/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
-	@ResponseBody
-	public ResponseEntity<String> listJsonWithFormat(
-			@PathVariable (value = "format") String format) {
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json; charset=utf-8");
-		List<DDictValue> dDictResults = DDictValue.findAllDDictValues();
-
-		if(format != null && format.equalsIgnoreCase("codeTable")) {
-			List<CodeTableDTO> codeTables = dataDictionaryService.convertToCodeTables(dDictResults);
-			codeTables = CodeTableDTO.sortCodeTables(codeTables);
-			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
-		} else if (format != null && format.equalsIgnoreCase("csv")) {
-			String outputString = dataDictionaryService.getCsvList(dDictResults);
-			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<String>(DDictValue.toJsonArray(dDictResults), headers, HttpStatus.OK);
-		}
-	}
 
 	@RequestMapping(value = "/all/{lsType}/{lsKind}/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody

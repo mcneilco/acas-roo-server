@@ -77,8 +77,8 @@ public class ApiCurveFitController {
 			}
 			
 		} catch (Exception e) {
-			String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
     }
@@ -101,8 +101,8 @@ public class ApiCurveFitController {
 			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(filledRawCurveDataDTOs), headers, HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -122,8 +122,8 @@ public class ApiCurveFitController {
 			    return new ResponseEntity<String>(TgDataDTO.toJsonArray(filledTgDataDTOs), headers, HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -165,8 +165,8 @@ public class ApiCurveFitController {
 			}
 			
 		} catch (Exception e) {
-			String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
     }
@@ -187,8 +187,8 @@ public class ApiCurveFitController {
 			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(rawCurveDataDTOs), headers, HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
     }
@@ -209,8 +209,8 @@ public class ApiCurveFitController {
 			    return new ResponseEntity<String>(TgDataDTO.toJsonArray(tgDataDTOs), headers, HttpStatus.OK);
 			}
 		} catch (Exception e) {
-			String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
     }
@@ -224,8 +224,8 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			return new ResponseEntity<String>(headers, HttpStatus.OK);
 		} catch (Exception e) {
-	    	String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//	    	String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -240,8 +240,8 @@ public class ApiCurveFitController {
 			headers.add("Content-Type", "application/json");
 			return new ResponseEntity<String>(headers, HttpStatus.OK);
 		} catch (Exception e) {
-	    	String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//	    	String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
@@ -256,8 +256,8 @@ public class ApiCurveFitController {
 		    headers.add("Content-Type", "application/json");
 		    return new ResponseEntity<String>(headers, HttpStatus.OK);
 	    } catch(Exception e) {
-	    	String error = e.getMessage() + e.getStackTrace();
-	    	logger.error("Caught error: "+error);
+//	    	String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 	    }
 	    
