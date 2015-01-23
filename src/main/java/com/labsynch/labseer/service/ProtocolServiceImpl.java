@@ -295,7 +295,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 			protocolLabels.clear();
 		}
 		if (searchBy == "SCIENTIST") {
-			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndStringValueLike("scientist", queryString).getResultList();
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("scientist", queryString).getResultList();
 			if (!protocolValues.isEmpty()){
 				for (ProtocolValue protocolValue : protocolValues) {
 					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());

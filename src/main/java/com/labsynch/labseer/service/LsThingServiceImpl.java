@@ -716,7 +716,7 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 
 		if (searchBy == "SCIENTIST") {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike("scientist", queryString).getResultList();
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndCodeValueLike("scientist", queryString).getResultList();
 			if (!lsThingValues.isEmpty()){
 				for (LsThingValue lsThingValue : lsThingValues) {
 					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());

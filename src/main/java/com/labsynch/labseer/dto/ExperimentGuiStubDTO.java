@@ -73,8 +73,8 @@ public class ExperimentGuiStubDTO {
 			if (state.getLsType().equals("metadata") && state.getLsKind().equals("experiment metadata") && !state.isIgnored()){
 				Set<ExperimentValue> values = state.getLsValues();
 				for (ExperimentValue value : values){
-					if (value.getLsType().equals("stringValue") && value.getLsKind().equals("scientist") && !value.isIgnored()){
-						this.scientist = value.getStringValue();
+					if (value.getLsType().equals("codeValue") && value.getLsKind().equals("scientist") && !value.isIgnored()){
+						this.scientist = value.getCodeValue();
 					} else if (value.getLsType().equals("dateValue") && value.getLsKind().equals("completion date") && !value.isIgnored()){
 						this.completionDate = value.getDateValue();
 					} else if (value.getLsType().equals("stringValue") && value.getLsKind().equals("status") && !value.isIgnored()){

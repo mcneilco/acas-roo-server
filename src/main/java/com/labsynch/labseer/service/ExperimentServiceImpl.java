@@ -989,7 +989,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		}
 
 		if (searchBy == "SCIENTIST") {
-			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndStringValueLike("scientist", queryString).getResultList();
+			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike("scientist", queryString).getResultList();
 			if (!experimentValues.isEmpty()){
 				for (ExperimentValue experimentValue : experimentValues) {
 					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
