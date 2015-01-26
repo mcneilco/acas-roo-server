@@ -239,7 +239,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "CODENAME"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NAME"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "SCIENTIST"));
-			protocolIdList.addAll(findProtocolIdsByMetadata(term, "RECORDEDBY"));
+//			protocolIdList.addAll(findProtocolIdsByMetadata(term, "RECORDEDBY"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TYPE"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KIND"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "DATE"));

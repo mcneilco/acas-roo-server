@@ -2,12 +2,15 @@
 
 package com.labsynch.labseer.service;
 
+import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.persistence.EntityManager;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -307,5 +310,12 @@ public class ProtocolServiceTest {
 		Assert.assertEquals("deleted", deletedProtocolStatus);
 		Assert.assertEquals("deleted", checkDeletedProtocolStatus);
 		
+	}
+	
+	@Test
+	@Transactional
+	public void findScientistProtocolValue() {
+		Collection<ProtocolValue> protocolValues  = ProtocolValue.findProtocolValuesByLsKindEqualsAndStringValueLike("scientist", "*").getResultList();
+		logger.info(ProtocolValue.toJsonArray(protocolValues));
 	}
 }

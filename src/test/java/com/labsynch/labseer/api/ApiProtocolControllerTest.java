@@ -50,7 +50,7 @@ public class ApiProtocolControllerTest {
     
     @Test
     public void genericSearchByScientist() throws Exception {
-    	String searchString = "smeyer";
+    	String searchString = "bfielder";
     	String responseJson =  this.mockMvc.perform(get("/api/v1/protocols/search?q="+searchString)
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON))
