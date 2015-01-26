@@ -30,7 +30,8 @@ import flexjson.JSONDeserializer;
 @RooJson
 @RooJpaActiveRecord(finders = { "findLsThingValuesByLsState", "findLsThingValuesByLsTransactionEquals",
 		 "findLsThingValuesByCodeValueEquals", "findLsThingValuesByIgnoredNotAndCodeValueEquals",
-		 "findLsThingValuesByLsKindEqualsAndStringValueLike", "findLsThingValuesByLsKindEqualsAndDateValueLike"})
+		 "findLsThingValuesByLsKindEqualsAndStringValueLike", "findLsThingValuesByLsKindEqualsAndDateValueLike",
+		 "findLsThingValuesByLsKindEqualsAndCodeValueLike"})
 public class LsThingValue extends AbstractValue {
 
 	private static final Logger logger = LoggerFactory.getLogger(LsThingValue.class);

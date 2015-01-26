@@ -650,6 +650,7 @@ public class LsThingServiceImpl implements LsThingService {
 		for (String term : splitQuery) {
 			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "CODENAME"));
 			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "PARENT NAME"));
+			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "RECORDEDBY"));
 			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "SCIENTIST"));
 			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "LSKIND"));
 			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "DATE"));
@@ -714,9 +715,17 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			lsThingLabels.clear();
 		}
-
+		if (searchBy == "RECORDEDBY") {
+			List<LsThing> lsThings = LsThing.findLsThingsByRecordedByLike(queryString).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing:lsThings) {
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+		}
 		if (searchBy == "SCIENTIST") {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike("scientist", queryString).getResultList();
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndCodeValueLike("scientist", queryString).getResultList();
 			if (!lsThingValues.isEmpty()){
 				for (LsThingValue lsThingValue : lsThingValues) {
 					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());

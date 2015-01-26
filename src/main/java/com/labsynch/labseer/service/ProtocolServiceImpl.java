@@ -239,6 +239,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "CODENAME"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NAME"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "SCIENTIST"));
+//			protocolIdList.addAll(findProtocolIdsByMetadata(term, "RECORDEDBY"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TYPE"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KIND"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "DATE"));
@@ -295,13 +296,22 @@ public class ProtocolServiceImpl implements ProtocolService {
 			protocolLabels.clear();
 		}
 		if (searchBy == "SCIENTIST") {
-			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndStringValueLike("scientist", queryString).getResultList();
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("scientist", queryString).getResultList();
 			if (!protocolValues.isEmpty()){
 				for (ProtocolValue protocolValue : protocolValues) {
 					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
 				}
 			}
 			protocolValues.clear();
+		}
+		if (searchBy == "RECORDEDBY") {
+			List<Protocol> protocols = Protocol.findProtocolsByRecordedByLike(queryString).getResultList();
+			if (!protocols.isEmpty()){
+				for (Protocol protocol: protocols) {
+					protocolIdList.add(protocol.getId());
+				}
+			}
+			protocols.clear();
 		}
 		if (searchBy == "TYPE") {
 			List<Protocol> protocols = Protocol.findProtocolsByLsTypeLike(queryString).getResultList();
