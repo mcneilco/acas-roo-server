@@ -486,6 +486,7 @@ public class LsThingServiceImpl implements LsThingService {
 
 		LsThing newLsThing = new LsThing(lsThing);
 		if (newLsThing.getCodeName() == null){
+			if (newLsThing.getLsTypeAndKind() == null) newLsThing.setLsTypeAndKind(newLsThing.getLsType()+"_"+newLsThing.getLsKind());
 			newLsThing.setCodeName(autoLabelService.getLsThingCodeName(newLsThing.getLsTypeAndKind()));
 		}
 		newLsThing.persist();
