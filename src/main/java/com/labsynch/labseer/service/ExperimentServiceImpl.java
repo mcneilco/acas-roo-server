@@ -81,7 +81,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@Override
 	@Transactional
 	public Experiment updateExperiment(Experiment jsonExperiment){
-		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
+//		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
 		logger.debug("recorded by: " + jsonExperiment.getRecordedBy());
 
 		Experiment updatedExperiment = Experiment.update(jsonExperiment);
@@ -134,7 +134,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			}
 		}
 
-		logger.debug("updatedExperiment: " + updatedExperiment.toPrettyJson());
+//		logger.debug("updatedExperiment: " + updatedExperiment.toPrettyJson());
 		return updatedExperiment;
 
 	}
@@ -812,11 +812,13 @@ public class ExperimentServiceImpl implements ExperimentService {
 		List<AnalysisGroupValueDTO> agValues = null;
 		if (finalUniqueBatchCodes.size() > 0){
 			logger.debug("looking by expriment codes and batch codes");
-			agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
+			if (onlyPublicData) agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList(), onlyPublicData).getResultList();
+			else agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
 			logger.debug("number of agValues found: " + agValues.size());
 		} else if (!filteredGeneData && finalUniqueBatchCodes.size() == 0) {
 			logger.debug("looking by expriment codes only");
-			agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();
+			if (onlyPublicData) agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList(), onlyPublicData).getResultList();
+			else agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();
 			logger.debug("number of agValues found: " + agValues.size());
 		} else if (filteredGeneData && finalUniqueBatchCodes.size() == 0){
 			logger.debug("no results found with the search filters");
