@@ -65,6 +65,8 @@ public interface LsThingService {
 
 	Collection<LsThing> findLsThingsByLsTypeAndLsKindAndIncludeIgnored(
 			String lsType, String lsKind, boolean includeIgnored);
+
+	LsThing findParentByBatchEquals(LsThing batch);
 	
 	
 	

@@ -486,6 +486,7 @@ public class LsThingServiceImpl implements LsThingService {
 
 		LsThing newLsThing = new LsThing(lsThing);
 		if (newLsThing.getCodeName() == null){
+			if (newLsThing.getLsTypeAndKind() == null) newLsThing.setLsTypeAndKind(newLsThing.getLsType()+"_"+newLsThing.getLsKind());
 			newLsThing.setCodeName(autoLabelService.getLsThingCodeName(newLsThing.getLsTypeAndKind()));
 		}
 		newLsThing.persist();
@@ -632,6 +633,17 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		return batches;
 	}
+	
+	@Override
+	public LsThing findParentByBatchEquals(LsThing batch) {
+		LsThing parent;
+		try{
+			parent = LsThing.findSecondLsThingsByItxTypeKindEqualsAndFirstLsThingEquals("instantiates", "batch_parent", batch).getSingleResult();
+		} catch (EmptyResultDataAccessException e){
+			parent = null;
+		}
+		return parent;
+	}
 
 
 	@Override
@@ -673,6 +685,11 @@ public class LsThingServiceImpl implements LsThingService {
 			if (lsThing.isDeleted()){
 				logger.debug("removing a deleted lsThing from the results");
 			} else {
+				//Inject parent preferred label to all batch lsThings
+				if (lsThing.getLsType().equals("batch")){
+					LsThingLabel bestParentLabel = LsThingLabel.pickBestLabel(findParentByBatchEquals(lsThing).getLsLabels());
+					lsThing.getLsLabels().add(bestParentLabel);
+				}
 				result.add(lsThing);
 			}
 		}
