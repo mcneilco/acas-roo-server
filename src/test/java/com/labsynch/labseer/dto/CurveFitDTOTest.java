@@ -15,6 +15,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.ProtocolValue;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
@@ -94,5 +96,15 @@ public class CurveFitDTOTest {
 		logger.debug("total number of curves: " + results.size());
 		logger.debug(CurveFitDTO.toJsonArray(results));
 		Assert.assertTrue(!results.isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void getDisplayMinMaxByCurveIdTest() {
+		String curveId = "AG-00441632_7080";
+		Collection<ProtocolValue> protocolValues = CurveFitDTO.findDisplayMinMaxByCurveId(curveId);
+		logger.info(ProtocolValue.toJsonArray(protocolValues));
+		Assert.assertTrue(!protocolValues.isEmpty());
+
 	}
 }

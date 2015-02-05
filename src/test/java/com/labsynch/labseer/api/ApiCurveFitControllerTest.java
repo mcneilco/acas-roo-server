@@ -25,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -56,17 +57,22 @@ public class ApiCurveFitControllerTest {
     //update ki fit data
     //flag wells
     
+    
     @Test
-    public void getOrCreateValueKinds() throws Exception {
-    	String json = "[{\"lsType\":\"test\",\"lsKind\":\"test\"}]";
-    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/valuekinds/getOrCreate/jsonArray")
+    @Transactional
+    public void getDisplayMinMaxByCurveId() throws Exception{
+    	String json = "AG-00441632_7080";
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/displayminmax")
     			.contentType(MediaType.APPLICATION_JSON)
-    			.accept(MediaType.APPLICATION_JSON))
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
     			.andExpect(status().isOk())
-    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andExpect(content().contentType("application/json"))
     			.andReturn().getResponse();
     	String responseJson = response.getContentAsString();
     	logger.info(responseJson);
+    	Collection<ProtocolValue> results = ProtocolValue.fromJsonArrayToProtocolValues(responseJson);
+    	Assert.assertEquals(2, results.size());
     }
     
     

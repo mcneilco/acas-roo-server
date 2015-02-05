@@ -24,6 +24,7 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.CurveFitDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
@@ -263,5 +264,23 @@ public class ApiCurveFitController {
 	    
 
     }
+	
+	@Transactional
+	@RequestMapping(value = "/displayminmax", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> getProtocolCurveDisplayMinAndCurveDisplayMaxByCurveId(@RequestBody String curveId, @RequestParam(value = "format", required = false) String format) {
+		try {
+			logger.info("From the ApiCurveFitController displayminmax route");
+			logger.info("curveId: "+ curveId);
+			Collection<ProtocolValue> protocolValues = CurveFitDTO.findDisplayMinMaxByCurveId(curveId);
+			logger.info("Found: "+ ProtocolValue.toJsonArray(protocolValues));
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Type", "application/json");
+			return new ResponseEntity<String>(ProtocolValue.toJsonArray(protocolValues), headers, HttpStatus.OK);
+		} catch (Exception e) {
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
+	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 	
 }

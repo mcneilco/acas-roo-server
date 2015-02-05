@@ -35,6 +35,8 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
@@ -771,6 +773,30 @@ public class CurveFitDTO {
 
 	public static Collection<CurveFitDTO> getFitData(List<String> curveIds) {
 		return getFitData(makeCurveFitDTOsFromCurveIdList(curveIds));
+	}
+	
+	private static Collection<Long> findProtocolIdsByCurveId(String curveId) {
+		Collection<Long> protocolIds = new HashSet<Long>();
+		AnalysisGroupValue curveIdValue = findCurveIdValue(curveId);
+		AnalysisGroup analysisGroup = curveIdValue.getLsState().getAnalysisGroup();
+		Collection<Experiment> experiments = analysisGroup.getExperiments();
+		for (Experiment experiment: experiments){
+			protocolIds.add(experiment.getProtocol().getId());
+		}
+		return protocolIds;
+	}
+	
+	private static Collection<ProtocolValue> getDisplayMinMaxByProtocolIds(Collection<Long> protocolIds){
+		Collection<ProtocolValue> protocolValues = new HashSet<ProtocolValue>();
+		for (Long protocolId: protocolIds){
+			protocolValues.addAll(ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(protocolId, "metadata", "screening assay", "numericValue", "curve display min").getResultList());
+			protocolValues.addAll(ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(protocolId, "metadata", "screening assay", "numericValue", "curve display max").getResultList());
+		}
+		return protocolValues;
+	}
+	
+	public static Collection<ProtocolValue> findDisplayMinMaxByCurveId(String curveId){
+		return getDisplayMinMaxByProtocolIds(findProtocolIdsByCurveId(curveId));
 	}
 	
 }
