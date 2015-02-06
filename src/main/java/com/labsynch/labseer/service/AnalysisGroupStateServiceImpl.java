@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,14 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 			AnalysisGroupState analysisGroupState) {
 		analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupState.getAnalysisGroup().getId()));		
 		analysisGroupState.persist();
+		Set<AnalysisGroupValue> savedValues = new HashSet<AnalysisGroupValue>();
+		for (AnalysisGroupValue analysisGroupValue : analysisGroupState.getLsValues()){
+			analysisGroupValue.setLsState(analysisGroupState);
+			analysisGroupValue.persist();
+			savedValues.add(analysisGroupValue);
+		}
+		analysisGroupState.setLsValues(savedValues);
+		analysisGroupState.merge();
 		return analysisGroupState;
 	}
 

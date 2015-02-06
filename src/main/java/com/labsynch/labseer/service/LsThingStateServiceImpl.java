@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
@@ -77,6 +76,14 @@ public class LsThingStateServiceImpl implements LsThingStateService {
 			LsThingState lsThingState) {
 		lsThingState.setLsThing(LsThing.findLsThing(lsThingState.getLsThing().getId()));		
 		lsThingState.persist();
+		Set<LsThingValue> savedValues = new HashSet<LsThingValue>();
+		for (LsThingValue lsThingValue : lsThingState.getLsValues()){
+			lsThingValue.setLsState(lsThingState);
+			lsThingValue.persist();
+			savedValues.add(lsThingValue);
+		}
+		lsThingState.setLsValues(savedValues);
+		lsThingState.merge();
 		return lsThingState;
 	}
 

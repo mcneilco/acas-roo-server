@@ -1,7 +1,9 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
+import com.labsynch.labseer.domain.ExperimentValue;
 
 
 @Service
@@ -48,6 +51,14 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 			ExperimentState experimentState) {
 		experimentState.setExperiment(Experiment.findExperiment(experimentState.getExperiment().getId()));		
 		experimentState.persist();
+		Set<ExperimentValue> savedValues = new HashSet<ExperimentValue>();
+		for (ExperimentValue experimentValue : experimentState.getLsValues()){
+			experimentValue.setLsState(experimentState);
+			experimentValue.persist();
+			savedValues.add(experimentValue);
+		}
+		experimentState.setLsValues(savedValues);
+		experimentState.merge();
 		return experimentState;
 	}
 
