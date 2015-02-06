@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
+import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
@@ -77,6 +79,14 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 			ProtocolState protocolState) {
 		protocolState.setProtocol(Protocol.findProtocol(protocolState.getProtocol().getId()));		
 		protocolState.persist();
+		Set<ProtocolValue> savedValues = new HashSet<ProtocolValue>();
+		for (ProtocolValue protocolValue : protocolState.getLsValues()){
+			protocolValue.setLsState(protocolState);
+			protocolValue.persist();
+			savedValues.add(protocolValue);
+		}
+		protocolState.setLsValues(savedValues);
+		protocolState.merge();
 		return protocolState;
 	}
 
