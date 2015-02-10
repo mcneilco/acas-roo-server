@@ -174,7 +174,7 @@ public class RawCurveDataDTO {
 		return processors;
 	}
 	
-	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds, String renderingHint){
+	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds){
 		EntityManager em = SubjectValue.entityManager();
 		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( rsv.id as responseSubjectValueId, "
         		+ "rsv.numericValue as response, "
@@ -237,7 +237,6 @@ public class RawCurveDataDTO {
         		+ "AND subj.ignored = false "
         		+ "AND agv.stringValue IN :curveIds", Map.class);
         q.setParameter("curveIds", curveIds);
-//        if (renderingHint.equalsIgnoreCase("4 parameter D-R")) 
         q.setParameter("responseKind", "transformed efficacy");
         List<Map> queryResults = q.getResultList();
         List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
@@ -280,12 +279,11 @@ public class RawCurveDataDTO {
 	public static Collection<RawCurveDataDTO> getRawCurveDataByExperiment(String experimentIdOrCodeName){
 		long startTime = System.currentTimeMillis();
 		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
-		String renderingHint = CurveFitDTO.findRenderingHint(curveIds.iterator().next());
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		logger.debug("time to get curve id list and rendering hint = " + totalTime + " miliseconds.");
 		long startTime2 = System.currentTimeMillis();
-		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveData(curveIds, renderingHint);
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveData(curveIds);
 		long endTime2 = System.currentTimeMillis();
 		long totalTime2 = endTime2 - startTime2;
 		logger.debug("time to fill in raw curve data = " + totalTime2 + " miliseconds.");

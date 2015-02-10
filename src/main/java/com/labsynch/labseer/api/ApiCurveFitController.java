@@ -90,8 +90,7 @@ public class ApiCurveFitController {
 	public ResponseEntity<String> getRawCurveDataByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format) {
 		try {
 			//This route currently assumes that all the curveIds specified have the same rendering hint. It will not pull back the correct data if a mix of rendering hints is expected.
-			String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
-			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(curveIds, renderingHint);
+			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveData(curveIds);
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Type", "application/json");
 			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
