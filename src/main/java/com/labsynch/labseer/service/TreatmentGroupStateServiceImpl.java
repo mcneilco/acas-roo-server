@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,10 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
@@ -74,6 +71,14 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 			TreatmentGroupState treatmentGroupState) {
 		treatmentGroupState.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupState.getTreatmentGroup().getId()));		
 		treatmentGroupState.persist();
+		Set<TreatmentGroupValue> savedValues = new HashSet<TreatmentGroupValue>();
+		for (TreatmentGroupValue treatmentGroupValue : treatmentGroupState.getLsValues()){
+			treatmentGroupValue.setLsState(treatmentGroupState);
+			treatmentGroupValue.persist();
+			savedValues.add(treatmentGroupValue);
+		}
+		treatmentGroupState.setLsValues(savedValues);
+		treatmentGroupState.merge();
 		return treatmentGroupState;
 	}
 
