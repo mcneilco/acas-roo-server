@@ -131,13 +131,14 @@ public class ApiCurveFitController {
 	
 	@Transactional
     @RequestMapping(value = "/fitdata", method = RequestMethod.GET, headers = "Accept=application/json")
-    public ResponseEntity<String> getFitDataByExperimentIdOrCodeName(@RequestParam(value = "experiment") String experimentIdOrCodeName, 
+    public ResponseEntity<String> getFitDataByExperimentIdOrCodeName(@RequestParam(value = "experiment") String experimentIdOrCodeName,
+    		@RequestParam(value = "modelFitType", required=true) String renderingHint,
     		@RequestParam(value = "format", required = false) String format) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
         try {
         	List<String> curveIds = (List<String>) CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
-        	String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
+//        	String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
 			if (renderingHint.equalsIgnoreCase("4 parameter D-R")){
 				Collection<CurveFitDTO> filledCurveFitDTOs = CurveFitDTO.getFitData(curveIds);
 				if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
