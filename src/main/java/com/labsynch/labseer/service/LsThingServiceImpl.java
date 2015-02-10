@@ -281,11 +281,11 @@ public class LsThingServiceImpl implements LsThingService {
 
 
 	@Override
-	public boolean validateComponentName(String componentName) {
+	public boolean validateComponentName(String componentName, String lsKind) {
 		Collection<LsThing> foundLsThings = null;
 		boolean isValid = true;
 		try{
-			foundLsThings = LsThing.findLsThingByLabelText(componentName).getResultList();
+			foundLsThings = LsThing.findLsThingByLabelTextAndLsKind(componentName, lsKind).getResultList();
 		} catch (EmptyResultDataAccessException e){
 			return true;
 		}
@@ -299,9 +299,10 @@ public class LsThingServiceImpl implements LsThingService {
 	public boolean validateComponentName(LsThing lsThing) {
 		boolean isValid = true;
 		Set<LsThingLabel> lsThingLabels = lsThing.getLsLabels();
+		String lsKind = lsThing.getLsKind();
 		for (LsThingLabel label : lsThingLabels){
 			String labelText = label.getLabelText();
-			if (!label.isIgnored()) isValid = validateComponentName(labelText);
+			if (!label.isIgnored()) isValid = validateComponentName(labelText, lsKind);
 		}
 		return isValid;
 	}
