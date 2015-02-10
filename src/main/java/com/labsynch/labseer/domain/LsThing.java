@@ -194,6 +194,25 @@ public class LsThing extends AbstractThing {
         
         return q;
     }
+    
+    public static TypedQuery<LsThing> findLsThingByLabelTextAndLsKind(String labelText, String lsKind) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = LsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM LsThing o " +
+				"JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsKind = :lsKind ";
+        
+        TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
        
     public static TypedQuery<LsThing> findLsThingByLabelTextList(List<String> labelTextList) {
         if (labelTextList == null || labelTextList.size() == 0) throw new IllegalArgumentException("The labelText argument is required");

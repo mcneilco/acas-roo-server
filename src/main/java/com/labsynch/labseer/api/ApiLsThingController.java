@@ -335,7 +335,7 @@ public class ApiLsThingController {
         boolean isValid = false;
         if (isComponent){
         	String componentName = names.get(0);
-        	isValid = lsThingService.validateComponentName(componentName);
+        	isValid = lsThingService.validateComponentName(componentName, lsKind);
         }
         if (isAssembly){
         	List<String> componentCodeNames = names;

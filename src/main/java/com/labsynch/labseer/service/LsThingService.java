@@ -31,7 +31,7 @@ public interface LsThingService {
 			String thingKind, String labelType, String labelKind,
 			PreferredNameRequestDTO requestDTO);
 
-	boolean validateComponentName(String componentName);
+	boolean validateComponentName(String componentName, String lsKind);
 
 	boolean validateAssembly(List<String> componentCodeNames);
 
