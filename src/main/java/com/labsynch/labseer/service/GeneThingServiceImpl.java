@@ -35,6 +35,7 @@ import com.labsynch.labseer.domain.ValueKind;
 import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.EntrezDbGeneDTO;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 public class GeneThingServiceImpl implements GeneThingService {
@@ -175,6 +176,11 @@ public class GeneThingServiceImpl implements GeneThingService {
 			ValueType valueTypeDate = ValueType.getOrCreate("dateValue");
 			ValueKind.getOrCreate(valueTypeDate, "modification date");
 
+			int numberOfLines = SimpleUtil.countLines(inputFile);
+			Long numberOfLabels = new Long(numberOfLines-1);
+			
+			List<AutoLabelDTO> thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);
+			
 			int i = 0;
 			int batchSize = 25;
 			LsThing geneThing = null;
@@ -185,14 +191,10 @@ public class GeneThingServiceImpl implements GeneThingService {
 				// check if gene currently exists
 				Long geneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId());
 
-
 				if (geneIdCount == 0L){
 
-					Long numberOfLabels = 1L;
-					List<AutoLabelDTO> thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);			
-
 					geneThing = new LsThing();
-					geneThing.setCodeName(thingCodes.get(0).getAutoLabel());
+					geneThing.setCodeName(thingCodes.get(i).getAutoLabel());
 					geneThing.setLsType(geneTypeString);
 					geneThing.setLsKind(geneKindString);
 					geneThing.setLsTransaction(lsTransaction.getId());
