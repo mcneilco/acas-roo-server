@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
@@ -292,7 +293,7 @@ public class CurveFitDTO {
 	@Transactional
 	public static CurveFitDTO getFitData(CurveFitDTO curveFitDTO){
 		AnalysisGroupValue curveIdValue = findCurveIdValue(curveFitDTO.getCurveId());
-		if (curveIdValue.getStateId() == null) {
+		if (curveIdValue == null || curveIdValue.getStateId() == null) {
 			logger.debug("No data found for curve id: " + curveFitDTO.getCurveId());
 			return new CurveFitDTO();
 		}
@@ -636,15 +637,14 @@ public class CurveFitDTO {
         q.setParameter("ignored", true);
         try{
         	return q.getSingleResult();
-        }catch(Exception e){
-        	logger.error("ERROR: More than one non-ignored curve id found");
-        	logger.error("Specific error: " + e.getMessage());
-        	logger.debug("Found: ");
-        	List<AnalysisGroupValue> results = q.getResultList();
-        	for (AnalysisGroupValue result: results){
-        		logger.debug(result.toJson());
-        	}
-        	return new AnalysisGroupValue();
+        }catch(NoResultException e1) {
+        	logger.warn("No curve id found");
+        	return null;
+        }
+        	catch(Exception e2){
+	        	logger.error("Caught error trying to find curve id: " + curveId);
+	        	logger.error("Specific error: " + e2.getMessage());
+        	return null;
         }
 	}
 	
@@ -767,8 +767,25 @@ public class CurveFitDTO {
 	
 	public static String findRenderingHint(String curveId) {
 		AnalysisGroupValue curveIdValue = findCurveIdValue(curveId);
+		if (curveIdValue == null) return null;
 		AnalysisGroup analysisGroup = curveIdValue.getLsState().getAnalysisGroup();
 		return findRenderingHint(analysisGroup);
+	}
+
+	public static String findFirstRenderingHint(List<String> curveIds) {
+		String renderingHint = "4 parameter D-R";
+		for (String curveId: curveIds){
+			try{
+				String newRenderingHint = findRenderingHint(curveId);
+				if (newRenderingHint != null){
+					if (!newRenderingHint.equals(renderingHint)) logger.debug("Changing rendering hint from: " + renderingHint + " to: " + newRenderingHint);
+					renderingHint = newRenderingHint;
+				}
+			} catch (EmptyResultDataAccessException e){
+				logger.warn("No rendering hint found for curve Id: " + curveId);
+			}
+		}
+		return renderingHint;
 	}
 
 	public static Collection<CurveFitDTO> getFitData(List<String> curveIds) {
@@ -778,6 +795,7 @@ public class CurveFitDTO {
 	private static Collection<Long> findProtocolIdsByCurveId(String curveId) {
 		Collection<Long> protocolIds = new HashSet<Long>();
 		AnalysisGroupValue curveIdValue = findCurveIdValue(curveId);
+		if (curveIdValue == null) return new ArrayList<Long>();
 		AnalysisGroup analysisGroup = curveIdValue.getLsState().getAnalysisGroup();
 		Collection<Experiment> experiments = analysisGroup.getExperiments();
 		for (Experiment experiment: experiments){
