@@ -18,6 +18,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -1201,25 +1202,30 @@ public class ApiExperimentController {
     public ResponseEntity<java.lang.String> jsonFindExperimentsByCodeNameEqualsRoute(@PathVariable("codeName") String codeName, @RequestParam(value = "with", required = false) String with) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(codeName).getResultList();
+        Experiment experiment;
+        try{
+        	experiment = Experiment.findExperimentsByCodeNameEquals(codeName).getSingleResult();
+        } catch (EmptyResultDataAccessException e){
+        	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
         if (with != null) {
             if (with.equalsIgnoreCase("analysisgroups")) {
-                return new ResponseEntity<String>(Experiment.toJsonArrayStubWithAG(experiments), headers, HttpStatus.OK);
+                return new ResponseEntity<String>(experiment.toJsonStubWithAnalysisGroups(), headers, HttpStatus.OK);
             } else if (with.equalsIgnoreCase("analysisgroupstates")) {
-                return new ResponseEntity<String>(Experiment.toJsonArrayStubWithAGStates(experiments), headers, HttpStatus.OK);
+                return new ResponseEntity<String>(experiment.toJsonStubWithAnalysisGroupStates(), headers, HttpStatus.OK);
             } else if (with.equalsIgnoreCase("analysisgroupvalues")) {
-                return new ResponseEntity<String>(Experiment.toJsonArrayStubWithAGValues(experiments), headers, HttpStatus.OK);
+                return new ResponseEntity<String>(experiment.toJsonStubWithAnalysisGroupValues(), headers, HttpStatus.OK);
             } else if (with.equalsIgnoreCase("fullobject")) {
-                return new ResponseEntity<String>(Experiment.toJsonArray(experiments), headers, HttpStatus.OK);
+                return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.OK);
             } else if (with.equalsIgnoreCase("prettyjson")) {
-                return new ResponseEntity<String>(Experiment.toJsonArrayPretty(experiments), headers, HttpStatus.OK);
+                return new ResponseEntity<String>(experiment.toPrettyJson(), headers, HttpStatus.OK);
             } else if (with.equalsIgnoreCase("prettyjsonstub")) {
-                return new ResponseEntity<String>(Experiment.toJsonArrayStubPretty(experiments), headers, HttpStatus.OK);
+                return new ResponseEntity<String>(experiment.toPrettyJsonStub(), headers, HttpStatus.OK);
             } else {
                 return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers, HttpStatus.NOT_IMPLEMENTED);
             }
         } else {
-            return new ResponseEntity<String>(Experiment.toJsonArrayStub(experiments), headers, HttpStatus.OK);
+            return new ResponseEntity<String>(experiment.toJsonStub(), headers, HttpStatus.OK);
         }
     }
 
