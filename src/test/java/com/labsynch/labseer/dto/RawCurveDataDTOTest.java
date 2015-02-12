@@ -34,8 +34,7 @@ public class RawCurveDataDTOTest {
 		String curveId = "15_AG-00348398";
 		List<String> curveIdList = new ArrayList<String>();
 		curveIdList.add(curveId);
-		String renderingHint = CurveFitDTO.findRenderingHint(curveId);
-		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(curveIdList, renderingHint);
+		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(curveIdList);
 		logger.debug(resultList.toString());
 		for (RawCurveDataDTO result : resultList) {
 			logger.debug(result.toJson());

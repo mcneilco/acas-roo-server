@@ -76,5 +76,57 @@ public class ApiCurveFitControllerTest {
     }
     
     
+    //"AG-00442336_7271"
+    //brian [10:29 AM] this should "AG-00442336_7270"
+    
+    @Test
+    @Transactional
+    public void getFitDataByCurveIdWithMixedRenderingHintExistence() throws Exception{
+    	String json = "[\"AG-00442336_7271\",\"AG-00441632_7080\"]";
+
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    }
+    
+    @Test
+    @Transactional
+    public void getFitDataByCurveIdWithoutRenderingHint() throws Exception{
+    	String json = "[\"AG-00442336_7270\"]";
+
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    }
+    
+    @Test
+    @Transactional
+    public void getFitDataByCurveIdWithRenderingHint() throws Exception{
+    	String json = "[\"AG-00441632_7080\"]";
+
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/curvefit/fitdata")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    }
+    
+    
 
 }

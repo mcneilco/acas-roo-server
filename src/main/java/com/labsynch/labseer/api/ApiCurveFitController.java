@@ -48,8 +48,8 @@ public class ApiCurveFitController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-        	//This route currently assumes that all the curveIds specified have the same rendering hint. It will not pull back the correct data if a mix of rendering hints is expected.
-			String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
+        	//This route will not pull back the correct data if a mix of rendering hints is expected. It will handle mixed existence of rendering hints.
+			String renderingHint = CurveFitDTO.findFirstRenderingHint(curveIds);
 			if (renderingHint.equalsIgnoreCase("4 parameter D-R")){
 				Collection<CurveFitDTO> filledCurveFitDTOs = CurveFitDTO.getFitData(curveIds);
 				if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
