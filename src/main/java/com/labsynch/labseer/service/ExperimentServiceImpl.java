@@ -917,6 +917,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "STATUS"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL TYPE"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL KIND"));
+			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL CODENAME"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL NAME"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "DATE"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "NOTEBOOK"));
