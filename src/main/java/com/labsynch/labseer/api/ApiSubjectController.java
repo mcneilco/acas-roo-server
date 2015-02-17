@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.service.SubjectService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -30,6 +31,9 @@ public class ApiSubjectController {
 	
 	@Autowired
 	private SubjectValueService subjectValueService;
+	
+	@Autowired
+	private SubjectService subjectService;
 	
 
 //	@RequestMapping(value = "/{SubjectIdOrCodeName}/values/{SubjectValueId}", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -144,7 +148,7 @@ public class ApiSubjectController {
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
         Subject subject = Subject.fromJsonToSubject(json);
-        subject.persist();
+        subjectService.saveSubject(subject);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -153,7 +157,7 @@ public class ApiSubjectController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
         for (Subject subject: Subject.fromJsonArrayToSubjects(json)) {
-            subject.persist();
+            subjectService.saveSubject(subject);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
