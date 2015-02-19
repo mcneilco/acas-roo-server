@@ -1,5 +1,7 @@
 package com.labsynch.labseer.api;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,20 +150,21 @@ public class ApiSubjectController {
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJson(@RequestBody String json) {
         Subject subject = Subject.fromJsonToSubject(json);
-        subjectService.saveSubject(subject);
+        subject = subjectService.saveSubject(subject);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(subject.toJson(), headers, HttpStatus.CREATED);
     }
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
-        for (Subject subject: Subject.fromJsonArrayToSubjects(json)) {
-            subjectService.saveSubject(subject);
+        Collection<Subject> savedSubjects = new HashSet<Subject>();
+		for (Subject subject: Subject.fromJsonArrayToSubjects(json)) {
+            savedSubjects.add(subjectService.saveSubject(subject));
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(Subject.toJsonArray(savedSubjects), headers, HttpStatus.CREATED);
     }
 
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -172,19 +175,22 @@ public class ApiSubjectController {
         if (subject.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+        subject = subjectService.updateSubject(subject);
+        return new ResponseEntity<String>(subject.toJson(), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
+        Collection<Subject> updatedSubjects = new HashSet<Subject>();
+		HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         for (Subject subject: Subject.fromJsonArrayToSubjects(json)) {
             if (subject.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
+            updatedSubjects.add(subjectService.updateSubject(subject));
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Subject.toJsonArray(updatedSubjects), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
