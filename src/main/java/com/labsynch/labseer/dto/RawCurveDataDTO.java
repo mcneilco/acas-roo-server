@@ -46,6 +46,8 @@ public class RawCurveDataDTO {
 	
 	public RawCurveDataDTO(String curveId, Map dataMap) {
 		this.curveId = curveId;
+		this.recordedBy = (String) dataMap.get("recordedBy");
+		this.lsTransaction = (Long) dataMap.get("lsTransaction");
 		this.responseSubjectValueId = (Long) dataMap.get("responseSubjectValueId");
 		this.response = (BigDecimal) dataMap.get("response");
 		this.responseKind = (String) dataMap.get("responseKind");
@@ -72,6 +74,8 @@ public class RawCurveDataDTO {
 	
 	public RawCurveDataDTO(Map dataMap) {
 		this.curveId = (String) dataMap.get("curveId");
+		this.recordedBy = (String) dataMap.get("recordedBy");
+		this.lsTransaction = (Long) dataMap.get("lsTransaction");
 		this.responseSubjectValueId = (Long) dataMap.get("responseSubjectValueId");
 		this.response = (BigDecimal) dataMap.get("response");
 		this.responseKind = (String) dataMap.get("responseKind");
@@ -99,6 +103,8 @@ public class RawCurveDataDTO {
 
 
 	private String curveId; //location: provided
+	private String recordedBy;
+	private Long lsTransaction;
 	private Long responseSubjectValueId; // location: subject value, SS: data_results, SV: numericValue_Response, id attribute
 	private BigDecimal response; // location: same as responseSubjectValueId, but in numericValue field
 	private String responseKind;
@@ -124,6 +130,8 @@ public class RawCurveDataDTO {
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
 				"curveId",
+				"recordedBy",
+				"lsTransaction",
 				"responseSubjectValueId",
 				"dose",
 				"doseUnits",
@@ -168,6 +176,8 @@ public class RawCurveDataDTO {
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional()
 		};
 
@@ -177,6 +187,8 @@ public class RawCurveDataDTO {
 	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds){
 		EntityManager em = SubjectValue.entityManager();
 		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( rsv.id as responseSubjectValueId, "
+				+ "rsv.recordedBy as recordedBy, "
+				+ "rsv.lsTransaction as lsTransaction, "
         		+ "rsv.numericValue as response, "
         		+ "rsv.unitKind as responseUnits, "
         		+ "rsv.lsKind as responseKind, "

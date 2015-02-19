@@ -30,6 +30,8 @@ import com.labsynch.labseer.domain.TreatmentGroupValue;
 public class TgDataDTO {
 	
 	private String curveId;
+	private String recordedBy;
+	private Long lsTransaction;
 	private Long tgvId;
 	private String lsType;
 	private String lsKind;
@@ -49,8 +51,10 @@ public class TgDataDTO {
 		this.curveId = curveId;
 	}
 	
-	public TgDataDTO(String curveId, TreatmentGroupValue result) {
+	public TgDataDTO(String curveId, String recordedBy, Long lsTransaction, TreatmentGroupValue result) {
 		this.curveId = curveId;
+		this.recordedBy = recordedBy;
+		this.lsTransaction = lsTransaction;
 		this.tgvId = result.getId();
 		this.lsType = result.getLsType();
 		this.lsKind = result.getLsKind();
@@ -67,6 +71,8 @@ public class TgDataDTO {
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
 				"curveId",
+				"recordedBy",
+				"lsTransaction",
 				"tgvId",
 				"lsType",
 				"lsKind",
@@ -85,6 +91,8 @@ public class TgDataDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -134,7 +142,7 @@ public class TgDataDTO {
         List<TreatmentGroupValue> queryResults = q.getResultList();
         List<TgDataDTO> tgDataList = new ArrayList<TgDataDTO>();
         for (TreatmentGroupValue result : queryResults) {
-			TgDataDTO tgDataDTO = new TgDataDTO(curveId, result);
+			TgDataDTO tgDataDTO = new TgDataDTO(curveId, result.getRecordedBy(), result.getLsTransaction(), result);
 			tgDataList.add(tgDataDTO);
 		}
 		return tgDataList;

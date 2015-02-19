@@ -122,6 +122,7 @@ public class KiCurveFitDTO {
 	private String curveId;
 	private String analysisGroupCode;
 	private String recordedBy;
+	private Long lsTransaction;
 	private String batchCode;
 	private String category;
 	private String renderingHint;
@@ -178,6 +179,7 @@ public class KiCurveFitDTO {
 				"curveId",
 				"analysisGroupCode",
 				"recordedBy",
+				"lsTransaction",
 				"batchCode",
 				"category",
 				"renderingHint",
@@ -282,6 +284,7 @@ public class KiCurveFitDTO {
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				new Optional(),
 				new Optional()
 		};
 
@@ -334,6 +337,8 @@ public class KiCurveFitDTO {
 		}
 		curveFitDTO = new KiCurveFitDTO(stringMap, numericMap);
 		curveFitDTO.setAnalysisGroupCode(doseResponseState.getAnalysisGroup().getCodeName());
+		curveFitDTO.setRecordedBy(curveIdValue.getRecordedBy());
+		curveFitDTO.setLsTransaction(curveIdValue.getLsTransaction());
 		return curveFitDTO;
 	}
 	
@@ -370,6 +375,7 @@ public class KiCurveFitDTO {
 		for (KiCurveFitDTO curveFitDTO : curveFitDTOs) {
 			if (curveFitDTO.getAnalysisGroupCode() == null) logger.error("FIELD MISSING: analysisGroupCode");
 			if (curveFitDTO.getRecordedBy() == null) logger.error("FIELD MISSING: recordedBy");
+			if (curveFitDTO.getLsTransaction() == null) logger.error("FIELD MISSING: lsTransaction");
 			AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(curveFitDTO.getAnalysisGroupCode()).getSingleResult();
 			try {
 				AnalysisGroupState oldState = AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(analysisGroup, "data", "dose response", true).getSingleResult();
@@ -379,7 +385,7 @@ public class KiCurveFitDTO {
 			} catch(EmptyResultDataAccessException e) {
 				logger.debug("Old state of typekind data/dose response not found for AG Code " + curveFitDTO.getAnalysisGroupCode() + " , creating new one");
 			}
-			AnalysisGroupState newState = createCurveFitState(analysisGroup.getId(), "data", "dose response", curveFitDTO.getRecordedBy());
+			AnalysisGroupState newState = createCurveFitState(analysisGroup.getId(), "data", "dose response", curveFitDTO.getRecordedBy(), curveFitDTO.getLsTransaction());
 			saveFitData(newState, curveFitDTO);
 		}
 	}
@@ -390,10 +396,11 @@ public class KiCurveFitDTO {
 		//non-optional fields
 		String recordedBy = curveFitDTO.getRecordedBy();
 		String batchCode = curveFitDTO.getBatchCode();
-		AnalysisGroupValue batchCodeValue = createCurveFitValue(state, "codeValue", "batch code", curveFitDTO.getBatchCode(), recordedBy);
+		Long lsTransaction = curveFitDTO.getLsTransaction();
+		AnalysisGroupValue batchCodeValue = createCurveFitValue(state, "codeValue", "batch code", curveFitDTO.getBatchCode(), recordedBy, lsTransaction);
 		batchCodeValue.setPublicData(true);
 		newValues.add(batchCodeValue);
-		AnalysisGroupValue curveIdValue = createCurveFitValue(state, "stringValue", "curve id", curveFitDTO.getCurveId(), recordedBy);
+		AnalysisGroupValue curveIdValue = createCurveFitValue(state, "stringValue", "curve id", curveFitDTO.getCurveId(), recordedBy, lsTransaction);
 		curveIdValue.setPublicData(true);
 		newValues.add(curveIdValue);
 		//all the rest of the fields (may be null)
@@ -421,19 +428,19 @@ public class KiCurveFitDTO {
 		//only create AnalysisGroupValues if they would not be empty/null
 
 		if (!(category==null)){
-			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "category", category, recordedBy);
+			AnalysisGroupValue categoryValue = createCurveFitValue(state, "stringValue", "category", category, recordedBy, lsTransaction);
 			categoryValue.setCodeValue(batchCode);
 			newValues.add(categoryValue);
 		}
 		if (!(renderingHint==null)){
-			AnalysisGroupValue renderingHintValue = createCurveFitValue(state, "stringValue", "Rendering Hint", renderingHint, recordedBy);
+			AnalysisGroupValue renderingHintValue = createCurveFitValue(state, "stringValue", "Rendering Hint", renderingHint, recordedBy, lsTransaction);
 			renderingHintValue.setCodeValue(batchCode);
 			newValues.add(renderingHintValue);
 		}
 		//Min, Max, and Ki are special cases. They must be filled in with something for Seurat,
 		//so we fill them in as stringValues if their value is not numeric
 		if (!(min==null) && SimpleUtil.isDecimalNumeric(min)) {
-			AnalysisGroupValue minValue = createCurveFitValue(state, "numericValue", "Min", new BigDecimal(min), recordedBy);
+			AnalysisGroupValue minValue = createCurveFitValue(state, "numericValue", "Min", new BigDecimal(min), recordedBy, lsTransaction);
 			minValue.setUnitKind(curveFitDTO.getMinUnits());
 			minValue.setUncertainty(curveFitDTO.getMinUncertainty());
 			minValue.setUncertaintyType(curveFitDTO.getMinUncertaintyType());
@@ -441,13 +448,13 @@ public class KiCurveFitDTO {
 			minValue.setPublicData(true);
 			newValues.add(minValue);
 		} else {
-			AnalysisGroupValue minValue = createCurveFitValue(state, "stringValue", "Min", min, recordedBy);
+			AnalysisGroupValue minValue = createCurveFitValue(state, "stringValue", "Min", min, recordedBy, lsTransaction);
 			minValue.setCodeValue(batchCode);
 			minValue.setPublicData(true);
 			newValues.add(minValue);
 		}
 		if (!(max==null) && SimpleUtil.isDecimalNumeric(max)) {
-			AnalysisGroupValue maxValue = createCurveFitValue(state, "numericValue", "Max", new BigDecimal(max), recordedBy);
+			AnalysisGroupValue maxValue = createCurveFitValue(state, "numericValue", "Max", new BigDecimal(max), recordedBy, lsTransaction);
 			maxValue.setUnitKind(curveFitDTO.getMaxUnits());
 			maxValue.setUncertainty(curveFitDTO.getMaxUncertainty());
 			maxValue.setUncertaintyType(curveFitDTO.getMaxUncertaintyType());
@@ -455,12 +462,12 @@ public class KiCurveFitDTO {
 			maxValue.setPublicData(true);
 			newValues.add(maxValue);
 		} else {
-			AnalysisGroupValue maxValue = createCurveFitValue(state, "stringValue", "Max", max, recordedBy);
+			AnalysisGroupValue maxValue = createCurveFitValue(state, "stringValue", "Max", max, recordedBy, lsTransaction);
 			maxValue.setPublicData(true);
 			newValues.add(maxValue);
 		}
 		if (!(ki==null) && SimpleUtil.isDecimalNumeric(ki)) {
-			AnalysisGroupValue kiValue = createCurveFitValue(state, "numericValue", "Ki", new BigDecimal(ki), recordedBy);
+			AnalysisGroupValue kiValue = createCurveFitValue(state, "numericValue", "Ki", new BigDecimal(ki), recordedBy, lsTransaction);
 			kiValue.setUnitKind(curveFitDTO.getKiUnits());
 			kiValue.setUncertainty(curveFitDTO.getKiUncertainty());
 			kiValue.setUncertaintyType(curveFitDTO.getKiUncertaintyType());
@@ -468,98 +475,98 @@ public class KiCurveFitDTO {
 			kiValue.setPublicData(true);
 			newValues.add(kiValue);
 		} else {
-			AnalysisGroupValue kiValue = createCurveFitValue(state, "stringValue", "Ki", ki, recordedBy);
+			AnalysisGroupValue kiValue = createCurveFitValue(state, "stringValue", "Ki", ki, recordedBy, lsTransaction);
 			kiValue.setCodeValue(batchCode);
 			kiValue.setPublicData(true);
 			newValues.add(kiValue);
 		}
 		//Remaining non-special numericValues
 		if (!(ligandConc==null)){
-			AnalysisGroupValue ligandConcValue = createCurveFitValue(state, "numericValue", "Ligand Conc", ligandConc, recordedBy);
+			AnalysisGroupValue ligandConcValue = createCurveFitValue(state, "numericValue", "Ligand Conc", ligandConc, recordedBy, lsTransaction);
 			ligandConcValue.setCodeValue(batchCode);
 			ligandConcValue.setUncertainty(curveFitDTO.getLigandConcUncertainty());
 			ligandConcValue.setUncertaintyType(curveFitDTO.getLigandConcUncertaintyType());
 			newValues.add(ligandConcValue);
 		}
 		if (!(kd==null)){
-			AnalysisGroupValue kdValue = createCurveFitValue(state, "numericValue", "Kd", kd, recordedBy);
+			AnalysisGroupValue kdValue = createCurveFitValue(state, "numericValue", "Kd", kd, recordedBy, lsTransaction);
 			kdValue.setCodeValue(batchCode);
 			kdValue.setUncertainty(curveFitDTO.getKdUncertainty());
 			kdValue.setUncertaintyType(curveFitDTO.getKdUncertaintyType());
 			newValues.add(kdValue);
 		}
 		if (!(fittedMin==null)){
-			AnalysisGroupValue fittedMinValue = createCurveFitValue(state, "numericValue", "Fitted Min", fittedMin, recordedBy);
+			AnalysisGroupValue fittedMinValue = createCurveFitValue(state, "numericValue", "Fitted Min", fittedMin, recordedBy, lsTransaction);
 			fittedMinValue.setCodeValue(batchCode);
 			fittedMinValue.setUncertainty(curveFitDTO.getFittedMinUncertainty());
 			fittedMinValue.setUncertaintyType(curveFitDTO.getFittedMinUncertaintyType());
 			newValues.add(fittedMinValue);
 		}
 		if (!(fittedMax==null)){
-			AnalysisGroupValue fittedMaxValue = createCurveFitValue(state, "numericValue", "Fitted Max", fittedMax, recordedBy);
+			AnalysisGroupValue fittedMaxValue = createCurveFitValue(state, "numericValue", "Fitted Max", fittedMax, recordedBy, lsTransaction);
 			fittedMaxValue.setCodeValue(batchCode);
 			fittedMaxValue.setUncertainty(curveFitDTO.getFittedMaxUncertainty());
 			fittedMaxValue.setUncertaintyType(curveFitDTO.getFittedMaxUncertaintyType());
 			newValues.add(fittedMaxValue);
 		}
 		if (!(fittedKi==null)){
-			AnalysisGroupValue fittedKiValue = createCurveFitValue(state, "numericValue", "Fitted Ki", fittedKi, recordedBy);
+			AnalysisGroupValue fittedKiValue = createCurveFitValue(state, "numericValue", "Fitted Ki", fittedKi, recordedBy, lsTransaction);
 			fittedKiValue.setCodeValue(batchCode);
 			fittedKiValue.setUncertainty(curveFitDTO.getFittedKiUncertainty());
 			fittedKiValue.setUncertaintyType(curveFitDTO.getFittedKiUncertaintyType());
 			newValues.add(fittedKiValue);
 		}
 		if (!(sse==null)){
-			AnalysisGroupValue sseValue = createCurveFitValue(state, "numericValue", "SSE", sse, recordedBy);
+			AnalysisGroupValue sseValue = createCurveFitValue(state, "numericValue", "SSE", sse, recordedBy, lsTransaction);
 			sseValue.setCodeValue(batchCode);
 			newValues.add(sseValue);
 		}
 		if (!(sst==null)){
-			AnalysisGroupValue sstValue = createCurveFitValue(state, "numericValue", "SST", sst, recordedBy);
+			AnalysisGroupValue sstValue = createCurveFitValue(state, "numericValue", "SST", sst, recordedBy, lsTransaction);
 			sstValue.setCodeValue(batchCode);
 			newValues.add(sstValue);
 		}
 		if (!(rSquared==null)){
-			AnalysisGroupValue rSquaredValue = createCurveFitValue(state, "numericValue", "rSquared", rSquared, recordedBy);
+			AnalysisGroupValue rSquaredValue = createCurveFitValue(state, "numericValue", "rSquared", rSquared, recordedBy, lsTransaction);
 			rSquaredValue.setCodeValue(batchCode);
 			newValues.add(rSquaredValue);
 		}
 		//clob values
 		if (!(curveErrorsClob==null)){
-			AnalysisGroupValue curveErrorsClobValue = createCurveFitValue(state, "clobValue", "curveErrorsClob", curveErrorsClob, recordedBy);
+			AnalysisGroupValue curveErrorsClobValue = createCurveFitValue(state, "clobValue", "curveErrorsClob", curveErrorsClob, recordedBy, lsTransaction);
 			curveErrorsClobValue.setCodeValue(batchCode);
 			newValues.add(curveErrorsClobValue);
 		}
 		if (!(reportedValuesClob==null)){
-			AnalysisGroupValue reportedValuesClobValue = createCurveFitValue(state, "clobValue", "reportedValuesClob", reportedValuesClob, recordedBy);
+			AnalysisGroupValue reportedValuesClobValue = createCurveFitValue(state, "clobValue", "reportedValuesClob", reportedValuesClob, recordedBy, lsTransaction);
 			reportedValuesClobValue.setCodeValue(batchCode);
 			newValues.add(reportedValuesClobValue);
 		}
 		if (!(parameterStdErrorsClob==null)){
-			AnalysisGroupValue parameterStdErrorsClobValue = createCurveFitValue(state, "clobValue", "parameterStdErrorsClob", parameterStdErrorsClob, recordedBy);
+			AnalysisGroupValue parameterStdErrorsClobValue = createCurveFitValue(state, "clobValue", "parameterStdErrorsClob", parameterStdErrorsClob, recordedBy, lsTransaction);
 			parameterStdErrorsClobValue.setCodeValue(batchCode);
 			newValues.add(parameterStdErrorsClobValue);
 		}
 		if (!(fitSettings==null)){
-			AnalysisGroupValue fitSettingsValue = createCurveFitValue(state, "clobValue", "fitSettings", fitSettings, recordedBy);
+			AnalysisGroupValue fitSettingsValue = createCurveFitValue(state, "clobValue", "fitSettings", fitSettings, recordedBy, lsTransaction);
 			fitSettingsValue.setCodeValue(batchCode);
 			newValues.add(fitSettingsValue);
 		}
 		if (!(fitSummaryClob==null)){
-			AnalysisGroupValue fitSummaryClobValue = createCurveFitValue(state, "clobValue", "fitSummaryClob", fitSummaryClob, recordedBy);
+			AnalysisGroupValue fitSummaryClobValue = createCurveFitValue(state, "clobValue", "fitSummaryClob", fitSummaryClob, recordedBy, lsTransaction);
 			fitSummaryClobValue.setCodeValue(batchCode);
 			newValues.add(fitSummaryClobValue);
 		}
 		//flags
 		if (!(userFlagStatus==null)){
-			AnalysisGroupValue userFlagStatusValue = createCurveFitValue(state, "codeValue", "user flag status", userFlagStatus, recordedBy);
+			AnalysisGroupValue userFlagStatusValue = createCurveFitValue(state, "codeValue", "user flag status", userFlagStatus, recordedBy, lsTransaction);
 			userFlagStatusValue.setCodeType("user well flags");
 			userFlagStatusValue.setCodeKind("flag status");
 			userFlagStatusValue.setCodeOrigin("ACAS Curve Curator");
 			newValues.add(userFlagStatusValue);
 		}
 		if (!(algorithmFlagStatus==null)){
-			AnalysisGroupValue algorithmFlagStatusValue = createCurveFitValue(state, "codeValue", "algorithm flag status", algorithmFlagStatus, recordedBy);
+			AnalysisGroupValue algorithmFlagStatusValue = createCurveFitValue(state, "codeValue", "algorithm flag status", algorithmFlagStatus, recordedBy, lsTransaction);
 			algorithmFlagStatusValue.setCodeType("algorithm well flags");
 			algorithmFlagStatusValue.setCodeKind("flag status");
 			algorithmFlagStatusValue.setCodeOrigin("ACAS Curve Fit Module");
@@ -573,7 +580,7 @@ public class KiCurveFitDTO {
 	}
 	
 	@Transactional
-	private static AnalysisGroupValue createCurveFitValue(AnalysisGroupState lsState, String lsType, String lsKind, String value, String recordedBy) {
+	private static AnalysisGroupValue createCurveFitValue(AnalysisGroupState lsState, String lsType, String lsKind, String value, String recordedBy, Long lsTransaction) {
 		AnalysisGroupValue analysisGroupValue = new AnalysisGroupValue();
 		analysisGroupValue.setLsState(lsState);
 		analysisGroupValue.setLsType(lsType);
@@ -582,32 +589,35 @@ public class KiCurveFitDTO {
 		if (lsType.equals("clobValue")) analysisGroupValue.setClobValue(value);
 		if (lsType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
 		analysisGroupValue.setRecordedBy(recordedBy);
+		analysisGroupValue.setLsTransaction(lsTransaction);
 		logger.debug("Creating value kind: " + analysisGroupValue.toJson());
 		analysisGroupValue.persist();
 		return analysisGroupValue;
 	}
 	
 	@Transactional
-	private static AnalysisGroupValue createCurveFitValue(AnalysisGroupState lsState, String lsType, String lsKind, BigDecimal value, String recordedBy) {
+	private static AnalysisGroupValue createCurveFitValue(AnalysisGroupState lsState, String lsType, String lsKind, BigDecimal value, String recordedBy, Long lsTransaction) {
 		AnalysisGroupValue analysisGroupValue = new AnalysisGroupValue();
 		analysisGroupValue.setLsState(lsState);
 		analysisGroupValue.setLsType(lsType);
 		analysisGroupValue.setLsKind(lsKind);
 		if (lsType.equals("numericValue")) analysisGroupValue.setNumericValue(value);
 		analysisGroupValue.setRecordedBy(recordedBy);
+		analysisGroupValue.setLsTransaction(lsTransaction);
 		logger.debug("Creating value kind: " + analysisGroupValue.toJson());
 		analysisGroupValue.persist();
 		return analysisGroupValue;
 	}
 	
 	@Transactional
-	private static AnalysisGroupState createCurveFitState(Long analysisGroupId, String stateType, String stateKind, String recordedBy) {
+	private static AnalysisGroupState createCurveFitState(Long analysisGroupId, String stateType, String stateKind, String recordedBy, Long lsTransaction) {
 		AnalysisGroupState analysisGroupState = new AnalysisGroupState();
 		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupId);
 		analysisGroupState.setAnalysisGroup(analysisGroup);
 		analysisGroupState.setLsType(stateType);
 		analysisGroupState.setLsKind(stateKind);
 		analysisGroupState.setRecordedBy(recordedBy);
+		analysisGroupState.setLsTransaction(lsTransaction);
 		analysisGroupState.persist();
 		return analysisGroupState;
 	}

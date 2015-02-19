@@ -46,6 +46,7 @@ public class FlagWellDTO {
 	
 	private Long responseSubjectValueId;
 	private String recordedBy;
+	private Long lsTransaction;
 	private String algorithmFlagStatus;
 	private String algorithmFlagObservation;
 	private String algorithmFlagReason;
@@ -63,9 +64,10 @@ public class FlagWellDTO {
 		//empty constructor
 	}
 	
-	public FlagWellDTO(Long responseSubjectValueId, String recordedBy, Map<String, String> flagMap) {
+	public FlagWellDTO(Long responseSubjectValueId, String recordedBy, Long lsTransaction, Map<String, String> flagMap) {
 		this.responseSubjectValueId = responseSubjectValueId;
 		this.recordedBy = recordedBy;
+		this.lsTransaction = lsTransaction;
 		this.algorithmFlagStatus = flagMap.get("algorithmFlagStatus");
 		this.algorithmFlagObservation = flagMap.get("algorithmFlagObservation");
 		this.algorithmFlagReason = flagMap.get("algorithmFlagReason");
@@ -84,6 +86,7 @@ public class FlagWellDTO {
 		String[] headerColumns = new String[] {
 				"responseSubjectValueId",
 				"recordedBy",
+				"lsTransaction",
 				"algorithmFlagStatus",
 				"algorithmFlagObservation",
 				"algorithmFlagReason",
@@ -117,6 +120,7 @@ public class FlagWellDTO {
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				new Optional(),
 				new Optional()
 		};
 
@@ -127,10 +131,12 @@ public class FlagWellDTO {
 	public static void updateWellFlags( Collection<FlagWellDTO> flagWellDTOs) {
 		Collection<TreatmentGroup> allTreatmentGroups = new HashSet<TreatmentGroup>();
 		String recordedBy = null;
+		Long lsTransaction = null;
 		for (FlagWellDTO flagWellDTO : flagWellDTOs) {
 			if (flagWellDTO.getResponseSubjectValueId() == null) logger.error("FIELD MISSING: responseSubjectValueId");
 			if (flagWellDTO.getRecordedBy() == null) logger.error("FIELD MISSING: recordedBy");
 			recordedBy = flagWellDTO.getRecordedBy();
+			lsTransaction = flagWellDTO.getLsTransaction();
 			Subject subject = findSubject(flagWellDTO.getResponseSubjectValueId());
 			Collection<TreatmentGroup> treatmentGroups = subject.getTreatmentGroups();
 			allTreatmentGroups.addAll(treatmentGroups);
@@ -145,7 +151,7 @@ public class FlagWellDTO {
 				}catch(EmptyResultDataAccessException e) {
 					logger.debug("Old state of typekind data/auto flag not found for Subject " + subject.getCodeName() + " , creating new one");
 				}
-				SubjectState newAlgorithmState = createWellFlagState(subject.getId(), "data", "auto flag", flagWellDTO.getRecordedBy());
+				SubjectState newAlgorithmState = createWellFlagState(subject.getId(), "data", "auto flag", recordedBy, lsTransaction);
 				saveWellFlags(newAlgorithmState, flagWellDTO);
 			}
 			if ( !(flagWellDTO.getPreprocessFlagStatus()==null) || !(flagWellDTO.getPreprocessFlagObservation()==null) || !(flagWellDTO.getPreprocessFlagReason()==null) || !(flagWellDTO.getPreprocessFlagComment()==null)) {
@@ -159,7 +165,7 @@ public class FlagWellDTO {
 				}catch(EmptyResultDataAccessException e) {
 					logger.debug("Old state of typekind data/preprocess flag not found for Subject " + subject.getCodeName() + " , creating new one");
 				}
-				SubjectState newPreprocessState = createWellFlagState(subject.getId(), "data", "preprocess flag", flagWellDTO.getRecordedBy());
+				SubjectState newPreprocessState = createWellFlagState(subject.getId(), "data", "preprocess flag", recordedBy, lsTransaction);
 				saveWellFlags(newPreprocessState, flagWellDTO);
 			}
 			if ( !(flagWellDTO.getUserFlagStatus()==null) || !(flagWellDTO.getUserFlagObservation()==null) || !(flagWellDTO.getUserFlagReason()==null) || !(flagWellDTO.getUserFlagComment()==null)) {
@@ -173,7 +179,7 @@ public class FlagWellDTO {
 				}catch(EmptyResultDataAccessException e) {
 					logger.debug("Old state of typekind data/user flag not found for Subject " + subject.getCodeName() + " , creating new one");
 				}
-				SubjectState newUserState = createWellFlagState(subject.getId(), "data", "user flag", flagWellDTO.getRecordedBy());
+				SubjectState newUserState = createWellFlagState(subject.getId(), "data", "user flag", recordedBy, lsTransaction);
 				saveWellFlags(newUserState, flagWellDTO);
 			}
 		}
@@ -200,8 +206,8 @@ public class FlagWellDTO {
 				}catch(EmptyResultDataAccessException e){
 					logger.debug("No state data/results found. Creating a new state.");
 				}
-				TreatmentGroupState newState = createResultsTreatmentGroupState(treatmentGroup.getId(), "data", "results", recordedBy);
-				TreatmentGroupValue newTransformedEfficacyTreatmentGroupValue = createTreatmentGroupValue(newState, "numericValue", "transformed efficacy", recordedBy);
+				TreatmentGroupState newState = createResultsTreatmentGroupState(treatmentGroup.getId(), "data", "results", recordedBy, lsTransaction);
+				TreatmentGroupValue newTransformedEfficacyTreatmentGroupValue = createTreatmentGroupValue(newState, "numericValue", "transformed efficacy", recordedBy, lsTransaction);
 				StatCalc statCalc = new StatCalc();
 				for (SubjectValue value : notKOTransformedEfficacySubjectValues){
 					statCalc.add(value.getNumericValue().doubleValue()); 
@@ -402,27 +408,28 @@ public class FlagWellDTO {
 			flagComment = flagWellDTO.getUserFlagComment();
 		}
 		String recordedBy = flagWellDTO.getRecordedBy();
+		Long lsTransaction = flagWellDTO.getLsTransaction();
 		//only create SubjectValues if they would not be empty/null
 		if (!(flagStatus==null)){
-			SubjectValue flagStatusValue = createWellFlagValue(state, "codeValue", flagType+" flag status", flagStatus, recordedBy);
+			SubjectValue flagStatusValue = createWellFlagValue(state, "codeValue", flagType+" flag status", flagStatus, recordedBy, lsTransaction);
 			flagStatusValue.setCodeType(flagType+" well flags");
 			flagStatusValue.setCodeKind("flag status");
 			newValues.add(flagStatusValue);
 		}
 		if (!(flagObservation==null)){
-			SubjectValue flagObservationValue = createWellFlagValue(state, "codeValue", flagType+" flag observation", flagObservation, recordedBy);
+			SubjectValue flagObservationValue = createWellFlagValue(state, "codeValue", flagType+" flag observation", flagObservation, recordedBy, lsTransaction);
 			flagObservationValue.setCodeType(flagType+" well flags");
 			flagObservationValue.setCodeKind("flag observation");
 			newValues.add(flagObservationValue);
 		}
 		if (!(flagReason==null)){
-			SubjectValue flagReasonValue = createWellFlagValue(state, "codeValue", flagType+" flag reason", flagReason, recordedBy);
+			SubjectValue flagReasonValue = createWellFlagValue(state, "codeValue", flagType+" flag reason", flagReason, recordedBy, lsTransaction);
 			flagReasonValue.setCodeType(flagType+" well flags");
 			flagReasonValue.setCodeKind("flag reason");
 			newValues.add(flagReasonValue);
 		}
 		if (!(flagComment==null)){
-			SubjectValue flagCommentValue = createWellFlagValue(state, "stringValue", "comment", flagComment, recordedBy);
+			SubjectValue flagCommentValue = createWellFlagValue(state, "stringValue", "comment", flagComment, recordedBy, lsTransaction);
 			flagCommentValue.setCodeType(flagType+" well flags");
 			flagCommentValue.setCodeKind("flag reason");
 			newValues.add(flagCommentValue);
@@ -437,25 +444,27 @@ public class FlagWellDTO {
 	}
 	
 	@Transactional
-	private static TreatmentGroupValue createTreatmentGroupValue(TreatmentGroupState lsState, String lsType, String lsKind, String recordedBy) {
+	private static TreatmentGroupValue createTreatmentGroupValue(TreatmentGroupState lsState, String lsType, String lsKind, String recordedBy, Long lsTransaction) {
 		TreatmentGroupValue treatmentGroupValue = new TreatmentGroupValue();
 		treatmentGroupValue.setLsState(lsState);
 		treatmentGroupValue.setLsType(lsType);
 		treatmentGroupValue.setLsKind(lsKind);
 		treatmentGroupValue.setRecordedBy(recordedBy);
+		treatmentGroupValue.setLsTransaction(lsTransaction);
 		logger.debug("Creating value: " + treatmentGroupValue.toJson());
 		treatmentGroupValue.persist();
 		return treatmentGroupValue;
 	}
 	
 	@Transactional
-	private static TreatmentGroupState createResultsTreatmentGroupState(Long treatmentGroupId, String stateType, String stateKind, String recordedBy) {
+	private static TreatmentGroupState createResultsTreatmentGroupState(Long treatmentGroupId, String stateType, String stateKind, String recordedBy, Long lsTransaction) {
 		TreatmentGroupState treatmentGroupState = new TreatmentGroupState();
 		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupId);
 		treatmentGroupState.setTreatmentGroup(treatmentGroup);
 		treatmentGroupState.setLsType(stateType);
 		treatmentGroupState.setLsKind(stateKind);
 		treatmentGroupState.setRecordedBy(recordedBy);
+		treatmentGroupState.setLsTransaction(lsTransaction);
 		logger.debug("Creating state: " + treatmentGroupState.toJson());
 		treatmentGroupState.persist();
 		return treatmentGroupState;
@@ -463,7 +472,7 @@ public class FlagWellDTO {
 	
 	
 	@Transactional
-	private static SubjectValue createWellFlagValue(SubjectState lsState, String lsType, String lsKind, String value, String recordedBy) {
+	private static SubjectValue createWellFlagValue(SubjectState lsState, String lsType, String lsKind, String value, String recordedBy, Long lsTransaction) {
 		SubjectValue subjectValue = new SubjectValue();
 		subjectValue.setLsState(lsState);
 		subjectValue.setLsType(lsType);
@@ -471,6 +480,7 @@ public class FlagWellDTO {
 		if (lsType.equals("stringValue")) subjectValue.setStringValue(value);
 		if (lsType.equals("codeValue")) subjectValue.setCodeValue(value);
 		subjectValue.setRecordedBy(recordedBy);
+		subjectValue.setLsTransaction(lsTransaction);
 		logger.debug("Creating value: " + subjectValue.toJson());
 		subjectValue.persist();
 		return subjectValue;
@@ -478,13 +488,14 @@ public class FlagWellDTO {
 	
 
 	@Transactional
-	private static SubjectState createWellFlagState(Long subjectId, String stateType, String stateKind, String recordedBy) {
+	private static SubjectState createWellFlagState(Long subjectId, String stateType, String stateKind, String recordedBy, Long lsTransaction) {
 		SubjectState subjectState = new SubjectState();
 		Subject subject = Subject.findSubject(subjectId);
 		subjectState.setSubject(subject);
 		subjectState.setLsType(stateType);
 		subjectState.setLsKind(stateKind);
 		subjectState.setRecordedBy(recordedBy);
+		subjectState.setLsTransaction(lsTransaction);
 		logger.debug("Creating state: " + subjectState.toJson());
 		subjectState.persist();
 		return subjectState;
