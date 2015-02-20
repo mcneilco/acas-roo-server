@@ -27,7 +27,7 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getFitDataTest() {
-		String curveId = "15_AG-00348398";
+		String curveId = "AG-00348384_3716";
 		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
 		curveFitDTO = CurveFitDTO.getFitData(curveFitDTO);
 		logger.debug(curveFitDTO.toJson());
@@ -37,13 +37,15 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getFitDataThenSaveTest() {
-		String curveId = "15_AG-00348398";
-		String analysisGroupCode = "AG-00348398";
+		String curveId = "AG-00348384_3716";
+		String analysisGroupCode = "AG-00348384";
 		String recordedBy = "bfielder";
+		Long lsTransaction = 99999L;
 		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
 		curveFitDTO = CurveFitDTO.getFitData(curveFitDTO);
 		curveFitDTO.setAnalysisGroupCode(analysisGroupCode);
 		curveFitDTO.setRecordedBy(recordedBy);
+		curveFitDTO.setLsTransaction(lsTransaction);
 		logger.debug("initial: " + curveFitDTO.toJson());
 		Assert.assertNotNull(curveFitDTO.getRenderingHint());
 		Collection<CurveFitDTO> curveFitDTOCollection = new ArrayList<CurveFitDTO>();
@@ -58,8 +60,8 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getFitDataArrayTest() {
-		String curveId = "1_AG-00348384";
-		String curveId2 = "2_AG-00348385";
+		String curveId = "AG-00348384_3716";
+		String curveId2 = "AG-00348385_3716";
 		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
 		CurveFitDTO curveFitDTO2 = new CurveFitDTO(curveId2);
 		Collection<CurveFitDTO> curveFitDTOs = new ArrayList<CurveFitDTO>();
@@ -101,7 +103,7 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getDisplayMinMaxByCurveIdTest() {
-		String curveId = "AG-00441632_7080";
+		String curveId = "AG-00348388_3716";
 		Collection<ProtocolValue> protocolValues = CurveFitDTO.findDisplayMinMaxByCurveId(curveId);
 		logger.info(ProtocolValue.toJsonArray(protocolValues));
 		Assert.assertTrue(!protocolValues.isEmpty());
