@@ -37,11 +37,11 @@ public class DDictValueController {
 //	@Autowired
 //	private AutoLabelService autoLabelService;
 //
-//    void populateEditForm(Model uiModel, DDictValue DDictValue_) {
-//        uiModel.addAttribute("DDictValue_", DDictValue_);
-//        uiModel.addAttribute("ddicttypes", DDictType.findAllDDictTypes());
-//        uiModel.addAttribute("ddictkinds", DDictKind.findAllDDictKinds());
-//    }
+    void populateEditForm(Model uiModel, DDictValue DDictValue_) {
+        uiModel.addAttribute("DDictValue_", DDictValue_);
+        uiModel.addAttribute("ddicttypes", DDictType.findAllDDictTypes());
+        uiModel.addAttribute("ddictkinds", DDictKind.findAllDDictKinds());
+    }
 //
 //	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
 //    public String create(@Valid DDictValue DDictValue_, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
