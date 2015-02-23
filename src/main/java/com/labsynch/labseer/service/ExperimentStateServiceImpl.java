@@ -47,19 +47,19 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 	}
 	
 	@Override
-	public ExperimentState saveExperimentState(
-			ExperimentState experimentState) {
-		experimentState.setExperiment(Experiment.findExperiment(experimentState.getExperiment().getId()));		
-		experimentState.persist();
+	public ExperimentState saveExperimentState(ExperimentState experimentState) {
+		ExperimentState newExperimentState = new ExperimentState(experimentState);
+		newExperimentState.setExperiment(Experiment.findExperiment(experimentState.getExperiment().getId()));		
+		newExperimentState.persist();
 		Set<ExperimentValue> savedValues = new HashSet<ExperimentValue>();
 		for (ExperimentValue experimentValue : experimentState.getLsValues()){
-			experimentValue.setLsState(experimentState);
+			experimentValue.setLsState(newExperimentState);
 			experimentValue.persist();
 			savedValues.add(experimentValue);
 		}
-		experimentState.setLsValues(savedValues);
-		experimentState.merge();
-		return experimentState;
+		newExperimentState.setLsValues(savedValues);
+		newExperimentState.merge();
+		return newExperimentState;
 	}
 
 	@Override

@@ -12,14 +12,19 @@ public class ValueTypeKindDTO {
 	private String lsType;
 	
 	private String lsKind;
-
 	
+	private int displayOrder;
+
 	public ValueTypeKindDTO(
 			String lsType, 
 			String lsKind){
 		
 		this.lsType = lsType;
 		this.lsKind = lsKind;
+	}
+
+
+	public ValueTypeKindDTO() {
 	}
 	
 }

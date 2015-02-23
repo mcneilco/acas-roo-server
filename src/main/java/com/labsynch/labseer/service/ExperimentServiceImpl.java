@@ -43,6 +43,8 @@ import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
+import com.labsynch.labseer.dto.SELColOrderDTO;
+import com.labsynch.labseer.dto.StateValueCsvDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -81,7 +83,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@Override
 	@Transactional
 	public Experiment updateExperiment(Experiment jsonExperiment){
-//		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
+		//		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
 		logger.debug("recorded by: " + jsonExperiment.getRecordedBy());
 
 		Experiment updatedExperiment = Experiment.update(jsonExperiment);
@@ -134,7 +136,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			}
 		}
 
-//		logger.debug("updatedExperiment: " + updatedExperiment.toPrettyJson());
+		//		logger.debug("updatedExperiment: " + updatedExperiment.toPrettyJson());
 		return updatedExperiment;
 
 	}
@@ -277,7 +279,64 @@ public class ExperimentServiceImpl implements ExperimentService {
 				} else {
 					logger.error("no preferred names");
 				}
-				Collection<ValueTypeKindDTO> valueTypes = AnalysisGroupValue.findAnalysisGroupValueTypeKindDTO(experimentCode).getResultList();
+
+				String stateType = "metadata";
+				String stateKind = "data column order";
+				List<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKind(eft.getExperimentId(), stateType, stateKind).getResultList();
+				Collection<ValueTypeKindDTO> valueTypes = null;
+
+				if (experimentValues.size() > 0){
+					HashMap<ExperimentState, SELColOrderDTO> valueStateMap = new HashMap<ExperimentState, SELColOrderDTO>();
+					SELColOrderDTO selColOrderDTO;
+					for (ExperimentValue ev : experimentValues){				
+						if (valueStateMap.get(ev.getLsState()) != null){
+							selColOrderDTO = valueStateMap.get(ev.getLsState());
+						} else {
+							selColOrderDTO = new SELColOrderDTO();
+						}
+
+						if (ev.getLsKind().equalsIgnoreCase("column name")){
+							selColOrderDTO.setColumnName(ev.getStringValue());
+							selColOrderDTO.setLsKind(ev.getStringValue());
+						} else if (ev.getLsKind().equalsIgnoreCase("column type")){
+							selColOrderDTO.setLsType(ev.getStringValue());
+						} else if (ev.getLsKind().equalsIgnoreCase("column order")){
+							selColOrderDTO.setColumnOrder( Double.valueOf(ev.getNumericValue().toString()).intValue());
+						} else if (ev.getLsKind().equalsIgnoreCase("hide column")){
+							boolean displayColumn = true;
+							if (ev.getStringValue().equalsIgnoreCase("true")){
+								displayColumn = false;
+							}
+							selColOrderDTO.setPublicData(displayColumn);
+							selColOrderDTO.setColumnDisplay(displayColumn);
+						}
+						valueStateMap.put(ev.getLsState(), selColOrderDTO);
+					}
+					
+					List<SELColOrderDTO> valueStateList = new ArrayList<SELColOrderDTO>();
+					Set<ExperimentState> vsKeys = valueStateMap.keySet();
+					for (ExperimentState vsKey : vsKeys){
+						SELColOrderDTO query = valueStateMap.get(vsKey);
+						if (query.isPublicData()){
+							valueStateList.add(query);
+						}
+					}
+
+					Collections.sort(valueStateList);
+					valueTypes = new ArrayList<ValueTypeKindDTO>();
+					for (SELColOrderDTO selColDTO : valueStateList){
+						ValueTypeKindDTO vtkDTO = new ValueTypeKindDTO();
+						vtkDTO.setLsKind(selColDTO.getLsKind());
+						vtkDTO.setLsType(selColDTO.getLsType());
+						vtkDTO.setDisplayOrder(selColDTO.getColumnOrder());
+						valueTypes.add(vtkDTO);
+					}				
+				} else {
+					valueTypes = AnalysisGroupValue.findAnalysisGroupValueTypeKindDTO(experimentCode).getResultList();
+
+				}
+				
+
 				eft.setValueKinds(valueTypes);
 				eftSet.add(eft);
 			} else {

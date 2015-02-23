@@ -32,6 +32,7 @@ import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ValueKind;
 import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.StateValueCsvDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -131,11 +132,12 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		ICsvBeanWriter beanWriter = null;
 		try {
 			beanWriter = new CsvBeanWriter(outFile, CsvPreference.STANDARD_PREFERENCE);
-			final String[] header = AbstractValue.getColumns();
-			final CellProcessor[] processors = AbstractValue.getProcessors();
+			final String[] header = StateValueCsvDTO.getColumns();
+			final CellProcessor[] processors = StateValueCsvDTO.getProcessors();
 			beanWriter.writeHeader(header);
 			for (final ExperimentValue experimentValue : experimentValues) {
-				beanWriter.write(experimentValue, header, processors);
+				StateValueCsvDTO stateValueCsv = new StateValueCsvDTO(experimentValue);
+				beanWriter.write(stateValueCsv, header, processors);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

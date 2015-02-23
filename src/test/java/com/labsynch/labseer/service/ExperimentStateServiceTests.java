@@ -3,6 +3,7 @@
 package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.NoResultException;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
+import com.labsynch.labseer.domain.ExperimentValue;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,7 +35,7 @@ public class ExperimentStateServiceTests {
 	@Autowired
 	private ExperimentStateService experimentStateService;
 	
-	@Test
+//	@Test
 	@Transactional
 	public void QueryExperimentStateByExpIdAndStateTypeKind(){
 			
@@ -45,7 +47,7 @@ public class ExperimentStateServiceTests {
 		assert(results.size() == 5);
 	}
 	
-	@Test
+//	@Test
 	@Transactional
 	public void QueryExperimentStateByExpIdAndStateTypeKindWithBadData() {
 		Long experimentId = 9L;
@@ -60,7 +62,7 @@ public class ExperimentStateServiceTests {
 		assert(results.size() == 0);
 	}
 	
-	@Test
+//	@Test
 	@Transactional
 	public void QueryExperimentStateByExpIdAndStateTypeKindWithCodeName() {
 		String experimentCodeName = "EXPT-00000003";
@@ -85,7 +87,7 @@ public class ExperimentStateServiceTests {
 		if(!didCatch) assert(results.size() == 5);
 	}
 	
-	@Test
+//	@Test
 	@Transactional
 	public void createExperimentStateByExperimentIdAndStateTypeKindTest() {
 		Long experimentId = 2L;
@@ -94,6 +96,34 @@ public class ExperimentStateServiceTests {
 		ExperimentState exptState = experimentStateService.createExperimentStateByExperimentIdAndStateTypeKind(experimentId, lsType, lsKind);
 		Assert.assertNotNull(exptState);
 		logger.info(exptState.toJson());
+	}
+	
+	@Test
+	@Transactional
+	public void createExperimentStatesFromJson() {
+		String json = "[{\"experiment\":{\"codeName\":\"EXPT-00004\",\"deleted\":false,\"id\":97418,\"version\":1},\"lsValues\":[{\"lsState\":null,\"lsType\":\"numericValue\",\"lsKind\":\"column order\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":1,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"goshiro\",\"recordedDate\":1423885275000,\"lsTransaction\":7},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"column name\",\"stringValue\":\"McNeil Hit\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"goshiro\",\"recordedDate\":1423885275000,\"lsTransaction\":7},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"publicData\",\"stringValue\":\"false\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"goshiro\",\"recordedDate\":1423885275000,\"lsTransaction\":7}],\"recordedBy\":\"goshiro\",\"lsType\":\"metadata\",\"lsKind\":\"data column order\",\"comments\":\"\",\"lsTransaction\":7,\"ignored\":false,\"recordedDate\":1423885275000},{\"experiment\":{\"codeName\":\"EXPT-00004\",\"deleted\":false,\"id\":97418,\"version\":1},\"lsValues\":[{\"lsState\":null,\"lsType\":\"numericValue\",\"lsKind\":\"column order\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":2,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"goshiro\",\"recordedDate\":1423885275000,\"lsTransaction\":7},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"column name\",\"stringValue\":\"Avogadro Hit\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"goshiro\",\"recordedDate\":1423885275000,\"lsTransaction\":7},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"publicData\",\"stringValue\":\"true\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"goshiro\",\"recordedDate\":1423885275000,\"lsTransaction\":7}],\"recordedBy\":\"goshiro\",\"lsType\":\"metadata\",\"lsKind\":\"data column order\",\"comments\":\"\",\"lsTransaction\":7,\"ignored\":false,\"recordedDate\":1423885275000}]";
+		Collection<ExperimentState> experimentStates = ExperimentState.fromJsonArrayToExperimentStates(json);
+		Collection<ExperimentState> exptStates = experimentStateService.saveExperimentStates(experimentStates);
+		Assert.assertNotNull(exptStates);
+		logger.info(ExperimentState.toJsonArray(exptStates));
+	}
+	
+	@Test
+	public void deleteExperimentStates() {
+		String codeName = "EXPT-";
+		List<Experiment> experiments = Experiment.findExperimentsByCodeNameLike(codeName).getResultList();
+		for (Experiment experiment : experiments){
+			for (ExperimentState es : ExperimentState.findExperimentStatesByExperiment(experiment).getResultList()){
+				if (es.getLsType().equalsIgnoreCase("metadata") && es.getLsKind().equalsIgnoreCase("data column order")){
+					for (ExperimentValue ev : ExperimentValue.findExperimentValuesByLsState(es).getResultList()){
+						ev.remove();
+					}
+					es.remove();
+				}
+			}
+		}
+		
+		
 	}
 	
 }

@@ -198,7 +198,7 @@ public class ExperimentValueServiceTests {
 	@Test
 	@Transactional
 	public void ExperimentValuesToCodeName() {
-		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentId(9l);
+		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentId(97418l);
 		String csvString = experimentValueService.getCsvList(experimentValues);
 		assert(csvString != null && csvString.compareTo("") != 0);
 		logger.info(csvString);
