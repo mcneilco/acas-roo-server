@@ -73,6 +73,20 @@ public class ApiExperimentControllerTest {
     	logger.info(responseJson);
     }
     
+    @Test
+    public void genericSearchByProtocolCodeName() throws Exception {
+    	String searchString = "PROT-00000131";
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
+    	Assert.assertFalse(results.isEmpty());
+    }
+    
     
 
 }
