@@ -46,6 +46,7 @@ import com.labsynch.labseer.domain.ValueKind;
 import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.EntrezDbGeneDTO;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -202,6 +203,8 @@ public class CreateGeneIDsFromCSVFileTests {
 
 			ValueType valueTypeDate = ValueType.getOrCreate("dateValue");
 			ValueKind.getOrCreate(valueTypeDate, "modification date");
+			
+			int numberOfRows = SimpleUtil.countLines(testFileName);
 
 			int i = 0;
 			int batchSize = 25;
