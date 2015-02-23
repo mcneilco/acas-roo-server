@@ -129,7 +129,7 @@ public class SignUpController {
     		mail.setSubject("User Activation");
     		
 //    		mail.setText("Hi "+ author.getFirstName() + ",\n. You just registered with us. Please click on this link to activate your account - <a href=\"" + propertiesUtilService.getHostPath() +  "signup?emailAddress="+author.getEmailAddress()+"&activate="+activationKey+"\">Activate Link</a>. \n Thanks Typical Security Admin");
-    		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your account: " + propertiesUtilService.getHostPath()+"signup?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +  "\nThank you, \nACAS Admin");
+    		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your account: " + propertiesUtilService.getClientPath()+"/activateUser?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +  "\nThank you, \nACAS Admin");
             mailSender.send(mail);
             return "signup/thanks";
         }

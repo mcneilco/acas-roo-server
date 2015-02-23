@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,14 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 			SubjectState subjectState) {
 		subjectState.setSubject(Subject.findSubject(subjectState.getSubject().getId()));		
 		subjectState.persist();
+		Set<SubjectValue> savedValues = new HashSet<SubjectValue>();
+		for (SubjectValue subjectValue : subjectState.getLsValues()){
+			subjectValue.setLsState(subjectState);
+			subjectValue.persist();
+			savedValues.add(subjectValue);
+		}
+		subjectState.setLsValues(savedValues);
+		subjectState.merge();
 		return subjectState;
 	}
 

@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,6 +75,14 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 			TreatmentGroupState treatmentGroupState) {
 		treatmentGroupState.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupState.getTreatmentGroup().getId()));		
 		treatmentGroupState.persist();
+		Set<TreatmentGroupValue> savedValues = new HashSet<TreatmentGroupValue>();
+		for (TreatmentGroupValue treatmentGroupValue : treatmentGroupState.getLsValues()){
+			treatmentGroupValue.setLsState(treatmentGroupState);
+			treatmentGroupValue.persist();
+			savedValues.add(treatmentGroupValue);
+		}
+		treatmentGroupState.setLsValues(savedValues);
+		treatmentGroupState.merge();
 		return treatmentGroupState;
 	}
 
