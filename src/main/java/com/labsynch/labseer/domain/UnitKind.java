@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Entity
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(sequenceName = "UNITS_KIND_PKSEQ")
+@RooJpaActiveRecord(sequenceName = "UNITS_KIND_PKSEQ", finders={"findUnitKindsByKindNameEqualsAndLsType"})
 @RooJson
 public class UnitKind {
 

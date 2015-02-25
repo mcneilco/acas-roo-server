@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Entity
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(sequenceName = "PROTOCOL_KIND_PKSEQ")
+@RooJpaActiveRecord(sequenceName = "PROTOCOL_KIND_PKSEQ", finders={"findProtocolKindsByLsTypeEqualsAndKindNameEquals"})
 @RooJson
 public class ProtocolKind {
 

@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Entity
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(sequenceName = "OPERATOR_KIND_PKSEQ")
+@RooJpaActiveRecord(sequenceName = "OPERATOR_KIND_PKSEQ", finders={"findOperatorKindsByKindNameEqualsAndLsType"})
 @RooJson
 public class OperatorKind {
 

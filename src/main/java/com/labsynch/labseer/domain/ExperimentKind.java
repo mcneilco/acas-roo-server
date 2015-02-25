@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(sequenceName = "EXPERIMENT_KIND_PKSEQ")
+@RooJpaActiveRecord(sequenceName = "EXPERIMENT_KIND_PKSEQ", finders={"findExperimentKindsByLsTypeEqualsAndKindNameEquals"})
 @RooJson
 public class ExperimentKind {
 
