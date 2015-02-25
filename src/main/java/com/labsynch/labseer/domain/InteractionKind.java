@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(sequenceName = "INTERACTION_KIND_PKSEQ")
+@RooJpaActiveRecord(sequenceName = "INTERACTION_KIND_PKSEQ", finders={"findInteractionKindsByKindNameEqualsAndLsType"})
 @RooJson
 public class InteractionKind {
 	

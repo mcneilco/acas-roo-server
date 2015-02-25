@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(sequenceName = "CONTAINER_KIND_PKSEQ")
+@RooJpaActiveRecord(sequenceName = "CONTAINER_KIND_PKSEQ", finders={"findContainerKindsByKindNameEqualsAndLsType"})
 @RooJson
 public class ContainerKind {
 

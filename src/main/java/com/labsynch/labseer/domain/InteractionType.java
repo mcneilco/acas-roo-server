@@ -1,6 +1,7 @@
 package com.labsynch.labseer.domain;
 
 import javax.persistence.Column;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -11,7 +12,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord(sequenceName = "INTERACTION_TYPE_PKSEQ")
+@RooJpaActiveRecord(sequenceName = "INTERACTION_TYPE_PKSEQ", finders = { "findInteractionTypesByTypeNameEquals" })
 @RooJson
 public class InteractionType {
 
@@ -23,4 +24,5 @@ public class InteractionType {
     @NotNull
     @Size(max = 128)
     private String typeVerb;
+
 }
