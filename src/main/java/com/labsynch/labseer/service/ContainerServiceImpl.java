@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -255,10 +256,12 @@ public class ContainerServiceImpl implements ContainerService {
 	@Override
 	public Collection<Container> saveLsContainers(
 			Collection<Container> containers) {
+		Collection<Container> savedContainers = new HashSet<Container>();
 		for (Container container : containers){
-			container = saveLsContainer(container);
+			Container savedContainer = saveLsContainer(container);
+			savedContainers.add(savedContainer);
 		}
-		return containers;
+		return savedContainers;
 	}
 
 }

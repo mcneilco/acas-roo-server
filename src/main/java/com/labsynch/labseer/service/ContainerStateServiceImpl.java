@@ -130,10 +130,12 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 	@Override
 	public Collection<ContainerState> saveContainerStates(
 			Collection<ContainerState> containerStates) {
+		Collection<ContainerState> savedContainerStates = new HashSet<ContainerState>();
 		for (ContainerState containerState: containerStates) {
-			containerState = saveContainerState(containerState);
+			ContainerState savedContainerState = saveContainerState(containerState);
+			savedContainerStates.add(savedContainerState);
 		}
-		return containerStates;
+		return savedContainerStates;
 	}
 
 
