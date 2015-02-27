@@ -53,7 +53,7 @@ public class ContainerValueServiceImpl implements ContainerValueService {
 			ContainerValue savedContainerValue = saveContainerValue(containerValue);
 			savedContainerValues.add(savedContainerValue);
 		}
-		return containerValues;
+		return savedContainerValues;
 	}
 
 
