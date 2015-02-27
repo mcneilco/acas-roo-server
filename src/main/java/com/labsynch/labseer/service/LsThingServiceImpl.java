@@ -426,7 +426,7 @@ public class LsThingServiceImpl implements LsThingService {
 					updatedLsThing.getLsStates().add(updatedLsThingState);
 				} else {
 					updatedLsThingState = LsThingState.update(lsThingState);
-					logger.debug("updated lsThing state " + lsThingState.getId());
+					logger.debug("updated lsThing state " + updatedLsThingState.getId());
 
 				}
 				if (lsThingState.getLsValues() != null){
@@ -434,7 +434,7 @@ public class LsThingServiceImpl implements LsThingService {
 						LsThingValue updatedLsThingValue;
 						if (lsThingValue.getId() == null){
 							updatedLsThingValue = LsThingValue.create(lsThingValue);
-							updatedLsThingValue.setLsState(LsThingState.findLsThingState(lsThingState.getId()));
+							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
 							updatedLsThingValue.persist();
 							updatedLsThingState.getLsValues().add(updatedLsThingValue);
 						} else {
