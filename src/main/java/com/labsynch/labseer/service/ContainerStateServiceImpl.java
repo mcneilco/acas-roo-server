@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -130,7 +131,7 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 	@Override
 	public Collection<ContainerState> saveContainerStates(
 			Collection<ContainerState> containerStates) {
-		Collection<ContainerState> savedContainerStates = new HashSet<ContainerState>();
+		Collection<ContainerState> savedContainerStates = new ArrayList<ContainerState>();
 		for (ContainerState containerState: containerStates) {
 			ContainerState savedContainerState = saveContainerState(containerState);
 			savedContainerStates.add(savedContainerState);
