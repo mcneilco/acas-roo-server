@@ -1,6 +1,7 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +48,10 @@ public class ContainerValueServiceImpl implements ContainerValueService {
 	@Override
 	public Collection<ContainerValue> saveContainerValues(
 			Collection<ContainerValue> containerValues) {
+		Collection<ContainerValue> savedContainerValues = new HashSet<ContainerValue>();
 		for (ContainerValue containerValue: containerValues) {
-			containerValue = saveContainerValue(containerValue);
+			ContainerValue savedContainerValue = saveContainerValue(containerValue);
+			savedContainerValues.add(savedContainerValue);
 		}
 		return containerValues;
 	}
