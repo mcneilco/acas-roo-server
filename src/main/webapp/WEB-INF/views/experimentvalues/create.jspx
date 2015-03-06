@@ -38,6 +38,8 @@
         <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ExperimentValue_uncertainty" validationMessageCode="field_invalid_number" z="yPCo9AKL5gFq5dbgbs7Yr16U3jM="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ExperimentValue_codeOrigin" z="Tp5iOW3kt1mM+10DciGyouAk17o="/>
         <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ExperimentValue_deleted" z="vEiyg6QNLkiLVnBq27Q9uMDFqk8="/>
+        <field:input field="concentration" id="c_com_labsynch_labseer_domain_ExperimentValue_concentration" validationMessageCode="field_invalid_number" z="e7TP+sWL4YCOJ3agckjNG7KqSMk="/>
+        <field:input field="concUnit" id="c_com_labsynch_labseer_domain_ExperimentValue_concUnit" max="25" z="CH6llA7sY1eIFALSVBGda8znbCQ="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ExperimentValue" render="${not empty dependencies}" z="dZg/3hMIQvSCl7gQjiWTZDENU0w="/>
 </div>

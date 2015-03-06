@@ -4,7 +4,9 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
+import com.labsynch.labseer.domain.ItxProtocolProtocolState;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ThingPage;
 import com.labsynch.labseer.web.ItxProtocolProtocolController;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -102,6 +104,14 @@ privileged aspect ItxProtocolProtocolController_Roo_Controller {
     void ItxProtocolProtocolController.addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("itxProtocolProtocol_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
         uiModel.addAttribute("itxProtocolProtocol_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
+    }
+    
+    void ItxProtocolProtocolController.populateEditForm(Model uiModel, ItxProtocolProtocol itxProtocolProtocol) {
+        uiModel.addAttribute("itxProtocolProtocol", itxProtocolProtocol);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("itxprotocolprotocolstates", ItxProtocolProtocolState.findAllItxProtocolProtocolStates());
+        uiModel.addAttribute("protocols", Protocol.findAllProtocols());
+        uiModel.addAttribute("thingpages", ThingPage.findAllThingPages());
     }
     
     String ItxProtocolProtocolController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

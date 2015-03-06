@@ -6,6 +6,8 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.web.LsThingValueController;
+import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,6 +34,41 @@ privileged aspect LsThingValueController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", method = RequestMethod.GET)
     public String LsThingValueController.findLsThingValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue, Model uiModel) {
         uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList());
+        return "lsthingvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndCodeValueLike", "form" }, method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndCodeValueLikeForm(Model uiModel) {
+        return "lsthingvalues/findLsThingValuesByLsKindEqualsAndCodeValueLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndCodeValueLike", method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndCodeValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("codeValue") String codeValue, Model uiModel) {
+        uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndCodeValueLike(lsKind, codeValue).getResultList());
+        return "lsthingvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndDateValueLike", "form" }, method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndDateValueLikeForm(Model uiModel) {
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLike", method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndDateValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue, Model uiModel) {
+        uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLike(lsKind, dateValue).getResultList());
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthingvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndStringValueLike", "form" }, method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndStringValueLikeForm(Model uiModel) {
+        return "lsthingvalues/findLsThingValuesByLsKindEqualsAndStringValueLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndStringValueLike", method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndStringValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue, Model uiModel) {
+        uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike(lsKind, stringValue).getResultList());
         return "lsthingvalues/list";
     }
     

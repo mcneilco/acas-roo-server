@@ -9,7 +9,7 @@
             <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_lsTypeAndKind" property="lsTypeAndKind" z="Dn5fA5plZ015EOXDct//Ev80O/s="/>
             <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_ignored" property="ignored" z="gs6AM5blLcIxrwtGKEz6hFVdslI="/>
             <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_publicData" property="publicData" z="hB4NvS2XRomLLHVEhATJtLPTv5Y="/>
-            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_codeOrigin" property="codeOrigin" z="uahy2KJXXyACFO2wVmqTcWfzg7Y="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentValue_deleted" property="deleted" z="hZ+U/JsetWa9g+YtC6obTQFDrZE="/>
         </table:table>
     </page:list>
 </div>

@@ -25,4 +25,13 @@
 <definition extends="default" name="lsthingvalues/findLsThingValuesByIgnoredNotAndCodeValueEquals">
         <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByIgnoredNotAndCodeValueEquals.jspx"/>
     </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndCodeValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndCodeValueLike.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueLike.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndStringValueLike">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndStringValueLike.jspx"/>
+    </definition>
 </tiles-definitions>

@@ -34,6 +34,7 @@ privileged aspect TreatmentGroupStateDataOnDemand_Roo_DataOnDemand {
     public TreatmentGroupState TreatmentGroupStateDataOnDemand.getNewTransientTreatmentGroupState(int index) {
         TreatmentGroupState obj = new TreatmentGroupState();
         setComments(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -53,6 +54,11 @@ privileged aspect TreatmentGroupStateDataOnDemand_Roo_DataOnDemand {
             comments = comments.substring(0, 512);
         }
         obj.setComments(comments);
+    }
+    
+    public void TreatmentGroupStateDataOnDemand.setDeleted(TreatmentGroupState obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void TreatmentGroupStateDataOnDemand.setIgnored(TreatmentGroupState obj, int index) {

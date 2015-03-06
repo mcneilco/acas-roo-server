@@ -78,4 +78,15 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
         return "ddictvalues/list";
     }
     
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndLsKindEqualsAndShortNameEquals", "form" }, method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEqualsForm(Model uiModel) {
+        return "ddictvalues/findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndShortNameEquals", method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("shortName") String shortName, Model uiModel) {
+        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName).getResultList());
+        return "ddictvalues/list";
+    }
+    
 }

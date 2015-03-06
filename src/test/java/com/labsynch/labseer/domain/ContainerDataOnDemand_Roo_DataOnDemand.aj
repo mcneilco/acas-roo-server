@@ -28,6 +28,7 @@ privileged aspect ContainerDataOnDemand_Roo_DataOnDemand {
     public Container ContainerDataOnDemand.getNewTransientContainer(int index) {
         Container obj = new Container();
         setCodeName(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLocationId(obj, index);
         setLsKind(obj, index);
@@ -47,6 +48,11 @@ privileged aspect ContainerDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
+    }
+    
+    public void ContainerDataOnDemand.setDeleted(Container obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ContainerDataOnDemand.setIgnored(Container obj, int index) {

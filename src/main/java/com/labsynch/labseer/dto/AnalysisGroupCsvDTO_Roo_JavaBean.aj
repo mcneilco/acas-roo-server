@@ -129,6 +129,14 @@ privileged aspect AnalysisGroupCsvDTO_Roo_JavaBean {
         this.valueKind = valueKind;
     }
     
+    public String AnalysisGroupCsvDTO.getCodeOrigin() {
+        return this.codeOrigin;
+    }
+    
+    public void AnalysisGroupCsvDTO.setCodeOrigin(String codeOrigin) {
+        this.codeOrigin = codeOrigin;
+    }
+    
     public String AnalysisGroupCsvDTO.getCodeType() {
         return this.codeType;
     }
@@ -247,6 +255,22 @@ privileged aspect AnalysisGroupCsvDTO_Roo_JavaBean {
     
     public void AnalysisGroupCsvDTO.setValueUnit(String valueUnit) {
         this.valueUnit = valueUnit;
+    }
+    
+    public Double AnalysisGroupCsvDTO.getConcentration() {
+        return this.concentration;
+    }
+    
+    public void AnalysisGroupCsvDTO.setConcentration(Double concentration) {
+        this.concentration = concentration;
+    }
+    
+    public String AnalysisGroupCsvDTO.getConcUnit() {
+        return this.concUnit;
+    }
+    
+    public void AnalysisGroupCsvDTO.setConcUnit(String concUnit) {
+        this.concUnit = concUnit;
     }
     
     public String AnalysisGroupCsvDTO.getComments() {

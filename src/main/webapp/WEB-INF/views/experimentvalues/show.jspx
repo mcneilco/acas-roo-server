@@ -38,5 +38,7 @@
         <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_ExperimentValue_uncertainty" object="${experimentvalue}" z="+Aq/V4YJZo/EE8USi22FuFhL6H0="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_ExperimentValue_codeOrigin" object="${experimentvalue}" z="ifrboUs1bYBVSIuJjw+xz+4lf3U="/>
         <field:display field="deleted" id="s_com_labsynch_labseer_domain_ExperimentValue_deleted" object="${experimentvalue}" z="KPhCF0E6WW/BWD2ZtnthWUf2wKQ="/>
+        <field:display field="concentration" id="s_com_labsynch_labseer_domain_ExperimentValue_concentration" object="${experimentvalue}" z="RqRvDyd5IgO3Yg2GFSnVsCxusUo="/>
+        <field:display field="concUnit" id="s_com_labsynch_labseer_domain_ExperimentValue_concUnit" object="${experimentvalue}" z="cor9tgEnciE89blHbV/7+mBxBk4="/>
     </page:show>
 </div>

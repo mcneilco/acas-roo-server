@@ -38,5 +38,7 @@
         <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_uncertainty" validationMessageCode="field_invalid_number" z="qUdHnRN7ZvHrWGNJhiAJtKeWvc4="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_codeOrigin" z="1B5R4a2U7gTmgDPLHY3eTtT8zhk="/>
         <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_deleted" z="0DsWsQPbSUFufX4J2Kw0zO8kL38="/>
+        <field:input field="concentration" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_concentration" validationMessageCode="field_invalid_number" z="TZ5OPWl0/L/cEOWvqDdmzPwE+EE="/>
+        <field:input field="concUnit" id="c_com_labsynch_labseer_domain_TreatmentGroupValue_concUnit" max="25" z="SU7Ve+k+22KYhDCK2E7ss7Ct4SI="/>
     </form:update>
 </div>

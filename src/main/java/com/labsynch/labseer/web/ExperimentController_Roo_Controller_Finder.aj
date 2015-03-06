@@ -91,4 +91,15 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
         return "experiments/list";
     }
     
+    @RequestMapping(params = { "find=ByRecordedByLike", "form" }, method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByRecordedByLikeForm(Model uiModel) {
+        return "experiments/findExperimentsByRecordedByLike";
+    }
+    
+    @RequestMapping(params = "find=ByRecordedByLike", method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByRecordedByLike(@RequestParam("recordedBy") String recordedBy, Model uiModel) {
+        uiModel.addAttribute("experiments", Experiment.findExperimentsByRecordedByLike(recordedBy).getResultList());
+        return "experiments/list";
+    }
+    
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect DDictKindController_Roo_Controller_Json {
@@ -90,6 +91,14 @@ privileged aspect DDictKindController_Roo_Controller_Json {
         }
         DDictKind_.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> DDictKindController.jsonFindDDictKindsByLsTypeEqualsAndNameEquals(@RequestParam("lsType") String lsType, @RequestParam("name") String name) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(DDictKind.toJsonArray(DDictKind.findDDictKindsByLsTypeEqualsAndNameEquals(lsType, name).getResultList()), headers, HttpStatus.OK);
     }
     
 }

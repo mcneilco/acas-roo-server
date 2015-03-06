@@ -13,4 +13,7 @@
 <definition extends="default" name="protocolkinds/update">
         <put-attribute name="body" value="/WEB-INF/views/protocolkinds/update.jspx"/>
     </definition>
+<definition extends="default" name="protocolkinds/findProtocolKindsByLsTypeEqualsAndKindNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocolkinds/findProtocolKindsByLsTypeEqualsAndKindNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

@@ -64,4 +64,19 @@ privileged aspect Experiment_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<Experiment> Experiment.findExperimentsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Experiment.class);
+        q.setParameter("recordedBy", recordedBy);
+        return q;
+    }
+    
 }

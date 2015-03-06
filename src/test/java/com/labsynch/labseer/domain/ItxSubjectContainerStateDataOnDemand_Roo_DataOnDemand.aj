@@ -33,6 +33,7 @@ privileged aspect ItxSubjectContainerStateDataOnDemand_Roo_DataOnDemand {
     public ItxSubjectContainerState ItxSubjectContainerStateDataOnDemand.getNewTransientItxSubjectContainerState(int index) {
         ItxSubjectContainerState obj = new ItxSubjectContainerState();
         setComments(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -51,6 +52,11 @@ privileged aspect ItxSubjectContainerStateDataOnDemand_Roo_DataOnDemand {
             comments = comments.substring(0, 512);
         }
         obj.setComments(comments);
+    }
+    
+    public void ItxSubjectContainerStateDataOnDemand.setDeleted(ItxSubjectContainerState obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ItxSubjectContainerStateDataOnDemand.setIgnored(ItxSubjectContainerState obj, int index) {

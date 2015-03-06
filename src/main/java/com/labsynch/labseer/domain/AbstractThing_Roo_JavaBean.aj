@@ -82,6 +82,14 @@ privileged aspect AbstractThing_Roo_JavaBean {
         this.ignored = ignored;
     }
     
+    public boolean AbstractThing.isDeleted() {
+        return this.deleted;
+    }
+    
+    public void AbstractThing.setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+    
     public Long AbstractThing.getLsTransaction() {
         return this.lsTransaction;
     }

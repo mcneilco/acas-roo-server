@@ -306,4 +306,20 @@ privileged aspect TreatmentGroupValueDTO_Roo_JavaBean {
         this.stateKind = stateKind;
     }
     
+    public BigDecimal TreatmentGroupValueDTO.getConcentration() {
+        return this.concentration;
+    }
+    
+    public void TreatmentGroupValueDTO.setConcentration(BigDecimal concentration) {
+        this.concentration = concentration;
+    }
+    
+    public String TreatmentGroupValueDTO.getConcUnit() {
+        return this.concUnit;
+    }
+    
+    public void TreatmentGroupValueDTO.setConcUnit(String concUnit) {
+        this.concUnit = concUnit;
+    }
+    
 }

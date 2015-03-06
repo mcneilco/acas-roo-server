@@ -34,4 +34,7 @@
 <definition extends="default" name="experiments/findExperimentsByLsTypeLike">
         <put-attribute name="body" value="/WEB-INF/views/experiments/findExperimentsByLsTypeLike.jspx"/>
     </definition>
+<definition extends="default" name="experiments/findExperimentsByRecordedByLike">
+        <put-attribute name="body" value="/WEB-INF/views/experiments/findExperimentsByRecordedByLike.jspx"/>
+    </definition>
 </tiles-definitions>

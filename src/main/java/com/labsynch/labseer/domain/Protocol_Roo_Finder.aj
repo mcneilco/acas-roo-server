@@ -17,6 +17,30 @@ privileged aspect Protocol_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<Protocol> Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(String codeName, boolean ignored) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored IS NOT :ignored", Protocol.class);
+        q.setParameter("codeName", codeName);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
+    public static TypedQuery<Protocol> Protocol.findProtocolsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Protocol.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+    
     public static TypedQuery<Protocol> Protocol.findProtocolsByIgnoredNot(boolean ignored) {
         EntityManager em = Protocol.entityManager();
         TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.ignored IS NOT :ignored", Protocol.class);

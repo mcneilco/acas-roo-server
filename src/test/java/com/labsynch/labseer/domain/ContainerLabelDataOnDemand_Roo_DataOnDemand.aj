@@ -34,6 +34,7 @@ privileged aspect ContainerLabelDataOnDemand_Roo_DataOnDemand {
     public ContainerLabel ContainerLabelDataOnDemand.getNewTransientContainerLabel(int index) {
         ContainerLabel obj = new ContainerLabel();
         setContainer(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setImageFile(obj, index);
         setLabelText(obj, index);
@@ -52,6 +53,11 @@ privileged aspect ContainerLabelDataOnDemand_Roo_DataOnDemand {
     public void ContainerLabelDataOnDemand.setContainer(ContainerLabel obj, int index) {
         Container container = containerDataOnDemand.getRandomContainer();
         obj.setContainer(container);
+    }
+    
+    public void ContainerLabelDataOnDemand.setDeleted(ContainerLabel obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ContainerLabelDataOnDemand.setIgnored(ContainerLabel obj, int index) {

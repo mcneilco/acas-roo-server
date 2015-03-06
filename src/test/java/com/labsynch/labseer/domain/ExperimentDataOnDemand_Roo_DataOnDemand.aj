@@ -34,6 +34,7 @@ privileged aspect ExperimentDataOnDemand_Roo_DataOnDemand {
     public Experiment ExperimentDataOnDemand.getNewTransientExperiment(int index) {
         Experiment obj = new Experiment();
         setCodeName(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -54,6 +55,11 @@ privileged aspect ExperimentDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
+    }
+    
+    public void ExperimentDataOnDemand.setDeleted(Experiment obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ExperimentDataOnDemand.setIgnored(Experiment obj, int index) {

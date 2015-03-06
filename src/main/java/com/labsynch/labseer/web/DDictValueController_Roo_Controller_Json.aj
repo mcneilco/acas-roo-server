@@ -141,4 +141,12 @@ privileged aspect DDictValueController_Roo_Controller_Json {
         return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndShortNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> DDictValueController.jsonFindDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("shortName") String shortName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(DDictValue.toJsonArray(DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName).getResultList()), headers, HttpStatus.OK);
+    }
+    
 }

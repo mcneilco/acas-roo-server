@@ -34,6 +34,7 @@ privileged aspect ProtocolStateDataOnDemand_Roo_DataOnDemand {
     public ProtocolState ProtocolStateDataOnDemand.getNewTransientProtocolState(int index) {
         ProtocolState obj = new ProtocolState();
         setComments(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -53,6 +54,11 @@ privileged aspect ProtocolStateDataOnDemand_Roo_DataOnDemand {
             comments = comments.substring(0, 512);
         }
         obj.setComments(comments);
+    }
+    
+    public void ProtocolStateDataOnDemand.setDeleted(ProtocolState obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ProtocolStateDataOnDemand.setIgnored(ProtocolState obj, int index) {

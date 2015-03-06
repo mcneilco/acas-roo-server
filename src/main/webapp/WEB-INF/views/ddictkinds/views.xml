@@ -13,4 +13,7 @@
 <definition extends="default" name="ddictkinds/update">
         <put-attribute name="body" value="/WEB-INF/views/ddictkinds/update.jspx"/>
     </definition>
+<definition extends="default" name="ddictkinds/findDDictKindsByLsTypeEqualsAndNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/ddictkinds/findDDictKindsByLsTypeEqualsAndNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

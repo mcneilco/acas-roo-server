@@ -28,6 +28,7 @@ privileged aspect AnalysisGroupDataOnDemand_Roo_DataOnDemand {
     public AnalysisGroup AnalysisGroupDataOnDemand.getNewTransientAnalysisGroup(int index) {
         AnalysisGroup obj = new AnalysisGroup();
         setCodeName(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -46,6 +47,11 @@ privileged aspect AnalysisGroupDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
+    }
+    
+    public void AnalysisGroupDataOnDemand.setDeleted(AnalysisGroup obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void AnalysisGroupDataOnDemand.setIgnored(AnalysisGroup obj, int index) {

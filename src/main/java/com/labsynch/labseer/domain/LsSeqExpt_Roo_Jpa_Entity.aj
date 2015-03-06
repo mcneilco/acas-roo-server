@@ -5,6 +5,7 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.LsSeqExpt;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +13,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
 privileged aspect LsSeqExpt_Roo_Jpa_Entity {
+    
+    declare @type: LsSeqExpt: @Entity;
     
     @Id
     @SequenceGenerator(name = "lsSeqExptGen", sequenceName = "LSSEQ_EXPT_PKSEQ")

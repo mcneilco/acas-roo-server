@@ -96,6 +96,14 @@ privileged aspect AbstractLabel_Roo_JavaBean {
         this.ignored = ignored;
     }
     
+    public boolean AbstractLabel.isDeleted() {
+        return this.deleted;
+    }
+    
+    public void AbstractLabel.setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+    
     public Long AbstractLabel.getLsTransaction() {
         return this.lsTransaction;
     }

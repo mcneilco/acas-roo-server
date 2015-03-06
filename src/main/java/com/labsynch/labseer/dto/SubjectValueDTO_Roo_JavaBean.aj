@@ -306,4 +306,20 @@ privileged aspect SubjectValueDTO_Roo_JavaBean {
         this.stateKind = stateKind;
     }
     
+    public BigDecimal SubjectValueDTO.getConcentration() {
+        return this.concentration;
+    }
+    
+    public void SubjectValueDTO.setConcentration(BigDecimal concentration) {
+        this.concentration = concentration;
+    }
+    
+    public String SubjectValueDTO.getConcUnit() {
+        return this.concUnit;
+    }
+    
+    public void SubjectValueDTO.setConcUnit(String concUnit) {
+        this.concUnit = concUnit;
+    }
+    
 }

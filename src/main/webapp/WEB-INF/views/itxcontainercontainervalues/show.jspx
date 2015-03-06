@@ -38,5 +38,7 @@
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_codeTypeAndKind" object="${itxcontainercontainervalue}" z="M8VC1GtGWvWQh5ruEsLdpN+kHxI="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_codeOrigin" object="${itxcontainercontainervalue}" z="tIDFM9LUNHPiAgZEb5amSvXcMFI="/>
         <field:display field="deleted" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_deleted" object="${itxcontainercontainervalue}" z="cKcuC+8706eKShfYq90GRiYkfoI="/>
+        <field:display field="concentration" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_concentration" object="${itxcontainercontainervalue}" z="3mUSm/qiuhiIdzh1So9BYTF6v8o="/>
+        <field:display field="concUnit" id="s_com_labsynch_labseer_domain_ItxContainerContainerValue_concUnit" object="${itxcontainercontainervalue}" z="w3ayii4+fqVWnHAeB1UdLJ7gZ7M="/>
     </page:show>
 </div>

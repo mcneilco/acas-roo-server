@@ -28,6 +28,7 @@ privileged aspect ProtocolDataOnDemand_Roo_DataOnDemand {
     public Protocol ProtocolDataOnDemand.getNewTransientProtocol(int index) {
         Protocol obj = new Protocol();
         setCodeName(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -47,6 +48,11 @@ privileged aspect ProtocolDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
+    }
+    
+    public void ProtocolDataOnDemand.setDeleted(Protocol obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ProtocolDataOnDemand.setIgnored(Protocol obj, int index) {

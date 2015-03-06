@@ -193,6 +193,22 @@ privileged aspect AbstractValue_Roo_JavaBean {
         return this.unitTypeAndKind;
     }
     
+    public Double AbstractValue.getConcentration() {
+        return this.concentration;
+    }
+    
+    public void AbstractValue.setConcentration(Double concentration) {
+        this.concentration = concentration;
+    }
+    
+    public String AbstractValue.getConcUnit() {
+        return this.concUnit;
+    }
+    
+    public void AbstractValue.setConcUnit(String concUnit) {
+        this.concUnit = concUnit;
+    }
+    
     public String AbstractValue.getComments() {
         return this.comments;
     }
@@ -207,6 +223,14 @@ privileged aspect AbstractValue_Roo_JavaBean {
     
     public void AbstractValue.setIgnored(boolean ignored) {
         this.ignored = ignored;
+    }
+    
+    public boolean AbstractValue.isDeleted() {
+        return this.deleted;
+    }
+    
+    public void AbstractValue.setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
     
     public Long AbstractValue.getLsTransaction() {

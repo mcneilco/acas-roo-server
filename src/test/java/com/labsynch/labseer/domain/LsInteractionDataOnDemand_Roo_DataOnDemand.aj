@@ -28,6 +28,7 @@ privileged aspect LsInteractionDataOnDemand_Roo_DataOnDemand {
     public LsInteraction LsInteractionDataOnDemand.getNewTransientLsInteraction(int index) {
         LsInteraction obj = new LsInteraction();
         setCodeName(obj, index);
+        setDeleted(obj, index);
         setFirstThing(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
@@ -48,6 +49,11 @@ privileged aspect LsInteractionDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
+    }
+    
+    public void LsInteractionDataOnDemand.setDeleted(LsInteraction obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void LsInteractionDataOnDemand.setFirstThing(LsInteraction obj, int index) {

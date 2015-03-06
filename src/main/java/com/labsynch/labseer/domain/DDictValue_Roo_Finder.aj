@@ -39,14 +39,6 @@ privileged aspect DDictValue_Roo_Finder {
         return q;
     }
     
-    public static TypedQuery<DDictValue> DDictValue.findDDictValuesByLsKindEquals(String lsKind) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = DDictValue.entityManager();
-        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.lsKind = :lsKind", DDictValue.class);
-        q.setParameter("lsKind", lsKind);
-        return q;
-    }
-    
     public static TypedQuery<DDictValue> DDictValue.findDDictValuesByLsTypeEquals(String lsType) {
         if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = DDictValue.entityManager();
@@ -62,6 +54,18 @@ privileged aspect DDictValue_Roo_Finder {
         TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", DDictValue.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
+    public static TypedQuery<DDictValue> DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(String lsType, String lsKind, String shortName) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (shortName == null || shortName.length() == 0) throw new IllegalArgumentException("The shortName argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.shortName = :shortName", DDictValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("shortName", shortName);
         return q;
     }
     

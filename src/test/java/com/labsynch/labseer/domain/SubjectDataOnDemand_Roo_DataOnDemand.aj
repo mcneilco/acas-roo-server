@@ -28,6 +28,7 @@ privileged aspect SubjectDataOnDemand_Roo_DataOnDemand {
     public Subject SubjectDataOnDemand.getNewTransientSubject(int index) {
         Subject obj = new Subject();
         setCodeName(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -46,6 +47,11 @@ privileged aspect SubjectDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
+    }
+    
+    public void SubjectDataOnDemand.setDeleted(Subject obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void SubjectDataOnDemand.setIgnored(Subject obj, int index) {

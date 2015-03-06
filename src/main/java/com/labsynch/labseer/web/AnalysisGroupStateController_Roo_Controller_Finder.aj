@@ -25,6 +25,18 @@ privileged aspect AnalysisGroupStateController_Roo_Controller_Finder {
         return "analysisgroupstates/list";
     }
     
+    @RequestMapping(params = { "find=ByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot", "form" }, method = RequestMethod.GET)
+    public String AnalysisGroupStateController.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNotForm(Model uiModel) {
+        uiModel.addAttribute("analysisgroups", AnalysisGroup.findAllAnalysisGroups());
+        return "analysisgroupstates/findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot";
+    }
+    
+    @RequestMapping(params = "find=ByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot", method = RequestMethod.GET)
+    public String AnalysisGroupStateController.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(@RequestParam("analysisGroup") AnalysisGroup analysisGroup, @RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
+        uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(analysisGroup, lsType, lsKind, ignored).getResultList());
+        return "analysisgroupstates/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsTransactionEquals", "form" }, method = RequestMethod.GET)
     public String AnalysisGroupStateController.findAnalysisGroupStatesByLsTransactionEqualsForm(Model uiModel) {
         return "analysisgroupstates/findAnalysisGroupStatesByLsTransactionEquals";

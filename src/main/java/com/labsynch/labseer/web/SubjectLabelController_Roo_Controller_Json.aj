@@ -6,14 +6,93 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.web.SubjectLabelController;
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect SubjectLabelController_Roo_Controller_Json {
+    
+    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> SubjectLabelController.showJson(@PathVariable("id") Long id) {
+        SubjectLabel subjectLabel = SubjectLabel.findSubjectLabel(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        if (subjectLabel == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(subjectLabel.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> SubjectLabelController.listJson() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<SubjectLabel> result = SubjectLabel.findAllSubjectLabels();
+        return new ResponseEntity<String>(SubjectLabel.toJsonArray(result), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> SubjectLabelController.createFromJson(@RequestBody String json) {
+        SubjectLabel subjectLabel = SubjectLabel.fromJsonToSubjectLabel(json);
+        subjectLabel.persist();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+    
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> SubjectLabelController.createFromJsonArray(@RequestBody String json) {
+        for (SubjectLabel subjectLabel: SubjectLabel.fromJsonArrayToSubjectLabels(json)) {
+            subjectLabel.persist();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+    
+    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> SubjectLabelController.updateFromJson(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        SubjectLabel subjectLabel = SubjectLabel.fromJsonToSubjectLabel(json);
+        if (subjectLabel.merge() == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> SubjectLabelController.updateFromJsonArray(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        for (SubjectLabel subjectLabel: SubjectLabel.fromJsonArrayToSubjectLabels(json)) {
+            if (subjectLabel.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> SubjectLabelController.deleteFromJson(@PathVariable("id") Long id) {
+        SubjectLabel subjectLabel = SubjectLabel.findSubjectLabel(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (subjectLabel == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        subjectLabel.remove();
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
     
     @RequestMapping(params = "find=BySubject", headers = "Accept=application/json")
     @ResponseBody

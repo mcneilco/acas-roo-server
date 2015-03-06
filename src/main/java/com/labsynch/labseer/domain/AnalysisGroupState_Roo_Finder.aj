@@ -18,6 +18,19 @@ privileged aspect AnalysisGroupState_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<AnalysisGroupState> AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(AnalysisGroup analysisGroup, String lsType, String lsKind, boolean ignored) {
+        if (analysisGroup == null) throw new IllegalArgumentException("The analysisGroup argument is required");
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = AnalysisGroupState.entityManager();
+        TypedQuery<AnalysisGroupState> q = em.createQuery("SELECT o FROM AnalysisGroupState AS o WHERE o.analysisGroup = :analysisGroup AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored", AnalysisGroupState.class);
+        q.setParameter("analysisGroup", analysisGroup);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
     public static TypedQuery<AnalysisGroupState> AnalysisGroupState.findAnalysisGroupStatesByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = AnalysisGroupState.entityManager();

@@ -38,6 +38,8 @@
         <field:select field="lsState" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsState" itemValue="id" items="${itxexperimentexperimentstates}" path="/itxexperimentexperimentstates" z="55wyUN9XXMp6l1qcuIKnMp2Qb2g="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_codeOrigin" z="3f7CGOC29tNVPrH/9Cu4ny3qUGQ="/>
         <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_deleted" z="MQmcQKivUcIztFVfTGz4juRfYpo="/>
+        <field:input field="concentration" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_concentration" validationMessageCode="field_invalid_number" z="/XVbj2k/bPYOH/o0BS52BGI0nUk="/>
+        <field:input field="concUnit" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_concUnit" max="25" z="B4D4SpQTYxJ4CvBjj640Yl6je0o="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ItxExperimentExperimentValue" render="${not empty dependencies}" z="Dfd+Ji4CtffUu/2VedX9xofwoYU="/>
 </div>
