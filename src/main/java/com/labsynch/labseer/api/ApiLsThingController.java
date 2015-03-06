@@ -1,5 +1,6 @@
 package com.labsynch.labseer.api;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -427,6 +428,18 @@ public class ApiLsThingController {
         }
     }
 
-
+  @RequestMapping(value = "/gene/v1/loadGeneEntities", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> loadGeneEntities(@RequestParam(value = "fileName", required = true) String fileName) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json; charset=utf-8");
+      logger.info("loading genes from tab delimited file: " + fileName);
+      try {
+          geneThingService.RegisterGeneThingsFromCSV(fileName);
+      } catch (IOException e) {
+          logger.error("IOException: " + e.toString());
+          return new ResponseEntity<String>("ERROR: IOError. Unable to load file. " + fileName, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+      }
+      return new ResponseEntity<String>(headers, HttpStatus.OK);
+  }
 	
 }
