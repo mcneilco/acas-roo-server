@@ -169,7 +169,8 @@ public class ApiAnalysisGroupController {
 	
     @Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody AnalysisGroup analysisGroup) {
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    	AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
         AnalysisGroup newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -177,7 +178,8 @@ public class ApiAnalysisGroupController {
     }
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJsonArray(@RequestBody List<AnalysisGroup> analysisGroups) {
+    public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
+		Collection<AnalysisGroup> analysisGroups = AnalysisGroup.fromJsonArrayToAnalysisGroups(json);
         for (AnalysisGroup analysisGroup: analysisGroups) {
         	analysisGroupService.saveLsAnalysisGroup(analysisGroup);
         }
