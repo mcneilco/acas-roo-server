@@ -1,7 +1,10 @@
 package com.labsynch.labseer.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Collection;
 
@@ -20,11 +23,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.dto.CodeTableDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -140,8 +141,8 @@ public class ApiLsThingControllerTest {
     
     @Test
     public void validateInvalidComponentNameTest() throws Exception {
-    	String componentName = "[\"Ad\"]";
-    	String response = this.mockMvc.perform(post("/api/v1/lsthings/validatename?lsKind=protein")
+    	String componentName = "[\"Ad 2\"]";
+    	String response = this.mockMvc.perform(post("/api/v1/lsthings/validatename?lsKind=linker small molecule")
     			.contentType(MediaType.APPLICATION_JSON)
     			.content(componentName)
     			.accept(MediaType.APPLICATION_JSON))
