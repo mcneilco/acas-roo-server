@@ -256,8 +256,8 @@ public class ApiLsThingController {
         boolean isComponent = false;
         if (lsType.equals("parent")) isParent = true;
         if (lsType.equals("batch")) isBatch = true;
-        List<String> assemblyKinds = Arrays.asList("internalization agent", "RNA", "polymer", "linker","formulation");
-        List<String> componentKinds = Arrays.asList("protein", "cationic block", "spacer", "linker small molecule");
+        List<String> assemblyKinds = propertiesUtilService.getAssemblyKindList();
+        List<String> componentKinds = propertiesUtilService.getComponentKindList();
         if (assemblyKinds.contains(lsKind)) isAssembly=true;
         if (componentKinds.contains(lsKind)) isComponent=true;
         //do required validation
@@ -329,18 +329,24 @@ public class ApiLsThingController {
     		@RequestBody List<String> names) {
         boolean isComponent = false;
         boolean isAssembly = false;
-    	List<String> assemblyKinds = Arrays.asList("internalization agent", "RNA", "polymer", "linker","formulation");
-        List<String> componentKinds = Arrays.asList("protein", "cationic block", "spacer", "linker small molecule");
+    	List<String> assemblyKinds = propertiesUtilService.getAssemblyKindList();
+        List<String> componentKinds = propertiesUtilService.getComponentKindList();
+        logger.debug(assemblyKinds.toString());
+        logger.debug(componentKinds.toString());
         if (componentKinds.contains(lsKind)) isComponent=true;
         if (assemblyKinds.contains(lsKind)) isAssembly=true;
         boolean isValid = false;
         if (isComponent){
         	String componentName = names.get(0);
+        	logger.debug("Validating "+lsKind+" name: "+componentName);
         	isValid = lsThingService.validateComponentName(componentName, lsKind);
         }
-        if (isAssembly){
+        else if (isAssembly){
         	List<String> componentCodeNames = names;
         	isValid = lsThingService.validateAssembly(componentCodeNames);
+        }
+        else {
+        	isValid = true;
         }
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
@@ -364,8 +370,8 @@ public class ApiLsThingController {
         //decide what kind of validation we need to do
         boolean isAssembly = false;
         boolean isComponent = false;
-        List<String> assemblyKinds = Arrays.asList("internalization agent", "RNA", "polymer", "linker","formulation");
-        List<String> componentKinds = Arrays.asList("protein", "cationic block", "spacer", "linker small molecule");
+        List<String> assemblyKinds = propertiesUtilService.getAssemblyKindList();
+        List<String> componentKinds = propertiesUtilService.getComponentKindList();
         if (assemblyKinds.contains(lsKind)) isAssembly=true;
         if (componentKinds.contains(lsKind)) isComponent=true;
         //do required validation

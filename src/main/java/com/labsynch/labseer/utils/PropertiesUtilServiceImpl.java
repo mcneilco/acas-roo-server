@@ -1,5 +1,9 @@
 package com.labsynch.labseer.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -136,5 +140,33 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	@Override
 	public boolean getUniqueLsThingName() {
 		return Boolean.parseBoolean(this.uniqueLsThingName);
+	}
+	
+	String componentKindList;
+	
+	@Value("${componentKindList}")
+	public void setComponentKindList(String componentKindList) {
+	    this.componentKindList = componentKindList;
+	}
+	
+	@Override
+	public List<String> getComponentKindList() {
+		List<String> componentKindListList = new ArrayList<String>();
+		componentKindListList.addAll(Arrays.asList(componentKindList.split(",")));
+		return componentKindListList;
+	}
+	
+	String assemblyKindList;
+	
+	@Value("${assemblyKindList}")
+	public void setAssemblyKindList(String assemblyKindList) {
+	    this.assemblyKindList = assemblyKindList;
+	}
+	
+	@Override
+	public List<String> getAssemblyKindList() {
+		List<String> assemblyKindListList = new ArrayList<String>();
+		assemblyKindListList.addAll(Arrays.asList(assemblyKindList.split(",")));
+		return assemblyKindListList;
 	}
 }
