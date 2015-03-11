@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -25,6 +26,7 @@ import flexjson.JSONSerializer;
 @RooToString
 @RooJpaActiveRecord
 @RooJson
+@Table(name="ITX_EXPT_EXPT_VALUE")
 public class ItxExperimentExperimentValue extends AbstractValue {
 		
     @ManyToOne
