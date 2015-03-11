@@ -184,7 +184,12 @@ public class SubjectServiceImpl implements SubjectService {
 		int j = 0;
 		if (subjects != null && !subjects.isEmpty()) {
 			logger.debug("number of incoming subjects: " + subjects.size());
-			for (Subject subject : subjects) {
+			Set<Long> subjectIds = new HashSet<Long>();
+			for (Subject subject : subjects){
+				subjectIds.add(subject.getId());
+			}
+			for (Long subjectId : subjectIds) {
+				Subject subject = Subject.findSubject(subjectId);
 				logger.debug("attempting to save subject: " + subject.getId());
 				Subject newSubject = saveSubject(treatmentGroups, subject,
 						recordedDate);
@@ -193,6 +198,7 @@ public class SubjectServiceImpl implements SubjectService {
 					newSubject.clear();
 				}
 				j++;
+				logger.debug("updated subject: " + subject.getId());
 			}
 		}
 	}
@@ -230,7 +236,7 @@ public class SubjectServiceImpl implements SubjectService {
 			saveStates(subject, newSubject, recordedDate );
 
 		} else {
-			// logger.debug("this is an existing subject -----------");
+			logger.debug("this is an existing subject -----------");
 			newSubject = Subject.findSubject(subject.getId());
 			for (TreatmentGroup treatmentGroup : treatmentGroups){
 				// logger.debug("incoming treatment group: ------------ " + treatmentGroup.toJson());
