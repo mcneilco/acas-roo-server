@@ -13,6 +13,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -30,6 +31,7 @@ import flexjson.JSONSerializer;
 @RooToString
 @RooJpaActiveRecord
 @RooJson
+@Table(name="ITX_EXPT_EXPT_STATE")
 public class ItxExperimentExperimentState extends AbstractState {
 
     public ItxExperimentExperimentState(ItxExperimentExperimentState itxState) {

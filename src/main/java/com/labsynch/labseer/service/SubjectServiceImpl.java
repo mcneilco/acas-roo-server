@@ -182,14 +182,18 @@ public class SubjectServiceImpl implements SubjectService {
 		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 		treatmentGroups.add(treatmentGroup);
 		int j = 0;
-		// logger.debug("number of incoming subjects: " + subjects.size());
-		for (Subject subject : subjects){
-			Subject newSubject = saveSubject(treatmentGroups, subject, recordedDate);
-			if ( j % propertiesUtilService.getBatchSize() == 0 ) { 
-				newSubject.flush();
-				newSubject.clear();
+		if (subjects != null && !subjects.isEmpty()) {
+			logger.debug("number of incoming subjects: " + subjects.size());
+			for (Subject subject : subjects) {
+				logger.debug("attempting to save subject: " + subject.getId());
+				Subject newSubject = saveSubject(treatmentGroups, subject,
+						recordedDate);
+				if (j % propertiesUtilService.getBatchSize() == 0) {
+					newSubject.flush();
+					newSubject.clear();
+				}
+				j++;
 			}
-			j++;
 		}
 	}
 
