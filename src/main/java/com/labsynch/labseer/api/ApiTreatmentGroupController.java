@@ -68,7 +68,8 @@ public class ApiTreatmentGroupController {
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody TreatmentGroup treatmentGroup) {
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    	TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
         TreatmentGroup savedTreatmentGroup = treatmentGroupService.saveLsTreatmentGroup(treatmentGroup);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -76,7 +77,8 @@ public class ApiTreatmentGroupController {
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<TreatmentGroup> treatmentGroups) {
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    	Collection<TreatmentGroup> treatmentGroups = TreatmentGroup.fromJsonArrayToTreatmentGroups(json);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<TreatmentGroup> savedTreatmentGroups = new ArrayList<TreatmentGroup>();

@@ -796,7 +796,8 @@ public class ApiExperimentController {
 
 	@Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Experiment experiment) {
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+		Experiment experiment = Experiment.fromJsonToExperiment(json);
         logger.debug("----from the Experiment POST controller----");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -821,7 +822,8 @@ public class ApiExperimentController {
 	
 	@Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<Experiment> experiments) {
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+		Collection<Experiment> experiments = Experiment.fromJsonArrayToExperiments(json);
         for (Experiment experiment : experiments) {
             try {
                 experiment = experimentService.saveLsExperiment(experiment);
