@@ -823,6 +823,7 @@ public class LsThingServiceImpl implements LsThingService {
 	
 	private String pickBestLabel(LsThing lsThing) {
 		Collection<LsThingLabel> labels = lsThing.getLsLabels();
+		if (labels.isEmpty()) return null;
 		return LsThingLabel.pickBestLabel(labels).getLabelText();
 	}
 
