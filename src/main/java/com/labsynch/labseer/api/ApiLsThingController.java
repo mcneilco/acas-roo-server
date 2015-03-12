@@ -309,7 +309,7 @@ public class ApiLsThingController {
         		try {
         			lsThing = lsThingService.saveLsThing(lsThing, isParent, isBatch, isAssembly, isComponent, parentId);
                 } catch (Exception e) {
-                    logger.error("----from the POST controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+                    logger.error("----from the POST controller----" + " ERROR:  " + e.toString());
                     ErrorMessage error = new ErrorMessage();
                     error.setErrorLevel("error");
                     error.setMessage("error occurred during saving");
