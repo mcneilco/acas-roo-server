@@ -20,7 +20,10 @@ import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
+import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
+import flexjson.JSONSerializer;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -90,7 +93,7 @@ public class LsThingServiceTests {
 	
 	@Test
 	@Transactional
-	public void getOrder(){
+	public void retrieveOrder(){
 		//TODO
 	}
 	
@@ -143,5 +146,59 @@ public class LsThingServiceTests {
 		Collection<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingLabelsByLabelTextLike(queryString).getResultList();
 		logger.info(LsThingLabel.toJsonArray(lsThingLabels));
 	}
+	
+	@Test
+	public void findLsThingsByLsTypeAndKindEquals() {
+		String lsTypeAndKind = "term_documentTerm";
+		Collection<LsThing> results = LsThing.findLsThingsByLsTypeAndKindEquals(lsTypeAndKind).getResultList();
+		Assert.assertEquals(1, results.size());
+		LsThing lsThing = results.iterator().next();
+		logger.info(lsThing.getId().toString());
+		logger.info(lsThing.getCodeName());
+		logger.info(LsThing.toJsonArray(results));
+	}
+	
+	@Transactional
+	@Test
+	public void toFullJson(){
+		LsThing lsThing = LsThing.findLsThingsByCodeNameEquals("PROT000006").getSingleResult();
+		
+		
+		String json1 = new JSONSerializer().
+					exclude("*.class","lsStates.lsThing","lsLabels.lsThing"
+							,"firstLsThings.secondLsThing","secondLsThings.firstLsThing"
+//							,"firstLsThings.firstLsThing.firstLsThings", "firstLsThings.firstLsThing.secondLsThings"
+							)
+					.include("lsLabels", "lsStates.lsValues"
+							,"secondLsThings","firstLsThings"
+//							,"firstLsThings.firstLsThing"
+							)
+					.transform(new ExcludeNulls(), void.class)
+					.serialize(lsThing);
+		logger.info(json1);
+		
+//		logger.info(lsThing.toFullJson());
+	}
+	
+	@Test
+	@Transactional
+    public void toJsonTest() {
+		LsThing lsThing = LsThing.findLsThingsByCodeNameEquals("PROT000006-1").getSingleResult();
+		
+        String json = new JSONSerializer().
+        		exclude("*.class").
+        		include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings","secondLsThings").
+        		transform(new ExcludeNulls(), void.class).
+        		serialize(lsThing);
+        
+        logger.info(json);
+    }
+	
+//	public String toFullJson() {
+//        return new JSONSerializer().
+//        		exclude("*.class", "lsStates.analysisGroup", "lsLabels.analysisGroup", "treatmentGroups.analysisGroup", "experiment.protocol")
+//        		.include("lsLabels", "lsStates.lsValues", "treatmentGroups.lsStates.lsValues", "treatmentGroups.lsLabels", "treatmentGroups.subjects.lsStates.lsValues", "treatmentGroups.subjects.lsLabels")
+//        		.transform(new ExcludeNulls(), void.class).serialize(this);
+//    }
 
 }
