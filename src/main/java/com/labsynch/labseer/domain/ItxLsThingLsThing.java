@@ -37,12 +37,12 @@ import flexjson.JSONSerializer;
 public class ItxLsThingLsThing extends AbstractThing {
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "first_ls_thing_id")
     private LsThing firstLsThing;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "second_ls_thing_id")
     private LsThing secondLsThing;
 
@@ -151,7 +151,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         return q;
     }
     
-    public int getOrder() {
+    public int retrieveOrder() {
     	EntityManager em = ItxLsThingLsThing.entityManager();
 		String query = "SELECT v.numericValue FROM ItxLsThingLsThingValue v " +
 				"JOIN v.lsState s " + 

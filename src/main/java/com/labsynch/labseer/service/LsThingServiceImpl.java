@@ -360,7 +360,7 @@ public class LsThingServiceImpl implements LsThingService {
 		Collection<ItxLsThingLsThing> interactions = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals("incorporates", "assembly_component", component).getResultList();
 		Collection<LsThing> assemblies = new HashSet<LsThing>();
 		for (ItxLsThingLsThing interaction : interactions){
-			if (interaction.getOrder() == order) assemblies.add(interaction.getFirstLsThing());
+			if (interaction.retrieveOrder() == order) assemblies.add(interaction.getFirstLsThing());
 		}
 		return assemblies;
 	}

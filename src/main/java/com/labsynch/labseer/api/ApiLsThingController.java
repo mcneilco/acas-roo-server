@@ -161,7 +161,7 @@ public class ApiLsThingController {
     	headers.add("Content-Type", "application/json; charset=utf-8");
     	if (with != null) {
 			if (with.equalsIgnoreCase("fullobject")) {
-				return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
+				return new ResponseEntity<String>(LsThing.toJsonArrayFull(results), headers, HttpStatus.OK);
 			} else if (with.equalsIgnoreCase("prettyjson")) {
 				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(results), headers, HttpStatus.OK);
 			} else {

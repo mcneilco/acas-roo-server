@@ -251,6 +251,17 @@ public class ApiLsThingControllerTest {
     }
     
     @Test
+    public void getCodeTableLsThings2() throws Exception {
+    	String json = this.mockMvc.perform(get("/api/v1/lsthings/codetable?lsType=term&lsKind=documentTerm")
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json;charset=utf-8"))
+        		.andReturn().getResponse().getContentAsString();
+    	logger.info(json);
+    }
+    
+    @Test
     public void searchByScientist() throws Exception {
     	String searchString = "jane";
         String json = this.mockMvc.perform(get("/api/v1/lsthings/search?q="+searchString)
