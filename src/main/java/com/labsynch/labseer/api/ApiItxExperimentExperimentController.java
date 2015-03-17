@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ItxExperimentExperiment;
 import com.labsynch.labseer.service.ItxContainerContainerService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -100,5 +102,35 @@ public class ApiItxExperimentExperimentController {
             updatedItxExperimentExperiments.add(itxExperimentExperiment);
         }
         return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(updatedItxExperimentExperiments), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByFirstExperiment", method = RequestMethod.GET)
+    public ResponseEntity<String> findItxExperimentExperimentsByFirstExperiment(@RequestParam("firstExperimentId") Long firstExperimentId) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Experiment firstExperiment;
+    	try{
+    		firstExperiment = Experiment.findExperiment(firstExperimentId);
+    	} catch(Exception e){
+    		logger.error("Error in findItxExperimentExperimentsByFirstExperiment: firstExperiment "+ firstExperimentId.toString()+" not found");
+    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+    	}
+        Collection<ItxExperimentExperiment> itxExperimentExperiments = ItxExperimentExperiment.findItxExperimentExperimentsByFirstExperiment(firstExperiment).getResultList();
+        return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(itxExperimentExperiments), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=BySecondExperiment", method = RequestMethod.GET)
+    public ResponseEntity<String> findItxExperimentExperimentsBySecondExperiment(@RequestParam("secondExperimentId") Long secondExperimentId) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Experiment secondExperiment;
+        try{
+    		secondExperiment = Experiment.findExperiment(secondExperimentId);
+    	} catch(Exception e){
+    		logger.error("Error in findItxExperimentExperimentsBySecondExperiment: secondExperiment "+ secondExperimentId.toString()+" not found");
+    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+    	}
+        Collection<ItxExperimentExperiment> itxExperimentExperiments = ItxExperimentExperiment.findItxExperimentExperimentsBySecondExperiment(secondExperiment).getResultList();
+        return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(itxExperimentExperiments), headers, HttpStatus.OK);
     }
 }
