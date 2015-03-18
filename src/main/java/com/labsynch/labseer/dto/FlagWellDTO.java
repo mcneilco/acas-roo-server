@@ -213,7 +213,7 @@ public class FlagWellDTO {
 					statCalc.add(value.getNumericValue().doubleValue()); 
 				}
 				newEfficacyTreatmentGroupValue.setNumericValue(BigDecimal.valueOf(statCalc.getArithmeticMean()));
-				newEfficacyTreatmentGroupValue.setUnitKind("efficacy");
+				newEfficacyTreatmentGroupValue.setUnitKind("%");
 				newEfficacyTreatmentGroupValue.setNumberOfReplicates(statCalc.getCount());
 				newEfficacyTreatmentGroupValue.setUncertainty(BigDecimal.valueOf(statCalc.getStandardDeviation()));
 				newEfficacyTreatmentGroupValue.setUncertaintyType("standard deviation");
