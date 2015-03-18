@@ -249,7 +249,7 @@ public class RawCurveDataDTO {
         		+ "AND subj.ignored = false "
         		+ "AND agv.stringValue IN :curveIds", Map.class);
         q.setParameter("curveIds", curveIds);
-        q.setParameter("responseKind", "transformed efficacy");
+        q.setParameter("responseKind", "efficacy");
         List<Map> queryResults = q.getResultList();
         List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
 		for (Map result : queryResults) {
