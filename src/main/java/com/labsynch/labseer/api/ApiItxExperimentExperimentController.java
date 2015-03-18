@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Experiment;
@@ -104,8 +103,9 @@ public class ApiItxExperimentExperimentController {
         return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(updatedItxExperimentExperiments), headers, HttpStatus.OK);
     }
     
-    @RequestMapping(params = "find=ByFirstExperiment", method = RequestMethod.GET)
-    public ResponseEntity<String> findItxExperimentExperimentsByFirstExperiment(@RequestParam("firstExperimentId") Long firstExperimentId) {
+    @Transactional
+    @RequestMapping(value = "/findByFirstExperiment/{id}", method = RequestMethod.GET)
+    public ResponseEntity<String> findItxExperimentExperimentsByFirstExperiment(@PathVariable("id") Long firstExperimentId) {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Experiment firstExperiment;
@@ -116,11 +116,16 @@ public class ApiItxExperimentExperimentController {
     		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
     	}
         Collection<ItxExperimentExperiment> itxExperimentExperiments = ItxExperimentExperiment.findItxExperimentExperimentsByFirstExperiment(firstExperiment).getResultList();
+        for (ItxExperimentExperiment itx : itxExperimentExperiments){
+        	logger.debug(itx.getCodeName() + " " + itx.getId().toString());
+        	logger.debug(itx.toJson());
+        }
         return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(itxExperimentExperiments), headers, HttpStatus.OK);
     }
     
-    @RequestMapping(params = "find=BySecondExperiment", method = RequestMethod.GET)
-    public ResponseEntity<String> findItxExperimentExperimentsBySecondExperiment(@RequestParam("secondExperimentId") Long secondExperimentId) {
+    @Transactional
+    @RequestMapping(value = "/findBySecondExperiment/{id}", method = RequestMethod.GET)
+    public ResponseEntity<String> findItxExperimentExperimentsBySecondExperiment(@PathVariable("id") Long secondExperimentId) {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Experiment secondExperiment;
