@@ -47,10 +47,10 @@ public class LsThing extends AbstractThing {
     joinColumns = { @JoinColumn(name="lsthing_id") }, inverseJoinColumns = { @JoinColumn(name="tag_id") })
     private Set<LsTag> lsTags = new HashSet<LsTag>();
     
-    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, mappedBy = "secondLsThing", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "secondLsThing", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
 
-    @OneToMany(cascade = { javax.persistence.CascadeType.PERSIST, javax.persistence.CascadeType.MERGE }, mappedBy = "firstLsThing", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "firstLsThing", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
 
     public LsThing(com.labsynch.labseer.domain.LsThing lsThing) {

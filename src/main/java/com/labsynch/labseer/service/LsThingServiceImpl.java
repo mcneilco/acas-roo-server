@@ -534,7 +534,46 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			newLsThing.setLsStates(lsStates);
 		}
-
+		
+		if(lsThing.getFirstLsThings() != null){
+			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : lsThing.getFirstLsThings()){
+				if (itxLsThingLsThing.getId() == null){
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+						LsThing nestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+						itxLsThingLsThing.setFirstLsThing(nestedLsThing);
+					}
+					itxLsThingLsThing.setSecondLsThing(newLsThing);
+					ItxLsThingLsThing newItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					firstLsThings.add(newItxLsThingLsThing);
+				}else {
+					firstLsThings.add(itxLsThingLsThing);
+				}
+			}
+			newLsThing.setFirstLsThings(firstLsThings);
+		}
+		
+		if(lsThing.getSecondLsThings() != null){
+			Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : lsThing.getSecondLsThings()){
+				if (itxLsThingLsThing.getId() == null){
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+						logger.debug("saving new nested LsThing: " + itxLsThingLsThing.getSecondLsThing().toJson());
+						LsThing nestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+						itxLsThingLsThing.setSecondLsThing(nestedLsThing);
+					}
+					itxLsThingLsThing.setFirstLsThing(newLsThing);
+					ItxLsThingLsThing newItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					secondLsThings.add(newItxLsThingLsThing);
+				}else {
+					secondLsThings.add(itxLsThingLsThing);
+				}
+			}
+			newLsThing.setSecondLsThings(secondLsThings);
+		}
 		return newLsThing;
 	}
 	
@@ -558,6 +597,39 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 		}
 		return savedLsThing;
+	}
+	
+	
+	private ItxLsThingLsThing saveItxLsThingLsThing(ItxLsThingLsThing itxLsThingLsThing){
+		ItxLsThingLsThing newItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+		newItxLsThingLsThing.persist();
+		if(itxLsThingLsThing.getLsStates() != null){
+			Set<ItxLsThingLsThingState> lsStates = new HashSet<ItxLsThingLsThingState>();
+			for(ItxLsThingLsThingState itxLsThingLsThingState : itxLsThingLsThing.getLsStates()){
+				ItxLsThingLsThingState newItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
+				newItxLsThingLsThingState.setItxLsThingLsThing(newItxLsThingLsThing);
+				logger.debug("here is the newItxLsThingLsThingState before save: " + newItxLsThingLsThingState.toJson());
+				newItxLsThingLsThingState.persist();
+				logger.debug("persisted the newItxLsThingLsThingState: " + newItxLsThingLsThingState.toJson());
+				if (itxLsThingLsThingState.getLsValues() != null){
+					Set<ItxLsThingLsThingValue> lsValues = new HashSet<ItxLsThingLsThingValue>();
+					for(ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()){
+						logger.debug("itxLsThingLsThingValue: " + itxLsThingLsThingValue.toJson());
+						ItxLsThingLsThingValue newItxLsThingLsThingValue = new ItxLsThingLsThingValue(itxLsThingLsThingValue);
+						newItxLsThingLsThingValue.setLsState(newItxLsThingLsThingState);
+						newItxLsThingLsThingValue.persist();
+						lsValues.add(newItxLsThingLsThingValue);
+						logger.debug("persisted the itxLsThingLsThingValue: " + newItxLsThingLsThingValue.toJson());
+					}	
+					newItxLsThingLsThingState.setLsValues(lsValues);
+				} else {
+					logger.debug("No itxLsThingLsThing values to save");
+				}
+				lsStates.add(newItxLsThingLsThingState);
+			}
+			newItxLsThingLsThing.setLsStates(lsStates);
+		}
+		return newItxLsThingLsThing;
 	}
 	
 	private void saveItxLsThingLsThing(String lsType, String lsKind,

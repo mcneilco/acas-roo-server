@@ -30,7 +30,51 @@ public class ItxLsThingLsThingValue extends AbstractValue {
     @ManyToOne
     private ItxLsThingLsThingState lsState;
     
-    public static ItxLsThingLsThingValue update(ItxLsThingLsThingValue object) {
+    public ItxLsThingLsThingValue(ItxLsThingLsThingValue itxLsThingLsThingValue) {
+    	super.setBlobValue(itxLsThingLsThingValue.getBlobValue());
+        super.setClobValue(itxLsThingLsThingValue.getClobValue());
+        super.setCodeKind(itxLsThingLsThingValue.getCodeKind());
+        super.setCodeOrigin(itxLsThingLsThingValue.getCodeOrigin());
+        super.setCodeType(itxLsThingLsThingValue.getCodeType());
+        super.setCodeTypeAndKind(itxLsThingLsThingValue.getCodeTypeAndKind());
+        super.setCodeValue(itxLsThingLsThingValue.getCodeValue());
+        super.setComments(itxLsThingLsThingValue.getComments());
+        super.setConcentration(itxLsThingLsThingValue.getConcentration());
+        super.setConcUnit(itxLsThingLsThingValue.getConcUnit());
+        super.setDateValue(itxLsThingLsThingValue.getDateValue());
+        super.setDeleted(itxLsThingLsThingValue.isDeleted());
+        super.setFileValue(itxLsThingLsThingValue.getFileValue());
+        super.setIgnored(itxLsThingLsThingValue.isIgnored());
+        super.setLsKind(itxLsThingLsThingValue.getLsKind());
+        super.setLsTransaction(itxLsThingLsThingValue.getLsTransaction());
+        super.setLsType(itxLsThingLsThingValue.getLsType());
+        super.setLsTypeAndKind(itxLsThingLsThingValue.getLsTypeAndKind());
+        super.setModifiedBy(itxLsThingLsThingValue.getModifiedBy());
+        super.setModifiedDate(itxLsThingLsThingValue.getModifiedDate());
+        super.setNumberOfReplicates(itxLsThingLsThingValue.getNumberOfReplicates());
+        super.setNumericValue(itxLsThingLsThingValue.getNumericValue());
+        super.setOperatorKind(itxLsThingLsThingValue.getOperatorKind());
+        super.setOperatorType(itxLsThingLsThingValue.getOperatorType());
+        super.setOperatorTypeAndKind(itxLsThingLsThingValue.getOperatorTypeAndKind());
+        super.setPublicData(itxLsThingLsThingValue.isPublicData());
+        super.setRecordedBy(itxLsThingLsThingValue.getRecordedBy());
+        super.setRecordedDate(itxLsThingLsThingValue.getRecordedDate());
+        super.setSigFigs(itxLsThingLsThingValue.getSigFigs());
+        super.setStringValue(itxLsThingLsThingValue.getStringValue());
+        super.setUncertainty(itxLsThingLsThingValue.getUncertainty());
+        super.setUncertaintyType(itxLsThingLsThingValue.getUncertaintyType());
+        super.setUnitKind(itxLsThingLsThingValue.getUnitKind());
+        super.setUnitType(itxLsThingLsThingValue.getUnitType());
+        super.setUnitTypeAndKind(itxLsThingLsThingValue.getUnitTypeAndKind());
+        super.setUrlValue(itxLsThingLsThingValue.getUrlValue());
+        super.setVersion(itxLsThingLsThingValue.getVersion());
+	}
+    
+    public ItxLsThingLsThingValue() {
+    }
+
+
+	public static ItxLsThingLsThingValue update(ItxLsThingLsThingValue object) {
     	ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).
         		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
