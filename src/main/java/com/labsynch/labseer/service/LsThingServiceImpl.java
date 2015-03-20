@@ -415,38 +415,120 @@ public class LsThingServiceImpl implements LsThingService {
 		} else {
 			logger.debug("No lsThing labels to update");
 		}
-
-		if(jsonLsThing.getLsStates() != null){
-			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
-				LsThingState updatedLsThingState;
-				if (lsThingState.getId() == null){
-					updatedLsThingState = new LsThingState(lsThingState);
-					updatedLsThingState.setLsThing(updatedLsThing);
-					updatedLsThingState.persist();
-					updatedLsThing.getLsStates().add(updatedLsThingState);
-				} else {
-					updatedLsThingState = LsThingState.update(lsThingState);
-					logger.debug("updated lsThing state " + updatedLsThingState.getId());
-
-				}
-				if (lsThingState.getLsValues() != null){
-					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
-						LsThingValue updatedLsThingValue;
-						if (lsThingValue.getId() == null){
-							updatedLsThingValue = LsThingValue.create(lsThingValue);
-							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
-							updatedLsThingValue.persist();
-							updatedLsThingState.getLsValues().add(updatedLsThingValue);
-						} else {
-							updatedLsThingValue = LsThingValue.update(lsThingValue);
-							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
+		updateLsStates(jsonLsThing, updatedLsThing);
+		//updated itx and nested LsThings
+		if(jsonLsThing.getFirstLsThings() != null){
+		//there are itx's
+			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
+				ItxLsThingLsThing updatedItxLsThingLsThing;
+				if (itxLsThingLsThing.getId() == null){
+					//need to save a new itx
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					LsThing updatedNestedLsThing;
+					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+						//need to save a new nested lsthing
+						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+						try{
+							updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+							itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+						} catch (UniqueNameException e){
+							logger.error("Caught UniqueNameException trying to update nested LsThing");
 						}
-					}	
-				} else {
-					logger.debug("No lsThing values to update");
+					}
+					else{
+						//just need to update the old nested lsThing inside the new itx
+						updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getFirstLsThing());
+						updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
+						itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+					}
+					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					firstLsThings.add(updatedItxLsThingLsThing);
+				}else {
+					//old itx needs to be updated
+					LsThing updatedNestedLsThing;
+					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+						//old itx has new nested lsThing
+						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+						try{
+							updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+							itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+						} catch (UniqueNameException e){
+							logger.error("Caught UniqueNameException trying to update nested LsThing");
+						}
+					}
+					else{
+						//old itx has old lsThing that needs to be updated
+						updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getFirstLsThing());
+						updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
+						itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+					}
+					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
+					firstLsThings.add(updatedItxLsThingLsThing);
 				}
 			}
+			updatedLsThing.setFirstLsThings(firstLsThings);
 		}
+		
+		if(jsonLsThing.getSecondLsThings() != null){
+			//there are itx's
+				Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+				for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getSecondLsThings()){
+					ItxLsThingLsThing updatedItxLsThingLsThing;
+					if (itxLsThingLsThing.getId() == null){
+						//need to save a new itx
+						logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+						LsThing updatedNestedLsThing;
+						if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+							//need to save a new nested lsthing
+							logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
+							try{
+								updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+								itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+							} catch (UniqueNameException e){
+								logger.error("Caught UniqueNameException trying to update nested LsThing");
+							}
+						}
+						else{
+							//just need to update the old nested lsThing inside the new itx
+							updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getSecondLsThing());
+							updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
+							itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+						}
+						itxLsThingLsThing.setFirstLsThing(updatedLsThing);
+						updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+						firstLsThings.add(updatedItxLsThingLsThing);
+					}else {
+						//old itx needs to be updated
+						LsThing updatedNestedLsThing;
+						if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+							//old itx has new nested lsThing
+							logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
+							try{
+								updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+								itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+							} catch (UniqueNameException e){
+								logger.error("Caught UniqueNameException trying to update nested LsThing");
+							}
+						}
+						else{
+							//old itx has old lsThing that needs to be updated
+							updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getSecondLsThing());
+							updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
+							itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+						}
+						itxLsThingLsThing.setFirstLsThing(updatedLsThing);
+						updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
+						firstLsThings.add(updatedItxLsThingLsThing);
+					}
+				}
+				updatedLsThing.setSecondLsThings(firstLsThings);
+			}
+		
+		
+		
 
 		return updatedLsThing;
 
@@ -914,5 +996,39 @@ public class LsThingServiceImpl implements LsThingService {
 			} catch (EmptyResultDataAccessException e){}
 		}
 		return searchResults;
+	}
+	
+	private void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
+		if(jsonLsThing.getLsStates() != null){
+			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
+				LsThingState updatedLsThingState;
+				if (lsThingState.getId() == null){
+					updatedLsThingState = new LsThingState(lsThingState);
+					updatedLsThingState.setLsThing(updatedLsThing);
+					updatedLsThingState.persist();
+					updatedLsThing.getLsStates().add(updatedLsThingState);
+				} else {
+					updatedLsThingState = LsThingState.update(lsThingState);
+					logger.debug("updated lsThing state " + updatedLsThingState.getId());
+
+				}
+				if (lsThingState.getLsValues() != null){
+					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
+						LsThingValue updatedLsThingValue;
+						if (lsThingValue.getId() == null){
+							updatedLsThingValue = LsThingValue.create(lsThingValue);
+							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
+							updatedLsThingValue.persist();
+							updatedLsThingState.getLsValues().add(updatedLsThingValue);
+						} else {
+							updatedLsThingValue = LsThingValue.update(lsThingValue);
+							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
+						}
+					}	
+				} else {
+					logger.debug("No lsThing values to update");
+				}
+			}
+		}
 	}
 }

@@ -47,10 +47,10 @@ public class LsThing extends AbstractThing {
     joinColumns = { @JoinColumn(name="lsthing_id") }, inverseJoinColumns = { @JoinColumn(name="tag_id") })
     private Set<LsTag> lsTags = new HashSet<LsTag>();
     
-    @OneToMany(mappedBy = "secondLsThing", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade={}, mappedBy = "secondLsThing", fetch = FetchType.LAZY)
     private Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
 
-    @OneToMany(mappedBy = "firstLsThing", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(cascade={}, mappedBy = "firstLsThing", fetch = FetchType.LAZY)
     private Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
 
     public LsThing(com.labsynch.labseer.domain.LsThing lsThing) {
@@ -106,8 +106,13 @@ public class LsThing extends AbstractThing {
     }
     
     @Transactional
-    public String toFullJson() {
-        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings","secondLsThings").transform(new ExcludeNulls(), void.class).serialize(this);
+    public String toJsonWithNestedStubs() {
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsLabels","secondLsThings.secondLsThing.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
+    }
+    
+    @Transactional
+    public String toJsonWithNestedFull() {
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels","secondLsThings.lsStates.lsValues","secondLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
@@ -117,12 +122,17 @@ public class LsThing extends AbstractThing {
 
     @Transactional
     public String toJsonStub() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     @Transactional
-    public static String toJsonArrayFull(Collection<com.labsynch.labseer.domain.LsThing> collection) {
-        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings","secondLsThings").transform(new ExcludeNulls(), void.class).serialize(collection);
+    public static String toJsonArrayWithNestedStubs(Collection<com.labsynch.labseer.domain.LsThing> collection) {
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsLabels","secondLsThings.secondLsThing.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
+    
+    @Transactional
+    public static String toJsonArrayWithNestedFull(Collection<com.labsynch.labseer.domain.LsThing> collection) {
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels","secondLsThings.lsStates.lsValues","secondLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
     
     @Transactional
@@ -132,7 +142,7 @@ public class LsThing extends AbstractThing {
 
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.LsThing> collection) {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
