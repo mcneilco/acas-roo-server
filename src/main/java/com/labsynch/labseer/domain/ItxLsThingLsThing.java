@@ -63,13 +63,12 @@ public class ItxLsThingLsThing extends AbstractThing {
         this.secondLsThing = itxLsThingLsThing.getSecondLsThing();
     }
     
-    public static ItxLsThingLsThing update(ItxLsThingLsThing object) {
-    	ItxLsThingLsThing updatedObject = new JSONDeserializer<ItxLsThingLsThing>().use(null, ItxLsThingLsThing.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
-        				ItxLsThingLsThing.findItxLsThingLsThing(object.getId()));
-    	updatedObject.setModifiedDate(new Date());
-    	updatedObject.merge();
-        return updatedObject;
+    public static ItxLsThingLsThing update(ItxLsThingLsThing itxLsThingLsThing) {
+    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setModifiedDate(new Date());
+    	updatedItxLsThingLsThing.merge();
+        return updatedItxLsThingLsThing;
     }
     
     public String toJson() {
