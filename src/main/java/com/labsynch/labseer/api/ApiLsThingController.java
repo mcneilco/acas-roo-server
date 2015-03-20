@@ -174,7 +174,8 @@ public class ApiLsThingController {
     @RequestMapping(value = "/{lsType}/{lsKind}/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getLsThingByIdCodeName(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
-    		@PathVariable("idOrCodeName") String idOrCodeName) {
+    		@PathVariable("idOrCodeName") String idOrCodeName,
+    		@RequestParam(value = "with", required = false) String with) {
     	logger.debug("----from the LsThing GET controller----");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -198,6 +199,15 @@ public class ApiLsThingController {
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
         } else {
+        	if (with != null) {
+    			if (with.equalsIgnoreCase("fullobject")) {
+    				return new ResponseEntity<String>(lsThing.toFullJson(), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("prettyjson")) {
+    				return new ResponseEntity<String>(lsThing.toPrettyJson(), headers, HttpStatus.OK);
+    			} else {
+    				return new ResponseEntity<String>(lsThing.toJsonStub(), headers, HttpStatus.OK);
+    			}
+    		}
             return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
         }
     }
@@ -320,7 +330,7 @@ public class ApiLsThingController {
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
         } else {
-            return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.CREATED);
+            return new ResponseEntity<String>(lsThing.toFullJson(), headers, HttpStatus.CREATED);
         }
     }
     
