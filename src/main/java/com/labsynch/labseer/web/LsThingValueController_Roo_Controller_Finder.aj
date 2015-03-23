@@ -6,6 +6,7 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.web.LsThingValueController;
+import java.math.BigDecimal;
 import java.util.Date;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -48,6 +49,32 @@ privileged aspect LsThingValueController_Roo_Controller_Finder {
         return "lsthingvalues/list";
     }
     
+    @RequestMapping(params = { "find=ByLsKindEqualsAndDateValueGreaterThanEquals", "form" }, method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEqualsForm(Model uiModel) {
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueGreaterThanEquals", method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue, Model uiModel) {
+        uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals(lsKind, dateValue).getResultList());
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthingvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndDateValueLessThanEquals", "form" }, method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndDateValueLessThanEqualsForm(Model uiModel) {
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLessThanEquals", method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue, Model uiModel) {
+        uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals(lsKind, dateValue).getResultList());
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthingvalues/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsKindEqualsAndDateValueLike", "form" }, method = RequestMethod.GET)
     public String LsThingValueController.findLsThingValuesByLsKindEqualsAndDateValueLikeForm(Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
@@ -58,6 +85,39 @@ privileged aspect LsThingValueController_Roo_Controller_Finder {
     public String LsThingValueController.findLsThingValuesByLsKindEqualsAndDateValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue, Model uiModel) {
         uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLike(lsKind, dateValue).getResultList());
         addDateTimeFormatPatterns(uiModel);
+        return "lsthingvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndNumericValueEquals", "form" }, method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndNumericValueEqualsForm(Model uiModel) {
+        return "lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndNumericValueEquals", method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndNumericValueEquals(@RequestParam("lsKind") String lsKind, @RequestParam("numericValue") BigDecimal numericValue, Model uiModel) {
+        uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals(lsKind, numericValue).getResultList());
+        return "lsthingvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndNumericValueGreaterThanEquals", "form" }, method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEqualsForm(Model uiModel) {
+        return "lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndNumericValueGreaterThanEquals", method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals(@RequestParam("lsKind") String lsKind, @RequestParam("numericValue") BigDecimal numericValue, Model uiModel) {
+        uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals(lsKind, numericValue).getResultList());
+        return "lsthingvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEqualsAndNumericValueLessThanEquals", "form" }, method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndNumericValueLessThanEqualsForm(Model uiModel) {
+        return "lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndNumericValueLessThanEquals", method = RequestMethod.GET)
+    public String LsThingValueController.findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals(@RequestParam("lsKind") String lsKind, @RequestParam("numericValue") BigDecimal numericValue, Model uiModel) {
+        uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals(lsKind, numericValue).getResultList());
         return "lsthingvalues/list";
     }
     

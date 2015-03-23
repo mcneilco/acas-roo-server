@@ -34,4 +34,19 @@
 <definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndStringValueLike">
         <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndStringValueLike.jspx"/>
     </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals.jspx"/>
+    </definition>
 </tiles-definitions>

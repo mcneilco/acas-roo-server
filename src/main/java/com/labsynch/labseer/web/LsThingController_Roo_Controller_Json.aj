@@ -5,7 +5,9 @@ package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.web.LsThingController;
+import java.util.Date;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -133,12 +135,36 @@ privileged aspect LsThingController_Roo_Controller_Json {
         return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeAndKindEquals(lsTypeAndKind).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsTypeEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingController.jsonFindLsThingsByLsTypeEquals(@RequestParam("lsType") String lsType) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByRecordedByLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByRecordedByLike(@RequestParam("recordedBy") String recordedBy) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedByLike(recordedBy).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByRecordedDateGreaterThan", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingController.jsonFindLsThingsByRecordedDateGreaterThan(@RequestParam("recordedDate") @DateTimeFormat(style = "MM") Date recordedDate) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedDateGreaterThan(recordedDate).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByRecordedDateLessThan", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingController.jsonFindLsThingsByRecordedDateLessThan(@RequestParam("recordedDate") @DateTimeFormat(style = "MM") Date recordedDate) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedDateLessThan(recordedDate).getResultList()), headers, HttpStatus.OK);
     }
     
 }
