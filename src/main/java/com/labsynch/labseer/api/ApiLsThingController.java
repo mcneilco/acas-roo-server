@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -480,6 +482,20 @@ public class ApiLsThingController {
           return new ResponseEntity<String>("ERROR: IOError. Unable to load file. " + fileName, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
       }
       return new ResponseEntity<String>(headers, HttpStatus.OK);
+  }
+  
+  @RequestMapping(value = "/documentmanagersearch", method = RequestMethod.GET)
+  public ResponseEntity<java.lang.String> documentManagerSearch(@RequestParam Map<String,String> searchParamsMap){
+	  HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json");
+      Collection<LsThing> results = new HashSet<LsThing>();
+      try{
+    	  results = lsThingService.searchForDocumentThings(searchParamsMap);
+      }catch (Exception e){
+    	  logger.error("Caught error in documentManagerSearch: " + e.toString());
+    	  return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
   }
 	
 }

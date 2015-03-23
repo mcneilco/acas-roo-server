@@ -312,5 +312,20 @@ public class ApiLsThingControllerTest {
     	LsThing postedLsThing = LsThing.fromJsonToLsThing(responseJson);
     	logger.info(postedLsThing.toJson());
     }
-
+    
+    @Test
+    @Transactional
+    public void documentManagerSearchTest1() throws Exception {
+    	String searchTerms="";
+    	 String json = this.mockMvc.perform(get("/api/v1/lsthings/documentmanagersearch?"+searchTerms)
+         		.contentType(MediaType.APPLICATION_JSON)
+         		.accept(MediaType.APPLICATION_JSON))
+         		.andExpect(status().isOk())
+         		.andExpect(content().contentType("application/json"))
+         		.andReturn().getResponse().getContentAsString();
+         
+         logger.info(json);
+         LsThing lsThing = LsThing.fromJsonToLsThing(json);
+         logger.info(lsThing.toJson());
+    }
 }
