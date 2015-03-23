@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.util.List;
 import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -67,6 +68,9 @@ public interface LsThingService {
 			String lsType, String lsKind, boolean includeIgnored);
 
 	LsThing findParentByBatchEquals(LsThing batch);
+
+	Collection<LsThing> searchForDocumentThings(
+			Map<String, String> searchParamsMap);
 	
 	
 	
