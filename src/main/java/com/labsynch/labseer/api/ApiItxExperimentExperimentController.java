@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ItxExperimentExperiment;
 import com.labsynch.labseer.service.ItxContainerContainerService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -100,5 +101,41 @@ public class ApiItxExperimentExperimentController {
             updatedItxExperimentExperiments.add(itxExperimentExperiment);
         }
         return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(updatedItxExperimentExperiments), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/findByFirstExperiment/{id}", method = RequestMethod.GET)
+    public ResponseEntity<String> findItxExperimentExperimentsByFirstExperiment(@PathVariable("id") Long firstExperimentId) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Experiment firstExperiment;
+    	try{
+    		firstExperiment = Experiment.findExperiment(firstExperimentId);
+    	} catch(Exception e){
+    		logger.error("Error in findItxExperimentExperimentsByFirstExperiment: firstExperiment "+ firstExperimentId.toString()+" not found");
+    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+    	}
+        Collection<ItxExperimentExperiment> itxExperimentExperiments = ItxExperimentExperiment.findItxExperimentExperimentsByFirstExperiment(firstExperiment).getResultList();
+        for (ItxExperimentExperiment itx : itxExperimentExperiments){
+        	logger.debug(itx.getCodeName() + " " + itx.getId().toString());
+        	logger.debug(itx.toJson());
+        }
+        return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(itxExperimentExperiments), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/findBySecondExperiment/{id}", method = RequestMethod.GET)
+    public ResponseEntity<String> findItxExperimentExperimentsBySecondExperiment(@PathVariable("id") Long secondExperimentId) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Experiment secondExperiment;
+        try{
+    		secondExperiment = Experiment.findExperiment(secondExperimentId);
+    	} catch(Exception e){
+    		logger.error("Error in findItxExperimentExperimentsBySecondExperiment: secondExperiment "+ secondExperimentId.toString()+" not found");
+    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+    	}
+        Collection<ItxExperimentExperiment> itxExperimentExperiments = ItxExperimentExperiment.findItxExperimentExperimentsBySecondExperiment(secondExperiment).getResultList();
+        return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(itxExperimentExperiments), headers, HttpStatus.OK);
     }
 }
