@@ -10,4 +10,8 @@ privileged aspect ProtocolValue_Roo_Jpa_Entity {
     
     declare @type: ProtocolValue: @Entity;
     
+    public ProtocolValue.new() {
+        super();
+    }
+
 }
