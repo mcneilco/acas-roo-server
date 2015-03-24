@@ -137,49 +137,63 @@ public class ProtocolServiceImpl implements ProtocolService {
 		logger.debug("UPDATE PROTOCOL --- incoming meta protocol: " + protocol.toJson() + "\n");
 		Protocol updatedProtocol = Protocol.update(protocol);
 		if (protocol.getLsLabels() != null){
+			Set<ProtocolLabel> updatedProtocolLabels = new HashSet<ProtocolLabel>();
 			for(ProtocolLabel protocolLabel : protocol.getLsLabels()){
 				logger.debug(protocolLabel.toJson());
 				if (protocolLabel.getId() == null){
 					ProtocolLabel newProtocolLabel = new ProtocolLabel(protocolLabel);
 					newProtocolLabel.setProtocol(updatedProtocol);
 					newProtocolLabel.persist();	
-					updatedProtocol.getLsLabels().add(newProtocolLabel);
+//					updatedProtocol.getLsLabels().add(newProtocolLabel);
+					updatedProtocolLabels.add(newProtocolLabel);
 				} else {
-					ProtocolLabel.update(protocolLabel);
+					ProtocolLabel updatedProtocolLabel = ProtocolLabel.update(protocolLabel);
+					updatedProtocolLabels.add(updatedProtocolLabel);
 				}
-			}	
+			}
+			updatedProtocol.setLsLabels(updatedProtocolLabels);
 		} else {
 			logger.debug("No protocol labels to save");	
 		}
-
+		
+		
 		if (protocol.getLsStates() != null){
+			Set<ProtocolState> updatedProtocolStates = new HashSet<ProtocolState>();
 			for(ProtocolState protocolState : protocol.getLsStates()){
+				ProtocolState updatedProtocolState;
 				if (protocolState.getId() == null){
-					ProtocolState newProtocolState = new ProtocolState(protocolState);
-					newProtocolState.setProtocol(updatedProtocol);
-					newProtocolState.persist();		
-					protocolState.setId(newProtocolState.getId());
-					updatedProtocol.getLsStates().add(newProtocolState);
+					updatedProtocolState = new ProtocolState(protocolState);
+					updatedProtocolState.setProtocol(updatedProtocol);
+					updatedProtocolState.persist();		
+//					protocolState.setId(newProtocolState.getId());
+//					updatedProtocol.getLsStates().add(newProtocolState);
 				} else {
-					ProtocolState updatedProtocolState = ProtocolState.update(protocolState);
+					updatedProtocolState = ProtocolState.update(protocolState);
 					logger.debug("updatedProtocolState: " + updatedProtocolState.toJson());
 				}
-
+				
 				if (protocolState.getLsValues() != null){
+					Set<ProtocolValue> updatedProtocolValues = new HashSet<ProtocolValue>();
 					for(ProtocolValue protocolValue : protocolState.getLsValues()){
+						ProtocolValue updatedProtocolValue;
 						if (protocolValue.getId() == null){
-							protocolValue.setLsState(ProtocolState.findProtocolState(protocolState.getId()));
-							protocolValue.persist();
-							protocolState.getLsValues().add(protocolValue);
+							updatedProtocolValue = new ProtocolValue(protocolValue);
+							updatedProtocolValue.setLsState(ProtocolState.findProtocolState(protocolState.getId()));
+							updatedProtocolValue.persist();
+							updatedProtocolValues.add(updatedProtocolValue);
 						} else {
-							ProtocolValue updatedProtocolValue = ProtocolValue.update(protocolValue);
+							updatedProtocolValue = ProtocolValue.update(protocolValue);
+							updatedProtocolValues.add(updatedProtocolValue);
 							logger.debug("updatedProtocolValue: " + updatedProtocolValue.toJson());
 						}
-					}				
+					}
+					updatedProtocolState.setLsValues(updatedProtocolValues);
 				} else {
 					logger.debug("No protocol values to save");
 				}
+			updatedProtocolStates.add(updatedProtocolState);
 			}
+			updatedProtocol.setLsStates(updatedProtocolStates);
 		}
 
 		return updatedProtocol;

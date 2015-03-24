@@ -32,7 +32,47 @@ public class ProtocolValue extends AbstractValue {
     @JoinColumn(name = "protocol_state_id")
     private ProtocolState lsState;
 
-    public static com.labsynch.labseer.domain.ProtocolValue fromJsonToProtocolValue(String json) {
+    public ProtocolValue(ProtocolValue protocolValue) {
+            super.setBlobValue(protocolValue.getBlobValue());
+            super.setClobValue(protocolValue.getClobValue());
+            super.setCodeKind(protocolValue.getCodeKind());
+            super.setCodeOrigin(protocolValue.getCodeOrigin());
+            super.setCodeType(protocolValue.getCodeType());
+            super.setCodeTypeAndKind(protocolValue.getCodeTypeAndKind());
+            super.setCodeValue(protocolValue.getCodeValue());
+            super.setComments(protocolValue.getComments());
+            super.setConcentration(protocolValue.getConcentration());
+            super.setConcUnit(protocolValue.getConcUnit());
+            super.setDateValue(protocolValue.getDateValue());
+            super.setDeleted(protocolValue.isDeleted());
+            super.setFileValue(protocolValue.getFileValue());
+            super.setIgnored(protocolValue.isIgnored());
+            super.setLsKind(protocolValue.getLsKind());
+            super.setLsTransaction(protocolValue.getLsTransaction());
+            super.setLsType(protocolValue.getLsType());
+            super.setLsTypeAndKind(protocolValue.getLsTypeAndKind());
+            super.setModifiedBy(protocolValue.getModifiedBy());
+            super.setModifiedDate(protocolValue.getModifiedDate());
+            super.setNumberOfReplicates(protocolValue.getNumberOfReplicates());
+            super.setNumericValue(protocolValue.getNumericValue());
+            super.setOperatorKind(protocolValue.getOperatorKind());
+            super.setOperatorType(protocolValue.getOperatorType());
+            super.setOperatorTypeAndKind(protocolValue.getOperatorTypeAndKind());
+            super.setPublicData(protocolValue.isPublicData());
+            super.setRecordedBy(protocolValue.getRecordedBy());
+            super.setRecordedDate(protocolValue.getRecordedDate());
+            super.setSigFigs(protocolValue.getSigFigs());
+            super.setStringValue(protocolValue.getStringValue());
+            super.setUncertainty(protocolValue.getUncertainty());
+            super.setUncertaintyType(protocolValue.getUncertaintyType());
+            super.setUnitKind(protocolValue.getUnitKind());
+            super.setUnitType(protocolValue.getUnitType());
+            super.setUnitTypeAndKind(protocolValue.getUnitTypeAndKind());
+            super.setUrlValue(protocolValue.getUrlValue());
+            super.setVersion(protocolValue.getVersion());
+	}
+
+	public static com.labsynch.labseer.domain.ProtocolValue fromJsonToProtocolValue(String json) {
         return new JSONDeserializer<ProtocolValue>().use(null, ProtocolValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
