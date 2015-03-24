@@ -187,14 +187,14 @@ public class FlagWellDTO {
 		for (TreatmentGroup treatmentGroup: allTreatmentGroups){
 			String renderingHint = CurveFitDTO.findRenderingHint(treatmentGroup);
 			if (renderingHint.equalsIgnoreCase("4 parameter D-R")) {
-				Collection<SubjectValue> notKOTransformedEfficacySubjectValues = new HashSet<SubjectValue>();
-				Collection<SubjectValue> transformedEfficacySubjectValues = findTransformedEfficacySubjectValuesByTreatmentGroup(treatmentGroup);
+				Collection<SubjectValue> notKOEfficacySubjectValues = new HashSet<SubjectValue>();
+				Collection<SubjectValue> efficacySubjectValues = findEfficacySubjectValuesByTreatmentGroup(treatmentGroup);
 				Collection<SubjectValue> flagStatusKOSubjectValues = findFlagStatusKOSubjectValuesByTreatmentGroup(treatmentGroup);
 				List<Long> koSubjectIdList = makeSubjectIdList(flagStatusKOSubjectValues);
-				for (SubjectValue subjectValue : transformedEfficacySubjectValues){
+				for (SubjectValue subjectValue : efficacySubjectValues){
 					Long subjectId = subjectValue.getLsState().getSubject().getId();
 					if (!koSubjectIdList.contains(subjectId)){
-						notKOTransformedEfficacySubjectValues.add(subjectValue);
+						notKOEfficacySubjectValues.add(subjectValue);
 					}
 				}
 				try {
@@ -207,19 +207,19 @@ public class FlagWellDTO {
 					logger.debug("No state data/results found. Creating a new state.");
 				}
 				TreatmentGroupState newState = createResultsTreatmentGroupState(treatmentGroup.getId(), "data", "results", recordedBy, lsTransaction);
-				TreatmentGroupValue newTransformedEfficacyTreatmentGroupValue = createTreatmentGroupValue(newState, "numericValue", "transformed efficacy", recordedBy, lsTransaction);
+				TreatmentGroupValue newEfficacyTreatmentGroupValue = createTreatmentGroupValue(newState, "numericValue", "efficacy", recordedBy, lsTransaction);
 				StatCalc statCalc = new StatCalc();
-				for (SubjectValue value : notKOTransformedEfficacySubjectValues){
+				for (SubjectValue value : notKOEfficacySubjectValues){
 					statCalc.add(value.getNumericValue().doubleValue()); 
 				}
-				newTransformedEfficacyTreatmentGroupValue.setNumericValue(BigDecimal.valueOf(statCalc.getArithmeticMean()));
-				newTransformedEfficacyTreatmentGroupValue.setUnitKind("efficacy");
-				newTransformedEfficacyTreatmentGroupValue.setNumberOfReplicates(statCalc.getCount());
-				newTransformedEfficacyTreatmentGroupValue.setUncertainty(BigDecimal.valueOf(statCalc.getStandardDeviation()));
-				newTransformedEfficacyTreatmentGroupValue.setUncertaintyType("standard deviation");
-				logger.debug("Calculated new mean and standard deviation: " + newTransformedEfficacyTreatmentGroupValue.toJson());
-				newTransformedEfficacyTreatmentGroupValue.merge();
-//				newTransformedEfficacyTreatmentGroupValue.flush();
+				newEfficacyTreatmentGroupValue.setNumericValue(BigDecimal.valueOf(statCalc.getArithmeticMean()));
+				newEfficacyTreatmentGroupValue.setUnitKind("%");
+				newEfficacyTreatmentGroupValue.setNumberOfReplicates(statCalc.getCount());
+				newEfficacyTreatmentGroupValue.setUncertainty(BigDecimal.valueOf(statCalc.getStandardDeviation()));
+				newEfficacyTreatmentGroupValue.setUncertaintyType("standard deviation");
+				logger.debug("Calculated new mean and standard deviation: " + newEfficacyTreatmentGroupValue.toJson());
+				newEfficacyTreatmentGroupValue.merge();
+//				newEfficacyTreatmentGroupValue.flush();
 			}
 			
 		}
@@ -289,7 +289,7 @@ public class FlagWellDTO {
 	}
 	
 	@Transactional
-	public static Collection<SubjectValue> findTransformedEfficacySubjectValuesByTreatmentGroup(
+	public static Collection<SubjectValue> findEfficacySubjectValuesByTreatmentGroup(
 			TreatmentGroup treatmentGroup) {
 		EntityManager em = SubjectValue.entityManager();
 		TypedQuery<SubjectValue> q = em.createQuery("SELECT resultsValue "
@@ -308,7 +308,7 @@ public class FlagWellDTO {
 		q.setParameter("resultsStateType", "data");
 		q.setParameter("resultsStateKind", "results");
 		q.setParameter("resultsValueType", "numericValue");
-		q.setParameter("resultsValueKind", "transformed efficacy");
+		q.setParameter("resultsValueKind", "efficacy");
 		q.setParameter("treatmentGroup", treatmentGroup);
 		q.setParameter("ignored", true);
 		return q.getResultList();
