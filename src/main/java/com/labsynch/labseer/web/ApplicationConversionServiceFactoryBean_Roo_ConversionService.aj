@@ -7,6 +7,7 @@ import com.labsynch.labseer.domain.CodeOrigin;
 import com.labsynch.labseer.domain.ItxExperimentExperiment;
 import com.labsynch.labseer.domain.ItxExperimentExperimentState;
 import com.labsynch.labseer.domain.ItxExperimentExperimentValue;
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
 
@@ -104,6 +105,30 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ItxExperimentExperimentValue>() {
             public com.labsynch.labseer.domain.ItxExperimentExperimentValue convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), ItxExperimentExperimentValue.class);
+            }
+        };
+    }
+    
+    public Converter<ItxLsThingLsThing, String> ApplicationConversionServiceFactoryBean.getItxLsThingLsThingToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.ItxLsThingLsThing, java.lang.String>() {
+            public String convert(ItxLsThingLsThing itxLsThingLsThing) {
+                return new StringBuilder().append(itxLsThingLsThing.getLsType()).append(' ').append(itxLsThingLsThing.getLsKind()).append(' ').append(itxLsThingLsThing.getLsTypeAndKind()).append(' ').append(itxLsThingLsThing.getCodeName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, ItxLsThingLsThing> ApplicationConversionServiceFactoryBean.getIdToItxLsThingLsThingConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.ItxLsThingLsThing>() {
+            public com.labsynch.labseer.domain.ItxLsThingLsThing convert(java.lang.Long id) {
+                return ItxLsThingLsThing.findItxLsThingLsThing(id);
+            }
+        };
+    }
+    
+    public Converter<String, ItxLsThingLsThing> ApplicationConversionServiceFactoryBean.getStringToItxLsThingLsThingConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ItxLsThingLsThing>() {
+            public com.labsynch.labseer.domain.ItxLsThingLsThing convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), ItxLsThingLsThing.class);
             }
         };
     }
