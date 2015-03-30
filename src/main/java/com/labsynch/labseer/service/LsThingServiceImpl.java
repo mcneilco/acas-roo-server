@@ -38,6 +38,8 @@ import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolLabel;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -360,7 +362,7 @@ public class LsThingServiceImpl implements LsThingService {
 		Collection<ItxLsThingLsThing> interactions = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals("incorporates", "assembly_component", component).getResultList();
 		Collection<LsThing> assemblies = new HashSet<LsThing>();
 		for (ItxLsThingLsThing interaction : interactions){
-			if (interaction.getOrder() == order) assemblies.add(interaction.getFirstLsThing());
+			if (interaction.retrieveOrder() == order) assemblies.add(interaction.getFirstLsThing());
 		}
 		return assemblies;
 	}
@@ -415,38 +417,120 @@ public class LsThingServiceImpl implements LsThingService {
 		} else {
 			logger.debug("No lsThing labels to update");
 		}
-
-		if(jsonLsThing.getLsStates() != null){
-			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
-				LsThingState updatedLsThingState;
-				if (lsThingState.getId() == null){
-					updatedLsThingState = new LsThingState(lsThingState);
-					updatedLsThingState.setLsThing(updatedLsThing);
-					updatedLsThingState.persist();
-					updatedLsThing.getLsStates().add(updatedLsThingState);
-				} else {
-					updatedLsThingState = LsThingState.update(lsThingState);
-					logger.debug("updated lsThing state " + updatedLsThingState.getId());
-
-				}
-				if (lsThingState.getLsValues() != null){
-					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
-						LsThingValue updatedLsThingValue;
-						if (lsThingValue.getId() == null){
-							updatedLsThingValue = LsThingValue.create(lsThingValue);
-							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
-							updatedLsThingValue.persist();
-							updatedLsThingState.getLsValues().add(updatedLsThingValue);
-						} else {
-							updatedLsThingValue = LsThingValue.update(lsThingValue);
-							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
+		updateLsStates(jsonLsThing, updatedLsThing);
+		//updated itx and nested LsThings
+		if(jsonLsThing.getFirstLsThings() != null){
+		//there are itx's
+			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
+				ItxLsThingLsThing updatedItxLsThingLsThing;
+				if (itxLsThingLsThing.getId() == null){
+					//need to save a new itx
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					LsThing updatedNestedLsThing;
+					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+						//need to save a new nested lsthing
+						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+						try{
+							updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+							itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+						} catch (UniqueNameException e){
+							logger.error("Caught UniqueNameException trying to update nested LsThing");
 						}
-					}	
-				} else {
-					logger.debug("No lsThing values to update");
+					}
+					else{
+						//just need to update the old nested lsThing inside the new itx
+						updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getFirstLsThing());
+						updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
+						itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+					}
+					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					firstLsThings.add(updatedItxLsThingLsThing);
+				}else {
+					//old itx needs to be updated
+					LsThing updatedNestedLsThing;
+					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+						//old itx has new nested lsThing
+						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+						try{
+							updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+							itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+						} catch (UniqueNameException e){
+							logger.error("Caught UniqueNameException trying to update nested LsThing");
+						}
+					}
+					else{
+						//old itx has old lsThing that needs to be updated
+						updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getFirstLsThing());
+						updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
+						itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+					}
+					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
+					firstLsThings.add(updatedItxLsThingLsThing);
 				}
 			}
+			updatedLsThing.setFirstLsThings(firstLsThings);
 		}
+		
+		if(jsonLsThing.getSecondLsThings() != null){
+			//there are itx's
+				Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+				for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getSecondLsThings()){
+					ItxLsThingLsThing updatedItxLsThingLsThing;
+					if (itxLsThingLsThing.getId() == null){
+						//need to save a new itx
+						logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+						LsThing updatedNestedLsThing;
+						if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+							//need to save a new nested lsthing
+							logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
+							try{
+								updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+								itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+							} catch (UniqueNameException e){
+								logger.error("Caught UniqueNameException trying to update nested LsThing");
+							}
+						}
+						else{
+							//just need to update the old nested lsThing inside the new itx
+							updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getSecondLsThing());
+							updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
+							itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+						}
+						itxLsThingLsThing.setFirstLsThing(updatedLsThing);
+						updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+						firstLsThings.add(updatedItxLsThingLsThing);
+					}else {
+						//old itx needs to be updated
+						LsThing updatedNestedLsThing;
+						if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+							//old itx has new nested lsThing
+							logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
+							try{
+								updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+								itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+							} catch (UniqueNameException e){
+								logger.error("Caught UniqueNameException trying to update nested LsThing");
+							}
+						}
+						else{
+							//old itx has old lsThing that needs to be updated
+							updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getSecondLsThing());
+							updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
+							itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+						}
+						itxLsThingLsThing.setFirstLsThing(updatedLsThing);
+						updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
+						firstLsThings.add(updatedItxLsThingLsThing);
+					}
+				}
+				updatedLsThing.setSecondLsThings(firstLsThings);
+			}
+		
+		
+		
 
 		return updatedLsThing;
 
@@ -534,7 +618,46 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			newLsThing.setLsStates(lsStates);
 		}
-
+		
+		if(lsThing.getFirstLsThings() != null){
+			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : lsThing.getFirstLsThings()){
+				if (itxLsThingLsThing.getId() == null){
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+						LsThing nestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+						itxLsThingLsThing.setFirstLsThing(nestedLsThing);
+					}
+					itxLsThingLsThing.setSecondLsThing(newLsThing);
+					ItxLsThingLsThing newItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					firstLsThings.add(newItxLsThingLsThing);
+				}else {
+					firstLsThings.add(itxLsThingLsThing);
+				}
+			}
+			newLsThing.setFirstLsThings(firstLsThings);
+		}
+		
+		if(lsThing.getSecondLsThings() != null){
+			Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : lsThing.getSecondLsThings()){
+				if (itxLsThingLsThing.getId() == null){
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+						logger.debug("saving new nested LsThing: " + itxLsThingLsThing.getSecondLsThing().toJson());
+						LsThing nestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+						itxLsThingLsThing.setSecondLsThing(nestedLsThing);
+					}
+					itxLsThingLsThing.setFirstLsThing(newLsThing);
+					ItxLsThingLsThing newItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					secondLsThings.add(newItxLsThingLsThing);
+				}else {
+					secondLsThings.add(itxLsThingLsThing);
+				}
+			}
+			newLsThing.setSecondLsThings(secondLsThings);
+		}
 		return newLsThing;
 	}
 	
@@ -558,6 +681,39 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 		}
 		return savedLsThing;
+	}
+	
+	
+	private ItxLsThingLsThing saveItxLsThingLsThing(ItxLsThingLsThing itxLsThingLsThing){
+		ItxLsThingLsThing newItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+		newItxLsThingLsThing.persist();
+		if(itxLsThingLsThing.getLsStates() != null){
+			Set<ItxLsThingLsThingState> lsStates = new HashSet<ItxLsThingLsThingState>();
+			for(ItxLsThingLsThingState itxLsThingLsThingState : itxLsThingLsThing.getLsStates()){
+				ItxLsThingLsThingState newItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
+				newItxLsThingLsThingState.setItxLsThingLsThing(newItxLsThingLsThing);
+				logger.debug("here is the newItxLsThingLsThingState before save: " + newItxLsThingLsThingState.toJson());
+				newItxLsThingLsThingState.persist();
+				logger.debug("persisted the newItxLsThingLsThingState: " + newItxLsThingLsThingState.toJson());
+				if (itxLsThingLsThingState.getLsValues() != null){
+					Set<ItxLsThingLsThingValue> lsValues = new HashSet<ItxLsThingLsThingValue>();
+					for(ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()){
+						logger.debug("itxLsThingLsThingValue: " + itxLsThingLsThingValue.toJson());
+						ItxLsThingLsThingValue newItxLsThingLsThingValue = new ItxLsThingLsThingValue(itxLsThingLsThingValue);
+						newItxLsThingLsThingValue.setLsState(newItxLsThingLsThingState);
+						newItxLsThingLsThingValue.persist();
+						lsValues.add(newItxLsThingLsThingValue);
+						logger.debug("persisted the itxLsThingLsThingValue: " + newItxLsThingLsThingValue.toJson());
+					}	
+					newItxLsThingLsThingState.setLsValues(lsValues);
+				} else {
+					logger.debug("No itxLsThingLsThing values to save");
+				}
+				lsStates.add(newItxLsThingLsThingState);
+			}
+			newItxLsThingLsThing.setLsStates(lsStates);
+		}
+		return newItxLsThingLsThing;
 	}
 	
 	private void saveItxLsThingLsThing(String lsType, String lsKind,
@@ -823,6 +979,7 @@ public class LsThingServiceImpl implements LsThingService {
 	
 	private String pickBestLabel(LsThing lsThing) {
 		Collection<LsThingLabel> labels = lsThing.getLsLabels();
+		if (labels.isEmpty()) return null;
 		return LsThingLabel.pickBestLabel(labels).getLabelText();
 	}
 
@@ -841,5 +998,426 @@ public class LsThingServiceImpl implements LsThingService {
 			} catch (EmptyResultDataAccessException e){}
 		}
 		return searchResults;
+	}
+	
+	private void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
+		if(jsonLsThing.getLsStates() != null){
+			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
+				LsThingState updatedLsThingState;
+				if (lsThingState.getId() == null){
+					updatedLsThingState = new LsThingState(lsThingState);
+					updatedLsThingState.setLsThing(updatedLsThing);
+					updatedLsThingState.persist();
+					updatedLsThing.getLsStates().add(updatedLsThingState);
+				} else {
+					updatedLsThingState = LsThingState.update(lsThingState);
+					logger.debug("updated lsThing state " + updatedLsThingState.getId());
+
+				}
+				if (lsThingState.getLsValues() != null){
+					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
+						LsThingValue updatedLsThingValue;
+						if (lsThingValue.getId() == null){
+							updatedLsThingValue = LsThingValue.create(lsThingValue);
+							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
+							updatedLsThingValue.persist();
+							updatedLsThingState.getLsValues().add(updatedLsThingValue);
+						} else {
+							updatedLsThingValue = LsThingValue.update(lsThingValue);
+							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
+						}
+					}	
+				} else {
+					logger.debug("No lsThing values to update");
+				}
+			}
+		}
+	}
+
+
+	@Override
+	public Collection<LsThing> searchForDocumentThings(
+			Map<String, String> searchParamsMap) {
+		//make our HashSets: lsThingIdList will be filled/cleared/refilled for each term
+		HashSet<Long> lsThingIdList = new HashSet<Long>();
+		//allLsThingIdList aggregates all the search results, which we will then filter down by intersections
+		HashSet<Long> allLsThingIdList = new HashSet<Long>();
+		//lsThingList is the final search result
+		Collection<LsThing> lsThingList = new HashSet<LsThing>();
+		//map where key is paramName and value is list of ids found matching that param
+		Map<String, HashSet<Long>> resultsByParam = new HashMap<String, HashSet<Long>>();
+		for (String paramName : searchParamsMap.keySet()){
+			String param = searchParamsMap.get(paramName);
+			logger.debug("Searching by "+paramName+" = "+param);
+			lsThingIdList.addAll(findDocumentLsThingsByParam(paramName, param));
+			resultsByParam.put(paramName, lsThingIdList);
+			allLsThingIdList.addAll(lsThingIdList);
+			lsThingIdList.clear();
+		}
+		//Here is the intersect logic
+		for (String paramName: searchParamsMap.keySet()) {
+			allLsThingIdList.retainAll(resultsByParam.get(paramName));
+		}
+		for (Long id: allLsThingIdList) lsThingList.add(LsThing.findLsThing(id));
+        //This method uses finders that will find everything, whether or not it is ignored or deleted
+		Collection<LsThing> result = new HashSet<LsThing>();
+		for (LsThing lsThing: lsThingList) {
+			//For Protocol Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+			if (lsThing.isDeleted()){
+				logger.debug("removing a deleted lsThing from the results");
+			} else {
+				result.add(lsThing);
+			}
+		}
+		return result;
+	}
+
+
+	private Collection<Long> findDocumentLsThingsByParam(
+			String paramName, String param) {
+		Collection<Long> lsThingIdList = new HashSet<Long>();
+		/*
+		 * List of Search params:
+		 * documentCode - codeName of document LsThing
+		 * documentType - LsType of document LsThing
+		 * titleContains - like query on labelText of LsThingLabel of document (name_document name)
+		 * project - lsThing
+		 * owner - stringValue_owner in Document
+		 * amountFrom - numericValue_amount in state with lsType=metadata
+		 * amountTo - numericValue_amount in state with lsType=metadata
+		 * createdDateFrom - recordedDate on Document LsThing (MM/dd/yyyy)
+		 * createdDateTo - ???? should be dateValue in lsType = metadata
+		 * active - stringValue_active in metadata state
+		 * termType - another lsThing
+		 * daysBefore - numericValue of TERM lsThing
+		 * termDateFrom - dateValue_date of TERM lsThing
+		 * termDateTo - dateValue_date of TERM lsThing
+		 * missingAnnotation - ????
+		 */
+		if (paramName.equals("documentCode")){
+			List<LsThing> lsThings = LsThing.findLsThingsByCodeNameLike(param).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+		}
+		if (paramName.equals("documentType")){
+			List<LsThing> lsThings = LsThing.findLsThingsByLsTypeEquals(param).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+		}
+		if (paramName.equals("titleContains")){
+			List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingLabelsByLabelTextLike(param).getResultList();
+			if (!lsThingLabels.isEmpty()){
+				for (LsThingLabel lsThingLabel : lsThingLabels){
+					lsThingIdList.add(lsThingLabel.getLsThing().getId());
+				}
+			}
+			lsThingLabels.clear();
+		}
+		if (paramName.equals("project")){
+			LsThing project = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_project", project).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+			project.clear();
+		}
+		if (paramName.equals("owner")){
+			Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedByLike(param).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+		}
+		if (paramName.equals("amountFrom")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals("amount", new BigDecimal(param)).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("amountTo")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals("amount", new BigDecimal(param)).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("createdDateFrom")){
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+			try{
+				Date date = df.parse(param);
+				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateGreaterThan(date).getResultList();
+				if (!lsThings.isEmpty()){
+					for (LsThing lsThing : lsThings) {
+						lsThingIdList.add(lsThing.getId());
+					}
+				}
+				lsThings.clear();
+			} catch (Exception e){
+				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+			}
+		}
+		if (paramName.equals("createdDateTo")){
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+			try{
+				Date date = df.parse(param);
+				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateLessThan(date).getResultList();
+				if (!lsThings.isEmpty()){
+					for (LsThing lsThing : lsThings) {
+						lsThingIdList.add(lsThing.getId());
+					}
+				}
+				lsThings.clear();
+			} catch (Exception e){
+				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+			}
+		}
+		if (paramName.equals("active")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike("active", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("termType")){
+			LsThing termType = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
+			List<LsThing> terms = LsThing.findSecondLsThingsByItxTypeKindEqualsAndFirstLsThingEquals("classifies", "term type_term", termType).getResultList();
+			if (!terms.isEmpty()){
+				for (LsThing term: terms){
+					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+					if (!lsThings.isEmpty()){
+						for (LsThing lsThing : lsThings){
+							lsThingIdList.add(lsThing.getId());
+						}
+					}
+					lsThings.clear();
+				}
+			}
+			terms.clear();
+			termType.clear();
+		}
+		if (paramName.equals("daysBefore")){
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals("days before", new BigDecimal(param)).getResultList();
+			Collection<LsThing> terms = new HashSet<LsThing>();
+			if (!lsThingValues.isEmpty()){
+				for(LsThingValue lsThingValue: lsThingValues){
+					terms.add(lsThingValue.getLsState().getLsThing());
+				}
+			}
+			lsThingValues.clear();
+			if (!terms.isEmpty()){
+				for (LsThing term: terms){
+					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+					if (!lsThings.isEmpty()){
+						for (LsThing lsThing : lsThings){
+							lsThingIdList.add(lsThing.getId());
+						}
+					}
+					lsThings.clear();
+				}
+			}
+			terms.clear();
+		}
+		if (paramName.equals("termDateFrom")){
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+			try{
+				Date date = df.parse(param);
+				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals("date",date).getResultList();
+				Collection<LsThing> terms = new HashSet<LsThing>();
+				if (!lsThingValues.isEmpty()){
+					for(LsThingValue lsThingValue: lsThingValues){
+						terms.add(lsThingValue.getLsState().getLsThing());
+					}
+				}
+				lsThingValues.clear();
+				if (!terms.isEmpty()){
+					for (LsThing term: terms){
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+						if (!lsThings.isEmpty()){
+							for (LsThing lsThing : lsThings){
+								lsThingIdList.add(lsThing.getId());
+							}
+						}
+						lsThings.clear();
+					}
+				}
+				terms.clear();
+			} catch (Exception e){
+				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+			}
+		}
+		if (paramName.equals("termDateTo")){
+			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+			try{
+				Date date = df.parse(param);
+				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals("date",date).getResultList();
+				Collection<LsThing> terms = new HashSet<LsThing>();
+				if (!lsThingValues.isEmpty()){
+					for(LsThingValue lsThingValue: lsThingValues){
+						terms.add(lsThingValue.getLsState().getLsThing());
+					}
+				}
+				lsThingValues.clear();
+				if (!terms.isEmpty()){
+					for (LsThing term: terms){
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+						if (!lsThings.isEmpty()){
+							for (LsThing lsThing : lsThings){
+								lsThingIdList.add(lsThing.getId());
+							}
+						}
+						lsThings.clear();
+					}
+				}
+				terms.clear();
+			} catch (Exception e){
+				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+			}		}
+		if (paramName.equals("missingAnnotation")){
+			//TODO: figure out what this is, then code it
+		}
+		
+		return lsThingIdList;
+	}
+	
+	public Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy) {
+		Collection<Long> protocolIdList = new HashSet<Long>();
+		if (searchBy == "CODENAME") {
+			List<Protocol> protocols = Protocol.findProtocolsByCodeNameLike(queryString).getResultList();
+			if (!protocols.isEmpty()){
+				for (Protocol protocol:protocols) {
+					protocolIdList.add(protocol.getId());
+				}
+			}
+			protocols.clear();
+		}
+		if (searchBy == "NAME") {
+			List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByLabelTextLike(queryString).getResultList();
+			if (!protocolLabels.isEmpty()) {
+				for (ProtocolLabel protocolLabel: protocolLabels) {
+					protocolIdList.add(protocolLabel.getProtocol().getId());
+				}
+			}
+			protocolLabels.clear();
+		}
+		if (searchBy == "SCIENTIST") {
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("scientist", queryString).getResultList();
+			if (!protocolValues.isEmpty()){
+				for (ProtocolValue protocolValue : protocolValues) {
+					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
+		if (searchBy == "RECORDEDBY") {
+			List<Protocol> protocols = Protocol.findProtocolsByRecordedByLike(queryString).getResultList();
+			if (!protocols.isEmpty()){
+				for (Protocol protocol: protocols) {
+					protocolIdList.add(protocol.getId());
+				}
+			}
+			protocols.clear();
+		}
+		if (searchBy == "TYPE") {
+			List<Protocol> protocols = Protocol.findProtocolsByLsTypeLike(queryString).getResultList();
+			if (!protocols.isEmpty()){
+				for (Protocol protocol: protocols) {
+					protocolIdList.add(protocol.getId());
+				}
+			}
+			protocols.clear();
+		}
+		if (searchBy == "KIND") {
+			List<Protocol> protocols = Protocol.findProtocolsByLsKindLike(queryString).getResultList();
+			if (!protocols.isEmpty()){
+				for (Protocol protocol: protocols) {
+					protocolIdList.add(protocol.getId());
+				}
+			}
+			protocols.clear();
+		}
+		if (searchBy == "DATE") {
+			Collection<ProtocolValue> protocolValues = new HashSet<ProtocolValue>();
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+			try {
+				Date date = df.parse(queryString);
+				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+			} catch (Exception e) {
+				try {
+					Date date = df2.parse(queryString);
+					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+				} catch (Exception e2) {
+					//do nothing
+				}
+			}
+			if (!protocolValues.isEmpty()) {
+				for (ProtocolValue protocolValue : protocolValues) {
+					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
+		if (searchBy == "NOTEBOOK") {
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndStringValueLike("notebook", queryString).getResultList();
+			if (!protocolValues.isEmpty()) {
+				for (ProtocolValue protocolValue : protocolValues) {
+					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
+		if (searchBy == "KEYWORD") {
+			Collection<LsTag> tags = LsTag.findLsTagsByTagTextLike(queryString).getResultList();
+			if (!tags.isEmpty()) {
+				for (LsTag tag: tags) {
+					Collection<Protocol> protocols = tag.getProtocols();
+					if (!protocols.isEmpty()) {
+						for (Protocol protocol:protocols) {
+							protocolIdList.add(protocol.getId());
+						}
+					}
+					protocols.clear();
+				}
+			}
+			tags.clear();
+		}
+		if (searchBy == "ASSAY ACTIVITY" || searchBy == "MOLECULAR TARGET" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
+			Collection<DDictValue> ddictValues = DDictValue.findDDictValuesByLabelTextLike(queryString).getResultList();
+			if (!ddictValues.isEmpty()) {
+				for (DDictValue ddictvalue : ddictValues) {
+					if (ddictvalue.getShortName() != null) {
+						Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike(searchBy.toLowerCase(), ddictvalue.getShortName()).getResultList();
+						if (!protocolValues.isEmpty()) {
+							for (ProtocolValue protocolValue : protocolValues) {
+								protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+							}
+						}
+						protocolValues.clear();
+					}
+				}
+			}
+		}
+		
+		return protocolIdList;
 	}
 }

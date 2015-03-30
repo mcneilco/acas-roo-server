@@ -3,7 +3,9 @@ package com.labsynch.labseer.api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,11 +159,13 @@ public class ApiLsThingController {
     	HttpHeaders headers = new HttpHeaders();
     	headers.add("Content-Type", "application/json; charset=utf-8");
     	if (with != null) {
-			if (with.equalsIgnoreCase("fullobject")) {
-				return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
+			if (with.equalsIgnoreCase("nestedfull")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(results), headers, HttpStatus.OK);
 			} else if (with.equalsIgnoreCase("prettyjson")) {
 				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(results), headers, HttpStatus.OK);
-			} else {
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(results), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("stub")) {
 				return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
 			}
 		}
@@ -171,7 +175,8 @@ public class ApiLsThingController {
     @RequestMapping(value = "/{lsType}/{lsKind}/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getLsThingByIdCodeName(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
-    		@PathVariable("idOrCodeName") String idOrCodeName) {
+    		@PathVariable("idOrCodeName") String idOrCodeName,
+    		@RequestParam(value = "with", required = false) String with) {
     	logger.debug("----from the LsThing GET controller----");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -195,6 +200,17 @@ public class ApiLsThingController {
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
         } else {
+        	if (with != null) {
+    			if (with.equalsIgnoreCase("nestedfull")) {
+    				return new ResponseEntity<String>(lsThing.toJsonWithNestedFull(), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("prettyjson")) {
+    				return new ResponseEntity<String>(lsThing.toPrettyJson(), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("nestedstub")) {
+    				return new ResponseEntity<String>(lsThing.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("stub")) {
+    				return new ResponseEntity<String>(lsThing.toJsonStub(), headers, HttpStatus.OK);
+    			}
+    		}
             return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
         }
     }
@@ -237,6 +253,7 @@ public class ApiLsThingController {
     public ResponseEntity<java.lang.String> createFromJson(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
     		@RequestParam(value="parentIdOrCodeName", required = false) String parentIdOrCodeName,
+    		@RequestParam(value="with", required = false) String with,
     		@RequestBody String json) {
        //headers and setup
 		logger.debug("----from the LsThing POST controller----");
@@ -306,7 +323,7 @@ public class ApiLsThingController {
         		try {
         			lsThing = lsThingService.saveLsThing(lsThing, isParent, isBatch, isAssembly, isComponent, parentId);
                 } catch (Exception e) {
-                    logger.error("----from the POST controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+                    logger.error("----from the POST controller----" + " ERROR:  " + e.toString());
                     ErrorMessage error = new ErrorMessage();
                     error.setErrorLevel("error");
                     error.setMessage("error occurred during saving");
@@ -316,9 +333,18 @@ public class ApiLsThingController {
         	}	
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
-        } else {
-            return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.CREATED);
-        }
+        }else if (with != null) {
+			if (with.equalsIgnoreCase("nestedfull")) {
+				return new ResponseEntity<String>(lsThing.toJsonWithNestedFull(), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(lsThing.toPrettyJson(), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(lsThing.toJsonWithNestedStubs(), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("stub")) {
+				return new ResponseEntity<String>(lsThing.toJsonStub(), headers, HttpStatus.CREATED);
+			}
+		}
+        return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.CREATED);
     }
     
     @RequestMapping(value = "/validatename", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -356,6 +382,7 @@ public class ApiLsThingController {
     public ResponseEntity<java.lang.String> updateFromJson(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
     		@PathVariable("idOrCodeName") String idOrCodeName,
+    		@RequestParam(value="with", required = false) String with,
     		@RequestBody String json) {
        //headers and setup
 		logger.debug("----from the LsThing PUT controller----");
@@ -426,9 +453,18 @@ public class ApiLsThingController {
         }
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.INTERNAL_SERVER_ERROR);
-        } else {
-            return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
-        }
+        }else if (with != null) {
+			if (with.equalsIgnoreCase("nestedfull")) {
+				return new ResponseEntity<String>(lsThing.toJsonWithNestedFull(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(lsThing.toPrettyJson(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(lsThing.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("stub")) {
+				return new ResponseEntity<String>(lsThing.toJsonStub(), headers, HttpStatus.OK);
+			}
+		}
+        return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
     }
 
   @RequestMapping(value = "/gene/v1/loadGeneEntities", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -443,6 +479,20 @@ public class ApiLsThingController {
           return new ResponseEntity<String>("ERROR: IOError. Unable to load file. " + fileName, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
       }
       return new ResponseEntity<String>(headers, HttpStatus.OK);
+  }
+  
+  @RequestMapping(value = "/documentmanagersearch", method = RequestMethod.GET)
+  public ResponseEntity<java.lang.String> documentManagerSearch(@RequestParam Map<String,String> searchParamsMap){
+	  HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json");
+      Collection<LsThing> results = new HashSet<LsThing>();
+      try{
+    	  results = lsThingService.searchForDocumentThings(searchParamsMap);
+      }catch (Exception e){
+    	  logger.error("Caught error in documentManagerSearch: " + e.toString());
+    	  return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
   }
 	
 }

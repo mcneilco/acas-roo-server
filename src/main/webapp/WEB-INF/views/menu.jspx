@@ -371,11 +371,14 @@
             <menu:item id="i_lsthing_new" messageCode="global_menu_new" url="/lsthings?form" z="FkvjAHMnih2v+Eaijc3pAIivtmw="/>
             <menu:item id="i_lsthing_list" messageCode="global_menu_list" url="/lsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KdnkBXuo2MoJ5nhgfl2rt3i2KCQ="/>
             <menu:item id="fi_lsthing_codenameequals" messageCode="global_menu_find" url="/lsthings?find=ByCodeNameEquals&amp;form" z="k9kkRKddWM2bGHmLfsOoz3tA5+E="/>
-            <menu:item id="fi_lsthing_lstransactionequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTransactionEquals&amp;form" z="20eTek0wKMABLzD+DeD98giqJt0="/>
-            <menu:item id="fi_lsthing_lstypeandkindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeAndKindEquals&amp;form" z="dmBfpocGcW2wsusk0jXLxUC3tmU="/>
             <menu:item id="fi_lsthing_codenamelike" messageCode="global_menu_find" url="/lsthings?find=ByCodeNameLike&amp;form" z="irkgn326gCwbL/fD67flKwdT5s0="/>
             <menu:item id="fi_lsthing_lskindlike" messageCode="global_menu_find" url="/lsthings?find=ByLsKindLike&amp;form" z="Jy9T+1sJZwHFty3E4zgV4H9MAj0="/>
+            <menu:item id="fi_lsthing_lstransactionequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTransactionEquals&amp;form" z="20eTek0wKMABLzD+DeD98giqJt0="/>
+            <menu:item id="fi_lsthing_lstypeandkindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeAndKindEquals&amp;form" z="dmBfpocGcW2wsusk0jXLxUC3tmU="/>
+            <menu:item id="fi_lsthing_lstypeequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeEquals&amp;form" z="viV3cUJ4J0UoXCLq+u6Qps6/xN8="/>
             <menu:item id="fi_lsthing_recordedbylike" messageCode="global_menu_find" url="/lsthings?find=ByRecordedByLike&amp;form" z="h9+nSaROI5FHM+mfAaZeNALGtPU="/>
+            <menu:item id="fi_lsthing_recordeddategreaterthan" messageCode="global_menu_find" url="/lsthings?find=ByRecordedDateGreaterThan&amp;form" z="CKWEGR0JeEBK21sR5CTn73aKQFg="/>
+            <menu:item id="fi_lsthing_recordeddatelessthan" messageCode="global_menu_find" url="/lsthings?find=ByRecordedDateLessThan&amp;form" z="FDiykZmU9VrdXfigG4RU5LPiLfk="/>
         </menu:category>
         <menu:category id="c_lsthingstate" z="kDZpS4CZuCX4P3hck2rU9pGQEHs=">
             <menu:item id="i_lsthingstate_new" messageCode="global_menu_new" url="/lsthingstates?form" z="pX/Lr4UYIRxuIGH06d1XLuCTDKI="/>
@@ -398,7 +401,12 @@
             <menu:item id="fi_lsthingvalue_codevalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByCodeValueEquals&amp;form" z="jg96nP+uHTWmMkROeTXD5Nc0Rio="/>
             <menu:item id="fi_lsthingvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="+IVT41w4/TqHTKH3veCd39DiQZk="/>
             <menu:item id="fi_lsthingvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="AuOdss3oEqeDKH/PD1yLnMCODuI="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsanddatevaluegreaterthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndDateValueGreaterThanEquals&amp;form" z="YmMi+Gwv4XGb4MNhJ5lZdVJyotk="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsanddatevaluelessthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndDateValueLessThanEquals&amp;form" z="T6IVa4yGqw35rNKEiNcqpFvQQAQ="/>
             <menu:item id="fi_lsthingvalue_lskindequalsanddatevaluelike" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndDateValueLike&amp;form" z="g8WiM5YM8gAnYtD3rhzrgL3A+YE="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandnumericvalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueEquals&amp;form" z="QC9IiYKfRrQeFHpWglx0orbOvUY="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandnumericvaluegreaterthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueGreaterThanEquals&amp;form" z="KgWRwRcPu2U0NuZLfH6ZzRKPZFY="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandnumericvaluelessthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueLessThanEquals&amp;form" z="LzDWS6atGPcpHjOuC4rarllBelk="/>
             <menu:item id="fi_lsthingvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="gdD732nq+S08YPAF+25/386b6dA="/>
             <menu:item id="fi_lsthingvalue_lsstate" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsState&amp;form" z="2LyWlqa1YNYldDLQ5u0XhjzLmnU="/>
             <menu:item id="fi_lsthingvalue_lstransactionequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsTransactionEquals&amp;form" z="7Bny+xW4b8yhnsbcOas/S479ufI="/>
@@ -481,6 +489,10 @@
         <menu:category id="c_codeorigin" z="YIlul8nVnnFkXmJTSwjIrUaiCbk=">
             <menu:item id="i_codeorigin_new" messageCode="global_menu_new" url="/codeorigins?form" z="4YkihonA/OS0RucT6PxNTrBF264="/>
             <menu:item id="i_codeorigin_list" messageCode="global_menu_list" url="/codeorigins?page=1&amp;size=${empty param.size ? 10 : param.size}" z="mXDEu129EL4jbhn0szLC72IYL8k="/>
+        </menu:category>
+        <menu:category id="c_itxlsthinglsthing" z="8Gc/rkZ1RT71J+B3ubM/dh2H9VE=">
+            <menu:item id="i_itxlsthinglsthing_new" messageCode="global_menu_new" url="/itxlsthinglsthings?form" z="Sv7z8vH12pw4uXJL4KvD5bntOUk="/>
+            <menu:item id="i_itxlsthinglsthing_list" messageCode="global_menu_list" url="/itxlsthinglsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dTBbXYSN3UodAC+gzSIDn7jQ2LQ="/>
         </menu:category>
     </menu:menu>
 </div>
