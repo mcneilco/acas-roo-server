@@ -2,7 +2,6 @@ package com.labsynch.labseer.api;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -21,17 +20,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
-import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.GeneThingService;
 import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -69,7 +63,8 @@ public class ApiLsThingController {
 	}
     
     @RequestMapping(value = "/getGeneCodeNameFromNameRequest", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getGeneCodeNameFromName(@RequestBody PreferredNameRequestDTO requestDTO) {
+    public ResponseEntity<java.lang.String> getGeneCodeNameFromName(@RequestBody String json) {
+    	PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);
         String thingType = "gene";
         String thingKind = "entrez gene";
         String labelType = "name";
@@ -82,11 +77,12 @@ public class ApiLsThingController {
     }
 
     @RequestMapping(value = "/getCodeNameFromNameRequest", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getCodeNameFromName(@RequestBody PreferredNameRequestDTO requestDTO, 
+    public ResponseEntity<java.lang.String> getCodeNameFromName(@RequestBody String json, 
     		@RequestParam(value = "thingType", required = true) String thingType, 
     		@RequestParam(value = "thingKind", required = true) String thingKind, 
     		@RequestParam(value = "labelType", required = false) String labelType, 
     		@RequestParam(value = "labelKind", required = false) String labelKind) {
+    	PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);
         logger.info("getCodeNameFromNameRequest incoming json: " + requestDTO.toJson());
         PreferredNameResultsDTO results = lsThingService.getCodeNameFromName(thingType, thingKind, labelType, labelKind, requestDTO);
         HttpHeaders headers = new HttpHeaders();
@@ -95,8 +91,9 @@ public class ApiLsThingController {
     }
 
     @RequestMapping(value = "/getPreferredNameFromNameRequest", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getPreferredNameFromName(@RequestBody PreferredNameRequestDTO requestDTO, @RequestParam(value = "thingType", required = true) String thingType, @RequestParam(value = "thingKind", required = true) String thingKind, @RequestParam(value = "labelType", required = false) String labelType, @RequestParam(value = "labelKind", required = false) String labelKind) {
-        PreferredNameResultsDTO results = lsThingService.getPreferredNameFromName(thingType, thingKind, labelType, labelKind, requestDTO);
+    public ResponseEntity<java.lang.String> getPreferredNameFromName(@RequestBody String json, @RequestParam(value = "thingType", required = true) String thingType, @RequestParam(value = "thingKind", required = true) String thingKind, @RequestParam(value = "labelType", required = false) String labelType, @RequestParam(value = "labelKind", required = false) String labelKind) {
+    	PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);
+    	PreferredNameResultsDTO results = lsThingService.getPreferredNameFromName(thingType, thingKind, labelType, labelKind, requestDTO);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
