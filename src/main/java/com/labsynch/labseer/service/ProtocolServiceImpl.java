@@ -64,11 +64,13 @@ public class ProtocolServiceImpl implements ProtocolService {
 					Set<ProtocolLabel> protLabels = protocol.getLsLabels();
 					for (ProtocolLabel label : protLabels){
 						String labelText = label.getLabelText();
+						logger.debug("Searching for labelText: "+labelText);
 						List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
+						logger.debug("Found "+ protocolLabels.size() +" labels");
 						for (ProtocolLabel pl : protocolLabels){
 							Protocol pro = pl.getProtocol();
 							//if the protocol is not hard deleted or soft deleted, there is a name conflict
-							if (!pro.isIgnored()){
+							if (!pro.isIgnored() && !pl.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
 								protocolExists = true;
 							}
 						}
@@ -137,12 +139,15 @@ public class ProtocolServiceImpl implements ProtocolService {
 		logger.debug("UPDATE PROTOCOL --- incoming meta protocol: " + protocol.toJson() + "\n");
 		
 		boolean checkProtocolName = propertiesUtilService.getUniqueProtocolName();
+		logger.debug("checkProtocolName = "+checkProtocolName);
 		if (checkProtocolName){
 			boolean protocolExists = false;
 			Set<ProtocolLabel> protLabels = protocol.getLsLabels();
 			for (ProtocolLabel label : protLabels){
 				String labelText = label.getLabelText();
+				logger.debug("Searching for labelText: "+labelText);
 				List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
+				logger.debug("Found "+ protocolLabels.size() +" labels");
 				for (ProtocolLabel pl : protocolLabels){
 					Protocol pro = pl.getProtocol();
 					//if the protocol is not hard deleted or soft deleted, there is a name conflict

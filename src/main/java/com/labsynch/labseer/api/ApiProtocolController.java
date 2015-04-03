@@ -192,10 +192,24 @@ public class ApiProtocolController {
 
     @Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Protocol protocol) throws UniqueNameException {
-        protocol = protocolService.saveLsProtocol(protocol);
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Protocol protocol){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        try{
+            protocol = protocolService.saveLsProtocol(protocol);
+        } catch(UniqueNameException e){
+        	logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage("not unique protocol name");
+            errors.add(error);
+            errorsFound = true;
+        }
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.CREATED);
     }
 
@@ -236,7 +250,7 @@ public class ApiProtocolController {
         	logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
             ErrorMessage error = new ErrorMessage();
             error.setErrorLevel("error");
-            error.setMessage("not unique experiment name");
+            error.setMessage("not unique protocol name");
             errors.add(error);
             errorsFound = true;
         }

@@ -143,11 +143,11 @@ public class ProtocolServiceTest {
 
 	}
 
-	//@Test
+	@Test
 	@Transactional
 	public void UpdateProtocol_6() throws UniqueNameException{
 		
-		String protocolCodeName = "test protocol code name 105";
+		String protocolCodeName = "PROT-00000108";
 		Protocol fetchProtocol = Protocol.findProtocolsByCodeNameEquals(protocolCodeName).getSingleResult();
 		fetchProtocol.setShortDescription("some new short description");
 		Protocol output = protocolService.updateProtocol(fetchProtocol);
