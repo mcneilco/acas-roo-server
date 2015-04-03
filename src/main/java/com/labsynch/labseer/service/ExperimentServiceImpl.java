@@ -82,10 +82,35 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Override
 	@Transactional
-	public Experiment updateExperiment(Experiment jsonExperiment){
+	public Experiment updateExperiment(Experiment jsonExperiment) throws UniqueNameException{
 		//		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
 		logger.debug("recorded by: " + jsonExperiment.getRecordedBy());
 
+		boolean checkExperimentName = propertiesUtilService.getUniqueExperimentName();
+		if (checkExperimentName){
+			boolean experimentExists = false;
+			Set<ExperimentLabel> exptLabels = jsonExperiment.getLsLabels();
+			for (ExperimentLabel label : exptLabels){
+				String labelText = label.getLabelText();
+				logger.debug("Searching for labelText: "+labelText);
+				List<ExperimentLabel> experimentLabels = ExperimentLabel.findExperimentLabelsByName(labelText).getResultList();	
+				logger.debug("Found "+ experimentLabels.size() +" labels");
+				for (ExperimentLabel el : experimentLabels){
+					Experiment exp = el.getExperiment();
+					logger.debug("Found same label on experiment: "+ exp.getId().toString() +" while experiment to update is: "+ jsonExperiment.getId().toString());
+					//if the experiment is not hard deleted or soft deleted, there is a name conflict
+					if (!exp.isIgnored() && !el.isIgnored() && exp.getId().compareTo(jsonExperiment.getId())!=0){
+						experimentExists = true;
+					}
+				}
+			}
+
+			if (experimentExists){
+				throw new UniqueNameException("Experiment with the same name exists");							
+			}
+		}
+		
+		
 		Experiment updatedExperiment = Experiment.update(jsonExperiment);
 		if (jsonExperiment.getLsLabels() != null) {
 			for(ExperimentLabel experimentLabel : jsonExperiment.getLsLabels()){
@@ -157,7 +182,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 				for (ExperimentLabel el : experimentLabels){
 					Experiment exp = el.getExperiment();
 					//if the experiment is not hard deleted or soft deleted, there is a name conflict
-					if (!exp.isIgnored()){
+					if (!exp.isIgnored() && !el.isIgnored()){
 						experimentExists = true;
 					}
 				}
