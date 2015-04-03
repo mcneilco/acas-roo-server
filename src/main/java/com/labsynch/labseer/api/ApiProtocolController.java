@@ -45,6 +45,7 @@ import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ProtocolDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ProtocolService;
 import com.labsynch.labseer.service.ProtocolValueService;
@@ -227,7 +228,21 @@ public class ApiProtocolController {
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Protocol protocol) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        protocol = protocolService.updateProtocol(protocol);
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        try{
+        	protocol = protocolService.updateProtocol(protocol);
+        } catch(UniqueNameException e){
+        	logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage("not unique experiment name");
+            errors.add(error);
+            errorsFound = true;
+        }
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+        }
         if (protocol.getId() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -239,8 +254,22 @@ public class ApiProtocolController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<Protocol> updatedProtocols = new ArrayList<Protocol>();
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
         for (Protocol protocol : protocols) {
-            updatedProtocols.add(protocolService.updateProtocol(protocol));
+        	try{
+        		updatedProtocols.add(protocolService.updateProtocol(protocol));
+            } catch(UniqueNameException e){
+            	logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+                ErrorMessage error = new ErrorMessage();
+                error.setErrorLevel("error");
+                error.setMessage("not unique experiment name");
+                errors.add(error);
+                errorsFound = true;
+            }
+        	if (errorsFound) {
+                return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+            }
         }
         return new ResponseEntity<String>(Protocol.toJsonArray(updatedProtocols), headers, HttpStatus.OK);
     }

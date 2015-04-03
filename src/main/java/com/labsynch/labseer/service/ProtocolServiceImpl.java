@@ -133,8 +133,30 @@ public class ProtocolServiceImpl implements ProtocolService {
 	}
 
 	@Override
-	public Protocol updateProtocol(Protocol protocol){
+	public Protocol updateProtocol(Protocol protocol) throws UniqueNameException{
 		logger.debug("UPDATE PROTOCOL --- incoming meta protocol: " + protocol.toJson() + "\n");
+		
+		boolean checkProtocolName = propertiesUtilService.getUniqueProtocolName();
+		if (checkProtocolName){
+			boolean protocolExists = false;
+			Set<ProtocolLabel> protLabels = protocol.getLsLabels();
+			for (ProtocolLabel label : protLabels){
+				String labelText = label.getLabelText();
+				List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
+				for (ProtocolLabel pl : protocolLabels){
+					Protocol pro = pl.getProtocol();
+					//if the protocol is not hard deleted or soft deleted, there is a name conflict
+					if (!pro.isIgnored() && !pl.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
+						protocolExists = true;
+					}
+				}
+			}
+
+			if (protocolExists){
+				throw new UniqueNameException("Protocol with the same name exists");							
+			}
+		}
+		
 		Protocol updatedProtocol = Protocol.update(protocol);
 		if (protocol.getLsLabels() != null){
 			Set<ProtocolLabel> updatedProtocolLabels = new HashSet<ProtocolLabel>();
