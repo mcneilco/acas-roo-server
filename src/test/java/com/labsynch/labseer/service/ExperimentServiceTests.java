@@ -198,8 +198,12 @@ public class ExperimentServiceTests {
 	// @Test
 	public void UpdateExeprimentName_2() {
 		String json = "{    \"analysisGroups\": null,    \"codeName\": \"test experiment code name 105\",    \"id\": 3101,    \"ignored\": false,    \"lsKind\": \"default\",    \"lsLabels\": null,    \"lsStates\": null,    \"lsTransaction\": 311,    \"lsType\": \"default\",    \"lsTypeAndKind\": \"default_default\",    \"modifiedBy\": null,    \"modifiedDate\": null,    \"protocol\": {        \"codeName\": \"test protocol code name 105\",        \"id\": 3100,        \"ignored\": false,        \"lsKind\": \"default\",        \"lsTransaction\": 311,        \"lsType\": \"default\",        \"lsTypeAndKind\": \"default_default\",        \"modifiedBy\": null,        \"modifiedDate\": null,        \"recordedBy\": \"testUser\",        \"recordedDate\": 1379479721768,        \"shortDescription\": \"just a test\",        \"version\": 0    },    \"recordedBy\": \"testUser\",    \"recordedDate\": 1379479721768,    \"shortDescription\": \"some short description\",    \"version\": 0}";
-		experimentService.updateExperiment(Experiment
+		try {
+			experimentService.updateExperiment(Experiment
 				.fromJsonToExperiment(json));
+		} catch (Exception e){
+			Assert.assertNull(e);
+		}
 	}
 
 	// @Test

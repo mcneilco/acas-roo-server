@@ -1,7 +1,9 @@
 package com.labsynch.labseer.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Collection;
 
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentLabel;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -31,6 +34,7 @@ import com.labsynch.labseer.domain.Experiment;
 		"classpath:/META-INF/spring/applicationContext.xml",
 		"classpath:/META-INF/spring/applicationContext-security.xml",
 		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+@Transactional
 public class ApiExperimentControllerTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiExperimentControllerTest.class);

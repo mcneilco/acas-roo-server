@@ -841,11 +841,20 @@ public class ApiExperimentController {
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Experiment experiment) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
         try {
         	experiment = experimentService.updateExperiment(experiment);
-        } catch (Exception e) {
-        	e.printStackTrace();
-        	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (UniqueNameException e) {
+            logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage("not unique experiment name");
+            errors.add(error);
+            errorsFound = true;
+        }
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
         }
         if (experiment.getId() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -860,8 +869,22 @@ public class ApiExperimentController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<Experiment> updatedExperiments = new ArrayList<Experiment>();
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
         for (Experiment experiment : experiments) {
-            updatedExperiments.add(experimentService.updateExperiment(experiment));
+            try{
+            	updatedExperiments.add(experimentService.updateExperiment(experiment));
+            } catch (UniqueNameException e){
+            	logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+                ErrorMessage error = new ErrorMessage();
+                error.setErrorLevel("error");
+                error.setMessage("not unique experiment name");
+                errors.add(error);
+                errorsFound = true;
+            }
+        }
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
         }
         return new ResponseEntity<String>(Experiment.toJsonArrayStub(updatedExperiments), headers, HttpStatus.OK);
     }

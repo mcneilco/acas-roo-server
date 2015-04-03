@@ -25,7 +25,7 @@ public interface ExperimentService {
 
 	public void deleteLsExperiment(Experiment experiment);
 
-	public Experiment updateExperiment(Experiment experiment);
+	public Experiment updateExperiment(Experiment experiment) throws UniqueNameException;
 
 	public Experiment getFullExperiment(Experiment queryExperiment);
 
