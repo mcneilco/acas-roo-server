@@ -182,7 +182,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 				for (ExperimentLabel el : experimentLabels){
 					Experiment exp = el.getExperiment();
 					//if the experiment is not hard deleted or soft deleted, there is a name conflict
-					if (!exp.isIgnored()){
+					if (!exp.isIgnored() && !el.isIgnored()){
 						experimentExists = true;
 					}
 				}

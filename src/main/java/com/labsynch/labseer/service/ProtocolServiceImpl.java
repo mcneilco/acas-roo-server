@@ -70,7 +70,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 						for (ProtocolLabel pl : protocolLabels){
 							Protocol pro = pl.getProtocol();
 							//if the protocol is not hard deleted or soft deleted, there is a name conflict
-							if (!pro.isIgnored() && !pl.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
+							if (!pro.isIgnored() && !pl.isIgnored()){
 								protocolExists = true;
 							}
 						}
