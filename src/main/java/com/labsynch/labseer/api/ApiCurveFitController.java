@@ -137,7 +137,6 @@ public class ApiCurveFitController {
 		headers.add("Content-Type", "application/json");
         try {
         	List<String> curveIds = (List<String>) CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
-//        	String renderingHint = CurveFitDTO.findRenderingHint(curveIds.get(0));
 			if (renderingHint.equalsIgnoreCase("4 parameter D-R")){
 				Collection<CurveFitDTO> filledCurveFitDTOs = CurveFitDTO.getFitData(curveIds);
 				if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {

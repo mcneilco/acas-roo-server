@@ -3,6 +3,7 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -62,13 +63,35 @@ public class CurveFitDTOTest {
 	public void getFitDataArrayTest() {
 		String curveId = "AG-00348384_3716";
 		String curveId2 = "AG-00348385_3716";
-		CurveFitDTO curveFitDTO = new CurveFitDTO(curveId);
-		CurveFitDTO curveFitDTO2 = new CurveFitDTO(curveId2);
-		Collection<CurveFitDTO> curveFitDTOs = new ArrayList<CurveFitDTO>();
-		curveFitDTOs.add(curveFitDTO);
-		curveFitDTOs.add(curveFitDTO2);
-		curveFitDTOs = CurveFitDTO.getFitData(curveFitDTOs);
+		List<String> curveIds = new ArrayList<String>();
+		curveIds.add(curveId);
+		curveIds.add(curveId2);
+		Collection<CurveFitDTO> curveFitDTOs = CurveFitDTO.getFitData(curveIds);
 		logger.debug(CurveFitDTO.toJsonArray(curveFitDTOs));
+	}
+	
+	@Test
+	@Transactional
+	public void getFitDataFromCurveIdListTimingTest() {
+		String curveId = "AG-00348384_3716";
+		String curveId2 = "AG-00348385_3716";
+		List<String> curveIds = new ArrayList<String>();
+		curveIds.add(curveId);
+		curveIds.add(curveId2);
+		long startTime = System.currentTimeMillis();
+		Collection<CurveFitDTO> curveFitDTOs = CurveFitDTO.getFitData(curveIds);
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
+		logger.debug("total number of curves: " + curveFitDTOs.size());
+		logger.debug(CurveFitDTO.toJsonArray(curveFitDTOs));
+		long startTime2 = System.currentTimeMillis();
+		Collection<CurveFitDTO> curveFitDTOs2 = CurveFitDTO.getFitData(curveIds);
+		long endTime2 = System.currentTimeMillis();
+		long totalTime2 = endTime2 - startTime2;
+		logger.debug("total elapsed time = " + totalTime2 + " miliseconds.");
+		logger.debug("total number of curves: " + curveFitDTOs2.size());
+		logger.debug(CurveFitDTO.toJsonArray(curveFitDTOs2));
 	}
 	
 	@Test
@@ -91,7 +114,8 @@ public class CurveFitDTOTest {
 		String experimentCodeName = "EXPT-00000909"; //29 curves
 //		String experimentCodeName = "EXPT-00000078"; //1000 curves
 		long startTime = System.currentTimeMillis();
-		Collection<CurveFitDTO> results = CurveFitDTO.getFitDataByExperiment(experimentCodeName);
+		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentCodeName);
+		Collection<CurveFitDTO> results = CurveFitDTO.getFitData(curveIds);
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
