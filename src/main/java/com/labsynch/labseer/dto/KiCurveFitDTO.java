@@ -283,6 +283,7 @@ public class KiCurveFitDTO {
 	@Transactional
 	public static Collection<KiCurveFitDTO> getFitData(Collection<String> curveIds){
 		EntityManager em = SubjectValue.entityManager();
+		if (curveIds.isEmpty()) return new ArrayList<KiCurveFitDTO>();
 		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( curveIdValue.stringValue as curveId, "
 				+ "ag.codeName as analysisGroupCode, "
 				+ "curveIdValue.recordedBy as recordedBy, "

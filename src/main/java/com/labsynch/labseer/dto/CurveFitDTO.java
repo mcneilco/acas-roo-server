@@ -333,6 +333,7 @@ public class CurveFitDTO {
 	@Transactional
 	public static Collection<CurveFitDTO> getFitData(Collection<String> curveIds){
 		EntityManager em = SubjectValue.entityManager();
+		if (curveIds.isEmpty()) return new ArrayList<CurveFitDTO>();
 		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( curveIdValue.stringValue as curveId, "
 				+ "ag.codeName as analysisGroupCode, "
 				+ "curveIdValue.recordedBy as recordedBy, "
