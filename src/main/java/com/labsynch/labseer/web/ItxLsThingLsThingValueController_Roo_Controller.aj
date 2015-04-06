@@ -3,8 +3,8 @@
 
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.ItxContainerContainerState;
-import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.domain.ItxLsThingLsThingState;
+import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.web.ItxLsThingLsThingValueController;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,28 +23,28 @@ import org.springframework.web.util.WebUtils;
 privileged aspect ItxLsThingLsThingValueController_Roo_Controller {
     
     @RequestMapping(method = RequestMethod.POST, produces = "text/html")
-    public String ItxLsThingLsThingValueController.create(@Valid ItxContainerContainerValue itxContainerContainerValue, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    public String ItxLsThingLsThingValueController.create(@Valid ItxLsThingLsThingValue itxLsThingLsThingValue, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
-            populateEditForm(uiModel, itxContainerContainerValue);
-            return "itxcontainercontainervalues/create";
+            populateEditForm(uiModel, itxLsThingLsThingValue);
+            return "itxlsthinglsthingvalues/create";
         }
         uiModel.asMap().clear();
-        itxContainerContainerValue.persist();
-        return "redirect:/itxcontainercontainervalues/" + encodeUrlPathSegment(itxContainerContainerValue.getId().toString(), httpServletRequest);
+        itxLsThingLsThingValue.persist();
+        return "redirect:/itxlsthinglsthingvalues/" + encodeUrlPathSegment(itxLsThingLsThingValue.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(params = "form", produces = "text/html")
     public String ItxLsThingLsThingValueController.createForm(Model uiModel) {
-        populateEditForm(uiModel, new ItxContainerContainerValue());
-        return "itxcontainercontainervalues/create";
+        populateEditForm(uiModel, new ItxLsThingLsThingValue());
+        return "itxlsthinglsthingvalues/create";
     }
     
     @RequestMapping(value = "/{id}", produces = "text/html")
     public String ItxLsThingLsThingValueController.show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("itxcontainercontainervalue", ItxContainerContainerValue.findItxContainerContainerValue(id));
+        uiModel.addAttribute("itxlsthinglsthingvalue", ItxLsThingLsThingValue.findItxLsThingLsThingValue(id));
         uiModel.addAttribute("itemId", id);
-        return "itxcontainercontainervalues/show";
+        return "itxlsthinglsthingvalues/show";
     }
     
     @RequestMapping(produces = "text/html")
@@ -52,53 +52,53 @@ privileged aspect ItxLsThingLsThingValueController_Roo_Controller {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("itxcontainercontainervalues", ItxContainerContainerValue.findItxContainerContainerValueEntries(firstResult, sizeNo));
-            float nrOfPages = (float) ItxContainerContainerValue.countItxContainerContainerValues() / sizeNo;
+            uiModel.addAttribute("itxlsthinglsthingvalues", ItxLsThingLsThingValue.findItxLsThingLsThingValueEntries(firstResult, sizeNo));
+            float nrOfPages = (float) ItxLsThingLsThingValue.countItxLsThingLsThingValues() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("itxcontainercontainervalues", ItxContainerContainerValue.findAllItxContainerContainerValues());
+            uiModel.addAttribute("itxlsthinglsthingvalues", ItxLsThingLsThingValue.findAllItxLsThingLsThingValues());
         }
         addDateTimeFormatPatterns(uiModel);
-        return "itxcontainercontainervalues/list";
+        return "itxlsthinglsthingvalues/list";
     }
     
     @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
-    public String ItxLsThingLsThingValueController.update(@Valid ItxContainerContainerValue itxContainerContainerValue, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+    public String ItxLsThingLsThingValueController.update(@Valid ItxLsThingLsThingValue itxLsThingLsThingValue, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
-            populateEditForm(uiModel, itxContainerContainerValue);
-            return "itxcontainercontainervalues/update";
+            populateEditForm(uiModel, itxLsThingLsThingValue);
+            return "itxlsthinglsthingvalues/update";
         }
         uiModel.asMap().clear();
-        itxContainerContainerValue.merge();
-        return "redirect:/itxcontainercontainervalues/" + encodeUrlPathSegment(itxContainerContainerValue.getId().toString(), httpServletRequest);
+        itxLsThingLsThingValue.merge();
+        return "redirect:/itxlsthinglsthingvalues/" + encodeUrlPathSegment(itxLsThingLsThingValue.getId().toString(), httpServletRequest);
     }
     
     @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String ItxLsThingLsThingValueController.updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, ItxContainerContainerValue.findItxContainerContainerValue(id));
-        return "itxcontainercontainervalues/update";
+        populateEditForm(uiModel, ItxLsThingLsThingValue.findItxLsThingLsThingValue(id));
+        return "itxlsthinglsthingvalues/update";
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String ItxLsThingLsThingValueController.delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        ItxContainerContainerValue itxContainerContainerValue = ItxContainerContainerValue.findItxContainerContainerValue(id);
-        itxContainerContainerValue.remove();
+        ItxLsThingLsThingValue itxLsThingLsThingValue = ItxLsThingLsThingValue.findItxLsThingLsThingValue(id);
+        itxLsThingLsThingValue.remove();
         uiModel.asMap().clear();
         uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
         uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
-        return "redirect:/itxcontainercontainervalues";
+        return "redirect:/itxlsthinglsthingvalues";
     }
     
     void ItxLsThingLsThingValueController.addDateTimeFormatPatterns(Model uiModel) {
-        uiModel.addAttribute("itxContainerContainerValue_datevalue_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
-        uiModel.addAttribute("itxContainerContainerValue_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
-        uiModel.addAttribute("itxContainerContainerValue_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
+        uiModel.addAttribute("itxLsThingLsThingValue_datevalue_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
+        uiModel.addAttribute("itxLsThingLsThingValue_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
+        uiModel.addAttribute("itxLsThingLsThingValue_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
     }
     
-    void ItxLsThingLsThingValueController.populateEditForm(Model uiModel, ItxContainerContainerValue itxContainerContainerValue) {
-        uiModel.addAttribute("itxContainerContainerValue", itxContainerContainerValue);
+    void ItxLsThingLsThingValueController.populateEditForm(Model uiModel, ItxLsThingLsThingValue itxLsThingLsThingValue) {
+        uiModel.addAttribute("itxLsThingLsThingValue", itxLsThingLsThingValue);
         addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("itxcontainercontainerstates", ItxContainerContainerState.findAllItxContainerContainerStates());
+        uiModel.addAttribute("itxlsthinglsthingstates", ItxLsThingLsThingState.findAllItxLsThingLsThingStates());
     }
     
     String ItxLsThingLsThingValueController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

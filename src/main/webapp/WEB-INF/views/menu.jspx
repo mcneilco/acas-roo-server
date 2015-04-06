@@ -494,5 +494,13 @@
             <menu:item id="i_itxlsthinglsthing_new" messageCode="global_menu_new" url="/itxlsthinglsthings?form" z="Sv7z8vH12pw4uXJL4KvD5bntOUk="/>
             <menu:item id="i_itxlsthinglsthing_list" messageCode="global_menu_list" url="/itxlsthinglsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dTBbXYSN3UodAC+gzSIDn7jQ2LQ="/>
         </menu:category>
+        <menu:category id="c_itxlsthinglsthingvalue" z="16NynK8hvte1Jz5OlnZk7yx2Cws=">
+            <menu:item id="i_itxlsthinglsthingvalue_new" messageCode="global_menu_new" url="/itxlsthinglsthingvalues?form" z="lSlbM5i6/TIvqxkWP3izDKm7cSg="/>
+            <menu:item id="i_itxlsthinglsthingvalue_list" messageCode="global_menu_list" url="/itxlsthinglsthingvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="QV3L2KdCFiwrC4kWB3x3GthgZks="/>
+        </menu:category>
+        <menu:category id="c_itxlsthinglsthingstate" z="dacFM2W4nNstoyJUE8ZhmtUcl+o=">
+            <menu:item id="i_itxlsthinglsthingstate_new" messageCode="global_menu_new" url="/itxlsthinglsthingstates?form" z="URYzXejwc0AbOnmQGDN6sxGn1lA="/>
+            <menu:item id="i_itxlsthinglsthingstate_list" messageCode="global_menu_list" url="/itxlsthinglsthingstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iJT8vqWzUsI32g9p3HD98Dus48A="/>
+        </menu:category>
     </menu:menu>
 </div>

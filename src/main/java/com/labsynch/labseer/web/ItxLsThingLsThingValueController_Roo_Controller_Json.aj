@@ -3,7 +3,7 @@
 
 package com.labsynch.labseer.web;
 
-import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.web.ItxLsThingLsThingValueController;
 import java.util.List;
 import org.springframework.http.HttpHeaders;
@@ -20,13 +20,13 @@ privileged aspect ItxLsThingLsThingValueController_Roo_Controller_Json {
     @RequestMapping(value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ItxLsThingLsThingValueController.showJson(@PathVariable("id") Long id) {
-        ItxContainerContainerValue itxContainerContainerValue = ItxContainerContainerValue.findItxContainerContainerValue(id);
+        ItxLsThingLsThingValue itxLsThingLsThingValue = ItxLsThingLsThingValue.findItxLsThingLsThingValue(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (itxContainerContainerValue == null) {
+        if (itxLsThingLsThingValue == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>(itxContainerContainerValue.toJson(), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(itxLsThingLsThingValue.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -34,14 +34,14 @@ privileged aspect ItxLsThingLsThingValueController_Roo_Controller_Json {
     public ResponseEntity<String> ItxLsThingLsThingValueController.listJson() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<ItxContainerContainerValue> result = ItxContainerContainerValue.findAllItxContainerContainerValues();
-        return new ResponseEntity<String>(ItxContainerContainerValue.toJsonArray(result), headers, HttpStatus.OK);
+        List<ItxLsThingLsThingValue> result = ItxLsThingLsThingValue.findAllItxLsThingLsThingValues();
+        return new ResponseEntity<String>(ItxLsThingLsThingValue.toJsonArray(result), headers, HttpStatus.OK);
     }
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ItxLsThingLsThingValueController.createFromJson(@RequestBody String json) {
-        ItxContainerContainerValue itxContainerContainerValue = ItxContainerContainerValue.fromJsonToItxContainerContainerValue(json);
-        itxContainerContainerValue.persist();
+        ItxLsThingLsThingValue itxLsThingLsThingValue = ItxLsThingLsThingValue.fromJsonToItxLsThingLsThingValue(json);
+        itxLsThingLsThingValue.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
@@ -49,8 +49,8 @@ privileged aspect ItxLsThingLsThingValueController_Roo_Controller_Json {
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ItxLsThingLsThingValueController.createFromJsonArray(@RequestBody String json) {
-        for (ItxContainerContainerValue itxContainerContainerValue: ItxContainerContainerValue.fromJsonArrayToItxContainerContainerValues(json)) {
-            itxContainerContainerValue.persist();
+        for (ItxLsThingLsThingValue itxLsThingLsThingValue: ItxLsThingLsThingValue.fromJsonArrayToItxLsThingLsThingValues(json)) {
+            itxLsThingLsThingValue.persist();
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -61,8 +61,8 @@ privileged aspect ItxLsThingLsThingValueController_Roo_Controller_Json {
     public ResponseEntity<String> ItxLsThingLsThingValueController.updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        ItxContainerContainerValue itxContainerContainerValue = ItxContainerContainerValue.fromJsonToItxContainerContainerValue(json);
-        if (itxContainerContainerValue.merge() == null) {
+        ItxLsThingLsThingValue itxLsThingLsThingValue = ItxLsThingLsThingValue.fromJsonToItxLsThingLsThingValue(json);
+        if (itxLsThingLsThingValue.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(headers, HttpStatus.OK);
@@ -72,8 +72,8 @@ privileged aspect ItxLsThingLsThingValueController_Roo_Controller_Json {
     public ResponseEntity<String> ItxLsThingLsThingValueController.updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        for (ItxContainerContainerValue itxContainerContainerValue: ItxContainerContainerValue.fromJsonArrayToItxContainerContainerValues(json)) {
-            if (itxContainerContainerValue.merge() == null) {
+        for (ItxLsThingLsThingValue itxLsThingLsThingValue: ItxLsThingLsThingValue.fromJsonArrayToItxLsThingLsThingValues(json)) {
+            if (itxLsThingLsThingValue.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
         }
@@ -82,13 +82,13 @@ privileged aspect ItxLsThingLsThingValueController_Roo_Controller_Json {
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> ItxLsThingLsThingValueController.deleteFromJson(@PathVariable("id") Long id) {
-        ItxContainerContainerValue itxContainerContainerValue = ItxContainerContainerValue.findItxContainerContainerValue(id);
+        ItxLsThingLsThingValue itxLsThingLsThingValue = ItxLsThingLsThingValue.findItxLsThingLsThingValue(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (itxContainerContainerValue == null) {
+        if (itxLsThingLsThingValue == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        itxContainerContainerValue.remove();
+        itxLsThingLsThingValue.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
