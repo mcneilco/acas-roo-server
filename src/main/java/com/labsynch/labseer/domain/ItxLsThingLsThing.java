@@ -171,4 +171,17 @@ public class ItxLsThingLsThing extends AbstractThing {
         }
     	return order;
     }
+    
+    public int getItxOrder() {
+		Set<ItxLsThingLsThingState> lsStates = this.getLsStates();
+		for (ItxLsThingLsThingState lsState : lsStates){
+			Set<ItxLsThingLsThingValue> lsValues = lsState.getLsValues();
+			for (ItxLsThingLsThingValue lsValue : lsValues){
+				if (lsValue.getLsKind().equals("order")){
+					return lsValue.getNumericValue().intValue();
+				}
+			}
+		}
+		return 0;
+	}
 }

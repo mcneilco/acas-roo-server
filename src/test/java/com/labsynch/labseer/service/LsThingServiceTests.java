@@ -130,7 +130,7 @@ public class LsThingServiceTests {
 		LsThing lsThing = LsThing.fromJsonToLsThing(json);
     	LsThing parent = LsThing.findLsThingsByCodeNameEquals("LSM000001").getSingleResult();
     	lsThing.setCodeName(lsThingService.generateBatchCodeName(parent));
-		lsThing = lsThingService.saveLsThing(lsThing, false, true, false, true, parent.getId());
+		lsThing = lsThingService.saveLsThing(lsThing, false, true, parent.getId());
 	}
 	
 	@Test

@@ -483,6 +483,58 @@ public class LsThing extends AbstractThing {
         return q;
 	}
 	
+	public static TypedQuery<LsThing> findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEqualsAndOrderEquals(String lsType,
+			String lsKind, LsThing secondLsThing, int order) {
+		if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = LsThing.entityManager();
+		String query = "SELECT DISTINCT itx.firstLsThing FROM LsThing secondLsThing " +
+				"JOIN secondLsThing.firstLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind " +
+				"JOIN itx.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
+				"WHERE secondLsThing.ignored IS NOT :ignored " +
+				"AND itxvalue.numericValue = :order " +
+				"AND secondLsThing = :secondLsThing ";
+		
+        TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("order", order);
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
+	
+	public static TypedQuery<LsThing> findSecondLsThingsByItxTypeKindEqualsAndFirstLsThingEqualsAndOrderEquals(String lsType,
+			String lsKind, LsThing firstLsThing, int order) {
+		if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = LsThing.entityManager();
+		String query = "SELECT DISTINCT itx.secondLsThing FROM LsThing firstLsThing " +
+				"JOIN firstLsThing.secondLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType AND itx.lsKind = :lsKind " +
+				"JOIN itx.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
+				"WHERE firstLsThing.ignored IS NOT :ignored " +
+				"AND itxvalue.numericValue = :order " +
+				"AND firstLsThing = :firstLsThing ";
+		
+        TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("order", order);
+        q.setParameter("firstLsThing", firstLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
+	
 	public static com.labsynch.labseer.domain.LsThing update(com.labsynch.labseer.domain.LsThing lsThing) {
         LsThing updatedLsThing = LsThing.findLsThing(lsThing.getId());
         updatedLsThing.setRecordedBy(lsThing.getRecordedBy());
@@ -513,6 +565,27 @@ public class LsThing extends AbstractThing {
         updatedLsThing.merge();
         return updatedLsThing;
     }
+
+	public static TypedQuery<LsThing> findFirstLsThingsByItxTypeEqualsAndSecondLsThingEquals(
+			String lsType, LsThing secondLsThing) {
+		if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = LsThing.entityManager();
+		String query = "SELECT DISTINCT itx.firstLsThing FROM LsThing secondLsThing " +
+				"JOIN secondLsThing.firstLsThings itx with itx.ignored IS NOT :ignored AND itx.lsType = :lsType " +
+				"WHERE secondLsThing.ignored IS NOT :ignored " +
+				"AND secondLsThing = :secondLsThing ";
+		
+        TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
 
 
 }
