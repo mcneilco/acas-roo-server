@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,7 @@ public class CurveFitDTO {
 		this.curveId = (String) dataMap.get("curveId");
 		this.analysisGroupCode = (String) dataMap.get("analysisGroupCode");
 		this.recordedBy = (String) dataMap.get("recordedBy");
+		this.recordedDate = (Date) dataMap.get("recordedDate");
 		this.lsTransaction = (Long) dataMap.get("lsTransaction");
 		this.batchCode = (String) dataMap.get("batchCode");
 		this.category = (String) dataMap.get("category");
@@ -167,6 +169,7 @@ public class CurveFitDTO {
 	private String curveId;
 	private String analysisGroupCode;
 	private String recordedBy;
+	private Date recordedDate;
 	private Long lsTransaction;
 	private String batchCode;
 	private String category;
@@ -334,6 +337,7 @@ public class CurveFitDTO {
 				+ "ag.codeName as analysisGroupCode, "
 				+ "curveIdValue.recordedBy as recordedBy, "
         		+ "curveIdValue.lsTransaction as lsTransaction, "
+        		+ "curveIdValue.recordedDate as recordedDate, "
         		+ "batchCodeValue.codeValue as batchCode, "
         		+ "categoryValue.stringValue as category, "
         		+ "renderingHintValue.stringValue as renderingHint, "

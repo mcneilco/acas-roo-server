@@ -5,7 +5,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +50,10 @@ public class KiCurveFitDTO {
 	
 	public KiCurveFitDTO(Map dataMap){
 		this.curveId = (String) dataMap.get("curveId");
+		this.analysisGroupCode = (String) dataMap.get("analysisGroupCode");
+		this.recordedBy = (String) dataMap.get("recordedBy");
+		this.recordedDate = (Date) dataMap.get("recordedDate");
+		this.lsTransaction = (Long) dataMap.get("lsTransaction");
 		this.batchCode = (String) dataMap.get("batchCode");
 		this.category = (String) dataMap.get("category");
 		this.renderingHint = (String) dataMap.get("renderingHint");
@@ -106,6 +110,7 @@ public class KiCurveFitDTO {
 	private String curveId;
 	private String analysisGroupCode;
 	private String recordedBy;
+	private Date recordedDate;
 	private Long lsTransaction;
 	private String batchCode;
 	private String category;
@@ -282,6 +287,7 @@ public class KiCurveFitDTO {
 				+ "ag.codeName as analysisGroupCode, "
 				+ "curveIdValue.recordedBy as recordedBy, "
         		+ "curveIdValue.lsTransaction as lsTransaction, "
+				+ "curveIdValue.recordedDate as recordedDate, "
         		+ "batchCodeValue.codeValue as batchCode, "
         		+ "categoryValue.stringValue as category, "
         		+ "renderingHintValue.stringValue as renderingHint, "
