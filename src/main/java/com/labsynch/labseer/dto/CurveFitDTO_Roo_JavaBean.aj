@@ -5,6 +5,7 @@ package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.CurveFitDTO;
 import java.math.BigDecimal;
+import java.util.Date;
 
 privileged aspect CurveFitDTO_Roo_JavaBean {
     
@@ -30,6 +31,14 @@ privileged aspect CurveFitDTO_Roo_JavaBean {
     
     public void CurveFitDTO.setRecordedBy(String recordedBy) {
         this.recordedBy = recordedBy;
+    }
+    
+    public Date CurveFitDTO.getRecordedDate() {
+        return this.recordedDate;
+    }
+    
+    public void CurveFitDTO.setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
     }
     
     public Long CurveFitDTO.getLsTransaction() {

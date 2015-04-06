@@ -111,7 +111,7 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getAllCurveFitDataByExperimentTest() {
-		String experimentCodeName = "EXPT-00000909"; //29 curves
+		String experimentCodeName = "EXPT-00001298"; //17 curves
 //		String experimentCodeName = "EXPT-00000078"; //1000 curves
 		long startTime = System.currentTimeMillis();
 		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentCodeName);
@@ -122,6 +122,34 @@ public class CurveFitDTOTest {
 		logger.debug("total number of curves: " + results.size());
 		logger.debug(CurveFitDTO.toJsonArray(results));
 		Assert.assertTrue(!results.isEmpty());
+		for (CurveFitDTO curveFitDTO: results){
+			Assert.assertNotNull(curveFitDTO.getAnalysisGroupCode());
+			Assert.assertNotNull(curveFitDTO.getRecordedBy());
+			Assert.assertNotNull(curveFitDTO.getRecordedDate());
+			Assert.assertNotNull(curveFitDTO.getLsTransaction());
+		}
+	}
+	
+	@Test
+	@Transactional
+	public void getAllKiCurveFitDataByExperimentTest() {
+		String experimentCodeName = "EXPT-00001229";
+		long startTime = System.currentTimeMillis();
+		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentCodeName);
+		Collection<KiCurveFitDTO> results = KiCurveFitDTO.getFitData(curveIds);
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
+		logger.debug("total number of curves: " + results.size());
+		logger.debug(KiCurveFitDTO.toJsonArray(results));
+		Assert.assertTrue(!results.isEmpty());
+		for (KiCurveFitDTO kiCurveFitDTO: results){
+			Assert.assertNotNull(kiCurveFitDTO.getAnalysisGroupCode());
+			Assert.assertNotNull(kiCurveFitDTO.getRecordedBy());
+			Assert.assertNotNull(kiCurveFitDTO.getRecordedDate());
+			Assert.assertNotNull(kiCurveFitDTO.getLsTransaction());
+		}
+
 	}
 	
 	@Test
