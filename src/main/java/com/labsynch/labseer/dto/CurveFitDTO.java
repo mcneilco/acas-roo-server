@@ -224,6 +224,7 @@ public class CurveFitDTO {
 				"curveId",
 				"analysisGroupCode",
 				"recordedBy",
+				"recordedDate",
 				"lsTransaction",
 				"batchCode",
 				"category",
@@ -277,6 +278,7 @@ public class CurveFitDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
