@@ -168,6 +168,7 @@ public class KiCurveFitDTO {
 				"curveId",
 				"analysisGroupCode",
 				"recordedBy",
+				"recordedDate",
 				"lsTransaction",
 				"batchCode",
 				"category",
@@ -224,6 +225,7 @@ public class KiCurveFitDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
