@@ -8,8 +8,8 @@ public class ItxLsThingLsThingComparator implements Comparator<ItxLsThingLsThing
 	
 	@Override
 	public int compare(ItxLsThingLsThing o1, ItxLsThingLsThing o2){
-		int o1Order = o1.getItxOrder();
-		int o2Order = o2.getItxOrder();
+		int o1Order = o1.grabItxOrder();
+		int o2Order = o2.grabItxOrder();
 		return o1Order - o2Order;
 	}
 

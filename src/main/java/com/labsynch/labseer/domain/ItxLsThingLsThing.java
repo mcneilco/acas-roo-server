@@ -172,7 +172,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     	return order;
     }
     
-    public int getItxOrder() {
+    public int grabItxOrder() {
 		Set<ItxLsThingLsThingState> lsStates = this.getLsStates();
 		for (ItxLsThingLsThingState lsState : lsStates){
 			Set<ItxLsThingLsThingValue> lsValues = lsState.getLsValues();

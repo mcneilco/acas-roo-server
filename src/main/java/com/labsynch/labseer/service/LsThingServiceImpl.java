@@ -1253,7 +1253,7 @@ public class LsThingServiceImpl implements LsThingService {
 			for (ItxLsThingLsThing secondItxLsThing : secondItxLsThings){
 				LsThing secondLsThing = secondItxLsThing.getSecondLsThing();
 				String lsKind = secondItxLsThing.getLsKind();
-				int order = secondItxLsThing.getItxOrder();
+				int order = secondItxLsThing.grabItxOrder();
 				Collection<LsThing> foundFirstLsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEqualsAndOrderEquals("incorporates", lsKind, secondLsThing, order).getResultList();
 				if (foundLsThings == null){
 					foundLsThings = new HashSet<LsThing>();
