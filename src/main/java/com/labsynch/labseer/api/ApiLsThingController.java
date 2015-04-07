@@ -217,7 +217,8 @@ public class ApiLsThingController {
     @RequestMapping(value = "/{lsType}/{lsKind}/getbatches/{parentIdOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> getLsThingBatchesByParentIdCodeName(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
-    		@PathVariable("parentIdOrCodeName") String parentIdOrCodeName) {
+    		@PathVariable("parentIdOrCodeName") String parentIdOrCodeName,
+    		@RequestParam(value = "with", required = false) String with) {
     	logger.debug("----from the LsThing GET controller----");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -242,6 +243,17 @@ public class ApiLsThingController {
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
         } else {
+        	if (with != null) {
+    			if (with.equalsIgnoreCase("nestedfull")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(batches), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("prettyjson")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(batches), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("nestedstub")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(batches), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("stub")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayStub(batches), headers, HttpStatus.OK);
+    			}
+    		}
             return new ResponseEntity<String>(LsThing.toJsonArray(batches), headers, HttpStatus.OK);
         }
     }
@@ -249,7 +261,8 @@ public class ApiLsThingController {
     @RequestMapping(value = "/{lsType}/{lsKind}/getcomposites/{componentIdOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> getLsThingCompositesByComponentIdCodeName(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
-    		@PathVariable("componentIdOrCodeName") String componentIdOrCodeName) {
+    		@PathVariable("componentIdOrCodeName") String componentIdOrCodeName,
+    		@RequestParam(value = "with", required = false) String with) {
     	logger.debug("----from the LsThing GET controller----");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -274,6 +287,17 @@ public class ApiLsThingController {
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
         } else {
+        	if (with != null) {
+    			if (with.equalsIgnoreCase("nestedfull")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(composites), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("prettyjson")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(composites), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("nestedstub")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(composites), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("stub")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayStub(composites), headers, HttpStatus.OK);
+    			}
+    		}
             return new ResponseEntity<String>(LsThing.toJsonArray(composites), headers, HttpStatus.OK);
         }
     }
