@@ -3,6 +3,7 @@ package com.labsynch.labseer.dto;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -176,16 +177,17 @@ public class FlagWellDTO {
 		}
 		//Then go update all of the aggregate values in the treatment groups
 		for (TreatmentGroup treatmentGroup: allTreatmentGroups){
-			String renderingHint = CurveFitDTO.findRenderingHint(treatmentGroup);
-			if (renderingHint.equalsIgnoreCase("4 parameter D-R")) {
-				Collection<SubjectValue> notKOEfficacySubjectValues = new HashSet<SubjectValue>();
-				Collection<SubjectValue> efficacySubjectValues = findEfficacySubjectValuesByTreatmentGroup(treatmentGroup);
-				Collection<SubjectValue> flagStatusKOSubjectValues = findFlagStatusKOSubjectValuesByTreatmentGroup(treatmentGroup);
-				List<Long> koSubjectIdList = makeSubjectIdList(flagStatusKOSubjectValues);
-				for (SubjectValue subjectValue : efficacySubjectValues){
-					Long subjectId = subjectValue.getLsState().getSubject().getId();
-					if (!koSubjectIdList.contains(subjectId)){
-						notKOEfficacySubjectValues.add(subjectValue);
+				Collection<SubjectValue> notKONumericValueSubjectValues = findNotKONumericValueSubjectValues(treatmentGroup);
+				Map<String, Collection<SubjectValue>> numericSubjectValueMapByLsKind = new HashMap<String, Collection<SubjectValue>>();
+				for (SubjectValue subjectValue : notKONumericValueSubjectValues){
+					String lsKind = subjectValue.getLsKind();
+					if (!numericSubjectValueMapByLsKind.containsKey(lsKind)){
+						Collection<SubjectValue> collection = new HashSet<SubjectValue>();
+						collection.add(subjectValue);
+						numericSubjectValueMapByLsKind.put(lsKind, collection);
+					} else{
+						Collection<SubjectValue> collection = numericSubjectValueMapByLsKind.get(lsKind);
+						collection.add(subjectValue);
 					}
 				}
 				try {
@@ -198,42 +200,56 @@ public class FlagWellDTO {
 					logger.debug("No state data/results found. Creating a new state.");
 				}
 				TreatmentGroupState newState = createResultsTreatmentGroupState(treatmentGroup.getId(), "data", "results", recordedBy, lsTransaction);
-				TreatmentGroupValue newEfficacyTreatmentGroupValue = createTreatmentGroupValue(newState, "numericValue", "efficacy", recordedBy, lsTransaction);
-				StatCalc statCalc = new StatCalc();
-				for (SubjectValue value : notKOEfficacySubjectValues){
-					statCalc.add(value.getNumericValue().doubleValue()); 
+				//fill in the batch code, using the batch code from one of the subjects (they are all the same under a treatmentGroup)
+				SubjectValue batchCodeSubjectValue = findBatchCodeSubjectValue(treatmentGroup);
+				TreatmentGroupValue newBatchCodeTreatmentGroupValue = createTreatmentGroupValue(newState, batchCodeSubjectValue.getLsType(), batchCodeSubjectValue.getLsKind(), recordedBy, lsTransaction);
+				newBatchCodeTreatmentGroupValue.setCodeValue(batchCodeSubjectValue.getCodeValue());
+				newBatchCodeTreatmentGroupValue.setConcentration(batchCodeSubjectValue.getConcentration());
+				newBatchCodeTreatmentGroupValue.setConcUnit(batchCodeSubjectValue.getConcUnit());
+				newBatchCodeTreatmentGroupValue.setCodeType(batchCodeSubjectValue.getCodeType());
+				newBatchCodeTreatmentGroupValue.setCodeKind(batchCodeSubjectValue.getCodeKind());
+				newBatchCodeTreatmentGroupValue.setCodeTypeAndKind(batchCodeSubjectValue.getCodeTypeAndKind());
+				newBatchCodeTreatmentGroupValue.merge();
+				//calculate a new averaged treatmentGroupValue for each lsKind of numericValue found in the not knocked out subjects
+				for (String key : numericSubjectValueMapByLsKind.keySet()){
+					String lsType = "numericValue";
+					String lsKind = key;
+					Collection<SubjectValue> subjectValues = numericSubjectValueMapByLsKind.get(key);
+					String unitKind = subjectValues.iterator().next().getUnitKind();
+					String uncertaintyType = "standard deviation";
+					StatCalc statCalc = new StatCalc();
+					for (SubjectValue subjectValue : subjectValues){
+						statCalc.add(subjectValue.getNumericValue().doubleValue()); 
+					}
+					TreatmentGroupValue newNumericTreatmentGroupValue = createTreatmentGroupValue(newState, lsType, lsKind, recordedBy, lsTransaction);
+					newNumericTreatmentGroupValue.setNumericValue(BigDecimal.valueOf(statCalc.getArithmeticMean()));
+					newNumericTreatmentGroupValue.setUnitKind(unitKind);
+					newNumericTreatmentGroupValue.setNumberOfReplicates(statCalc.getCount());
+					newNumericTreatmentGroupValue.setUncertainty(BigDecimal.valueOf(statCalc.getStandardDeviation()));
+					newNumericTreatmentGroupValue.setUncertaintyType(uncertaintyType);
+					newNumericTreatmentGroupValue.merge();
 				}
-				newEfficacyTreatmentGroupValue.setNumericValue(BigDecimal.valueOf(statCalc.getArithmeticMean()));
-				newEfficacyTreatmentGroupValue.setUnitKind("%");
-				newEfficacyTreatmentGroupValue.setNumberOfReplicates(statCalc.getCount());
-				newEfficacyTreatmentGroupValue.setUncertainty(BigDecimal.valueOf(statCalc.getStandardDeviation()));
-				newEfficacyTreatmentGroupValue.setUncertaintyType("standard deviation");
-				logger.debug("Calculated new mean and standard deviation: " + newEfficacyTreatmentGroupValue.toJson());
-				newEfficacyTreatmentGroupValue.merge();
-//				newEfficacyTreatmentGroupValue.flush();
-			}
-			
 		}
 	}
 
 
-	
-	private static List<Long> makeSubjectIdList(
-			Collection<SubjectValue> subjectValues) {
-		List<Long> subjectIdList = new ArrayList<Long>();
-		for (SubjectValue subjectValue : subjectValues) {
-			Long subjectId = subjectValue.getLsState().getSubject().getId();
-			subjectIdList.add(subjectId);
-		}
-		return subjectIdList;
-	}
 
-
-	@Transactional
-	public static Collection<SubjectValue> findFlagStatusKOSubjectValuesByTreatmentGroup(
+	public static Collection<SubjectValue> findNotKONumericValueSubjectValues(
 			TreatmentGroup treatmentGroup) {
 		EntityManager em = SubjectValue.entityManager();
-		TypedQuery<SubjectValue> q = em.createQuery("SELECT flagStatusValue "
+		TypedQuery<SubjectValue> q = em.createQuery("SELECT numericValues "
+				+ "FROM TreatmentGroup AS treatmentGroup "
+				+ "JOIN treatmentGroup.subjects AS subject "
+				+ "JOIN subject.lsStates AS dataResultsState "
+				+ "JOIN dataResultsState.lsValues AS numericValues "
+				+ "WHERE treatmentGroup = :treatmentGroup "
+				+ "AND subject.ignored IS NOT :ignored "
+				+ "AND dataResultsState.ignored IS NOT :ignored "
+				+ "AND dataResultsState.lsType = :dataResultsStateType "
+				+ "AND dataResultsState.lsKind = :dataResultsStateKind "
+				+ "AND numericValues.lsType =  'numericValue' "
+				+ "AND subject.id NOT IN "
+				+ "( SELECT subject.id "
 				+ "FROM TreatmentGroup AS treatmentGroup "
 				+ "JOIN treatmentGroup.subjects AS subject "
 				+ "JOIN subject.lsStates AS flagStatusState "
@@ -243,66 +259,43 @@ public class FlagWellDTO {
 				+ "AND flagStatusState.ignored IS NOT :ignored "
 				+ "AND flagStatusValue.lsType = :flagStatusValueType "
 				+ "AND flagStatusValue.lsKind = :flagStatusValueKind "
-				+ "AND flagStatusValue.codeValue = :ko ", SubjectValue.class);
+				+ "AND flagStatusValue.codeValue = :ko )", SubjectValue.class);
 		
 		q.setParameter("flagStatusValueType", "codeValue");
 		q.setParameter("flagStatusValueKind", "flag status");
 		q.setParameter("ko", "knocked out");
+		q.setParameter("dataResultsStateType", "data");
+		q.setParameter("dataResultsStateKind", "results");
 		q.setParameter("treatmentGroup", treatmentGroup);
 		q.setParameter("ignored", true);
+		
 		return q.getResultList();
 	}
 	
-	@Transactional
-	public static Collection<SubjectValue> findResponseSubjectValuesByTreatmentGroup(
+	private static SubjectValue findBatchCodeSubjectValue(
 			TreatmentGroup treatmentGroup) {
 		EntityManager em = SubjectValue.entityManager();
-		TypedQuery<SubjectValue> q = em.createQuery("SELECT resultsValue "
+		TypedQuery<SubjectValue> q = em.createQuery("SELECT batchCodeValue "
 				+ "FROM TreatmentGroup AS treatmentGroup "
 				+ "JOIN treatmentGroup.subjects AS subject "
 				+ "JOIN subject.lsStates AS resultsState "
-				+ "JOIN resultsState.lsValues AS resultsValue "
+				+ "JOIN resultsState.lsValues AS batchCodeValue "
 				+ "WHERE treatmentGroup = :treatmentGroup "
 				+ "AND subject.ignored IS NOT :ignored "
 				+ "AND resultsState.ignored IS NOT :ignored "
 				+ "AND resultsState.lsType = :resultsStateType "
 				+ "AND resultsState.lsKind = :resultsStateKind "
-				+ "AND resultsValue.lsType = :resultsValueType "
-				+ "AND resultsValue.lsKind = :resultsValueKind ", SubjectValue.class);
+				+ "AND resultsValue.lsType = :batchCodeValueType "
+				+ "AND resultsValue.lsKind = :batchCodeValueKind "
+				+ "LIMIT 1", SubjectValue.class);
 		
 		q.setParameter("resultsStateType", "data");
 		q.setParameter("resultsStateKind", "results");
-		q.setParameter("resultsValueType", "numericValue");
-		q.setParameter("resultsValueKind", "Response");
+		q.setParameter("batchCodeValueType", "codeValue");
+		q.setParameter("batchCodeValueKind", "batch code");
 		q.setParameter("treatmentGroup", treatmentGroup);
 		q.setParameter("ignored", true);
-		return q.getResultList();
-	}
-	
-	@Transactional
-	public static Collection<SubjectValue> findEfficacySubjectValuesByTreatmentGroup(
-			TreatmentGroup treatmentGroup) {
-		EntityManager em = SubjectValue.entityManager();
-		TypedQuery<SubjectValue> q = em.createQuery("SELECT resultsValue "
-				+ "FROM TreatmentGroup AS treatmentGroup "
-				+ "JOIN treatmentGroup.subjects AS subject "
-				+ "JOIN subject.lsStates AS resultsState "
-				+ "JOIN resultsState.lsValues AS resultsValue "
-				+ "WHERE treatmentGroup = :treatmentGroup "
-				+ "AND subject.ignored IS NOT :ignored "
-				+ "AND resultsState.ignored IS NOT :ignored "
-				+ "AND resultsState.lsType = :resultsStateType "
-				+ "AND resultsState.lsKind = :resultsStateKind "
-				+ "AND resultsValue.lsType = :resultsValueType "
-				+ "AND resultsValue.lsKind = :resultsValueKind ", SubjectValue.class);
-		
-		q.setParameter("resultsStateType", "data");
-		q.setParameter("resultsStateKind", "results");
-		q.setParameter("resultsValueType", "numericValue");
-		q.setParameter("resultsValueKind", "efficacy");
-		q.setParameter("treatmentGroup", treatmentGroup);
-		q.setParameter("ignored", true);
-		return q.getResultList();
+		return q.getSingleResult();
 	}
 	
 	@Transactional
