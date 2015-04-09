@@ -1,11 +1,7 @@
 package com.labsynch.labseer.api;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
-import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.CurveFitDTO;
-import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.FlagWellDTO;
 import com.labsynch.labseer.dto.KiCurveFitDTO;
 import com.labsynch.labseer.dto.RawCurveDataDTO;

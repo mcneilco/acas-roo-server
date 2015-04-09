@@ -102,7 +102,7 @@ public class FlagWellDTOTest {
 		flagWellDTO.setRecordedBy("bfielder");
 		flagWellDTO.setUserFlagStatus("knocked out");
 		flagWellDTO.setUserFlagObservation("high signal");
-		flagWellDTO.setUserFlagReason("tip clog");
+		flagWellDTO.setUserFlagCause("tip clog");
 		Collection<FlagWellDTO> flagWellDTOs = new HashSet<FlagWellDTO>();
 		flagWellDTOs.add(flagWellDTO);
 		FlagWellDTO.updateWellFlags(flagWellDTOs);

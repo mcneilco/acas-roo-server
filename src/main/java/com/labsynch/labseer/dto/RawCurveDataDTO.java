@@ -5,8 +5,6 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +13,6 @@ import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -25,8 +22,6 @@ import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.SubjectValue;
 
 @RooJavaBean
@@ -60,15 +55,15 @@ public class RawCurveDataDTO {
 		this.doseUnits = (String) dataMap.get("doseUnits");
 		this.algorithmFlagStatus = (String) dataMap.get("algorithmFlagStatus");
 		this.algorithmFlagObservation = (String) dataMap.get("algorithmFlagObservation");
-		this.algorithmFlagReason = (String) dataMap.get("algorithmFlagReason");
+		this.algorithmFlagCause = (String) dataMap.get("algorithmFlagCause");
 		this.algorithmFlagComment = (String) dataMap.get("algorithmFlagComment");
 		this.preprocessFlagStatus = (String) dataMap.get("preprocessFlagStatus");
 		this.preprocessFlagObservation = (String) dataMap.get("preprocessFlagObservation");
-		this.preprocessFlagReason = (String) dataMap.get("preprocessFlagReason");
+		this.preprocessFlagCause = (String) dataMap.get("preprocessFlagCause");
 		this.preprocessFlagComment = (String) dataMap.get("preprocessFlagComment");
 		this.userFlagStatus = (String) dataMap.get("userFlagStatus");
 		this.userFlagObservation = (String) dataMap.get("userFlagObservation");
-		this.userFlagReason = (String) dataMap.get("userFlagReason");
+		this.userFlagCause = (String) dataMap.get("userFlagCause");
 		this.userFlagComment = (String) dataMap.get("userFlagComment");
 	}
 	
@@ -88,15 +83,15 @@ public class RawCurveDataDTO {
 		this.doseUnits = (String) dataMap.get("doseUnits");
 		this.algorithmFlagStatus = (String) dataMap.get("algorithmFlagStatus");
 		this.algorithmFlagObservation = (String) dataMap.get("algorithmFlagObservation");
-		this.algorithmFlagReason = (String) dataMap.get("algorithmFlagReason");
+		this.algorithmFlagCause = (String) dataMap.get("algorithmFlagCause");
 		this.algorithmFlagComment = (String) dataMap.get("algorithmFlagComment");
 		this.preprocessFlagStatus = (String) dataMap.get("preprocessFlagStatus");
 		this.preprocessFlagObservation = (String) dataMap.get("preprocessFlagObservation");
-		this.preprocessFlagReason = (String) dataMap.get("preprocessFlagReason");
+		this.preprocessFlagCause = (String) dataMap.get("preprocessFlagCause");
 		this.preprocessFlagComment = (String) dataMap.get("preprocessFlagComment");
 		this.userFlagStatus = (String) dataMap.get("userFlagStatus");
 		this.userFlagObservation = (String) dataMap.get("userFlagObservation");
-		this.userFlagReason = (String) dataMap.get("userFlagReason");
+		this.userFlagCause = (String) dataMap.get("userFlagCause");
 		this.userFlagComment = (String) dataMap.get("userFlagComment");
 	}
 	
@@ -113,15 +108,15 @@ public class RawCurveDataDTO {
 	private String doseUnits; //location, same as above, but in unitKind field
 	private String algorithmFlagStatus;
 	private String algorithmFlagObservation;
-	private String algorithmFlagReason;
+	private String algorithmFlagCause;
 	private String algorithmFlagComment;
 	private String preprocessFlagStatus;
 	private String preprocessFlagObservation;
-	private String preprocessFlagReason;
+	private String preprocessFlagCause;
 	private String preprocessFlagComment;
 	private String userFlagStatus;
 	private String userFlagObservation;
-	private String userFlagReason;
+	private String userFlagCause;
 	private String userFlagComment;
 	
 	
@@ -140,15 +135,15 @@ public class RawCurveDataDTO {
 				"responseUnits",
 				"algorithmFlagStatus",
 				"algorithmFlagObservation",
-				"algorithmFlagReason",
+				"algorithmFlagCause",
 				"algorithmFlagComment",
 				"preprocessFlagStatus",
 				"preprocessFlagObservation",
-				"preprocessFlagReason",
+				"preprocessFlagCause",
 				"preprocessFlagComment",
 				"userFlagStatus",
 				"userFlagObservation",
-				"userFlagReason",
+				"userFlagCause",
 				"userFlagComment"
 				};
 
@@ -196,18 +191,18 @@ public class RawCurveDataDTO {
         		+ "bcsv.concUnit as doseUnits, "
         		+ "afsv.codeValue as algorithmFlagStatus, "
         		+ "afov.codeValue as algorithmFlagObservation, "
-        		+ "afrv.codeValue as algorithmFlagReason, "
+        		+ "afrv.codeValue as algorithmFlagCause, "
         		+ "afcv.stringValue as algorithmFlagComment, "
         		+ "pfsv.codeValue as preprocessFlagStatus, "
         		+ "pfov.codeValue as preprocessFlagObservation, "
-        		+ "pfrv.codeValue as preprocessFlagReason, "
+        		+ "pfrv.codeValue as preprocessFlagCause, "
         		+ "afs.lsKind as algorithmFlagLsKind, "
         		+ "pfs.lsKind as preprocessFlagLsKind, "
         		+ "ufs.lsKind as userFlagLsKind, "
         		+ "pfcv.stringValue as preprocessFlagComment, "
         		+ "ufsv.codeValue as userFlagStatus, "
         		+ "ufov.codeValue as userFlagObservation, "
-        		+ "ufrv.codeValue as userFlagReason, "
+        		+ "ufrv.codeValue as userFlagCause, "
         		+ "ufcv.stringValue as userFlagComment,"
         		+ "agv.stringValue as curveId "
         		+ " ) " 
@@ -220,19 +215,19 @@ public class RawCurveDataDTO {
         		+ "JOIN rss.lsValues as rsv "
         		+ "JOIN rss.lsValues as bcsv "
         		+ "LEFT JOIN subj.lsStates as afs WITH afs.lsKind = 'auto flag' AND afs.ignored = false "
-        		+ "LEFT JOIN afs.lsValues as afsv WITH afsv.lsKind = 'algorithm flag status' "
-        		+ "LEFT JOIN afs.lsValues as afov WITH afov.lsKind = 'algorithm flag observation' "
-        		+ "LEFT JOIN afs.lsValues as afrv WITH afrv.lsKind = 'algorithm flag reason' "
+        		+ "LEFT JOIN afs.lsValues as afsv WITH afsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN afs.lsValues as afov WITH afov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN afs.lsValues as afcv WITH afrv.lsKind = 'flag cause' "
         		+ "LEFT JOIN afs.lsValues as afcv WITH afcv.lsKind = 'comment' "
         		+ "LEFT JOIN subj.lsStates as pfs WITH pfs.lsKind = 'preprocess flag' AND pfs.ignored = false "
-        		+ "LEFT JOIN pfs.lsValues as pfsv WITH pfsv.lsKind = 'preprocess flag status' "
-        		+ "LEFT JOIN pfs.lsValues as pfov WITH pfov.lsKind = 'preprocess flag observation' "
-        		+ "LEFT JOIN pfs.lsValues as pfrv WITH pfrv.lsKind = 'preprocess flag reason' "
+        		+ "LEFT JOIN pfs.lsValues as pfsv WITH pfsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN pfs.lsValues as pfov WITH pfov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN pfs.lsValues as pfcv WITH pfrv.lsKind = 'flag cause' "
         		+ "LEFT JOIN pfs.lsValues as pfcv WITH pfcv.lsKind = 'comment' "
         		+ "LEFT JOIN subj.lsStates as ufs WITH ufs.lsKind = 'user flag' AND ufs.ignored = false "
-        		+ "LEFT JOIN ufs.lsValues as ufsv WITH ufsv.lsKind = 'user flag status' "
-        		+ "LEFT JOIN ufs.lsValues as ufov WITH ufov.lsKind = 'user flag observation' "
-        		+ "LEFT JOIN ufs.lsValues as ufrv WITH ufrv.lsKind = 'user flag reason' "
+        		+ "LEFT JOIN ufs.lsValues as ufsv WITH ufsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN ufs.lsValues as ufov WITH ufov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN ufs.lsValues as ufcv WITH ufrv.lsKind = 'flag cause' "
         		+ "LEFT JOIN ufs.lsValues as ufcv WITH ufcv.lsKind = 'comment' "
         		+ "WHERE rss.lsType = 'data' "
         		+ "AND rss.lsKind = 'results' "

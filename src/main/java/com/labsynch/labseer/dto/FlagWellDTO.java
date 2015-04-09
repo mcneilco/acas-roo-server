@@ -1,11 +1,8 @@
 package com.labsynch.labseer.dto;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -22,13 +19,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
@@ -49,15 +40,15 @@ public class FlagWellDTO {
 	private Long lsTransaction;
 	private String algorithmFlagStatus;
 	private String algorithmFlagObservation;
-	private String algorithmFlagReason;
+	private String algorithmFlagCause;
 	private String algorithmFlagComment;
 	private String preprocessFlagStatus;
 	private String preprocessFlagObservation;
-	private String preprocessFlagReason;
+	private String preprocessFlagCause;
 	private String preprocessFlagComment;
 	private String userFlagStatus;
 	private String userFlagObservation;
-	private String userFlagReason;
+	private String userFlagCause;
 	private String userFlagComment;
 	
 	public FlagWellDTO(){
@@ -70,15 +61,15 @@ public class FlagWellDTO {
 		this.lsTransaction = lsTransaction;
 		this.algorithmFlagStatus = flagMap.get("algorithmFlagStatus");
 		this.algorithmFlagObservation = flagMap.get("algorithmFlagObservation");
-		this.algorithmFlagReason = flagMap.get("algorithmFlagReason");
+		this.algorithmFlagCause = flagMap.get("algorithmFlagCause");
 		this.algorithmFlagComment = flagMap.get("userFlagComment");
 		this.preprocessFlagStatus = flagMap.get("preprocessFlagStatus");
 		this.preprocessFlagObservation = flagMap.get("preprocessFlagObservation");
-		this.preprocessFlagReason = flagMap.get("preprocessFlagReason");
+		this.preprocessFlagCause = flagMap.get("preprocessFlagCause");
 		this.preprocessFlagComment = flagMap.get("userFlagComment");
 		this.userFlagStatus = flagMap.get("userFlagStatus");
 		this.userFlagObservation = flagMap.get("userFlagObservation");
-		this.userFlagReason = flagMap.get("userFlagReason");
+		this.userFlagCause = flagMap.get("userFlagCause");
 		this.userFlagComment = flagMap.get("userFlagComment");
 	}
 
@@ -89,15 +80,15 @@ public class FlagWellDTO {
 				"lsTransaction",
 				"algorithmFlagStatus",
 				"algorithmFlagObservation",
-				"algorithmFlagReason",
+				"algorithmFlagCause",
 				"algorithmFlagComment",
 				"preprocessFlagStatus",
 				"preprocessFlagObservation",
-				"preprocessFlagReason",
+				"preprocessFlagCause",
 				"preprocessFlagComment",
 				"userFlagStatus",
 				"userFlagObservation",
-				"userFlagReason",
+				"userFlagCause",
 				"userFlagComment"
 				};
 
@@ -140,7 +131,7 @@ public class FlagWellDTO {
 			Subject subject = findSubject(flagWellDTO.getResponseSubjectValueId());
 			Collection<TreatmentGroup> treatmentGroups = subject.getTreatmentGroups();
 			allTreatmentGroups.addAll(treatmentGroups);
-			if ( !(flagWellDTO.getAlgorithmFlagStatus()==null) || !(flagWellDTO.getAlgorithmFlagObservation()==null) || !(flagWellDTO.getAlgorithmFlagReason()==null) || !(flagWellDTO.getAlgorithmFlagComment()==null)) {
+			if ( !(flagWellDTO.getAlgorithmFlagStatus()==null) || !(flagWellDTO.getAlgorithmFlagObservation()==null) || !(flagWellDTO.getAlgorithmFlagCause()==null) || !(flagWellDTO.getAlgorithmFlagComment()==null)) {
 				logger.debug("Change in algorithm flags detected. Attempting to ignore old state.");
 				try {
 					SubjectState oldAlgorithmFlagState = findAlgorithmFlagState(subject).getSingleResult();
@@ -154,7 +145,7 @@ public class FlagWellDTO {
 				SubjectState newAlgorithmState = createWellFlagState(subject.getId(), "data", "auto flag", recordedBy, lsTransaction);
 				saveWellFlags(newAlgorithmState, flagWellDTO);
 			}
-			if ( !(flagWellDTO.getPreprocessFlagStatus()==null) || !(flagWellDTO.getPreprocessFlagObservation()==null) || !(flagWellDTO.getPreprocessFlagReason()==null) || !(flagWellDTO.getPreprocessFlagComment()==null)) {
+			if ( !(flagWellDTO.getPreprocessFlagStatus()==null) || !(flagWellDTO.getPreprocessFlagObservation()==null) || !(flagWellDTO.getPreprocessFlagCause()==null) || !(flagWellDTO.getPreprocessFlagComment()==null)) {
 				logger.debug("Change in preprocess flags detected. Attempting to ignore old state.");
 				try {
 					SubjectState oldPreprocessFlagState = findPreprocessFlagState(subject).getSingleResult();
@@ -168,7 +159,7 @@ public class FlagWellDTO {
 				SubjectState newPreprocessState = createWellFlagState(subject.getId(), "data", "preprocess flag", recordedBy, lsTransaction);
 				saveWellFlags(newPreprocessState, flagWellDTO);
 			}
-			if ( !(flagWellDTO.getUserFlagStatus()==null) || !(flagWellDTO.getUserFlagObservation()==null) || !(flagWellDTO.getUserFlagReason()==null) || !(flagWellDTO.getUserFlagComment()==null)) {
+			if ( !(flagWellDTO.getUserFlagStatus()==null) || !(flagWellDTO.getUserFlagObservation()==null) || !(flagWellDTO.getUserFlagCause()==null) || !(flagWellDTO.getUserFlagComment()==null)) {
 				logger.debug("Change in user flags detected. Attempting to ignore old state.");
 				try {
 					SubjectState oldUserFlagState = findUserFlagState(subject).getSingleResult();
@@ -386,57 +377,55 @@ public class FlagWellDTO {
 		String flagType = null;
 		String flagStatus = null;
 		String flagObservation = null;
-		String flagReason = null;
+		String flagCause = null;
 		String flagComment = null;
 		if (stateLsKind.equals("auto flag")) {
 			flagType = "algorithm";
 			flagStatus = flagWellDTO.getAlgorithmFlagStatus();
 			flagObservation = flagWellDTO.getAlgorithmFlagObservation();
-			flagReason = flagWellDTO.getAlgorithmFlagReason();
+			flagCause = flagWellDTO.getAlgorithmFlagCause();
 			flagComment = flagWellDTO.getAlgorithmFlagComment();
 		} else if (stateLsKind.equals("preprocess flag")) {
 			flagType = "preprocess";
 			flagStatus = flagWellDTO.getPreprocessFlagStatus();
 			flagObservation = flagWellDTO.getPreprocessFlagObservation();
-			flagReason = flagWellDTO.getPreprocessFlagReason();
+			flagCause = flagWellDTO.getPreprocessFlagCause();
 			flagComment = flagWellDTO.getPreprocessFlagComment();
 		} else {
 			flagType = "user";
 			flagStatus = flagWellDTO.getUserFlagStatus();
 			flagObservation = flagWellDTO.getUserFlagObservation();
-			flagReason = flagWellDTO.getUserFlagReason();
+			flagCause = flagWellDTO.getUserFlagCause();
 			flagComment = flagWellDTO.getUserFlagComment();
 		}
 		String recordedBy = flagWellDTO.getRecordedBy();
 		Long lsTransaction = flagWellDTO.getLsTransaction();
 		//only create SubjectValues if they would not be empty/null
 		if (!(flagStatus==null)){
-			SubjectValue flagStatusValue = createWellFlagValue(state, "codeValue", flagType+" flag status", flagStatus, recordedBy, lsTransaction);
+			SubjectValue flagStatusValue = createWellFlagValue(state, "codeValue", "flag status", flagStatus, recordedBy, lsTransaction);
 			flagStatusValue.setCodeType(flagType+" well flags");
 			flagStatusValue.setCodeKind("flag status");
 			newValues.add(flagStatusValue);
 		}
 		if (!(flagObservation==null)){
-			SubjectValue flagObservationValue = createWellFlagValue(state, "codeValue", flagType+" flag observation", flagObservation, recordedBy, lsTransaction);
+			SubjectValue flagObservationValue = createWellFlagValue(state, "codeValue", "flag observation", flagObservation, recordedBy, lsTransaction);
 			flagObservationValue.setCodeType(flagType+" well flags");
 			flagObservationValue.setCodeKind("flag observation");
 			newValues.add(flagObservationValue);
 		}
-		if (!(flagReason==null)){
-			SubjectValue flagReasonValue = createWellFlagValue(state, "codeValue", flagType+" flag reason", flagReason, recordedBy, lsTransaction);
-			flagReasonValue.setCodeType(flagType+" well flags");
-			flagReasonValue.setCodeKind("flag reason");
-			newValues.add(flagReasonValue);
+		if (!(flagCause==null)){
+			SubjectValue flagCauseValue = createWellFlagValue(state, "codeValue", "flag cause", flagCause, recordedBy, lsTransaction);
+			flagCauseValue.setCodeType(flagType+" well flags");
+			flagCauseValue.setCodeKind("flag cause");
+			newValues.add(flagCauseValue);
 		}
 		if (!(flagComment==null)){
 			SubjectValue flagCommentValue = createWellFlagValue(state, "stringValue", "comment", flagComment, recordedBy, lsTransaction);
-			flagCommentValue.setCodeType(flagType+" well flags");
-			flagCommentValue.setCodeKind("flag reason");
 			newValues.add(flagCommentValue);
 		}
 		//persist and flush all the new values
 		for (SubjectValue value: newValues){
-			value.setCodeOrigin("ACAS Curve Curator");
+			value.setCodeOrigin("ACAS DDICT");
 			value.setRecordedBy(recordedBy);
 			value.persist();
 //			value.flush();
