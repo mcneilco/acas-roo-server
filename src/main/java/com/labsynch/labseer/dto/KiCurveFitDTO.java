@@ -600,16 +600,17 @@ public class KiCurveFitDTO {
 		//flags
 		if (!(userFlagStatus==null)){
 			AnalysisGroupValue userFlagStatusValue = createCurveFitValue(state, "codeValue", "user flag status", userFlagStatus, recordedBy, lsTransaction);
-			userFlagStatusValue.setCodeType("user well flags");
+			userFlagStatusValue.setCodeType("user flags");
 			userFlagStatusValue.setCodeKind("flag status");
-			userFlagStatusValue.setCodeOrigin("ACAS Curve Curator");
+			userFlagStatusValue.setCodeOrigin("ACAS DDICT");
 			newValues.add(userFlagStatusValue);
 		}
 		if (!(algorithmFlagStatus==null)){
 			AnalysisGroupValue algorithmFlagStatusValue = createCurveFitValue(state, "codeValue", "algorithm flag status", algorithmFlagStatus, recordedBy, lsTransaction);
-			algorithmFlagStatusValue.setCodeType("algorithm well flags");
+			algorithmFlagStatusValue.setCodeType("algorithm flags");
 			algorithmFlagStatusValue.setCodeKind("flag status");
-			algorithmFlagStatusValue.setCodeOrigin("ACAS Curve Fit Module");
+			algorithmFlagStatusValue.setCodeOrigin("ACAS DDICT");
+			newValues.add(algorithmFlagStatusValue);
 		}
 		
 		//persist and flush all the new values

@@ -96,12 +96,12 @@ privileged aspect RawCurveDataDTO_Roo_JavaBean {
         this.algorithmFlagObservation = algorithmFlagObservation;
     }
     
-    public String RawCurveDataDTO.getAlgorithmFlagReason() {
-        return this.algorithmFlagReason;
+    public String RawCurveDataDTO.getAlgorithmFlagCause() {
+        return this.algorithmFlagCause;
     }
     
-    public void RawCurveDataDTO.setAlgorithmFlagReason(String algorithmFlagReason) {
-        this.algorithmFlagReason = algorithmFlagReason;
+    public void RawCurveDataDTO.setAlgorithmFlagCause(String algorithmFlagCause) {
+        this.algorithmFlagCause = algorithmFlagCause;
     }
     
     public String RawCurveDataDTO.getAlgorithmFlagComment() {
@@ -128,12 +128,12 @@ privileged aspect RawCurveDataDTO_Roo_JavaBean {
         this.preprocessFlagObservation = preprocessFlagObservation;
     }
     
-    public String RawCurveDataDTO.getPreprocessFlagReason() {
-        return this.preprocessFlagReason;
+    public String RawCurveDataDTO.getPreprocessFlagCause() {
+        return this.preprocessFlagCause;
     }
     
-    public void RawCurveDataDTO.setPreprocessFlagReason(String preprocessFlagReason) {
-        this.preprocessFlagReason = preprocessFlagReason;
+    public void RawCurveDataDTO.setPreprocessFlagCause(String preprocessFlagCause) {
+        this.preprocessFlagCause = preprocessFlagCause;
     }
     
     public String RawCurveDataDTO.getPreprocessFlagComment() {
@@ -160,12 +160,12 @@ privileged aspect RawCurveDataDTO_Roo_JavaBean {
         this.userFlagObservation = userFlagObservation;
     }
     
-    public String RawCurveDataDTO.getUserFlagReason() {
-        return this.userFlagReason;
+    public String RawCurveDataDTO.getUserFlagCause() {
+        return this.userFlagCause;
     }
     
-    public void RawCurveDataDTO.setUserFlagReason(String userFlagReason) {
-        this.userFlagReason = userFlagReason;
+    public void RawCurveDataDTO.setUserFlagCause(String userFlagCause) {
+        this.userFlagCause = userFlagCause;
     }
     
     public String RawCurveDataDTO.getUserFlagComment() {
