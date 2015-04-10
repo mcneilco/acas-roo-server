@@ -28,4 +28,7 @@
 <definition extends="default" name="protocolvalues/findProtocolValuesByLsKindEqualsAndStringValueLike">
         <put-attribute name="body" value="/WEB-INF/views/protocolvalues/findProtocolValuesByLsKindEqualsAndStringValueLike.jspx"/>
     </definition>
+<definition extends="default" name="protocolvalues/findProtocolValuesByLsKindEqualsAndDateValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocolvalues/findProtocolValuesByLsKindEqualsAndDateValueEquals.jspx"/>
+    </definition>
 </tiles-definitions>
