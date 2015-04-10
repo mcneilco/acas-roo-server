@@ -132,5 +132,17 @@ public class ApiExperimentControllerTest {
     	Collection<Experiment> results = Experiment.fromJsonArrayToExperiments(responseJson);
     	Assert.assertFalse(results.isEmpty());
     }
+    
+    @Test
+    public void genericSearchForAllExperiments() throws Exception {
+    	String searchString = "*";
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isInternalServerError())
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Assert.assertTrue(responseJson.contains("Too many"));
+    }
 
 }
