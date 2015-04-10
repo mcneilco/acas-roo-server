@@ -286,8 +286,7 @@ public class FlagWellDTO {
 				+ "AND resultsState.lsType = :resultsStateType "
 				+ "AND resultsState.lsKind = :resultsStateKind "
 				+ "AND resultsValue.lsType = :batchCodeValueType "
-				+ "AND resultsValue.lsKind = :batchCodeValueKind "
-				+ "LIMIT 1", SubjectValue.class);
+				+ "AND resultsValue.lsKind = :batchCodeValueKind ", SubjectValue.class);
 		
 		q.setParameter("resultsStateType", "data");
 		q.setParameter("resultsStateKind", "results");
@@ -295,7 +294,7 @@ public class FlagWellDTO {
 		q.setParameter("batchCodeValueKind", "batch code");
 		q.setParameter("treatmentGroup", treatmentGroup);
 		q.setParameter("ignored", true);
-		return q.getSingleResult();
+		return q.getResultList().get(0);
 	}
 	
 	@Transactional
