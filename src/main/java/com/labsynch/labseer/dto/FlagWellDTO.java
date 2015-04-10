@@ -202,6 +202,7 @@ public class FlagWellDTO {
 				TreatmentGroupState newState = createResultsTreatmentGroupState(treatmentGroup.getId(), "data", "results", recordedBy, lsTransaction);
 				//fill in the batch code, using the batch code from one of the subjects (they are all the same under a treatmentGroup)
 				SubjectValue batchCodeSubjectValue = findBatchCodeSubjectValue(treatmentGroup);
+				if (batchCodeSubjectValue == null) logger.error("Unable to find batch code subject value for treatmentgroup: " + treatmentGroup.getCodeName());
 				TreatmentGroupValue newBatchCodeTreatmentGroupValue = createTreatmentGroupValue(newState, batchCodeSubjectValue.getLsType(), batchCodeSubjectValue.getLsKind(), recordedBy, lsTransaction);
 				newBatchCodeTreatmentGroupValue.setCodeValue(batchCodeSubjectValue.getCodeValue());
 				newBatchCodeTreatmentGroupValue.setConcentration(batchCodeSubjectValue.getConcentration());
@@ -272,7 +273,7 @@ public class FlagWellDTO {
 		return q.getResultList();
 	}
 	
-	private static SubjectValue findBatchCodeSubjectValue(
+	public static SubjectValue findBatchCodeSubjectValue(
 			TreatmentGroup treatmentGroup) {
 		EntityManager em = SubjectValue.entityManager();
 		TypedQuery<SubjectValue> q = em.createQuery("SELECT batchCodeValue "
@@ -285,8 +286,8 @@ public class FlagWellDTO {
 				+ "AND resultsState.ignored IS NOT :ignored "
 				+ "AND resultsState.lsType = :resultsStateType "
 				+ "AND resultsState.lsKind = :resultsStateKind "
-				+ "AND resultsValue.lsType = :batchCodeValueType "
-				+ "AND resultsValue.lsKind = :batchCodeValueKind ", SubjectValue.class);
+				+ "AND batchCodeValue.lsType = :batchCodeValueType "
+				+ "AND batchCodeValue.lsKind = :batchCodeValueKind ", SubjectValue.class);
 		
 		q.setParameter("resultsStateType", "data");
 		q.setParameter("resultsStateKind", "results");
@@ -294,7 +295,9 @@ public class FlagWellDTO {
 		q.setParameter("batchCodeValueKind", "batch code");
 		q.setParameter("treatmentGroup", treatmentGroup);
 		q.setParameter("ignored", true);
-		return q.getResultList().get(0);
+		Collection<SubjectValue> results = q.getResultList();
+		if (!results.isEmpty()) return results.iterator().next();
+		else return null;
 	}
 	
 	@Transactional
