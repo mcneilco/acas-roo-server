@@ -81,6 +81,15 @@ public class FlagWellDTOTest {
 	
 	@Test
 	@Transactional
+	public void findBatchCodeSubjectValueTest() {
+		Long id = 1132177L;
+		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
+		SubjectValue sv = FlagWellDTO.findBatchCodeSubjectValue(treatmentGroup);
+		logger.info(sv.toJson());
+	}
+	
+	@Test
+	@Transactional
 	public void updateWellFlagsTest() {
 		Long id1 = 3536726L;
 		Long id2 = 3536727L;
