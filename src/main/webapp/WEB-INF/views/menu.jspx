@@ -140,7 +140,7 @@
             <menu:item id="i_experimentvalue_new" messageCode="global_menu_new" url="/experimentvalues?form" z="dv8tE4L0crSnTYkUjPl7c6HwixI="/>
             <menu:item id="i_experimentvalue_list" messageCode="global_menu_list" url="/experimentvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="Qui9XKTtYE1Dsym9RpQJEF66oek="/>
             <menu:item id="fi_experimentvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="TkQpcyXT3kCx8QtfIhMU1s1sVJQ="/>
-            <menu:item id="fi_experimentvalue_lskindequalsanddatevaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndDateValueLike&amp;form" z="lkP4GGK96OnwCs/NlzKSOIN3WaA="/>
+            <menu:item id="fi_experimentvalue_lskindequalsanddatevalueequals" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndDateValueEquals&amp;form" z="peU0BfMs+8hHKaxtGjkcWvulPac="/>
             <menu:item id="fi_experimentvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="6Qb9CBQGfKxEpfaKiiWPzblfnN8="/>
             <menu:item id="fi_experimentvalue_lsstate" messageCode="global_menu_find" url="/experimentvalues?find=ByLsState&amp;form" z="9GTDsaIh52NGmUSF7Nmpi7Y11+o="/>
             <menu:item id="fi_experimentvalue_lsstateandignorednotandlskindequalsandlstypeequalsandstringvalueequals" messageCode="global_menu_find" url="/experimentvalues?find=ByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals&amp;form" z="7er6Ts6GhGJENszpULj1IVCpeR8="/>
@@ -192,7 +192,6 @@
             <menu:item id="i_protocolvalue_new" messageCode="global_menu_new" url="/protocolvalues?form" z="NeuraCstRhyZtMj+o86SkuN9oGQ="/>
             <menu:item id="i_protocolvalue_list" messageCode="global_menu_list" url="/protocolvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="FRB+41kwl8e6u9QTlycPPNaiMM8="/>
             <menu:item id="fi_protocolvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="MMmLU1imye2s/Ru3VFyUIJZSVvI="/>
-            <menu:item id="fi_protocolvalue_lskindequalsanddatevaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndDateValueLike&amp;form" z="CiOFltInilp+BOvRezHC0gGifrk="/>
             <menu:item id="fi_protocolvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="mchkxsc/6HRGLW4mZyX+nlSMCcM="/>
             <menu:item id="fi_protocolvalue_lsstate" messageCode="global_menu_find" url="/protocolvalues?find=ByLsState&amp;form" z="iC+uW+zryi1hkuwjmqaql0Z+5Vo="/>
             <menu:item id="fi_protocolvalue_lstransactionequals" messageCode="global_menu_find" url="/protocolvalues?find=ByLsTransactionEquals&amp;form" z="LKaa2qhqdvo5/47t358DbHVR/+4="/>
@@ -371,10 +370,10 @@
             <menu:item id="i_lsthing_new" messageCode="global_menu_new" url="/lsthings?form" z="FkvjAHMnih2v+Eaijc3pAIivtmw="/>
             <menu:item id="i_lsthing_list" messageCode="global_menu_list" url="/lsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KdnkBXuo2MoJ5nhgfl2rt3i2KCQ="/>
             <menu:item id="fi_lsthing_codenameequals" messageCode="global_menu_find" url="/lsthings?find=ByCodeNameEquals&amp;form" z="k9kkRKddWM2bGHmLfsOoz3tA5+E="/>
-            <menu:item id="fi_lsthing_lstransactionequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTransactionEquals&amp;form" z="20eTek0wKMABLzD+DeD98giqJt0="/>
-            <menu:item id="fi_lsthing_lstypeandkindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeAndKindEquals&amp;form" z="dmBfpocGcW2wsusk0jXLxUC3tmU="/>
             <menu:item id="fi_lsthing_codenamelike" messageCode="global_menu_find" url="/lsthings?find=ByCodeNameLike&amp;form" z="irkgn326gCwbL/fD67flKwdT5s0="/>
             <menu:item id="fi_lsthing_lskindlike" messageCode="global_menu_find" url="/lsthings?find=ByLsKindLike&amp;form" z="Jy9T+1sJZwHFty3E4zgV4H9MAj0="/>
+            <menu:item id="fi_lsthing_lstransactionequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTransactionEquals&amp;form" z="20eTek0wKMABLzD+DeD98giqJt0="/>
+            <menu:item id="fi_lsthing_lstypeandkindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeAndKindEquals&amp;form" z="dmBfpocGcW2wsusk0jXLxUC3tmU="/>
             <menu:item id="fi_lsthing_recordedbylike" messageCode="global_menu_find" url="/lsthings?find=ByRecordedByLike&amp;form" z="h9+nSaROI5FHM+mfAaZeNALGtPU="/>
         </menu:category>
         <menu:category id="c_lsthingstate" z="kDZpS4CZuCX4P3hck2rU9pGQEHs=">

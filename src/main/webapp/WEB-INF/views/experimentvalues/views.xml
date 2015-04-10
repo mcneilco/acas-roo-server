@@ -28,4 +28,7 @@
 <definition extends="default" name="experimentvalues/findExperimentValuesByLsKindEqualsAndStringValueLike">
         <put-attribute name="body" value="/WEB-INF/views/experimentvalues/findExperimentValuesByLsKindEqualsAndStringValueLike.jspx"/>
     </definition>
+<definition extends="default" name="experimentvalues/findExperimentValuesByLsKindEqualsAndDateValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/experimentvalues/findExperimentValuesByLsKindEqualsAndDateValueEquals.jspx"/>
+    </definition>
 </tiles-definitions>

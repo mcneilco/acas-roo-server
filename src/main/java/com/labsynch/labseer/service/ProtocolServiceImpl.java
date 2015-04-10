@@ -378,11 +378,13 @@ public class ProtocolServiceImpl implements ProtocolService {
 			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 			try {
 				Date date = df.parse(queryString);
-				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+				logger.debug("Successfully parsed date: "+queryString);
+				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
-					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+					logger.debug("Successfully parsed date: "+queryString);
+					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}

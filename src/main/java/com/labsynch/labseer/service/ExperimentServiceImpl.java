@@ -999,6 +999,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 //			experimentIdList.addAll(findExperimentIdsByMetadata(term, "RECORDEDBY"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "KIND"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "STATUS"));
+			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ANALYSIS STATUS"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL TYPE"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL KIND"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL CODENAME"));
@@ -1095,7 +1096,16 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experiments.clear();
 		}
 		if (searchBy == "STATUS") {
-			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndStringValueLike("status", queryString).getResultList();
+			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike("experiment status", queryString).getResultList();
+			if (!experimentValues.isEmpty()){
+				for (ExperimentValue experimentValue : experimentValues) {
+					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
+				}
+			}
+			experimentValues.clear();
+		}
+		if (searchBy == "ANALYSIS STATUS") {
+			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike("analysis status", queryString).getResultList();
 			if (!experimentValues.isEmpty()){
 				for (ExperimentValue experimentValue : experimentValues) {
 					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
@@ -1169,11 +1179,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 			try {
 				Date date = df.parse(queryString);
-				experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+				experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals("completion date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
-					experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+					experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals("completion date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}

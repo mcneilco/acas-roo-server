@@ -6,9 +6,7 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.web.ProtocolValueController;
-import java.util.Date;
 import java.util.List;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -102,14 +100,6 @@ privileged aspect ProtocolValueController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ProtocolValue.toJsonArray(ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike(lsKind, codeValue).getResultList()), headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLike", headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<String> ProtocolValueController.jsonFindProtocolValuesByLsKindEqualsAndDateValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ProtocolValue.toJsonArray(ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike(lsKind, dateValue).getResultList()), headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByLsKindEqualsAndStringValueLike", headers = "Accept=application/json")
