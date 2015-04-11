@@ -1381,8 +1381,7 @@ public class ApiExperimentController {
 			String result = Experiment.toJsonArrayStub(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery));
 			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 		} catch(Exception e){
-			String error = e.getMessage() + e.getStackTrace();
-			return new ResponseEntity<String>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
     

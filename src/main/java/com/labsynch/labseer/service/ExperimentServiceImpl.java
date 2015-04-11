@@ -47,6 +47,7 @@ import com.labsynch.labseer.dto.SELColOrderDTO;
 import com.labsynch.labseer.dto.StateValueCsvDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -981,7 +982,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	}
 
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString) {
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString) throws TooManyResultsException {
 		//make our HashSets: experimentIdList will be filled/cleared/refilled for each term
 		//experimentList is the final search result
 		HashSet<Long> experimentIdList = new HashSet<Long>();
@@ -990,6 +991,15 @@ public class ExperimentServiceImpl implements ExperimentService {
 		//Split the query up on spaces
 		String[] splitQuery = queryString.split("\\s+");
 		logger.debug("Number of search terms: " + splitQuery.length);
+		//Protection from searching * in a database with too many experiments:
+		if (splitQuery.length == 1 && splitQuery[0].equals("*")){
+			logger.warn("Query for '*' detected. Determining if number of results is too many.");
+			int experimentCount = (int) Experiment.countExperiments();
+			logger.debug("Found "+experimentCount +" experiments.");
+			if (experimentCount > 1000){
+				throw new TooManyResultsException("Too many experiments will be returned with the query: "+"*");
+			}
+		}
 		//Make the Map of terms and HashSets of experiment id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {
