@@ -33,7 +33,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord
+@RooJpaActiveRecord(finders = { "findItxLsThingLsThingsByCodeNameEquals" } )
 public class ItxLsThingLsThing extends AbstractThing {
 
     @NotNull
@@ -52,6 +52,9 @@ public class ItxLsThingLsThing extends AbstractThing {
     public ItxLsThingLsThing(com.labsynch.labseer.domain.ItxLsThingLsThing itxLsThingLsThing) {
     	this.setRecordedBy(itxLsThingLsThing.getRecordedBy());
     	this.setRecordedDate(itxLsThingLsThing.getRecordedDate());
+    	this.setIgnored(itxLsThingLsThing.isIgnored());
+    	this.setDeleted(itxLsThingLsThing.isDeleted());
+    	this.setVersion(itxLsThingLsThing.getVersion());
     	this.setLsTransaction(itxLsThingLsThing.getLsTransaction());
     	this.setModifiedBy(itxLsThingLsThing.getModifiedBy());
     	this.setModifiedDate(itxLsThingLsThing.getModifiedDate());
@@ -67,12 +70,21 @@ public class ItxLsThingLsThing extends AbstractThing {
     	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
     	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
     	updatedItxLsThingLsThing.setModifiedDate(new Date());
+    	updatedItxLsThingLsThing.setLsStates(itxLsThingLsThing.getLsStates());
     	updatedItxLsThingLsThing.merge();
         return updatedItxLsThingLsThing;
     }
     
+    public static ItxLsThingLsThing updateNoMerge(ItxLsThingLsThing itxLsThingLsThing) {
+    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setModifiedDate(new Date());
+    	updatedItxLsThingLsThing.setLsStates(itxLsThingLsThing.getLsStates());
+        return updatedItxLsThingLsThing;
+    }
+    
     public String toJson() {
-        return new JSONSerializer().exclude("*.class")
+        return new JSONSerializer().exclude("*.class", "lsStates.itxLsThingLsThing")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }

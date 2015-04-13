@@ -303,7 +303,7 @@ public class ApiLsThingController {
     }
     
 
-//	@Transactional
+	@Transactional
     @RequestMapping(value="/{lsType}/{lsKind}", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,

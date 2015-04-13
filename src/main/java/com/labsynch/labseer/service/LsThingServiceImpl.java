@@ -288,7 +288,7 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	@Transactional
 	public LsThing updateLsThing(LsThing jsonLsThing){
-		LsThing updatedLsThing = LsThing.update(jsonLsThing);
+		LsThing updatedLsThing = LsThing.updateNoMerge(jsonLsThing);
 		if (jsonLsThing.getLsLabels() != null) {
 			for(LsThingLabel lsThingLabel : jsonLsThing.getLsLabels()){
 				logger.debug("Label in hand: " + lsThingLabel.getLabelText());			
@@ -308,54 +308,24 @@ public class LsThingServiceImpl implements LsThingService {
 		updateLsStates(jsonLsThing, updatedLsThing);
 		//updated itx and nested LsThings
 		if(jsonLsThing.getFirstLsThings() != null){
-		//there are itx's
+			//there are itx's
 			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
 				ItxLsThingLsThing updatedItxLsThingLsThing;
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
 					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
-					LsThing updatedNestedLsThing;
-					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
-						//need to save a new nested lsthing
-						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
-						try{
-							updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
-							itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
-						} catch (UniqueNameException e){
-							logger.error("Caught UniqueNameException trying to update nested LsThing");
-						}
-					}
-					else{
-						//just need to update the old nested lsThing inside the new itx
-						updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getFirstLsThing());
-						updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
-						itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
-					}
+					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
 					firstLsThings.add(updatedItxLsThingLsThing);
 				}else {
 					//old itx needs to be updated
-					LsThing updatedNestedLsThing;
-					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
-						//old itx has new nested lsThing
-						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
-						try{
-							updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
-							itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
-						} catch (UniqueNameException e){
-							logger.error("Caught UniqueNameException trying to update nested LsThing");
-						}
-					}
-					else{
-						//old itx has old lsThing that needs to be updated
-						updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getFirstLsThing());
-						updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
-						itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
-					}
+					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
-					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
+					updatedItxLsThingLsThing = ItxLsThingLsThing.updateNoMerge(itxLsThingLsThing);
+					updateItxLsStates(itxLsThingLsThing, updatedItxLsThingLsThing);
+					updatedItxLsThingLsThing.merge();
 					firstLsThings.add(updatedItxLsThingLsThing);
 				}
 			}
@@ -364,65 +334,73 @@ public class LsThingServiceImpl implements LsThingService {
 		
 		if(jsonLsThing.getSecondLsThings() != null){
 			//there are itx's
-				Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
-				for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getSecondLsThings()){
-					ItxLsThingLsThing updatedItxLsThingLsThing;
-					if (itxLsThingLsThing.getId() == null){
-						//need to save a new itx
-						logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
-						LsThing updatedNestedLsThing;
-						if (itxLsThingLsThing.getSecondLsThing().getId() == null){
-							//need to save a new nested lsthing
-							logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
-							try{
-								updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
-								itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
-							} catch (UniqueNameException e){
-								logger.error("Caught UniqueNameException trying to update nested LsThing");
-							}
-						}
-						else{
-							//just need to update the old nested lsThing inside the new itx
-							updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getSecondLsThing());
-							updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
-							itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
-						}
-						itxLsThingLsThing.setFirstLsThing(updatedLsThing);
-						updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
-						firstLsThings.add(updatedItxLsThingLsThing);
-					}else {
-						//old itx needs to be updated
-						LsThing updatedNestedLsThing;
-						if (itxLsThingLsThing.getSecondLsThing().getId() == null){
-							//old itx has new nested lsThing
-							logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
-							try{
-								updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
-								itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
-							} catch (UniqueNameException e){
-								logger.error("Caught UniqueNameException trying to update nested LsThing");
-							}
-						}
-						else{
-							//old itx has old lsThing that needs to be updated
-							updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getSecondLsThing());
-							updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
-							itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
-						}
-						itxLsThingLsThing.setFirstLsThing(updatedLsThing);
-						updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
-						firstLsThings.add(updatedItxLsThingLsThing);
-					}
+			Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getSecondLsThings()){
+				ItxLsThingLsThing updatedItxLsThingLsThing;
+				if (itxLsThingLsThing.getId() == null){
+					//need to save a new itx
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					updateNestedSecondLsThing(itxLsThingLsThing);
+					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					secondLsThings.add(updatedItxLsThingLsThing);
+				}else {
+					//old itx needs to be updated
+					updateNestedSecondLsThing(itxLsThingLsThing);
+					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
+					updateItxLsStates(itxLsThingLsThing, updatedItxLsThingLsThing);
+					secondLsThings.add(updatedItxLsThingLsThing);
 				}
-				updatedLsThing.setSecondLsThings(firstLsThings);
 			}
+			updatedLsThing.setSecondLsThings(secondLsThings);
+		}
+		updatedLsThing.merge();
 		
-		
-		
-
 		return updatedLsThing;
 
 	}
+
+	private void updateNestedFirstLsThing(ItxLsThingLsThing itxLsThingLsThing) {
+		LsThing updatedNestedLsThing;
+		if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+			//need to save a new nested lsthing
+			logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+			try{
+				updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+				itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+			} catch (UniqueNameException e){
+				logger.error("Caught UniqueNameException trying to update nested LsThing");
+			}
+		}
+		else{
+			//just need to update the old nested lsThing inside the new itx
+			updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getFirstLsThing());
+			updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
+			itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+		}
+	}
+	
+	private void updateNestedSecondLsThing(ItxLsThingLsThing itxLsThingLsThing) {
+		LsThing updatedNestedLsThing;
+		if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+			//need to save a new nested lsthing
+			logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
+			try{
+				updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+				itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+			} catch (UniqueNameException e){
+				logger.error("Caught UniqueNameException trying to update nested LsThing");
+			}
+		}
+		else{
+			//just need to update the old nested lsThing inside the new itx
+			updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getSecondLsThing());
+			updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
+			itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+		}
+	}
+
 
 	@Override
 	@Transactional
@@ -920,6 +898,42 @@ public class LsThingServiceImpl implements LsThingService {
 					}	
 				} else {
 					logger.debug("No lsThing values to update");
+				}
+			}
+		}
+	}
+	
+	private void updateItxLsStates(ItxLsThingLsThing jsonItxLsThingLsThing, ItxLsThingLsThing updatedItxLsThingLsThing){
+		if(jsonItxLsThingLsThing.getLsStates() != null){
+			for(ItxLsThingLsThingState itxLsThingLsThingState : jsonItxLsThingLsThing.getLsStates()){
+				ItxLsThingLsThingState updatedItxLsThingLsThingState;
+				if (itxLsThingLsThingState.getId() == null){
+					updatedItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
+					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					updatedItxLsThingLsThingState.persist();
+					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
+				} else {
+					updatedItxLsThingLsThingState = ItxLsThingLsThingState.update(itxLsThingLsThingState);
+					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					logger.debug("updated itxLsThingLsThing state " + updatedItxLsThingLsThingState.getId());
+
+				}
+				if (itxLsThingLsThingState.getLsValues() != null){
+					for(ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()){
+						ItxLsThingLsThingValue updatedItxLsThingLsThingValue;
+						if (itxLsThingLsThingValue.getId() == null){
+							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.create(itxLsThingLsThingValue);
+							updatedItxLsThingLsThingValue.setLsState(ItxLsThingLsThingState.findItxLsThingLsThingState(updatedItxLsThingLsThingState.getId()));
+							updatedItxLsThingLsThingValue.persist();
+							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
+						} else {
+							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.update(itxLsThingLsThingValue);
+							updatedItxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
+							logger.debug("updated itxLsThingLsThing value " + updatedItxLsThingLsThingValue.getId());
+						}
+					}	
+				} else {
+					logger.debug("No itxLsThingLsThing values to update");
 				}
 			}
 		}

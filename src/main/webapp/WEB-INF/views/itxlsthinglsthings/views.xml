@@ -13,4 +13,7 @@
 <definition extends="default" name="itxlsthinglsthings/update">
         <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/update.jspx"/>
     </definition>
+<definition extends="default" name="itxlsthinglsthings/findItxLsThingLsThingsByCodeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/findItxLsThingLsThingsByCodeNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

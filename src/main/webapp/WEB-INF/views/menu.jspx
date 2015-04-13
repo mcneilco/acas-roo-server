@@ -493,6 +493,7 @@
         <menu:category id="c_itxlsthinglsthing" z="8Gc/rkZ1RT71J+B3ubM/dh2H9VE=">
             <menu:item id="i_itxlsthinglsthing_new" messageCode="global_menu_new" url="/itxlsthinglsthings?form" z="Sv7z8vH12pw4uXJL4KvD5bntOUk="/>
             <menu:item id="i_itxlsthinglsthing_list" messageCode="global_menu_list" url="/itxlsthinglsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dTBbXYSN3UodAC+gzSIDn7jQ2LQ="/>
+            <menu:item id="fi_itxlsthinglsthing_codenameequals" messageCode="global_menu_find" url="/itxlsthinglsthings?find=ByCodeNameEquals&amp;form" z="BEKIehLO6xE9H85uNGTFPB4mVJ4="/>
         </menu:category>
         <menu:category id="c_itxlsthinglsthingvalue" z="16NynK8hvte1Jz5OlnZk7yx2Cws=">
             <menu:item id="i_itxlsthinglsthingvalue_new" messageCode="global_menu_new" url="/itxlsthinglsthingvalues?form" z="lSlbM5i6/TIvqxkWP3izDKm7cSg="/>

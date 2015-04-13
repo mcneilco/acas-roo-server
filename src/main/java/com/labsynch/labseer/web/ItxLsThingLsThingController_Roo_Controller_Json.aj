@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect ItxLsThingLsThingController_Roo_Controller_Json {
@@ -90,6 +91,14 @@ privileged aspect ItxLsThingLsThingController_Roo_Controller_Json {
         }
         itxLsThingLsThing.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ItxLsThingLsThingController.jsonFindItxLsThingLsThingsByCodeNameEquals(@RequestParam("codeName") String codeName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArray(ItxLsThingLsThing.findItxLsThingLsThingsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
     }
     
 }
