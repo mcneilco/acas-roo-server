@@ -283,6 +283,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 //			protocolIdList.addAll(findProtocolIdsByMetadata(term, "RECORDEDBY"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TYPE"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KIND"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "STATUS"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "DATE"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NOTEBOOK"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KEYWORD"));
@@ -372,6 +373,15 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}
 			protocols.clear();
 		}
+		if (searchBy == "STATUS") {
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("protocol status", queryString).getResultList();
+			if (!protocolValues.isEmpty()){
+				for (ProtocolValue protocolValue : protocolValues) {
+					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
 		if (searchBy == "DATE") {
 			Collection<ProtocolValue> protocolValues = new HashSet<ProtocolValue>();
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
@@ -420,7 +430,16 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}
 			tags.clear();
 		}
-		if (searchBy == "ASSAY ACTIVITY" || searchBy == "MOLECULAR TARGET" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
+		if (searchBy == "MOLECULAR TARGET"){
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike(searchBy.toLowerCase(), queryString).getResultList();
+			if (!protocolValues.isEmpty()) {
+				for (ProtocolValue protocolValue : protocolValues) {
+					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
+		if (searchBy == "ASSAY ACTIVITY" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
 			Collection<DDictValue> ddictValues = DDictValue.findDDictValuesByLabelTextLike(queryString).getResultList();
 			if (!ddictValues.isEmpty()) {
 				for (DDictValue ddictvalue : ddictValues) {
