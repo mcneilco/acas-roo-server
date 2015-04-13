@@ -127,4 +127,9 @@ public class ItxLsThingLsThingValue extends AbstractValue {
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
+	
+	public static com.labsynch.labseer.domain.ItxLsThingLsThingValue create(com.labsynch.labseer.domain.ItxLsThingLsThingValue lsThingValue) {
+        ItxLsThingLsThingValue newItxLsThingLsThingValue = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new ItxLsThingLsThingValue());
+        return newItxLsThingLsThingValue;
+    }
 }

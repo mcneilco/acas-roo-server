@@ -33,7 +33,11 @@ import flexjson.JSONSerializer;
 public class ItxLsThingLsThingState extends AbstractState {
 
     public ItxLsThingLsThingState(ItxLsThingLsThingState itxState) {
-		super.setRecordedBy(itxState.getRecordedBy());
+		super.setLsType(itxState.getLsType());
+		super.setLsKind(itxState.getLsKind());
+		super.setIgnored(itxState.isIgnored());
+		super.setDeleted(itxState.isDeleted());
+    	super.setRecordedBy(itxState.getRecordedBy());
 		super.setRecordedDate(itxState.getRecordedDate());
 		super.setLsTransaction(itxState.getLsTransaction());
 		super.setModifiedBy(itxState.getModifiedBy());

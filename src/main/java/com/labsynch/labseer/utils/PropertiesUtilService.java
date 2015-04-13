@@ -29,9 +29,5 @@ public interface PropertiesUtilService {
 
 	boolean getUniqueLsThingName();
 
-	List<String> getComponentKindList();
-	
-	List<String> getAssemblyKindList();
-
 	
 }

@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
@@ -218,7 +217,8 @@ public class ApiLsThingController {
     @RequestMapping(value = "/{lsType}/{lsKind}/getbatches/{parentIdOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> getLsThingBatchesByParentIdCodeName(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
-    		@PathVariable("parentIdOrCodeName") String parentIdOrCodeName) {
+    		@PathVariable("parentIdOrCodeName") String parentIdOrCodeName,
+    		@RequestParam(value = "with", required = false) String with) {
     	logger.debug("----from the LsThing GET controller----");
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -243,12 +243,67 @@ public class ApiLsThingController {
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
         } else {
+        	if (with != null) {
+    			if (with.equalsIgnoreCase("nestedfull")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(batches), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("prettyjson")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(batches), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("nestedstub")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(batches), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("stub")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayStub(batches), headers, HttpStatus.OK);
+    			}
+    		}
             return new ResponseEntity<String>(LsThing.toJsonArray(batches), headers, HttpStatus.OK);
         }
     }
     
+    @RequestMapping(value = "/{lsType}/{lsKind}/getcomposites/{componentIdOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public ResponseEntity<String> getLsThingCompositesByComponentIdCodeName(@PathVariable("lsType") String lsType, 
+    		@PathVariable("lsKind") String lsKind,
+    		@PathVariable("componentIdOrCodeName") String componentIdOrCodeName,
+    		@RequestParam(value = "with", required = false) String with) {
+    	logger.debug("----from the LsThing GET controller----");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        LsThing component;
+        if(SimpleUtil.isNumeric(componentIdOrCodeName)) {
+        	component = LsThing.findLsThing(Long.valueOf(componentIdOrCodeName));
+		} else {		
+			try {
+				component = LsThing.findLsThingsByCodeNameEquals(componentIdOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				component = null;
+				ErrorMessage error = new ErrorMessage();
+	            error.setErrorLevel("error");
+	            error.setMessage("parent:" + componentIdOrCodeName +" not found");
+	            errors.add(error);
+	            errorsFound = true;
+			}
+		}
+        Collection<LsThing> composites = lsThingService.findCompositesByComponentEquals(component);
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+        } else {
+        	if (with != null) {
+    			if (with.equalsIgnoreCase("nestedfull")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(composites), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("prettyjson")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(composites), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("nestedstub")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(composites), headers, HttpStatus.OK);
+    			} else if (with.equalsIgnoreCase("stub")) {
+    				return new ResponseEntity<String>(LsThing.toJsonArrayStub(composites), headers, HttpStatus.OK);
+    			}
+    		}
+            return new ResponseEntity<String>(LsThing.toJsonArray(composites), headers, HttpStatus.OK);
+        }
+    }
+    
 
-//	@Transactional
+	@Transactional
     @RequestMapping(value="/{lsType}/{lsKind}", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@PathVariable("lsType") String lsType, 
     		@PathVariable("lsKind") String lsKind,
@@ -263,35 +318,11 @@ public class ApiLsThingController {
         boolean errorsFound = false;
         Long parentId = null;
         LsThing lsThing = LsThing.fromJsonToLsThing(json);
-        //decide what kind of validation we need to do
+        //decide what kind of special logic we need to do
         boolean isParent = false;
         boolean isBatch = false;
-        boolean isAssembly = false;
-        boolean isComponent = false;
         if (lsType.equals("parent")) isParent = true;
         if (lsType.equals("batch")) isBatch = true;
-        List<String> assemblyKinds = propertiesUtilService.getAssemblyKindList();
-        List<String> componentKinds = propertiesUtilService.getComponentKindList();
-        if (assemblyKinds.contains(lsKind)) isAssembly=true;
-        if (componentKinds.contains(lsKind)) isComponent=true;
-        //do required validation
-        if (isComponent){
-        	if (!lsThingService.validateComponentName(lsThing)){
-	            ErrorMessage error = new ErrorMessage();
-	            error.setErrorLevel("error");
-	            error.setMessage("not unique lsThing name");
-	            errors.add(error);
-	            errorsFound = true;
-        	}
-        } else if(isAssembly){
-        	if (!lsThingService.validateAssembly(lsThing)){
-                ErrorMessage error = new ErrorMessage();
-                error.setErrorLevel("error");
-                error.setMessage("not unique assembly lsThing");
-                errors.add(error);
-                errorsFound = true;
-            }
-        }
         LsThing parent;
         //if it's a batch, try to make an appropriate codeName
         if (isBatch && parentIdOrCodeName == null){
@@ -321,7 +352,7 @@ public class ApiLsThingController {
         //if all's well so far, go ahead with the save
         if (!errorsFound){
         		try {
-        			lsThing = lsThingService.saveLsThing(lsThing, isParent, isBatch, isAssembly, isComponent, parentId);
+        			lsThing = lsThingService.saveLsThing(lsThing, isParent, isBatch, parentId);
                 } catch (Exception e) {
                     logger.error("----from the POST controller----" + " ERROR:  " + e.toString());
                     ErrorMessage error = new ErrorMessage();
@@ -347,33 +378,33 @@ public class ApiLsThingController {
         return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.CREATED);
     }
     
-    @RequestMapping(value = "/validatename", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> validateName(@RequestParam(value = "lsKind", required = true) String lsKind, 
-    		@RequestBody List<String> names) {
-        boolean isComponent = false;
-        boolean isAssembly = false;
-    	List<String> assemblyKinds = propertiesUtilService.getAssemblyKindList();
-        List<String> componentKinds = propertiesUtilService.getComponentKindList();
-        logger.debug(assemblyKinds.toString());
-        logger.debug(componentKinds.toString());
-        if (componentKinds.contains(lsKind)) isComponent=true;
-        if (assemblyKinds.contains(lsKind)) isAssembly=true;
-        boolean isValid = false;
-        if (isComponent){
-        	String componentName = names.get(0);
-        	logger.debug("Validating "+lsKind+" name: "+componentName);
-        	isValid = lsThingService.validateComponentName(componentName, lsKind);
-        }
-        else if (isAssembly){
-        	List<String> componentCodeNames = names;
-        	isValid = lsThingService.validateAssembly(componentCodeNames);
-        }
-        else {
-        	isValid = true;
-        }
+    @RequestMapping(value = "/validate", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> validateLsThing(@RequestParam(value = "uniqueName", required = false) Boolean uniqueName,
+    		@RequestParam(value = "uniqueInteractions", required = false) Boolean uniqueInteractions,
+    		@RequestParam(value = "orderMatters", required = false) Boolean orderMatters,
+    		@RequestParam(value = "forwardAndReverseAreSame", required = false) Boolean forwardAndReverseAreSame,
+    		@RequestBody String json) {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(String.valueOf(isValid), headers, HttpStatus.OK);
+        
+    	boolean checkUniqueName = false;
+    	boolean checkUniqueInteractions = false;
+    	boolean checkOrderMatters = false;
+    	boolean checkForwardAndReverseAreSame = false;
+    	if (uniqueName!=null) checkUniqueName = uniqueName;
+    	if (uniqueInteractions!=null) checkUniqueInteractions = uniqueInteractions;
+    	if (orderMatters!=null) checkOrderMatters = orderMatters;
+    	if (forwardAndReverseAreSame!=null) checkForwardAndReverseAreSame = forwardAndReverseAreSame;
+    	
+    	LsThing lsThing = LsThing.fromJsonToLsThing(json);
+    	
+        ArrayList<ErrorMessage> errorMessages = lsThingService.validateLsThing(lsThing, checkUniqueName, checkUniqueInteractions, checkOrderMatters, checkForwardAndReverseAreSame);
+        if (!errorMessages.isEmpty()){
+        	return new ResponseEntity<String>(ErrorMessage.toJsonArray(errorMessages), headers, HttpStatus.CONFLICT);
+        }
+        else{
+        	return new ResponseEntity<String>(headers, HttpStatus.ACCEPTED);
+        }
     }
     
     
@@ -391,66 +422,18 @@ public class ApiLsThingController {
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
         LsThing lsThing = LsThing.fromJsonToLsThing(json);
-        //decide what kind of validation we need to do
-        boolean isAssembly = false;
-        boolean isComponent = false;
-        List<String> assemblyKinds = propertiesUtilService.getAssemblyKindList();
-        List<String> componentKinds = propertiesUtilService.getComponentKindList();
-        if (assemblyKinds.contains(lsKind)) isAssembly=true;
-        if (componentKinds.contains(lsKind)) isComponent=true;
-        //do required validation
-        if (isComponent){
-        	Collection<String> oldLabelTexts = new ArrayList<String>();
-        	for (LsThingLabel label : LsThing.findLsThing(lsThing.getId()).getLsLabels()){
-        		oldLabelTexts.add(label.getLabelText());
-        	}
-        	Collection<String> newLabelTexts = new ArrayList<String>();
-        	for (LsThingLabel label : lsThing.getLsLabels()){
-        		newLabelTexts.add(label.getLabelText());
-        	}
-        	boolean nameChanged = false;
-        	for (String newLabelText : newLabelTexts){
-        		if (!oldLabelTexts.contains(newLabelText)) nameChanged=true;
-        	}
-        	if (nameChanged){
-        		if (!lsThingService.validateComponentName(lsThing)){
-    	            ErrorMessage error = new ErrorMessage();
-    	            error.setErrorLevel("error");
-    	            error.setMessage("not unique lsThing name");
-    	            errors.add(error);
-    	            errorsFound = true;
-            	}
-        	}
-        } else if(isAssembly){
-        	List<String> oldComponents = lsThingService.getComponentCodeNamesFromNewAssembly(LsThing.findLsThing(lsThing.getId()));
-        	List<String> newComponents = lsThingService.getComponentCodeNamesFromNewAssembly(lsThing);
-        	boolean componentsChanged = (!oldComponents.equals(newComponents));
-        	if (componentsChanged) {
-        		if (!lsThingService.validateAssembly(lsThing)){
-                    ErrorMessage error = new ErrorMessage();
-                    error.setErrorLevel("error");
-                    error.setMessage("not unique assembly lsThing");
-                    errors.add(error);
-                    errorsFound = true;
-                }
-        	}
-        }
-        //if all's well so far, go ahead with the save
-        if (!errorsFound){
-        	//if it's a batch or an assembly, we don't care about name uniqueness
-    		try {
-        		lsThing = lsThingService.updateLsThing(lsThing);
-        	} catch (Exception e) {
-        		logger.error("----from the controller----"
-						+ e.getMessage().toString() + " whole message  "
-						+ e.toString());
-				ErrorMessage error = new ErrorMessage();
-				error.setErrorLevel("error");
-				error.setMessage("internal error occurred while trying to update lsThing");
-				errors.add(error);
-				errorsFound = true;
-        	}
-        }
+		try {
+    		lsThing = lsThingService.updateLsThing(lsThing);
+    	} catch (Exception e) {
+    		logger.error("----from the controller----"
+					+ e.getMessage().toString() + " whole message  "
+					+ e.toString());
+			ErrorMessage error = new ErrorMessage();
+			error.setErrorLevel("error");
+			error.setMessage("internal error occurred while trying to update lsThing");
+			errors.add(error);
+			errorsFound = true;
+    	}
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }else if (with != null) {
