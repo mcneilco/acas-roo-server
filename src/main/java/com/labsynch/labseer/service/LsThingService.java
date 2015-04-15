@@ -69,7 +69,10 @@ public interface LsThingService {
 	ArrayList<ErrorMessage> validateLsThing(LsThing lsThing,
 			boolean checkUniqueName, boolean checkUniqueInteractions,
 			boolean checkOrderMatters, boolean checkForwardAndReverseAreSame);
+
+	Collection<LsThing> sortLsThingsByCodeName(Collection<LsThing> lsThings);
 	
+	Collection<LsThing> sortBatches(Collection<LsThing> batches);
 	
 	
 }

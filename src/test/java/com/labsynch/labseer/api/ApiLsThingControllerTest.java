@@ -360,5 +360,25 @@ public class ApiLsThingControllerTest {
          LsThing lsThing = LsThing.fromJsonToLsThing(json);
          logger.info(lsThing.toJson());
     }
+    
+    @Test
+    public void getComponentBatchesAndCheckOrder() throws Exception {
+    	String parentCodeName = "CB000020";
+        String json = this.mockMvc.perform(get("/api/v1/lsthings/parent/linker small molecule/getbatches/"+parentCodeName)
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        
+        logger.info(json);
+        Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+        int batchNo = 1;
+        for (LsThing lsThing: lsThings){
+        	logger.info(lsThing.getCodeName());
+        	Assert.assertEquals(parentCodeName+"-"+batchNo, lsThing.getCodeName());
+        	batchNo++;
+        }
+    }
 
 }
