@@ -55,7 +55,7 @@ public class ApiLsThingController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			String result = LsThing.toJsonArrayStub(lsThingService.findLsThingsByGenericMetaDataSearch(lsType, searchQuery));
+			String result = LsThing.toJsonArray(lsThingService.findLsThingsByGenericMetaDataSearch(lsType, searchQuery));
 			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 		} catch(Exception e){
 			String error = e.getMessage() + e.getStackTrace();
@@ -240,6 +240,7 @@ public class ApiLsThingController {
 			}
 		}
         Collection<LsThing> batches = lsThingService.findBatchesByParentEquals(parent);
+        batches = lsThingService.sortBatches(batches);
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
         } else {

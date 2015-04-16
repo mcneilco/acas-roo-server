@@ -3,9 +3,11 @@
 package com.labsynch.labseer.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -420,6 +422,50 @@ public class LsThingServiceTests {
 		logger.info(updatedLsThing.toJsonWithNestedFull());
 		Assert.assertEquals(2, updatedLsThing.getSecondLsThings().size());
 		Assert.assertEquals(1, updatedLsThing.getSecondLsThings().iterator().next().getLsStates().size());
+	}
+	
+	@Test
+	@Transactional
+	public void sortLsThingsByCodeName(){
+		createLsThingStack();
+		LsThing thing1 = LsThing.findLsThingsByCodeNameEquals("THING-01").getSingleResult();
+		LsThing thing2 = LsThing.findLsThingsByCodeNameEquals("THING-02").getSingleResult();
+		LsThing thing3 = LsThing.findLsThingsByCodeNameEquals("THING-03").getSingleResult();
+		
+		List<LsThing> lsThings = new ArrayList<LsThing>();
+		lsThings.add(thing2);
+		lsThings.add(thing3);
+		lsThings.add(thing1);
+		logger.info(LsThing.toJsonArrayStub(lsThings));
+		lsThingService.sortLsThingsByCodeName(lsThings);
+		logger.info(LsThing.toJsonArrayStub(lsThings));
+		int num = 1;
+		for (LsThing lsThing : lsThings){
+			Assert.assertEquals("THING-0"+num, lsThing.getCodeName());
+			num++;
+		}
+	}
+	
+	@Test
+	@Transactional
+	public void sortLsThingsByBatchNumber(){
+		createLsThingStack();
+		LsThing thing1 = LsThing.findLsThingsByCodeNameEquals("THING-01").getSingleResult();
+		LsThing thing2 = LsThing.findLsThingsByCodeNameEquals("THING-02").getSingleResult();
+		LsThing thing3 = LsThing.findLsThingsByCodeNameEquals("THING-03").getSingleResult();
+		
+		Collection<LsThing> lsThings = new ArrayList<LsThing>();
+		lsThings.add(thing2);
+		lsThings.add(thing3);
+		lsThings.add(thing1);
+		logger.info(LsThing.toJsonArrayStub(lsThings));
+		lsThings = lsThingService.sortBatches(lsThings);
+		logger.info(LsThing.toJsonArrayStub(lsThings));
+		int num = 1;
+		for (LsThing lsThing : lsThings){
+			Assert.assertEquals("THING-0"+num, lsThing.getCodeName());
+			num++;
+		}
 	}
 
 }

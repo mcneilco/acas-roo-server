@@ -50,6 +50,8 @@ import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueInteractionsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.ItxLsThingLsThingComparator;
+import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
+import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -1337,5 +1339,20 @@ public class LsThingServiceImpl implements LsThingService {
 			}	
 		}
 		
+	}
+	
+	@Override
+	public Collection<LsThing> sortLsThingsByCodeName(Collection<LsThing> lsThings) {
+		List<LsThing> listLsThings = new ArrayList<LsThing>(lsThings);
+		Collections.sort(listLsThings, new LsThingComparatorByCodeName());
+		return listLsThings;
+	}
+
+
+	@Override
+	public Collection<LsThing> sortBatches(Collection<LsThing> lsThings) {
+		List<LsThing> listLsThings = new ArrayList<LsThing>(lsThings);
+		Collections.sort(listLsThings, new LsThingComparatorByBatchNumber());
+		return listLsThings;
 	}
 }
