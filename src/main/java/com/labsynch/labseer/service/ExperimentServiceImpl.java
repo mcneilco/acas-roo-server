@@ -1396,7 +1396,14 @@ public class ExperimentServiceImpl implements ExperimentService {
         				+ "WHERE e.id = :experimentId ) ";
         Query q = em.createQuery(sqlQuery);
         q.setParameter("experimentId", experiment.getId());
-        return (q.executeUpdate() > 0);
+        try{
+        	int numRows = q.executeUpdate();
+            logger.info(numRows + "AnalysisGroups logically deleted.");
+        }catch (Exception e){
+        	logger.error("Caught error deleting AnalysisGroups under experiment: " + experiment.getCodeName()+ " "+e.toString());
+        	return false;
+        }
+        return true;
 	}
 
 
