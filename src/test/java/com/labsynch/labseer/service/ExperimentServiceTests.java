@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -694,6 +695,19 @@ public class ExperimentServiceTests {
 		String checkDeletedExperimentStatus = experimentValue3.getCodeValue();
 		Assert.assertEquals("deleted", deletedExperimentStatus);
 		Assert.assertEquals("deleted", checkDeletedExperimentStatus);
+		
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(value=false)
+	public void deleteChildren() {
+		Experiment experiment = Experiment.findExperiment(203528L);
+		long startTime = new Date().getTime();
+		experimentService.deleteAnalysisGroupsByExperiment(experiment);
+		long endTime = new Date().getTime();
+		long totalTime = endTime - startTime;
+		logger.info("Time to delete "+ totalTime +" ms");
 		
 	}
 }

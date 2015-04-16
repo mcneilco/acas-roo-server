@@ -14,6 +14,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -1375,17 +1377,26 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Override
 	public boolean deleteAnalysisGroupsByExperiment(Experiment experiment) {
-		boolean successfullyDeleted = true;
-		try {
-			for (AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
-				analysisGroup.logicalDelete();
-				analysisGroup.merge();
-			}
-		} catch (Exception e) {
-			successfullyDeleted = false;
-			logger.error("Error in deleting analysis groups by experiment: " + e.toString());
-		}
-		return successfullyDeleted;
+//		boolean successfullyDeleted = true;
+//		try {
+//			for (AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
+//				analysisGroup.logicalDelete();
+//				analysisGroup.merge();
+//			}
+//		} catch (Exception e) {
+//			successfullyDeleted = false;
+//			logger.error("Error in deleting analysis groups by experiment: " + e.toString());
+//		}
+//		return successfullyDeleted;
+		
+		
+		EntityManager em = Experiment.entityManager();
+        String sqlQuery = "UPDATE AnalysisGroup AS ag SET ag.ignored = true, ag.deleted = true "
+        				+ "WHERE ag.id IN ( SELECT ag2.id FROM AnalysisGroup AS ag2 JOIN ag2.experiments e "
+        				+ "WHERE e.id = :experimentId ) ";
+        Query q = em.createQuery(sqlQuery);
+        q.setParameter("experimentId", experiment.getId());
+        return (q.executeUpdate() > 0);
 	}
 
 
