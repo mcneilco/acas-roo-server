@@ -1111,7 +1111,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike("experiment status", queryString).getResultList();
 			if (!experimentValues.isEmpty()){
 				for (ExperimentValue experimentValue : experimentValues) {
-					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
+					if (!experimentValue.isIgnored()) experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
 				}
 			}
 			experimentValues.clear();
@@ -1120,7 +1120,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike("analysis status", queryString).getResultList();
 			if (!experimentValues.isEmpty()){
 				for (ExperimentValue experimentValue : experimentValues) {
-					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
+					if (!experimentValue.isIgnored()) experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
 				}
 			}
 			experimentValues.clear();
@@ -1398,7 +1398,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         q.setParameter("experimentId", experiment.getId());
         try{
         	int numRows = q.executeUpdate();
-            logger.info(numRows + "AnalysisGroups logically deleted.");
+            logger.info(numRows + " AnalysisGroups logically deleted.");
         }catch (Exception e){
         	logger.error("Caught error deleting AnalysisGroups under experiment: " + experiment.getCodeName()+ " "+e.toString());
         	return false;
