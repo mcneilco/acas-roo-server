@@ -198,7 +198,7 @@ public class ExperimentValueServiceTests {
 	@Test
 	@Transactional
 	public void ExperimentValuesToCodeName() {
-		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentId(9l);
+		List<ExperimentValue> experimentValues = experimentValueService.getExperimentValuesByExperimentId(97418l);
 		String csvString = experimentValueService.getCsvList(experimentValues);
 		assert(csvString != null && csvString.compareTo("") != 0);
 		logger.info(csvString);
@@ -235,7 +235,7 @@ public class ExperimentValueServiceTests {
 	@Test
 	@Transactional
 	public void updateExperimentValueTest3() {
-		String idOrCodeName = "EXPT-00000001";
+		String idOrCodeName = "EXPT-00000002";
 		String stateType = "metadata";
 		String stateKind = "experiment metadata";
 		String valueType = "codeValue";
@@ -247,18 +247,34 @@ public class ExperimentValueServiceTests {
 	}
 	
 	@Test
-	@Transactional
+//	@Transactional
 	public void updateExperimentValueTest4() {
-		String idOrCodeName = "EXPT-00000001";
+		String idOrCodeName = "EXPT-00000002";
 		String stateType = "metadata";
 		String stateKind = "experiment metadata";
 		String valueType = "dateValue";
 		String valueKind = "completion date";
-		String value = "1398322800000";
+		String value = "1398344800000";
 		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
 		Assert.assertNotNull(experimentValue);
 		logger.info(experimentValue.toJson());
 	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentValueTest_NewKinds() {
+		String idOrCodeName = "EXPT-00000002";
+		String stateType = "metadata";
+		String stateKind = "brian test metadata";
+		String valueType = "stringValue";
+		String valueKind = "brian comment";
+		String value = "Hooray!";
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+		Assert.assertNotNull(experimentValue);
+		logger.info(experimentValue.toJson());
+	}
+	
+	
 	
 	
 }

@@ -27,6 +27,14 @@ privileged aspect TreatmentGroup_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = TreatmentGroup.entityManager();
+        TypedQuery<TreatmentGroup> q = em.createQuery("SELECT o FROM TreatmentGroup AS o WHERE o.codeName = :codeName", TreatmentGroup.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+    
     public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = TreatmentGroup.entityManager();

@@ -7,12 +7,15 @@ import javax.persistence.NonUniqueResultException;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.dto.LabelSequenceDTO;
 
 @Service
 public interface AutoLabelService {
 
 
 	List<AutoLabelDTO> getAutoLabels(String json) throws NonUniqueResultException;
+	
+	List<AutoLabelDTO> getAutoLabels(LabelSequenceDTO lsDTO) throws NonUniqueResultException;
 
 	List<AutoLabelDTO> getAutoLabels(String thingTypeAndKind, String labelTypeAndKind, Long numberOfLabels) throws NonUniqueResultException;
 
@@ -27,6 +30,8 @@ public interface AutoLabelService {
 	String getDataDictionaryCodeName();
 
 	String getProtocolCodeName();
+
+	String getLsThingCodeName(String lsTypeAndKind);
 
 	
 	

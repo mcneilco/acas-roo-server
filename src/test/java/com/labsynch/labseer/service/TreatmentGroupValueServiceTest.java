@@ -40,6 +40,7 @@ import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -154,6 +155,26 @@ public class TreatmentGroupValueServiceTest {
 		TreatmentGroupValue treatmentGroupValue = treatmentGroupValueService.updateTreatmentGroupValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
 		Assert.assertNotNull(treatmentGroupValue);
 		logger.info(treatmentGroupValue.toJson());
+	}
+	
+	@Test
+	@Transactional
+	public void saveTreatmentGroupValueFromJson() {
+		String json = "{\"lsState\":{\"deleted\":false,\"id\":1074932,\"ignored\":false,\"lsKind\":\"results\",\"lsTransaction\":1928,\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394689,\"treatmentGroup\":{\"codeName\":\"TG-00108073\",\"deleted\":false,\"id\":703067,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1928,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394686,\"version\":0},\"version\":0},\"lsType\":\"stringValue\",\"lsKind\":\"analysis status\",\"stringValue\":\"now\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"username\",\"recordedDate\":1415752566000,\"lsTransaction\":3068}";
+		TreatmentGroupValue treatmentGroupValue = TreatmentGroupValue.fromJsonToTreatmentGroupValue(json);
+		treatmentGroupValue = treatmentGroupValueService.saveTreatmentGroupValue(treatmentGroupValue);
+		Assert.assertNotNull(treatmentGroupValue.getId());
+	}
+	
+	@Test
+	@Transactional
+	public void saveTreatmentGroupValuesFromJson() {
+		String json = "[{\"lsState\":{\"deleted\":false,\"id\":1074932,\"ignored\":false,\"lsKind\":\"results\",\"lsTransaction\":1928,\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394689,\"treatmentGroup\":{\"codeName\":\"TG-00108073\",\"deleted\":false,\"id\":703067,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1928,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394686,\"version\":0},\"version\":0},\"lsType\":\"stringValue\",\"lsKind\":\"analysis status\",\"stringValue\":\"now\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"username\",\"recordedDate\":1415752566000,\"lsTransaction\":3068},{\"lsState\":{\"deleted\":false,\"id\":1074932,\"ignored\":false,\"lsKind\":\"results\",\"lsTransaction\":1928,\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394689,\"treatmentGroup\":{\"codeName\":\"TG-00108073\",\"deleted\":false,\"id\":703067,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1928,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394686,\"version\":0},\"version\":0},\"lsType\":\"stringValue\",\"lsKind\":\"analysis status\",\"stringValue\":\"now\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"username\",\"recordedDate\":1415752566000,\"lsTransaction\":3068},{\"lsState\":{\"deleted\":false,\"id\":1074932,\"ignored\":false,\"lsKind\":\"results\",\"lsTransaction\":1928,\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394689,\"treatmentGroup\":{\"codeName\":\"TG-00108073\",\"deleted\":false,\"id\":703067,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1928,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394686,\"version\":0},\"version\":0},\"lsType\":\"stringValue\",\"lsKind\":\"analysis status\",\"stringValue\":\"now\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"username\",\"recordedDate\":1415752566000,\"lsTransaction\":3068},{\"lsState\":{\"deleted\":false,\"id\":1074932,\"ignored\":false,\"lsKind\":\"results\",\"lsTransaction\":1928,\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394689,\"treatmentGroup\":{\"codeName\":\"TG-00108073\",\"deleted\":false,\"id\":703067,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1928,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"bob\",\"recordedDate\":1412716394686,\"version\":0},\"version\":0},\"lsType\":\"stringValue\",\"lsKind\":\"analysis status\",\"stringValue\":\"now\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"codeOrigin\":null,\"codeType\":null,\"codeKind\":null,\"recordedBy\":\"username\",\"recordedDate\":1415752566000,\"lsTransaction\":3068}]";
+		Collection<TreatmentGroupValue> treatmentGroupValues = TreatmentGroupValue.fromJsonArrayToTreatmentGroupValues(json);
+		treatmentGroupValues = treatmentGroupValueService.saveTreatmentGroupValues(treatmentGroupValues);
+		for (TreatmentGroupValue treatmentGroupValue: treatmentGroupValues) {
+			Assert.assertNotNull(treatmentGroupValue.getId());
+		}
 	}
 
 }

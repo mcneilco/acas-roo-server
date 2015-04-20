@@ -4,6 +4,11 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupLabel;
+import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ThingPage;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.web.AnalysisGroupController;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
@@ -91,6 +96,16 @@ privileged aspect AnalysisGroupController_Roo_Controller {
     void AnalysisGroupController.addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("analysisGroup_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
         uiModel.addAttribute("analysisGroup_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
+    }
+    
+    void AnalysisGroupController.populateEditForm(Model uiModel, AnalysisGroup analysisGroup) {
+        uiModel.addAttribute("analysisGroup", analysisGroup);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("analysisgrouplabels", AnalysisGroupLabel.findAllAnalysisGroupLabels());
+        uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAllAnalysisGroupStates());
+        uiModel.addAttribute("experiments", Experiment.findAllExperiments());
+        uiModel.addAttribute("thingpages", ThingPage.findAllThingPages());
+        uiModel.addAttribute("treatmentgroups", TreatmentGroup.findAllTreatmentGroups());
     }
     
     String AnalysisGroupController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

@@ -32,6 +32,7 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(sequenceName = "AUTH_ROLE_PKSEQ", finders = { "findAuthorRolesByUserEntry", "findAuthorRolesByRoleEntry", "findAuthorRolesByRoleEntryAndUserEntry" })
 public class AuthorRole {
 
+	
     @NotNull
     @ManyToOne
     @JoinColumn(name = "author_id", referencedColumnName = "id")

@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -24,7 +25,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findProtocolValuesByLsState", "findProtocolValuesByLsTransactionEquals", "findProtocolValuesByLsKindEqualsAndStringValueLike", "findProtocolValuesByLsKindEqualsAndDateValueLike", "findProtocolValuesByLsKindEqualsAndCodeValueLike" })
+@RooJpaActiveRecord(finders = { "findProtocolValuesByLsState", "findProtocolValuesByLsTransactionEquals", "findProtocolValuesByLsKindEqualsAndStringValueLike", "findProtocolValuesByLsKindEqualsAndCodeValueLike" })
 public class ProtocolValue extends AbstractValue {
 
     @NotNull
@@ -32,7 +33,47 @@ public class ProtocolValue extends AbstractValue {
     @JoinColumn(name = "protocol_state_id")
     private ProtocolState lsState;
 
-    public static com.labsynch.labseer.domain.ProtocolValue fromJsonToProtocolValue(String json) {
+    public ProtocolValue(ProtocolValue protocolValue) {
+            super.setBlobValue(protocolValue.getBlobValue());
+            super.setClobValue(protocolValue.getClobValue());
+            super.setCodeKind(protocolValue.getCodeKind());
+            super.setCodeOrigin(protocolValue.getCodeOrigin());
+            super.setCodeType(protocolValue.getCodeType());
+            super.setCodeTypeAndKind(protocolValue.getCodeTypeAndKind());
+            super.setCodeValue(protocolValue.getCodeValue());
+            super.setComments(protocolValue.getComments());
+            super.setConcentration(protocolValue.getConcentration());
+            super.setConcUnit(protocolValue.getConcUnit());
+            super.setDateValue(protocolValue.getDateValue());
+            super.setDeleted(protocolValue.isDeleted());
+            super.setFileValue(protocolValue.getFileValue());
+            super.setIgnored(protocolValue.isIgnored());
+            super.setLsKind(protocolValue.getLsKind());
+            super.setLsTransaction(protocolValue.getLsTransaction());
+            super.setLsType(protocolValue.getLsType());
+            super.setLsTypeAndKind(protocolValue.getLsTypeAndKind());
+            super.setModifiedBy(protocolValue.getModifiedBy());
+            super.setModifiedDate(protocolValue.getModifiedDate());
+            super.setNumberOfReplicates(protocolValue.getNumberOfReplicates());
+            super.setNumericValue(protocolValue.getNumericValue());
+            super.setOperatorKind(protocolValue.getOperatorKind());
+            super.setOperatorType(protocolValue.getOperatorType());
+            super.setOperatorTypeAndKind(protocolValue.getOperatorTypeAndKind());
+            super.setPublicData(protocolValue.isPublicData());
+            super.setRecordedBy(protocolValue.getRecordedBy());
+            super.setRecordedDate(protocolValue.getRecordedDate());
+            super.setSigFigs(protocolValue.getSigFigs());
+            super.setStringValue(protocolValue.getStringValue());
+            super.setUncertainty(protocolValue.getUncertainty());
+            super.setUncertaintyType(protocolValue.getUncertaintyType());
+            super.setUnitKind(protocolValue.getUnitKind());
+            super.setUnitType(protocolValue.getUnitType());
+            super.setUnitTypeAndKind(protocolValue.getUnitTypeAndKind());
+            super.setUrlValue(protocolValue.getUrlValue());
+            super.setVersion(protocolValue.getVersion());
+	}
+
+	public static com.labsynch.labseer.domain.ProtocolValue fromJsonToProtocolValue(String json) {
         return new JSONDeserializer<ProtocolValue>().use(null, ProtocolValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
@@ -65,7 +106,7 @@ public class ProtocolValue extends AbstractValue {
 				"JOIN ps.protocol p " +
 				"WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
 				"AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored IS NOT :ignored " +
-				"AND p.ignored IS NOT :ignored " +
+//				"AND p.ignored IS NOT :ignored " +
 				"AND p.id = :protocolId ";
 		TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
 		q.setParameter("protocolId", protocolId);
@@ -76,4 +117,14 @@ public class ProtocolValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+	
+	 public static TypedQuery<ProtocolValue> findProtocolValuesByLsKindEqualsAndDateValueEquals(String lsKind, Date dateValue) {
+	        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+	        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+	        EntityManager em = ProtocolValue.entityManager();
+	        TypedQuery<ProtocolValue> q = em.createQuery("SELECT o FROM ProtocolValue AS o WHERE o.lsKind = :lsKind  AND CAST(o.dateValue, date) = CAST(:dateValue, date) ", ProtocolValue.class);
+	        q.setParameter("lsKind", lsKind);
+	        q.setParameter("dateValue", dateValue);
+	        return q;
+	    }
 }

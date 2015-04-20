@@ -37,5 +37,8 @@
         <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeTypeAndKind" object="${analysisgroupvalue}" z="NbSj8E0YZJOOtDy/gDXzm7Shr38="/>
         <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_uncertainty" object="${analysisgroupvalue}" z="saMYP48Gt064d72lrj2f2ihhy5g="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_codeOrigin" object="${analysisgroupvalue}" z="+CuEl6nOTkVlK8M+4T9aWo7/R+g="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_deleted" object="${analysisgroupvalue}" z="xE/V6oMOPqbnYKFw83WFxaWNiiQ="/>
+        <field:display field="concentration" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_concentration" object="${analysisgroupvalue}" z="QnNjDkc8MHcQOw3OyHrdMpZFcos="/>
+        <field:display field="concUnit" id="s_com_labsynch_labseer_domain_AnalysisGroupValue_concUnit" object="${analysisgroupvalue}" z="8fSqOsPkGGuV2bQvidpxeyfgOBg="/>
     </page:show>
 </div>

@@ -14,5 +14,6 @@
         <field:display field="lsType" id="s_com_labsynch_labseer_domain_ItxSubjectContainerState_lsType" object="${itxsubjectcontainerstate}" z="SPuptQqui3HSWQbo+Z2VGiw1SG4="/>
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ItxSubjectContainerState_lsKind" object="${itxsubjectcontainerstate}" z="RkWM8OTFlt0u7JMGrMUxGNStpLI="/>
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_ItxSubjectContainerState_lsTypeAndKind" object="${itxsubjectcontainerstate}" z="uZTFKGwv2i2euC9/lRRCFPNNBwM="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ItxSubjectContainerState_deleted" object="${itxsubjectcontainerstate}" z="9OTJQ6aldgqRcHHq3pYEcyCLsl8="/>
     </page:show>
 </div>

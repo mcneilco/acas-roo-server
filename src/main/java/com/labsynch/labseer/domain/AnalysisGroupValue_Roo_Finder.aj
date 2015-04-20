@@ -53,4 +53,24 @@ privileged aspect AnalysisGroupValue_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<AnalysisGroupValue> AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(String lsType, String lsKind, String stringValue, boolean ignored) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        stringValue = stringValue.replace('*', '%');
+        if (stringValue.charAt(0) != '%') {
+            stringValue = "%" + stringValue;
+        }
+        if (stringValue.charAt(stringValue.length() - 1) != '%') {
+            stringValue = stringValue + "%";
+        }
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored", AnalysisGroupValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
 }

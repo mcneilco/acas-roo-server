@@ -6,14 +6,93 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.web.AnalysisGroupValueController;
+import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect AnalysisGroupValueController_Roo_Controller_Json {
+    
+    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> AnalysisGroupValueController.showJson(@PathVariable("id") Long id) {
+        AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        if (analysisGroupValue == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(analysisGroupValue.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> AnalysisGroupValueController.listJson() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<AnalysisGroupValue> result = AnalysisGroupValue.findAllAnalysisGroupValues();
+        return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(result), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> AnalysisGroupValueController.createFromJson(@RequestBody String json) {
+        AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
+        analysisGroupValue.persist();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+    
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> AnalysisGroupValueController.createFromJsonArray(@RequestBody String json) {
+        for (AnalysisGroupValue analysisGroupValue: AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json)) {
+            analysisGroupValue.persist();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+    
+    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> AnalysisGroupValueController.updateFromJson(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
+        if (analysisGroupValue.merge() == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> AnalysisGroupValueController.updateFromJsonArray(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        for (AnalysisGroupValue analysisGroupValue: AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json)) {
+            if (analysisGroupValue.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> AnalysisGroupValueController.deleteFromJson(@PathVariable("id") Long id) {
+        AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (analysisGroupValue == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        analysisGroupValue.remove();
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
     
     @RequestMapping(params = "find=ByCodeValueEquals", headers = "Accept=application/json")
     @ResponseBody
@@ -53,6 +132,14 @@ privileged aspect AnalysisGroupValueController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> AnalysisGroupValueController.jsonFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue, @RequestParam(value = "ignored", required = false) boolean ignored) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(lsType, lsKind, stringValue, ignored).getResultList()), headers, HttpStatus.OK);
     }
     
 }

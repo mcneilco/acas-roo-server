@@ -20,5 +20,6 @@
         <field:display field="lsType" id="s_com_labsynch_labseer_domain_FileThing_lsType" object="${filething}" z="FyGhcjqelgqBakZOaWwTeWk01OY="/>
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_FileThing_lsKind" object="${filething}" z="Fw34k8V5oJHGZPjGsIZLhUYLMzA="/>
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_FileThing_lsTypeAndKind" object="${filething}" z="sRARN0MbueNn4w09bNVkad+DFY8="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_FileThing_deleted" object="${filething}" z="4AW8vD1UuzZ2o4DDgC0zwmbRwJQ="/>
     </page:show>
 </div>

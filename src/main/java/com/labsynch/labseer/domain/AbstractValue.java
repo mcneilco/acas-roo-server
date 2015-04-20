@@ -123,12 +123,20 @@ public abstract class AbstractValue {
 	@org.hibernate.annotations.Index(name="_UNTK_IDX")
 	private String unitTypeAndKind;
 	
+	private Double concentration;
+	
+	@Size(max = 25)
+	private String concUnit;
+	
 	@Size(max = 512)
 	private String comments;
 
 	@NotNull
 	@org.hibernate.annotations.Index(name="_IGN_IDX")
 	private boolean ignored;
+	
+	@NotNull
+	private boolean deleted;
 	
 	@org.hibernate.annotations.Index(name="_TRXN_IDX")
 	private Long lsTransaction;
@@ -183,14 +191,18 @@ public abstract class AbstractValue {
         this.numericValue = numericValue;
     }
     
+
     public boolean getIgnored() {
         return this.ignored;
     }
-    
+
     public boolean getPublicData() {
         return this.publicData;
     }
-    
+
+    public boolean getDeleted() {
+        return this.deleted;
+    }
     
 	@PersistenceContext
 	transient EntityManager entityManager;

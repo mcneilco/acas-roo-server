@@ -15,5 +15,6 @@
         <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_ItxContainerContainerState_lsType" required="true" z="6IdC82kMfgNWRpDHtTjw9jN5wDY="/>
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ItxContainerContainerState_lsKind" required="true" z="hcmhFzn3wm9ahBGrQxFj1vQ2jlY="/>
         <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ItxContainerContainerState_lsTypeAndKind" z="iEebeoWlUPjmSPA06rfhfp8jsrw="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxContainerContainerState_deleted" z="lNX/XtBFaEer2bSIDqPMjpil2pI="/>
     </form:update>
 </div>

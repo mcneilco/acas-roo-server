@@ -47,4 +47,5 @@ public class LabelSequence {
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "MM")
     private Date modifiedDate;
+    
 }

@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.labsynch.labseer.domain.LsThingValue;
@@ -18,6 +19,12 @@ public interface LsThingValueService {
 	List<LsThingValue> getLsThingValuesByLsThingIdAndStateTypeKindAndValueTypeKind(
 			Long lsThingId, String stateType, String stateKind,
 			String valueType, String valueKind);
+
+	Collection<LsThingValue> saveLsThingValues(
+			Collection<LsThingValue> lsThingValues);
+
+	Collection<LsThingValue> updateLsThingValues(
+			Collection<LsThingValue> lsThingValues);
 
 
 }

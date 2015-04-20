@@ -25,12 +25,14 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.SubjectValueDTO;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -59,7 +61,8 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 			subjectValue.setLsState(subjectState); 
 		} else {
 			subjectValue.setLsState(SubjectState.findSubjectState(subjectValue.getLsState().getId()));
-		}		
+		}
+		subjectValue.setVersion(SubjectValue.findSubjectValue(subjectValue.getId()).getVersion());
 		subjectValue.merge();
 		return subjectValue;
 	}
@@ -77,6 +80,15 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 		}		
 		subjectValue.persist();
 		return subjectValue;
+	}
+	
+	@Override
+	@Transactional
+	public Collection<SubjectValue> saveSubjectValues(Collection<SubjectValue> subjectValues) {
+		for (SubjectValue subjectValue: subjectValues) {
+			subjectValue = saveSubjectValue(subjectValue);
+		}
+		return subjectValues;
 	}
 
 	@Override
@@ -171,7 +183,7 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 	public SubjectValue updateSubjectValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
 		//fetch the entity
 		Subject subject;
-		if(ApiValueController.isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			subject = Subject.findSubject(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -239,5 +251,14 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 		subjectValue.setRecordedBy("default");
 		subjectValue.persist();
 		return subjectValue;
+	}
+	
+	@Override
+	public Collection<SubjectValue> updateSubjectValues(
+			Collection<SubjectValue> subjectValues) {
+		for (SubjectValue subjectValue: subjectValues) {
+			subjectValue = updateSubjectValue(subjectValue);
+		}
+		return subjectValues;
 	}
 }

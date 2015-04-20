@@ -15,22 +15,24 @@ import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
-import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
+import com.labsynch.labseer.dto.StringCollectionDTO;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
 public interface ExperimentService {
 
-	public Experiment saveLsExperiment(Experiment experiment) throws UniqueExperimentNameException;
+	public Experiment saveLsExperiment(Experiment experiment) throws UniqueNameException;
 
 	public void deleteLsExperiment(Experiment experiment);
 
-	public Experiment updateExperiment(Experiment experiment);
+	public Experiment updateExperiment(Experiment experiment) throws UniqueNameException;
 
 	public Experiment getFullExperiment(Experiment queryExperiment);
 
 	Collection<JSTreeNodeDTO> getExperimentNodes(Collection<String> codeValues);
 
-	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest);
+	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest, Boolean onlyPublicData);
 
 	public Collection<ExperimentFilterDTO> getExperimentFilters(Collection<String> experimentCodes);
 
@@ -41,11 +43,19 @@ public interface ExperimentService {
 
 	public Collection<Experiment> findExperimentsByMetadataJson(String json);
 	
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query);
+	public Collection<Experiment> findExperimentsByMetadataJson(
+			List<StringCollectionDTO> metaDataList);
+	
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query) throws TooManyResultsException;
 
 	public Collection<Experiment> findExperimentsByMetadata(String queryString, String searchBy);
 
 	public Set<Experiment> findExperimentsByRequestMetadata(
 			Map<String, String> requestParams);
+
+	Collection<JSTreeNodeDTO> getExperimentNodesMod(
+			Collection<String> codeValues);
+
+	public boolean deleteAnalysisGroupsByExperiment(Experiment experiment);
 	
 }

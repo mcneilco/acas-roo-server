@@ -93,22 +93,22 @@ public class ExperimentServiceTests2 {
 
 		Set<ExperimentFilterSearchDTO> searchFilters = new HashSet<ExperimentFilterSearchDTO>();
 		ExperimentFilterSearchDTO searchFilter = new ExperimentFilterSearchDTO(); 
-		searchFilter.setExperimentCode("EXPT-00003");
-		searchFilter.setLsType("numericValue");
-		searchFilter.setLsKind("Shapira hit");
-		searchFilter.setOperator("=");
-		searchFilter.setFilterValue("1");
+		searchFilter.setExperimentCode("EXPT-00000016");
+		searchFilter.setLsType("stringValue");
+		searchFilter.setLsKind("Gene Symbol");
+		searchFilter.setOperator("equals");
+		searchFilter.setFilterValue("A1BG");
 		logger.info(searchFilter.toJson());
 		searchFilters.add(searchFilter);
 
-				ExperimentFilterSearchDTO searchFilter2 = new ExperimentFilterSearchDTO(); 
-				searchFilter2.setExperimentCode("EXPT-00000002");
-				searchFilter2.setLsType("numericValue");
-				searchFilter2.setLsKind("18h Z-score diff.");
-				searchFilter2.setOperator(">");
-				searchFilter2.setFilterValue("2");
-				logger.info(searchFilter2.toJson());
-				searchFilters.add(searchFilter2);
+//				ExperimentFilterSearchDTO searchFilter2 = new ExperimentFilterSearchDTO(); 
+//				searchFilter2.setExperimentCode("EXPT-00000002");
+//				searchFilter2.setLsType("numericValue");
+//				searchFilter2.setLsKind("18h Z-score diff.");
+//				searchFilter2.setOperator(">");
+//				searchFilter2.setFilterValue("2");
+//				logger.info(searchFilter2.toJson());
+//				searchFilters.add(searchFilter2);
 
 
 		Set<String> batchCodeList = new HashSet<String>();
@@ -120,25 +120,25 @@ public class ExperimentServiceTests2 {
 		//		batchCodeList.add("GENE-000003");
 
 		Set<String> experimentCodeList = new HashSet<String>();
-		experimentCodeList.add("EXPT-00000002");
-		experimentCodeList.add("EXPT-00003");
-		experimentCodeList.add("EXPT-00004");
+		experimentCodeList.add("EXPT-00000016");
+//		experimentCodeList.add("EXPT-00003");
+//		experimentCodeList.add("EXPT-00004");
 		//		experimentCodeList.add("EXPT-00000316");
 		//		experimentCodeList.add("EXPT-00000441");
 
 
-		String booleanFilter = "ADVANCED"; //choices AND, OR, ADVANCED
+		String booleanFilter = "AND"; //choices AND, OR, ADVANCED
 //		String advancedFilter = "((Q1 and Q2 and Q3) or (Q4 and Q5)) OR (Q6)"; //choices AND, OR, ADVANCED
-		String advancedFilter = "(Q1 and Q2)"; //choices AND, OR, ADVANCED
+//		String advancedFilter = "(Q1 and Q2)"; //choices AND, OR, ADVANCED
 
 //		String advancedSQL = "select distinct tested_lot from api_experiment_results where numeric_value > 3";
-		String advancedSQL = "select distinct tested_lot from ((select tested_lot from api_experiment_results where experiment_id = '46693' " +
-							"and ls_kind = '18h Z-score diff.' and numeric_value > 1) intersect (select tested_lot from api_experiment_results where " +
-							"ls_kind = 'Shapira hit' and numeric_value = 1)) temp";
+//		String advancedSQL = "select distinct tested_lot from ((select tested_lot from api_experiment_results where experiment_id = '46693' " +
+//							"and ls_kind = '18h Z-score diff.' and numeric_value > 1) intersect (select tested_lot from api_experiment_results where " +
+//							"ls_kind = 'Shapira hit' and numeric_value = 1)) temp";
 
 		ExperimentSearchRequestDTO searchRequest = new ExperimentSearchRequestDTO();
-		searchRequest.setAdvancedFilter(advancedFilter);
-		searchRequest.setAdvancedFilterSQL(advancedSQL);
+//		searchRequest.setAdvancedFilter(advancedFilter);
+//		searchRequest.setAdvancedFilterSQL(advancedSQL);
 		searchRequest.setBooleanFilter(booleanFilter);
 		searchRequest.setBatchCodeList(batchCodeList);
 		searchRequest.setExperimentCodeList(experimentCodeList);
@@ -172,11 +172,11 @@ public class ExperimentServiceTests2 {
 		} else if (searchRequest.getBooleanFilter() != null){
 			for (ExperimentFilterSearchDTO singleSearchFilter : searchFilters){
 				if (firstPass){
-					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, false).getResultList();
 					logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
 					firstPass = false;
 				} else {
-					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter).getResultList();
+					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, false).getResultList();
 					logger.info("size of firstBatchCodes: " + collectionOfCodes.size());
 					logger.info("size of secondBatchCodes: " + batchCodes.size());
 
@@ -208,9 +208,12 @@ public class ExperimentServiceTests2 {
 //		searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
 
 		logger.info("calling experiment service search: ");
-		List<AnalysisGroupValueDTO> agValues = experimentService.getFilteredAGData(searchRequest);
+		List<AnalysisGroupValueDTO> agValues = experimentService.getFilteredAGData(searchRequest, true);
 
 		logger.info("number of agValues found: " + agValues.size());
+		for (AnalysisGroupValueDTO agValue : agValues){
+			logger.debug(agValue.toJson());
+		}
 
 
 		//        for (String bc : batchCodes){
@@ -280,7 +283,6 @@ public class ExperimentServiceTests2 {
 			CodeTableDTO ct = new CodeTableDTO();
 			ct.setCode(code);
 			ct.setName(code);
-			ct.setCodeName(code);
 			codeTables.add(ct);
 		}
 
@@ -315,7 +317,7 @@ public class ExperimentServiceTests2 {
 	    logger.debug("converted json: " + searchRequest.toJson());
 	    List<AnalysisGroupValueDTO> agValues = null;
 	    try {
-	        agValues = experimentService.getFilteredAGData(searchRequest);
+	        agValues = experimentService.getFilteredAGData(searchRequest, false);
 	        logger.debug("number of agvalues found: " + agValues.size());
 	    } catch (Exception e) {
 	        logger.error(e.toString());

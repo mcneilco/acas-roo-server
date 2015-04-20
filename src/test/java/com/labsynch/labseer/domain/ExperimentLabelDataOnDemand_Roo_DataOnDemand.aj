@@ -33,6 +33,7 @@ privileged aspect ExperimentLabelDataOnDemand_Roo_DataOnDemand {
     
     public ExperimentLabel ExperimentLabelDataOnDemand.getNewTransientExperimentLabel(int index) {
         ExperimentLabel obj = new ExperimentLabel();
+        setDeleted(obj, index);
         setExperiment(obj, index);
         setIgnored(obj, index);
         setImageFile(obj, index);
@@ -47,6 +48,11 @@ privileged aspect ExperimentLabelDataOnDemand_Roo_DataOnDemand {
         setRecordedBy(obj, index);
         setRecordedDate(obj, index);
         return obj;
+    }
+    
+    public void ExperimentLabelDataOnDemand.setDeleted(ExperimentLabel obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ExperimentLabelDataOnDemand.setExperiment(ExperimentLabel obj, int index) {

@@ -69,4 +69,15 @@ privileged aspect AnalysisGroupValueController_Roo_Controller_Finder {
         return "analysisgroupvalues/list";
     }
     
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot", "form" }, method = RequestMethod.GET)
+    public String AnalysisGroupValueController.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNotForm(Model uiModel) {
+        return "analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot", method = RequestMethod.GET)
+    public String AnalysisGroupValueController.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
+        uiModel.addAttribute("analysisgroupvalues", AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(lsType, lsKind, stringValue, ignored).getResultList());
+        return "analysisgroupvalues/list";
+    }
+    
 }

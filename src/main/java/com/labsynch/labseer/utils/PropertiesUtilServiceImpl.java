@@ -1,5 +1,9 @@
 package com.labsynch.labseer.utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -83,9 +87,86 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	@Value("${uniqueExperimentName}")
 	public void setUniqueExperimentName(String uniqueExperimentName) {
 	    this.uniqueExperimentName = uniqueExperimentName;
-	}	
+	}
+	
 	@Override
 	public Boolean getUniqueExperimentName() {
 	    return Boolean.parseBoolean(this.uniqueExperimentName);
+	}
+	
+	String uniqueProtocolName;
+
+	@Value("${uniqueProtocolName}")
+	public void setUniqueProtocolName(String uniqueProtocolName) {
+	    this.uniqueProtocolName = uniqueProtocolName;
+	}
+	
+	@Override
+	public Boolean getUniqueProtocolName() {
+	    return Boolean.parseBoolean(this.uniqueProtocolName);
+	}
+	
+	String autoCreateKinds;
+
+	@Value("${autoCreateKinds}")
+	public void setAutoCreateKinds(String autoCreateKinds) {
+	    this.uniqueExperimentName = autoCreateKinds;
+	}
+	
+	@Override
+	public Boolean getAutoCreateKinds() {
+	    return Boolean.parseBoolean(this.autoCreateKinds);
+	}
+	
+	String clientFullPath;
+
+	@Value("${client.fullpath}")
+	public void setClientFullPath(String clientFullPath) {
+	    this.clientFullPath = clientFullPath;
+	}
+	
+	@Override
+	public String getClientFullPath() {
+	    return this.clientFullPath;
+	}
+
+	String uniqueLsThingName;
+	
+	@Value("${uniqueLsThingName}")
+	public void setUniqueLsThingName(String uniqueLsThingName) {
+	    this.uniqueLsThingName = uniqueLsThingName;
+	}
+	
+	@Override
+	public boolean getUniqueLsThingName() {
+		return Boolean.parseBoolean(this.uniqueLsThingName);
+	}
+	
+	String componentKindList;
+	
+	@Value("${componentKindList}")
+	public void setComponentKindList(String componentKindList) {
+	    this.componentKindList = componentKindList;
+	}
+	
+	@Override
+	public List<String> getComponentKindList() {
+		List<String> componentKindListList = new ArrayList<String>();
+		componentKindListList.addAll(Arrays.asList(componentKindList.split(",")));
+		return componentKindListList;
+	}
+	
+	String assemblyKindList;
+	
+	@Value("${assemblyKindList}")
+	public void setAssemblyKindList(String assemblyKindList) {
+	    this.assemblyKindList = assemblyKindList;
+	}
+	
+	@Override
+	public List<String> getAssemblyKindList() {
+		List<String> assemblyKindListList = new ArrayList<String>();
+		assemblyKindListList.addAll(Arrays.asList(assemblyKindList.split(",")));
+		return assemblyKindListList;
 	}
 }

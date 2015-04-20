@@ -18,6 +18,18 @@ public interface TreatmentGroupStateService {
 	TreatmentGroupState createTreatmentGroupStateByTreatmentGroupIdAndStateTypeKind(
 			Long treatmentGroupId, String stateType, String stateKind);
 
+	TreatmentGroupState saveTreatmentGroupState(
+			TreatmentGroupState treatmentGroupState);
+
+	Collection<TreatmentGroupState> saveTreatmentGroupStates(
+			Collection<TreatmentGroupState> treatmentGroupStates);
+
+	TreatmentGroupState updateTreatmentGroupState(
+			TreatmentGroupState treatmentGroupState);
+
+	Collection<TreatmentGroupState> updateTreatmentGroupStates(
+			Collection<TreatmentGroupState> treatmentGroupStates);
+
 	
 	
 }

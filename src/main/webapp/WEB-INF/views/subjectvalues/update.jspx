@@ -37,5 +37,8 @@
         <field:select field="lsState" id="c_com_labsynch_labseer_domain_SubjectValue_lsState" itemValue="id" items="${subjectstates}" path="/subjectstatesnew" required="true" z="user-managed"/>
         <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_SubjectValue_uncertainty" validationMessageCode="field_invalid_number" z="JWsVQgIh8qFKjZ5MKsMjA2agEKY="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_SubjectValue_codeOrigin" z="wd0Iylnz4Ie111nvO7DODumT1tg="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_SubjectValue_deleted" z="TNxeZAq89Gc51C6z4FhnvdC1fVU="/>
+        <field:input field="concentration" id="c_com_labsynch_labseer_domain_SubjectValue_concentration" validationMessageCode="field_invalid_number" z="bv8D4/mRMWLSWpRtM3e01/Urgq4="/>
+        <field:input field="concUnit" id="c_com_labsynch_labseer_domain_SubjectValue_concUnit" max="25" z="PhcHT4nSunKbqmrzJnJsv/3D/Q0="/>
     </form:update>
 </div>

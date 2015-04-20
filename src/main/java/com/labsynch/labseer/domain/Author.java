@@ -39,6 +39,7 @@ import flexjson.JSONSerializer;
 //@RooToString(excludeFields = { "password", "modifiedDate", "activationKey", "activationDate", "emailAddress", "recordedDate", "modifiedDate", "enabled", "locked" })
 //@RooToString(excludeFields = { "password", "authorRoles"})
 
+
 @RooJpaActiveRecord(sequenceName = "AUTHOR_PKSEQ", finders = { "findAuthorsByUserName", "findAuthorsByEmailAddress", "findAuthorsByActivationKeyAndEmailAddress" })
 public class Author {
 
@@ -167,7 +168,7 @@ public class Author {
 	public static TypedQuery<Author> findAuthorsByUserName(String userName) {
         if (userName == null || userName.length() == 0) throw new IllegalArgumentException("The userName argument is required");
         EntityManager em = Author.entityManager();
-        TypedQuery<Author> q = em.createQuery("SELECT o FROM Author AS o WHERE o.userName = :userName", Author.class);
+        TypedQuery<Author> q = em.createQuery("SELECT o FROM Author AS o WHERE LOWER(o.userName) = LOWER(:userName)", Author.class);
         q.setParameter("userName", userName);
         return q;
     }

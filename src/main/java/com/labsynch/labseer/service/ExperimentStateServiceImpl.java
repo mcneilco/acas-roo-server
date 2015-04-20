@@ -1,12 +1,18 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
+import com.labsynch.labseer.domain.ExperimentValue;
 
 
 @Service
@@ -35,7 +41,50 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 		experimentState.setExperiment(experiment);
 		experimentState.setLsType(stateType);
 		experimentState.setLsKind(stateKind);
+		experimentState.setRecordedBy("default");
 		experimentState.persist();
 		return experimentState;
+	}
+	
+	@Override
+	public ExperimentState saveExperimentState(ExperimentState experimentState) {
+		ExperimentState newExperimentState = new ExperimentState(experimentState);
+		newExperimentState.setExperiment(Experiment.findExperiment(experimentState.getExperiment().getId()));		
+		newExperimentState.persist();
+		Set<ExperimentValue> savedValues = new HashSet<ExperimentValue>();
+		for (ExperimentValue experimentValue : experimentState.getLsValues()){
+			experimentValue.setLsState(newExperimentState);
+			experimentValue.persist();
+			savedValues.add(experimentValue);
+		}
+		newExperimentState.setLsValues(savedValues);
+		newExperimentState.merge();
+		return newExperimentState;
+	}
+
+	@Override
+	public Collection<ExperimentState> saveExperimentStates(
+			Collection<ExperimentState> experimentStates) {
+		for (ExperimentState experimentState: experimentStates) {
+			experimentState = saveExperimentState(experimentState);
+		}
+		return experimentStates;
+	}
+	
+	@Override
+	public ExperimentState updateExperimentState(
+			ExperimentState experimentState) {
+		experimentState.setVersion(ExperimentState.findExperimentState(experimentState.getId()).getVersion());
+		experimentState.merge();
+		return experimentState;
+	}
+
+	@Override
+	public Collection<ExperimentState> updateExperimentStates(
+			Collection<ExperimentState> experimentStates) {
+		for (ExperimentState experimentState : experimentStates){
+			experimentState = updateExperimentState(experimentState);
+		}
+		return null;
 	}
 }

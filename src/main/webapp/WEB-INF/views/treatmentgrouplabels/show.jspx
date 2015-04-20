@@ -16,5 +16,6 @@
         <field:display field="lsType" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_lsType" object="${treatmentgrouplabel}" z="6nYxbiptiU02vpDs5VVdHWSrEgE="/>
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_lsKind" object="${treatmentgrouplabel}" z="tylcYbN2bMA2TORTbs933ZKGgEM="/>
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_lsTypeAndKind" object="${treatmentgrouplabel}" z="KQb0syGmgU8s4JK78ebZ35lO6gM="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_TreatmentGroupLabel_deleted" object="${treatmentgrouplabel}" z="mH11+F2cfggwIKmEbCW8oUIm2+8="/>
     </page:show>
 </div>

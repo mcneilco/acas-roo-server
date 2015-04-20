@@ -4,6 +4,11 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerLabel;
+import com.labsynch.labseer.domain.ContainerState;
+import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.ItxSubjectContainer;
+import com.labsynch.labseer.domain.ThingPage;
 import com.labsynch.labseer.web.ContainerController;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
@@ -91,6 +96,16 @@ privileged aspect ContainerController_Roo_Controller {
     void ContainerController.addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("container_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
         uiModel.addAttribute("container_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
+    }
+    
+    void ContainerController.populateEditForm(Model uiModel, Container container) {
+        uiModel.addAttribute("container", container);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("containerlabels", ContainerLabel.findAllContainerLabels());
+        uiModel.addAttribute("containerstates", ContainerState.findAllContainerStates());
+        uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findAllItxContainerContainers());
+        uiModel.addAttribute("itxsubjectcontainers", ItxSubjectContainer.findAllItxSubjectContainers());
+        uiModel.addAttribute("thingpages", ThingPage.findAllThingPages());
     }
     
     String ContainerController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

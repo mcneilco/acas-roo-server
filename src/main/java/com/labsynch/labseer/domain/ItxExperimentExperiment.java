@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -31,15 +32,16 @@ import flexjson.JSONSerializer;
 @RooToString
 @RooJson
 @RooJpaActiveRecord(finders = { "findItxExperimentExperimentsByLsTransactionEquals", "findItxExperimentExperimentsByFirstExperiment" , "findItxExperimentExperimentsBySecondExperiment"})
+@Table(name="ITX_EXPT_EXPT")
 public class ItxExperimentExperiment extends AbstractThing {
 
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "first_experiment_id")
     private Experiment firstExperiment;
 
     @NotNull
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "second_experiment_id")
     private Experiment secondExperiment;
 

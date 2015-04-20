@@ -11,6 +11,6 @@
     Forgot Password
     <script type="text/javascript">Spring.addDecoration(new Spring.ElementDecoration({elementId : '_title_div', widgetType : 'dijit.TitlePane', widgetAttrs : {title: '${title_msg}'}})); </script>
     
-    <h3>Your new password is sent to your email address.</h3>
+    <h3>Your new password has been sent to your email address.</h3>
   </div>
 </div>

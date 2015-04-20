@@ -101,6 +101,12 @@ privileged aspect ContainerLabelController_Roo_Controller {
         uiModel.addAttribute("containerLabel_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
     }
     
+    void ContainerLabelController.populateEditForm(Model uiModel, ContainerLabel containerLabel) {
+        uiModel.addAttribute("containerLabel", containerLabel);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("containers", Container.findAllContainers());
+    }
+    
     String ContainerLabelController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {

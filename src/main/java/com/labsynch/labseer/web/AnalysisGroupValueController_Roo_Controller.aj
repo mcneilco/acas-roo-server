@@ -102,6 +102,12 @@ privileged aspect AnalysisGroupValueController_Roo_Controller {
         uiModel.addAttribute("analysisGroupValue_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
     }
     
+    void AnalysisGroupValueController.populateEditForm(Model uiModel, AnalysisGroupValue analysisGroupValue) {
+        uiModel.addAttribute("analysisGroupValue", analysisGroupValue);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAllAnalysisGroupStates());
+    }
+    
     String AnalysisGroupValueController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {

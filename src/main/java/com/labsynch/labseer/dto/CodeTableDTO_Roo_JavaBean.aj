@@ -15,14 +15,6 @@ privileged aspect CodeTableDTO_Roo_JavaBean {
         this.code = code;
     }
     
-    public String CodeTableDTO.getCodeName() {
-        return this.codeName;
-    }
-    
-    public void CodeTableDTO.setCodeName(String codeName) {
-        this.codeName = codeName;
-    }
-    
     public String CodeTableDTO.getName() {
         return this.name;
     }
@@ -53,6 +45,46 @@ privileged aspect CodeTableDTO_Roo_JavaBean {
     
     public void CodeTableDTO.setId(Long id) {
         this.id = id;
+    }
+    
+    public String CodeTableDTO.getDescription() {
+        return this.description;
+    }
+    
+    public void CodeTableDTO.setDescription(String description) {
+        this.description = description;
+    }
+    
+    public String CodeTableDTO.getComments() {
+        return this.comments;
+    }
+    
+    public void CodeTableDTO.setComments(String comments) {
+        this.comments = comments;
+    }
+    
+    public String CodeTableDTO.getCodeType() {
+        return this.codeType;
+    }
+    
+    public void CodeTableDTO.setCodeType(String codeType) {
+        this.codeType = codeType;
+    }
+    
+    public String CodeTableDTO.getCodeKind() {
+        return this.codeKind;
+    }
+    
+    public void CodeTableDTO.setCodeKind(String codeKind) {
+        this.codeKind = codeKind;
+    }
+    
+    public String CodeTableDTO.getCodeOrigin() {
+        return this.codeOrigin;
+    }
+    
+    public void CodeTableDTO.setCodeOrigin(String codeOrigin) {
+        this.codeOrigin = codeOrigin;
     }
     
 }

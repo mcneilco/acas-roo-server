@@ -35,6 +35,7 @@ privileged aspect AnalysisGroupStateDataOnDemand_Roo_DataOnDemand {
         AnalysisGroupState obj = new AnalysisGroupState();
         setAnalysisGroup(obj, index);
         setComments(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -58,6 +59,11 @@ privileged aspect AnalysisGroupStateDataOnDemand_Roo_DataOnDemand {
             comments = comments.substring(0, 512);
         }
         obj.setComments(comments);
+    }
+    
+    public void AnalysisGroupStateDataOnDemand.setDeleted(AnalysisGroupState obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void AnalysisGroupStateDataOnDemand.setIgnored(AnalysisGroupState obj, int index) {

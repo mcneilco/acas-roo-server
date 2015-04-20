@@ -34,6 +34,7 @@ privileged aspect ItxContainerContainerDataOnDemand_Roo_DataOnDemand {
     public ItxContainerContainer ItxContainerContainerDataOnDemand.getNewTransientItxContainerContainer(int index) {
         ItxContainerContainer obj = new ItxContainerContainer();
         setCodeName(obj, index);
+        setDeleted(obj, index);
         setFirstContainer(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
@@ -54,6 +55,11 @@ privileged aspect ItxContainerContainerDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
+    }
+    
+    public void ItxContainerContainerDataOnDemand.setDeleted(ItxContainerContainer obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ItxContainerContainerDataOnDemand.setFirstContainer(ItxContainerContainer obj, int index) {

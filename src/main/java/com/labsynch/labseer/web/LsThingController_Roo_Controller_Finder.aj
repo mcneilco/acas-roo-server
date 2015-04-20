@@ -23,6 +23,28 @@ privileged aspect LsThingController_Roo_Controller_Finder {
         return "lsthings/list";
     }
     
+    @RequestMapping(params = { "find=ByCodeNameLike", "form" }, method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByCodeNameLikeForm(Model uiModel) {
+        return "lsthings/findLsThingsByCodeNameLike";
+    }
+    
+    @RequestMapping(params = "find=ByCodeNameLike", method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByCodeNameLike(@RequestParam("codeName") String codeName, Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findLsThingsByCodeNameLike(codeName).getResultList());
+        return "lsthings/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindLike", "form" }, method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByLsKindLikeForm(Model uiModel) {
+        return "lsthings/findLsThingsByLsKindLike";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindLike", method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByLsKindLike(@RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findLsThingsByLsKindLike(lsKind).getResultList());
+        return "lsthings/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsTransactionEquals", "form" }, method = RequestMethod.GET)
     public String LsThingController.findLsThingsByLsTransactionEqualsForm(Model uiModel) {
         return "lsthings/findLsThingsByLsTransactionEquals";
@@ -42,6 +64,17 @@ privileged aspect LsThingController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByLsTypeAndKindEquals", method = RequestMethod.GET)
     public String LsThingController.findLsThingsByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind, Model uiModel) {
         uiModel.addAttribute("lsthings", LsThing.findLsThingsByLsTypeAndKindEquals(lsTypeAndKind).getResultList());
+        return "lsthings/list";
+    }
+    
+    @RequestMapping(params = { "find=ByRecordedByLike", "form" }, method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByRecordedByLikeForm(Model uiModel) {
+        return "lsthings/findLsThingsByRecordedByLike";
+    }
+    
+    @RequestMapping(params = "find=ByRecordedByLike", method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByRecordedByLike(@RequestParam("recordedBy") String recordedBy, Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findLsThingsByRecordedByLike(recordedBy).getResultList());
         return "lsthings/list";
     }
     

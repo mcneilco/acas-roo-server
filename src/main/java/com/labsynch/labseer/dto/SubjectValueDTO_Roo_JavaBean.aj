@@ -10,6 +10,22 @@ import java.util.Date;
 
 privileged aspect SubjectValueDTO_Roo_JavaBean {
     
+    public Long SubjectValueDTO.getTreatmentGroupId() {
+        return this.treatmentGroupId;
+    }
+    
+    public void SubjectValueDTO.setTreatmentGroupId(Long treatmentGroupId) {
+        this.treatmentGroupId = treatmentGroupId;
+    }
+    
+    public Long SubjectValueDTO.getSubjectId() {
+        return this.subjectId;
+    }
+    
+    public void SubjectValueDTO.setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
+    }
+    
     public SubjectState SubjectValueDTO.getLsState() {
         return this.lsState;
     }
@@ -264,6 +280,46 @@ privileged aspect SubjectValueDTO_Roo_JavaBean {
     
     public void SubjectValueDTO.setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
+    }
+    
+    public Long SubjectValueDTO.getStateId() {
+        return this.stateId;
+    }
+    
+    public void SubjectValueDTO.setStateId(Long stateId) {
+        this.stateId = stateId;
+    }
+    
+    public String SubjectValueDTO.getStateType() {
+        return this.stateType;
+    }
+    
+    public void SubjectValueDTO.setStateType(String stateType) {
+        this.stateType = stateType;
+    }
+    
+    public String SubjectValueDTO.getStateKind() {
+        return this.stateKind;
+    }
+    
+    public void SubjectValueDTO.setStateKind(String stateKind) {
+        this.stateKind = stateKind;
+    }
+    
+    public BigDecimal SubjectValueDTO.getConcentration() {
+        return this.concentration;
+    }
+    
+    public void SubjectValueDTO.setConcentration(BigDecimal concentration) {
+        this.concentration = concentration;
+    }
+    
+    public String SubjectValueDTO.getConcUnit() {
+        return this.concUnit;
+    }
+    
+    public void SubjectValueDTO.setConcUnit(String concUnit) {
+        this.concUnit = concUnit;
     }
     
 }

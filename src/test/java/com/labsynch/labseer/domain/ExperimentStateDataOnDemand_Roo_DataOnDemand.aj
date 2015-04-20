@@ -34,6 +34,7 @@ privileged aspect ExperimentStateDataOnDemand_Roo_DataOnDemand {
     public ExperimentState ExperimentStateDataOnDemand.getNewTransientExperimentState(int index) {
         ExperimentState obj = new ExperimentState();
         setComments(obj, index);
+        setDeleted(obj, index);
         setExperiment(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
@@ -53,6 +54,11 @@ privileged aspect ExperimentStateDataOnDemand_Roo_DataOnDemand {
             comments = comments.substring(0, 512);
         }
         obj.setComments(comments);
+    }
+    
+    public void ExperimentStateDataOnDemand.setDeleted(ExperimentState obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ExperimentStateDataOnDemand.setExperiment(ExperimentState obj, int index) {

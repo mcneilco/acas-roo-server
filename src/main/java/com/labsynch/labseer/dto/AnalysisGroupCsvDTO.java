@@ -4,44 +4,22 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentLabel;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
-import com.labsynch.labseer.domain.Protocol;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
-
 @RooJavaBean
 @RooToString
 @RooJson
 public class AnalysisGroupCsvDTO {
 
+	
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupCsvDTO.class);
 
 	public AnalysisGroupCsvDTO(){
@@ -51,7 +29,7 @@ public class AnalysisGroupCsvDTO {
 	//	valueType	valueKind	numericValue	stringValue	dateValue	clobValue	urlValue	fileValue	codeValue	valueUnit	valueOperator	publicData	stateType	stateKind	stateID	analysisGroupID	experimentID	experimentVersion	lsTransaction	recordedBy	codeName
 	//	stringValue	Rendering Hint	NULL	4 parameter D-R	NULL	NULL	NULL	NULL	NULL	NULL	NULL	FALSE	data	results	1	1	1007	1	86	smeyer	AG-1
 	//	stringValue	Rendering Hint	NULL	4 parameter D-R	NULL	NULL	NULL	NULL	NULL	NULL	NULL	FALSE	data	results	5	2	1007	1	86	smeyer	AG-2
-//	valueType,valueKind,numericValue,stringValue,dateValue,clobValue,urlValue,fileValue,codeType,codeKind,codeValue,unitKind,unitType,operatorKind,operatorType,publicData,stateType,stateKind,tempStateId,stateId,id,tempId,parentId,tempParentId,lsTransaction,recordedBy,codeName,lsType,lsKind
+	//	valueType,valueKind,numericValue,stringValue,dateValue,clobValue,urlValue,fileValue,codeType,codeKind,codeValue,unitKind,unitType,operatorKind,operatorType,publicData,stateType,stateKind,tempStateId,stateId,id,tempId,parentId,tempParentId,lsTransaction,recordedBy,codeName,lsType,lsKind
 
 	private Long experimentID;
 	private String experimentCodeName;
@@ -71,6 +49,7 @@ public class AnalysisGroupCsvDTO {
 	private Long valueId;	
 	private String valueType;
 	private String valueKind;
+	private String codeOrigin;
 	private String codeType;
 	private String codeKind;
 	private String stringValue;
@@ -86,6 +65,8 @@ public class AnalysisGroupCsvDTO {
 	private Integer numberOfReplicates;
 	private String uncertaintyType;
 	private String valueUnit;
+	private Double concentration;
+	private String concUnit;
 	private String comments;
 	private boolean ignored;
 	private Long lsTransaction;
@@ -159,7 +140,7 @@ public class AnalysisGroupCsvDTO {
 				"lsType",
 				"lsKind",
 				"testedLot",
-		"result"};
+				"result"};
 
 		return headerColumns;
 

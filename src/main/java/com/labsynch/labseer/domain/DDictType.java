@@ -12,11 +12,10 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
-@Entity
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "DDICT_TYPE_PKSEQ", finders = { })
+@RooJpaActiveRecord(sequenceName = "DDICT_TYPE_PKSEQ", finders = { "findDDictTypesByNameEquals"})
 public class DDictType {
 
     private static final Logger logger = LoggerFactory.getLogger(DDictType.class);
@@ -36,5 +35,7 @@ public class DDictType {
 	private boolean ignored;
 
 	private Integer displayOrder;
+
+	
 
 }

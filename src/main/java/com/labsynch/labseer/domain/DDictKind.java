@@ -26,9 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "DDICT_KIND_PKSEQ", finders = { })
+@RooJpaActiveRecord(sequenceName = "DDICT_KIND_PKSEQ", finders = { "findDDictKindsByLsTypeEqualsAndNameEquals"})
 public class DDictKind {
-	
 	
     private static final Logger logger = LoggerFactory.getLogger(DDictKind.class);
 

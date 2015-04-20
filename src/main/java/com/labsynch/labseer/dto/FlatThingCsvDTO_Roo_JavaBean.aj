@@ -125,6 +125,14 @@ privileged aspect FlatThingCsvDTO_Roo_JavaBean {
         this.valueKind = valueKind;
     }
     
+    public String FlatThingCsvDTO.getCodeOrigin() {
+        return this.codeOrigin;
+    }
+    
+    public void FlatThingCsvDTO.setCodeOrigin(String codeOrigin) {
+        this.codeOrigin = codeOrigin;
+    }
+    
     public String FlatThingCsvDTO.getCodeType() {
         return this.codeType;
     }
@@ -259,6 +267,22 @@ privileged aspect FlatThingCsvDTO_Roo_JavaBean {
     
     public void FlatThingCsvDTO.setUnitKind(String unitKind) {
         this.unitKind = unitKind;
+    }
+    
+    public Double FlatThingCsvDTO.getConcentration() {
+        return this.concentration;
+    }
+    
+    public void FlatThingCsvDTO.setConcentration(Double concentration) {
+        this.concentration = concentration;
+    }
+    
+    public String FlatThingCsvDTO.getConcUnit() {
+        return this.concUnit;
+    }
+    
+    public void FlatThingCsvDTO.setConcUnit(String concUnit) {
+        this.concUnit = concUnit;
     }
     
     public String FlatThingCsvDTO.getComments() {

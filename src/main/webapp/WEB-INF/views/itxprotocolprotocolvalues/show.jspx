@@ -37,5 +37,8 @@
         <field:display field="publicData" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolValue_publicData" object="${itxprotocolprotocolvalue}" z="VOvOQ4jfJha7y4lbog1ES5Hbq/A="/>
         <field:display field="lsState" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsState" object="${itxprotocolprotocolvalue}" z="PBESXVzZED5KCvDOHDiixBpbjkA="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeOrigin" object="${itxprotocolprotocolvalue}" z="MlrLYf9zMROO9xCJkpNPOzX5Kz4="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolValue_deleted" object="${itxprotocolprotocolvalue}" z="krY/P2Vx3qAsjGd117PE3HrBYa0="/>
+        <field:display field="concentration" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolValue_concentration" object="${itxprotocolprotocolvalue}" z="SWamLrz4AtBffflaQLfCUNlGtvI="/>
+        <field:display field="concUnit" id="s_com_labsynch_labseer_domain_ItxProtocolProtocolValue_concUnit" object="${itxprotocolprotocolvalue}" z="qP26AyhMOIieGO1OBe79v8zPibM="/>
     </page:show>
 </div>

@@ -42,7 +42,10 @@ privileged aspect ContainerValueDataOnDemand_Roo_DataOnDemand {
         setCodeTypeAndKind(obj, index);
         setCodeValue(obj, index);
         setComments(obj, index);
+        setConcUnit(obj, index);
+        setConcentration(obj, index);
         setDateValue(obj, index);
+        setDeleted(obj, index);
         setFileValue(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
@@ -129,9 +132,27 @@ privileged aspect ContainerValueDataOnDemand_Roo_DataOnDemand {
         obj.setComments(comments);
     }
     
+    public void ContainerValueDataOnDemand.setConcUnit(ContainerValue obj, int index) {
+        String concUnit = "concUnit_" + index;
+        if (concUnit.length() > 25) {
+            concUnit = concUnit.substring(0, 25);
+        }
+        obj.setConcUnit(concUnit);
+    }
+    
+    public void ContainerValueDataOnDemand.setConcentration(ContainerValue obj, int index) {
+        Double concentration = new Integer(index).doubleValue();
+        obj.setConcentration(concentration);
+    }
+    
     public void ContainerValueDataOnDemand.setDateValue(ContainerValue obj, int index) {
         Date dateValue = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setDateValue(dateValue);
+    }
+    
+    public void ContainerValueDataOnDemand.setDeleted(ContainerValue obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ContainerValueDataOnDemand.setFileValue(ContainerValue obj, int index) {

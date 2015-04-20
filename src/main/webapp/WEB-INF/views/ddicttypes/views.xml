@@ -13,4 +13,7 @@
 <definition extends="default" name="ddicttypes/update">
         <put-attribute name="body" value="/WEB-INF/views/ddicttypes/update.jspx"/>
     </definition>
+<definition extends="default" name="ddicttypes/findDDictTypesByNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/ddicttypes/findDDictTypesByNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

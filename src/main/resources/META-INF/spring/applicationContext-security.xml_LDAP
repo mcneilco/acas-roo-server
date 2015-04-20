@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+	<!-- authentication-success-handler-ref="postSuccessAuthHandler" -->
+
+	<!-- HTTP security configurations -->
+	<http auto-config="true" use-expressions="true">
+		<form-login login-processing-url="/resources/j_spring_security_check"
+			login-page="/login" authentication-success-handler-ref="postSuccessAuthHandler"
+			authentication-failure-url="/login?login_error=t" />
+		<logout logout-url="/resources/j_spring_security_logout" />
+
+		<!-- Configure these elements to secure URIs in your application -->
+		<intercept-url pattern="/api/admin/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/resources/**" access="permitAll" />
+		<intercept-url pattern="/login/**" access="permitAll" />
+		<intercept-url pattern="/**" access="permitAll" />
+	</http>
+
+	<beans:bean id="postSuccessAuthHandler"
+		class="com.labsynch.labseer.service.PostSuccessfulAuthenticationHandler">
+	</beans:bean>
+
+	<!-- <beans:property name="defaultTargetUrl" value="/"></beans:property> -->
+
+	<authentication-manager erase-credentials="true">
+		<authentication-provider>
+			<user-service>
+				<user name="dmanager@acas.local" authorities="ROLE_ADMINISTRATOR"
+					password="password" />
+			</user-service>
+		</authentication-provider>
+		<authentication-provider ref="ldapActiveDirectoryAuthProvider" />
+	</authentication-manager>
+
+	<beans:bean id="ldapActiveDirectoryAuthProvider"
+		class="org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider">
+		<beans:constructor-arg value="acas.local" />
+		<beans:constructor-arg value="ldap://acas-server:389/" />
+		<beans:property name="convertSubErrorCodesToExceptions"
+			value="true" />
+	</beans:bean>
+
+
+
+	<!-- Security event logging -->
+	<beans:bean id="loggerListener"
+		class="org.springframework.security.authentication.event.LoggerListener" />
+
+	<!-- Configure Authentication mechanism -->
+	<beans:bean
+		class="org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder"
+		id="messageDigestPasswordEncoder">
+		<beans:constructor-arg value="sha-1" />
+	</beans:bean>
+
+
+</beans:beans>
+

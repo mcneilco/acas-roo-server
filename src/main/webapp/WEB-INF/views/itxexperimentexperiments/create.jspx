@@ -17,6 +17,7 @@
         <field:select field="firstExperiment" id="c_com_labsynch_labseer_domain_ItxExperimentExperiment_firstExperiment" itemValue="id" items="${experiments}" path="/experiments" required="true" z="NywBRbZu8ZDVlvdNSHqZoTgfhPY="/>
         <field:select field="secondExperiment" id="c_com_labsynch_labseer_domain_ItxExperimentExperiment_secondExperiment" itemValue="id" items="${experiments}" path="/experiments" required="true" z="XgtOPfdt25SbfgSN4BWERVo9laE="/>
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_ItxExperimentExperiment_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Experiment Experiment State" z="EEV9/f5KgerjltG5g1Mmxbvobn4="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxExperimentExperiment_deleted" z="DQgwSjC7GazTctTEXJheWm0k7Ro="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ItxExperimentExperiment" render="${not empty dependencies}" z="t4FujWWWZWSWZC+4dFFzzSMSX6o="/>
 </div>

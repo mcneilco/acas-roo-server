@@ -1,8 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import flexjson.JSONDeserializer;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,12 +7,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -26,10 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+
+import flexjson.JSONDeserializer;
+
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findExperimentValuesByLsState", "findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals", "findExperimentValuesByLsKindEqualsAndCodeValueLike", "findExperimentValuesByLsKindEqualsAndStringValueLike", "findExperimentValuesByLsKindEqualsAndDateValueLike" })
+@RooJpaActiveRecord(finders = { "findExperimentValuesByLsState", "findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals", "findExperimentValuesByLsKindEqualsAndCodeValueLike", "findExperimentValuesByLsKindEqualsAndStringValueLike", "findExperimentValuesByLsKindEqualsAndDateValueEquals" })
 public class ExperimentValue extends AbstractValue {
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentValue.class);
@@ -162,6 +165,16 @@ public class ExperimentValue extends AbstractValue {
         q.setParameter("ignored", true);
         return q;
     }
+    
+    public static TypedQuery<ExperimentValue> findExperimentValuesByLsKindEqualsAndDateValueEquals(String lsKind, Date dateValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = ExperimentValue.entityManager();
+        TypedQuery<ExperimentValue> q = em.createQuery("SELECT o FROM ExperimentValue AS o WHERE o.lsKind = :lsKind  AND CAST(o.dateValue, date) = CAST(:dateValue, date) ", ExperimentValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return q;
+    }
 
     public static String[] getColumns() {
         String[] headerColumns = new String[] { "id", "codeName", "lsType", "lsKind", "labelText", "description", "comments", "ignored", "displayOrder" };
@@ -172,4 +185,89 @@ public class ExperimentValue extends AbstractValue {
         final CellProcessor[] processors = new CellProcessor[] { new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional(), new Optional() };
         return processors;
     }
+    
+	public static String[] getAllColumns(){
+		String[] headerColumns = new String[] {
+				"lsState",
+				"id",
+				"lsType",
+				"lsKind",
+				"codeType",
+				"codeKind",
+				"codeValue",
+				"stringValue",
+				
+				"fileValue",
+				"urlValue",
+				"dateValue",
+				"clobValue",
+				"operatorType",
+				"operatorKind",
+				"numericValue",
+				"sigFigs",
+				"uncertainty",
+				"numberOfReplicates",
+				
+				"uncertaintyType",
+				"unitType",
+				"unitKind",
+				"comments",
+				"ignored",
+				"lsTransaction",
+				"recordedDate",
+				"recordedBy",
+				"modifiedDate",
+				"modifiedBy",
+				
+				"publicData"
+		};
+//31 columns
+		return headerColumns;
+
+	}
+
+	public static CellProcessor[] getAllProcessors() {
+		final CellProcessor[] processors = new CellProcessor[] { 
+				
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional()
+
+
+		};
+
+		return processors;
+	}
+	
+
 }

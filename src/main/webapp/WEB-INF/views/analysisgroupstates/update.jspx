@@ -15,5 +15,6 @@
         <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_AnalysisGroupState_lsKind" required="true" z="u32S/fhAjky8VYpowYL14b+rE78="/>
         <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_AnalysisGroupState_lsTypeAndKind" z="WhY6bbeBrYiXg/SdO2t4iRBz36Q="/>
         <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_AnalysisGroupState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Analysis Group Value" z="jA9escvYy0O8QrJAdhwHzimOKIk="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_AnalysisGroupState_deleted" z="OhJn8SouPkVxgMncXUIqzBGdBT0="/>
     </form:update>
 </div>

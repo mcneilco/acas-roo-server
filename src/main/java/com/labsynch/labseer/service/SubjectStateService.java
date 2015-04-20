@@ -18,6 +18,16 @@ public interface SubjectStateService {
 	SubjectState createSubjectStateBySubjectIdAndStateTypeKind(Long subjectId,
 			String stateType, String stateKind);
 
+	SubjectState saveSubjectState(SubjectState subjectState);
+
+	Collection<SubjectState> saveSubjectStates(
+			Collection<SubjectState> subjectStates);
+
+	SubjectState updateSubjectState(SubjectState subjectState);
+
+	Collection<SubjectState> updateSubjectStates(
+			Collection<SubjectState> subjectStates);
+
 	
 	
 }

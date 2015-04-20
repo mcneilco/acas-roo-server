@@ -34,6 +34,7 @@ privileged aspect SubjectStateDataOnDemand_Roo_DataOnDemand {
     public SubjectState SubjectStateDataOnDemand.getNewTransientSubjectState(int index) {
         SubjectState obj = new SubjectState();
         setComments(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -53,6 +54,11 @@ privileged aspect SubjectStateDataOnDemand_Roo_DataOnDemand {
             comments = comments.substring(0, 512);
         }
         obj.setComments(comments);
+    }
+    
+    public void SubjectStateDataOnDemand.setDeleted(SubjectState obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void SubjectStateDataOnDemand.setIgnored(SubjectState obj, int index) {

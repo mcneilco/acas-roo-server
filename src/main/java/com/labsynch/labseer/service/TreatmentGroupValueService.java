@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -22,5 +23,17 @@ public interface TreatmentGroupValueService {
 	public TreatmentGroupValue updateTreatmentGroupValue(String idOrCodeName,
 			String stateType, String stateKind, String valueType,
 			String valueKind, String value);
+
+	TreatmentGroupValue updateTreatmentGroupValue(
+			TreatmentGroupValue treatmentGroupValue);
+
+	TreatmentGroupValue saveTreatmentGroupValue(
+			TreatmentGroupValue treatmentGroupValue);
+
+	Collection<TreatmentGroupValue> saveTreatmentGroupValues(
+			Collection<TreatmentGroupValue> treatmentGroupValues);
+
+	public Collection<TreatmentGroupValue> updateTreatmentGroupValues(
+			Collection<TreatmentGroupValue> treatmentGroupValues);
 	
 }

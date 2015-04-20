@@ -37,5 +37,8 @@
         <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_publicData" z="2fbsJalx+OfFEMzkI5rBONf+JEg="/>
         <field:select field="lsState" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_lsState" itemValue="id" items="${itxprotocolprotocolstates}" path="/itxprotocolprotocolstates" z="M0aSthrtqJ9HgxgfWG3lriJBKts="/>
         <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_codeOrigin" z="iZvDzl/XDTDJIAJ7KHuyQ15Ek34="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_deleted" z="ozl0WQiUv60vKpMbKqXWJWKiy1w="/>
+        <field:input field="concentration" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_concentration" validationMessageCode="field_invalid_number" z="LDj0kbUppkynLc+7wfeasRxZosw="/>
+        <field:input field="concUnit" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_concUnit" max="25" z="qL4Ojt83GBqAVoiroVytHznJDwA="/>
     </form:update>
 </div>

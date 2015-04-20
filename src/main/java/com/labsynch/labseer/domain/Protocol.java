@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "experiments", "lsLabels" })
 @RooJson
-@RooJpaActiveRecord(finders = { "findProtocolsByCodeNameEquals", "findProtocolsByIgnoredNot", "findProtocolsByLsKindEquals", "findProtocolsByLsTypeEquals", "findProtocolsByLsTypeEqualsAndLsKindEquals", "findProtocolsByLsTypeAndKindEquals", "findProtocolsByLsTransactionEquals", "findProtocolsByRecordedByLike", "findProtocolsByLsKindLike", "findProtocolsByLsTypeLike" })
+@RooJpaActiveRecord(finders = { "findProtocolsByCodeNameEquals", "findProtocolsByCodeNameLike", "findProtocolsByIgnoredNot", "findProtocolsByLsKindEquals", "findProtocolsByLsTypeEquals", "findProtocolsByLsTypeEqualsAndLsKindEquals", "findProtocolsByLsTypeAndKindEquals", "findProtocolsByLsTransactionEquals", "findProtocolsByRecordedByLike", "findProtocolsByLsKindLike", "findProtocolsByLsTypeLike", "findProtocolsByCodeNameEqualsAndIgnoredNot" })
 public class Protocol extends AbstractThing {
 
     private static final Logger logger = LoggerFactory.getLogger(Protocol.class);
@@ -106,6 +106,7 @@ public class Protocol extends AbstractThing {
         }
         if (protocol.getLsTags() != null) {
             for (LsTag lsTag : protocol.getLsTags()) {
+            	logger.debug("udpating tags: " + lsTag);
                 List<LsTag> queryTags = LsTag.findLsTagsByTagTextEquals(lsTag.getTagText()).getResultList();
                 if (queryTags.size() < 1) {
                     LsTag newLsTag = new LsTag(lsTag);
@@ -116,7 +117,10 @@ public class Protocol extends AbstractThing {
                 }
             }
         }
+        logger.debug("attempting to merge protocol");
+        logger.debug(updatedProtocol.toPrettyJson());
         updatedProtocol.merge();
+        logger.debug("successfully merged protocol");
         return updatedProtocol;
     }
 
@@ -125,7 +129,7 @@ public class Protocol extends AbstractThing {
         List<Protocol> protocolList = new ArrayList<Protocol>();
         for (ProtocolLabel protocolLabel : foundProtocolLabels) {
             Protocol protocol = Protocol.findProtocol(protocolLabel.getProtocol().getId());
-            protocolList.add(protocol);
+            if (!protocol.isIgnored()) protocolList.add(protocol);
         }
         return protocolList;
     }
@@ -217,7 +221,6 @@ public class Protocol extends AbstractThing {
     public static com.labsynch.labseer.domain.Protocol findProtocol(Long id) {
         if (id == null) return null;
         else if (entityManager().find(Protocol.class, id) == null) return null;
-        else if (entityManager().find(Protocol.class, id).isIgnored()) return null;
         return entityManager().find(Protocol.class, id);
     }
 

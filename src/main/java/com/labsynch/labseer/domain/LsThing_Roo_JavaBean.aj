@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.domain;
 
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
@@ -33,6 +34,22 @@ privileged aspect LsThing_Roo_JavaBean {
     
     public void LsThing.setLsTags(Set<LsTag> lsTags) {
         this.lsTags = lsTags;
+    }
+    
+    public Set<ItxLsThingLsThing> LsThing.getFirstLsThings() {
+        return this.firstLsThings;
+    }
+    
+    public void LsThing.setFirstLsThings(Set<ItxLsThingLsThing> firstLsThings) {
+        this.firstLsThings = firstLsThings;
+    }
+    
+    public Set<ItxLsThingLsThing> LsThing.getSecondLsThings() {
+        return this.secondLsThings;
+    }
+    
+    public void LsThing.setSecondLsThings(Set<ItxLsThingLsThing> secondLsThings) {
+        this.secondLsThings = secondLsThings;
     }
     
 }

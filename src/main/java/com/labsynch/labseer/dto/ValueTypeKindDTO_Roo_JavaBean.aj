@@ -23,4 +23,12 @@ privileged aspect ValueTypeKindDTO_Roo_JavaBean {
         this.lsKind = lsKind;
     }
     
+    public int ValueTypeKindDTO.getDisplayOrder() {
+        return this.displayOrder;
+    }
+    
+    public void ValueTypeKindDTO.setDisplayOrder(int displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+    
 }

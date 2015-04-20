@@ -37,5 +37,8 @@
         <field:display field="publicData" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_publicData" object="${itxexperimentexperimentvalue}" z="6VAe94mlixss75yaITi2Dvf77Uk="/>
         <field:display field="lsState" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_lsState" object="${itxexperimentexperimentvalue}" z="1NJva1y12fOcG6UNmu5UqnskcCU="/>
         <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_codeOrigin" object="${itxexperimentexperimentvalue}" z="oPJBAZ155HvoZnS8ns/WgTcU9oQ="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_deleted" object="${itxexperimentexperimentvalue}" z="N6u8A4OdAUW/Fa1+RSZPRW58xcg="/>
+        <field:display field="concentration" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_concentration" object="${itxexperimentexperimentvalue}" z="7jzw+hGuUzypCmH11wXO6DM0uWg="/>
+        <field:display field="concUnit" id="s_com_labsynch_labseer_domain_ItxExperimentExperimentValue_concUnit" object="${itxexperimentexperimentvalue}" z="XhSzfxm+qZdyPUzAL6tQ5lt4hw8="/>
     </page:show>
 </div>

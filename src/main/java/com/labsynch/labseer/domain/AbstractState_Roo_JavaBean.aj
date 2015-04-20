@@ -80,6 +80,14 @@ privileged aspect AbstractState_Roo_JavaBean {
         this.ignored = ignored;
     }
     
+    public boolean AbstractState.isDeleted() {
+        return this.deleted;
+    }
+    
+    public void AbstractState.setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+    
     public Long AbstractState.getLsTransaction() {
         return this.lsTransaction;
     }

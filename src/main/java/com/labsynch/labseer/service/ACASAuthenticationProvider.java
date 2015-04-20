@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
@@ -133,6 +134,7 @@ AbstractUserDetailsAuthenticationProvider {
 
 		UserDetails user = null;
 		String expectedPassword = null;
+		Boolean enabled = true;
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		
 		if (adminUser == null){
@@ -172,6 +174,10 @@ AbstractUserDetailsAuthenticationProvider {
 					for(AuthorRole userRole:userRoles){
 						authorities.add(new GrantedAuthorityImpl(userRole.getRoleEntry().getRoleName()));
 					}
+					enabled = targetUser.getEnabled();
+					if (!enabled) {
+						throw new DisabledException("Account has not been activated.");
+					}
 
 				}
 				// authenticate the person
@@ -197,13 +203,15 @@ AbstractUserDetailsAuthenticationProvider {
 			} catch (NoSuchAlgorithmException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (DisabledException e) {
+				e.printStackTrace();
 			}
 		}
 		
 		return new org.springframework.security.core.userdetails.User(
 				username,
 				password,
-				true, // enabled 
+				enabled, // enabled 
 				true, // account not expired
 				true, // credentials not expired 
 				true, // account not locked

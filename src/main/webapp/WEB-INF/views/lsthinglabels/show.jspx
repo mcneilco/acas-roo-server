@@ -17,5 +17,6 @@
         <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_LsThingLabel_lsTransaction" object="${lsthinglabel}" z="DDengMOrttYGzgXn//RVwht3/8M="/>
         <field:display field="lsThing" id="s_com_labsynch_labseer_domain_LsThingLabel_lsThing" object="${lsthinglabel}" z="VV5Oox++WGgETXgGqoJuUQHUpxQ="/>
         <field:display field="lsThingTypeAndKind" id="s_com_labsynch_labseer_domain_LsThingLabel_lsThingTypeAndKind" object="${lsthinglabel}" z="5ESHSg57kcwt8p9BqwgIkE1x3gg="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_LsThingLabel_deleted" object="${lsthinglabel}" z="HN+Ub4EM2pdWrwGKbD5/jWgKhzM="/>
     </page:show>
 </div>

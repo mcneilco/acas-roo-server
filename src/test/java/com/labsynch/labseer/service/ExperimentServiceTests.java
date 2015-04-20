@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +46,8 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.exceptions.UniqueExperimentNameException;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -198,14 +200,18 @@ public class ExperimentServiceTests {
 	// @Test
 	public void UpdateExeprimentName_2() {
 		String json = "{    \"analysisGroups\": null,    \"codeName\": \"test experiment code name 105\",    \"id\": 3101,    \"ignored\": false,    \"lsKind\": \"default\",    \"lsLabels\": null,    \"lsStates\": null,    \"lsTransaction\": 311,    \"lsType\": \"default\",    \"lsTypeAndKind\": \"default_default\",    \"modifiedBy\": null,    \"modifiedDate\": null,    \"protocol\": {        \"codeName\": \"test protocol code name 105\",        \"id\": 3100,        \"ignored\": false,        \"lsKind\": \"default\",        \"lsTransaction\": 311,        \"lsType\": \"default\",        \"lsTypeAndKind\": \"default_default\",        \"modifiedBy\": null,        \"modifiedDate\": null,        \"recordedBy\": \"testUser\",        \"recordedDate\": 1379479721768,        \"shortDescription\": \"just a test\",        \"version\": 0    },    \"recordedBy\": \"testUser\",    \"recordedDate\": 1379479721768,    \"shortDescription\": \"some short description\",    \"version\": 0}";
-		experimentService.updateExperiment(Experiment
+		try {
+			experimentService.updateExperiment(Experiment
 				.fromJsonToExperiment(json));
+		} catch (Exception e){
+			Assert.assertNull(e);
+		}
 	}
 
 	// @Test
 	// @Transactional
 	public void CreateProtocolFromSimpleJson_3()
-			throws UniqueExperimentNameException {
+			throws UniqueNameException {
 		String json = "{\"protocol\":{\"codeName\":\"PROT-00000007\",\"id\":14,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"id\":9,\"ignored\":false,\"imageFile\":null,\"labelText\":\"test\",\"lsKind\":\"protocol name\",\"lsTransaction\":10,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_protocol name\",\"modifiedDate\":null,\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"smeyer\",\"recordedDate\":1371828671000,\"version\":0}],\"lsStates\":[],\"lsTransaction\":10,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"modifiedBy\":null,\"modifiedDate\":null,\"recordedBy\":\"smeyer\",\"recordedDate\":1371828794000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":1},\"codeName\":\"EXPT-00000004\",\"lsType\":\"default\",\"lsKind\":\"default\",\"shortDescription\":\"experiment created by generic data parser\",\"recordedBy\":\"smeyer\",\"lsTransaction\":10,\"lsLabels\":[],\"lsStates\":[]}";
 		Experiment experiment = experimentService.saveLsExperiment(Experiment
 				.fromJsonToExperiment(json));
@@ -216,7 +222,7 @@ public class ExperimentServiceTests {
 	// @Test
 	// @Transactional
 	public void CreateProtocolFromNestedJson()
-			throws UniqueExperimentNameException {
+			throws UniqueNameException {
 		// String json =
 		// "{ \"name\": \"\",\"shortDescription\": \"\",\"lsTransaction\": null,\"protocolStates\": [ { \"protocolValues\": [ { \"valueType\": \"stringValue\",\"valueKind\": \"reader instrument\",\"stringValue\": \"Molecular Dynamics FLIPR\",\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\": null,\"sigFigs\": null,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve min\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":                0,\"sigFigs\":                2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve max\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":              100,\"sigFigs\":                2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 } ],\"recordedBy\": \"userName\",\"stateType\": \"metadata\",\"stateKind\": \"protocol parameters\",\"comments\": \"\",\"lsTransaction\": null,\"ignored\": false,\"recordedDate\":    1353216427000 } ] }";
 		String json = "{\"kind\":\"primary analysis\",\"recordedBy\":\"jmcneil\",\"recordedDate\":1363503600000,\"shortDescription\":\"primary 7:34\",\"description\":\"\", \"experimentLabels\":[{\"labelType\":\"name\",\"labelKind\":\"experiment name\",\"labelText\":\"john 7:34\",\"ignored\":false,\"preferred\":true,\"recordedDate\":1363503600000,\"recordedBy\":\"jmcneil\",\"physicallyLabled\":false,\"imageFile\":null}],\"experimentStates\":[], \"protocol\":{\"kind\":\"primary analysis\",\"recordedBy\":\"username\",\"shortDescription\":\"primary analysis\",\"description\":\"\", \"codeName\":\"PROT-00000003\",\"id\":96,\"ignored\":false,\"lsTransaction\":{\"comments\":\"primary analysis protocol transactions\",\"id\":87,\"recordedDate\":1363388477000,\"version\":0},\"modifiedBy\":null,\"modifiedDate\":null,\"recordedDate\":1363388477000,\"version\":1}}";
@@ -267,7 +273,7 @@ public class ExperimentServiceTests {
 
 	// @Test
 	@Transactional
-	public void createExperiment_test2() throws UniqueExperimentNameException {
+	public void createExperiment_test2() throws UniqueNameException {
 		String json = "";
 		Experiment experiment = experimentService.saveLsExperiment(Experiment
 				.fromJsonToExperiment(json));
@@ -460,19 +466,19 @@ public class ExperimentServiceTests {
 
 	@Test
 	public void hydrateJson_test() {
-		String josn = "{\"protocol\":{\"codeName\":\"PROT-00000026\",\"id\":484909,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"id\":11714,\"ignored\":false,\"labelText\":\"APMS\",\"lsKind\":\"protocol name\",\"lsTransaction\":302,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_protocol name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1393216025000,\"version\":0}],\"lsStates\":[],\"lsTags\":[],\"lsTransaction\":302,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":1393216025000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":1},\"codeName\":\"EXPT-00000389\",\"lsType\":\"default\",\"lsKind\":\"default\",\"shortDescription\":\"NA\",\"recordedBy\":\"nouser\",\"lsTransaction\":306,\"lsLabels\":[{\"experiment\":null,\"labelText\":\"Sample AMPS Expt 1001-V2\",\"recordedBy\":\"nouser\",\"lsType\":\"name\",\"lsKind\":\"experiment name\",\"preferred\":true,\"ignored\":false,\"lsTransaction\":306,\"recordedDate\":1393218563000}],\"lsStates\":[{\"experiment\":null,\"lsValues\":[{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"notebook\",\"stringValue\":\"JAM-000033\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"notebook page\",\"stringValue\":\"6\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"dateValue\",\"lsKind\":\"completion date\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":1373270400000,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"scientist\",\"stringValue\":\"jmcneil\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"status\",\"stringValue\":\"Approved\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"analysis status\",\"stringValue\":\"running\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"clobValue\",\"lsKind\":\"analysis result html\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":\"<p>Analysis not yet completed</p>\",\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"codeValue\",\"lsKind\":\"project\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":\"Fluomics Project 3\",\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306}],\"recordedBy\":\"nouser\",\"lsType\":\"metadata\",\"lsKind\":\"experiment metadata\",\"comments\":\"\",\"lsTransaction\":306,\"ignored\":false,\"recordedDate\":1393218563000}],\"lsTags\":[{\"tagText\":[\"apple\",\"banana\"],\"id\":null,\"version\":null,\"recordedDate\":1393218563000}],\"recordedDate\":1393218563000}";
+		String josn = "{\"protocol\":{\"codeName\":\"PROT-00000026\",\"id\":484909,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"id\":11714,\"ignored\":false,\"labelText\":\"APMS\",\"lsKind\":\"protocol name\",\"lsTransaction\":302,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_protocol name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1393216025000,\"version\":0}],\"lsStates\":[],\"lsTags\":[],\"lsTransaction\":302,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":1393216025000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":1},\"codeName\":\"EXPT-00000389\",\"lsType\":\"default\",\"lsKind\":\"default\",\"shortDescription\":\"NA\",\"recordedBy\":\"nouser\",\"lsTransaction\":306,\"lsLabels\":[{\"experiment\":null,\"labelText\":\"Sample AMPS Expt 1001-V2\",\"recordedBy\":\"nouser\",\"lsType\":\"name\",\"lsKind\":\"experiment name\",\"preferred\":true,\"ignored\":false,\"lsTransaction\":306,\"recordedDate\":1393218563000}],\"lsStates\":[{\"experiment\":null,\"lsValues\":[{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"notebook\",\"stringValue\":\"JAM-000033\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"notebook page\",\"stringValue\":\"6\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"dateValue\",\"lsKind\":\"completion date\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":1373270400000,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"codeValue\",\"lsKind\":\"scientist\",\"codeValue\":\"jmcneil\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"status\",\"stringValue\":\"Approved\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"stringValue\",\"lsKind\":\"analysis status\",\"stringValue\":\"running\",\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"clobValue\",\"lsKind\":\"analysis result html\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":\"<p>Analysis not yet completed</p>\",\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":null,\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306},{\"lsState\":null,\"lsType\":\"codeValue\",\"lsKind\":\"project\",\"stringValue\":null,\"fileValue\":null,\"urlValue\":null,\"dateValue\":null,\"clobValue\":null,\"blobValue\":null,\"operatorKind\":null,\"operatorType\":null,\"numericValue\":null,\"sigFigs\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"numberOfReplicates\":null,\"unitKind\":null,\"comments\":null,\"ignored\":false,\"publicData\":true,\"codeValue\":\"Fluomics Project 3\",\"recordedBy\":\"nouser\",\"recordedDate\":1393218563000,\"lsTransaction\":306}],\"recordedBy\":\"nouser\",\"lsType\":\"metadata\",\"lsKind\":\"experiment metadata\",\"comments\":\"\",\"lsTransaction\":306,\"ignored\":false,\"recordedDate\":1393218563000}],\"lsTags\":[{\"tagText\":[\"apple\",\"banana\"],\"id\":null,\"version\":null,\"recordedDate\":1393218563000}],\"recordedDate\":1393218563000}";
 	}
 
 	@Test
 	public void findAndSaveExperimentFromJson1() {
 		String experimentName = "Test Experiment Brian";
-		String json = "{\"codeName\":null,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"id\":null,\"ignored\":false,\"labelText\":\"Test Experiment Brian\",\"lsKind\":\"experiment name\",\"lsTransaction\":22,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_experiment name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"version\":null}],\"lsStates\":[{\"comments\":\"\",\"id\":null,\"ignored\":false,\"lsKind\":\"raw results locations\",\"lsTransaction\":22,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_raw results locations\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"fileValue\":\"experiments/EXPT-00000017/2_Concentration2.xls\",\"id\":null,\"ignored\":false,\"lsKind\":\"source file\",\"lsTransaction\":22,\"lsType\":\"fileValue\",\"lsTypeAndKind\":\"fileValue_source file\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"version\":null},{\"id\":null,\"ignored\":false,\"lsKind\":\"experiment metadata\",\"lsTransaction\":22,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_experiment metadata\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"scientist\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_scientist\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"stringValue\":\"jmcneil\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"notebook\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"stringValue\":\"JM-576\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"analysis status\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_analysis status\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"username\",\"recordedDate\":1396912532000,\"stringValue\":\"complete\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"status\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_status\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"stringValue\":\"Approved\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"dateValue\":1342076400000,\"id\":null,\"ignored\":false,\"lsKind\":\"completion date\",\"lsTransaction\":22,\"lsType\":\"dateValue\",\"lsTypeAndKind\":\"dateValue_completion date\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"notebook page\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook page\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"stringValue\":\"12\",\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"version\": null}],\"lsTags\":[],\"lsTransaction\":22,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000009\",\"id\":1584,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":12,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":1396403869000,\"shortDescription\":\"protocol created by generic data parser\",\"version\": null},\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"shortDescription\":\"experiment created by generic data parser\",\"version\": null}";
+		String json = "{\"codeName\":null,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"id\":null,\"ignored\":false,\"labelText\":\"Test Experiment Brian\",\"lsKind\":\"experiment name\",\"lsTransaction\":22,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_experiment name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"version\":null}],\"lsStates\":[{\"comments\":\"\",\"id\":null,\"ignored\":false,\"lsKind\":\"raw results locations\",\"lsTransaction\":22,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_raw results locations\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"fileValue\":\"experiments/EXPT-00000017/2_Concentration2.xls\",\"id\":null,\"ignored\":false,\"lsKind\":\"source file\",\"lsTransaction\":22,\"lsType\":\"fileValue\",\"lsTypeAndKind\":\"fileValue_source file\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"version\":null},{\"id\":null,\"ignored\":false,\"lsKind\":\"experiment metadata\",\"lsTransaction\":22,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_experiment metadata\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"scientist\",\"lsTransaction\":22,\"lsType\":\"codeValue\",\"lsTypeAndKind\":\"codeValue_scientist\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"codeValue\":\"jmcneil\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"notebook\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"stringValue\":\"JM-576\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"analysis status\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_analysis status\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"username\",\"recordedDate\":1396912532000,\"stringValue\":\"complete\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"status\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_status\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"stringValue\":\"Approved\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"dateValue\":1342076400000,\"id\":null,\"ignored\":false,\"lsKind\":\"completion date\",\"lsTransaction\":22,\"lsType\":\"dateValue\",\"lsTypeAndKind\":\"dateValue_completion date\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"notebook page\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook page\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"stringValue\":\"12\",\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"version\": null}],\"lsTags\":[],\"lsTransaction\":22,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000009\",\"id\":1584,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":12,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":1396403869000,\"shortDescription\":\"protocol created by generic data parser\",\"version\": null},\"recordedBy\":\"nouser\",\"recordedDate\":1396912531000,\"shortDescription\":\"experiment created by generic data parser\",\"version\": null}";
 		List<Experiment> check1 = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
 		Assert.assertTrue(check1.isEmpty());
 		Experiment experiment = null;
 		try {
 			experiment = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
-		} catch (UniqueExperimentNameException e) {
+		} catch (UniqueNameException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -484,7 +490,7 @@ public class ExperimentServiceTests {
 	@Test
 	public void findAndSaveExperimentFromJson2() {
 		String experimentName = "Test Experiment Brian";
-		String json = "{\"codeName\":null,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"id\":null,\"ignored\":false,\"labelText\":\"Test Experiment Brian\",\"lsKind\":\"experiment name\",\"lsTransaction\":22,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_experiment name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"version\":null}],\"lsStates\":[{\"comments\":\"\",\"id\":null,\"ignored\":false,\"lsKind\":\"raw results locations\",\"lsTransaction\":22,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_raw results locations\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"fileValue\":\"experiments/EXPT-00000017/2_Concentration2.xls\",\"id\":null,\"ignored\":false,\"lsKind\":\"source file\",\"lsTransaction\":22,\"lsType\":\"fileValue\",\"lsTypeAndKind\":\"fileValue_source file\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"nouser\",\"recordedDate\":null,\"version\":null},{\"id\":null,\"ignored\":false,\"lsKind\":\"experiment metadata\",\"lsTransaction\":22,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_experiment metadata\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"scientist\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_scientist\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"stringValue\":\"jmcneil\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"notebook\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"stringValue\":\"JM-576\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"analysis status\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_analysis status\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"username\",\"recordedDate\":null,\"stringValue\":\"complete\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"status\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_status\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"stringValue\":\"Approved\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"dateValue\":1342076400000,\"id\":null,\"ignored\":false,\"lsKind\":\"completion date\",\"lsTransaction\":22,\"lsType\":\"dateValue\",\"lsTypeAndKind\":\"dateValue_completion date\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"notebook page\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook page\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"stringValue\":\"12\",\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"nouser\",\"recordedDate\":null,\"version\": null}],\"lsTags\":[],\"lsTransaction\":22,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000009\",\"id\":1584,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":12,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":null,\"shortDescription\":\"protocol created by generic data parser\",\"version\": null},\"recordedBy\":\"nouser\",\"recordedDate\":null,\"shortDescription\":\"experiment created by generic data parser\",\"version\": null}";
+		String json = "{\"codeName\":null,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"id\":null,\"ignored\":false,\"labelText\":\"Test Experiment Brian\",\"lsKind\":\"experiment name\",\"lsTransaction\":22,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_experiment name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"version\":null}],\"lsStates\":[{\"comments\":\"\",\"id\":null,\"ignored\":false,\"lsKind\":\"raw results locations\",\"lsTransaction\":22,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_raw results locations\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"fileValue\":\"experiments/EXPT-00000017/2_Concentration2.xls\",\"id\":null,\"ignored\":false,\"lsKind\":\"source file\",\"lsTransaction\":22,\"lsType\":\"fileValue\",\"lsTypeAndKind\":\"fileValue_source file\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"nouser\",\"recordedDate\":null,\"version\":null},{\"id\":null,\"ignored\":false,\"lsKind\":\"experiment metadata\",\"lsTransaction\":22,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_experiment metadata\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"scientist\",\"lsTransaction\":22,\"lsType\":\"codeValue\",\"lsTypeAndKind\":\"codeValue_scientist\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"codeValue\":\"jmcneil\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"notebook\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"stringValue\":\"JM-576\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"analysis status\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_analysis status\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"username\",\"recordedDate\":null,\"stringValue\":\"complete\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"status\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_status\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"stringValue\":\"Approved\",\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"dateValue\":1342076400000,\"id\":null,\"ignored\":false,\"lsKind\":\"completion date\",\"lsTransaction\":22,\"lsType\":\"dateValue\",\"lsTypeAndKind\":\"dateValue_completion date\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"id\":null,\"ignored\":false,\"lsKind\":\"notebook page\",\"lsTransaction\":22,\"lsType\":\"stringValue\",\"lsTypeAndKind\":\"stringValue_notebook page\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"nouser\",\"recordedDate\":null,\"stringValue\":\"12\",\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"nouser\",\"recordedDate\":null,\"version\": null}],\"lsTags\":[],\"lsTransaction\":22,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000009\",\"id\":1584,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":12,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":null,\"shortDescription\":\"protocol created by generic data parser\",\"version\": null},\"recordedBy\":\"nouser\",\"recordedDate\":null,\"shortDescription\":\"experiment created by generic data parser\",\"version\": null}";
 		List<Experiment> check1 = Experiment.findExperimentListByExperimentNameAndIgnoredNot(experimentName);
 		Assert.assertEquals(1, check1.size());
 		Experiment experiment = new Experiment();
@@ -492,7 +498,7 @@ public class ExperimentServiceTests {
 		try {
 			experiment = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
 			experiment.persist();
-		} catch (UniqueExperimentNameException e) {
+		} catch (UniqueNameException e) {
 			caughtException = true;
 		}
 		Assert.assertTrue(caughtException);
@@ -587,29 +593,121 @@ public class ExperimentServiceTests {
 		Experiment experiment = Experiment.findExperiment(id);
 		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
 		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experiment.setIgnored(true);
 		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
 		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
+		experiment.setIgnored(false);
+		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experiment.setIgnored(true);
+		experiment.setDeleted(true);
 		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
 
 	}
 	
 	@Test
-	@Transactional
-	public void softDeletedTest2() {
-		Long id = 14L;
+//	@Transactional
+	public void browserFinderDeleteTest() throws TooManyResultsException {
+		Long id = 2123L;
+		String query = "EXPERIMENT 4 EXPT-00000006";
 		Experiment experiment = Experiment.findExperiment(id);
-		List<Experiment> experiments = Experiment.findExperimentListByExperimentNameAndIgnoredNot("Expt On1");
-		for (Experiment e: experiments){
-			if (e.isIgnored() || experimentService.isSoftDeleted(e)) experiments.remove(e);
-		}
-		logger.debug(experiments.toString());
-		experiment.logicalDelete();
-		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
-		Assert.assertTrue(experiment.isIgnored());
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Assert.assertEquals(1, experiments.size());
+		Assert.assertEquals(experiment.getId(), experiments.iterator().next().getId());
+		experiments.clear();
+		
 		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
-		Assert.assertTrue(experimentService.isSoftDeleted(experiment));
-		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Approved");
-		Assert.assertFalse(experimentService.isSoftDeleted(experiment));
-
+		experiment.setIgnored(true);
+		experiment.merge();
+		experiment.flush();
+		experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Assert.assertEquals(1, experiments.size());
+		Assert.assertEquals(experiment.getId(), experiments.iterator().next().getId());
+		experiments.clear();
+	}
+	
+	@Test
+	public void browserFinderDeleteTest2() throws TooManyResultsException{
+		Long id = 2123L;
+		String query = "EXPERIMENT 4 EXPT-00000006";
+		Experiment experiment = Experiment.findExperiment(id);
+		experiment.setDeleted(true);
+		experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "stringValue", "status", "Deleted");
+		experiment.setIgnored(true);
+		experiment.merge();
+		experiment.flush();
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		Assert.assertEquals(0, experiments.size());
+		
+	}
+	
+	@Test
+	public void browserFinderDeleteTest3() {
+		Long id = 2123L;
+		Experiment experiment = Experiment.findExperiment(id);
+		experiment.setIgnored(false);
+		experiment.setDeleted(false);
+		experiment.merge();
+		experiment.flush();
+	}
+	
+	@Test
+	@Transactional
+	public void uniqueNameExceptionTest() throws UniqueNameException{
+		String experimentName = "Test Load 102";
+		String json = "{\"codeName\":null,\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[{\"deleted\":false,\"id\":null,\"ignored\":false,\"labelText\":\"Test Load 102\",\"lsKind\":\"experiment name\",\"lsTransaction\":5,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_experiment name\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"nouser\",\"recordedDate\":1395708973000,\"version\":null}],\"lsStates\":[],\"lsTransaction\":5,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000002\",\"deleted\":false,\"id\":1006,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":5,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"nouser\",\"recordedDate\":1395708972000,\"shortDescription\":\"protocol created by generic data parser\",\"version\":null},\"recordedBy\":\"nouser\",\"recordedDate\":1395708973000,\"shortDescription\":\"NA\",\"version\":null}";
+		Experiment experiment = Experiment.fromJsonToExperiment(json);
+		try {
+			experimentService.saveLsExperiment(experiment);
+		} catch (UniqueNameException e){
+			Assert.assertNotNull(e);
+		}
+	}
+	
+	@Transactional
+	@Test
+	public void searchTest2() throws TooManyResultsException{
+		String query = "EXPT-00000012";
+		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		logger.debug("RESULTS: "+"NUMBER OF EXPERIMENTS: "+experiments.size()+experiments.toString());
+	}
+	
+	@Test
+//	@Transactional
+	public void createExperimentStatusTest() {
+		Experiment experiment = Experiment.findExperiment(7585L);
+		ExperimentValue experimentValue = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "experiment status", "created");
+		String createdExperimentStatus = experimentValue.getCodeValue();
+		Assert.assertEquals("created", createdExperimentStatus);		
+	}
+	
+	@Test
+	@Transactional
+	public void updateExperimentStatusTest() {
+		Experiment experiment = Experiment.findExperiment(7585L);
+		ExperimentValue experimentValue = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experiment.getId(), "metadata", "experiment metadata", "codeValue", "experiment status").getSingleResult();
+		String originalExperimentStatus = experimentValue.getCodeValue();
+		Assert.assertTrue(!originalExperimentStatus.equals("deleted"));
+		ExperimentValue experimentValue2 = experimentValueService.updateExperimentValue(experiment.getCodeName(), "metadata", "experiment metadata", "codeValue", "experiment status", "deleted");
+		experiment.setIgnored(true);
+		String deletedExperimentStatus = experimentValue2.getCodeValue();
+		ExperimentValue experimentValue3 = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(experiment.getId(), "metadata", "experiment metadata", "codeValue", "experiment status").getSingleResult();
+		String checkDeletedExperimentStatus = experimentValue3.getCodeValue();
+		Assert.assertEquals("deleted", deletedExperimentStatus);
+		Assert.assertEquals("deleted", checkDeletedExperimentStatus);
+		
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(value=false)
+	public void deleteChildren() {
+		Experiment experiment = Experiment.findExperiment(203528L);
+		long startTime = new Date().getTime();
+		experimentService.deleteAnalysisGroupsByExperiment(experiment);
+		long endTime = new Date().getTime();
+		long totalTime = endTime - startTime;
+		logger.info("Time to delete "+ totalTime +" ms");
+		
 	}
 }

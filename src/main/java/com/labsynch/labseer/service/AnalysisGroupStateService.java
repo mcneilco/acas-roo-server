@@ -14,9 +14,24 @@ public interface AnalysisGroupStateService {
 
 	AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKind(
 			Long analysisGroupId, String stateType, String stateKind);
+	
+	AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKindAndRecordedBy(
+			Long analysisGroupId, String stateType, String stateKind, String recordedBy);
 
 	List<AnalysisGroupState> getAnalysisGroupStatesByAnalysisGroupIdAndStateTypeKind(
 			Long analysisGroupId, String stateType, String stateKind);
+
+	AnalysisGroupState saveAnalysisGroupState(
+			AnalysisGroupState analysisGroupState);
+
+	Collection<AnalysisGroupState> saveAnalysisGroupStates(
+			Collection<AnalysisGroupState> analysisGroupStates);
+
+	AnalysisGroupState updateAnalysisGroupState(
+			AnalysisGroupState analysisGroupState);
+
+	Collection<AnalysisGroupState> updateAnalysisGroupStates(
+			Collection<AnalysisGroupState> analysisGroupStates);
 
 	
 	

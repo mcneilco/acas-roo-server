@@ -33,6 +33,7 @@ privileged aspect ProtocolLabelDataOnDemand_Roo_DataOnDemand {
     
     public ProtocolLabel ProtocolLabelDataOnDemand.getNewTransientProtocolLabel(int index) {
         ProtocolLabel obj = new ProtocolLabel();
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setImageFile(obj, index);
         setLabelText(obj, index);
@@ -47,6 +48,11 @@ privileged aspect ProtocolLabelDataOnDemand_Roo_DataOnDemand {
         setRecordedBy(obj, index);
         setRecordedDate(obj, index);
         return obj;
+    }
+    
+    public void ProtocolLabelDataOnDemand.setDeleted(ProtocolLabel obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ProtocolLabelDataOnDemand.setIgnored(ProtocolLabel obj, int index) {

@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,14 +44,21 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ProtocolDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ProtocolService;
 import com.labsynch.labseer.service.ProtocolValueService;
+import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
-@RooWebJson(jsonObject = Protocol.class)
+import flexjson.JSON;
+import flexjson.JSONSerializer;
+
+//@RooWebJson(jsonObject = Protocol.class)
 @Controller
 @RequestMapping("api/v1/protocols")
-@RooWebFinder
+//@RooWebFinder
 @Transactional
 public class ApiProtocolController {
 
@@ -89,7 +97,7 @@ public class ApiProtocolController {
         Protocol protocol = Protocol.findProtocol(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (protocol == null) {
+        if (protocol == null || protocol.isIgnored()) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.OK);
@@ -184,16 +192,30 @@ public class ApiProtocolController {
 
     @Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
-        Protocol protocol = protocolService.saveLsProtocol(Protocol.fromJsonToProtocol(json));
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Protocol protocol){
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        try{
+            protocol = protocolService.saveLsProtocol(protocol);
+        } catch(UniqueNameException e){
+        	logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage("not unique protocol name");
+            errors.add(error);
+            errorsFound = true;
+        }
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.CREATED);
     }
 
     @Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) throws UniqueNameException {
         Collection<Protocol> savedProtocols = new ArrayList<Protocol>();
         int batchSize = propertiesUtilService.getBatchSize();
         int i = 0;
@@ -217,10 +239,24 @@ public class ApiProtocolController {
 
     @Transactional
     @RequestMapping(value = { "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Protocol protocol) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        Protocol protocol = protocolService.updateProtocol(Protocol.fromJsonToProtocol(json));
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        try{
+        	protocol = protocolService.updateProtocol(protocol);
+        } catch(UniqueNameException e){
+        	logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage("not unique protocol name");
+            errors.add(error);
+            errorsFound = true;
+        }
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+        }
         if (protocol.getId() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
@@ -228,12 +264,26 @@ public class ApiProtocolController {
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<Protocol> protocols) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<Protocol> updatedProtocols = new ArrayList<Protocol>();
-        for (Protocol protocol : Protocol.fromJsonArrayToProtocols(json)) {
-            updatedProtocols.add(protocolService.updateProtocol(protocol));
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        for (Protocol protocol : protocols) {
+        	try{
+        		updatedProtocols.add(protocolService.updateProtocol(protocol));
+            } catch(UniqueNameException e){
+            	logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+                ErrorMessage error = new ErrorMessage();
+                error.setErrorLevel("error");
+                error.setMessage("not unique experiment name");
+                errors.add(error);
+                errorsFound = true;
+            }
+        	if (errorsFound) {
+                return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+            }
         }
         return new ResponseEntity<String>(Protocol.toJsonArray(updatedProtocols), headers, HttpStatus.OK);
     }
@@ -247,7 +297,9 @@ public class ApiProtocolController {
         if (protocol == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        protocol.remove();
+//        protocol.remove();
+        protocol.setIgnored(true);
+        protocol.setDeleted(true);
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
@@ -259,39 +311,46 @@ public class ApiProtocolController {
         if (protocol == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        ProtocolValue protocolValue = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "stringValue", "status", "Deleted");
-		return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
+        ProtocolValue protocolValue = protocolValueService.updateProtocolValue(protocol.getCodeName(), "metadata", "protocol metadata", "codeValue", "protocol status", "deleted");
+		protocol.setIgnored(true);
+        return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
     }
 
     @Transactional
     @RequestMapping(value = "/lsprotocols", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createLsProtocolFromJson(@RequestBody String json) {
-        Protocol protocol = protocolService.saveLsProtocol(Protocol.fromJsonToProtocol(json));
+    public ResponseEntity<java.lang.String> createLsProtocolFromJson(@RequestBody Protocol protocol) throws UniqueNameException {
+        protocol = protocolService.saveLsProtocol(protocol);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.CREATED);
     }
 
     @Transactional
-    @RequestMapping(value = "/codename/{codeName}", headers = "Accept=application/json")
+    @RequestMapping(value = "/codename/{codeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindProtocolsByCodeNameEqualsRoute(@PathVariable("codeName") String codeName) {
-        HttpHeaders headers = new HttpHeaders();
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+        Protocol protocol;
+        try{
+        	protocol = Protocol.findProtocolsByCodeNameEquals(codeName).getSingleResult();
+        } catch (EmptyResultDataAccessException e){
+        	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.OK);
     }
 
     @Transactional
-    @RequestMapping(params = "FindByCodeName", headers = "Accept=application/json")
+    @RequestMapping(params = "FindByCodeName", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindProtocolsByCodeNameEquals(@RequestParam("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, true).getResultList()), headers, HttpStatus.OK);
     }
 
     @Transactional
-    @RequestMapping(value = "/protocolname/**", headers = "Accept=application/json")
+    @RequestMapping(value = "/protocolname/**", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindProtocolsByProtocolNameEqualsRoute(HttpServletRequest request) {
         String restOfTheUrl = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
@@ -319,103 +378,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolByName(name)), headers, HttpStatus.OK);
     }
 
-    @Transactional
-    @RequestMapping(method = RequestMethod.POST, produces = "text/html")
-    public String create(@Valid Protocol protocol, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-        if (bindingResult.hasErrors()) {
-            populateEditForm(uiModel, protocol);
-            return "protocols/create";
-        }
-        uiModel.asMap().clear();
-        protocol.persist();
-        return "redirect:/protocols/" + encodeUrlPathSegment(protocol.getId().toString(), httpServletRequest);
-    }
-
-    @Transactional
-    @RequestMapping(params = "form", produces = "text/html")
-    public String createForm(Model uiModel) {
-        populateEditForm(uiModel, new Protocol());
-        return "protocols/create";
-    }
-
-    @Transactional
-    @RequestMapping(value = "/{id}", produces = "text/html")
-    public String show(@PathVariable("id") Long id, Model uiModel) {
-        addDateTimeFormatPatterns(uiModel);
-        uiModel.addAttribute("protocol", Protocol.findProtocol(id));
-        uiModel.addAttribute("itemId", id);
-        return "protocols/show";
-    }
-
-    @Transactional
-    @RequestMapping(produces = "text/html")
-    public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        if (page != null || size != null) {
-            int sizeNo = size == null ? 10 : size.intValue();
-            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("protocols", Protocol.findProtocolEntries(firstResult, sizeNo));
-            float nrOfPages = (float) Protocol.countProtocols() / sizeNo;
-            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
-        } else {
-            uiModel.addAttribute("protocols", Protocol.findAllProtocols());
-        }
-        addDateTimeFormatPatterns(uiModel);
-        return "protocols/list";
-    }
-
-    @Transactional
-    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
-    public String update(@Valid Protocol protocol, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
-        if (bindingResult.hasErrors()) {
-            populateEditForm(uiModel, protocol);
-            return "protocols/update";
-        }
-        uiModel.asMap().clear();
-        protocol.merge();
-        return "redirect:/protocols/" + encodeUrlPathSegment(protocol.getId().toString(), httpServletRequest);
-    }
-
-    @Transactional
-    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
-    public String updateForm(@PathVariable("id") Long id, Model uiModel) {
-        populateEditForm(uiModel, Protocol.findProtocol(id));
-        return "protocols/update";
-    }
-
-    @Transactional
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
-    public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        Protocol protocol = Protocol.findProtocol(id);
-        protocol.remove();
-        uiModel.asMap().clear();
-        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
-        uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
-        return "redirect:/protocols";
-    }
-
-    void addDateTimeFormatPatterns(Model uiModel) {
-        uiModel.addAttribute("protocol_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
-        uiModel.addAttribute("protocol_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
-    }
-
-    void populateEditForm(Model uiModel, Protocol protocol) {
-        uiModel.addAttribute("protocol", protocol);
-        addDateTimeFormatPatterns(uiModel);
-    }
-
-    String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
-        String enc = httpServletRequest.getCharacterEncoding();
-        if (enc == null) {
-            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
-        }
-        try {
-            pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        } catch (UnsupportedEncodingException uee) {
-        }
-        return pathSegment;
-    }
-
-	@RequestMapping(params = "find=ByIgnoredNot", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored) {
         HttpHeaders headers = new HttpHeaders();
@@ -423,7 +386,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByIgnoredNot(ignored).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsKindEquals(@RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
@@ -431,7 +394,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
@@ -439,7 +402,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeAndKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeAndKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind) {
         HttpHeaders headers = new HttpHeaders();
@@ -447,7 +410,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeAndKindEquals(lsTypeAndKind).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsTypeEquals(@RequestParam("lsType") String lsType) {
         HttpHeaders headers = new HttpHeaders();
@@ -455,7 +418,7 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArray(Protocol.findProtocolsByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> jsonFindProtocolsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
@@ -478,12 +441,28 @@ public class ApiProtocolController {
         return new ResponseEntity<String>(Protocol.toJsonArrayStub(result), headers, HttpStatus.OK);
     }
 	
-	@RequestMapping(value = "/search")
+	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<String> protocolBrowserSearch(@RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(Protocol.toJsonArray(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery)), headers, HttpStatus.OK);
+		try {
+		Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery));
+		return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);
+		}catch(Exception e){
+			String error = e.getMessage() + e.getStackTrace();
+			return new ResponseEntity<String>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value= "/experimentCount/{codeName}", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> experimentCount(@PathVariable String codeName) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		int numberOfExperiments = Protocol.findProtocolsByCodeNameEquals(codeName).getSingleResult().getExperiments().size();
+        String result = new JSONSerializer().serialize(numberOfExperiments);
+		return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 	}
 	
 }

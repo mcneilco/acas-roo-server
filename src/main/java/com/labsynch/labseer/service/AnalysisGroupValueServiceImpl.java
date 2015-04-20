@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -22,8 +23,14 @@ import com.labsynch.labseer.domain.AbstractValue;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.domain.TreatmentGroupState;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -100,10 +107,49 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 	}
 	
 	@Override
+	@Transactional
+	public AnalysisGroupValue saveAnalysisGroupValue(AnalysisGroupValue analysisGroupValue) {
+		if (analysisGroupValue.getLsState().getId() == null) {
+			AnalysisGroupState analysisGroupState = new AnalysisGroupState(analysisGroupValue.getLsState());
+			analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupValue.getLsState().getAnalysisGroup().getId()));
+			analysisGroupState.persist();
+			analysisGroupValue.setLsState(analysisGroupState); 
+		} else {
+			analysisGroupValue.setLsState(AnalysisGroupState.findAnalysisGroupState(analysisGroupValue.getLsState().getId()));
+		}		
+		analysisGroupValue.persist();
+		return analysisGroupValue;
+	}
+	
+	@Override
+	@Transactional
+	public Collection<AnalysisGroupValue> saveAnalysisGroupValues(Collection<AnalysisGroupValue> analysisGroupValues) {
+		for (AnalysisGroupValue analysisGroupValue: analysisGroupValues) {
+			analysisGroupValue = saveAnalysisGroupValue(analysisGroupValue);
+		}
+		return analysisGroupValues;
+	}
+	
+	@Override
+	public AnalysisGroupValue updateAnalysisGroupValue(AnalysisGroupValue analysisGroupValue) {
+		if (analysisGroupValue.getLsState().getId() == null) {
+			AnalysisGroupState analysisGroupState = new AnalysisGroupState(analysisGroupValue.getLsState());
+			analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupValue.getLsState().getAnalysisGroup().getId()));
+			analysisGroupState.persist();
+			analysisGroupValue.setLsState(analysisGroupState); 
+		} else {
+			analysisGroupValue.setLsState(AnalysisGroupState.findAnalysisGroupState(analysisGroupValue.getLsState().getId()));
+		}
+		analysisGroupValue.setVersion(AnalysisGroupValue.findAnalysisGroupValue(analysisGroupValue.getId()).getVersion());
+		analysisGroupValue.merge();
+		return analysisGroupValue;
+	}
+	
+	@Override
 	public AnalysisGroupValue updateAnalysisGroupValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
 		//fetch the entity
 		AnalysisGroup analysisGroup;
-		if(ApiValueController.isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			analysisGroup = AnalysisGroup.findAnalysisGroup(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -169,6 +215,35 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		if (valueType.equals("dateValue")) analysisGroupValue.setDateValue(new Date(Long.parseLong(value)));
 		if (valueType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
 		analysisGroupValue.setRecordedBy("default");
+		analysisGroupValue.persist();
+		return analysisGroupValue;
+	}
+
+
+	@Override
+	public Collection<AnalysisGroupValue> updateAnalysisGroupValues(
+			Collection<AnalysisGroupValue> analysisGroupValues) {
+		for (AnalysisGroupValue analysisGroupValue: analysisGroupValues) {
+			analysisGroupValue = updateAnalysisGroupValue(analysisGroupValue);
+		}
+		return analysisGroupValues;
+	}
+	
+	@Override
+	public AnalysisGroupValue createAnalysisGroupValueFromLsStateAndTypeAndKindAndValue(
+			AnalysisGroupState analysisGroupState, String lsType, String lsKind, String value, String recordedBy) {
+		AnalysisGroupValue analysisGroupValue = new AnalysisGroupValue();
+		analysisGroupValue.setLsState(analysisGroupState);
+		analysisGroupValue.setLsType(lsType);
+		analysisGroupValue.setLsKind(lsKind);
+		if (lsType.equals("stringValue")) analysisGroupValue.setStringValue(value);
+		if (lsType.equals("fileValue")) analysisGroupValue.setFileValue(value);
+		if (lsType.equals("clobValue")) analysisGroupValue.setClobValue(value);
+		if (lsType.equals("blobValue")) analysisGroupValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
+		if (lsType.equals("numericValue")) analysisGroupValue.setNumericValue(new BigDecimal(value));
+		if (lsType.equals("dateValue")) analysisGroupValue.setDateValue(new Date(Long.parseLong(value)));
+		if (lsType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
+		analysisGroupValue.setRecordedBy(recordedBy);
 		analysisGroupValue.persist();
 		return analysisGroupValue;
 	}

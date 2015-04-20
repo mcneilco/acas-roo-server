@@ -49,6 +49,9 @@ public class TreatmentGroupValue extends AbstractValue {
     
     public TreatmentGroupValue(FlatThingCsvDTO inputDTO) {
     	this.setCodeValue(inputDTO.getCodeValue());
+    	this.setCodeOrigin(inputDTO.getCodeOrigin());
+    	this.setCodeType(inputDTO.getCodeType());
+    	this.setCodeKind(inputDTO.getCodeKind());
     	this.setLsType(inputDTO.getValueType());
     	this.setLsKind(inputDTO.getValueKind());
     	this.setStringValue(inputDTO.getStringValue());
@@ -61,6 +64,8 @@ public class TreatmentGroupValue extends AbstractValue {
     	this.setUncertainty(inputDTO.getUncertainty());
     	this.setUncertaintyType(inputDTO.getUncertaintyType());
     	this.setUnitKind(inputDTO.getUnitKind());
+    	this.setConcentration(inputDTO.getConcentration());
+    	this.setConcUnit(inputDTO.getConcUnit());
     	this.setNumberOfReplicates(inputDTO.getNumberOfReplicates());
         this.setRecordedBy(inputDTO.getRecordedBy());
         this.setRecordedDate(inputDTO.getRecordedDate());
@@ -307,19 +312,18 @@ public class TreatmentGroupValue extends AbstractValue {
 		String[] headerColumns = new String[] {
 				"analysisGroupId",
 				"treatmentGroupId",
-				
 				"stateId",
 				"stateType",
 				"stateKind",
-				
 				"id",
 				"lsType",
 				"lsKind",
+				"codeOrigin",
 				"codeType",
 				"codeKind",
+
 				"codeValue",
 				"stringValue",
-				
 				"fileValue",
 				"urlValue",
 				"dateValue",
@@ -328,23 +332,25 @@ public class TreatmentGroupValue extends AbstractValue {
 				"operatorKind",
 				"numericValue",
 				"sigFigs",
+
 				"uncertainty",
-				"numberOfReplicates",
-				
+				"numberOfReplicates",				
 				"uncertaintyType",
 				"unitType",
 				"unitKind",
+				"concentration",
+				"concUnit",
 				"comments",
 				"ignored",
 				"lsTransaction",
+
 				"recordedDate",
 				"recordedBy",
 				"modifiedDate",
 				"modifiedBy",
-				
 				"publicData"
 		};
-//31 columns
+//35 columns
 		return headerColumns;
 
 	}
@@ -353,21 +359,6 @@ public class TreatmentGroupValue extends AbstractValue {
 		final CellProcessor[] processors = new CellProcessor[] { 
 				new Optional(),
 				new Optional(),
-				
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-				new Optional(),
-
-				new Optional(),
-				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
@@ -388,8 +379,23 @@ public class TreatmentGroupValue extends AbstractValue {
 				new Optional(),
 				new Optional(),
 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional()
-
 
 		};
 

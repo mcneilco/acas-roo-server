@@ -144,7 +144,7 @@ public class SubjectServiceImpl implements SubjectService {
 	public Set<SubjectDTO> getSubjectsWithStateTypeAndKind(Collection<Subject> subjects, String stateTypeAndKind) {
 		Set<SubjectDTO> subjectListDTO = new HashSet<SubjectDTO>();
 		for (Subject subject : subjects){
-			logger.info("query subject id is: " + subject.getId());
+			// logger.info("query subject id is: " + subject.getId());
 			Subject subj = Subject.findSubject(subject.getId());
 			if (subj != null){
 				SubjectDTO subjectDTO = new SubjectDTO(subj);
@@ -168,7 +168,7 @@ public class SubjectServiceImpl implements SubjectService {
 				subjectListDTO.add(subjectDTO);			
 
 			} else {
-				logger.error("subject is null!!");				
+				// logger.error("subject is null!!");				
 			}
 		}
 
@@ -182,21 +182,31 @@ public class SubjectServiceImpl implements SubjectService {
 		Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 		treatmentGroups.add(treatmentGroup);
 		int j = 0;
-		logger.debug("number of incoming subjects: " + subjects.size());
-		for (Subject subject : subjects){
-			Subject newSubject = saveSubject(treatmentGroups, subject, recordedDate);
-			if ( j % propertiesUtilService.getBatchSize() == 0 ) { 
-				newSubject.flush();
-				newSubject.clear();
+		if (subjects != null && !subjects.isEmpty()) {
+			logger.debug("number of incoming subjects: " + subjects.size());
+			Set<Long> subjectIds = new HashSet<Long>();
+			for (Subject subject : subjects){
+				subjectIds.add(subject.getId());
 			}
-			j++;
+			for (Long subjectId : subjectIds) {
+				Subject subject = Subject.findSubject(subjectId);
+				logger.debug("attempting to save subject: " + subject.getId());
+				Subject newSubject = saveSubject(treatmentGroups, subject,
+						recordedDate);
+				if (j % propertiesUtilService.getBatchSize() == 0) {
+					newSubject.flush();
+					newSubject.clear();
+				}
+				j++;
+				logger.debug("updated subject: " + subject.getId());
+			}
 		}
 	}
 
 	@Override
 	@Transactional
 	public Subject saveSubject(Subject subject){
-		logger.debug("incoming meta subject: " + subject.toJson());
+		// logger.debug("incoming meta subject: " + subject.toJson());
 		Date recordedDate = new Date();
 
 		return saveSubject(subject.getTreatmentGroups(), subject, recordedDate);
@@ -205,7 +215,7 @@ public class SubjectServiceImpl implements SubjectService {
 
 	@Override
 	public Subject saveSubject(Set<TreatmentGroup> treatmentGroups, Subject subject, Date recordedDate){
-		logger.debug("incoming meta subject: " + subject.toJson());
+		// logger.debug("incoming meta subject: " + subject.toJson());
 		Subject newSubject = null;
 
 		if (subject.getId() == null){
@@ -229,7 +239,7 @@ public class SubjectServiceImpl implements SubjectService {
 			logger.debug("this is an existing subject -----------");
 			newSubject = Subject.findSubject(subject.getId());
 			for (TreatmentGroup treatmentGroup : treatmentGroups){
-				logger.debug("incoming treatment group: ------------ " + treatmentGroup.toJson());
+				// logger.debug("incoming treatment group: ------------ " + treatmentGroup.toJson());
 				newSubject.getTreatmentGroups().add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));
 			}
 
@@ -272,7 +282,7 @@ public class SubjectServiceImpl implements SubjectService {
 	@Transactional
 	public Subject updateSubject(Subject subject){
 
-		logger.debug("incoming meta subject to update: " + subject.toJson());
+		// logger.debug("incoming meta subject to update: " + subject.toJson());
 		subject = Subject.update(subject);
 
 		if (subject.getLsLabels() != null) {
@@ -326,7 +336,7 @@ public class SubjectServiceImpl implements SubjectService {
 		HashMap<String, TempThingDTO> subjectValueMap = new HashMap<String, TempThingDTO>();
 
 		try {
-			logger.info("read csv delimited file");
+			// logger.info("read csv delimited file");
 			InputStream is = new FileInputStream(subjectFilePath);  
 			InputStreamReader isr = new InputStreamReader(is);  
 			BufferedReader br = new BufferedReader(isr);
@@ -337,17 +347,17 @@ public class SubjectServiceImpl implements SubjectService {
 			List<String> headerList = new ArrayList<String>();
 			int position = 0;
 			for (String head : headerText){
-				logger.info("header column: " + position + "  " + head);
+				// logger.info("header column: " + position + "  " + head);
 				headerList.add(head);
 				position++;
 			}
 
-			logger.info("size of header list  " + headerList.size());
+			// logger.info("size of header list  " + headerList.size());
 			String[] header = new String[headerList.size()];
 			headerList.toArray(header);
 
 			for (String head : header){
-				logger.debug("header column array : " + position + "  " + head);
+				// logger.debug("header column array : " + position + "  " + head);
 				position++;
 			}
 
@@ -361,8 +371,8 @@ public class SubjectServiceImpl implements SubjectService {
 			long rowIndex = 1;
 			Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
 			while( (subjectDTO = beanReader.read(FlatThingCsvDTO.class, header, processors)) != null ) {
-				logger.debug("-------------working on rowIndex: " + rowIndex + "--------------------");
-				logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), subjectDTO));
+				// logger.debug("-------------working on rowIndex: " + rowIndex + "--------------------");
+				// logger.debug(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), subjectDTO));
 
 				if (subjectDTO.getLsType() == null) subjectDTO.setLsType("default");
 				if (subjectDTO.getLsKind() == null) subjectDTO.setLsKind("default");
@@ -378,19 +388,19 @@ public class SubjectServiceImpl implements SubjectService {
 //					TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(treatmentGroupMap.get(subjectDTO.getTempParentId()).getId());
 //					treatmentGroup.getSubjects().add(subject);
 //					treatmentGroups.add(treatmentGroup);
-					logger.debug("saved the new subject: ID: " + subject.getId() + " codeName" + subject.getCodeName());
-					logger.debug("saved the new subject: " + subject.toJson());
+					// logger.debug("saved the new subject: ID: " + subject.getId() + " codeName" + subject.getCodeName());
+					// logger.debug("saved the new subject: " + subject.toJson());
 					subjectMap = saveTempSubject(subject, subjectDTO, subjectMap);
 				}
 
 				if (subjectDTO.getStateType() != null && subjectDTO.getStateKind() != null){
 					if (subjectDTO.getTempStateId() == null) subjectDTO.setTempStateId(subjectDTO.getStateId().toString());
-					logger.debug("subjectDTO.getTempStateId() is " + subjectDTO.getTempStateId());
+					// logger.debug("subjectDTO.getTempStateId() is " + subjectDTO.getTempStateId());
 					subjectState = getOrCreateSubjectState(subjectDTO, subjectStateMap, subjectMap);
 					if (subjectState != null){
 						subjectState.persist();
-						logger.debug("saved the new subject state: " + subjectState.getId());
-						logger.debug("saved the new subject state: " + subjectState.toJson());
+						// logger.debug("saved the new subject state: " + subjectState.getId());
+						// logger.debug("saved the new subject state: " + subjectState.toJson());
 						subjectStateMap = saveTempSubjectState(subjectState, subjectDTO, subjectStateMap);
 					}
 
@@ -399,7 +409,7 @@ public class SubjectServiceImpl implements SubjectService {
 						subjectValue = getOrCreateSubjectValue(subjectDTO, subjectValueMap, subjectStateMap);
 						if (subjectValue != null){
 							subjectValue.persist();
-							logger.debug("saved the subject Value: " + subjectValue.toJson());
+							// logger.debug("saved the subject Value: " + subjectValue.toJson());
 							if ( rowIndex % batchSize == 0 ) {
 								subjectValue.flush();
 								subjectValue.clear();
@@ -408,25 +418,25 @@ public class SubjectServiceImpl implements SubjectService {
 						}
 					}
 				} else {
-					logger.debug("---------- not saving a new subject state: " + subjectDTO.getStateType());
+					// logger.debug("---------- not saving a new subject state: " + subjectDTO.getStateType());
 				}
 
 				rowIndex++;
 			}
 //			Long beforeMerge = new Date().getTime();
-//			logger.info("Number of TreatmentGroups to merge: "+ treatmentGroups.size());
+//			// logger.info("Number of TreatmentGroups to merge: "+ treatmentGroups.size());
 //			for (TreatmentGroup treatmentGroup: treatmentGroups) {
-//				logger.debug("merging treatment group:" + treatmentGroup.getCodeName());
+//				// logger.debug("merging treatment group:" + treatmentGroup.getCodeName());
 ////				try {
-////					logger.debug(treatmentGroup.toJson());
+////					// logger.debug(treatmentGroup.toJson());
 ////				} catch (Exception e) {
-////					logger.debug("Found exception: " + e);
+////					// logger.debug("Found exception: " + e);
 ////				}
 //				treatmentGroup.merge();	
 //			}
 //			Long afterMerge = new Date().getTime();
 //			Long mergeDuration = afterMerge - beforeMerge;
-//			logger.info("Merging TreatmentGroups took: "+ mergeDuration + " ms");
+//			// logger.info("Merging TreatmentGroups took: "+ mergeDuration + " ms");
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -459,13 +469,13 @@ public class SubjectServiceImpl implements SubjectService {
 		if (!subjectValueMap.containsKey(subjectDTO.getTempValueId())){
 			if (subjectDTO.getValueId() == null){
 				subjectValue = new SubjectValue(subjectDTO);
-				logger.debug("query state: " + subjectDTO.getTempStateId());
+				// logger.debug("query state: " + subjectDTO.getTempStateId());
 				subjectValue.setLsState(SubjectState.findSubjectState(subjectStateMap.get(subjectDTO.getTempStateId()).getId()));				
 			} else {
 				subjectValue = SubjectValue.findSubjectValue(subjectDTO.getValueId());
 			}
 		} else {
-			logger.debug("skipping the saved subjectValue --------- " + subjectDTO.getValueId());
+			// logger.debug("skipping the saved subjectValue --------- " + subjectDTO.getValueId());
 		}
 
 		return subjectValue;
@@ -479,7 +489,7 @@ public class SubjectServiceImpl implements SubjectService {
 		TempThingDTO tempThingDTO = new TempThingDTO();
 		tempThingDTO.setId(subjectState.getId());
 		tempThingDTO.setTempId(subjectDTO.getTempStateId());
-		logger.debug("saving the temp state: " + tempThingDTO.getTempId());
+		// logger.debug("saving the temp state: " + tempThingDTO.getTempId());
 		subjectStateMap.put(subjectDTO.getTempStateId(), tempThingDTO);
 
 		return subjectStateMap;		
@@ -494,13 +504,13 @@ public class SubjectServiceImpl implements SubjectService {
 		if (!subjectStateMap.containsKey(subjectDTO.getTempStateId())){
 			if (subjectDTO.getStateId() == null){
 				subjectState = new SubjectState(subjectDTO);
-				logger.debug("subjectDTO TempId: " + subjectDTO.getTempId());
+				// logger.debug("subjectDTO TempId: " + subjectDTO.getTempId());
 				subjectState.setSubject(Subject.findSubject(subjectMap.get(subjectDTO.getTempId()).getId()));	
 			} else {
 				subjectState = SubjectState.findSubjectState(subjectDTO.getStateId());
 			}
 		} else {
-			logger.debug("skipping the saved subjectState --------- " + subjectDTO.getStateId());
+			// logger.debug("skipping the saved subjectState --------- " + subjectDTO.getStateId());
 		}
 
 		return subjectState;
@@ -531,13 +541,13 @@ public class SubjectServiceImpl implements SubjectService {
 				if (subjectDTO.getTempParentId() != null && !subjectDTO.getTempParentId().equalsIgnoreCase("null")){
 					subject = new Subject(subjectDTO);
 					if (subject.getCodeName() == null){
-						logger.debug("incoming subject codeName: " + subjectDTO.getCodeName());
+						// logger.debug("incoming subject codeName: " + subjectDTO.getCodeName());
 						String newCodeName = autoLabelService.getSubjectCodeName();
-						logger.debug("------------------ new codeName: " + newCodeName);
+						// logger.debug("------------------ new codeName: " + newCodeName);
 						subject.setCodeName(newCodeName);
 					}
 				} else {
-					logger.debug("the temp parent ID is null " + subjectDTO.getTempParentId());
+					// logger.debug("the temp parent ID is null " + subjectDTO.getTempParentId());
 				}
 			} else {
 				subject = Subject.findSubject(subjectDTO.getId());
@@ -550,7 +560,7 @@ public class SubjectServiceImpl implements SubjectService {
 				subject.getTreatmentGroups().addAll(treatmentGroups);
 			}			
 		} else {
-			logger.debug("skipping the previously saved subject --------- " + subjectDTO.getCodeName());
+			// logger.debug("skipping the previously saved subject --------- " + subjectDTO.getCodeName());
 		}
 		return subject;
 	}

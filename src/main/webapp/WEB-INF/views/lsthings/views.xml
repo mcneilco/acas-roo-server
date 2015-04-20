@@ -22,4 +22,13 @@
 <definition extends="default" name="lsthings/findLsThingsByLsTypeAndKindEquals">
         <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByLsTypeAndKindEquals.jspx"/>
     </definition>
+<definition extends="default" name="lsthings/findLsThingsByCodeNameLike">
+        <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByCodeNameLike.jspx"/>
+    </definition>
+<definition extends="default" name="lsthings/findLsThingsByLsKindLike">
+        <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByLsKindLike.jspx"/>
+    </definition>
+<definition extends="default" name="lsthings/findLsThingsByRecordedByLike">
+        <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByRecordedByLike.jspx"/>
+    </definition>
 </tiles-definitions>

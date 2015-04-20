@@ -22,6 +22,17 @@ import org.springframework.web.util.WebUtils;
 
 privileged aspect AuthorController_Roo_Controller {
     
+    @RequestMapping(method = RequestMethod.POST, produces = "text/html")
+    public String AuthorController.create(@Valid Author author, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            populateEditForm(uiModel, author);
+            return "authors/create";
+        }
+        uiModel.asMap().clear();
+        author.persist();
+        return "redirect:/authors/" + encodeUrlPathSegment(author.getId().toString(), httpServletRequest);
+    }
+    
     @RequestMapping(params = "form", produces = "text/html")
     public String AuthorController.createForm(Model uiModel) {
         populateEditForm(uiModel, new Author());

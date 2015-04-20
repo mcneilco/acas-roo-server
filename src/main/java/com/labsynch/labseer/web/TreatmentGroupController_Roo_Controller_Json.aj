@@ -6,15 +6,94 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.web.TreatmentGroupController;
+import java.util.List;
 import java.util.Set;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect TreatmentGroupController_Roo_Controller_Json {
+    
+    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> TreatmentGroupController.showJson(@PathVariable("id") Long id) {
+        TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        if (treatmentGroup == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(treatmentGroup.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> TreatmentGroupController.listJson() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<TreatmentGroup> result = TreatmentGroup.findAllTreatmentGroups();
+        return new ResponseEntity<String>(TreatmentGroup.toJsonArray(result), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> TreatmentGroupController.createFromJson(@RequestBody String json) {
+        TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
+        treatmentGroup.persist();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+    
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> TreatmentGroupController.createFromJsonArray(@RequestBody String json) {
+        for (TreatmentGroup treatmentGroup: TreatmentGroup.fromJsonArrayToTreatmentGroups(json)) {
+            treatmentGroup.persist();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+    }
+    
+    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> TreatmentGroupController.updateFromJson(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        TreatmentGroup treatmentGroup = TreatmentGroup.fromJsonToTreatmentGroup(json);
+        if (treatmentGroup.merge() == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> TreatmentGroupController.updateFromJsonArray(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        for (TreatmentGroup treatmentGroup: TreatmentGroup.fromJsonArrayToTreatmentGroups(json)) {
+            if (treatmentGroup.merge() == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+        }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> TreatmentGroupController.deleteFromJson(@PathVariable("id") Long id) {
+        TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        if (treatmentGroup == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        treatmentGroup.remove();
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
     
     @RequestMapping(params = "find=ByAnalysisGroups", headers = "Accept=application/json")
     @ResponseBody
@@ -22,6 +101,14 @@ privileged aspect TreatmentGroupController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(TreatmentGroup.toJsonArray(TreatmentGroup.findTreatmentGroupsByAnalysisGroups(analysisGroups).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> TreatmentGroupController.jsonFindTreatmentGroupsByCodeNameEquals(@RequestParam("codeName") String codeName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(TreatmentGroup.toJsonArray(TreatmentGroup.findTreatmentGroupsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")

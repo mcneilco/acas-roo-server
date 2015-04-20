@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,8 +62,63 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 		analysisGroupState.setAnalysisGroup(analysisGroup);
 		analysisGroupState.setLsType(stateType);
 		analysisGroupState.setLsKind(stateKind);
+		analysisGroupState.setRecordedBy("default");
 		analysisGroupState.persist();
 		return analysisGroupState;
+	}
+	
+	@Override
+	public AnalysisGroupState createAnalysisGroupStateByAnalysisGroupIdAndStateTypeKindAndRecordedBy(Long analysisGroupId, String stateType, String stateKind, String recordedBy) {
+		AnalysisGroupState analysisGroupState = new AnalysisGroupState();
+		AnalysisGroup analysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroupId);
+		analysisGroupState.setAnalysisGroup(analysisGroup);
+		analysisGroupState.setLsType(stateType);
+		analysisGroupState.setLsKind(stateKind);
+		analysisGroupState.setRecordedBy(recordedBy);
+		analysisGroupState.persist();
+		return analysisGroupState;
+	}
+
+	@Override
+	public AnalysisGroupState saveAnalysisGroupState(
+			AnalysisGroupState analysisGroupState) {
+		analysisGroupState.setAnalysisGroup(AnalysisGroup.findAnalysisGroup(analysisGroupState.getAnalysisGroup().getId()));		
+		analysisGroupState.persist();
+		Set<AnalysisGroupValue> savedValues = new HashSet<AnalysisGroupValue>();
+		for (AnalysisGroupValue analysisGroupValue : analysisGroupState.getLsValues()){
+			analysisGroupValue.setLsState(analysisGroupState);
+			analysisGroupValue.persist();
+			savedValues.add(analysisGroupValue);
+		}
+		analysisGroupState.setLsValues(savedValues);
+		analysisGroupState.merge();
+		return analysisGroupState;
+	}
+
+	@Override
+	public Collection<AnalysisGroupState> saveAnalysisGroupStates(
+			Collection<AnalysisGroupState> analysisGroupStates) {
+		for (AnalysisGroupState analysisGroupState: analysisGroupStates) {
+			analysisGroupState = saveAnalysisGroupState(analysisGroupState);
+		}
+		return analysisGroupStates;
+	}
+
+	@Override
+	public AnalysisGroupState updateAnalysisGroupState(
+			AnalysisGroupState analysisGroupState) {
+		analysisGroupState.setVersion(AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId()).getVersion());
+		analysisGroupState.merge();
+		return analysisGroupState;
+	}
+
+	@Override
+	public Collection<AnalysisGroupState> updateAnalysisGroupStates(
+			Collection<AnalysisGroupState> analysisGroupStates) {
+		for (AnalysisGroupState analysisGroupState : analysisGroupStates){
+			analysisGroupState = updateAnalysisGroupState(analysisGroupState);
+		}
+		return null;
 	}
 
 

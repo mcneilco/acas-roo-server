@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -21,11 +22,20 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AbstractValue;
+import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.domain.StateKind;
+import com.labsynch.labseer.domain.StateType;
+import com.labsynch.labseer.domain.ValueKind;
+import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.StateValueCsvDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -34,6 +44,9 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 	
 	@Autowired
 	private ExperimentStateService experimentStateService;
+	
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentValueServiceImpl.class);
 
@@ -48,7 +61,8 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 			experimentValue.setLsState(experimentState); 
 		} else {
 			experimentValue.setLsState(ExperimentState.findExperimentState(experimentValue.getLsState().getId()));
-		}		
+		}
+		experimentValue.setVersion(ExperimentValue.findExperimentValue(experimentValue.getId()).getVersion());
 		experimentValue.merge();
 		return experimentValue;
 	}
@@ -67,6 +81,15 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		}		
 		experimentValue.persist();
 		return experimentValue;
+	}
+	
+	@Override
+	@Transactional
+	public Collection<ExperimentValue> saveExperimentValues(Collection<ExperimentValue> experimentValues) {
+		for (ExperimentValue experimentValue: experimentValues) {
+			experimentValue = saveExperimentValue(experimentValue);
+		}
+		return experimentValues;
 	}
 
 	@Override
@@ -109,11 +132,12 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		ICsvBeanWriter beanWriter = null;
 		try {
 			beanWriter = new CsvBeanWriter(outFile, CsvPreference.STANDARD_PREFERENCE);
-			final String[] header = AbstractValue.getColumns();
-			final CellProcessor[] processors = AbstractValue.getProcessors();
+			final String[] header = StateValueCsvDTO.getColumns();
+			final CellProcessor[] processors = StateValueCsvDTO.getProcessors();
 			beanWriter.writeHeader(header);
 			for (final ExperimentValue experimentValue : experimentValues) {
-				beanWriter.write(experimentValue, header, processors);
+				StateValueCsvDTO stateValueCsv = new StateValueCsvDTO(experimentValue);
+				beanWriter.write(stateValueCsv, header, processors);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -178,7 +202,7 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 	public ExperimentValue updateExperimentValue(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind, String value) {
 		//fetch the entity
 		Experiment experiment;
-		if(isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			experiment = Experiment.findExperiment(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -187,6 +211,15 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 				experiment = null;
 			}
 		}
+		//Verify state and value kinds exist. If not, create them.
+		if (propertiesUtilService.getAutoCreateKinds()) {
+			StateType stateLsType = StateType.findStateTypesByTypeNameEquals(stateType).getSingleResult();
+			StateKind.getOrCreate(stateLsType, stateKind);
+			
+			ValueType valueLsType = ValueType.findValueTypesByTypeNameEquals(valueType).getSingleResult();
+			ValueKind.getOrCreate(valueLsType, valueKind);
+		}
+		
 		//fetch the state, and if it doesn't exist, create it
 		List<ExperimentState> experimentStates;
 		if(experiment != null) {
@@ -247,11 +280,14 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		experimentValue.persist();
 		return experimentValue;
 	}
-
-	private static boolean isNumeric(String str) {
-		for (char c : str.toCharArray()) {
-			if (!Character.isDigit(c)) return false;
+	
+	@Override
+	public Collection<ExperimentValue> updateExperimentValues(
+			Collection<ExperimentValue> experimentValues) {
+		for (ExperimentValue experimentValue: experimentValues) {
+			experimentValue = updateExperimentValue(experimentValue);
 		}
-		return true;
+		return experimentValues;
 	}
+
 }

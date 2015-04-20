@@ -34,6 +34,17 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
         return "ddictvalues/list";
     }
     
+    @RequestMapping(params = { "find=ByLabelTextLike", "form" }, method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByLabelTextLikeForm(Model uiModel) {
+        return "ddictvalues/findDDictValuesByLabelTextLike";
+    }
+    
+    @RequestMapping(params = "find=ByLabelTextLike", method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByLabelTextLike(@RequestParam("labelText") String labelText, Model uiModel) {
+        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLabelTextLike(labelText).getResultList());
+        return "ddictvalues/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsKindEquals", "form" }, method = RequestMethod.GET)
     public String DDictValueController.findDDictValuesByLsKindEqualsForm(Model uiModel) {
         return "ddictvalues/findDDictValuesByLsKindEquals";
@@ -64,6 +75,17 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
     public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
         uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+        return "ddictvalues/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndLsKindEqualsAndShortNameEquals", "form" }, method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEqualsForm(Model uiModel) {
+        return "ddictvalues/findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndShortNameEquals", method = RequestMethod.GET)
+    public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("shortName") String shortName, Model uiModel) {
+        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName).getResultList());
         return "ddictvalues/list";
     }
     

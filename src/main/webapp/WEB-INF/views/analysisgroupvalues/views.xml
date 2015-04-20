@@ -28,4 +28,7 @@
 <definition extends="default" name="analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals">
         <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals.jspx"/>
     </definition>
+<definition extends="default" name="analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot.jspx"/>
+    </definition>
 </tiles-definitions>

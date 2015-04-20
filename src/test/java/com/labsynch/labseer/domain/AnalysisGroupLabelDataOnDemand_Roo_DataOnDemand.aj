@@ -34,6 +34,7 @@ privileged aspect AnalysisGroupLabelDataOnDemand_Roo_DataOnDemand {
     public AnalysisGroupLabel AnalysisGroupLabelDataOnDemand.getNewTransientAnalysisGroupLabel(int index) {
         AnalysisGroupLabel obj = new AnalysisGroupLabel();
         setAnalysisGroup(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setImageFile(obj, index);
         setLabelText(obj, index);
@@ -52,6 +53,11 @@ privileged aspect AnalysisGroupLabelDataOnDemand_Roo_DataOnDemand {
     public void AnalysisGroupLabelDataOnDemand.setAnalysisGroup(AnalysisGroupLabel obj, int index) {
         AnalysisGroup analysisGroup = analysisGroupDataOnDemand.getRandomAnalysisGroup();
         obj.setAnalysisGroup(analysisGroup);
+    }
+    
+    public void AnalysisGroupLabelDataOnDemand.setDeleted(AnalysisGroupLabel obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void AnalysisGroupLabelDataOnDemand.setIgnored(AnalysisGroupLabel obj, int index) {

@@ -28,4 +28,10 @@
 <definition extends="default" name="ddictvalues/findDDictValuesByCodeNameEquals">
         <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByCodeNameEquals.jspx"/>
     </definition>
+<definition extends="default" name="ddictvalues/findDDictValuesByLabelTextLike">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByLabelTextLike.jspx"/>
+    </definition>
+<definition extends="default" name="ddictvalues/findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/ddictvalues/findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

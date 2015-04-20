@@ -17,6 +17,36 @@ privileged aspect LsThing_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThing> LsThing.findLsThingsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", LsThing.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+    
+    public static TypedQuery<LsThing> LsThing.findLsThingsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", LsThing.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
     public static TypedQuery<LsThing> LsThing.findLsThingsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = LsThing.entityManager();
@@ -30,6 +60,21 @@ privileged aspect LsThing_Roo_Finder {
         EntityManager em = LsThing.entityManager();
         TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", LsThing.class);
         q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+    
+    public static TypedQuery<LsThing> LsThing.findLsThingsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", LsThing.class);
+        q.setParameter("recordedBy", recordedBy);
         return q;
     }
     

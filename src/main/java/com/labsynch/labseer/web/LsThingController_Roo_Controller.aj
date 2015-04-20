@@ -3,7 +3,12 @@
 
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.LsThingState;
+import com.labsynch.labseer.domain.ThingPage;
 import com.labsynch.labseer.web.LsThingController;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
@@ -91,6 +96,16 @@ privileged aspect LsThingController_Roo_Controller {
     void LsThingController.addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("lsThing_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
         uiModel.addAttribute("lsThing_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
+    }
+    
+    void LsThingController.populateEditForm(Model uiModel, LsThing lsThing) {
+        uiModel.addAttribute("lsThing", lsThing);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findAllItxLsThingLsThings());
+        uiModel.addAttribute("lstags", LsTag.findAllLsTags());
+        uiModel.addAttribute("lsthinglabels", LsThingLabel.findAllLsThingLabels());
+        uiModel.addAttribute("lsthingstates", LsThingState.findAllLsThingStates());
+        uiModel.addAttribute("thingpages", ThingPage.findAllThingPages());
     }
     
     String LsThingController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

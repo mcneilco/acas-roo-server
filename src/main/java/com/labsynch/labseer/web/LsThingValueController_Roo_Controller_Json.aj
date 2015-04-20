@@ -6,7 +6,9 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.web.LsThingValueController;
+import java.util.Date;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,6 +110,30 @@ privileged aspect LsThingValueController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndCodeValueLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndCodeValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("codeValue") String codeValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndCodeValueLike(lsKind, codeValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndDateValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLike(lsKind, dateValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndStringValueLike", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndStringValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike(lsKind, stringValue).getResultList()), headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByLsState", headers = "Accept=application/json")

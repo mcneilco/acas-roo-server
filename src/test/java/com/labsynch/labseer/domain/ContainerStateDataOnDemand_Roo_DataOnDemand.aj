@@ -35,6 +35,7 @@ privileged aspect ContainerStateDataOnDemand_Roo_DataOnDemand {
         ContainerState obj = new ContainerState();
         setComments(obj, index);
         setContainer(obj, index);
+        setDeleted(obj, index);
         setIgnored(obj, index);
         setLsKind(obj, index);
         setLsTransaction(obj, index);
@@ -58,6 +59,11 @@ privileged aspect ContainerStateDataOnDemand_Roo_DataOnDemand {
     public void ContainerStateDataOnDemand.setContainer(ContainerState obj, int index) {
         Container container = containerDataOnDemand.getRandomContainer();
         obj.setContainer(container);
+    }
+    
+    public void ContainerStateDataOnDemand.setDeleted(ContainerState obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void ContainerStateDataOnDemand.setIgnored(ContainerState obj, int index) {

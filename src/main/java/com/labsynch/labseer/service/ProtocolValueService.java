@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.labsynch.labseer.domain.ProtocolValue;
@@ -18,6 +19,12 @@ public interface ProtocolValueService {
 	List<ProtocolValue> getProtocolValuesByProtocolIdAndStateTypeKindAndValueTypeKind(
 			Long protocolId, String stateType, String stateKind,
 			String valueType, String valueKind);
+
+	Collection<ProtocolValue> saveProtocolValues(
+			Collection<ProtocolValue> protocolValues);
+
+	Collection<ProtocolValue> updateProtocolValues(
+			Collection<ProtocolValue> protocolValues);
 
 
 }

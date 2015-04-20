@@ -102,6 +102,12 @@ privileged aspect ProtocolValueController_Roo_Controller {
         uiModel.addAttribute("protocolValue_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
     }
     
+    void ProtocolValueController.populateEditForm(Model uiModel, ProtocolValue protocolValue) {
+        uiModel.addAttribute("protocolValue", protocolValue);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("protocolstates", ProtocolState.findAllProtocolStates());
+    }
+    
     String ProtocolValueController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {

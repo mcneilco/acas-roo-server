@@ -24,10 +24,14 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolState;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -88,6 +92,45 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 
 		return outFile.toString();
 	}
+	
+	@Override
+	@Transactional
+	public TreatmentGroupValue saveTreatmentGroupValue(TreatmentGroupValue treatmentGroupValue) {
+		if (treatmentGroupValue.getLsState().getId() == null) {
+			TreatmentGroupState treatmentGroupState = new TreatmentGroupState(treatmentGroupValue.getLsState());
+			treatmentGroupState.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupValue.getLsState().getTreatmentGroup().getId()));
+			treatmentGroupState.persist();
+			treatmentGroupValue.setLsState(treatmentGroupState); 
+		} else {
+			treatmentGroupValue.setLsState(TreatmentGroupState.findTreatmentGroupState(treatmentGroupValue.getLsState().getId()));
+		}		
+		treatmentGroupValue.persist();
+		return treatmentGroupValue;
+	}
+	
+	@Override
+	@Transactional
+	public Collection<TreatmentGroupValue> saveTreatmentGroupValues(Collection<TreatmentGroupValue> treatmentGroupValues) {
+		for (TreatmentGroupValue treatmentGroupValue: treatmentGroupValues) {
+			treatmentGroupValue = saveTreatmentGroupValue(treatmentGroupValue);
+		}
+		return treatmentGroupValues;
+	}
+	
+	@Override
+	public TreatmentGroupValue updateTreatmentGroupValue(TreatmentGroupValue treatmentGroupValue) {
+		if (treatmentGroupValue.getLsState().getId() == null) {
+			TreatmentGroupState treatmentGroupState = new TreatmentGroupState(treatmentGroupValue.getLsState());
+			treatmentGroupState.setTreatmentGroup(TreatmentGroup.findTreatmentGroup(treatmentGroupValue.getLsState().getTreatmentGroup().getId()));
+			treatmentGroupState.persist();
+			treatmentGroupValue.setLsState(treatmentGroupState); 
+		} else {
+			treatmentGroupValue.setLsState(TreatmentGroupState.findTreatmentGroupState(treatmentGroupValue.getLsState().getId()));
+		}
+		treatmentGroupValue.setVersion(TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupValue.getId()).getVersion());
+		treatmentGroupValue.merge();
+		return treatmentGroupValue;
+	}
 
 	@Override
 	public List<TreatmentGroupValue> getTreatmentGroupValuesByAnalysisGroupIdAndStateTypeKind(
@@ -104,7 +147,7 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 			String valueKind, String value) {
 		//fetch the entity
 		TreatmentGroup treatmentGroup;
-		if(ApiValueController.isNumeric(idOrCodeName)) {
+		if(SimpleUtil.isNumeric(idOrCodeName)) {
 			treatmentGroup = TreatmentGroup.findTreatmentGroup(Long.valueOf(idOrCodeName));
 		} else {		
 			try {
@@ -179,6 +222,15 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 		List<TreatmentGroupValue> treatmentGroupValues = TreatmentGroupValue.findTreatmentGroupValuesByTreatmentGroupIDAndStateTypeKindAndValueTypeKind(treatmentGroupId, stateType,
 				stateKind, valueType, valueKind).getResultList();
 		
+		return treatmentGroupValues;
+	}
+	
+	@Override
+	public Collection<TreatmentGroupValue> updateTreatmentGroupValues(
+			Collection<TreatmentGroupValue> treatmentGroupValues) {
+		for (TreatmentGroupValue treatmentGroupValue: treatmentGroupValues) {
+			treatmentGroupValue = updateTreatmentGroupValue(treatmentGroupValue);
+		}
 		return treatmentGroupValues;
 	}
 

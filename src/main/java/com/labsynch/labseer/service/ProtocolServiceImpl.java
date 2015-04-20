@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.Protocol;
@@ -28,6 +29,7 @@ import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -52,8 +54,33 @@ public class ProtocolServiceImpl implements ProtocolService {
 	//    }
 
 	@Override
-	public Protocol saveLsProtocol(Protocol protocol){
+	public Protocol saveLsProtocol(Protocol protocol) throws UniqueNameException{
 		logger.debug("incoming meta protocol: " + protocol.toJson() + "\n");
+		
+		//check if protocol with the same name exists
+				boolean checkProtocolName = propertiesUtilService.getUniqueProtocolName();
+				if (checkProtocolName){
+					boolean protocolExists = false;
+					Set<ProtocolLabel> protLabels = protocol.getLsLabels();
+					for (ProtocolLabel label : protLabels){
+						String labelText = label.getLabelText();
+						logger.debug("Searching for labelText: "+labelText);
+						List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
+						logger.debug("Found "+ protocolLabels.size() +" labels");
+						for (ProtocolLabel pl : protocolLabels){
+							Protocol pro = pl.getProtocol();
+							//if the protocol is not hard deleted or soft deleted, there is a name conflict
+							if (!pro.isIgnored() && !pl.isIgnored()){
+								protocolExists = true;
+							}
+						}
+					}
+
+					if (protocolExists){
+						throw new UniqueNameException("Protocol with the same name exists");							
+					}
+				}
+		
 		Protocol newProtocol = new Protocol(protocol);
 		if (newProtocol.getCodeName() == null){
 			
@@ -108,49 +135,92 @@ public class ProtocolServiceImpl implements ProtocolService {
 	}
 
 	@Override
-	public Protocol updateProtocol(Protocol protocol){
-		logger.debug("incoming meta protocol: " + protocol.toJson() + "\n");
+	public Protocol updateProtocol(Protocol protocol) throws UniqueNameException{
+		logger.debug("UPDATE PROTOCOL --- incoming meta protocol: " + protocol.toJson() + "\n");
+		
+		boolean checkProtocolName = propertiesUtilService.getUniqueProtocolName();
+		logger.debug("checkProtocolName = "+checkProtocolName);
+		if (checkProtocolName){
+			boolean protocolExists = false;
+			Set<ProtocolLabel> protLabels = protocol.getLsLabels();
+			for (ProtocolLabel label : protLabels){
+				String labelText = label.getLabelText();
+				logger.debug("Searching for labelText: "+labelText);
+				List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
+				logger.debug("Found "+ protocolLabels.size() +" labels");
+				for (ProtocolLabel pl : protocolLabels){
+					Protocol pro = pl.getProtocol();
+					//if the protocol is not hard deleted or soft deleted, there is a name conflict
+					if (!pro.isIgnored() && !pl.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
+						protocolExists = true;
+					}
+				}
+			}
+
+			if (protocolExists){
+				throw new UniqueNameException("Protocol with the same name exists");							
+			}
+		}
+		
 		Protocol updatedProtocol = Protocol.update(protocol);
 		if (protocol.getLsLabels() != null){
+			Set<ProtocolLabel> updatedProtocolLabels = new HashSet<ProtocolLabel>();
 			for(ProtocolLabel protocolLabel : protocol.getLsLabels()){
+				logger.debug(protocolLabel.toJson());
 				if (protocolLabel.getId() == null){
 					ProtocolLabel newProtocolLabel = new ProtocolLabel(protocolLabel);
 					newProtocolLabel.setProtocol(updatedProtocol);
-					newProtocolLabel.persist();						
+					newProtocolLabel.persist();	
+//					updatedProtocol.getLsLabels().add(newProtocolLabel);
+					updatedProtocolLabels.add(newProtocolLabel);
 				} else {
-					ProtocolLabel.update(protocolLabel);
+					ProtocolLabel updatedProtocolLabel = ProtocolLabel.update(protocolLabel);
+					updatedProtocolLabels.add(updatedProtocolLabel);
 				}
-			}	
+			}
+			updatedProtocol.setLsLabels(updatedProtocolLabels);
 		} else {
 			logger.debug("No protocol labels to save");	
 		}
-
+		
+		
 		if (protocol.getLsStates() != null){
+			Set<ProtocolState> updatedProtocolStates = new HashSet<ProtocolState>();
 			for(ProtocolState protocolState : protocol.getLsStates()){
+				ProtocolState updatedProtocolState;
 				if (protocolState.getId() == null){
-					ProtocolState newProtocolState = new ProtocolState(protocolState);
-					newProtocolState.setProtocol(updatedProtocol);
-					newProtocolState.persist();		
-					protocolState.setId(newProtocolState.getId());
+					updatedProtocolState = new ProtocolState(protocolState);
+					updatedProtocolState.setProtocol(updatedProtocol);
+					updatedProtocolState.persist();		
+//					protocolState.setId(newProtocolState.getId());
+//					updatedProtocol.getLsStates().add(newProtocolState);
 				} else {
-					ProtocolState updatedProtocolState = ProtocolState.update(protocolState);
+					updatedProtocolState = ProtocolState.update(protocolState);
 					logger.debug("updatedProtocolState: " + updatedProtocolState.toJson());
 				}
-
+				
 				if (protocolState.getLsValues() != null){
+					Set<ProtocolValue> updatedProtocolValues = new HashSet<ProtocolValue>();
 					for(ProtocolValue protocolValue : protocolState.getLsValues()){
+						ProtocolValue updatedProtocolValue;
 						if (protocolValue.getId() == null){
-							protocolValue.setLsState(ProtocolState.findProtocolState(protocolState.getId()));
-							protocolValue.persist();							
+							updatedProtocolValue = new ProtocolValue(protocolValue);
+							updatedProtocolValue.setLsState(ProtocolState.findProtocolState(protocolState.getId()));
+							updatedProtocolValue.persist();
+							updatedProtocolValues.add(updatedProtocolValue);
 						} else {
-							ProtocolValue updatedProtocolValue = ProtocolValue.update(protocolValue);
+							updatedProtocolValue = ProtocolValue.update(protocolValue);
+							updatedProtocolValues.add(updatedProtocolValue);
 							logger.debug("updatedProtocolValue: " + updatedProtocolValue.toJson());
 						}
-					}				
+					}
+					updatedProtocolState.setLsValues(updatedProtocolValues);
 				} else {
 					logger.debug("No protocol values to save");
 				}
+			updatedProtocolStates.add(updatedProtocolState);
 			}
+			updatedProtocol.setLsStates(updatedProtocolStates);
 		}
 
 		return updatedProtocol;
@@ -210,8 +280,10 @@ public class ProtocolServiceImpl implements ProtocolService {
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "CODENAME"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NAME"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "SCIENTIST"));
+//			protocolIdList.addAll(findProtocolIdsByMetadata(term, "RECORDEDBY"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TYPE"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KIND"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "STATUS"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "DATE"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NOTEBOOK"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KEYWORD"));
@@ -232,13 +304,23 @@ public class ProtocolServiceImpl implements ProtocolService {
 			protocolAllIdList.retainAll(resultsByTerm.get(term));
 		}
 		for (Long id: protocolAllIdList) protocolList.add(Protocol.findProtocol(id));
-		return protocolList;
+        //This method uses finders that will find everything, whether or not it is ignored or deleted
+		Collection<Protocol> result = new HashSet<Protocol>();
+		for (Protocol protocol: protocolList) {
+			//For Protocol Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+			if (protocol.isDeleted()){
+				logger.debug("removing a deleted protocol from the results");
+			} else {
+				result.add(protocol);
+			}
+		}
+		return result;
 	}
 
 	public Collection<Long> findProtocolIdsByMetadata(String queryString, String searchBy) {
 		Collection<Long> protocolIdList = new HashSet<Long>();
 		if (searchBy == "CODENAME") {
-			List<Protocol> protocols = Protocol.findProtocolsByCodeNameEquals(queryString).getResultList();
+			List<Protocol> protocols = Protocol.findProtocolsByCodeNameLike(queryString).getResultList();
 			if (!protocols.isEmpty()){
 				for (Protocol protocol:protocols) {
 					protocolIdList.add(protocol.getId());
@@ -256,13 +338,22 @@ public class ProtocolServiceImpl implements ProtocolService {
 			protocolLabels.clear();
 		}
 		if (searchBy == "SCIENTIST") {
-			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndStringValueLike("scientist", queryString).getResultList();
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("scientist", queryString).getResultList();
 			if (!protocolValues.isEmpty()){
 				for (ProtocolValue protocolValue : protocolValues) {
 					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
 				}
 			}
 			protocolValues.clear();
+		}
+		if (searchBy == "RECORDEDBY") {
+			List<Protocol> protocols = Protocol.findProtocolsByRecordedByLike(queryString).getResultList();
+			if (!protocols.isEmpty()){
+				for (Protocol protocol: protocols) {
+					protocolIdList.add(protocol.getId());
+				}
+			}
+			protocols.clear();
 		}
 		if (searchBy == "TYPE") {
 			List<Protocol> protocols = Protocol.findProtocolsByLsTypeLike(queryString).getResultList();
@@ -282,17 +373,28 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}
 			protocols.clear();
 		}
+		if (searchBy == "STATUS") {
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("protocol status", queryString).getResultList();
+			if (!protocolValues.isEmpty()){
+				for (ProtocolValue protocolValue : protocolValues) {
+					if (!protocolValue.isIgnored()) protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
 		if (searchBy == "DATE") {
 			Collection<ProtocolValue> protocolValues = new HashSet<ProtocolValue>();
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 			try {
 				Date date = df.parse(queryString);
-				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+				logger.debug("Successfully parsed date: "+queryString);
+				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
-					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+					logger.debug("Successfully parsed date: "+queryString);
+					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}
@@ -328,7 +430,16 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}
 			tags.clear();
 		}
-		if (searchBy == "ASSAY ACTIVITY" || searchBy == "MOLECULAR TARGET" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
+		if (searchBy == "MOLECULAR TARGET"){
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike(searchBy.toLowerCase(), queryString).getResultList();
+			if (!protocolValues.isEmpty()) {
+				for (ProtocolValue protocolValue : protocolValues) {
+					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
+		if (searchBy == "ASSAY ACTIVITY" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
 			Collection<DDictValue> ddictValues = DDictValue.findDDictValuesByLabelTextLike(queryString).getResultList();
 			if (!ddictValues.isEmpty()) {
 				for (DDictValue ddictvalue : ddictValues) {

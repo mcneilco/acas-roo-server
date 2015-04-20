@@ -15,5 +15,6 @@
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_Protocol_lsKind" object="${protocol}" z="BC+A4TTBvJtA05RRSMKZhBa/rJA="/>
         <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_Protocol_lsTypeAndKind" object="${protocol}" z="P8b/R7nKpTPW+8eU33SmiNYInBE="/>
         <field:display field="lsTags" id="s_com_labsynch_labseer_domain_Protocol_lsTags" object="${protocol}" z="5nmBjvFYx1VLu8QecrG9HI2YlGk="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_Protocol_deleted" object="${protocol}" z="mVm7jGHQcZ0pdVxBjN0eu4Fus0Y="/>
     </page:show>
 </div>

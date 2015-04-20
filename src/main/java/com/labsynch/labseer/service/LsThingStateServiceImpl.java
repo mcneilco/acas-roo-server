@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,9 +66,50 @@ public class LsThingStateServiceImpl implements LsThingStateService {
 		lsThingState.setLsThing(lsThing);
 		lsThingState.setLsType(stateType);
 		lsThingState.setLsKind(stateKind);
+		lsThingState.setRecordedBy("default");
 		lsThingState.persist();
 		return lsThingState;
 	}
 
+	@Override
+	public LsThingState saveLsThingState(
+			LsThingState lsThingState) {
+		lsThingState.setLsThing(LsThing.findLsThing(lsThingState.getLsThing().getId()));		
+		lsThingState.persist();
+		Set<LsThingValue> savedValues = new HashSet<LsThingValue>();
+		for (LsThingValue lsThingValue : lsThingState.getLsValues()){
+			lsThingValue.setLsState(lsThingState);
+			lsThingValue.persist();
+			savedValues.add(lsThingValue);
+		}
+		lsThingState.setLsValues(savedValues);
+		lsThingState.merge();
+		return lsThingState;
+	}
 
+	@Override
+	public Collection<LsThingState> saveLsThingStates(
+			Collection<LsThingState> lsThingStates) {
+		for (LsThingState lsThingState: lsThingStates) {
+			lsThingState = saveLsThingState(lsThingState);
+		}
+		return lsThingStates;
+	}
+	
+	@Override
+	public LsThingState updateLsThingState(
+			LsThingState lsThingState) {
+		lsThingState.setVersion(LsThingState.findLsThingState(lsThingState.getId()).getVersion());
+		lsThingState.merge();
+		return lsThingState;
+	}
+
+	@Override
+	public Collection<LsThingState> updateLsThingStates(
+			Collection<LsThingState> lsThingStates) {
+		for (LsThingState lsThingState : lsThingStates){
+			lsThingState = updateLsThingState(lsThingState);
+		}
+		return null;
+	}
 }

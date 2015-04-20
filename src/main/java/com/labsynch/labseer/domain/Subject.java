@@ -34,7 +34,6 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@Entity
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord(finders = { "findSubjectsByTreatmentGroups", "findSubjectsByLsTransactionEquals", "findSubjectsByCodeNameEquals" })

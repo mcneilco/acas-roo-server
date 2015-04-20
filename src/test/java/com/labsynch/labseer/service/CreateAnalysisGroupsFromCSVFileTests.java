@@ -41,7 +41,7 @@ public class CreateAnalysisGroupsFromCSVFileTests {
 	private PropertiesUtilService propertiesUtilService;
 
 
-	private String fieldDelimiter = ",";
+//	private String fieldDelimiter = ",";
 
 	
 	@Test
