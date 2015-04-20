@@ -3,7 +3,6 @@ package com.labsynch.labseer.dto;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -14,13 +13,10 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
@@ -36,17 +32,11 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.service.AnalysisGroupStateService;
-import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.utils.SimpleUtil;
-
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -63,7 +53,62 @@ public class CurveFitDTO {
 		this.curveId = curveId;
 	}
 	
-	
+	public CurveFitDTO(Map dataMap){
+		this.curveId = (String) dataMap.get("curveId");
+		this.analysisGroupCode = (String) dataMap.get("analysisGroupCode");
+		this.recordedBy = (String) dataMap.get("recordedBy");
+		this.recordedDate = (Date) dataMap.get("recordedDate");
+		this.lsTransaction = (Long) dataMap.get("lsTransaction");
+		this.batchCode = (String) dataMap.get("batchCode");
+		this.category = (String) dataMap.get("category");
+		this.renderingHint = (String) dataMap.get("renderingHint");
+		if (dataMap.get("minNumeric") != null) this.min = ((BigDecimal) dataMap.get("minNumeric")).toString();
+		else this.min = (String) dataMap.get("minString");
+		if (dataMap.get("maxNumeric") != null) this.max = ((BigDecimal) dataMap.get("maxNumeric")).toString();
+		else this.max = (String) dataMap.get("maxString");
+		if (dataMap.get("ec50Numeric") != null) this.ec50 = ((BigDecimal) dataMap.get("ec50Numeric")).toString();
+		else this.ec50 = (String) dataMap.get("ec50String");
+		if (dataMap.get("slopeNumeric") != null) this.slope = ((BigDecimal) dataMap.get("slopeNumeric")).toString();
+		else this.slope = (String) dataMap.get("slopeString");
+		this.minUnits = (String) dataMap.get("minUnits");
+		this.maxUnits = (String) dataMap.get("maxUnits");
+		this.ec50Units = (String) dataMap.get("ec50Units");
+		this.slope = (String) dataMap.get("slope");
+		this.minUncertainty = (BigDecimal) dataMap.get("minUncertainty");
+		this.maxUncertainty = (BigDecimal) dataMap.get("maxUncertainty");
+		this.ec50Uncertainty = (BigDecimal) dataMap.get("ec50Uncertainty");
+		this.slopeUncertainty = (BigDecimal) dataMap.get("slopeUncertainty");
+		this.minUncertaintyType = (String) dataMap.get("minUncertaintyType");
+		this.maxUncertaintyType = (String) dataMap.get("maxUncertaintyType");
+		this.ec50UncertaintyType = (String) dataMap.get("ec50UncertaintyType");
+		this.slopeUncertaintyType = (String) dataMap.get("slopeUncertaintyType");
+		this.minOperatorKind = (String) dataMap.get("minOperatorKind");
+		this.maxOperatorKind = (String) dataMap.get("maxOperatorKind");
+		this.ec50OperatorKind = (String) dataMap.get("ec50OperatorKind");
+		this.slopeOperatorKind = (String) dataMap.get("slopeOperatorKind");
+		this.fittedMin = (BigDecimal) dataMap.get("fittedMin");
+		this.fittedMax = (BigDecimal) dataMap.get("fittedMax");
+		this.fittedEC50 = (BigDecimal) dataMap.get("fittedEC50");
+		this.fittedSlope = (BigDecimal) dataMap.get("fittedSlope");
+		this.fittedMinUncertainty = (BigDecimal) dataMap.get("fittedMinUncertainty");
+		this.fittedMaxUncertainty = (BigDecimal) dataMap.get("fittedMaxUncertainty");
+		this.fittedEc50Uncertainty = (BigDecimal) dataMap.get("fittedEc50Uncertainty");
+		this.fittedSlopeUncertainty = (BigDecimal) dataMap.get("fittedSlopeUncertainty");
+		this.fittedMinUncertaintyType = (String) dataMap.get("fittedMinUncertaintyType");
+		this.fittedMaxUncertaintyType = (String) dataMap.get("fittedMaxUncertaintyType");
+		this.fittedEc50UncertaintyType = (String) dataMap.get("fittedEc50UncertaintyType");
+		this.fittedSlopeUncertaintyType = (String) dataMap.get("fittedSlopeUncertaintyType");
+		this.sse = (BigDecimal) dataMap.get("sse");
+		this.sst = (BigDecimal) dataMap.get("sst");
+		this.rsquared = (BigDecimal) dataMap.get("rsquared");
+		this.curveErrorsClob = (String) dataMap.get("curveErrorsClob");
+		this.reportedValuesClob = (String) dataMap.get("reportedValuesClob");
+		this.parameterStdErrorsClob = (String) dataMap.get("parameterStdErrorsClob");
+		this.fitSettings = (String) dataMap.get("fitSettings");
+		this.fitSummaryClob = (String) dataMap.get("fitSummaryClob");
+		this.userFlagStatus = (String) dataMap.get("userFlagStatus");
+		this.algorithmFlagStatus = (String) dataMap.get("algorithmFlagStatus");
+	}
 	
 	public CurveFitDTO(HashMap<String, String> stringMap, HashMap<String, BigDecimal> numericMap)
 			{
@@ -124,6 +169,7 @@ public class CurveFitDTO {
 	private String curveId;
 	private String analysisGroupCode;
 	private String recordedBy;
+	private Date recordedDate;
 	private Long lsTransaction;
 	private String batchCode;
 	private String category;
@@ -178,6 +224,7 @@ public class CurveFitDTO {
 				"curveId",
 				"analysisGroupCode",
 				"recordedBy",
+				"recordedDate",
 				"lsTransaction",
 				"batchCode",
 				"category",
@@ -278,19 +325,109 @@ public class CurveFitDTO {
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				new Optional(),
 				new Optional()
 		};
 
 		return processors;
 	}
-
-	public static Collection<CurveFitDTO> getFitData(
-			Collection<CurveFitDTO> curveFitDTOs) {
-		Collection<CurveFitDTO> filledCurveFitDTOs = new HashSet<CurveFitDTO>();
-		for (CurveFitDTO curveFitDTO : curveFitDTOs) {
-			filledCurveFitDTOs.add(getFitData(curveFitDTO));
+	
+	@Transactional
+	public static Collection<CurveFitDTO> getFitData(Collection<String> curveIds){
+		EntityManager em = SubjectValue.entityManager();
+		if (curveIds.isEmpty()) return new ArrayList<CurveFitDTO>();
+		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( curveIdValue.stringValue as curveId, "
+				+ "ag.codeName as analysisGroupCode, "
+				+ "curveIdValue.recordedBy as recordedBy, "
+        		+ "curveIdValue.lsTransaction as lsTransaction, "
+        		+ "curveIdValue.recordedDate as recordedDate, "
+        		+ "batchCodeValue.codeValue as batchCode, "
+        		+ "categoryValue.stringValue as category, "
+        		+ "renderingHintValue.stringValue as renderingHint, "
+        		+ "minValue.stringValue as minString, "
+        		+ "minValue.numericValue as minNumeric, "
+        		+ "maxValue.stringValue as maxString, "
+        		+ "maxValue.numericValue as maxNumeric, "
+        		+ "ec50Value.stringValue as ec50String, "
+        		+ "ec50Value.numericValue as ec50Numeric, "
+        		+ "slopeValue.stringValue as slopeString, "
+        		+ "slopeValue.numericValue as slopeNumeric, "
+        		+ "minValue.unitKind as minUnits, "
+        		+ "maxValue.unitKind as maxUnits, "
+        		+ "ec50Value.unitKind as ec50Units, "
+        		+ "minValue.uncertainty as minUncertainty, "
+        		+ "maxValue.uncertainty as maxUncertainty, "
+        		+ "ec50Value.uncertainty as ec50Uncertainty, "
+        		+ "slopeValue.uncertainty as slopeUncertainty, "
+        		+ "minValue.uncertaintyType as minUncertaintyType, "
+        		+ "maxValue.uncertaintyType as maxUncertaintyType, "
+        		+ "ec50Value.uncertaintyType as ec50UncertaintyType, "
+        		+ "slopeValue.uncertaintyType as slopeUncertaintyType, "
+        		+ "minValue.operatorKind as minOperatorKind, "
+        		+ "maxValue.operatorKind as maxOperatorKind, "
+        		+ "ec50Value.operatorKind as ec50OperatorKind, "
+        		+ "slopeValue.operatorKind as slopeOperatorKind, "
+        		+ "fittedMinValue.numericValue as fittedMin, "
+        		+ "fittedMaxValue.numericValue as fittedMax, "
+        		+ "fittedEc50Value.numericValue as fittedEC50, "
+        		+ "fittedSlopeValue.numericValue as fittedSlope, "
+        		+ "fittedMinValue.uncertainty as fittedMinUncertainty, "
+        		+ "fittedMaxValue.uncertainty as fittedMaxUncertainty, "
+        		+ "fittedEc50Value.uncertainty as fittedEc50Uncertainty, "
+        		+ "fittedSlopeValue.uncertainty as fittedSlopeUncertainty, "
+        		+ "fittedMinValue.uncertaintyType as fittedMinUncertaintyType, "
+        		+ "fittedMaxValue.uncertaintyType as fittedMaxUncertaintyType, "
+        		+ "fittedEc50Value.uncertaintyType as fittedEc50UncertaintyType, "
+        		+ "fittedSlopeValue.uncertaintyType as fittedSlopeUncertaintyType, "
+        		+ "sseValue.numericValue as sse, "
+        		+ "sstValue.numericValue as sst, "
+        		+ "rSquaredValue.numericValue as rsquared, "
+        		+ "curveErrorsClobValue.clobValue as curveErrorsClob, "
+        		+ "reportedValuesClobValue.clobValue as reportedValuesClob, "
+        		+ "parameterStdErrorsClobValue.clobValue as parameterStdErrorsClob, "
+        		+ "fitSettingsValue.clobValue as fitSettings, "
+        		+ "fitSummaryClobValue.clobValue as fitSummaryClob, "
+        		+ "userFlagStatusValue.codeValue as userFlagStatus, "
+        		+ "algorithmFlagStatusValue.codeValue as algorithmFlagStatus "
+        		+ " ) " 
+        		+ "FROM AnalysisGroup ag "
+        		+ "JOIN ag.lsStates as ags "
+				+ "LEFT JOIN ags.lsValues as curveIdValue WITH curveIdValue.lsKind = 'curve id' "
+				+ "LEFT JOIN ags.lsValues as batchCodeValue WITH batchCodeValue.lsKind = 'batch code' "
+				+ "LEFT JOIN ags.lsValues as categoryValue WITH categoryValue.lsKind = 'category' "
+				+ "LEFT JOIN ags.lsValues as renderingHintValue WITH renderingHintValue.lsKind = 'Rendering Hint' "
+				+ "LEFT JOIN ags.lsValues as minValue WITH minValue.lsKind = 'Min' "
+				+ "LEFT JOIN ags.lsValues as maxValue WITH maxValue.lsKind = 'Max' "
+				+ "LEFT JOIN ags.lsValues as ec50Value WITH ec50Value.lsKind = 'EC50' "
+				+ "LEFT JOIN ags.lsValues as slopeValue WITH slopeValue.lsKind = 'Slope' "
+				+ "LEFT JOIN ags.lsValues as fittedMinValue WITH fittedMinValue.lsKind = 'Fitted Min' "
+				+ "LEFT JOIN ags.lsValues as fittedMaxValue WITH fittedMaxValue.lsKind = 'Fitted Max' "
+				+ "LEFT JOIN ags.lsValues as fittedEc50Value WITH fittedEc50Value.lsKind = 'Fitted EC50' "
+				+ "LEFT JOIN ags.lsValues as fittedSlopeValue WITH fittedSlopeValue.lsKind = 'Fitted Slope' "
+				+ "LEFT JOIN ags.lsValues as sseValue WITH sseValue.lsKind = 'SSE' "
+				+ "LEFT JOIN ags.lsValues as sstValue WITH sstValue.lsKind = 'SST' "
+				+ "LEFT JOIN ags.lsValues as rSquaredValue WITH rSquaredValue.lsKind = 'rSquared' "
+				+ "LEFT JOIN ags.lsValues as curveErrorsClobValue WITH curveErrorsClobValue.lsKind = 'curveErrorsClob' "
+				+ "LEFT JOIN ags.lsValues as parameterStdErrorsClobValue WITH parameterStdErrorsClobValue.lsKind = 'parameterStdErrorsClob' "
+				+ "LEFT JOIN ags.lsValues as reportedValuesClobValue WITH reportedValuesClobValue.lsKind = 'reportedValuesClob' "
+				+ "LEFT JOIN ags.lsValues as fitSettingsValue WITH fitSettingsValue.lsKind = 'fitSettings' "
+				+ "LEFT JOIN ags.lsValues as fitSummaryClobValue WITH fitSummaryClobValue.lsKind = 'fitSummaryClob' "
+				+ "LEFT JOIN ags.lsValues as userFlagStatusValue WITH userFlagStatusValue.lsKind = 'user flag status' "
+				+ "LEFT JOIN ags.lsValues as algorithmFlagStatusValue WITH algorithmFlagStatusValue.lsKind = 'algorithm flag status' "
+        		+ "WHERE ag.ignored = false " 
+        		+ "AND ags.ignored = false "
+        		+ "AND curveIdValue.ignored = false "
+        		+ "AND curveIdValue.stringValue IN :curveIds", Map.class);
+        q.setParameter("curveIds", curveIds);
+        List<Map> queryResults = q.getResultList();
+        logger.debug(queryResults.size()+" results found");
+        List<CurveFitDTO> curveFitDTOList = new ArrayList<CurveFitDTO>();
+		for (Map result : queryResults) {
+			CurveFitDTO curveFitDTO = new CurveFitDTO(result);
+			curveFitDTOList.add(curveFitDTO);
 		}
-		return filledCurveFitDTOs;
+		return curveFitDTOList;
+		
 	}
 	
 	@Transactional
@@ -564,16 +701,16 @@ public class CurveFitDTO {
 		//flags
 		if (!(userFlagStatus==null)){
 			AnalysisGroupValue userFlagStatusValue = createCurveFitValue(state, "codeValue", "user flag status", userFlagStatus, recordedBy, lsTransaction);
-			userFlagStatusValue.setCodeType("user well flags");
+			userFlagStatusValue.setCodeType("user flags");
 			userFlagStatusValue.setCodeKind("flag status");
-			userFlagStatusValue.setCodeOrigin("ACAS Curve Curator");
+			userFlagStatusValue.setCodeOrigin("ACAS DDICT");
 			newValues.add(userFlagStatusValue);
 		}
 		if (!(algorithmFlagStatus==null)){
 			AnalysisGroupValue algorithmFlagStatusValue = createCurveFitValue(state, "codeValue", "algorithm flag status", algorithmFlagStatus, recordedBy, lsTransaction);
-			algorithmFlagStatusValue.setCodeType("algorithm well flags");
+			algorithmFlagStatusValue.setCodeType("algorithm flags");
 			algorithmFlagStatusValue.setCodeKind("flag status");
-			algorithmFlagStatusValue.setCodeOrigin("ACAS Curve Fit Module");
+			algorithmFlagStatusValue.setCodeOrigin("ACAS DDICT");
 			newValues.add(algorithmFlagStatusValue);
 		}
 		
@@ -657,12 +794,6 @@ public class CurveFitDTO {
 	        	logger.error("Specific error: " + e2.getMessage());
         	return null;
         }
-	}
-	
-	public static Collection<CurveFitDTO> getFitDataByExperiment(String experimentIdOrCodeName){
-		Collection<CurveFitDTO> curveFitDTOs = makeCurveFitDTOsFromCurveIdList(findAllCurveIdsByExperiment(experimentIdOrCodeName));
-		curveFitDTOs = getFitData(curveFitDTOs);
-		return curveFitDTOs;
 	}
 	
 	@Transactional
@@ -797,10 +928,6 @@ public class CurveFitDTO {
 			}
 		}
 		return renderingHint;
-	}
-
-	public static Collection<CurveFitDTO> getFitData(List<String> curveIds) {
-		return getFitData(makeCurveFitDTOsFromCurveIdList(curveIds));
 	}
 	
 	private static Collection<Long> findProtocolIdsByCurveId(String curveId) {

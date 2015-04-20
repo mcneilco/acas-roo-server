@@ -5,7 +5,6 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
-import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -25,16 +24,6 @@ privileged aspect ExperimentValue_Roo_Finder {
         TypedQuery<ExperimentValue> q = em.createQuery("SELECT o FROM ExperimentValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.codeValue) LIKE LOWER(:codeValue)", ExperimentValue.class);
         q.setParameter("lsKind", lsKind);
         q.setParameter("codeValue", codeValue);
-        return q;
-    }
-    
-    public static TypedQuery<ExperimentValue> ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike(String lsKind, Date dateValue) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
-        EntityManager em = ExperimentValue.entityManager();
-        TypedQuery<ExperimentValue> q = em.createQuery("SELECT o FROM ExperimentValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.dateValue) LIKE LOWER(:dateValue)", ExperimentValue.class);
-        q.setParameter("lsKind", lsKind);
-        q.setParameter("dateValue", dateValue);
         return q;
     }
     

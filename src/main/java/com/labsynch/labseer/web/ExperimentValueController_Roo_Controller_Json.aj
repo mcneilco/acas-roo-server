@@ -104,12 +104,12 @@ privileged aspect ExperimentValueController_Roo_Controller_Json {
         return new ResponseEntity<String>(ExperimentValue.toJsonArray(ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike(lsKind, codeValue).getResultList()), headers, HttpStatus.OK);
     }
     
-    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLike", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueEquals", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> ExperimentValueController.jsonFindExperimentValuesByLsKindEqualsAndDateValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue) {
+    public ResponseEntity<String> ExperimentValueController.jsonFindExperimentValuesByLsKindEqualsAndDateValueEquals(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ExperimentValue.toJsonArray(ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike(lsKind, dateValue).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(ExperimentValue.toJsonArray(ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals(lsKind, dateValue).getResultList()), headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByLsKindEqualsAndStringValueLike", headers = "Accept=application/json")

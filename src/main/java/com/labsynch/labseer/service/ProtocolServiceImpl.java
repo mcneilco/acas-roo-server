@@ -64,11 +64,13 @@ public class ProtocolServiceImpl implements ProtocolService {
 					Set<ProtocolLabel> protLabels = protocol.getLsLabels();
 					for (ProtocolLabel label : protLabels){
 						String labelText = label.getLabelText();
+						logger.debug("Searching for labelText: "+labelText);
 						List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
+						logger.debug("Found "+ protocolLabels.size() +" labels");
 						for (ProtocolLabel pl : protocolLabels){
 							Protocol pro = pl.getProtocol();
 							//if the protocol is not hard deleted or soft deleted, there is a name conflict
-							if (!pro.isIgnored()){
+							if (!pro.isIgnored() && !pl.isIgnored()){
 								protocolExists = true;
 							}
 						}
@@ -133,8 +135,33 @@ public class ProtocolServiceImpl implements ProtocolService {
 	}
 
 	@Override
-	public Protocol updateProtocol(Protocol protocol){
+	public Protocol updateProtocol(Protocol protocol) throws UniqueNameException{
 		logger.debug("UPDATE PROTOCOL --- incoming meta protocol: " + protocol.toJson() + "\n");
+		
+		boolean checkProtocolName = propertiesUtilService.getUniqueProtocolName();
+		logger.debug("checkProtocolName = "+checkProtocolName);
+		if (checkProtocolName){
+			boolean protocolExists = false;
+			Set<ProtocolLabel> protLabels = protocol.getLsLabels();
+			for (ProtocolLabel label : protLabels){
+				String labelText = label.getLabelText();
+				logger.debug("Searching for labelText: "+labelText);
+				List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
+				logger.debug("Found "+ protocolLabels.size() +" labels");
+				for (ProtocolLabel pl : protocolLabels){
+					Protocol pro = pl.getProtocol();
+					//if the protocol is not hard deleted or soft deleted, there is a name conflict
+					if (!pro.isIgnored() && !pl.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
+						protocolExists = true;
+					}
+				}
+			}
+
+			if (protocolExists){
+				throw new UniqueNameException("Protocol with the same name exists");							
+			}
+		}
+		
 		Protocol updatedProtocol = Protocol.update(protocol);
 		if (protocol.getLsLabels() != null){
 			Set<ProtocolLabel> updatedProtocolLabels = new HashSet<ProtocolLabel>();
@@ -256,6 +283,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 //			protocolIdList.addAll(findProtocolIdsByMetadata(term, "RECORDEDBY"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "TYPE"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KIND"));
+			protocolIdList.addAll(findProtocolIdsByMetadata(term, "STATUS"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "DATE"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "NOTEBOOK"));
 			protocolIdList.addAll(findProtocolIdsByMetadata(term, "KEYWORD"));
@@ -345,17 +373,28 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}
 			protocols.clear();
 		}
+		if (searchBy == "STATUS") {
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("protocol status", queryString).getResultList();
+			if (!protocolValues.isEmpty()){
+				for (ProtocolValue protocolValue : protocolValues) {
+					if (!protocolValue.isIgnored()) protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
 		if (searchBy == "DATE") {
 			Collection<ProtocolValue> protocolValues = new HashSet<ProtocolValue>();
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 			try {
 				Date date = df.parse(queryString);
-				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+				logger.debug("Successfully parsed date: "+queryString);
+				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
-					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+					logger.debug("Successfully parsed date: "+queryString);
+					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}
@@ -391,7 +430,16 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}
 			tags.clear();
 		}
-		if (searchBy == "ASSAY ACTIVITY" || searchBy == "MOLECULAR TARGET" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
+		if (searchBy == "MOLECULAR TARGET"){
+			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike(searchBy.toLowerCase(), queryString).getResultList();
+			if (!protocolValues.isEmpty()) {
+				for (ProtocolValue protocolValue : protocolValues) {
+					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+				}
+			}
+			protocolValues.clear();
+		}
+		if (searchBy == "ASSAY ACTIVITY" || searchBy == "ASSAY TYPE" || searchBy == "ASSAY TECHNOLOGY" || searchBy == "CELL LINE" || searchBy == "TARGET ORIGIN" || searchBy == "ASSAY STAGE") {
 			Collection<DDictValue> ddictValues = DDictValue.findDDictValuesByLabelTextLike(queryString).getResultList();
 			if (!ddictValues.isEmpty()) {
 				for (DDictValue ddictvalue : ddictValues) {

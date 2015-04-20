@@ -192,7 +192,6 @@
             <menu:item id="i_protocolvalue_new" messageCode="global_menu_new" url="/protocolvalues?form" z="NeuraCstRhyZtMj+o86SkuN9oGQ="/>
             <menu:item id="i_protocolvalue_list" messageCode="global_menu_list" url="/protocolvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="FRB+41kwl8e6u9QTlycPPNaiMM8="/>
             <menu:item id="fi_protocolvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="MMmLU1imye2s/Ru3VFyUIJZSVvI="/>
-            <menu:item id="fi_protocolvalue_lskindequalsanddatevaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndDateValueLike&amp;form" z="CiOFltInilp+BOvRezHC0gGifrk="/>
             <menu:item id="fi_protocolvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="mchkxsc/6HRGLW4mZyX+nlSMCcM="/>
             <menu:item id="fi_protocolvalue_lsstate" messageCode="global_menu_find" url="/protocolvalues?find=ByLsState&amp;form" z="iC+uW+zryi1hkuwjmqaql0Z+5Vo="/>
             <menu:item id="fi_protocolvalue_lstransactionequals" messageCode="global_menu_find" url="/protocolvalues?find=ByLsTransactionEquals&amp;form" z="LKaa2qhqdvo5/47t358DbHVR/+4="/>

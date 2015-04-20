@@ -1,10 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-
-import flexjson.JSONDeserializer;
-
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,10 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+
+import flexjson.JSONDeserializer;
+
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findExperimentValuesByLsState", "findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals", "findExperimentValuesByLsKindEqualsAndCodeValueLike", "findExperimentValuesByLsKindEqualsAndStringValueLike", "findExperimentValuesByLsKindEqualsAndDateValueLike" })
+@RooJpaActiveRecord(finders = { "findExperimentValuesByLsState", "findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals", "findExperimentValuesByLsKindEqualsAndCodeValueLike", "findExperimentValuesByLsKindEqualsAndStringValueLike", "findExperimentValuesByLsKindEqualsAndDateValueEquals" })
 public class ExperimentValue extends AbstractValue {
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentValue.class);
@@ -164,6 +163,16 @@ public class ExperimentValue extends AbstractValue {
         q.setParameter("stateType", stateType);
         q.setParameter("stateKind", stateKind);
         q.setParameter("ignored", true);
+        return q;
+    }
+    
+    public static TypedQuery<ExperimentValue> findExperimentValuesByLsKindEqualsAndDateValueEquals(String lsKind, Date dateValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = ExperimentValue.entityManager();
+        TypedQuery<ExperimentValue> q = em.createQuery("SELECT o FROM ExperimentValue AS o WHERE o.lsKind = :lsKind  AND CAST(o.dateValue, date) = CAST(:dateValue, date) ", ExperimentValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
         return q;
     }
 

@@ -64,18 +64,8 @@ public class FlagWellDTOTest {
 	public void findResponseSubjectValuesByTreatmentGroup_2() {
 		Long id = 523655L;
 		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
-		Collection<SubjectValue> results = FlagWellDTO.findResponseSubjectValuesByTreatmentGroup(treatmentGroup);
-		logger.debug(SubjectValue.toJsonArray(results));
-		
-	}
-	
-	@Test
-	@Transactional
-	public void findFlagStatusKOSubjectValuesByTreatmentGroup() {
-		Long id = 523655L;
-		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
-		Collection<SubjectValue> results = FlagWellDTO.findFlagStatusKOSubjectValuesByTreatmentGroup(treatmentGroup);
-		logger.debug(SubjectValue.toJsonArray(results));
+		Collection<SubjectValue> results = FlagWellDTO.findNotKONumericValueSubjectValues(treatmentGroup);
+		logger.info(SubjectValue.toJsonArray(results));
 		
 	}
 	
@@ -91,6 +81,15 @@ public class FlagWellDTOTest {
 	
 	@Test
 	@Transactional
+	public void findBatchCodeSubjectValueTest() {
+		Long id = 1132177L;
+		TreatmentGroup treatmentGroup = TreatmentGroup.findTreatmentGroup(id);
+		SubjectValue sv = FlagWellDTO.findBatchCodeSubjectValue(treatmentGroup);
+		logger.info(sv.toJson());
+	}
+	
+	@Test
+	@Transactional
 	public void updateWellFlagsTest() {
 		Long id1 = 3536726L;
 		Long id2 = 3536727L;
@@ -102,7 +101,7 @@ public class FlagWellDTOTest {
 		flagWellDTO.setRecordedBy("bfielder");
 		flagWellDTO.setUserFlagStatus("knocked out");
 		flagWellDTO.setUserFlagObservation("high signal");
-		flagWellDTO.setUserFlagReason("tip clog");
+		flagWellDTO.setUserFlagCause("tip clog");
 		Collection<FlagWellDTO> flagWellDTOs = new HashSet<FlagWellDTO>();
 		flagWellDTOs.add(flagWellDTO);
 		FlagWellDTO.updateWellFlags(flagWellDTOs);

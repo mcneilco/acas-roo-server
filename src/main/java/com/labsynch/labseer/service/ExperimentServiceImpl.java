@@ -14,6 +14,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -47,6 +49,7 @@ import com.labsynch.labseer.dto.SELColOrderDTO;
 import com.labsynch.labseer.dto.StateValueCsvDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -82,10 +85,35 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Override
 	@Transactional
-	public Experiment updateExperiment(Experiment jsonExperiment){
+	public Experiment updateExperiment(Experiment jsonExperiment) throws UniqueNameException{
 		//		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
 		logger.debug("recorded by: " + jsonExperiment.getRecordedBy());
 
+		boolean checkExperimentName = propertiesUtilService.getUniqueExperimentName();
+		if (checkExperimentName){
+			boolean experimentExists = false;
+			Set<ExperimentLabel> exptLabels = jsonExperiment.getLsLabels();
+			for (ExperimentLabel label : exptLabels){
+				String labelText = label.getLabelText();
+				logger.debug("Searching for labelText: "+labelText);
+				List<ExperimentLabel> experimentLabels = ExperimentLabel.findExperimentLabelsByName(labelText).getResultList();	
+				logger.debug("Found "+ experimentLabels.size() +" labels");
+				for (ExperimentLabel el : experimentLabels){
+					Experiment exp = el.getExperiment();
+					logger.debug("Found same label on experiment: "+ exp.getId().toString() +" while experiment to update is: "+ jsonExperiment.getId().toString());
+					//if the experiment is not hard deleted or soft deleted, there is a name conflict
+					if (!exp.isIgnored() && !el.isIgnored() && exp.getId().compareTo(jsonExperiment.getId())!=0){
+						experimentExists = true;
+					}
+				}
+			}
+
+			if (experimentExists){
+				throw new UniqueNameException("Experiment with the same name exists");							
+			}
+		}
+		
+		
 		Experiment updatedExperiment = Experiment.update(jsonExperiment);
 		if (jsonExperiment.getLsLabels() != null) {
 			for(ExperimentLabel experimentLabel : jsonExperiment.getLsLabels()){
@@ -157,7 +185,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 				for (ExperimentLabel el : experimentLabels){
 					Experiment exp = el.getExperiment();
 					//if the experiment is not hard deleted or soft deleted, there is a name conflict
-					if (!exp.isIgnored()){
+					if (!exp.isIgnored() && !el.isIgnored()){
 						experimentExists = true;
 					}
 				}
@@ -956,7 +984,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	}
 
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString) {
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString) throws TooManyResultsException {
 		//make our HashSets: experimentIdList will be filled/cleared/refilled for each term
 		//experimentList is the final search result
 		HashSet<Long> experimentIdList = new HashSet<Long>();
@@ -965,6 +993,15 @@ public class ExperimentServiceImpl implements ExperimentService {
 		//Split the query up on spaces
 		String[] splitQuery = queryString.split("\\s+");
 		logger.debug("Number of search terms: " + splitQuery.length);
+		//Protection from searching * in a database with too many experiments:
+		if (splitQuery.length == 1 && splitQuery[0].equals("*")){
+			logger.warn("Query for '*' detected. Determining if number of results is too many.");
+			int experimentCount = (int) Experiment.countExperiments();
+			logger.debug("Found "+experimentCount +" experiments.");
+			if (experimentCount > 1000){
+				throw new TooManyResultsException("Too many experiments will be returned with the query: "+"*");
+			}
+		}
 		//Make the Map of terms and HashSets of experiment id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {
@@ -974,6 +1011,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 //			experimentIdList.addAll(findExperimentIdsByMetadata(term, "RECORDEDBY"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "KIND"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "STATUS"));
+			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ANALYSIS STATUS"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL TYPE"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL KIND"));
 			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL CODENAME"));
@@ -1070,10 +1108,19 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experiments.clear();
 		}
 		if (searchBy == "STATUS") {
-			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndStringValueLike("status", queryString).getResultList();
+			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike("experiment status", queryString).getResultList();
 			if (!experimentValues.isEmpty()){
 				for (ExperimentValue experimentValue : experimentValues) {
-					experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
+					if (!experimentValue.isIgnored()) experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
+				}
+			}
+			experimentValues.clear();
+		}
+		if (searchBy == "ANALYSIS STATUS") {
+			Collection<ExperimentValue> experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike("analysis status", queryString).getResultList();
+			if (!experimentValues.isEmpty()){
+				for (ExperimentValue experimentValue : experimentValues) {
+					if (!experimentValue.isIgnored()) experimentIdList.add(experimentValue.getLsState().getExperiment().getId());
 				}
 			}
 			experimentValues.clear();
@@ -1144,11 +1191,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 			try {
 				Date date = df.parse(queryString);
-				experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+				experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals("completion date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
-					experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
+					experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals("completion date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}
@@ -1330,17 +1377,33 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Override
 	public boolean deleteAnalysisGroupsByExperiment(Experiment experiment) {
-		boolean successfullyDeleted = true;
-		try {
-			for (AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
-				analysisGroup.logicalDelete();
-				analysisGroup.merge();
-			}
-		} catch (Exception e) {
-			successfullyDeleted = false;
-			logger.error("Error in deleting analysis groups by experiment: " + e.toString());
-		}
-		return successfullyDeleted;
+//		boolean successfullyDeleted = true;
+//		try {
+//			for (AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
+//				analysisGroup.logicalDelete();
+//				analysisGroup.merge();
+//			}
+//		} catch (Exception e) {
+//			successfullyDeleted = false;
+//			logger.error("Error in deleting analysis groups by experiment: " + e.toString());
+//		}
+//		return successfullyDeleted;
+		
+		
+		EntityManager em = Experiment.entityManager();
+        String sqlQuery = "UPDATE AnalysisGroup AS ag SET ag.ignored = true, ag.deleted = true "
+        				+ "WHERE ag.id IN ( SELECT ag2.id FROM AnalysisGroup AS ag2 JOIN ag2.experiments e "
+        				+ "WHERE e.id = :experimentId ) ";
+        Query q = em.createQuery(sqlQuery);
+        q.setParameter("experimentId", experiment.getId());
+        try{
+        	int numRows = q.executeUpdate();
+            logger.info(numRows + " AnalysisGroups logically deleted.");
+        }catch (Exception e){
+        	logger.error("Caught error deleting AnalysisGroups under experiment: " + experiment.getCodeName()+ " "+e.toString());
+        	return false;
+        }
+        return true;
 	}
 
 

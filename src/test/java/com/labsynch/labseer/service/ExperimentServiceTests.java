@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,7 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -198,8 +200,12 @@ public class ExperimentServiceTests {
 	// @Test
 	public void UpdateExeprimentName_2() {
 		String json = "{    \"analysisGroups\": null,    \"codeName\": \"test experiment code name 105\",    \"id\": 3101,    \"ignored\": false,    \"lsKind\": \"default\",    \"lsLabels\": null,    \"lsStates\": null,    \"lsTransaction\": 311,    \"lsType\": \"default\",    \"lsTypeAndKind\": \"default_default\",    \"modifiedBy\": null,    \"modifiedDate\": null,    \"protocol\": {        \"codeName\": \"test protocol code name 105\",        \"id\": 3100,        \"ignored\": false,        \"lsKind\": \"default\",        \"lsTransaction\": 311,        \"lsType\": \"default\",        \"lsTypeAndKind\": \"default_default\",        \"modifiedBy\": null,        \"modifiedDate\": null,        \"recordedBy\": \"testUser\",        \"recordedDate\": 1379479721768,        \"shortDescription\": \"just a test\",        \"version\": 0    },    \"recordedBy\": \"testUser\",    \"recordedDate\": 1379479721768,    \"shortDescription\": \"some short description\",    \"version\": 0}";
-		experimentService.updateExperiment(Experiment
+		try {
+			experimentService.updateExperiment(Experiment
 				.fromJsonToExperiment(json));
+		} catch (Exception e){
+			Assert.assertNull(e);
+		}
 	}
 
 	// @Test
@@ -601,7 +607,7 @@ public class ExperimentServiceTests {
 	
 	@Test
 //	@Transactional
-	public void browserFinderDeleteTest() {
+	public void browserFinderDeleteTest() throws TooManyResultsException {
 		Long id = 2123L;
 		String query = "EXPERIMENT 4 EXPT-00000006";
 		Experiment experiment = Experiment.findExperiment(id);
@@ -621,7 +627,7 @@ public class ExperimentServiceTests {
 	}
 	
 	@Test
-	public void browserFinderDeleteTest2() {
+	public void browserFinderDeleteTest2() throws TooManyResultsException{
 		Long id = 2123L;
 		String query = "EXPERIMENT 4 EXPT-00000006";
 		Experiment experiment = Experiment.findExperiment(id);
@@ -660,7 +666,7 @@ public class ExperimentServiceTests {
 	
 	@Transactional
 	@Test
-	public void searchTest2() {
+	public void searchTest2() throws TooManyResultsException{
 		String query = "EXPT-00000012";
 		Collection<Experiment> experiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
 		logger.debug("RESULTS: "+"NUMBER OF EXPERIMENTS: "+experiments.size()+experiments.toString());
@@ -689,6 +695,19 @@ public class ExperimentServiceTests {
 		String checkDeletedExperimentStatus = experimentValue3.getCodeValue();
 		Assert.assertEquals("deleted", deletedExperimentStatus);
 		Assert.assertEquals("deleted", checkDeletedExperimentStatus);
+		
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(value=false)
+	public void deleteChildren() {
+		Experiment experiment = Experiment.findExperiment(203528L);
+		long startTime = new Date().getTime();
+		experimentService.deleteAnalysisGroupsByExperiment(experiment);
+		long endTime = new Date().getTime();
+		long totalTime = endTime - startTime;
+		logger.info("Time to delete "+ totalTime +" ms");
 		
 	}
 }

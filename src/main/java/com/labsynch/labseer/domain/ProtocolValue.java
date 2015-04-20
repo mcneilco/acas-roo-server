@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -24,7 +25,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findProtocolValuesByLsState", "findProtocolValuesByLsTransactionEquals", "findProtocolValuesByLsKindEqualsAndStringValueLike", "findProtocolValuesByLsKindEqualsAndDateValueLike", "findProtocolValuesByLsKindEqualsAndCodeValueLike" })
+@RooJpaActiveRecord(finders = { "findProtocolValuesByLsState", "findProtocolValuesByLsTransactionEquals", "findProtocolValuesByLsKindEqualsAndStringValueLike", "findProtocolValuesByLsKindEqualsAndCodeValueLike" })
 public class ProtocolValue extends AbstractValue {
 
     @NotNull
@@ -116,4 +117,14 @@ public class ProtocolValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+	
+	 public static TypedQuery<ProtocolValue> findProtocolValuesByLsKindEqualsAndDateValueEquals(String lsKind, Date dateValue) {
+	        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+	        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+	        EntityManager em = ProtocolValue.entityManager();
+	        TypedQuery<ProtocolValue> q = em.createQuery("SELECT o FROM ProtocolValue AS o WHERE o.lsKind = :lsKind  AND CAST(o.dateValue, date) = CAST(:dateValue, date) ", ProtocolValue.class);
+	        q.setParameter("lsKind", lsKind);
+	        q.setParameter("dateValue", dateValue);
+	        return q;
+	    }
 }

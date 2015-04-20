@@ -16,7 +16,7 @@ public interface ProtocolService {
 
 	Protocol getFullProtocol(Protocol protocol);
 
-	Protocol updateProtocol(Protocol protocol);
+	Protocol updateProtocol(Protocol protocol) throws UniqueNameException;
 
 //	Collection<Protocol> findProtocolsByMetadataJson(String json);
 

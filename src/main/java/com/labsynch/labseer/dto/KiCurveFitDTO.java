@@ -3,23 +3,18 @@ package com.labsynch.labseer.dto;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
@@ -35,15 +30,8 @@ import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.service.AnalysisGroupStateService;
-import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.utils.SimpleUtil;
-
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -60,68 +48,69 @@ public class KiCurveFitDTO {
 		this.curveId = curveId;
 	}
 	
-	
-	
-	public KiCurveFitDTO(HashMap<String, String> stringMap, HashMap<String, BigDecimal> numericMap)
-			{
-		// These keys must be exactly the same as what is used in the database. Case sensitive.
-				this.curveId = stringMap.get("curve id");
-				this.batchCode = stringMap.get("batch code");
-				this.category = stringMap.get("category");
-				this.renderingHint = stringMap.get("Rendering Hint");
-				this.min = String.valueOf(numericMap.get("Min"));
-				if (this.min.equals("null")) this.min = stringMap.get("Min");
-				this.max = String.valueOf(numericMap.get("Max"));
-				if (this.max.equals("null")) this.max = stringMap.get("Max");
-				this.ki = String.valueOf(numericMap.get("Ki"));
-				if (this.ki.equals("null")) this.ki = stringMap.get("Ki");
-				this.minUnits = stringMap.get("Min units");
-				this.maxUnits = stringMap.get("Max units");
-				this.kiUnits = stringMap.get("Ki units");
-				this.kd = numericMap.get("Kd");
-				this.kdUnits = stringMap.get("Kd units");
-				this.kdUncertainty = numericMap.get("Kd uncertainty");
-				this.kdUncertaintyType = stringMap.get("Kd uncertainty type");
-				this.ligandConc = numericMap.get("Ligand Conc");
-				this.ligandConcUnits = stringMap.get("Ligand Conc units");
-				this.ligandConcUncertainty = numericMap.get("Ligand Conc uncertainty");
-				this.ligandConcUncertaintyType = stringMap.get("Ligand Conc uncertainty type");
-				this.minUncertainty = numericMap.get("Min uncertainty");
-				this.maxUncertainty = numericMap.get("Max uncertainty");
-				this.kiUncertainty = numericMap.get("Ki uncertainty");
-				this.minUncertaintyType = stringMap.get("Min uncertainty type");
-				this.maxUncertaintyType = stringMap.get("Max uncertainty type");
-				this.kiUncertaintyType = stringMap.get("Ki uncertainty type");
-				this.minOperatorKind = stringMap.get("Min operator kind");
-				this.maxOperatorKind = stringMap.get("Max operator kind");
-				this.kiOperatorKind = stringMap.get("Ki operator kind");
-				this.ligandConcOperatorKind = stringMap.get("Ligand Conc operator kind");
-				this.kdOperatorKind = stringMap.get("Kd operator kind");
-				this.fittedMin = numericMap.get("Fitted Min");
-				this.fittedMax = numericMap.get("Fitted Max");
-				this.fittedKi = numericMap.get("Fitted Ki");
-				this.fittedMinUncertainty = numericMap.get("Fitted Min uncertainty");
-				this.fittedMaxUncertainty = numericMap.get("Fitted Max uncertainty");
-				this.fittedKiUncertainty = numericMap.get("Fitted Ki uncertainty");
-				this.fittedMinUncertaintyType = stringMap.get("Fitted Min uncertainty type");
-				this.fittedMaxUncertaintyType = stringMap.get("Fitted Max uncertainty type");
-				this.fittedKiUncertaintyType = stringMap.get("Fitted Ki uncertainty type");
-				this.sse = numericMap.get("SSE");
-				this.sst = numericMap.get("SST");
-				this.rsquared = numericMap.get("rSquared");
-				this.curveErrorsClob = stringMap.get("curveErrorsClob");
-				this.reportedValuesClob = stringMap.get("reportedValuesClob");
-				this.parameterStdErrorsClob = stringMap.get("parameterStdErrorsClob");
-				this.fitSettings = stringMap.get("fitSettings");
-				this.fitSummaryClob = stringMap.get("fitSummaryClob");
-				this.userFlagStatus = stringMap.get("user flag status");
-				this.algorithmFlagStatus = stringMap.get("algorithm flag status");
+	public KiCurveFitDTO(Map dataMap){
+		this.curveId = (String) dataMap.get("curveId");
+		this.analysisGroupCode = (String) dataMap.get("analysisGroupCode");
+		this.recordedBy = (String) dataMap.get("recordedBy");
+		this.recordedDate = (Date) dataMap.get("recordedDate");
+		this.lsTransaction = (Long) dataMap.get("lsTransaction");
+		this.batchCode = (String) dataMap.get("batchCode");
+		this.category = (String) dataMap.get("category");
+		this.renderingHint = (String) dataMap.get("renderingHint");
+		if (dataMap.get("minNumeric") != null) this.min = ((BigDecimal) dataMap.get("minNumeric")).toString();
+		else this.min = (String) dataMap.get("minString");
+		if (dataMap.get("maxNumeric") != null) this.max = ((BigDecimal) dataMap.get("maxNumeric")).toString();
+		else this.max = (String) dataMap.get("maxString");
+		if (dataMap.get("kiNumeric") != null) this.ki = ((BigDecimal) dataMap.get("kiNumeric")).toString();
+		else this.ki = (String) dataMap.get("kiString");
+		this.minUnits = (String) dataMap.get("minUnits");
+		this.maxUnits = (String) dataMap.get("maxUnits");
+		this.kiUnits = (String) dataMap.get("kiUnits");
+		this.kd = (BigDecimal) dataMap.get("kd");
+		this.kdUnits = (String) dataMap.get("kdUnits");
+		this.kdUncertainty = (BigDecimal) dataMap.get("kdUncertainty");
+		this.kdUncertaintyType = (String) dataMap.get("kdUncertaintyType");
+		this.ligandConc = (BigDecimal) dataMap.get("ligandConc");
+		this.ligandConcUnits = (String) dataMap.get("ligandConcUnits");
+		this.ligandConcUncertainty = (BigDecimal) dataMap.get("ligandConcUncertainty");
+		this.ligandConcUncertaintyType = (String) dataMap.get("ligandConcUncertaintyType");
+		this.minUncertainty = (BigDecimal) dataMap.get("minUncertainty");
+		this.maxUncertainty = (BigDecimal) dataMap.get("maxUncertainty");
+		this.kiUncertainty = (BigDecimal) dataMap.get("kiUncertainty");
+		this.minUncertaintyType = (String) dataMap.get("minUncertaintyType");
+		this.maxUncertaintyType = (String) dataMap.get("maxUncertaintyType");
+		this.kiUncertaintyType = (String) dataMap.get("kiUncertaintyType");
+		this.minOperatorKind = (String) dataMap.get("minOperatorKind");
+		this.maxOperatorKind = (String) dataMap.get("maxOperatorKind");
+		this.kiOperatorKind = (String) dataMap.get("kiOperatorKind");
+		this.ligandConcOperatorKind = (String) dataMap.get("ligandConcOperatorKind");
+		this.kdOperatorKind = (String) dataMap.get("kdOperatorKind");
+		this.fittedMin = (BigDecimal) dataMap.get("fittedMin");
+		this.fittedMax = (BigDecimal) dataMap.get("fittedMax");
+		this.fittedKi = (BigDecimal) dataMap.get("fittedKi");
+		this.fittedMinUncertainty = (BigDecimal) dataMap.get("fittedMinUncertainty");
+		this.fittedMaxUncertainty = (BigDecimal) dataMap.get("fittedMaxUncertainty");
+		this.fittedKiUncertainty = (BigDecimal) dataMap.get("fittedKiUncertainty");
+		this.fittedMinUncertaintyType = (String) dataMap.get("fittedMinUncertaintyType");
+		this.fittedMaxUncertaintyType = (String) dataMap.get("fittedMaxUncertaintyType");
+		this.fittedKiUncertaintyType = (String) dataMap.get("fittedKiUncertaintyType");
+		this.sse = (BigDecimal) dataMap.get("sse");
+		this.sst = (BigDecimal) dataMap.get("sst");
+		this.rsquared = (BigDecimal) dataMap.get("rsquared");
+		this.curveErrorsClob = (String) dataMap.get("curveErrorsClob");
+		this.reportedValuesClob = (String) dataMap.get("reportedValuesClob");
+		this.parameterStdErrorsClob = (String) dataMap.get("parameterStdErrorsClob");
+		this.fitSettings = (String) dataMap.get("fitSettings");
+		this.fitSummaryClob = (String) dataMap.get("fitSummaryClob");
+		this.userFlagStatus = (String) dataMap.get("userFlagStatus");
+		this.algorithmFlagStatus = (String) dataMap.get("algorithmFlagStatus");
 	}
 
 
 	private String curveId;
 	private String analysisGroupCode;
 	private String recordedBy;
+	private Date recordedDate;
 	private Long lsTransaction;
 	private String batchCode;
 	private String category;
@@ -179,6 +168,7 @@ public class KiCurveFitDTO {
 				"curveId",
 				"analysisGroupCode",
 				"recordedBy",
+				"recordedDate",
 				"lsTransaction",
 				"batchCode",
 				"category",
@@ -285,61 +275,111 @@ public class KiCurveFitDTO {
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				new Optional(),
 				new Optional()
 		};
 
 		return processors;
 	}
-
-	public static Collection<KiCurveFitDTO> getFitData(
-			Collection<KiCurveFitDTO> curveFitDTOs) {
-		Collection<KiCurveFitDTO> filledCurveFitDTOs = new HashSet<KiCurveFitDTO>();
-		for (KiCurveFitDTO curveFitDTO : curveFitDTOs) {
-			filledCurveFitDTOs.add(getFitData(curveFitDTO));
-		}
-		return filledCurveFitDTOs;
-	}
 	
 	@Transactional
-	public static KiCurveFitDTO getFitData(KiCurveFitDTO curveFitDTO){
-		AnalysisGroupValue curveIdValue = findCurveIdValue(curveFitDTO.getCurveId());
-		if (curveIdValue.getStateId() == null) {
-			logger.debug("No data found for curve id: " + curveFitDTO.getCurveId());
-			return new KiCurveFitDTO();
+	public static Collection<KiCurveFitDTO> getFitData(Collection<String> curveIds){
+		EntityManager em = SubjectValue.entityManager();
+		if (curveIds.isEmpty()) return new ArrayList<KiCurveFitDTO>();
+		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( curveIdValue.stringValue as curveId, "
+				+ "ag.codeName as analysisGroupCode, "
+				+ "curveIdValue.recordedBy as recordedBy, "
+        		+ "curveIdValue.lsTransaction as lsTransaction, "
+				+ "curveIdValue.recordedDate as recordedDate, "
+        		+ "batchCodeValue.codeValue as batchCode, "
+        		+ "categoryValue.stringValue as category, "
+        		+ "renderingHintValue.stringValue as renderingHint, "
+        		+ "minValue.stringValue as minString, "
+        		+ "minValue.numericValue as minNumeric, "
+        		+ "maxValue.stringValue as maxString, "
+        		+ "maxValue.numericValue as maxNumeric, "
+        		+ "kiValue.stringValue as kiString, "
+        		+ "kiValue.numericValue as kiNumeric, "
+        		+ "minValue.unitKind as minUnits, "
+        		+ "maxValue.unitKind as maxUnits, "
+        		+ "kiValue.unitKind as kiUnits, "
+        		+ "kdValue.numericValue as kd, "
+        		+ "kdValue.unitKind as kdUnits, "
+        		+ "kdValue.uncertainty as kdUncertainty, "
+        		+ "kdValue.uncertaintyType as kdUncertaintyType, "
+        		+ "ligandConcValue.numericValue as ligandConc, "
+        		+ "ligandConcValue.unitKind as ligandConcUnits, "
+        		+ "ligandConcValue.uncertainty as ligandConcUncertainty, "
+        		+ "ligandConcValue.uncertaintyType as ligandConcUncertaintyType, "
+        		+ "minValue.uncertainty as minUncertainty, "
+        		+ "maxValue.uncertainty as maxUncertainty, "
+        		+ "kiValue.uncertainty as kiUncertainty, "
+        		+ "minValue.uncertaintyType as minUncertaintyType, "
+        		+ "maxValue.uncertaintyType as maxUncertaintyType, "
+        		+ "kiValue.uncertaintyType as kiUncertaintyType, "
+        		+ "minValue.operatorKind as minOperatorKind, "
+        		+ "maxValue.operatorKind as maxOperatorKind, "
+        		+ "kiValue.operatorKind as kiOperatorKind, "
+        		+ "ligandConcValue.operatorKind as ligandConcOperatorKind, "
+        		+ "kdValue.operatorKind as kdValueOperatorKind, "
+        		+ "fittedMinValue.numericValue as fittedMin, "
+        		+ "fittedMaxValue.numericValue as fittedMax, "
+        		+ "fittedKiValue.numericValue as fittedKi, "
+        		+ "fittedMinValue.uncertainty as fittedMinUncertainty, "
+        		+ "fittedMaxValue.uncertainty as fittedMaxUncertainty, "
+        		+ "fittedKiValue.uncertainty as fittedKiUncertainty, "
+        		+ "fittedMinValue.uncertaintyType as fittedMinUncertaintyType, "
+        		+ "fittedMaxValue.uncertaintyType as fittedMaxUncertaintyType, "
+        		+ "fittedKiValue.uncertaintyType as fittedKiUncertaintyType, "
+        		+ "sseValue.numericValue as sse, "
+        		+ "sstValue.numericValue as sst, "
+        		+ "rSquaredValue.numericValue as rsquared, "
+        		+ "curveErrorsClobValue.clobValue as curveErrorsClob, "
+        		+ "reportedValuesClobValue.clobValue as reportedValuesClob, "
+        		+ "parameterStdErrorsClobValue.clobValue as parameterStdErrorsClob, "
+        		+ "fitSettingsValue.clobValue as fitSettings, "
+        		+ "fitSummaryClobValue.clobValue as fitSummaryClob, "
+        		+ "userFlagStatusValue.codeValue as userFlagStatus, "
+        		+ "algorithmFlagStatusValue.codeValue as algorithmFlagStatus "
+        		+ " ) " 
+        		+ "FROM AnalysisGroup ag "
+        		+ "JOIN ag.lsStates as ags "
+				+ "LEFT JOIN ags.lsValues as curveIdValue WITH curveIdValue.lsKind = 'curve id' "
+				+ "LEFT JOIN ags.lsValues as batchCodeValue WITH batchCodeValue.lsKind = 'batch code' "
+				+ "LEFT JOIN ags.lsValues as categoryValue WITH categoryValue.lsKind = 'category' "
+				+ "LEFT JOIN ags.lsValues as renderingHintValue WITH renderingHintValue.lsKind = 'Rendering Hint' "
+				+ "LEFT JOIN ags.lsValues as minValue WITH minValue.lsKind = 'Min' "
+				+ "LEFT JOIN ags.lsValues as maxValue WITH maxValue.lsKind = 'Max' "
+				+ "LEFT JOIN ags.lsValues as kiValue WITH kiValue.lsKind = 'Ki' "
+				+ "LEFT JOIN ags.lsValues as kdValue WITH kdValue.lsKind = 'Kd' "
+				+ "LEFT JOIN ags.lsValues as ligandConcValue WITH ligandConcValue.lsKind = 'Ligand Conc' "
+				+ "LEFT JOIN ags.lsValues as fittedMinValue WITH fittedMinValue.lsKind = 'Fitted Min' "
+				+ "LEFT JOIN ags.lsValues as fittedMaxValue WITH fittedMaxValue.lsKind = 'Fitted Max' "
+				+ "LEFT JOIN ags.lsValues as fittedKiValue WITH fittedKiValue.lsKind = 'Fitted Ki' "
+				+ "LEFT JOIN ags.lsValues as sseValue WITH sseValue.lsKind = 'SSE' "
+				+ "LEFT JOIN ags.lsValues as sstValue WITH sstValue.lsKind = 'SST' "
+				+ "LEFT JOIN ags.lsValues as rSquaredValue WITH rSquaredValue.lsKind = 'rSquared' "
+				+ "LEFT JOIN ags.lsValues as curveErrorsClobValue WITH curveErrorsClobValue.lsKind = 'curveErrorsClob' "
+				+ "LEFT JOIN ags.lsValues as parameterStdErrorsClobValue WITH parameterStdErrorsClobValue.lsKind = 'parameterStdErrorsClob' "
+				+ "LEFT JOIN ags.lsValues as reportedValuesClobValue WITH reportedValuesClobValue.lsKind = 'reportedValuesClob' "
+				+ "LEFT JOIN ags.lsValues as fitSettingsValue WITH fitSettingsValue.lsKind = 'fitSettings' "
+				+ "LEFT JOIN ags.lsValues as fitSummaryClobValue WITH fitSummaryClobValue.lsKind = 'fitSummaryClob' "
+				+ "LEFT JOIN ags.lsValues as userFlagStatusValue WITH userFlagStatusValue.lsKind = 'user flag status' "
+				+ "LEFT JOIN ags.lsValues as algorithmFlagStatusValue WITH algorithmFlagStatusValue.lsKind = 'algorithm flag status' "
+        		+ "WHERE ag.ignored = false " 
+        		+ "AND ags.ignored = false "
+        		+ "AND curveIdValue.ignored = false "
+        		+ "AND curveIdValue.stringValue IN :curveIds", Map.class);
+        q.setParameter("curveIds", curveIds);
+        List<Map> queryResults = q.getResultList();
+        logger.debug(queryResults.size()+" results found");
+        List<KiCurveFitDTO> curveFitDTOList = new ArrayList<KiCurveFitDTO>();
+		for (Map result : queryResults) {
+			KiCurveFitDTO curveFitDTO = new KiCurveFitDTO(result);
+			curveFitDTOList.add(curveFitDTO);
 		}
-		AnalysisGroupState doseResponseState = AnalysisGroupState.findAnalysisGroupState(curveIdValue.getStateId());
-//		List<AnalysisGroupValue> agValues = AnalysisGroupValue.findAnalysisGroupValuesByLsState(doseResponseState).getResultList();
-		Collection<AnalysisGroupValue> agValues = doseResponseState.getLsValues();
-		HashMap<String, String> stringMap = new HashMap<String, String>();
-		HashMap<String, BigDecimal> numericMap = new HashMap<String, BigDecimal>();
-		for (AnalysisGroupValue agValue : agValues) {
-			if (agValue.getLsType().equals("stringValue")) {
-				stringMap.put(agValue.getLsKind(), agValue.getStringValue());
-			} else if (agValue.getLsType().equals("clobValue")) {
-				stringMap.put(agValue.getLsKind(), agValue.getClobValue());
-			} else if (agValue.getLsType().equals("numericValue")) {
-				numericMap.put(agValue.getLsKind(), agValue.getNumericValue());
-				if(agValue.getUnitKind() != null) {
-					stringMap.put(agValue.getLsKind()+" units", agValue.getUnitKind());
-				}
-				if(agValue.getUncertainty() != null){
-					numericMap.put(agValue.getLsKind()+" uncertainty", agValue.getUncertainty());
-				}
-				if(agValue.getUncertaintyType() != null){
-					stringMap.put(agValue.getLsKind()+" uncertainty type", agValue.getUncertaintyType());
-				}
-				if(agValue.getOperatorKind() != null){
-					stringMap.put(agValue.getLsKind()+" operator kind", agValue.getOperatorKind());
-				}
-			} else if  (agValue.getLsType().equals("codeValue")) {
-				stringMap.put(agValue.getLsKind(), agValue.getCodeValue());
-			}
-		}
-		curveFitDTO = new KiCurveFitDTO(stringMap, numericMap);
-		curveFitDTO.setAnalysisGroupCode(doseResponseState.getAnalysisGroup().getCodeName());
-		curveFitDTO.setRecordedBy(curveIdValue.getRecordedBy());
-		curveFitDTO.setLsTransaction(curveIdValue.getLsTransaction());
-		return curveFitDTO;
+		return curveFitDTOList;
+		
 	}
 	
 	public static String getCsvList(Collection<KiCurveFitDTO> curveFitDTOs, String format) {
@@ -560,16 +600,17 @@ public class KiCurveFitDTO {
 		//flags
 		if (!(userFlagStatus==null)){
 			AnalysisGroupValue userFlagStatusValue = createCurveFitValue(state, "codeValue", "user flag status", userFlagStatus, recordedBy, lsTransaction);
-			userFlagStatusValue.setCodeType("user well flags");
+			userFlagStatusValue.setCodeType("user flags");
 			userFlagStatusValue.setCodeKind("flag status");
-			userFlagStatusValue.setCodeOrigin("ACAS Curve Curator");
+			userFlagStatusValue.setCodeOrigin("ACAS DDICT");
 			newValues.add(userFlagStatusValue);
 		}
 		if (!(algorithmFlagStatus==null)){
 			AnalysisGroupValue algorithmFlagStatusValue = createCurveFitValue(state, "codeValue", "algorithm flag status", algorithmFlagStatus, recordedBy, lsTransaction);
-			algorithmFlagStatusValue.setCodeType("algorithm well flags");
+			algorithmFlagStatusValue.setCodeType("algorithm flags");
 			algorithmFlagStatusValue.setCodeKind("flag status");
-			algorithmFlagStatusValue.setCodeOrigin("ACAS Curve Fit Module");
+			algorithmFlagStatusValue.setCodeOrigin("ACAS DDICT");
+			newValues.add(algorithmFlagStatusValue);
 		}
 		
 		//persist and flush all the new values
@@ -655,12 +696,6 @@ public class KiCurveFitDTO {
         }
 	}
 	
-	public static Collection<KiCurveFitDTO> getFitDataByExperiment(String experimentIdOrCodeName){
-		Collection<KiCurveFitDTO> curveFitDTOs = makeCurveFitDTOsFromCurveIdList(findAllCurveIdsByExperiment(experimentIdOrCodeName));
-		curveFitDTOs = getFitData(curveFitDTOs);
-		return curveFitDTOs;
-	}
-	
 	@Transactional
 	public static Collection<String> findAllCurveIdsByExperiment(String experimentIdOrCodeName){
 		Experiment experiment = null;
@@ -697,15 +732,6 @@ public class KiCurveFitDTO {
 			curveFitDTOs.add(new KiCurveFitDTO(curveId));
 		}
 		return curveFitDTOs;
-	}
-	
-	public static Collection<KiCurveFitDTO> getFitData(List<String> curveIds) {
-		Collection<KiCurveFitDTO> curveFitDTOs = new HashSet<KiCurveFitDTO>();
-		for (String curveId : curveIds){
-			KiCurveFitDTO curveFitDTO = new KiCurveFitDTO(curveId);
-			curveFitDTOs.add(curveFitDTO);
-		}
-		return getFitData(curveFitDTOs);
 	}
 	
 }

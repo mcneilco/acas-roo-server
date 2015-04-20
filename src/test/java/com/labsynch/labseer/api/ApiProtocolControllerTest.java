@@ -62,6 +62,19 @@ public class ApiProtocolControllerTest {
     	Assert.assertFalse(results.isEmpty());
     }
     
+    @Test
+    public void genericSearchByDate() throws Exception {
+    	String searchString = "2015-03-06";
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/protocols/search?q="+searchString)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<Protocol> results = Protocol.fromJsonArrayToProtocols(responseJson);
+    	Assert.assertFalse(results.isEmpty());
+    }
     
 
 }

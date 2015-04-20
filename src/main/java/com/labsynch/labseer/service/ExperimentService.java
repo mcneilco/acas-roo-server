@@ -16,6 +16,7 @@ import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
@@ -25,7 +26,7 @@ public interface ExperimentService {
 
 	public void deleteLsExperiment(Experiment experiment);
 
-	public Experiment updateExperiment(Experiment experiment);
+	public Experiment updateExperiment(Experiment experiment) throws UniqueNameException;
 
 	public Experiment getFullExperiment(Experiment queryExperiment);
 
@@ -45,7 +46,7 @@ public interface ExperimentService {
 	public Collection<Experiment> findExperimentsByMetadataJson(
 			List<StringCollectionDTO> metaDataList);
 	
-	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query);
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query) throws TooManyResultsException;
 
 	public Collection<Experiment> findExperimentsByMetadata(String queryString, String searchBy);
 

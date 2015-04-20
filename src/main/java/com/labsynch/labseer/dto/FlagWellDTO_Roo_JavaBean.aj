@@ -47,12 +47,12 @@ privileged aspect FlagWellDTO_Roo_JavaBean {
         this.algorithmFlagObservation = algorithmFlagObservation;
     }
     
-    public String FlagWellDTO.getAlgorithmFlagReason() {
-        return this.algorithmFlagReason;
+    public String FlagWellDTO.getAlgorithmFlagCause() {
+        return this.algorithmFlagCause;
     }
     
-    public void FlagWellDTO.setAlgorithmFlagReason(String algorithmFlagReason) {
-        this.algorithmFlagReason = algorithmFlagReason;
+    public void FlagWellDTO.setAlgorithmFlagCause(String algorithmFlagCause) {
+        this.algorithmFlagCause = algorithmFlagCause;
     }
     
     public String FlagWellDTO.getAlgorithmFlagComment() {
@@ -79,12 +79,12 @@ privileged aspect FlagWellDTO_Roo_JavaBean {
         this.preprocessFlagObservation = preprocessFlagObservation;
     }
     
-    public String FlagWellDTO.getPreprocessFlagReason() {
-        return this.preprocessFlagReason;
+    public String FlagWellDTO.getPreprocessFlagCause() {
+        return this.preprocessFlagCause;
     }
     
-    public void FlagWellDTO.setPreprocessFlagReason(String preprocessFlagReason) {
-        this.preprocessFlagReason = preprocessFlagReason;
+    public void FlagWellDTO.setPreprocessFlagCause(String preprocessFlagCause) {
+        this.preprocessFlagCause = preprocessFlagCause;
     }
     
     public String FlagWellDTO.getPreprocessFlagComment() {
@@ -111,12 +111,12 @@ privileged aspect FlagWellDTO_Roo_JavaBean {
         this.userFlagObservation = userFlagObservation;
     }
     
-    public String FlagWellDTO.getUserFlagReason() {
-        return this.userFlagReason;
+    public String FlagWellDTO.getUserFlagCause() {
+        return this.userFlagCause;
     }
     
-    public void FlagWellDTO.setUserFlagReason(String userFlagReason) {
-        this.userFlagReason = userFlagReason;
+    public void FlagWellDTO.setUserFlagCause(String userFlagCause) {
+        this.userFlagCause = userFlagCause;
     }
     
     public String FlagWellDTO.getUserFlagComment() {

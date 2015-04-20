@@ -98,7 +98,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 
 	@Value("${uniqueProtocolName}")
 	public void setUniqueProtocolName(String uniqueProtocolName) {
-	    this.uniqueExperimentName = uniqueProtocolName;
+	    this.uniqueProtocolName = uniqueProtocolName;
 	}
 	
 	@Override

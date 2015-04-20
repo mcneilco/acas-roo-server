@@ -26,15 +26,15 @@ privileged aspect ExperimentValueController_Roo_Controller_Finder {
         return "experimentvalues/list";
     }
     
-    @RequestMapping(params = { "find=ByLsKindEqualsAndDateValueLike", "form" }, method = RequestMethod.GET)
-    public String ExperimentValueController.findExperimentValuesByLsKindEqualsAndDateValueLikeForm(Model uiModel) {
+    @RequestMapping(params = { "find=ByLsKindEqualsAndDateValueEquals", "form" }, method = RequestMethod.GET)
+    public String ExperimentValueController.findExperimentValuesByLsKindEqualsAndDateValueEqualsForm(Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
-        return "experimentvalues/findExperimentValuesByLsKindEqualsAndDateValueLike";
+        return "experimentvalues/findExperimentValuesByLsKindEqualsAndDateValueEquals";
     }
     
-    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLike", method = RequestMethod.GET)
-    public String ExperimentValueController.findExperimentValuesByLsKindEqualsAndDateValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue, Model uiModel) {
-        uiModel.addAttribute("experimentvalues", ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike(lsKind, dateValue).getResultList());
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueEquals", method = RequestMethod.GET)
+    public String ExperimentValueController.findExperimentValuesByLsKindEqualsAndDateValueEquals(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue, Model uiModel) {
+        uiModel.addAttribute("experimentvalues", ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals(lsKind, dateValue).getResultList());
         addDateTimeFormatPatterns(uiModel);
         return "experimentvalues/list";
     }
