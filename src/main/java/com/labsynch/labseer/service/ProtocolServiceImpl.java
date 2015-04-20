@@ -377,7 +377,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 			Collection<ProtocolValue> protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("protocol status", queryString).getResultList();
 			if (!protocolValues.isEmpty()){
 				for (ProtocolValue protocolValue : protocolValues) {
-					protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
+					if (!protocolValue.isIgnored()) protocolIdList.add(protocolValue.getLsState().getProtocol().getId());
 				}
 			}
 			protocolValues.clear();
