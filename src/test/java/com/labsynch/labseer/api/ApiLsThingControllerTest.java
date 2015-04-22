@@ -348,7 +348,24 @@ public class ApiLsThingControllerTest {
     @Test
     @Transactional
     public void documentManagerSearchTest1() throws Exception {
-    	String searchTerms="";
+    	String searchTerms=""
+    			+ "documentCode=MTA-00000034"
+    			+ "&documentType=legalDocument"
+    			+ "&titleContains=4-6-15-d11"
+    			+ "&project=PROJ-00000012"
+    			+ "&owner=Admin"
+    			+ "&amountFrom=5"
+    			+ "&amountTo=15"
+//    			+ "&createdDateFrom=MM/dd/yyyy"
+//    			+ "&createdDateTo=MM/dd/yyyy"
+//    			+ "&active="
+//    			+ "&termType="
+//    			+ "&daysBefore="
+//    			+ "&termDateFrom="
+//    			+ "&termDateTo="
+    			+ "&with=nestedFull"
+    			+ "";
+    	logger.info("GET on url: /api/v1/lsthings/documentmanagersearch?"+searchTerms);
     	 String json = this.mockMvc.perform(get("/api/v1/lsthings/documentmanagersearch?"+searchTerms)
          		.contentType(MediaType.APPLICATION_JSON)
          		.accept(MediaType.APPLICATION_JSON))
@@ -357,8 +374,9 @@ public class ApiLsThingControllerTest {
          		.andReturn().getResponse().getContentAsString();
          
          logger.info(json);
-         LsThing lsThing = LsThing.fromJsonToLsThing(json);
-         logger.info(lsThing.toJson());
+         Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+         Assert.assertEquals(1, lsThings.size());
+         logger.info(LsThing.toJsonArray(lsThings));
     }
     
     @Test

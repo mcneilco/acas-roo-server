@@ -943,6 +943,7 @@ public class LsThingServiceImpl implements LsThingService {
 
 
 	@Override
+	@Transactional
 	public Collection<LsThing> searchForDocumentThings(
 			Map<String, String> searchParamsMap) {
 		//make our HashSets: lsThingIdList will be filled/cleared/refilled for each term
@@ -953,11 +954,12 @@ public class LsThingServiceImpl implements LsThingService {
 		Collection<LsThing> lsThingList = new HashSet<LsThing>();
 		//map where key is paramName and value is list of ids found matching that param
 		Map<String, HashSet<Long>> resultsByParam = new HashMap<String, HashSet<Long>>();
+		searchParamsMap.remove("with");
 		for (String paramName : searchParamsMap.keySet()){
 			String param = searchParamsMap.get(paramName);
 			logger.debug("Searching by "+paramName+" = "+param);
 			lsThingIdList.addAll(findDocumentLsThingsByParam(paramName, param));
-			resultsByParam.put(paramName, lsThingIdList);
+			resultsByParam.put(paramName, new HashSet<Long>(lsThingIdList));
 			allLsThingIdList.addAll(lsThingIdList);
 			lsThingIdList.clear();
 		}
@@ -1040,13 +1042,13 @@ public class LsThingServiceImpl implements LsThingService {
 			project.clear();
 		}
 		if (paramName.equals("owner")){
-			Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedByLike(param).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing : lsThings){
-					lsThingIdList.add(lsThing.getId());
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByStringValueLike(param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
 				}
 			}
-			lsThings.clear();
+			lsThingValues.clear();
 		}
 		if (paramName.equals("amountFrom")) {
 			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals("amount", new BigDecimal(param)).getResultList();

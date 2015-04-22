@@ -470,11 +470,23 @@ public class ApiLsThingController {
 	  HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", "application/json");
       Collection<LsThing> results = new HashSet<LsThing>();
+      String with = searchParamsMap.get("with");
       try{
     	  results = lsThingService.searchForDocumentThings(searchParamsMap);
       }catch (Exception e){
     	  logger.error("Caught error in documentManagerSearch: " + e.toString());
     	  return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      if (with != null) {
+    	  if (with.equalsIgnoreCase("nestedfull")) {
+			return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(results), headers, HttpStatus.OK);
+		} else if (with.equalsIgnoreCase("prettyjson")) {
+			return new ResponseEntity<String>(LsThing.toJsonArrayPretty(results), headers, HttpStatus.OK);
+		} else if (with.equalsIgnoreCase("nestedstub")) {
+			return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(results), headers, HttpStatus.OK);
+		} else if (with.equalsIgnoreCase("stub")) {
+			return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
+		}
       }
       return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
   }
