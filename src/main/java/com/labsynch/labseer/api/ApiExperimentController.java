@@ -1052,7 +1052,7 @@ public class ApiExperimentController {
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(
-    		@RequestBody ExperimentSearchRequestDTO searchRequest, 
+    		@RequestBody String searchRequestJSON, 
     		@RequestParam(value = "format", required = false) String format,
 			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
 
@@ -1061,6 +1061,7 @@ public class ApiExperimentController {
 			publicData = true;
 		}
 		
+		ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(searchRequestJSON);
         logger.debug("converted json: " + searchRequest.toJson());
         List<AnalysisGroupValueDTO> agValues = null;
         try {
