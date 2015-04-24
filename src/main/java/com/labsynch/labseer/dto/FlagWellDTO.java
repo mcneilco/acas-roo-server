@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
@@ -238,37 +239,56 @@ public class FlagWellDTO {
 	public static Collection<SubjectValue> findNotKONumericValueSubjectValues(
 			TreatmentGroup treatmentGroup) {
 		EntityManager em = SubjectValue.entityManager();
-		TypedQuery<SubjectValue> q = em.createQuery("SELECT numericValues "
-				+ "FROM TreatmentGroup AS treatmentGroup "
-				+ "JOIN treatmentGroup.subjects AS subject "
-				+ "JOIN subject.lsStates AS dataResultsState "
-				+ "JOIN dataResultsState.lsValues AS numericValues "
-				+ "WHERE treatmentGroup = :treatmentGroup "
-				+ "AND subject.ignored IS NOT :ignored "
-				+ "AND dataResultsState.ignored IS NOT :ignored "
-				+ "AND dataResultsState.lsType = :dataResultsStateType "
-				+ "AND dataResultsState.lsKind = :dataResultsStateKind "
-				+ "AND numericValues.lsType =  'numericValue' "
-				+ "AND subject.id NOT IN "
-				+ "( SELECT subject.id "
-				+ "FROM TreatmentGroup AS treatmentGroup "
-				+ "JOIN treatmentGroup.subjects AS subject "
-				+ "JOIN subject.lsStates AS flagStatusState "
-				+ "JOIN flagStatusState.lsValues AS flagStatusValue "
-				+ "WHERE treatmentGroup = :treatmentGroup "
-				+ "AND subject.ignored IS NOT :ignored "
-				+ "AND flagStatusState.ignored IS NOT :ignored "
-				+ "AND flagStatusValue.lsType = :flagStatusValueType "
-				+ "AND flagStatusValue.lsKind = :flagStatusValueKind "
-				+ "AND flagStatusValue.codeValue = :ko )", SubjectValue.class);
+		Query q = em.createNativeQuery( "SELECT lsvalues4_.* "
+				+ "FROM treatment_group treatmentg0_ "
+				+ "INNER JOIN treatmentgroup_subject subjects1_ "
+				+ "ON treatmentg0_.id=subjects1_.treatment_group_id "
+				+ "INNER JOIN subject subject2_ "
+				+ "ON subjects1_.subject_id=subject2_.id "
+				+ "INNER JOIN subject_state lsstates3_ "
+				+ "ON subject2_.id=lsstates3_.subject_id "
+				+ "INNER JOIN subject_value lsvalues4_ "
+				+ "ON lsstates3_.id       =lsvalues4_.subject_state_id "
+				+ "WHERE treatmentg0_.id  = ?1 "
+				+ "AND subject2_.ignored <> ?2 "
+				+ "AND lsstates3_.ignored<> ?3 "
+				+ "AND lsstates3_.ls_type = ?4 "
+				+ "AND lsstates3_.ls_kind = ?5 "
+				+ "AND lsvalues4_.ls_type ='numericValue' "
+				+ "AND (subject2_.id NOT IN "
+				+ "  (SELECT "
+				+ "  /*+  "
+				+ "      index(lsvalues9_ SBJVL_SBJST_FK) "
+				+ "  */ "
+				+ "  subject7_.id "
+				+ "  FROM treatment_group treatmentg5_ "
+				+ "  INNER JOIN treatmentgroup_subject subjects6_ "
+				+ "  ON treatmentg5_.id=subjects6_.treatment_group_id "
+				+ "  INNER JOIN subject subject7_ "
+				+ "  ON subjects6_.subject_id=subject7_.id "
+				+ "  INNER JOIN subject_state lsstates8_ "
+				+ "  ON subject7_.id=lsstates8_.subject_id "
+				+ "  INNER JOIN subject_value lsvalues9_ "
+				+ "  ON lsstates8_.id         =lsvalues9_.subject_state_id "
+				+ "  WHERE treatmentg5_.id    = ?6 "
+				+ "  AND subject7_.ignored   <> ?7 "
+				+ "  AND lsstates8_.ignored  <> ?8 "
+				+ "  AND lsvalues9_.ls_type   = ?9 "
+				+ "  AND lsvalues9_.ls_kind   = ?10 "
+				+ "  AND lsvalues9_.code_value= ?11 "
+				+ "  )) ", SubjectValue.class);
 		
-		q.setParameter("flagStatusValueType", "codeValue");
-		q.setParameter("flagStatusValueKind", "flag status");
-		q.setParameter("ko", "knocked out");
-		q.setParameter("dataResultsStateType", "data");
-		q.setParameter("dataResultsStateKind", "results");
-		q.setParameter("treatmentGroup", treatmentGroup);
-		q.setParameter("ignored", true);
+		q.setParameter(1, treatmentGroup.getId());
+		q.setParameter(2, true);
+		q.setParameter(3, true);
+		q.setParameter(4, "data");
+		q.setParameter(5, "results");
+		q.setParameter(6, treatmentGroup.getId());
+		q.setParameter(7, true);
+		q.setParameter(8, true);
+		q.setParameter(9, "codeValue");
+		q.setParameter(10, "flag status");
+		q.setParameter(11, "knocked out");
 		
 		return q.getResultList();
 	}
