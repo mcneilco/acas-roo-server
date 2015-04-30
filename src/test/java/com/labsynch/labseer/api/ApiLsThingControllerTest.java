@@ -23,11 +23,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -379,6 +381,27 @@ public class ApiLsThingControllerTest {
         	Assert.assertEquals(parentCodeName+"-"+batchNo, lsThing.getCodeName());
         	batchNo++;
         }
+    }
+    
+    @Test
+    public void deleteLsThing() throws Exception {
+    	String parentCodeName = "PROT000004";
+        String json = this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/lsthings/default/default/"+parentCodeName)
+        		.contentType(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andReturn().getResponse().getContentAsString();
+        Assert.assertEquals("",json);
+    }
+    
+    @Test
+    public void deleteLsThingFail() throws Exception {
+    	String parentCodeName = "alkdsfngakjdsgn23894273429";
+        String json = this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/lsthings/default/default/"+parentCodeName)
+        		.contentType(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isNotFound())
+        		.andReturn().getResponse().getContentAsString();
+        Collection<ErrorMessage> errors = ErrorMessage.fromJsonArrayToErrorMessages(json);
+        Assert.assertEquals(1, errors.size());
     }
 
 }
