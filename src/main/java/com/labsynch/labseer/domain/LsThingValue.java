@@ -189,9 +189,101 @@ public class LsThingValue extends AbstractValue {
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
         EntityManager em = LsThingValue.entityManager();
-        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND date(o.dateValue) = CAST(:dateValue AS date) ", LsThingValue.class);
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND date(o.dateValue) = CAST(:dateValue AS date) ", LsThingValue.class);
         q.setParameter("lsKind", lsKind);
         q.setParameter("dateValue", dateValue);
+        return q;
+    }
+	public static TypedQuery<LsThingValue> findLsThingValuesByStringValueLike(
+			String stringValue) {
+		if (stringValue == null) throw new IllegalArgumentException("The stringValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.ignored IS false AND o.stringValue LIKE :stringValue ", LsThingValue.class);
+        q.setParameter("stringValue", stringValue);
+        return q;
+	}
+	
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndCodeValueLike(String lsKind, String codeValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        codeValue = codeValue.replace('*', '%');
+        if (codeValue.charAt(0) != '%') {
+            codeValue = "%" + codeValue;
+        }
+        if (codeValue.charAt(codeValue.length() - 1) != '%') {
+            codeValue = codeValue + "%";
+        }
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND LOWER(o.codeValue) LIKE LOWER(:codeValue)", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals(String lsKind, Date dateValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND o.dateValue >= :dateValue", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals(String lsKind, Date dateValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND o.dateValue <= :dateValue", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndNumericValueEquals(String lsKind, BigDecimal numericValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND o.numericValue = :numericValue", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals(String lsKind, BigDecimal numericValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND o.numericValue >= :numericValue", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals(String lsKind, BigDecimal numericValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND o.numericValue <= :numericValue", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndStringValueLike(String lsKind, String stringValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        stringValue = stringValue.replace('*', '%');
+        if (stringValue.charAt(0) != '%') {
+            stringValue = "%" + stringValue;
+        }
+        if (stringValue.charAt(stringValue.length() - 1) != '%') {
+            stringValue = stringValue + "%";
+        }
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND LOWER(o.stringValue) LIKE LOWER(:stringValue)", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
         return q;
     }
 }
