@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -179,7 +180,28 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		return codeTableList;	
 	}
 
-
+	@Override
+	public CodeTableDTO getOrCreateCodeTable(CodeTableDTO codeTable, Boolean createTypeKind){
+		CodeTableDTO newCodeTable = null;
+		try{
+			DDictValue dDictValue = DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(codeTable.getCodeType(), codeTable.getCodeKind(), codeTable.getCode()).getSingleResult();
+			newCodeTable = new CodeTableDTO(dDictValue);
+			logger.debug("Found the codeTable: " + newCodeTable.toJson());
+		}catch (EmptyResultDataAccessException e){
+			newCodeTable = saveCodeTableValue(codeTable, createTypeKind);
+		}
+		return newCodeTable;
+	}
+	
+	@Override
+	public List<CodeTableDTO> getOrCreateCodeTableArray(List<CodeTableDTO> codeTables, Boolean createTypeKind){
+		List<CodeTableDTO> newCodeTables = new ArrayList<CodeTableDTO>();
+		for (CodeTableDTO codeTable : codeTables){
+			CodeTableDTO newCodeTable = getOrCreateCodeTable(codeTable, createTypeKind);
+			newCodeTables.add(newCodeTable);
+		}
+		return newCodeTables;
+	}
 
 	@Override
 	public CodeTableDTO saveCodeTableValue(CodeTableDTO codeTableValue, Boolean createTypeAndKind) {

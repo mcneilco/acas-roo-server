@@ -26,6 +26,8 @@ public class CodeTableDTO {
 		this.setDisplayOrder(dDictVal.getDisplayOrder());
 		this.setDescription(dDictVal.getDescription());
 		this.setComments(dDictVal.getComments());
+		this.setCodeKind(dDictVal.getLsKind());
+		this.setCodeType(dDictVal.getLsType());
 	}
 
 	private String code;

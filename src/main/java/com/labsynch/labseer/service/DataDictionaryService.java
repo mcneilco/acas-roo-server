@@ -34,6 +34,12 @@ public interface DataDictionaryService {
 
 	List<CodeTableDTO> saveCodeTableValueArray(List<CodeTableDTO> codeTableDTOs, Boolean createTypeAndKind);
 
+	List<CodeTableDTO> getOrCreateCodeTableArray(List<CodeTableDTO> codeTables,
+			Boolean createTypeKind);
+
+	CodeTableDTO getOrCreateCodeTable(CodeTableDTO codeTable,
+			Boolean createTypeKind);
+
 
 
 
