@@ -262,7 +262,7 @@ public class ApiSetupController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		Boolean createTypeKind = true;
-		List<CodeTableDTO> savedCodeTableValues = dataDictionaryService.saveCodeTableValueArray(codeTableDTOs, createTypeKind);
+		List<CodeTableDTO> savedCodeTableValues = dataDictionaryService.getOrCreateCodeTableArray(codeTableDTOs, createTypeKind);
 		return new ResponseEntity<String>(CodeTableDTO.toJsonArray(savedCodeTableValues), headers, HttpStatus.CREATED);
 	}
 	
