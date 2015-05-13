@@ -5,7 +5,7 @@ RUN cd /src && \
 	mvn clean && \
 	mvn clean && \
 	mvn compile war:war && \
-	mv target/acas*.war /usr/local/tomcat/webapps
+	mv target/acas*.war /usr/local/tomcat/webapps/acas.war
 
 WORKDIR $CATALINA_HOME
 EXPOSE 8080
