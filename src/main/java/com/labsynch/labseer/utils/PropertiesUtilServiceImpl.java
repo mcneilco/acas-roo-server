@@ -142,4 +142,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 		return Boolean.parseBoolean(this.uniqueLsThingName);
 	}
 	
+	String enableSwagger;
+	
+	@Value("${enableSwagger}")
+	public void setEnableSwagger(String enableSwagger) {
+	    this.enableSwagger = enableSwagger;
+	}
+	
+	@Override
+	public boolean getEnableSwagger() {
+		return Boolean.parseBoolean(this.enableSwagger);
+	}
+	
 }
