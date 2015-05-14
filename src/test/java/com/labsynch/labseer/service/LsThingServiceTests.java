@@ -29,6 +29,7 @@ import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ThingKind;
 import com.labsynch.labseer.domain.ThingType;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -466,6 +467,23 @@ public class LsThingServiceTests {
 			Assert.assertEquals("THING-0"+num, lsThing.getCodeName());
 			num++;
 		}
+	}
+	
+	@Transactional
+	@Test
+	public void lsThingBrowserSearchTestWithQuotes() {
+		String query = "Ad 2";
+		logger.info("Searching with the query: "+ query);
+		Collection<LsThing> resultLsThings = lsThingService.findLsThingsByGenericMetaDataSearch(query);
+//		logger.info("Found: "+ resultLsThings.toString());
+		logger.info("Number of results: "+resultLsThings.size());
+		Assert.assertTrue(resultLsThings.size() > 1);
+		query = "\"Ad 2\"";
+		logger.info("Searching with the query: "+ query);
+		Collection<LsThing> resultLsThings2 = lsThingService.findLsThingsByGenericMetaDataSearch(query);
+//		logger.info("Found: "+ resultLsThings.toString());
+		logger.info("Number of results: "+resultLsThings2.size());
+		Assert.assertTrue(resultLsThings2.size() < resultLsThings.size());
 	}
 
 }

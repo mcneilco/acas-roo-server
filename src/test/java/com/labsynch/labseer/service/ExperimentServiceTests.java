@@ -710,4 +710,32 @@ public class ExperimentServiceTests {
 		logger.info("Time to delete "+ totalTime +" ms");
 		
 	}
+	
+	@Transactional
+	@Test
+	public void experimentBrowserSearchTest2() throws Exception{
+		String query = "EXPERIMENT 5";
+		logger.info("Searching with the query: "+ query);
+		Collection<Experiment> resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultExperiments.toString());
+		Assert.assertTrue(resultExperiments.size() > 0);
+		query = "\"EXPERIMENT 5\"";
+		logger.info("Searching with the query: "+ query);
+		Collection<Experiment> resultExperiments2 = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultExperiments2.toString());
+		Assert.assertTrue(resultExperiments2.size() > 0);
+		Assert.assertTrue(resultExperiments.size() != resultExperiments2.size());
+		
+		query = "EXPERIMENT 50";
+		logger.info("Searching with the query: "+ query);
+		resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultExperiments.toString());
+		Assert.assertTrue(resultExperiments.size() > 0);
+		query = "\"EXPERIMENT 50\"";
+		logger.info("Searching with the query: "+ query);
+		resultExperiments2 = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultExperiments2.toString());
+		Assert.assertTrue(resultExperiments2.size() > 0);
+		Assert.assertEquals(resultExperiments.iterator().next().getCodeName(),resultExperiments2.iterator().next().getCodeName());
+	}
 }
