@@ -115,6 +115,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		
 		
 		Experiment updatedExperiment = Experiment.update(jsonExperiment);
+		
 		if (jsonExperiment.getLsLabels() != null) {
 			for(ExperimentLabel experimentLabel : jsonExperiment.getLsLabels()){
 				logger.debug("Label in hand: " + experimentLabel.getLabelText());			

@@ -139,6 +139,10 @@ public class Experiment extends AbstractThing {
         } else {
             logger.info("No experiment labels to save");
         }
+        if (experiment.getProtocol().getId() != updatedExperiment.getProtocol().getId()){
+			logger.warn("Changing protocol of experiment "+experiment.getCodeName()+" from "+updatedExperiment.getProtocol().getCodeName()+" to "+experiment.getProtocol().getCodeName());
+			updatedExperiment.setProtocol(experiment.getProtocol());
+		}
         updatedExperiment.merge();
         return updatedExperiment;
     }

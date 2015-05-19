@@ -710,4 +710,21 @@ public class ExperimentServiceTests {
 		logger.info("Time to delete "+ totalTime +" ms");
 		
 	}
+	
+	@Test
+	@Transactional
+	@Rollback(value=false)
+	public void changeProtocol() throws Exception{
+		Experiment experiment  = Experiment.findExperiment(1007L);
+		Protocol newProtocol = Protocol.findProtocol(708326L);
+		Assert.assertFalse(experiment.getProtocol().getId() == newProtocol.getId());
+		Assert.assertFalse(experiment.getProtocol().getCodeName().equals(newProtocol.getCodeName()));
+//		logger.info(newProtocol.toJson());
+//		logger.info(experiment.toJson());
+		experiment.setProtocol(newProtocol);
+		Experiment updatedExperiment = experimentService.updateExperiment(experiment);
+//		logger.info(updatedExperiment.toJson());
+		Assert.assertTrue(updatedExperiment.getProtocol().getId() == newProtocol.getId());
+		Assert.assertTrue(updatedExperiment.getProtocol().getCodeName().equals(newProtocol.getCodeName()));
+	}
 }
