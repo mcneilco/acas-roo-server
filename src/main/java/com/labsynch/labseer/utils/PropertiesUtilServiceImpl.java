@@ -110,7 +110,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 
 	@Value("${autoCreateKinds}")
 	public void setAutoCreateKinds(String autoCreateKinds) {
-	    this.uniqueExperimentName = autoCreateKinds;
+	    this.autoCreateKinds = autoCreateKinds;
 	}
 	
 	@Override
