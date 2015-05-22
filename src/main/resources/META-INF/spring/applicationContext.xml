@@ -6,7 +6,9 @@
 		application context files in the form of ${propertyKey}. -->
     <context:property-placeholder ignore-unresolvable="true" location="classpath*:META-INF/spring/*.properties" order="1"/>
 
-	<context:property-placeholder location="file:${catalina.home}/conf.properties" order="2" ignore-unresolvable="true" />
+<!--
+	<context:property-placeholder location="file://${ACAS_HOME}/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" /> 
+-->
 
      
 <!--
