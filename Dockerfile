@@ -5,7 +5,6 @@ WORKDIR /src
 ENV CATALINA_HOME /usr/local/tomcat
 ENV PATH $CATALINA_HOME/bin:$PATH
 RUN 	mvn clean && \
-		mvn clean && \
 		mvn compile war:war && \
 		mv target/acas*.war $CATALINA_HOME/webapps/acas.war
 
