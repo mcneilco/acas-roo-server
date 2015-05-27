@@ -37,30 +37,38 @@ public class SecurityUtils {
 
 		String principalUserName = null;
 		String userDN = null;
-
+		
+		Author author = new Author();
 
 		if (principal instanceof LdapUserDetails) {
-			principalUserName = ((LdapUserDetails)principal).getUsername();
-			userDN =  ((LdapUserDetails)principal).getDn();
-
-			logger.info("user Name " + principalUserName);
-			logger.info("user userDN " + userDN);
-
+			LdapUserDetails ldapPrincipal = (LdapUserDetails) principal;
+			principalUserName = ldapPrincipal.getUsername();
+			logger.debug("username: " + principalUserName);
+			String dn = ldapPrincipal.getDn();
+			int beginIndex = dn.indexOf("cn=") + 3;
+			int endIndex = dn.indexOf(",");
+			String fullName = dn.substring(beginIndex, endIndex);
+			logger.debug("fullName: " + fullName);
+			String firstName = fullName.split(" ",2)[0];
+			String lastName = fullName.split(" ",2)[1];
+			author.setUserName(principalUserName);
+			author.setFirstName(firstName);
+			author.setLastName(lastName);
+			author.setEmailAddress(principalUserName);
+			author.setPassword(principalUserName);
+			author.persist();
 
 		} else {
 			principalUserName = ((User)principal).getUsername();
 			logger.info("not LDAP user Name " + principalUserName);
-
+			author.setUserName(principalUserName);
+			author.setFirstName(principalUserName);
+			author.setLastName(principalUserName);
+			author.setEmailAddress(principalUserName);
+			author.setPassword(principalUserName);
+			author.persist();
 		}
-
-
-		Author author = new Author();
-		author.setUserName(principalUserName);
-		author.setFirstName(principalUserName);
-		author.setLastName(principalUserName);
-		author.setEmailAddress(principalUserName);
-		author.setPassword(principalUserName);
-		author.persist();
+		
 
 		logger.info("just created new user in the database: " + author.toJson());
 
