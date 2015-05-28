@@ -49,6 +49,7 @@ import com.labsynch.labseer.dto.SELColOrderDTO;
 import com.labsynch.labseer.dto.StateValueCsvDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
+import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -171,7 +172,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Override
 	@Transactional
-	public Experiment saveLsExperiment(Experiment experiment) throws UniqueNameException{
+	public Experiment saveLsExperiment(Experiment experiment) throws UniqueNameException, NotFoundException{
 		logger.debug("incoming meta experiment: " + experiment.toJson());
 
 		//check if experiment with the same name exists
@@ -250,8 +251,13 @@ public class ExperimentServiceImpl implements ExperimentService {
 			for(AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
 				analysisGroup.getExperiments().add(newExperiment);
 				AnalysisGroup newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
-				analysisGroups.add(newAnalysisGroup);
-				logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
+				if (newAnalysisGroup != null){
+					analysisGroups.add(newAnalysisGroup);
+					logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
+				} else{		
+					logger.debug("the analysis group is NULL");
+					throw new NotFoundException("AnalysisGroup not found: ");
+				}
 			}
 			newExperiment.setAnalysisGroups(analysisGroups);
 		}

@@ -34,6 +34,7 @@ import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -91,7 +92,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 	
 	@Transactional
 	@Override
-	public AnalysisGroup saveLsAnalysisGroup(AnalysisGroup analysisGroup){
+	public AnalysisGroup saveLsAnalysisGroup(AnalysisGroup analysisGroup) throws NotFoundException{
 
 //		logger.debug("incoming meta analysisGroup: " + analysisGroup.toJson());
 		Date recordedDate = new Date();
@@ -118,9 +119,14 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 
 		} else {
 			newAnalysisGroup = AnalysisGroup.update(analysisGroup);
-			newAnalysisGroup.merge();
+			if (newAnalysisGroup != null){
+				newAnalysisGroup.merge();
+				treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);				
+			} else {
+				logger.info("analysis group not found");
+				throw new NotFoundException("AnalysisGroup not found: " + analysisGroup.getId());
+			}
 			
-			treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);
 
 		}
 

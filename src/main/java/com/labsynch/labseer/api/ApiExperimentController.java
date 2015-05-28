@@ -59,6 +59,7 @@ import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.SubjectStateValueDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
@@ -812,7 +813,22 @@ public class ApiExperimentController {
             error.setMessage("not unique experiment name");
             errors.add(error);
             errorsFound = true;
-        }
+        } catch (NotFoundException e) {
+            logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+//TODO: Fix this to do this logic lower in the code if possible. 
+// Assuming that we are unable to find the analysisgroups in the experiment
+//Want to tell the users all of the missing analysisgroups
+            Set<AnalysisGroup> analysisGroups = experiment.getAnalysisGroups();
+            for (AnalysisGroup analysisGroup : analysisGroups){
+            	if (analysisGroup.getId() != null && AnalysisGroup.findAnalysisGroup(analysisGroup.getId()) == null){
+                    ErrorMessage error = new ErrorMessage();
+                    error.setErrorLevel("error");
+                    error.setMessage("analysis group not found: " + analysisGroup.getId());
+                    errors.add(error);
+                    errorsFound = true;            		
+            	}
+            }
+		}
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
         } else {
