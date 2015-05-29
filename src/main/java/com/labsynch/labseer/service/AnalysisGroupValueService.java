@@ -45,5 +45,9 @@ public interface AnalysisGroupValueService {
 			AnalysisGroupState analysisGroupState, String lsType, String lsKind,
 			String value, String recordedBy);
 
+	public AnalysisGroupValue getAnalysisGroupValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind);
+
 	
 }

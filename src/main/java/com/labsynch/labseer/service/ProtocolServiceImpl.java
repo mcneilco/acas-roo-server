@@ -206,7 +206,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 						ProtocolValue updatedProtocolValue;
 						if (protocolValue.getId() == null){
 							updatedProtocolValue = new ProtocolValue(protocolValue);
-							updatedProtocolValue.setLsState(ProtocolState.findProtocolState(protocolState.getId()));
+							updatedProtocolValue.setLsState(updatedProtocolState);
 							updatedProtocolValue.persist();
 							updatedProtocolValues.add(updatedProtocolValue);
 						} else {

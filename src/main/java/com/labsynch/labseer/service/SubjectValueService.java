@@ -40,5 +40,8 @@ public interface SubjectValueService {
 
 	public Collection<SubjectValue> updateSubjectValues(
 			Collection<SubjectValue> subjectValues);
+
+	public SubjectValue getSubjectValue(String idOrCodeName, String stateType,
+			String stateKind, String valueType, String valueKind);
 	
 }
