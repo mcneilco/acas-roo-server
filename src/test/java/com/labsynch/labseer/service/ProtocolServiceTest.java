@@ -226,8 +226,28 @@ public class ProtocolServiceTest {
 		resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
 		logger.info("Found: "+ resultProtocols.toString());
 		Assert.assertNotNull(resultProtocols);
+		name = "\"FLIPR target A biochemical\"";
+		query = name;
+		logger.info("Searching with the query: "+ query);
+		resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultProtocols.toString());
+		Assert.assertNotNull(resultProtocols);
 	}
 	
+	@Transactional
+	@Test
+	public void protocolBrowserSearchTestWithQuotes() {
+		String query = "Target Y binding";
+		logger.info("Searching with the query: "+ query);
+		Collection<Protocol> resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultProtocols.toString());
+		Assert.assertTrue(resultProtocols.size() > 1);
+		query = "\"Target Y binding\"";
+		logger.info("Searching with the query: "+ query);
+		resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultProtocols.toString());
+		Assert.assertTrue(resultProtocols.size() == 1);
+	}
 	
 	@Transactional
 	@Test

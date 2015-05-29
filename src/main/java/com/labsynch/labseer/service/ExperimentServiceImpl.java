@@ -52,6 +52,7 @@ import com.labsynch.labseer.dto.ValueTypeKindDTO;
 import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -992,10 +993,10 @@ public class ExperimentServiceImpl implements ExperimentService {
 		HashSet<Long> experimentAllIdList = new HashSet<Long>();
 		Collection<Experiment> experimentList = new HashSet<Experiment>();
 		//Split the query up on spaces
-		String[] splitQuery = queryString.split("\\s+");
-		logger.debug("Number of search terms: " + splitQuery.length);
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
 		//Protection from searching * in a database with too many experiments:
-		if (splitQuery.length == 1 && splitQuery[0].equals("*")){
+		if (splitQuery.contains("*")){
 			logger.warn("Query for '*' detected. Determining if number of results is too many.");
 			int experimentCount = (int) Experiment.countExperiments();
 			logger.debug("Found "+experimentCount +" experiments.");
