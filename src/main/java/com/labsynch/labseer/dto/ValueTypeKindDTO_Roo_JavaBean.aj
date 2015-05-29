@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.dto;
 
+import com.labsynch.labseer.domain.ValueKind;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
 
 privileged aspect ValueTypeKindDTO_Roo_JavaBean {
@@ -29,6 +30,14 @@ privileged aspect ValueTypeKindDTO_Roo_JavaBean {
     
     public void ValueTypeKindDTO.setDisplayOrder(int displayOrder) {
         this.displayOrder = displayOrder;
+    }
+    
+    public ValueKind ValueTypeKindDTO.getValueKind() {
+        return this.valueKind;
+    }
+    
+    public void ValueTypeKindDTO.setValueKind(ValueKind valueKind) {
+        this.valueKind = valueKind;
     }
     
 }
