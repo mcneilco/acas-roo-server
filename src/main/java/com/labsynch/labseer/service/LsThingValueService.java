@@ -26,5 +26,8 @@ public interface LsThingValueService {
 	Collection<LsThingValue> updateLsThingValues(
 			Collection<LsThingValue> lsThingValues);
 
+	LsThingValue getLsThingValue(String idOrCodeName, String stateType,
+			String stateKind, String valueType, String valueKind);
+
 
 }

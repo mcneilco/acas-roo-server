@@ -261,4 +261,19 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 		}
 		return subjectValues;
 	}
+	
+	@Override
+	public SubjectValue getSubjectValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind) {
+		SubjectValue value = null;
+		try{
+			Long id = Subject.findSubjectsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			value = SubjectValue.findSubjectValuesBySubjectIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+		}catch (Exception e){
+			logger.debug("Caught error "+e.toString()+" trying to find a value.");
+			value = null;
+		}
+		return value;
+	}
 }

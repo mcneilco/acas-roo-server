@@ -22,6 +22,7 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.AbstractValue;
+import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
@@ -288,6 +289,21 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 			experimentValue = updateExperimentValue(experimentValue);
 		}
 		return experimentValues;
+	}
+	
+	@Override
+	public ExperimentValue getExperimentValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind) {
+		ExperimentValue value = null;
+		try{
+			Long id = Experiment.findExperimentsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			value = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+		}catch (Exception e){
+			logger.debug("Caught error "+e.toString()+" trying to find a value.");
+			value = null;
+		}
+		return value;
 	}
 
 }

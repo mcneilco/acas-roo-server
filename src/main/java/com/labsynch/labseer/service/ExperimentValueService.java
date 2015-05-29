@@ -41,5 +41,9 @@ public interface ExperimentValueService {
 
 	public Collection<ExperimentValue> updateExperimentValues(
 			Collection<ExperimentValue> experimentValues);
+
+	public ExperimentValue getExperimentValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind);
 	
 }

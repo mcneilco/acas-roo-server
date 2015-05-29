@@ -35,5 +35,9 @@ public interface TreatmentGroupValueService {
 
 	public Collection<TreatmentGroupValue> updateTreatmentGroupValues(
 			Collection<TreatmentGroupValue> treatmentGroupValues);
+
+	public TreatmentGroupValue getTreatmentGroupValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind);
 	
 }

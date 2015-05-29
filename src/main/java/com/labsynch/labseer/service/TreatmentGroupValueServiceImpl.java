@@ -234,5 +234,19 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 		return treatmentGroupValues;
 	}
 
+	@Override
+	public TreatmentGroupValue getTreatmentGroupValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind) {
+		TreatmentGroupValue value = null;
+		try{
+			Long id = TreatmentGroup.findTreatmentGroupsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			value = TreatmentGroupValue.findTreatmentGroupValuesByTreatmentGroupIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+		}catch (Exception e){
+			logger.debug("Caught error "+e.toString()+" trying to find a value.");
+			value = null;
+		}
+		return value;
+	}
 
 }
