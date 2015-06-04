@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import javax.persistence.OptimisticLockException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,14 +123,51 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 		} else {
 			newAnalysisGroup = AnalysisGroup.update(analysisGroup);
 			if (newAnalysisGroup != null){
-				newAnalysisGroup.merge();
-				treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);				
+				try {
+					newAnalysisGroup.merge();
+					treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);				
+				} catch (OptimisticLockException e){
+					logger.info(e.toString());
+					try {
+						TimeUnit.SECONDS.sleep(10);
+						newAnalysisGroup = AnalysisGroup.update(analysisGroup);
+						newAnalysisGroup.merge();
+						treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);				
+					} catch (OptimisticLockException e2){
+						logger.info(e2.toString());
+						try {
+							TimeUnit.SECONDS.sleep(30);
+							newAnalysisGroup = AnalysisGroup.update(analysisGroup);
+							newAnalysisGroup.merge();
+							treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);				
+						} catch (OptimisticLockException e3){
+							logger.info(e3.toString());
+							try {
+								TimeUnit.SECONDS.sleep(90);
+								newAnalysisGroup = AnalysisGroup.update(analysisGroup);
+								newAnalysisGroup.merge();
+								treatmentGroupService.saveLsTreatmentGroups( newAnalysisGroup,  analysisGroup.getTreatmentGroups(), recordedDate);				
+							} catch (OptimisticLockException e4){
+								logger.info(e3.toString());
+								throw new OptimisticLockException(e4);
+							} catch (InterruptedException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							throw new OptimisticLockException(e3);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					} catch (InterruptedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
 			} else {
 				logger.info("analysis group not found");
 				throw new NotFoundException("AnalysisGroup not found: " + analysisGroup.getId());
-			}
-			
-
+			}			
 		}
 
 		return newAnalysisGroup;
