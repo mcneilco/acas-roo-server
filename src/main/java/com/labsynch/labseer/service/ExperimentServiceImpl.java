@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -205,15 +206,13 @@ public class ExperimentServiceImpl implements ExperimentService {
 			newExperiment.setCodeName(autoLabelService.getExperimentCodeName());
 		}
 		newExperiment.persist();
-		logger.debug("persisted the newExperiment: " + newExperiment.toJson());
-
+//		newExperiment.flush();
 
 		if (experiment.getLsLabels() != null) {
 			Set<ExperimentLabel> lsLabels = new HashSet<ExperimentLabel>();
 			for(ExperimentLabel experimentLabel : experiment.getLsLabels()){
 				ExperimentLabel newExperimentLabel = new ExperimentLabel(experimentLabel);
 				newExperimentLabel.setExperiment(newExperiment);
-				logger.debug("here is the newExperimentLabel before save: " + newExperimentLabel.toJson());
 				newExperimentLabel.persist();
 				lsLabels.add(newExperimentLabel);
 			}
@@ -227,17 +226,13 @@ public class ExperimentServiceImpl implements ExperimentService {
 			for(ExperimentState experimentState : experiment.getLsStates()){
 				ExperimentState newExperimentState = new ExperimentState(experimentState);
 				newExperimentState.setExperiment(newExperiment);
-				logger.debug("here is the newExperimentState before save: " + newExperimentState.toJson());
 				newExperimentState.persist();
-				logger.debug("persisted the newExperimentState: " + newExperimentState.toJson());
 				if (experimentState.getLsValues() != null){
 					Set<ExperimentValue> lsValues = new HashSet<ExperimentValue>();
 					for(ExperimentValue experimentValue : experimentState.getLsValues()){
-						logger.debug("experimentValue: " + experimentValue.toJson());
 						experimentValue.setLsState(newExperimentState);
 						experimentValue.persist();
 						lsValues.add(experimentValue);
-						logger.debug("persisted the experimentValue: " + experimentValue.toJson());
 					}	
 					newExperimentState.setLsValues(lsValues);
 				} else {
@@ -247,21 +242,64 @@ public class ExperimentServiceImpl implements ExperimentService {
 			}
 			newExperiment.setLsStates(lsStates);
 		}
-		if(experiment.getAnalysisGroups() != null){
-			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
-			for(AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
-				analysisGroup.getExperiments().add(newExperiment);
-				AnalysisGroup newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
-				if (newAnalysisGroup != null){
-					analysisGroups.add(newAnalysisGroup);
-					logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
-				} else{		
-					logger.debug("the analysis group is NULL");
-					throw new NotFoundException("AnalysisGroup not found: ");
-				}
-			}
-			newExperiment.setAnalysisGroups(analysisGroups);
-		}
+		
+//		if(experiment.getAnalysisGroups() != null){
+//			Set<AnalysisGroup> inputAnalysisGroups = new HashSet<AnalysisGroup>();
+//			for(AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
+//				inputAnalysisGroups.add(analysisGroup);
+//			}
+//
+//			for(AnalysisGroup analysisGroup : inputAnalysisGroups){
+//				analysisGroup.getExperiments().add(newExperiment);
+//				analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+//			}
+				//			Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
+//			for(AnalysisGroup analysisGroup : inputAnalysisGroups){
+//				analysisGroup.getExperiments().add(newExperiment);
+//				AnalysisGroup newAnalysisGroup = null;
+//				try {
+//					newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+//					
+//				} catch (Exception e){
+//					logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//					logger.error("Hit an error with Analysis Group: " + analysisGroup.getId());
+//					logger.error("Problem AG: " + AnalysisGroup.findAnalysisGroup(analysisGroup.getId()).getId());
+//					logger.error(e.toString());
+//					
+//					try {
+//						TimeUnit.SECONDS.sleep(5);
+//						newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+//
+//					}  catch (Exception e2){
+//						
+//						logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//						logger.error("Hit an error with Analysis Group: " + analysisGroup.getId());
+//						logger.error("Problem AG: " + AnalysisGroup.findAnalysisGroup(analysisGroup.getId()).getId());
+//						logger.error(e2.toString());
+//						
+//						try {
+//							TimeUnit.SECONDS.sleep(10);
+//							newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+//
+//						}  catch (Exception e3){
+//							
+//							logger.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+//							logger.error("Hit an error with Analysis Group: " + analysisGroup.getId());
+//							logger.error("Problem AG: " + AnalysisGroup.findAnalysisGroup(analysisGroup.getId()).getId());
+//							logger.error(e3.toString());
+//						}
+//					}
+//				}
+//				if (newAnalysisGroup != null){
+//					analysisGroups.add(newAnalysisGroup);
+////					logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
+//				} else{		
+//					logger.debug("the analysis group is NULL");
+//					throw new NotFoundException("AnalysisGroup not found: " + analysisGroup.getId());
+//				}
+//			}
+//			newExperiment.setAnalysisGroups(analysisGroups);
+//		}
 
 		return newExperiment;
 	}

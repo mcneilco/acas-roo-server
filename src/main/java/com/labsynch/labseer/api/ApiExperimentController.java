@@ -1,11 +1,10 @@
 package com.labsynch.labseer.api;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +73,7 @@ import flexjson.JSONDeserializer;
 
 @Controller
 @RequestMapping("api/v1/experiments")
-@Transactional
+//@Transactional
 //@RooWebJson(jsonObject = Experiment.class)
 public class ApiExperimentController {
 	private static final Logger logger = LoggerFactory.getLogger(ApiExperimentController.class);
@@ -795,7 +793,7 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.OK);
     }
 
-	@Transactional
+//	@Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		Experiment experiment = Experiment.fromJsonToExperiment(json);
@@ -805,16 +803,57 @@ public class ApiExperimentController {
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
         try {
-            experiment = experimentService.saveLsExperiment(experiment);
+			Set<AnalysisGroup> inputAnalysisGroups = new HashSet<AnalysisGroup>();
+			for(AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
+				inputAnalysisGroups.add(analysisGroup);					
+			}
+        	
+//			Set<Long> hashAnalysisGroupIds = new HashSet<Long>();
+//			for(AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
+//				hashAnalysisGroupIds.add(analysisGroup.getId());
+//			}
+//        	
+//		    List<Long> analysisGroupIds = new ArrayList<Long>(hashAnalysisGroupIds.size());
+//			for(Long analysisGroupId : hashAnalysisGroupIds){
+//				analysisGroupIds.add(analysisGroupId);
+//			}
+//			Collections.sort(analysisGroupIds);
+//        	
+//			List<AnalysisGroup> inputAnalysisGroups = new ArrayList<AnalysisGroup>();
+//			for(Long analysisGroupId : analysisGroupIds){
+//				inputAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(analysisGroupId));
+//			}
+			
+			Experiment savedExperiment = experimentService.saveLsExperiment(experiment);
+
+			AnalysisGroup savedAnalysisGroup = null;
+			int i = 0;
+			for(AnalysisGroup analysisGroup : inputAnalysisGroups){
+				try {
+					analysisGroup.getExperiments().add(savedExperiment);
+					savedAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+					if ( i % propertiesUtilService.getBatchSize() == 0 ) { 
+						savedAnalysisGroup.flush();
+						savedAnalysisGroup.clear();
+					}
+					i++;
+				} catch (Exception e){
+					logger.error("Error saving the analysisGroup -------" + e.toString());
+					throw new RuntimeException("Error saving the analysisGroup" + e);
+				}
+			}
+       				
+//			experiment.setAnalysisGroups(inputAnalysisGroups);
+                
         } catch (UniqueNameException e) {
-            logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+			logger.error("----from the controller UniqueNameException ----" + e.getMessage().toString() + " whole message  " + e.toString());
             ErrorMessage error = new ErrorMessage();
             error.setErrorLevel("error");
             error.setMessage("not unique experiment name");
             errors.add(error);
             errorsFound = true;
         } catch (NotFoundException e) {
-            logger.error("----from the controller----" + e.getMessage().toString() + " whole message  " + e.toString());
+			logger.error("----from the controller NotFoundException ----" + e.getMessage().toString() + " whole message  " + e.toString());
 //TODO: Fix this to do this logic lower in the code if possible. 
 // Assuming that we are unable to find the analysisgroups in the experiment
 //Want to tell the users all of the missing analysisgroups
