@@ -327,7 +327,7 @@ public class ExperimentServiceTests2 {
 	@Test
 	@Transactional
 	public void getCompoundDataViaGeneIdQuery(){
-		String json = "{\"advancedFilter\":\"\",\"advancedFilterSQL\":null,\"batchCodeList\":[],\"booleanFilter\":\"and\",\"experimentCodeList\":[\"PROT-00000001\",\"EXPT-00000001\"],\"searchFilters\":[]}";
+		String json = "{\"advancedFilter\":\"\",\"advancedFilterSQL\":null,\"batchCodeList\":[],\"booleanFilter\":\"and\",\"experimentCodeList\":[\"PROT-00000003\",\"EXPT-00000003\"],\"searchFilters\":[]}";
 	    ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
 		List<AnalysisGroupValueDTO> agData = experimentService.getFilteredAGData(searchRequest,true);
 		logger.info(AnalysisGroupValueDTO.toJsonArray(agData));

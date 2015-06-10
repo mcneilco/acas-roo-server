@@ -43,7 +43,14 @@ public class AnalysisGroupValueDTO {
 			String stringValue, 
 			BigDecimal numericValue,
 			String testedLot,
-			String geneId){
+			String geneId,
+			String resultUnit,
+			String operator,
+			BigDecimal uncertainty,
+			String uncertaintyUnit,
+			Double testedConcentration,
+			String testedConcentrationUnit
+			){
 
 		this.id = id;		
 		this.experimentId = experimentId;
@@ -52,7 +59,13 @@ public class AnalysisGroupValueDTO {
 		this.lsType = lsType;
 		this.lsKind = lsKind;
 		this.testedLot = testedLot;
-
+		this.resultUnit = resultUnit;
+		this.operator = operator;
+		if (testedConcentration != null) this.testedConcentration = testedConcentration.toString();
+		this.testedConcentrationUnit = testedConcentrationUnit;
+		if (uncertainty != null) this.uncertainty = uncertainty.toString();
+		this.uncertaintyUnit = uncertaintyUnit;
+		
 		if (testedLot.startsWith("GENE")){
 			this.testedLot = geneId;
 //			Long lsThingId = LsThing.findLsThingsByCodeNameEquals(testedLot).getSingleResult().getId();
@@ -75,7 +88,9 @@ public class AnalysisGroupValueDTO {
 				this.result=stringValue;				
 			} else if (numericValue != null) {
 				this.result = String.valueOf(numericValue.doubleValue());
-			}			
+			} else if (stringValue != null) {
+				this.result = stringValue;
+			}
 		}
 
 //		List<ExperimentLabel> experimentNames = ExperimentLabel.findExperimentPreferredName(experimentId).getResultList();
@@ -109,6 +124,12 @@ public class AnalysisGroupValueDTO {
 	//	private String stringValue;
 	//	private BigDecimal numericValue;
 	private String result;
+	private String resultUnit;
+	private String operator;
+	private String testedConcentration;
+	private String testedConcentrationUnit;
+	private String uncertainty;
+	private String uncertaintyUnit;
 
 
 	public static String[] getColumns(){
@@ -121,7 +142,13 @@ public class AnalysisGroupValueDTO {
 				"lsType",
 				"lsKind",
 				"testedLot",
-				"result"};
+				"result",
+				"resultUnit",
+				"operator",
+				"testedConcentration",
+				"testedConcentrationUnit",
+				"uncertainty",
+				"uncertaintyUnit"};
 
 		return headerColumns;
 
@@ -129,6 +156,12 @@ public class AnalysisGroupValueDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),

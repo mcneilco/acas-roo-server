@@ -79,4 +79,52 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
         this.result = result;
     }
     
+    public String AnalysisGroupValueDTO.getResultUnit() {
+        return this.resultUnit;
+    }
+    
+    public void AnalysisGroupValueDTO.setResultUnit(String resultUnit) {
+        this.resultUnit = resultUnit;
+    }
+    
+    public String AnalysisGroupValueDTO.getOperator() {
+        return this.operator;
+    }
+    
+    public void AnalysisGroupValueDTO.setOperator(String operator) {
+        this.operator = operator;
+    }
+    
+    public String AnalysisGroupValueDTO.getTestedConcentration() {
+        return this.testedConcentration;
+    }
+    
+    public void AnalysisGroupValueDTO.setTestedConcentration(String testedConcentration) {
+        this.testedConcentration = testedConcentration;
+    }
+    
+    public String AnalysisGroupValueDTO.getTestedConcentrationUnit() {
+        return this.testedConcentrationUnit;
+    }
+    
+    public void AnalysisGroupValueDTO.setTestedConcentrationUnit(String testedConcentrationUnit) {
+        this.testedConcentrationUnit = testedConcentrationUnit;
+    }
+    
+    public String AnalysisGroupValueDTO.getUncertainty() {
+        return this.uncertainty;
+    }
+    
+    public void AnalysisGroupValueDTO.setUncertainty(String uncertainty) {
+        this.uncertainty = uncertainty;
+    }
+    
+    public String AnalysisGroupValueDTO.getUncertaintyUnit() {
+        return this.uncertaintyUnit;
+    }
+    
+    public void AnalysisGroupValueDTO.setUncertaintyUnit(String uncertaintyUnit) {
+        this.uncertaintyUnit = uncertaintyUnit;
+    }
+    
 }
