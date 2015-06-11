@@ -118,7 +118,7 @@ public class AnalysisGroup extends AbstractThing {
         if(analysisGroup.getLsTransaction() != null) updatedAnalysisGroup.setLsTransaction(analysisGroup.getLsTransaction());
         if(analysisGroup.getModifiedBy() != null) updatedAnalysisGroup.setModifiedBy(analysisGroup.getModifiedBy());
         updatedAnalysisGroup.setModifiedDate(new Date());
-        if(analysisGroup.getRecordedBy() != null) updatedAnalysisGroup.setCodeName(analysisGroup.getRecordedBy());
+        if(analysisGroup.getCodeName() != null) updatedAnalysisGroup.setCodeName(analysisGroup.getCodeName());
         if(analysisGroup.getLsKind() != null) updatedAnalysisGroup.setLsKind(analysisGroup.getLsKind());
         if(analysisGroup.getLsType() != null) updatedAnalysisGroup.setLsType(analysisGroup.getLsType());
         for (Experiment experiment : analysisGroup.getExperiments()) {
