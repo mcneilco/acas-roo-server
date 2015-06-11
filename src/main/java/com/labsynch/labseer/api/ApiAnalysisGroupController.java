@@ -35,6 +35,7 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentStateService;
@@ -171,7 +172,13 @@ public class ApiAnalysisGroupController {
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
     	AnalysisGroup analysisGroup = AnalysisGroup.fromJsonToAnalysisGroup(json);
-        AnalysisGroup newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+        AnalysisGroup newAnalysisGroup = null;
+		try {
+			newAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+		} catch (NotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(newAnalysisGroup.toJson(), headers, HttpStatus.CREATED);
@@ -181,7 +188,12 @@ public class ApiAnalysisGroupController {
     public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
 		Collection<AnalysisGroup> analysisGroups = AnalysisGroup.fromJsonArrayToAnalysisGroups(json);
         for (AnalysisGroup analysisGroup: analysisGroups) {
-        	analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+        	try {
+				analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+			} catch (NotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
