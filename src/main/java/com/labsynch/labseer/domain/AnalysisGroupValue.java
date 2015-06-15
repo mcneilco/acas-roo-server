@@ -314,7 +314,8 @@ public class AnalysisGroupValue extends AbstractValue {
 		logger.debug("size for batchCodeList: " + batchCodeList.size());
 		logger.debug("size for experimentCodeList: " + experimentCodeList.size());
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
-		+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
+		+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.fileValue as fileValue, " 
 				+ "agv2.codeValue AS testedLot "
 				+ ", agv2.codeValue as geneId  " 
 //				+ ", tl.labelText as geneId  " 
@@ -345,7 +346,8 @@ public class AnalysisGroupValue extends AbstractValue {
 		logger.debug("size for batchCodeList: " + batchCodeList.size());
 		logger.debug("size for experimentCodeList: " + experimentCodeList.size());
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
-		+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
+		+ "agv.lsType as lsType, agv.lsKind as lsKind, " 
+				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.fileValue as fileValue, " 
 				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  " 
 				+ ", agv.unitKind as resultUnit "
 				+ ", agv.operatorKind as operator "
@@ -396,7 +398,7 @@ public class AnalysisGroupValue extends AbstractValue {
 	
 	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOByExperiments(Set<java.lang.String> experimentCodeList, boolean publicData) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
-	+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
+	+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.fileValue as fileValue, " 
 				+ "agv2.codeValue AS testedLot, tl.labelText as geneId " + " ) FROM AnalysisGroup ag, LsThing thing " 
 	+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
 				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 

@@ -42,6 +42,8 @@ public class AnalysisGroupValueDTO {
 			String lsKind,
 			String stringValue, 
 			BigDecimal numericValue,
+			String codeValue,
+			String fileValue,
 			String testedLot,
 			String geneId,
 			String resultUnit,
@@ -90,6 +92,10 @@ public class AnalysisGroupValueDTO {
 				this.result = String.valueOf(numericValue.doubleValue());
 			} else if (stringValue != null) {
 				this.result = stringValue;
+			} else if (lsType.equals("codeValue")){
+				this.result=codeValue;
+			} else if (lsType.equals("inlineFileValue")){
+				this.result=fileValue;
 			}
 		}
 
