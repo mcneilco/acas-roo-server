@@ -130,8 +130,14 @@ public class LsThingServiceImpl implements LsThingService {
 				error.setErrorMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
-			} else {
-				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+			}else {
+				try{
+					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
+					request.setPreferredName(codeNameMatch.getCodeName());
+					request.setReferenceName(codeNameMatch.getCodeName());
+				}catch (EmptyResultDataAccessException e){
+					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				}
 			}
 		}
 		responseOutput.setResults(requests);
@@ -164,7 +170,13 @@ public class LsThingServiceImpl implements LsThingService {
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
-				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				try{
+					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
+					request.setPreferredName(codeNameMatch.getCodeName());
+					request.setReferenceName(codeNameMatch.getCodeName());
+				}catch (EmptyResultDataAccessException e){
+					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				}
 			}
 		}
 		responseOutput.setResults(requests);
