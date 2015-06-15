@@ -81,8 +81,8 @@ public class ApiLsThingController {
     public ResponseEntity<java.lang.String> getCodeNameFromName(@RequestBody String json, 
     		@RequestParam(value = "thingType", required = true) String thingType, 
     		@RequestParam(value = "thingKind", required = true) String thingKind, 
-    		@RequestParam(value = "labelType", required = false) String labelType, 
-    		@RequestParam(value = "labelKind", required = false) String labelKind) {
+    		@RequestParam(value = "labelType", required = true) String labelType, 
+    		@RequestParam(value = "labelKind", required = true) String labelKind) {
     	PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);
         logger.info("getCodeNameFromNameRequest incoming json: " + requestDTO.toJson());
         PreferredNameResultsDTO results = lsThingService.getCodeNameFromName(thingType, thingKind, labelType, labelKind, requestDTO);

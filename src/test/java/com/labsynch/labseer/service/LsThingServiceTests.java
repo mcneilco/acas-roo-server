@@ -33,6 +33,7 @@ import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ThingKind;
 import com.labsynch.labseer.domain.ThingType;
 import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -484,6 +485,27 @@ public class LsThingServiceTests {
 //		logger.info("Found: "+ resultLsThings.toString());
 		logger.info("Number of results: "+resultLsThings2.size());
 		Assert.assertTrue(resultLsThings2.size() < resultLsThings.size());
+	}
+	
+	@Test
+	public void getCodeNameFromCodeNameRequeset() {
+		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
+		Collection<PreferredNameDTO> requests = new HashSet<PreferredNameDTO>();
+		String codeName="LSM000001";
+		requests.add(new PreferredNameDTO(codeName, null, null));
+		requests.add(new PreferredNameDTO("NOT-A-CODE-NAME", null, null));
+		requestDTO.setRequests(requests);
+        PreferredNameResultsDTO results = lsThingService.getCodeNameFromName("parent", "linker small molecule", "codeName", "codeName", requestDTO);
+        Assert.assertEquals(2, results.getResults().size());
+        for (PreferredNameDTO result : results.getResults()){
+        	if (result.getRequestName().equals(codeName)){
+        		Assert.assertEquals(codeName, result.getPreferredName());
+        		Assert.assertEquals(codeName, result.getReferenceName());
+        	}else {
+        		Assert.assertEquals("", result.getPreferredName());
+        		Assert.assertEquals("", result.getReferenceName());
+        	}
+        }
 	}
 
 }
