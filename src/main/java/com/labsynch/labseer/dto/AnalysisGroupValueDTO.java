@@ -34,7 +34,8 @@ public class AnalysisGroupValueDTO {
 	
 	
 	public AnalysisGroupValueDTO(
-			Long id, 
+			Long id,
+			Long protocolId,
 			Long experimentId, 
 			String codeName, 
 			String prefName,
@@ -54,7 +55,8 @@ public class AnalysisGroupValueDTO {
 			String testedConcentrationUnit
 			){
 
-		this.id = id;		
+		this.id = id;
+		this.protocolId = protocolId;
 		this.experimentId = experimentId;
 		//		this.codeName = codeName;
 		this.experimentCodeName = codeName;
@@ -114,7 +116,6 @@ public class AnalysisGroupValueDTO {
 
 //		Protocol protocol = Protocol.findProtocol(Experiment.findExperiment(experimentId).getProtocol().getId());
 //		this.protocolId = protocol.getId();
-		this.protocolId = 0L;
 
 	}
 
