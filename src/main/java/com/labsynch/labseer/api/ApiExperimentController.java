@@ -802,6 +802,7 @@ public class ApiExperimentController {
         headers.add("Content-Type", "application/json");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
+        Experiment savedExperiment = null;
         try {
 			Set<AnalysisGroup> inputAnalysisGroups = new HashSet<AnalysisGroup>();
 			for(AnalysisGroup analysisGroup : experiment.getAnalysisGroups()){
@@ -824,7 +825,7 @@ public class ApiExperimentController {
 //				inputAnalysisGroups.add(AnalysisGroup.findAnalysisGroup(analysisGroupId));
 //			}
 			
-			Experiment savedExperiment = experimentService.saveLsExperiment(experiment);
+			savedExperiment = experimentService.saveLsExperiment(experiment);
 
 			AnalysisGroup savedAnalysisGroup = null;
 			int i = 0;
@@ -871,7 +872,7 @@ public class ApiExperimentController {
         if (errorsFound) {
             return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
         } else {
-            return new ResponseEntity<String>(experiment.toJson(), headers, HttpStatus.CREATED);
+			return new ResponseEntity<String>(savedExperiment.toJson(), headers, HttpStatus.CREATED);
         }
     }
 	
