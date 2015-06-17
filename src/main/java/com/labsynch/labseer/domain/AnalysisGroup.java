@@ -129,6 +129,7 @@ public class AnalysisGroup extends AbstractThing {
 		} else {
     		logger.error("DID not find the requested analysis group " + analysisGroup.getId() );
     		return null;
+		}
     }
 
     public String toFullJson() {
