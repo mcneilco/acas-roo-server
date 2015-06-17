@@ -191,7 +191,7 @@ public class ApiAnalysisGroupController {
 		Collection<AnalysisGroup> savedAnalysisGroups = new HashSet<AnalysisGroup>();
         for (AnalysisGroup analysisGroup: analysisGroups) {
         	try {
-				analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+				AnalysisGroup savedAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
 				savedAnalysisGroups.add(savedAnalysisGroup);
 			} catch (NotFoundException e) {
 				// TODO Auto-generated catch block

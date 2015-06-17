@@ -198,9 +198,6 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 		@Transactional
 		public AnalysisGroup updateLsAnalysisGroup(AnalysisGroup analysisGroup){
 
-			logger.debug("incoming meta analysisGroup to update: " + analysisGroup.toJson());
-			AnalysisGroup updatedAnalysisGroup = AnalysisGroup.update(analysisGroup);
-
 //		logger.debug("incoming meta analysisGroup to update: " + analysisGroup.toJson());
 		AnalysisGroup updatedAnalysisGroup = AnalysisGroup.update(analysisGroup);
 
@@ -241,30 +238,6 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 						} else {
 							AnalysisGroupValue updatedAnalysisGroupValue = AnalysisGroupValue.update(analysisGroupValue);
 						}
-
-			if (analysisGroup.getLsStates() != null){
-				for(AnalysisGroupState analysisGroupState : analysisGroup.getLsStates()){
-					if (analysisGroupState.getId() == null){
-						AnalysisGroupState newAnalysisGroupState = new AnalysisGroupState(analysisGroupState);
-						newAnalysisGroupState.setAnalysisGroup(updatedAnalysisGroup);
-						if (newAnalysisGroupState.getRecordedDate() == null) {newAnalysisGroupState.setRecordedDate(new Date());}		
-						if (newAnalysisGroupState.getRecordedBy() == null) { newAnalysisGroupState.setRecordedBy(updatedAnalysisGroup.getRecordedBy()); }
-						newAnalysisGroupState.persist();
-						logger.debug("persisted the newAnalysisGroupState: " + newAnalysisGroupState.toJson());					
-					} else {
-						AnalysisGroupState updatedAnalysisGroupState = AnalysisGroupState.update(analysisGroupState);
-					}
-					if (analysisGroupState.getLsValues() != null){
-						for(AnalysisGroupValue analysisGroupValue : analysisGroupState.getLsValues()){
-							if (analysisGroupValue.getId() == null){
-								if (analysisGroupValue.getRecordedDate() == null) {analysisGroupValue.setRecordedDate(new Date());}
-								analysisGroupValue.setLsState(AnalysisGroupState.findAnalysisGroupState(updatedAnalysisGroupState));
-								analysisGroupValue.persist();
-								logger.debug("persisted the analysisGroupValue: " + analysisGroupValue.toJson());							
-							} else {
-								AnalysisGroupValue updatedAnalysisGroupValue = AnalysisGroupValue.update(analysisGroupValue);
-							}
-
 						}				
 					}
 				}		
