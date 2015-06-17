@@ -201,18 +201,46 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			logger.debug("incoming meta analysisGroup to update: " + analysisGroup.toJson());
 			AnalysisGroup updatedAnalysisGroup = AnalysisGroup.update(analysisGroup);
 
-			if (analysisGroup.getLsLabels() != null) {
-				for(AnalysisGroupLabel analysisGroupLabel : analysisGroup.getLsLabels()){
-					if (analysisGroupLabel.getId() == null){
-						AnalysisGroupLabel newAnalysisGroupLabel = new AnalysisGroupLabel(analysisGroupLabel);
-						newAnalysisGroupLabel.setAnalysisGroup(updatedAnalysisGroup);
-						newAnalysisGroupLabel.persist();
-					} else {
-						AnalysisGroupLabel updatedAnalysisGroupLabel = AnalysisGroupLabel.update(analysisGroupLabel);
-					}
-				}			
-			} 
+//		logger.debug("incoming meta analysisGroup to update: " + analysisGroup.toJson());
+		AnalysisGroup updatedAnalysisGroup = AnalysisGroup.update(analysisGroup);
 
+		if (analysisGroup.getLsLabels() != null) {
+			for(AnalysisGroupLabel analysisGroupLabel : analysisGroup.getLsLabels()){
+				if (analysisGroupLabel.getId() == null){
+					AnalysisGroupLabel newAnalysisGroupLabel = new AnalysisGroupLabel(analysisGroupLabel);
+					newAnalysisGroupLabel.setAnalysisGroup(updatedAnalysisGroup);
+					newAnalysisGroupLabel.persist();
+				} else {
+					AnalysisGroupLabel updatedAnalysisGroupLabel = AnalysisGroupLabel.update(analysisGroupLabel);
+				}
+			}			
+		} 
+		
+		
+		if (analysisGroup.getLsStates() != null){
+			for(AnalysisGroupState analysisGroupState : analysisGroup.getLsStates()){
+				AnalysisGroupState updatedAnalysisGroupState;
+				if (analysisGroupState.getId() == null){
+					AnalysisGroupState newAnalysisGroupState = new AnalysisGroupState(analysisGroupState);
+					newAnalysisGroupState.setAnalysisGroup(updatedAnalysisGroup);
+					if (newAnalysisGroupState.getRecordedDate() == null) {newAnalysisGroupState.setRecordedDate(new Date());}		
+					if (newAnalysisGroupState.getRecordedBy() == null) { newAnalysisGroupState.setRecordedBy(updatedAnalysisGroup.getRecordedBy()); }
+					newAnalysisGroupState.persist();
+					updatedAnalysisGroupState = newAnalysisGroupState;
+//					logger.debug("persisted the newAnalysisGroupState: " + newAnalysisGroupState.toJson());					
+				} else {
+					updatedAnalysisGroupState = AnalysisGroupState.update(analysisGroupState);
+				}
+				if (analysisGroupState.getLsValues() != null){
+					for(AnalysisGroupValue analysisGroupValue : analysisGroupState.getLsValues()){
+						if (analysisGroupValue.getId() == null){
+							if (analysisGroupValue.getRecordedDate() == null) {analysisGroupValue.setRecordedDate(new Date());}
+							analysisGroupValue.setLsState(updatedAnalysisGroupState);
+							analysisGroupValue.persist();
+//							logger.debug("persisted the analysisGroupValue: " + analysisGroupValue.toJson());							
+						} else {
+							AnalysisGroupValue updatedAnalysisGroupValue = AnalysisGroupValue.update(analysisGroupValue);
+						}
 
 			if (analysisGroup.getLsStates() != null){
 				for(AnalysisGroupState analysisGroupState : analysisGroup.getLsStates()){
@@ -230,7 +258,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 						for(AnalysisGroupValue analysisGroupValue : analysisGroupState.getLsValues()){
 							if (analysisGroupValue.getId() == null){
 								if (analysisGroupValue.getRecordedDate() == null) {analysisGroupValue.setRecordedDate(new Date());}
-								analysisGroupValue.setLsState(AnalysisGroupState.findAnalysisGroupState(analysisGroupState.getId()));
+								analysisGroupValue.setLsState(AnalysisGroupState.findAnalysisGroupState(updatedAnalysisGroupState));
 								analysisGroupValue.persist();
 								logger.debug("persisted the analysisGroupValue: " + analysisGroupValue.toJson());							
 							} else {

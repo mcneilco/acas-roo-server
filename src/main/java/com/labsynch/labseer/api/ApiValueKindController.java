@@ -1,6 +1,5 @@
 package com.labsynch.labseer.api;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -13,25 +12,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 
 import com.labsynch.labseer.domain.ValueKind;
 import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
 
 @Transactional
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/valuekinds")
 @Controller
 
 public class ApiValueKindController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiValueKindController.class);
 
-	@RequestMapping(value = "/valuekinds/getOrCreate/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@RequestMapping(value = "/getOrCreate/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> getOrCreateValueKinds(@RequestBody String json ){
 		Collection<ValueTypeKindDTO> valueTypeKindDTOs = ValueTypeKindDTO.fromJsonArrayToValueTypeKindDTO(json);
 		Collection<ValueKind> valueKinds = new HashSet<ValueKind>();
@@ -62,6 +59,25 @@ public class ApiValueKindController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ValueKind.toJsonArray(valueKinds), headers, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(value = "/get/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> getValueKindsWithValueTypeKindDTO(@RequestBody String json){
+		HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+		logger.info("incoming json:"+json);
+        List<ValueTypeKindDTO> valueTypeKindDTOs = (List<ValueTypeKindDTO>) ValueTypeKindDTO.fromJsonArrayToValueTypeKindDTO(json);
+        try{
+			for (ValueTypeKindDTO valueTypeKindDTO : valueTypeKindDTOs){
+				valueTypeKindDTO.findValueKind();
+				logger.info(valueTypeKindDTO.toJson());
+			}
+	        return new ResponseEntity<String>(ValueTypeKindDTO.toJsonArray(valueTypeKindDTOs), headers, HttpStatus.OK);
+		}catch (Exception e){
+			logger.error(e.toString());
+			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
 	}
 	
 	

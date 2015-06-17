@@ -4,6 +4,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SimpleUtil {
 	public static boolean isNumeric(String str) {
@@ -39,5 +43,14 @@ public class SimpleUtil {
 	    } finally {
 	        is.close();
 	    }
+	}
+	
+	public static List<String> splitSearchString(String searchString){
+		List<String> list = new ArrayList<String>();
+		Matcher m = Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(searchString);
+		while (m.find()){
+			list.add(m.group(1).replace("\"",""));
+		}
+		return list;
 	}
 }

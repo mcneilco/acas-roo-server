@@ -53,6 +53,7 @@ import com.labsynch.labseer.utils.ItxLsThingLsThingComparator;
 import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
 import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 public class LsThingServiceImpl implements LsThingService {
@@ -129,8 +130,14 @@ public class LsThingServiceImpl implements LsThingService {
 				error.setErrorMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
-			} else {
-				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+			}else {
+				try{
+					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
+					request.setPreferredName(codeNameMatch.getCodeName());
+					request.setReferenceName(codeNameMatch.getCodeName());
+				}catch (EmptyResultDataAccessException e){
+					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				}
 			}
 		}
 		responseOutput.setResults(requests);
@@ -163,7 +170,13 @@ public class LsThingServiceImpl implements LsThingService {
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
-				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				try{
+					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
+					request.setPreferredName(codeNameMatch.getCodeName());
+					request.setReferenceName(codeNameMatch.getCodeName());
+				}catch (EmptyResultDataAccessException e){
+					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				}
 			}
 		}
 		responseOutput.setResults(requests);
@@ -683,8 +696,8 @@ public class LsThingServiceImpl implements LsThingService {
 		HashSet<Long> lsThingAllIdList = new HashSet<Long>();
 		Collection<LsThing> lsThingList = new HashSet<LsThing>();
 		//Split the query up on spaces
-		String[] splitQuery = queryString.split("\\s+");
-		logger.debug("Number of search terms: " + splitQuery.length);
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
 		//Make the Map of terms and HashSets of lsThing id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {

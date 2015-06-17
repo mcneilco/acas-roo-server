@@ -195,4 +195,19 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 		}
 		return lsThingValues;
 	}
+	
+	@Override
+	public LsThingValue getLsThingValue(String idOrCodeName,
+			String stateType, String stateKind, String valueType,
+			String valueKind) {
+		LsThingValue value = null;
+		try{
+			Long id = LsThing.findLsThingsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			value = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+		}catch (Exception e){
+			logger.debug("Caught error "+e.toString()+" trying to find a value.");
+			value = null;
+		}
+		return value;
+	}
 }

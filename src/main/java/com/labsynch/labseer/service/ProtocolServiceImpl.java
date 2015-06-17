@@ -31,6 +31,7 @@ import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 public class ProtocolServiceImpl implements ProtocolService {
@@ -205,7 +206,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 						ProtocolValue updatedProtocolValue;
 						if (protocolValue.getId() == null){
 							updatedProtocolValue = new ProtocolValue(protocolValue);
-							updatedProtocolValue.setLsState(ProtocolState.findProtocolState(protocolState.getId()));
+							updatedProtocolValue.setLsState(updatedProtocolState);
 							updatedProtocolValue.persist();
 							updatedProtocolValues.add(updatedProtocolValue);
 						} else {
@@ -272,8 +273,8 @@ public class ProtocolServiceImpl implements ProtocolService {
 		HashSet<Long> protocolAllIdList = new HashSet<Long>();
 		Collection<Protocol> protocolList = new HashSet<Protocol>();
 		//Split the query up on spaces
-		String[] splitQuery = queryString.split("\\s+");
-		logger.debug("Number of search terms: " + splitQuery.length);
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
 		//Make the Map of terms and HashSets of protocol id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {

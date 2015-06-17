@@ -112,24 +112,23 @@ public class AnalysisGroup extends AbstractThing {
     }
 
     public static com.labsynch.labseer.domain.AnalysisGroup update(com.labsynch.labseer.domain.AnalysisGroup analysisGroup) {
-    	if (AnalysisGroup.findAnalysisGroup(analysisGroup.getId()) != null){
-    	       AnalysisGroup updatedAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroup.getId());
-    	        updatedAnalysisGroup.setRecordedBy(analysisGroup.getRecordedBy());
-    	        updatedAnalysisGroup.setRecordedDate(analysisGroup.getRecordedDate());
-    	        updatedAnalysisGroup.setLsTransaction(analysisGroup.getLsTransaction());
-    	        updatedAnalysisGroup.setModifiedBy(analysisGroup.getModifiedBy());
-    	        updatedAnalysisGroup.setModifiedDate(new Date());
-    	        updatedAnalysisGroup.setCodeName(analysisGroup.getCodeName());
-    	        updatedAnalysisGroup.setLsKind(analysisGroup.getLsKind());
-    	        updatedAnalysisGroup.setLsType(analysisGroup.getLsType());
-    	        for (Experiment experiment : analysisGroup.getExperiments()) {
-    	            updatedAnalysisGroup.getExperiments().add(experiment);
-    	        }   		
-    	        return updatedAnalysisGroup;
-    	} else {
+		if (AnalysisGroup.findAnalysisGroup(analysisGroup.getId()) != null){        
+			AnalysisGroup updatedAnalysisGroup = AnalysisGroup.findAnalysisGroup(analysisGroup.getId());
+        	if(analysisGroup.getRecordedBy() != null) updatedAnalysisGroup.setRecordedBy(analysisGroup.getRecordedBy());
+        	if(analysisGroup.getRecordedDate() != null) updatedAnalysisGroup.setRecordedDate(analysisGroup.getRecordedDate());
+        	if(analysisGroup.getLsTransaction() != null) updatedAnalysisGroup.setLsTransaction(analysisGroup.getLsTransaction());
+        	if(analysisGroup.getModifiedBy() != null) updatedAnalysisGroup.setModifiedBy(analysisGroup.getModifiedBy());
+        	updatedAnalysisGroup.setModifiedDate(new Date());
+        	if(analysisGroup.getCodeName() != null) updatedAnalysisGroup.setCodeName(analysisGroup.getCodeName());
+        	if(analysisGroup.getLsKind() != null) updatedAnalysisGroup.setLsKind(analysisGroup.getLsKind());
+        	if(analysisGroup.getLsType() != null) updatedAnalysisGroup.setLsType(analysisGroup.getLsType());
+        	for (Experiment experiment : analysisGroup.getExperiments()) {
+          	  updatedAnalysisGroup.getExperiments().add(experiment);
+        	}
+        	return updatedAnalysisGroup;
+		} else {
     		logger.error("DID not find the requested analysis group " + analysisGroup.getId() );
     		return null;
-    	}
     }
 
     public String toFullJson() {

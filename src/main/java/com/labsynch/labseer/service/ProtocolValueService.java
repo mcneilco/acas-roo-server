@@ -26,5 +26,8 @@ public interface ProtocolValueService {
 	Collection<ProtocolValue> updateProtocolValues(
 			Collection<ProtocolValue> protocolValues);
 
+	ProtocolValue getProtocolValue(String idOrCodeName, String stateType,
+			String stateKind, String valueType, String valueKind);
+
 
 }
