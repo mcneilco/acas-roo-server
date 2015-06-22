@@ -111,8 +111,8 @@ public class CurveFitDTOTest {
 	@Test
 	@Transactional
 	public void getAllCurveFitDataByExperimentTest() {
-		String experimentCodeName = "EXPT-00001298"; //17 curves
-//		String experimentCodeName = "EXPT-00000078"; //1000 curves
+//		String experimentCodeName = "EXPT-00001298"; //17 curves
+		String experimentCodeName = "EXPT-00000078"; //1000 curves
 		long startTime = System.currentTimeMillis();
 		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentCodeName);
 		Collection<CurveFitDTO> results = CurveFitDTO.getFitData(curveIds);
