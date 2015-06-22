@@ -16,9 +16,6 @@ import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
 public interface LsThingService {
-
-	PreferredNameResultsDTO getCodeNameFromName(String thingType,
-			String thingKind, String labelType, String labelKind, String json);
 	
 	PreferredNameResultsDTO getCodeNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, PreferredNameRequestDTO requestDTO);

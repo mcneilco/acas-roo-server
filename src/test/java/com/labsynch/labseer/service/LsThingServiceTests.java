@@ -488,7 +488,7 @@ public class LsThingServiceTests {
 	}
 	
 	@Test
-	public void getCodeNameFromCodeNameRequeset() {
+	public void getCodeNameFromCodeNameRequest() {
 		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
 		Collection<PreferredNameDTO> requests = new HashSet<PreferredNameDTO>();
 		String codeName="LSM000001";
@@ -496,6 +496,27 @@ public class LsThingServiceTests {
 		requests.add(new PreferredNameDTO("NOT-A-CODE-NAME", null, null));
 		requestDTO.setRequests(requests);
         PreferredNameResultsDTO results = lsThingService.getCodeNameFromName("parent", "linker small molecule", "codeName", "codeName", requestDTO);
+        Assert.assertEquals(2, results.getResults().size());
+        for (PreferredNameDTO result : results.getResults()){
+        	if (result.getRequestName().equals(codeName)){
+        		Assert.assertEquals(codeName, result.getPreferredName());
+        		Assert.assertEquals(codeName, result.getReferenceName());
+        	}else {
+        		Assert.assertEquals("", result.getPreferredName());
+        		Assert.assertEquals("", result.getReferenceName());
+        	}
+        }
+	}
+	
+	@Test
+	public void getCodeNameFromCodeNameRequestNoLabelTypeKind() {
+		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
+		Collection<PreferredNameDTO> requests = new HashSet<PreferredNameDTO>();
+		String codeName="LSM000001";
+		requests.add(new PreferredNameDTO(codeName, null, null));
+		requests.add(new PreferredNameDTO("NOT-A-CODE-NAME", null, null));
+		requestDTO.setRequests(requests);
+        PreferredNameResultsDTO results = lsThingService.getCodeNameFromName("parent", "linker small molecule", null, null, requestDTO);
         Assert.assertEquals(2, results.getResults().size());
         for (PreferredNameDTO result : results.getResults()){
         	if (result.getRequestName().equals(codeName)){
