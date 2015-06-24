@@ -1032,7 +1032,7 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		if (paramName.equals("project")){
 			LsThing project = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
-			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_project", project).getResultList();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentProject", project).getResultList();
 			if (!lsThings.isEmpty()){
 				for (LsThing lsThing : lsThings){
 					lsThingIdList.add(lsThing.getId());
@@ -1109,10 +1109,10 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		if (paramName.equals("termType")){
 			LsThing termType = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
-			List<LsThing> terms = LsThing.findSecondLsThingsByItxTypeKindEqualsAndFirstLsThingEquals("classifies", "term type_term", termType).getResultList();
+			List<LsThing> terms = LsThing.findSecondLsThingsByItxTypeKindEqualsAndFirstLsThingEquals("classifies", "termTypeTerm", termType).getResultList();
 			if (!terms.isEmpty()){
 				for (LsThing term: terms){
-					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
 					if (!lsThings.isEmpty()){
 						for (LsThing lsThing : lsThings){
 							lsThingIdList.add(lsThing.getId());
@@ -1135,7 +1135,7 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThingValues.clear();
 			if (!terms.isEmpty()){
 				for (LsThing term: terms){
-					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
 					if (!lsThings.isEmpty()){
 						for (LsThing lsThing : lsThings){
 							lsThingIdList.add(lsThing.getId());
@@ -1160,7 +1160,7 @@ public class LsThingServiceImpl implements LsThingService {
 				lsThingValues.clear();
 				if (!terms.isEmpty()){
 					for (LsThing term: terms){
-						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
 						if (!lsThings.isEmpty()){
 							for (LsThing lsThing : lsThings){
 								lsThingIdList.add(lsThing.getId());
@@ -1188,7 +1188,7 @@ public class LsThingServiceImpl implements LsThingService {
 				lsThingValues.clear();
 				if (!terms.isEmpty()){
 					for (LsThing term: terms){
-						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
 						if (!lsThings.isEmpty()){
 							for (LsThing lsThing : lsThings){
 								lsThingIdList.add(lsThing.getId());
