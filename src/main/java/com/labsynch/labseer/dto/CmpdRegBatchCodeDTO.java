@@ -61,7 +61,7 @@ public class CmpdRegBatchCodeDTO {
 			}
 		} catch (Exception e) {
 			ErrorMessageDTO error = new ErrorMessageDTO();
-			error.setErrorLevel("error");
+			error.setLevel("error");
 			error.setMessage(e.getMessage());
 			errors.add(error);
 		}
@@ -94,7 +94,7 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromExperimentValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name) "
+		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, ev.codeValue as comments) "
 				+ "FROM ExperimentValue ev "
 				+ "JOIN ev.lsState as es "
 				+ "JOIN es.experiment as e "
@@ -115,6 +115,7 @@ public class CmpdRegBatchCodeDTO {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
+			codeTable.setComments(map.get("comments"));
 			experimentCodeTableDTOs.add(codeTable);
 		}
 		return experimentCodeTableDTOs;
@@ -122,7 +123,7 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromAnalysisGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name) "
+		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, agv.codeValue as comments) "
 				+ "FROM AnalysisGroupValue agv "
 				+ "JOIN agv.lsState as ags "
 				+ "JOIN ags.analysisGroup as ag "
@@ -146,6 +147,7 @@ public class CmpdRegBatchCodeDTO {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
+			codeTable.setComments(map.get("comments"));
 			experimentCodeTableDTOs.add(codeTable);
 		}
 		return experimentCodeTableDTOs;
@@ -153,7 +155,7 @@ public class CmpdRegBatchCodeDTO {
 
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromSubjectValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name) "
+		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, sv.codeValue as comments) "
 				+ "FROM SubjectValue sv "
 				+ "JOIN sv.lsState as ss "
 				+ "JOIN ss.subject as s "
@@ -180,6 +182,7 @@ public class CmpdRegBatchCodeDTO {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
+			codeTable.setComments(map.get("comments"));
 			experimentCodeTableDTOs.add(codeTable);
 		}
 		return experimentCodeTableDTOs;
@@ -187,7 +190,7 @@ public class CmpdRegBatchCodeDTO {
 	
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromTreatmentGroupValueBatchCodes() {
 		EntityManager em = SubjectValue.entityManager();
-		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name) "
+		String sql = "SELECT DISTINCT NEW MAP(e.codeName as code, el.labelText as name, tgv.codeValue as comments) "
 				+ "FROM TreatmentGroupValue tgv "
 				+ "JOIN tgv.lsState as tgs "
 				+ "JOIN tgs.treatmentGroup as tg "
@@ -213,6 +216,7 @@ public class CmpdRegBatchCodeDTO {
 			CodeTableDTO codeTable = new CodeTableDTO();
 			codeTable.setCode(map.get("code"));
 			codeTable.setName(map.get("name"));
+			codeTable.setComments(map.get("comments"));
 			experimentCodeTableDTOs.add(codeTable);
 		}
 		return experimentCodeTableDTOs;

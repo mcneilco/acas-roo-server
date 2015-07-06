@@ -7,12 +7,12 @@ import com.labsynch.labseer.dto.ErrorMessageDTO;
 
 privileged aspect ErrorMessageDTO_Roo_JavaBean {
     
-    public String ErrorMessageDTO.getErrorLevel() {
-        return this.errorLevel;
+    public String ErrorMessageDTO.getLevel() {
+        return this.level;
     }
     
-    public void ErrorMessageDTO.setErrorLevel(String errorLevel) {
-        this.errorLevel = errorLevel;
+    public void ErrorMessageDTO.setLevel(String level) {
+        this.level = level;
     }
     
     public String ErrorMessageDTO.getMessage() {

@@ -9,7 +9,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJson
 public class ErrorMessageDTO {
 
-	String errorLevel;
+	String level;
 	
 	String message;
 	

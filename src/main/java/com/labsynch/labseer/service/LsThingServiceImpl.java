@@ -126,7 +126,7 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThings.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorLevel("error");
+				error.setLevel("error");
 				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
@@ -159,7 +159,7 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThings.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorLevel("MULTIPLE RESULTS");
+				error.setLevel("MULTIPLE RESULTS");
 				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
@@ -214,7 +214,7 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThingLabels != null && lsThingLabels.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorLevel("MULTIPLE RESULTS");
+				error.setLevel("MULTIPLE RESULTS");
 				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
@@ -270,7 +270,7 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThingLabels != null && lsThingLabels.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorLevel("MULTIPLE RESULTS");
+				error.setLevel("MULTIPLE RESULTS");
 				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
