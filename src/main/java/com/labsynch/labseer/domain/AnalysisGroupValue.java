@@ -327,7 +327,7 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ ", agv2.concUnit as testedConcentrationUnit "
 				+ " ) FROM AnalysisGroup ag "
 		+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
-				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
+				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' and agv.ignored = false "
 		+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
 //		+ "LEFT OUTER JOIN LsThingLabel tl with agv2.codeValue = tl.labelText and tl.ignored = false and tl.preferred = true "
 //		+ "LEFT OUTER JOIN tl.lsThing thing " 
