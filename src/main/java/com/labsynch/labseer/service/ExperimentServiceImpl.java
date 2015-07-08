@@ -881,7 +881,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 					logger.debug("size of intersectCodes: " + collectionOfCodes.size());
 				}
 			}
-		} else {
+		} else if (uniqueBatchCodes.size() > 0) {
+          	collectionOfCodes = uniqueBatchCodes;
+        }else {
 			collectionOfCodes = uniqueBatchCodes;
 			logger.debug("Searching for Compound Batch Codes using experiment codes: "+searchRequest.getExperimentCodeList());
 			collectionOfCodes.addAll(findCompoundBatchCodes(searchRequest.getExperimentCodeList()));
