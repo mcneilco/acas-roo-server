@@ -3,6 +3,7 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,7 @@ public class AnalysisGroupValueDTO {
 			String stringValue, 
 			BigDecimal numericValue,
 			String codeValue,
+			Date dateValue,
 			String fileValue,
 			String testedLot,
 			String geneId,
@@ -102,6 +104,8 @@ public class AnalysisGroupValueDTO {
 				this.result=codeValue;
 			} else if (lsType.equals("inlineFileValue")){
 				this.result=fileValue;
+			} else if (lsType.equals("dateValue")){
+				this.result=dateValue.toString();
 			}
 		}
 
