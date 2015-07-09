@@ -127,4 +127,12 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
         this.uncertaintyUnit = uncertaintyUnit;
     }
     
+    public String AnalysisGroupValueDTO.getTestedTime() {
+        return this.testedTime;
+    }
+    
+    public void AnalysisGroupValueDTO.setTestedTime(String testedTime) {
+        this.testedTime = testedTime;
+    }
+    
 }

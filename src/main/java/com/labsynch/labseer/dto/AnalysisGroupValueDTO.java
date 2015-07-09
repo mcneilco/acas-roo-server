@@ -52,7 +52,8 @@ public class AnalysisGroupValueDTO {
 			BigDecimal uncertainty,
 			String uncertaintyUnit,
 			Double testedConcentration,
-			String testedConcentrationUnit
+			String testedConcentrationUnit,
+			BigDecimal testedTime
 			){
 
 		this.id = id;
@@ -69,6 +70,7 @@ public class AnalysisGroupValueDTO {
 		this.testedConcentrationUnit = testedConcentrationUnit;
 		if (uncertainty != null) this.uncertainty = uncertainty.toString();
 		this.uncertaintyUnit = uncertaintyUnit;
+		if (testedTime != null) this.testedTime = testedTime.toString();
 		
 		if (testedLot.startsWith("GENE")){
 			this.testedLot = geneId;
@@ -137,6 +139,7 @@ public class AnalysisGroupValueDTO {
 	private String testedConcentrationUnit;
 	private String uncertainty;
 	private String uncertaintyUnit;
+	private String testedTime;
 
 
 	public static String[] getColumns(){
@@ -155,7 +158,9 @@ public class AnalysisGroupValueDTO {
 				"testedConcentration",
 				"testedConcentrationUnit",
 				"uncertainty",
-				"uncertaintyUnit"};
+				"uncertaintyUnit",
+				"testedTime"
+				};
 
 		return headerColumns;
 
@@ -163,6 +168,7 @@ public class AnalysisGroupValueDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
