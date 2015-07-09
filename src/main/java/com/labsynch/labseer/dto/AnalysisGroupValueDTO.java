@@ -36,6 +36,7 @@ public class AnalysisGroupValueDTO {
 	public AnalysisGroupValueDTO(
 			Long id,
 			Long protocolId,
+			String protocolName,
 			Long experimentId, 
 			String codeName, 
 			String prefName,
@@ -58,6 +59,7 @@ public class AnalysisGroupValueDTO {
 
 		this.id = id;
 		this.protocolId = protocolId;
+		this.protocolName = protocolName;
 		this.experimentId = experimentId;
 		//		this.codeName = codeName;
 		this.experimentCodeName = codeName;
@@ -124,6 +126,7 @@ public class AnalysisGroupValueDTO {
 
 	private Long id;	
 	private Long protocolId;
+	private String protocolName;
 	private Long experimentId;
 	private String experimentCodeName;
 	private String experimentName;
@@ -146,6 +149,7 @@ public class AnalysisGroupValueDTO {
 		String[] headerColumns = new String[] {
 				"id", 
 				"protocolId",
+				"protocolName",
 				"experimentId",
 				"experimentCodeName",
 				"experimentName",
@@ -168,6 +172,7 @@ public class AnalysisGroupValueDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),

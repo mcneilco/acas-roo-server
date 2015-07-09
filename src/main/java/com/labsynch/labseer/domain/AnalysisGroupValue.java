@@ -313,8 +313,8 @@ public class AnalysisGroupValue extends AbstractValue {
 	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<java.lang.String> batchCodeList, Set<java.lang.String> experimentCodeList) {
 		logger.debug("size for batchCodeList: " + batchCodeList.size());
 		logger.debug("size for experimentCodeList: " + experimentCodeList.size());
-		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, prot.id as protocolId, expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
-		+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, prot.id as protocolId, protLabel.labelText as protocolName, "
+		+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, "
 				+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.fileValue as fileValue, " 
 				+ "agv2.codeValue AS testedLot "
 				+ ", agv2.codeValue as geneId  " 
@@ -335,6 +335,8 @@ public class AnalysisGroupValue extends AbstractValue {
 //		+ "LEFT OUTER JOIN tl.lsThing thing " 
 		+ "JOIN ag.experiments expt with expt.ignored = false " 
 		+ "JOIN expt.protocol prot with prot.ignored = false "
+		+ "JOIN expt.protocol prot with prot.ignored = false "
+        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false "
 		+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 				+ "WHERE ag.ignored = false  "
 //				+ "AND thing.codeName = agv2.codeValue "

@@ -23,6 +23,14 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
         this.protocolId = protocolId;
     }
     
+    public String AnalysisGroupValueDTO.getProtocolName() {
+        return this.protocolName;
+    }
+    
+    public void AnalysisGroupValueDTO.setProtocolName(String protocolName) {
+        this.protocolName = protocolName;
+    }
+    
     public Long AnalysisGroupValueDTO.getExperimentId() {
         return this.experimentId;
     }
