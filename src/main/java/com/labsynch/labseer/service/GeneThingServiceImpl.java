@@ -415,6 +415,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 		lsLabel.setLabelText(label);
 		lsLabel.setLsTransaction(lsTransaction.getId());
 		lsLabel.setRecordedBy("acas admin");
+		lsLabel.setRecordedDate(new Date());
 		lsLabel.persist();
 		logger.info("saving gene label: " + label);
 		return lsLabel;
@@ -646,9 +647,25 @@ public class GeneThingServiceImpl implements GeneThingService {
 				geneThing = updateGeneMetaData(geneThing, geneDTO, lsTransaction);
 			}
 			
+		} else if (geneIdCount == 0 && newGeneIdCount == 1){
+			logger.debug("------ just the new gene is currently registered");
+			// add the old entrez gene id to the registered gene
+			// add discontinued meta to the old gene
+									
+			// update the new gene with the new info
+			List<LsThing> genes = LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId()).getResultList();
+			if (genes.size() == 0){
+				logger.error("Gene not found");
+			} else if (genes.size() > 1){
+				logger.error("multiple genes found with the same gene ID");
+				
+			} else {
+				geneThing = genes.get(0);
+				geneThing = addOldGeneID(geneThing, geneDTO, entrezDiscontinuedGeneDTO, lsTransaction);
+			}			
 		} else {
 			logger.debug("gene is registered via old id");
-			if (logger.isDebugEnabled()) logger.debug("old gene: " + LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()).getResultList().get(0).toPrettyJson());
+//			if (logger.isDebugEnabled()) logger.debug("old gene: " + LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()).getResultList().get(0).toPrettyJson());
 			geneThing = updateGene(geneDTO, entrezDiscontinuedGeneDTO, lsTransaction);
 
 		}
@@ -659,6 +676,12 @@ public class GeneThingServiceImpl implements GeneThingService {
 	}
 	
 	
+	private LsThing addOldGeneID(LsThing geneThing, EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
+		geneThing.getLsLabels().add(saveGeneLabel(lsTransaction, geneThing, "name", "Entrez Gene ID", false, entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()));
+		geneThing.getLsLabels().add(saveGeneLabel(lsTransaction, geneThing, "name", "gene symbol", false, entrezDiscontinuedGeneDTO.getDiscontinuedSymbol()));
+		return geneThing;
+	}
+
 	private LsThing discontinueGene(EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
 		// TODO Auto-generated method stub
 		String geneTypeString = "gene";
@@ -667,7 +690,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 
 		LsThing geneThing = null ;
 		
-		logger.debug("---------- add discontinueGene meta data:  number of genes found: " + genes.size());
+		logger.debug("---------- add discontinued Gene meta data:  number of genes found: " + genes.size());
 		
 		if (genes.size() == 0){
 			logger.error("Gene not found");
@@ -924,24 +947,24 @@ public class GeneThingServiceImpl implements GeneThingService {
 		logger.info("create discontinued gene: " + geneDTO.getDiscontinuedGeneId());
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
-		ThingType geneType = ThingType.getOrCreate(geneTypeString);
-		ThingKind.getOrCreate(geneType, geneKindString);
-
-		LabelType labelType = LabelType.getOrCreate("name");
-		LabelKind.getOrCreate(labelType, "gene code name");
-		LabelKind.getOrCreate(labelType, "Entrez Gene ID");
-		LabelKind.getOrCreate(labelType, "gene symbol");
-
-		StateType stateType = StateType.getOrCreate("metadata");
-		StateKind.getOrCreate(stateType, "gene metadata");
-
-		ValueType valueType = ValueType.getOrCreate("stringValue");
-		ValueKind.getOrCreate(valueType, "discontinued gene id");
-		ValueKind.getOrCreate(valueType, "discontinued gene symbol");
-		ValueKind.getOrCreate(valueType, "discontinued date");
-		ValueKind.getOrCreate(valueType, "discontinued gene");
-		ValueType valueTypeDate = ValueType.getOrCreate("dateValue");
-		ValueKind.getOrCreate(valueTypeDate, "modification date");
+//		ThingType geneType = ThingType.getOrCreate(geneTypeString);
+//		ThingKind.getOrCreate(geneType, geneKindString);
+//
+//		LabelType labelType = LabelType.getOrCreate("name");
+//		LabelKind.getOrCreate(labelType, "gene code name");
+//		LabelKind.getOrCreate(labelType, "Entrez Gene ID");
+//		LabelKind.getOrCreate(labelType, "gene symbol");
+//
+//		StateType stateType = StateType.getOrCreate("metadata");
+//		StateKind.getOrCreate(stateType, "gene metadata");
+//
+//		ValueType valueType = ValueType.getOrCreate("stringValue");
+//		ValueKind.getOrCreate(valueType, "discontinued gene id");
+//		ValueKind.getOrCreate(valueType, "discontinued gene symbol");
+//		ValueKind.getOrCreate(valueType, "discontinued date");
+//		ValueKind.getOrCreate(valueType, "discontinued gene");
+//		ValueType valueTypeDate = ValueType.getOrCreate("dateValue");
+//		ValueKind.getOrCreate(valueTypeDate, "modification date");
 
 
 		LsThing geneThing = new LsThing();
@@ -1084,7 +1107,5 @@ public class GeneThingServiceImpl implements GeneThingService {
 
 		return processors;
 	}
-
-// I need to generate example test files to exercise the edge cases
 
 }
