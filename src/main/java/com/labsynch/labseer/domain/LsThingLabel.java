@@ -77,6 +77,33 @@ public class LsThingLabel extends AbstractLabel {
 		return updatedLsThingLabel;
 	}
 	
+	public static Long countOfLsThingLabelsByLabel(LsThing lsThing, String labelType, String labelKind, String labelText) {
+		if (lsThing == null ) throw new IllegalArgumentException("The lsThing argument is required");
+		if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+		if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");	
+		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+
+		boolean ignored = true;
+
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT count(DISTINCT o) " 
+				+ "FROM LsThingLabel AS o "
+				+ "WHERE o.lsThing = :lsThing "
+				+ "AND o.lsType = :labelType  "
+				+ "AND o.lsKind = :labelKind "
+				+ "AND o.ignored IS NOT :ignored "
+				+ "AND o.labelText = :labelText ";
+		logger.debug("sql query " + query);
+		TypedQuery<Long> q = em.createQuery(query, Long.class);
+
+		q.setParameter("lsThing", lsThing);
+		q.setParameter("labelType", labelType);
+		q.setParameter("labelKind", labelKind);
+		q.setParameter("labelText", labelText);
+		q.setParameter("ignored", ignored);
+		return q.getSingleResult();
+	}
+	
 	public static Long countOfLsThingByName(String thingType, String thingKind, String labelType, String labelKind, String labelText) {
 		if (thingType == null || thingType.length() == 0) throw new IllegalArgumentException("The thingType argument is required");
 		if (thingKind == null || thingKind.length() == 0) throw new IllegalArgumentException("The thingKind argument is required");		

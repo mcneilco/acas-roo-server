@@ -510,6 +510,24 @@ public class ApiLsThingController {
       return new ResponseEntity<String>(headers, HttpStatus.OK);
   }
   
+  @RequestMapping(value = "/gene/v1/updateGeneEntities", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> updateGeneEntities(
+		  @RequestParam(value = "entrezGenesFile", required = true) String entrezGenesFile,
+		  @RequestParam(value = "geneHistoryFile", required = true) String geneHistoryFile,
+		  @RequestParam(value = "taxonomyId", required = true) String taxonomyId
+		  ) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json; charset=utf-8");
+      logger.info("loading genes from tab delimited file: " + entrezGenesFile);
+      try {
+		geneThingService.updateEntrezGenes(entrezGenesFile, geneHistoryFile, taxonomyId);
+      } catch (IOException e) {
+          logger.error("IOException: " + e.toString());
+          return new ResponseEntity<String>("ERROR: IOError. Unable to load file. " + entrezGenesFile, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+      }
+      return new ResponseEntity<String>(headers, HttpStatus.OK);
+  }
+  
   @RequestMapping(value = "/documentmanagersearch", method = RequestMethod.GET)
   public ResponseEntity<java.lang.String> documentManagerSearch(@RequestParam Map<String,String> searchParamsMap){
 	  HttpHeaders headers = new HttpHeaders();
