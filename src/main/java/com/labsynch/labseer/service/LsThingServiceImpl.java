@@ -4,14 +4,12 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -24,31 +22,25 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.DDictValue;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentLabel;
-import com.labsynch.labseer.domain.ExperimentState;
-import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
-import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ProtocolLabel;
-import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
+import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.dto.ValuePathDTO;
+import com.labsynch.labseer.dto.ValueRuleDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueInteractionsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
+import com.labsynch.labseer.exceptions.UniqueValueRuleException;
 import com.labsynch.labseer.utils.ItxLsThingLsThingComparator;
 import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
 import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
@@ -1223,13 +1215,11 @@ public class LsThingServiceImpl implements LsThingService {
 
 
 	@Override
-	public ArrayList<ErrorMessage> validateLsThing(LsThing lsThing,
-			boolean checkUniqueName, boolean checkUniqueInteractions,
-			boolean checkOrderMatters, boolean checkForwardAndReverseAreSame) {
+	public ArrayList<ErrorMessage> validateLsThing(LsThingValidationDTO validationDTO) {
 		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-		if (checkUniqueName){
+		if (validationDTO.isUniqueName()){
 			try{
-				checkLsThingUniqueName(lsThing);
+				checkLsThingUniqueName(validationDTO.getLsThing());
 			} catch (UniqueNameException e){
 				logger.error("Caught UniqueNameException validating LsThing: " + e.getMessage().toString() + " whole message  " + e.toString());
 	            ErrorMessage error = new ErrorMessage();
@@ -1238,9 +1228,9 @@ public class LsThingServiceImpl implements LsThingService {
 	            errors.add(error);
 			}
 		}
-		if (checkUniqueInteractions){
+		if (validationDTO.isUniqueInteractions()){
 			try{
-				checkLsThingUniqueInteractions(lsThing, checkOrderMatters, checkForwardAndReverseAreSame);
+				checkLsThingUniqueInteractions(validationDTO);
 			} catch (UniqueInteractionsException e){
 				logger.error("Caught UniqueInteractionsException validating LsThing: " + e.getMessage().toString() + " whole message  " + e.toString());
 	            ErrorMessage error = new ErrorMessage();
@@ -1254,16 +1244,55 @@ public class LsThingServiceImpl implements LsThingService {
 	}
 
 
-	private void checkLsThingUniqueInteractions(LsThing lsThing,
-			boolean checkOrderMatters, boolean checkForwardAndReverseAreSame) throws UniqueInteractionsException {
-		Set<ItxLsThingLsThing> secondItxLsThings = lsThing.getFirstLsThings();
+	private boolean checkLsThingUniqueValueByRules(LsThingValidationDTO validationDTO) {
+		if (validationDTO.getValueRules() != null){
+			for (ValueRuleDTO valueRule : validationDTO.getValueRules()){
+				if (valueRule.getValue().getEntity().equalsIgnoreCase("LsThing")){
+					ValuePathDTO valuePath = valueRule.getValue();
+					Collection<LsThingValue> foundValues = LsThingValue.findLsThingValuesByTypeKindFullPath(valuePath.getEntityType(), valuePath.getEntityKind(), valuePath.getStateType(), valuePath.getStateKind(), valuePath.getValueType(), valuePath.getValueKind()).getResultList();
+					for (LsThingValue foundValue : foundValues){
+						LsThing foundThing = foundValue.getLsState().getLsThing();
+						if (valueRule.matchLsThings(validationDTO.getLsThing(), foundThing)) return true;
+					}
+				}
+			}
+		}
+		return false;
+		
+	}
+
+
+	private void checkLsThingUniqueInteractions(LsThingValidationDTO validationDTO) throws UniqueInteractionsException {
+		LsThing lsThing = validationDTO.getLsThing();
+		boolean checkOrderMatters = validationDTO.isOrderMatters();
+		boolean checkForwardAndReverseAreSame = validationDTO.isForwardAndReverseAreSame();
+		Set<ItxLsThingLsThing> secondItxLsThings = lsThing.getSecondLsThings();
 		if (!checkOrderMatters){
 			//order doesn't matter. We're just checking for a unique set of "incorporates" interactions
 			HashSet<LsThing> foundLsThings = null;
 			for (ItxLsThingLsThing secondItxLsThing : secondItxLsThings){
 				LsThing secondLsThing = secondItxLsThing.getSecondLsThing();
+				String lsType = "incorporates";
 				String lsKind = secondItxLsThing.getLsKind();
-				Collection<LsThing> foundFirstLsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", lsKind, secondLsThing).getResultList();
+				//first find the set of interactions that look like the one we're searching on
+				Collection<ItxLsThingLsThing> foundItxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals(lsType, lsKind, secondLsThing).getResultList();
+				//then if we have value criteria to compare, compare them and pare down the list of matching interactions
+				Collection<ItxLsThingLsThing> matchingItxLsThingLsThings = new HashSet<ItxLsThingLsThing>();
+				if (validationDTO.getValueRules() != null && !validationDTO.getValueRules().isEmpty()){
+					for (ValueRuleDTO valueRule : validationDTO.getValueRules()){
+						for (ItxLsThingLsThing foundItxLsThingLsThing : foundItxLsThingLsThings){
+							boolean isAMatch = valueRule.matchItxLsThingLsThings(secondItxLsThing, foundItxLsThingLsThing);
+							if (isAMatch) matchingItxLsThingLsThings.add(foundItxLsThingLsThing);
+						}
+					}
+				}else{
+					//if there are no value criteria to compare, then all the interactions are matching
+					matchingItxLsThingLsThings.addAll(foundItxLsThingLsThings);
+				}
+				Collection<LsThing> foundFirstLsThings = new HashSet<LsThing>();
+				for (ItxLsThingLsThing matchingItx : matchingItxLsThingLsThings){
+					foundFirstLsThings.add(matchingItx.getFirstLsThing());
+				}
 				//look for "firstLsThings" that are like the one we're validating, i.e. those that have an "incorporates" interaction to the same secondLsThing
 				if (foundLsThings == null){
 					//on the second one, instantiate the HashSet, then add all the foundFirstLsThings.
@@ -1275,17 +1304,37 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 			}
 			if (foundLsThings != null && !foundLsThings.isEmpty()){
-				//if anything remains, it was found for every interaction so it is a duplicate
-				throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions");
-			}
+				//if anything remains, it was found for every interaction so it may be a duplicate
+				//then we check for LsThing value rules
+				if (checkLsThingUniqueValueByRules(validationDTO)) throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions");
+				}
 		} else{
 			//order matters. for each interaction, we will grab the order, then search using it.
 			HashSet<LsThing> foundLsThings = null;
 			for (ItxLsThingLsThing secondItxLsThing : secondItxLsThings){
 				LsThing secondLsThing = secondItxLsThing.getSecondLsThing();
+				String lsType = "incorporates";
 				String lsKind = secondItxLsThing.getLsKind();
 				int order = secondItxLsThing.grabItxOrder();
-				Collection<LsThing> foundFirstLsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEqualsAndOrderEquals("incorporates", lsKind, secondLsThing, order).getResultList();
+				//first find the set of interactions that look like the one we're searching on, including by order
+				Collection<ItxLsThingLsThing> foundItxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEqualsAndOrderEquals(lsType, lsKind, secondLsThing, order).getResultList();
+				//then if we have value criteria to compare, compare them and pare down the list of matching interactions
+				Collection<ItxLsThingLsThing> matchingItxLsThingLsThings = new HashSet<ItxLsThingLsThing>();
+				if (validationDTO.getValueRules() != null && !validationDTO.getValueRules().isEmpty()){
+					for (ValueRuleDTO valueRule : validationDTO.getValueRules()){
+						for (ItxLsThingLsThing foundItxLsThingLsThing : foundItxLsThingLsThings){
+							boolean isAMatch = valueRule.matchItxLsThingLsThings(secondItxLsThing, foundItxLsThingLsThing);
+							if (isAMatch) matchingItxLsThingLsThings.add(foundItxLsThingLsThing);
+						}
+					}
+				}else{
+					//if there are no value criteria to compare, then all the interactions are matching
+					matchingItxLsThingLsThings.addAll(foundItxLsThingLsThings);
+				}
+				Collection<LsThing> foundFirstLsThings = new HashSet<LsThing>();
+				for (ItxLsThingLsThing matchingItx : matchingItxLsThingLsThings){
+					foundFirstLsThings.add(matchingItx.getFirstLsThing());
+				}
 				if (foundLsThings == null){
 					foundLsThings = new HashSet<LsThing>();
 					foundLsThings.addAll(foundFirstLsThings);
@@ -1294,8 +1343,9 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 			}
 			if (foundLsThings != null && !foundLsThings.isEmpty()){
-				//if anything remains, it was found for every interaction so it is a duplicate
-				throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
+				//if anything remains, it was found for every interaction so it may be a duplicate
+				//then we check for LsThing value rules
+				if (checkLsThingUniqueValueByRules(validationDTO)) throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
 			}
 			if (checkForwardAndReverseAreSame){
 				//if we need to check backwards as well, by this point we have already passed "forwards validation"
@@ -1312,8 +1362,26 @@ public class LsThingServiceImpl implements LsThingService {
 				int order = 1;
 				for (ItxLsThingLsThing secondItxLsThing : orderedIncorporatesInteractions){
 					LsThing secondLsThing = secondItxLsThing.getSecondLsThing();
+					String lsType = "incorporates";
 					String lsKind = secondItxLsThing.getLsKind();
-					Collection<LsThing> foundFirstLsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEqualsAndOrderEquals("incorporates", lsKind, secondLsThing, order).getResultList();
+					Collection<ItxLsThingLsThing> foundItxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEqualsAndOrderEquals(lsType, lsKind, secondLsThing, order).getResultList();
+					//then if we have value criteria to compare, compare them and pare down the list of matching interactions
+					Collection<ItxLsThingLsThing> matchingItxLsThingLsThings = new HashSet<ItxLsThingLsThing>();
+					if (validationDTO.getValueRules() != null && !validationDTO.getValueRules().isEmpty()){
+						for (ValueRuleDTO valueRule : validationDTO.getValueRules()){
+							for (ItxLsThingLsThing foundItxLsThingLsThing : foundItxLsThingLsThings){
+								boolean isAMatch = valueRule.matchItxLsThingLsThings(secondItxLsThing, foundItxLsThingLsThing);
+								if (isAMatch) matchingItxLsThingLsThings.add(foundItxLsThingLsThing);
+							}
+						}
+					}else{
+						//if there are no value criteria to compare, then all the interactions are matching
+						matchingItxLsThingLsThings.addAll(foundItxLsThingLsThings);
+					}
+					Collection<LsThing> foundFirstLsThings = new HashSet<LsThing>();
+					for (ItxLsThingLsThing matchingItx : matchingItxLsThingLsThings){
+						foundFirstLsThings.add(matchingItx.getFirstLsThing());
+					}
 					if (foundLsThings == null){
 						foundLsThings = new HashSet<LsThing>();
 						foundLsThings.addAll(foundFirstLsThings);
@@ -1323,8 +1391,9 @@ public class LsThingServiceImpl implements LsThingService {
 					order++;
 				}
 				if (foundLsThings != null && !foundLsThings.isEmpty()){
-					//if anything remains, it was found for every interaction so it is a duplicate
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
+					//if anything remains, it was found for every interaction so it may be a duplicate
+					//then we check for LsThing value rules
+					if (checkLsThingUniqueValueByRules(validationDTO)) throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reverse order");
 				}
 			}
 		}

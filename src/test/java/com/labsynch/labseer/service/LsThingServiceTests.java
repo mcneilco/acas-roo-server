@@ -32,9 +32,13 @@ import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ThingKind;
 import com.labsynch.labseer.domain.ThingType;
+import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.dto.ValuePathDTO;
+import com.labsynch.labseer.dto.ValueRuleDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -73,6 +77,8 @@ public class LsThingServiceTests {
 		thing1.setLsKind("test thing");
 		thing1.setRecordedBy("bfielder");
 		thing1.setRecordedDate(new Date());
+		thing1.setDeleted(false);
+		thing1.setIgnored(false);
 		thing1.persist();
 		
 		LsThing thing2 = new LsThing();
@@ -81,6 +87,8 @@ public class LsThingServiceTests {
 		thing2.setLsKind("test thing");
 		thing2.setRecordedBy("bfielder");
 		thing2.setRecordedDate(new Date());
+		thing2.setDeleted(false);
+		thing2.setIgnored(false);
 		thing2.persist();
 		
 		LsThing thing3 = new LsThing();
@@ -89,12 +97,49 @@ public class LsThingServiceTests {
 		thing3.setLsKind("test thing");
 		thing3.setRecordedBy("bfielder");
 		thing3.setRecordedDate(new Date());
+		thing3.setDeleted(false);
+		thing3.setIgnored(false);
 		thing3.persist();
 		
 		ItxLsThingLsThing inc12 = makeItxLsThingLsThing("ITXTHING-01", "incorporates", "assembly_component", thing1, thing2);
 		thing1.getSecondLsThings().add(inc12);
 		inc12.persist();
 		thing1.merge();
+		
+		return thing1;
+		
+	}
+	
+	public LsThing createTransientLsThingStack(){
+		LsThing thing1 = new LsThing();
+		thing1.setCodeName("THING-01");
+		thing1.setLsType("thing");
+		thing1.setLsKind("test thing");
+		thing1.setRecordedBy("bfielder");
+		thing1.setRecordedDate(new Date());
+		thing1.setDeleted(false);
+		thing1.setIgnored(false);
+		
+		LsThing thing2 = new LsThing();
+		thing2.setCodeName("THING-02");
+		thing2.setLsType("thing");
+		thing2.setLsKind("test thing");
+		thing2.setRecordedBy("bfielder");
+		thing2.setRecordedDate(new Date());
+		thing2.setDeleted(false);
+		thing2.setIgnored(false);
+		
+		LsThing thing3 = new LsThing();
+		thing3.setCodeName("THING-03");
+		thing3.setLsType("thing");
+		thing3.setLsKind("test thing");
+		thing3.setRecordedBy("bfielder");
+		thing3.setRecordedDate(new Date());
+		thing3.setDeleted(false);
+		thing3.setIgnored(false);
+		
+		ItxLsThingLsThing inc12 = makeItxLsThingLsThing("ITXTHING-01", "incorporates", "assembly_component", thing1, thing2);
+		thing1.getSecondLsThings().add(inc12);
 		
 		return thing1;
 		
@@ -122,9 +167,17 @@ public class LsThingServiceTests {
 		itxValue.setRecordedDate(new Date());
 		itxValue.setNumericValue(new BigDecimal(1));
 		itxValue.setLsState(itxState);
+		ItxLsThingLsThingValue itxValue2 = new ItxLsThingLsThingValue();
+		itxValue2.setLsType("numericValue");
+		itxValue2.setLsKind("pegylated");
+		itxValue2.setRecordedBy("bfielder");
+		itxValue2.setRecordedDate(new Date());
+		itxValue2.setNumericValue(new BigDecimal(50));
+		itxValue2.setLsState(itxState);
 		Set<ItxLsThingLsThingState> itxStates = new HashSet<ItxLsThingLsThingState>();
 		Set<ItxLsThingLsThingValue> itxValues = new HashSet<ItxLsThingLsThingValue>();
 		itxValues.add(itxValue);
+		itxValues.add(itxValue2);
 		itxState.setLsValues(itxValues);
 		itxStates.add(itxState);
 		itx.setLsStates(itxStates);
@@ -284,8 +337,38 @@ public class LsThingServiceTests {
 	
 	@Test
 	@Transactional
+	@Rollback(value=false)
+	public void buildLsThingStack(){
+		createLsThingStack();
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(value=false)
 	public void validateAssembly(){
-		//TODO
+		LsThing thing2 = createTransientLsThingStack();
+		ValuePathDTO pathDTO = new ValuePathDTO();
+		pathDTO.setEntity("ItxLsThingLsThing");
+		pathDTO.setEntityType("incorporates");
+		pathDTO.setEntityKind("assembly_component");
+		pathDTO.setStateType("metadata");
+		pathDTO.setStateKind("composition");
+		pathDTO.setValueType("numericValue");
+		pathDTO.setValueKind("pegylated");
+		ValueRuleDTO valueRule = new ValueRuleDTO();
+		valueRule.setComparisonMethod("numeric exact match");
+		valueRule.setValue(pathDTO);
+		Set<ValueRuleDTO> valueRules = new HashSet<ValueRuleDTO>();
+		valueRules.add(valueRule);
+		LsThingValidationDTO validationDTO = new LsThingValidationDTO();
+		validationDTO.setLsThing(thing2);
+		validationDTO.setUniqueName(true);
+		validationDTO.setUniqueInteractions(true);
+		validationDTO.setOrderMatters(true);
+		validationDTO.setForwardAndReverseAreSame(true);
+		validationDTO.setValueRules(valueRules);
+		ArrayList<ErrorMessage> errorMessages = lsThingService.validateLsThing(validationDTO);
+		Assert.assertTrue(errorMessages.isEmpty());
 	}
 	
 	@Test

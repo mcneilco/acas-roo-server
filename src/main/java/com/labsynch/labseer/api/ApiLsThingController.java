@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
@@ -425,26 +426,14 @@ public class ApiLsThingController {
     }
     
     @RequestMapping(value = "/validate", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> validateLsThing(@RequestParam(value = "uniqueName", required = false) Boolean uniqueName,
-    		@RequestParam(value = "uniqueInteractions", required = false) Boolean uniqueInteractions,
-    		@RequestParam(value = "orderMatters", required = false) Boolean orderMatters,
-    		@RequestParam(value = "forwardAndReverseAreSame", required = false) Boolean forwardAndReverseAreSame,
+    public ResponseEntity<String> validateLsThing(
     		@RequestBody String json) {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         
-    	boolean checkUniqueName = false;
-    	boolean checkUniqueInteractions = false;
-    	boolean checkOrderMatters = false;
-    	boolean checkForwardAndReverseAreSame = false;
-    	if (uniqueName!=null) checkUniqueName = uniqueName;
-    	if (uniqueInteractions!=null) checkUniqueInteractions = uniqueInteractions;
-    	if (orderMatters!=null) checkOrderMatters = orderMatters;
-    	if (forwardAndReverseAreSame!=null) checkForwardAndReverseAreSame = forwardAndReverseAreSame;
+    	LsThingValidationDTO validationDTO = LsThingValidationDTO.fromJsonToLsThingValidationDTO(json);
     	
-    	LsThing lsThing = LsThing.fromJsonToLsThing(json);
-    	
-        ArrayList<ErrorMessage> errorMessages = lsThingService.validateLsThing(lsThing, checkUniqueName, checkUniqueInteractions, checkOrderMatters, checkForwardAndReverseAreSame);
+        ArrayList<ErrorMessage> errorMessages = lsThingService.validateLsThing(validationDTO);
         if (!errorMessages.isEmpty()){
         	return new ResponseEntity<String>(ErrorMessage.toJsonArray(errorMessages), headers, HttpStatus.CONFLICT);
         }
