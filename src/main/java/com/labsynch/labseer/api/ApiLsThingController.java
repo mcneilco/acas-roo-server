@@ -71,7 +71,7 @@ public class ApiLsThingController {
         String labelType = "name";
         String labelKind = "Entrez Gene ID";
         logger.info("getGeneCodeNameFromNameRequest incoming json: " + requestDTO.toJson());
-        PreferredNameResultsDTO results = lsThingService.getPreferredNameFromName(thingType, thingKind, labelType, labelKind, requestDTO);
+        PreferredNameResultsDTO results = lsThingService.getPreferredNameFromName(requestDTO);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);

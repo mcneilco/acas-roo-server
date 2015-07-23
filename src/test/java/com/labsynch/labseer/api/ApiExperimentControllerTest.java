@@ -78,6 +78,20 @@ public class ApiExperimentControllerTest {
     }
     
     @Test
+    public void getGeneCodeName() throws Exception {
+    	String json = "{\"requests\":[{\"requestName\":\"HYST2477\"},{\"requestName\":\"2\"}]}";
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/lsthings/getGeneCodeNameFromNameRequest")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+//    			.andExpect(status().isCreated())
+//    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    }
+    
+    @Test
     public void genericSearchByProtocolCodeName() throws Exception {
     	String searchString = "PROT-00000131";
     	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
