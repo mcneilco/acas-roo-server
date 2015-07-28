@@ -143,4 +143,12 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
         this.testedTime = testedTime;
     }
     
+    public String AnalysisGroupValueDTO.getTestedTimeUnit() {
+        return this.testedTimeUnit;
+    }
+    
+    public void AnalysisGroupValueDTO.setTestedTimeUnit(String testedTimeUnit) {
+        this.testedTimeUnit = testedTimeUnit;
+    }
+    
 }

@@ -51,7 +51,7 @@ public class ApiExperimentControllerTest {
     
     @Test
     public void genericSearchByScientist() throws Exception {
-    	String searchString = "bbolt";
+    	String searchString = "bob";
     	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON))
@@ -65,7 +65,7 @@ public class ApiExperimentControllerTest {
     
     @Test
     public void advancedGeneFilter() throws Exception {
-    	String json = "{\"experimentCodeList\":[\"PROT-00000003\",\"EXPT-00000003\",\"tags_EXPT-00000003\",\"_beaches\",\"_beaches_lajolla\",\"_beaches_lajolla_other\",\"PROT-00000002\",\"EXPT-00000002\",\"tags_EXPT-00000002\",\"EXPT-00004\",\"tags_EXPT-00004\"],\"batchCodeList\":[],\"searchFilters\":[{\"filterValue\":\"1\",\"termName\":\"Q1\",\"experimentCode\":\"EXPT-00000002\",\"lsKind\":\"Brass hit\",\"lsType\":\"numericValue\",\"operator\":\"=\"},{\"filterValue\":\"1\",\"termName\":\"Q2\",\"experimentCode\":\"EXPT-00000002\",\"lsKind\":\"Shapira hit\",\"lsType\":\"numericValue\",\"operator\":\"=\"}],\"booleanFilter\":\"advanced\",\"advancedFilter\":\"(Q1 AND Q2)\",\"advancedFilterSQL\":\"((SELECT tested_lot FROM api_experiment_results WHERE expt_code_name='EXPT-00000002' AND ls_kind='Brass hit' AND ls_type='numericValue' AND numeric_value=1) INTERSECT (SELECT tested_lot FROM api_experiment_results WHERE expt_code_name='EXPT-00000002' AND ls_kind='Shapira hit' AND ls_type='numericValue' AND numeric_value=1))\"}";
+    	String json = "{\"experimentCodeList\":[\"EXPT-00000001\", \"PROT-00000001\"]}";
     	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/experiments/agdata/batchcodelist/experimentcodelist?format=csv&onlyPublicData=false")
     			.contentType(MediaType.APPLICATION_JSON)
     			.content(json)
@@ -135,7 +135,7 @@ public class ApiExperimentControllerTest {
     
     @Test
     public void genericSearchByExperimentStatus() throws Exception {
-    	String searchString = "Fiona complete";
+    	String searchString = "bob";
     	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON))

@@ -286,6 +286,11 @@ public class Experiment extends AbstractThing {
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.Experiment> collection) {
         return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues").exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
+    
+    @Transactional
+    public static String toJsonArrayStubWithProt(Collection<com.labsynch.labseer.domain.Experiment> collection) {
+        return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "protocol.lsLabels").exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
 
     @Transactional
     public static String toJsonArrayStubWithAG(Collection<com.labsynch.labseer.domain.Experiment> collection) {
