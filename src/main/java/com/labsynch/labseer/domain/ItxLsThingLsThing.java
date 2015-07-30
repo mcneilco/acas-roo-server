@@ -84,7 +84,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
     
     public String toJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.itxLsThingLsThing")
+        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class", "lsStates.itxLsThingLsThing")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }
@@ -97,7 +97,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
     
     public static String toJsonArray(Collection<ItxLsThingLsThing> collection) {
-        return new JSONSerializer().exclude("*.class")
+        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }

@@ -63,7 +63,7 @@ public class ValuePathDTO {
     				Set<LsThingValue> lsValues = lsState.getLsValues();
     				for (LsThingValue lsValue : lsValues){
     					if (valueType.equals(lsValue.getLsType()) && valueKind.equals(lsValue.getLsKind())){
-    						if (valueType.equals("stringValue")) return lsValue.getNumericValue();
+    						if (valueType.equals("numericValue")) return lsValue.getNumericValue();
     					}
     				}
     			}
@@ -102,7 +102,7 @@ public class ValuePathDTO {
     				Set<ItxLsThingLsThingValue> lsValues = lsState.getLsValues();
     				for (ItxLsThingLsThingValue lsValue : lsValues){
     					if (valueType.equals(lsValue.getLsType()) && valueKind.equals(lsValue.getLsKind())){
-    						if (valueType.equals("stringValue")) return lsValue.getNumericValue();
+    						if (valueType.equals("numericValue")) return lsValue.getNumericValue();
     					}
     				}
     			}

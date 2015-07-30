@@ -432,7 +432,7 @@ public class ApiLsThingController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         
     	LsThingValidationDTO validationDTO = LsThingValidationDTO.fromJsonToLsThingValidationDTO(json);
-    	
+    	logger.debug("FROM THE LSTHING VALIDATE CONTROLLER: "+validationDTO.toJson());
         ArrayList<ErrorMessage> errorMessages = lsThingService.validateLsThing(validationDTO);
         if (!errorMessages.isEmpty()){
         	return new ResponseEntity<String>(ErrorMessage.toJsonArray(errorMessages), headers, HttpStatus.CONFLICT);
