@@ -3,6 +3,7 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,9 @@ public class AnalysisGroupValueDTO {
 	
 	
 	public AnalysisGroupValueDTO(
-			Long id, 
+			Long id,
+			Long protocolId,
+			String protocolName,
 			Long experimentId, 
 			String codeName, 
 			String prefName,
@@ -42,17 +45,39 @@ public class AnalysisGroupValueDTO {
 			String lsKind,
 			String stringValue, 
 			BigDecimal numericValue,
+			String codeValue,
+			Date dateValue,
+			String fileValue,
 			String testedLot,
-			String geneId){
+			String geneId,
+			String resultUnit,
+			String operator,
+			BigDecimal uncertainty,
+			String uncertaintyUnit,
+			Double testedConcentration,
+			String testedConcentrationUnit,
+			BigDecimal testedTime,
+			String testedTimeUnit
+			){
 
-		this.id = id;		
+		this.id = id;
+		this.protocolId = protocolId;
+		this.protocolName = protocolName;
 		this.experimentId = experimentId;
 		//		this.codeName = codeName;
 		this.experimentCodeName = codeName;
 		this.lsType = lsType;
 		this.lsKind = lsKind;
 		this.testedLot = testedLot;
-
+		this.resultUnit = resultUnit;
+		this.operator = operator;
+		this.testedTimeUnit = testedTimeUnit;
+		if (testedConcentration != null) this.testedConcentration = testedConcentration.toString();
+		this.testedConcentrationUnit = testedConcentrationUnit;
+		if (uncertainty != null) this.uncertainty = uncertainty.toString();
+		this.uncertaintyUnit = uncertaintyUnit;
+		if (testedTime != null) this.testedTime = testedTime.toString();
+		
 		if (testedLot.startsWith("GENE")){
 			this.testedLot = geneId;
 //			Long lsThingId = LsThing.findLsThingsByCodeNameEquals(testedLot).getSingleResult().getId();
@@ -75,7 +100,15 @@ public class AnalysisGroupValueDTO {
 				this.result=stringValue;				
 			} else if (numericValue != null) {
 				this.result = String.valueOf(numericValue.doubleValue());
-			}			
+			} else if (stringValue != null) {
+				this.result = stringValue;
+			} else if (lsType.equals("codeValue")){
+				this.result=codeValue;
+			} else if (lsType.equals("inlineFileValue")){
+				this.result=fileValue;
+			} else if (lsType.equals("dateValue")){
+				this.result=dateValue.toString();
+			}
 		}
 
 //		List<ExperimentLabel> experimentNames = ExperimentLabel.findExperimentPreferredName(experimentId).getResultList();
@@ -93,13 +126,13 @@ public class AnalysisGroupValueDTO {
 
 //		Protocol protocol = Protocol.findProtocol(Experiment.findExperiment(experimentId).getProtocol().getId());
 //		this.protocolId = protocol.getId();
-		this.protocolId = 0L;
 
 	}
 
 
 	private Long id;	
 	private Long protocolId;
+	private String protocolName;
 	private Long experimentId;
 	private String experimentCodeName;
 	private String experimentName;
@@ -109,19 +142,37 @@ public class AnalysisGroupValueDTO {
 	//	private String stringValue;
 	//	private BigDecimal numericValue;
 	private String result;
+	private String resultUnit;
+	private String operator;
+	private String testedConcentration;
+	private String testedConcentrationUnit;
+	private String uncertainty;
+	private String uncertaintyUnit;
+	private String testedTime;
+	private String testedTimeUnit;
 
 
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
 				"id", 
 				"protocolId",
+				"protocolName",
 				"experimentId",
 				"experimentCodeName",
 				"experimentName",
 				"lsType",
 				"lsKind",
 				"testedLot",
-				"result"};
+				"result",
+				"resultUnit",
+				"operator",
+				"testedConcentration",
+				"testedConcentrationUnit",
+				"uncertainty",
+				"uncertaintyUnit",
+				"testedTime",
+				"testedTimeUnit"
+				};
 
 		return headerColumns;
 
@@ -129,6 +180,15 @@ public class AnalysisGroupValueDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),

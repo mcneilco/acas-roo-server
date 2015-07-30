@@ -24,11 +24,16 @@ public interface LsThingService {
 
 	PreferredNameResultsDTO getPreferredNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, String json);
+	
+	PreferredNameResultsDTO getPreferredNameFromName(String json);
 
 	String getProjectCodes();
 
 	PreferredNameResultsDTO getPreferredNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind,
+			PreferredNameRequestDTO requestDTO);
+
+	PreferredNameResultsDTO getPreferredNameFromName(
 			PreferredNameRequestDTO requestDTO);
 
 	LsThing saveLsThing(LsThing lsThing) throws UniqueNameException;
