@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
@@ -63,9 +64,7 @@ public interface LsThingService {
 
 	Collection<LsThing> findCompositesByComponentEquals(LsThing component);
 
-	ArrayList<ErrorMessage> validateLsThing(LsThing lsThing,
-			boolean checkUniqueName, boolean checkUniqueInteractions,
-			boolean checkOrderMatters, boolean checkForwardAndReverseAreSame);
+	ArrayList<ErrorMessage> validateLsThing(LsThingValidationDTO validationDTO);
 
 	Collection<LsThing> sortLsThingsByCodeName(Collection<LsThing> lsThings);
 	

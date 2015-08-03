@@ -84,7 +84,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
     
     public String toJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.itxLsThingLsThing")
+        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class", "lsStates.itxLsThingLsThing")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }
@@ -97,7 +97,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
     
     public static String toJsonArray(Collection<ItxLsThingLsThing> collection) {
-        return new JSONSerializer().exclude("*.class")
+        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
@@ -156,6 +156,58 @@ public class ItxLsThingLsThing extends AbstractThing {
         TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEqualsAndOrderEquals(String lsType, String lsKind, LsThing secondLsThing, int order){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"JOIN o.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND itxvalue.numericValue = :order " +
+				"AND o.secondLsThing = :secondLsThing ";
+        
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("order", new BigDecimal(order));
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndFirstLsThingEqualsAndSecondLsThingEquals(String lsType, String lsKind, LsThing firstLsThing, LsThing secondLsThing){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND o.firstLsThing = :firstLsThing " +
+				"AND o.secondLsThing = :secondLsThing ";
+        
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("firstLsThing", firstLsThing);        
         q.setParameter("secondLsThing", secondLsThing);        
         q.setParameter("ignored", ignored);
         
