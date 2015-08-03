@@ -95,6 +95,41 @@ public class LsThingServiceImpl implements LsThingService {
 
 		return responseOutput;
 	}
+
+
+	@Override
+	public PreferredNameResultsDTO getCodeNameFromName(String thingType, String thingKind, String labelType, String labelKind, String json){
+
+		PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);	
+		logger.info("number of requests: " + requestDTO.getRequests().size());
+		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
+
+		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
+		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
+
+		for (PreferredNameDTO request : requests){
+			request.setPreferredName("");
+			request.setReferenceName("");
+			List<LsThing> lsThings = LsThing.findLsThingByLabelText(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
+			if (lsThings.size() == 1){
+				request.setPreferredName(lsThings.get(0).getCodeName());
+				request.setReferenceName(lsThings.get(0).getCodeName());
+			} else if (lsThings.size() > 1){
+				responseOutput.setError(true);
+				ErrorMessageDTO error = new ErrorMessageDTO();
+				error.setLevel("error");
+				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
+				errors.add(error);
+			} else {
+				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+			}
+		}
+		responseOutput.setResults(requests);
+		responseOutput.setErrorMessages(errors);
+
+		return responseOutput;
+	}
 	
 	@Override
 	public PreferredNameResultsDTO getCodeNameFromName(String thingType, String thingKind, String labelType, String labelKind, PreferredNameRequestDTO requestDTO){
@@ -121,8 +156,8 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThings.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorCode("MULTIPLE RESULTS");
-				error.setErrorMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				error.setLevel("MULTIPLE RESULTS");
+				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
@@ -182,8 +217,8 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThingLabels != null && lsThingLabels.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorCode("MULTIPLE RESULTS");
-				error.setErrorMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				error.setLevel("MULTIPLE RESULTS");
+				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
@@ -238,8 +273,8 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThingLabels != null && lsThingLabels.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorCode("MULTIPLE RESULTS");
-				error.setErrorMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				error.setLevel("MULTIPLE RESULTS");
+				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {

@@ -1,7 +1,6 @@
 package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
 import java.util.Map;
 
@@ -69,6 +68,9 @@ public interface LsThingService {
 	Collection<LsThing> sortLsThingsByCodeName(Collection<LsThing> lsThings);
 	
 	Collection<LsThing> sortBatches(Collection<LsThing> batches);
+
+	PreferredNameResultsDTO getCodeNameFromName(String thingType,
+			String thingKind, String labelType, String labelKind, String json);
 	
 	
 }
