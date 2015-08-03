@@ -125,7 +125,7 @@ public class LsThingServiceImpl implements LsThingService {
 				lsThings = LsThing.findLsThingByLabelText(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
 			}
 			if (lsThings.size() == 1){
-				request.setPreferredName(lsThings.get(0).getCodeName());
+				request.setPreferredName(pickBestLabel(lsThings.get(0)));
 				request.setReferenceName(lsThings.get(0).getCodeName());
 			} else if (lsThings.size() > 1){
 				responseOutput.setError(true);
@@ -137,7 +137,7 @@ public class LsThingServiceImpl implements LsThingService {
 			} else {
 				try{
 					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
-					request.setPreferredName(codeNameMatch.getCodeName());
+					request.setPreferredName(pickBestLabel(codeNameMatch));
 					request.setReferenceName(codeNameMatch.getCodeName());
 				}catch (EmptyResultDataAccessException e){
 					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
