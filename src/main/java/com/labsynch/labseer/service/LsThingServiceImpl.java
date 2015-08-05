@@ -1010,7 +1010,7 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		if (paramName.equals("project")){
 			LsThing project = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
-			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_project", project).getResultList();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentProject", project).getResultList();
 			if (!lsThings.isEmpty()){
 				for (LsThing lsThing : lsThings){
 					lsThingIdList.add(lsThing.getId());
@@ -1086,11 +1086,19 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThingValues.clear();
 		}
 		if (paramName.equals("termType")){
-			LsThing termType = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
-			List<LsThing> terms = LsThing.findSecondLsThingsByItxTypeKindEqualsAndFirstLsThingEquals("classifies", "term type_term", termType).getResultList();
+			LsThingValue.findLsThingValuesByCodeValueEquals(param);
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByCodeValueEquals(param).getResultList();
+			Collection<LsThing> terms = new HashSet<LsThing>();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					LsThing term = LsThing.findLsThing(lsThingValue.getLsState().getLsThing().getId());
+					terms.add(term);
+				}
+			}
+			lsThingValues.clear();
 			if (!terms.isEmpty()){
 				for (LsThing term: terms){
-					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
 					if (!lsThings.isEmpty()){
 						for (LsThing lsThing : lsThings){
 							lsThingIdList.add(lsThing.getId());
@@ -1100,7 +1108,6 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 			}
 			terms.clear();
-			termType.clear();
 		}
 		if (paramName.equals("daysBefore")){
 			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals("days before", new BigDecimal(param)).getResultList();
@@ -1113,7 +1120,7 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThingValues.clear();
 			if (!terms.isEmpty()){
 				for (LsThing term: terms){
-					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
 					if (!lsThings.isEmpty()){
 						for (LsThing lsThing : lsThings){
 							lsThingIdList.add(lsThing.getId());
@@ -1138,7 +1145,7 @@ public class LsThingServiceImpl implements LsThingService {
 				lsThingValues.clear();
 				if (!terms.isEmpty()){
 					for (LsThing term: terms){
-						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
 						if (!lsThings.isEmpty()){
 							for (LsThing lsThing : lsThings){
 								lsThingIdList.add(lsThing.getId());
@@ -1166,7 +1173,7 @@ public class LsThingServiceImpl implements LsThingService {
 				lsThingValues.clear();
 				if (!terms.isEmpty()){
 					for (LsThing term: terms){
-						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "document_term", term).getResultList();
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
 						if (!lsThings.isEmpty()){
 							for (LsThing lsThing : lsThings){
 								lsThingIdList.add(lsThing.getId());

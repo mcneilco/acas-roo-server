@@ -1,7 +1,8 @@
 package com.labsynch.labseer.api;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.dto.AuthorNameDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.service.AuthorService;
@@ -46,6 +49,20 @@ public class ApiAuthorController {
 			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(results), headers, HttpStatus.OK);
         }
         else return new ResponseEntity<String>(Author.toJsonArray(result), headers, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/findByRoleName", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> listAuthorsByRoleName(@RequestParam("authorRoleName") String authorRoleName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<Author> authors = authorService.findAuthorsByAuthorRoleName(authorRoleName);
+        	return new ResponseEntity<String>(Author.toJsonArray(authors), headers, HttpStatus.OK);
+        }catch (Exception e){
+        	logger.error("Caught exception looking up authors with role: "+authorRoleName, e);
+        	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthorController.class);
