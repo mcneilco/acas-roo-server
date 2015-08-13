@@ -109,5 +109,14 @@ public class ItxLsThingLsThingState extends AbstractState {
         		.deserialize(json);
     }
 
+	public static ItxLsThingLsThingState updateNoMerge(
+			ItxLsThingLsThingState object) {
+		ItxLsThingLsThingState updatedObject = new JSONDeserializer<ItxLsThingLsThingState>().use(null, ItxLsThingLsThingState.class).
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+        				ItxLsThingLsThingState.findItxLsThingLsThingState(object.getId()));
+    	updatedObject.setModifiedDate(new Date());
+        return updatedObject;
+	}
+
 
 }
