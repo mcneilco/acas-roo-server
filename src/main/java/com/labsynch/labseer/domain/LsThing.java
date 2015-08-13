@@ -257,7 +257,6 @@ public class LsThing extends AbstractThing {
 		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
         
         boolean ignored = true;
-        
         EntityManager em = LsThing.entityManager();
 		String query = "SELECT DISTINCT o FROM LsThing o " +
 				"JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +

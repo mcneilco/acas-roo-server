@@ -95,13 +95,13 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public PreferredNameResultsDTO getGeneCodeNameFromName(String json){
 
-//		String thingType = "gene";
-//		String thingKind = "entrez gene";
-//		String labelType = "name";
-//		String labelKind = "Entrez Gene ID";
+		String thingType = "gene";
+		String thingKind = "entrez gene";
+		String labelType = "name";
+		String labelKind = "Entrez Gene ID";
 
-		PreferredNameResultsDTO responseOutput = getPreferredNameFromName(json);
-
+		PreferredNameResultsDTO responseOutput = getPreferredNameFromName(thingType, thingKind, labelType, labelKind, json);
+		
 		return responseOutput;
 	}
 	
