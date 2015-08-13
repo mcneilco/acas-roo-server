@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -13,5 +14,7 @@ public interface AuthorService {
 	public CodeTableDTO getAuthorCodeTable(Author author);
 
 	public List<CodeTableDTO> convertToCodeTables(List<Author> authors);
+
+	Collection<Author> findAuthorsByAuthorRoleName(String authorRoleName);
 
 }
