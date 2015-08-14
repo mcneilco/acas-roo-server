@@ -132,4 +132,13 @@ public class ItxLsThingLsThingValue extends AbstractValue {
         ItxLsThingLsThingValue newItxLsThingLsThingValue = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new ItxLsThingLsThingValue());
         return newItxLsThingLsThingValue;
     }
+
+	public static ItxLsThingLsThingValue updateNoMerge(
+			ItxLsThingLsThingValue object) {
+		ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+        				ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
+    	updatedObject.setModifiedDate(new Date());
+        return updatedObject;
+	}
 }
