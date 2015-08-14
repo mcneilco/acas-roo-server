@@ -1180,13 +1180,15 @@ public class LsThingServiceImpl implements LsThingService {
 			project.clear();
 		}
 		if (paramName.equals("owner")){
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByStringValueLike(param).getResultList();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+			LsThing owner = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentOwner", owner).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
 				}
 			}
-			lsThingValues.clear();
+			lsThings.clear();
+			owner.clear();
 		}
 		if (paramName.equals("amountFrom")) {
 			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals("amount", new BigDecimal(param)).getResultList();
