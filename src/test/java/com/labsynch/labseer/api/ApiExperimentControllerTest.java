@@ -51,7 +51,7 @@ public class ApiExperimentControllerTest {
     
     @Test
     public void genericSearchByScientist() throws Exception {
-    	String searchString = "bbolt";
+    	String searchString = "bob";
     	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/search?q="+searchString)
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON))

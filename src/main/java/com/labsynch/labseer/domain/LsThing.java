@@ -112,7 +112,7 @@ public class LsThing extends AbstractThing {
     
     @Transactional
     public String toJsonWithNestedFull() {
-        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels","secondLsThings.lsStates.lsValues","secondLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels", "secondLsThings.secondLsThing.lsStates.lsValues","secondLsThings.secondLsThing.lsLabels","firstLsThings.lsStates.lsValues","firstLsThings.lsLabels","secondLsThings.lsStates.lsValues","secondLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional

@@ -3,6 +3,8 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,7 +18,9 @@ import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.DDictValue;
+import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 
@@ -49,4 +53,16 @@ public class AuthorServiceImpl implements AuthorService {
 		}
 		return codeTableList;	
 	}
+	
+	@Override
+	public Collection<Author> findAuthorsByAuthorRoleName(String authorRoleName){
+		LsRole roleEntry = LsRole.findLsRolesByRoleNameEquals(authorRoleName).getSingleResult();
+		Collection<AuthorRole> authorRoles = AuthorRole.findAuthorRolesByRoleEntry(roleEntry).getResultList();
+		Collection<Author> authors = new HashSet<Author>();
+		for (AuthorRole authorRole : authorRoles){
+			authors.add(authorRole.getUserEntry());
+		}
+		return authors;
+	}
+	
 }
