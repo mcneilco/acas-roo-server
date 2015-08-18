@@ -27,6 +27,16 @@ privileged aspect LsThingValue_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThingValue> LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals(String lsKind, String stringValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.stringValue = :stringValue", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        return q;
+    }
+    
     public static TypedQuery<LsThingValue> LsThingValue.findLsThingValuesByLsState(LsThingState lsState) {
         if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
         EntityManager em = LsThingValue.entityManager();
