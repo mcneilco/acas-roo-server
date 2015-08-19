@@ -940,7 +940,7 @@ public class LsThingServiceImpl implements LsThingService {
 		searchParamsMap.remove("with");
 		if (searchParamsMap.isEmpty()){
 			Collection<LsThing> result = new HashSet<LsThing>();
-			result.addAll(LsThing.findAllLsThings());
+			result.addAll(LsThing.findLsThingsByLsTypeEquals("legalDocument").getResultList());
 			return result;
 		}
 		for (String paramName : searchParamsMap.keySet()){
@@ -960,8 +960,8 @@ public class LsThingServiceImpl implements LsThingService {
 		Collection<LsThing> result = new HashSet<LsThing>();
 		for (LsThing lsThing: lsThingList) {
 			//For Protocol Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
-			if (lsThing.isDeleted()){
-				logger.debug("removing a deleted lsThing from the results");
+			if (lsThing.isDeleted() || !lsThing.getLsType().equals("legalDocument")){
+				logger.debug("removing a deleted or non-legalDocument lsThing from the results");
 			} else {
 				result.add(lsThing);
 			}
