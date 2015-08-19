@@ -23,22 +23,22 @@ public class DiscontinuedGenesFromCSVFileTests {
 	private static final Logger logger = LoggerFactory.getLogger(DiscontinuedGenesFromCSVFileTests.class);
 
 	@Autowired
-	private AutoLabelService autoLabelService;
+	public AutoLabelService autoLabelService;
 
 	@Autowired
-	private GeneThingService geneThingService;
+	public GeneThingService geneThingService;
 
 	@Test
 	@Transactional
 	public void ReadCSVFile_Test1() throws IOException{
 
-//		String entrezGenesFile = "/Users/goshiro2014/Documents/McNeilco_2012/clients/Dart/acasDataExplorer/genesToLoad/sampleNewGenes.txt";
-//		String geneHistoryFile = "/Users/goshiro2014/Documents/McNeilco_2012/clients/Dart/acasDataExplorer/genesToLoad/sample_human_history.txt";
-//		String taxonomyId = "9606";
+		String entrezGenesFile = "/Users/goshiro2014/Documents/McNeilco_2012/clients/Dart/acasDataExplorer/genesToLoad/sampleHumanGenes.txt";
+		String geneHistoryFile = "/Users/goshiro2014/Documents/McNeilco_2012/clients/Dart/acasDataExplorer/genesToLoad/sample_human_history.txt";
+		String taxonomyId = "9606";
 		
-		String entrezGenesFile = "/Users/goshiro2014/Documents/McNeilco_2012/clients/Dart/acasDataExplorer/genesToLoad/fly_sample_gene.txt";
-		String geneHistoryFile = "/Users/goshiro2014/Documents/McNeilco_2012/clients/Dart/acasDataExplorer/genesToLoad/fly_sample_history.txt";
-		String taxonomyId = "7227";
+//		String entrezGenesFile = "/Users/goshiro2014/Documents/McNeilco_2012/clients/Dart/acasDataExplorer/genesToLoad/fly_sample_gene.txt";
+//		String geneHistoryFile = "/Users/goshiro2014/Documents/McNeilco_2012/clients/Dart/acasDataExplorer/genesToLoad/fly_sample_history.txt";
+//		String taxonomyId = "7227";
 		
 
 		geneThingService.updateEntrezGenes(entrezGenesFile, geneHistoryFile, taxonomyId);

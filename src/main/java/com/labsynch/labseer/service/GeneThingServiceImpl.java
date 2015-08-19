@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ParseDate;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -43,10 +44,10 @@ import com.labsynch.labseer.utils.SimpleUtil;
 @Service
 public class GeneThingServiceImpl implements GeneThingService {
 
-	private static final Logger logger = LoggerFactory.getLogger(GeneThingServiceImpl.class);
+	public static final Logger logger = LoggerFactory.getLogger(GeneThingServiceImpl.class);
 
 	@Autowired
-	private AutoLabelService autoLabelService;
+	public AutoLabelService autoLabelService;
 
 	
 	@Override
@@ -57,7 +58,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 	@Override
 	public void RegisterGeneThingsFromCSV(String inputFile) throws IOException{
 
-		logger.info("read tab delimited file");
+		logger.debug("read tab delimited file");
 		BufferedReader br = new BufferedReader(new FileReader(inputFile));
 
 		ICsvBeanReader beanReader = null;
@@ -101,7 +102,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			List<String> headerList = new ArrayList<String>();
 			int position = 0;
 			for (String head : headerText){
-				logger.info("header column: " + position + "  " + head);
+				logger.debug("header column: " + position + "  " + head);
 				if (geneBeanMap.get(head) != null){
 					headerList.add(geneBeanMap.get(head));   				
 				}
@@ -109,7 +110,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			}
 
 
-			logger.info("size of header list  " + headerList.size());
+			logger.debug("size of header list  " + headerList.size());
 			String[] header = new String[headerList.size()];
 			headerList.toArray(header);
 
@@ -133,7 +134,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			LsThing geneThing = null;
 			while( (geneDTO = beanReader.read(EntrezDbGeneDTO.class, header, processors)) != null ) {
 				System.out.println(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), geneDTO));
-				logger.info("current gene: " + geneDTO.getGeneId());
+				logger.debug("current gene: " + geneDTO.getGeneId());
 
 				// check if gene currently exists
 				Long geneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId());
@@ -197,7 +198,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 
 	}
 
-	private LsThingValue saveGeneDescriptor(LsTransaction lsTransaction, LsThingState geneState, String lsType, String lsKind, Date dateValue) {
+	public LsThingValue saveGeneDescriptor(LsTransaction lsTransaction, LsThingState geneState, String lsType, String lsKind, Date dateValue) {
 		LsThingValue lsValue = new LsThingValue();
 		lsValue.setLsState(geneState);
 		lsValue.setLsType(lsType);
@@ -206,17 +207,17 @@ public class GeneThingServiceImpl implements GeneThingService {
 		lsValue.setLsTransaction(lsTransaction.getId());
 		lsValue.setRecordedBy("acas admin");
 		lsValue.persist();
-		logger.info("saving gene descriptor date: " + dateValue);
+		logger.debug("saving gene descriptor date: " + dateValue);
 		return lsValue;
 
 	}
 	
-	private List<LsThingValue> saveGeneDescriptor(LsTransaction lsTransaction, LsThingState geneState, String lsType, String lsKind, String dataValues, String entrezSeparator) {
+	public List<LsThingValue> saveGeneDescriptor(LsTransaction lsTransaction, LsThingState geneState, String lsType, String lsKind, String dataValues, String entrezSeparator) {
 		List<LsThingValue> lsValues = new ArrayList<LsThingValue>();
 		String[] valueList = dataValues.split(entrezSeparator);
 		for (String value : valueList){
 			if (value.equalsIgnoreCase("-")){
-				logger.info("skipping gene descriptor: " + value);
+				logger.debug("skipping gene descriptor: " + value);
 			} else {
 			LsThingValue lsValue = new LsThingValue();
 			lsValue.setLsState(geneState);
@@ -227,18 +228,18 @@ public class GeneThingServiceImpl implements GeneThingService {
 			lsValue.setRecordedBy("acas admin");
 			lsValue.persist();
 			lsValues.add(lsValue);
-			logger.info("saving gene descriptor: " + value);
+			logger.debug("saving gene descriptor: " + value);
 			}
 		}		
 		return lsValues;
 	}
 
-	private List<LsThingLabel> saveGeneLabel(LsTransaction lsTransaction, LsThing geneThing, String labelType, String labelKind, boolean preferred, String labels, String entrezSeparator) {
+	public List<LsThingLabel> saveGeneLabel(LsTransaction lsTransaction, LsThing geneThing, String labelType, String labelKind, boolean preferred, String labels, String entrezSeparator) {
 		List<LsThingLabel> newLabels = new ArrayList<LsThingLabel>();
 		String[] labelList = labels.split(entrezSeparator);
 		for (String label : labelList){
 			if (label.equalsIgnoreCase("-")){
-				logger.info("skipping gene label: " + label);
+				logger.debug("skipping gene label: " + label);
 			} else {
 				
 //				existingLabels = LsThingLabel.findLsThingName("gene", "entrez gene", labelType, labelKind, label).getResultList();
@@ -253,9 +254,9 @@ public class GeneThingServiceImpl implements GeneThingService {
 					lsLabel.setRecordedBy("acas admin");
 					lsLabel.persist();
 					newLabels.add(lsLabel);
-					logger.info("saving gene label: " + label);
+					logger.debug("saving gene label: " + label);
 				} else {
-					logger.info("-------------- the label already exists -- not creating new entry" + label);
+					logger.debug("-------------- the label already exists -- not creating new entry" + label);
 				}
 				
 			}
@@ -405,7 +406,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 		
 	}
 	
-	private LsThingLabel saveGeneLabel(LsTransaction lsTransaction, LsThing geneThing,
+	public LsThingLabel saveGeneLabel(LsTransaction lsTransaction, LsThing geneThing,
 			String labelType, String labelKind, boolean preferred, String label) {
 		LsThingLabel lsLabel = new LsThingLabel();
 		lsLabel.setLsThing(geneThing);
@@ -417,7 +418,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 		lsLabel.setRecordedBy("acas admin");
 		lsLabel.setRecordedDate(new Date());
 		lsLabel.persist();
-		logger.info("saving gene label: " + label);
+		logger.debug("saving gene label: " + label);
 		return lsLabel;
 		
 	}
@@ -434,7 +435,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 
 	}
 	
-	private LsTransaction createLsTransaction(String txComment) {
+	public LsTransaction createLsTransaction(String txComment) {
 		LsTransaction lsTransaction = new LsTransaction();
 		lsTransaction.setComments(txComment);
 		lsTransaction.setRecordedDate(new Date());
@@ -451,6 +452,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 	}
 	
 	@Override
+	@Transactional
 	public void updateEntrezGenes(String entrezGenesFile,
 			String geneHistoryFile, String taxonomyId,
 			LsTransaction lsTransaction) throws IOException {
@@ -461,12 +463,12 @@ public class GeneThingServiceImpl implements GeneThingService {
 	}
 
 
-	private void processEntrezGenes(String entrezGenes, GeneHistoryDTO historyResults, 
+	public void processEntrezGenes(String entrezGenes, GeneHistoryDTO historyResults, 
 			String taxonomyId, LsTransaction lsTransaction) throws IOException {
 
 		setGeneDefaults();
 
-		logger.info("read tab delimited file");
+		logger.debug("read tab delimited file");
 		BufferedReader br = new BufferedReader(new FileReader(entrezGenes));
 
 		ICsvBeanReader beanReader = null;
@@ -500,7 +502,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			List<String> headerList = new ArrayList<String>();
 			int position = 0;
 			for (String head : headerText){
-				logger.info("header column: " + position + "  " + head);
+				logger.debug("header column: " + position + "  " + head);
 				if (geneBeanMap.get(head) != null){
 					headerList.add(geneBeanMap.get(head));   				
 				}
@@ -508,7 +510,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			}
 
 
-			logger.info("size of header list  " + headerList.size());
+			logger.debug("size of header list  " + headerList.size());
 			String[] header = new String[headerList.size()];
 			headerList.toArray(header);
 
@@ -532,12 +534,15 @@ public class GeneThingServiceImpl implements GeneThingService {
 			LsThing geneThing = null;
 			while( (geneDTO = beanReader.read(EntrezDbGeneDTO.class, header, processors)) != null ) {
 				System.out.println(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), geneDTO));
-				logger.info("current gene: " + geneDTO.getGeneId());
+				logger.debug("current gene: " + geneDTO.getGeneId());
 
 				// check if gene currently exists
 				Long geneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId());
 //				Long oldGeneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", historyResults.getUpdatedGenes().get(geneDTO.getGeneId()).getDiscontinuedGeneId());
 
+				logger.debug("geneId count"  + geneIdCount);
+
+				
 				// check if discontinued gene
 				boolean discontinuedGene = false;
 				if (historyResults.getDiscontinuedGenes().containsKey(geneDTO.getGeneId())) {
@@ -589,6 +594,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 					}
 				}
 				i++;
+				logger.debug("-----------------------------------------------current entrez gene update count: " + i);
 
 			}
 		}
@@ -676,13 +682,13 @@ public class GeneThingServiceImpl implements GeneThingService {
 	}
 	
 	
-	private LsThing addOldGeneID(LsThing geneThing, EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
+	public LsThing addOldGeneID(LsThing geneThing, EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
 		geneThing.getLsLabels().add(saveGeneLabel(lsTransaction, geneThing, "name", "Entrez Gene ID", false, entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()));
 		geneThing.getLsLabels().add(saveGeneLabel(lsTransaction, geneThing, "name", "gene symbol", false, entrezDiscontinuedGeneDTO.getDiscontinuedSymbol()));
 		return geneThing;
 	}
 
-	private LsThing discontinueGene(EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
+	public LsThing discontinueGene(EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
 		// TODO Auto-generated method stub
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
@@ -707,7 +713,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 		
 	}
 
-	private LsThing addDiscontinueMetadata(LsThing geneThing, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
+	public LsThing addDiscontinueMetadata(LsThing geneThing, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
 		
 		List<LsThingValue> thingValues = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(geneThing.getId(), "metadata", "gene discontinued metadata", "stringValue", "discontinued gene").getResultList();
 		
@@ -741,7 +747,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 		return geneThing;
 	}
 
-	private LsThing updateGene(EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
+	public LsThing updateGene(EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
 		List<LsThing> genes = LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()).getResultList();
@@ -763,7 +769,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 		return geneThing;
 	}
 
-	private LsThing updateGeneMetaData(LsThing geneThing, EntrezDbGeneDTO geneDTO, LsTransaction lsTransaction) {
+	public LsThing updateGeneMetaData(LsThing geneThing, EntrezDbGeneDTO geneDTO, LsTransaction lsTransaction) {
 		
 // ignore old states
 		//		List<LsThingState> oldStates = LsThingState.findLsThingStatesByLsThingIDAndStateTypeKind(geneThing.getId(), "metadata", "gene metadata").getResultList();
@@ -817,7 +823,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 	
 
 
-	private LsThing ignoreNonGeneIDLabels(LsTransaction lsTransaction, LsThing geneThing) {
+	public LsThing ignoreNonGeneIDLabels(LsTransaction lsTransaction, LsThing geneThing) {
 		Set<LsThingLabel> lsLabels = new HashSet<LsThingLabel>();
 		for (LsThingLabel geneLabel : geneThing.getLsLabels()){
 			if (geneLabel.getLsType().equalsIgnoreCase("name") && geneLabel.getLsKind().equalsIgnoreCase("Entrez Gene ID")){
@@ -833,7 +839,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 		return geneThing;
 	}
 
-	private LsThing updateGeneID(LsThing geneThing, EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
+	public LsThing updateGeneID(LsThing geneThing, EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
 		
 		logger.debug("attempting to update the gene");
 		logger.debug(geneThing.toJson());
@@ -872,7 +878,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 
 	@Override
 	public LsThing registerDiscontinuedGene(EntrezDiscontinuedGeneDTO geneDTO, LsTransaction lsTransaction) {
-		logger.info("create discontinued gene: " + geneDTO.getDiscontinuedGeneId());
+		logger.debug("create discontinued gene: " + geneDTO.getDiscontinuedGeneId());
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
 		ThingType geneType = ThingType.getOrCreate(geneTypeString);
@@ -925,26 +931,45 @@ public class GeneThingServiceImpl implements GeneThingService {
 	}
 
 
-	private void processDiscontinuedGenes(HashMap<String, EntrezDiscontinuedGeneDTO> discontinuedGenes,
+	public void processDiscontinuedGenes(HashMap<String, EntrezDiscontinuedGeneDTO> discontinuedGenes,
 			String taxonomyId, LsTransaction lsTransaction) {
 
 		EntrezDiscontinuedGeneDTO discontinuedGene;
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
 		LsThing geneThing = null;
+		int geneCount = 0;
+		int batchSize = 25;
 		for (String key : discontinuedGenes.keySet()){
 			discontinuedGene = discontinuedGenes.get(key);
 			// check if gene currently exists
 			Long geneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", discontinuedGene.getDiscontinuedGeneId());
+//			Long geneIdCount = LsThingLabel.countOfLsLabelsByName("name", "Entrez Gene ID", discontinuedGene.getDiscontinuedGeneId());
+
 			if (geneIdCount == 0){
 				geneThing = createDiscontinuedGene(discontinuedGene, lsTransaction);
 			}
+			
+			
+			
+			geneCount++;
+
+		
+
+			if ( geneCount % batchSize == 0 ) { // same as the JDBC batch size
+				logger.info("-----------------------------------------------current discontinued gene update count: " + geneCount);
+				if (geneThing != null){
+					geneThing.flush();
+					geneThing.clear();						
+				}
+			}
+		
 		}
 
 	}
 
-	private LsThing createDiscontinuedGene(EntrezDiscontinuedGeneDTO geneDTO, LsTransaction lsTransaction) {
-		logger.info("create discontinued gene: " + geneDTO.getDiscontinuedGeneId());
+	public LsThing createDiscontinuedGene(EntrezDiscontinuedGeneDTO geneDTO, LsTransaction lsTransaction) {
+		logger.debug("create discontinued gene: " + geneDTO.getDiscontinuedGeneId());
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
 //		ThingType geneType = ThingType.getOrCreate(geneTypeString);
@@ -998,7 +1023,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 	}
 
 	
-	private GeneHistoryDTO processGeneHistory(String geneHistoryFileName, String taxonomyId) throws IOException {
+	public GeneHistoryDTO processGeneHistory(String geneHistoryFileName, String taxonomyId) throws IOException {
 
 		BufferedReader br = new BufferedReader(new FileReader(geneHistoryFileName));
 		ICsvBeanReader beanReader = null;
@@ -1020,7 +1045,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			List<String> headerList = new ArrayList<String>();
 			int position = 0;
 			for (String head : headerText){
-				logger.info("header column: " + position + "  " + head);
+				logger.debug("header column: " + position + "  " + head);
 				if (geneBeanMap.get(head) != null){
 					headerList.add(geneBeanMap.get(head));   				
 				}
@@ -1028,7 +1053,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			}
 
 
-			logger.info("size of header list  " + headerList.size());
+			logger.debug("size of header list  " + headerList.size());
 			String[] header = new String[headerList.size()];
 			headerList.toArray(header);
 
@@ -1039,7 +1064,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 
 			while( (geneDTO = beanReader.read(EntrezDiscontinuedGeneDTO.class, header, processors)) != null ) {
 				System.out.println(String.format("lineNo=%s, rowNo=%s, bulkData=%s", beanReader.getLineNumber(), beanReader.getRowNumber(), geneDTO));
-				logger.info("current gene: " + geneDTO.getGeneId());
+				logger.debug("current gene: " + geneDTO.getGeneId());
 				if (geneDTO.getTaxId().equalsIgnoreCase(taxonomyId)){
 					if (geneDTO.getGeneId().equalsIgnoreCase("-")){
 						discontinuedGenes.put(geneDTO.getDiscontinuedGeneId(), geneDTO);					
@@ -1049,8 +1074,8 @@ public class GeneThingServiceImpl implements GeneThingService {
 				}
 
 			}
-			logger.info("size of the discontinuedGenes hash is : " + discontinuedGenes.size());
-			logger.info("size of the updatedGenes hash is : " + updatedGenes.size());
+			logger.debug("size of the discontinuedGenes hash is : " + discontinuedGenes.size());
+			logger.debug("size of the updatedGenes hash is : " + updatedGenes.size());
 
 		}		
 		finally {
@@ -1068,7 +1093,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 	}
 
 
-	private class GeneHistoryDTO {
+	public class GeneHistoryDTO {
 		private HashMap<String, EntrezDiscontinuedGeneDTO> discontinuedGenes;
 		private HashMap<String, EntrezDiscontinuedGeneDTO> updatedGenes;
 		public HashMap<String, EntrezDiscontinuedGeneDTO> getDiscontinuedGenes() {
@@ -1085,7 +1110,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 		}
 	}
 
-	private static CellProcessor[] getDiscontinuedGenesProcessors() {
+	public static CellProcessor[] getDiscontinuedGenesProcessors() {
 
 		//    	"dd/MM/yyyy" (parses a date formatted as "25/12/2011")
 		//    	"dd-MMM-yy" (parses a date formatted as "25-Dec-11")
