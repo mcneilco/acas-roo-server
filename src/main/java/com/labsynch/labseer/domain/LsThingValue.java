@@ -292,7 +292,17 @@ public class LsThingValue extends AbstractValue {
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
         EntityManager em = LsThingValue.entityManager();
-        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.stringValue) = LOWER(:stringValue)", LsThingValue.class);
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND LOWER(o.stringValue) = LOWER(:stringValue)", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndStringValueEquals(String lsKind, String stringValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND o.stringValue = :stringValue", LsThingValue.class);
         q.setParameter("lsKind", lsKind);
         q.setParameter("stringValue", stringValue);
         return q;

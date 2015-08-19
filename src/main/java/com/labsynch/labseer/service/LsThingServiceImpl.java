@@ -938,6 +938,10 @@ public class LsThingServiceImpl implements LsThingService {
 		//map where key is paramName and value is list of ids found matching that param
 		Map<String, HashSet<Long>> resultsByParam = new HashMap<String, HashSet<Long>>();
 		searchParamsMap.remove("with");
+		if (searchParamsMap.isEmpty()){
+			Collection<LsThing> result = new HashSet<LsThing>();
+			result.addAll(LsThing.findAllLsThings());
+		}
 		for (String paramName : searchParamsMap.keySet()){
 			String param = searchParamsMap.get(paramName);
 			logger.debug("Searching by "+paramName+" = "+param);
