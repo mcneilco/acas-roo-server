@@ -941,6 +941,7 @@ public class LsThingServiceImpl implements LsThingService {
 		if (searchParamsMap.isEmpty()){
 			Collection<LsThing> result = new HashSet<LsThing>();
 			result.addAll(LsThing.findAllLsThings());
+			return result;
 		}
 		for (String paramName : searchParamsMap.keySet()){
 			String param = searchParamsMap.get(paramName);
