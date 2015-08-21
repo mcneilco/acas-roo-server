@@ -36,6 +36,19 @@ public class ItxLsThingLsThingServiceTests {
 		ItxLsThingLsThing jsonItxLsThingLsThing = ItxLsThingLsThing.fromJsonToItxLsThingLsThing(json);
 		ItxLsThingLsThing updatedItxLsThingLsThing = itxLsThingLsThingService.updateItxLsThingLsThing(jsonItxLsThingLsThing);
 		logger.info(updatedItxLsThingLsThing.toJson());
+		updatedItxLsThingLsThing.flush();
+		updatedItxLsThingLsThing.clear();
+	}
+	
+	@Test
+	@Transactional
+	public void save_itx() {
+		String json = "{\"lsType\":\"supports\",\"lsKind\":\"reference_gene\",\"lsTypeAndKind\":\"supports_reference_gene\",\"lsStates\":[{\"lsType\":\"evidence\",\"lsKind\":\"in vitro default\",\"lsValues\":[{\"lsType\":\"clobValue\",\"lsKind\":\"excerpt\",\"ignored\":false,\"recordedDate\":1440111005789,\"recordedBy\":\"egao\",\"value\":\"test aug 20 excerpt\",\"clobValue\":\"test aug 20 excerpt\"},{\"lsType\":\"clobValue\",\"lsKind\":\"conclusion\",\"ignored\":false,\"recordedDate\":1440111005790,\"recordedBy\":\"egao\",\"value\":\"test aug20 conclusion\",\"clobValue\":\"test aug20 conclusion\"}],\"ignored\":false,\"recordedDate\":1440111005789,\"recordedBy\":\"egao\"}],\"recordedBy\":\"egao\",\"recordedDate\":1440111005789,\"firstLsThing\":{\"id\":667047},\"cid\":\"c1263\",\"_changing\":false,\"_previousAttributes\":{\"lsType\":\"supports\",\"lsKind\":\"reference_gene\",\"lsTypeAndKind\":\"supports_reference_gene\",\"lsStates\":[{\"lsType\":\"evidence\",\"lsKind\":\"in vitro default\",\"lsValues\":[{\"lsType\":\"clobValue\",\"lsKind\":\"excerpt\",\"ignored\":false,\"recordedDate\":1440111005789,\"recordedBy\":\"egao\",\"value\":\"test aug 20 excerpt\",\"clobValue\":\"test aug 20 excerpt\"},{\"lsType\":\"clobValue\",\"lsKind\":\"conclusion\",\"ignored\":false,\"recordedDate\":1440111005790,\"recordedBy\":\"egao\",\"value\":\"test aug20 conclusion\",\"clobValue\":\"test aug20 conclusion\"}],\"ignored\":false,\"recordedDate\":1440111005789,\"recordedBy\":\"egao\"}],\"recordedBy\":\"egao\",\"recordedDate\":1440110988652,\"firstLsThing\":{}},\"changed\":{\"evidenceClass\":\"general\"},\"_pending\":false,\"className\":\"BaseEvidence\",\"lsProperties\":{\"defaultValues\":[{\"key\":\"thumbnail\",\"type\":\"fileValue\",\"kind\":\"thumbnail\"},{\"key\":\"excerpt\",\"type\":\"clobValue\",\"kind\":\"excerpt\"},{\"key\":\"conclusion\",\"type\":\"clobValue\",\"kind\":\"conclusion\"}]},\"validationError\":null,\"idAttribute\":\"id\",\"secondLsThing\":{\"id\":4}}";
+		ItxLsThingLsThing jsonItxLsThingLsThing = ItxLsThingLsThing.fromJsonToItxLsThingLsThing(json);
+		ItxLsThingLsThing updatedItxLsThingLsThing = itxLsThingLsThingService.saveItxLsThingLsThing(jsonItxLsThingLsThing);
+		logger.info(updatedItxLsThingLsThing.toJson());
+		updatedItxLsThingLsThing.flush();
+		updatedItxLsThingLsThing.clear();
 	}
 
 }

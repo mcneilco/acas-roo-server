@@ -61,6 +61,8 @@ public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {
 	@Override
 	public ItxLsThingLsThing saveItxLsThingLsThing(ItxLsThingLsThing itxLsThingLsThing){
 		ItxLsThingLsThing newItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+//		newItxLsThingLsThing.setFirstLsThing(LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId()));
+//		newItxLsThingLsThing.setSecondLsThing(LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId()));
 		newItxLsThingLsThing.persist();
 		if(itxLsThingLsThing.getLsStates() != null){
 			Set<ItxLsThingLsThingState> lsStates = new HashSet<ItxLsThingLsThingState>();
@@ -91,7 +93,7 @@ public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {
 		return newItxLsThingLsThing;
 	}
 	
-	private void updateItxLsStates(ItxLsThingLsThing jsonItxLsThingLsThing, ItxLsThingLsThing updatedItxLsThingLsThing){
+	public void updateItxLsStates(ItxLsThingLsThing jsonItxLsThingLsThing, ItxLsThingLsThing updatedItxLsThingLsThing){
 		if(jsonItxLsThingLsThing.getLsStates() != null){
 			for(ItxLsThingLsThingState itxLsThingLsThingState : jsonItxLsThingLsThing.getLsStates()){
 				ItxLsThingLsThingState updatedItxLsThingLsThingState;

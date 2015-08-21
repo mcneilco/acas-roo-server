@@ -62,8 +62,8 @@ public class ItxLsThingLsThing extends AbstractThing {
     	this.setLsType(itxLsThingLsThing.getLsType());
     	this.setLsKind(itxLsThingLsThing.getLsKind());
     	this.setLsTypeAndKind(itxLsThingLsThing.getLsTypeAndKind());
-        this.firstLsThing = itxLsThingLsThing.getFirstLsThing();
-        this.secondLsThing = itxLsThingLsThing.getSecondLsThing();
+        this.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
+        this.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());
     }
     
     public static ItxLsThingLsThing update(ItxLsThingLsThing itxLsThingLsThing) {
