@@ -83,6 +83,14 @@ public class ItxLsThingLsThingValue extends AbstractValue {
         return updatedObject;
     }
     
+	public static ItxLsThingLsThingValue updateNoMerge(
+			ItxLsThingLsThingValue object) {
+		ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+        				ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
+    	updatedObject.setModifiedDate(new Date());
+        return updatedObject;
+	}
     
     public static ItxLsThingLsThingValue fromJsonToItxLsThingLsThingValue(String json) {
         return new JSONDeserializer<ItxLsThingLsThingValue>().
@@ -133,12 +141,5 @@ public class ItxLsThingLsThingValue extends AbstractValue {
         return newItxLsThingLsThingValue;
     }
 
-	public static ItxLsThingLsThingValue updateNoMerge(
-			ItxLsThingLsThingValue object) {
-		ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
-        				ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
-    	updatedObject.setModifiedDate(new Date());
-        return updatedObject;
-	}
+
 }

@@ -45,14 +45,38 @@ public class ItxLsThingLsThingState extends AbstractState {
 		
     }
     
-    public static ItxLsThingLsThingState update(ItxLsThingLsThingState object) {
-    	ItxLsThingLsThingState updatedObject = new JSONDeserializer<ItxLsThingLsThingState>().use(null, ItxLsThingLsThingState.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
-        				ItxLsThingLsThingState.findItxLsThingLsThingState(object.getId()));
+    public static ItxLsThingLsThingState update(ItxLsThingLsThingState itxState) {
+    	ItxLsThingLsThingState updatedObject = ItxLsThingLsThingState.findItxLsThingLsThingState(itxState.getId());
+    	updatedObject.setLsType(itxState.getLsType());
+    	updatedObject.setLsKind(itxState.getLsKind());
+    	updatedObject.setIgnored(itxState.isIgnored());
+    	updatedObject.setDeleted(itxState.isDeleted());
+    	updatedObject.setRecordedBy(itxState.getRecordedBy());
+    	updatedObject.setRecordedDate(itxState.getRecordedDate());
+    	updatedObject.setLsTransaction(itxState.getLsTransaction());
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();
         return updatedObject;
     }
+    
+//    public static ItxLsThingLsThingState update(ItxLsThingLsThingState object) {
+//    	ItxLsThingLsThingState updatedObject = new JSONDeserializer<ItxLsThingLsThingState>().use(null, ItxLsThingLsThingState.class).
+//        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+//        				ItxLsThingLsThingState.findItxLsThingLsThingState(object.getId()));
+//    	updatedObject.setModifiedDate(new Date());
+//    	updatedObject.merge();
+//        return updatedObject;
+//    }
+    
+	public static ItxLsThingLsThingState updateNoMerge(
+			ItxLsThingLsThingState object) {
+		ItxLsThingLsThingState updatedObject = new JSONDeserializer<ItxLsThingLsThingState>().use(null, ItxLsThingLsThingState.class).
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+        				ItxLsThingLsThingState.findItxLsThingLsThingState(object.getId()));
+    	updatedObject.setModifiedDate(new Date());
+        return updatedObject;
+	}
+
 
 	@ManyToOne
     private ItxLsThingLsThing itxLsThingLsThing;
@@ -109,14 +133,6 @@ public class ItxLsThingLsThingState extends AbstractState {
         		.deserialize(json);
     }
 
-	public static ItxLsThingLsThingState updateNoMerge(
-			ItxLsThingLsThingState object) {
-		ItxLsThingLsThingState updatedObject = new JSONDeserializer<ItxLsThingLsThingState>().use(null, ItxLsThingLsThingState.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
-        				ItxLsThingLsThingState.findItxLsThingLsThingState(object.getId()));
-    	updatedObject.setModifiedDate(new Date());
-        return updatedObject;
-	}
 
 
 }

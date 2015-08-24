@@ -23,6 +23,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -37,12 +38,12 @@ import flexjson.JSONSerializer;
 public class ItxLsThingLsThing extends AbstractThing {
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "first_ls_thing_id")
     private LsThing firstLsThing;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "second_ls_thing_id")
     private LsThing secondLsThing;
 
@@ -65,7 +66,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         this.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
         this.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());
     }
-    
+        
     public static ItxLsThingLsThing update(ItxLsThingLsThing itxLsThingLsThing) {
     	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
     	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
@@ -83,8 +84,17 @@ public class ItxLsThingLsThing extends AbstractThing {
         return updatedItxLsThingLsThing;
     }
     
+    public static ItxLsThingLsThing updateNoStates(ItxLsThingLsThing itxLsThingLsThing) {
+    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setModifiedDate(new Date());
+    	updatedItxLsThingLsThing.merge();
+        return updatedItxLsThingLsThing;
+    }
+    
+    @Transactional
     public String toJson() {
-        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class", "lsStates.itxLsThingLsThing")
+        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class", "lsStates.itxLsThingLsThing", "lsStates.lsValues.lsState")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }
@@ -97,7 +107,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
     
     public static String toJsonArray(Collection<ItxLsThingLsThing> collection) {
-        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class")
+        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class", "lsStates.itxLsThingLsThing", "lsStates.lsValues.lsState")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
@@ -248,4 +258,6 @@ public class ItxLsThingLsThing extends AbstractThing {
 		}
 		return 0;
 	}
+
+
 }
