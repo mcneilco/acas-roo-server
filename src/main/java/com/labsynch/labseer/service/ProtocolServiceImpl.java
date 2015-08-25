@@ -390,12 +390,12 @@ public class ProtocolServiceImpl implements ProtocolService {
 			try {
 				Date date = df.parse(queryString);
 				logger.debug("Successfully parsed date: "+queryString);
-				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
+				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
 					logger.debug("Successfully parsed date: "+queryString);
-					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
+					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}
