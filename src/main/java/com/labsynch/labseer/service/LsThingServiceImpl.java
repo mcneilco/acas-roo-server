@@ -875,7 +875,7 @@ public class LsThingServiceImpl implements LsThingService {
 		return searchResults;
 	}
 	
-	private void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
+	public void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
 		if(jsonLsThing.getLsStates() != null){
 			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
 				LsThingState updatedLsThingState;
@@ -884,13 +884,18 @@ public class LsThingServiceImpl implements LsThingService {
 					updatedLsThingState.setLsThing(updatedLsThing);
 					updatedLsThingState.persist();
 					updatedLsThing.getLsStates().add(updatedLsThingState);
+					logger.debug("persisted new lsThing state " + updatedLsThingState.getId());
+
 				} else {
 					updatedLsThingState = LsThingState.update(lsThingState);
+					updatedLsThing.getLsStates().add(updatedLsThingState);
+
 					logger.debug("updated lsThing state " + updatedLsThingState.getId());
 
 				}
 				if (lsThingState.getLsValues() != null){
 					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
+						if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedLsThingState);
 						LsThingValue updatedLsThingValue;
 						if (lsThingValue.getId() == null){
 							updatedLsThingValue = LsThingValue.create(lsThingValue);
@@ -901,6 +906,8 @@ public class LsThingServiceImpl implements LsThingService {
 							updatedLsThingValue = LsThingValue.update(lsThingValue);
 							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
 						}
+						logger.debug("checking lsThingValue " + updatedLsThingValue.toJson());
+
 					}	
 				} else {
 					logger.debug("No lsThing values to update");

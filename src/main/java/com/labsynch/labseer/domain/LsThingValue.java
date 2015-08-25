@@ -115,11 +115,21 @@ public class LsThingValue extends AbstractValue {
 
 
 	public static LsThingValue update(LsThingValue lsThingValue) {
-		LsThingValue updatedLsThingValue = new JSONDeserializer<LsThingValue>().
-		use(null, LsThingValue.class).
-		use(BigDecimal.class, new CustomBigDecimalFactory()).
-		deserializeInto(lsThingValue.toJson(), LsThingValue.findLsThingValue(lsThingValue.getId()));
-		updatedLsThingValue.merge();
+		
+		logger.debug("attempting to update lsThingValue: "  + lsThingValue.toJson());
+		
+		LsThingValue updatedLsThingValue = null;
+
+		try {
+			updatedLsThingValue = new JSONDeserializer<LsThingValue>().
+					use(null, LsThingValue.class).
+					use(BigDecimal.class, new CustomBigDecimalFactory()).
+					deserializeInto(lsThingValue.toJson(), LsThingValue.findLsThingValue(lsThingValue.getId()));
+					updatedLsThingValue.merge();
+			
+		} catch (Exception e){
+			logger.error("caught the error " + e);
+		}
 		return updatedLsThingValue;
 	}
 
