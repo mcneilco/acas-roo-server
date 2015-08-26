@@ -196,7 +196,26 @@ public class LsThingServiceImpl implements LsThingService {
 			requestNameList.add(request.getRequestName());
 		}
 
-		List<PreferredNameDTO> lsThingLabelsList = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNameList).getResultList();
+		List<PreferredNameDTO> lsThingLabelsList = new ArrayList<PreferredNameDTO>();	
+		int batchSize = 999;
+		int i = 1;
+		List<String> requestNamesSubset = new ArrayList<String>();
+		for (String requestName : requestNameList){
+			requestNamesSubset.add(requestName);
+			if (i % batchSize  == 0 ) { 
+				List<PreferredNameDTO> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+				lsThingLabelsList.addAll(lsThingLabels);
+				requestNamesSubset.clear();
+			}
+			i++;			
+			
+		}
+		
+		if (requestNamesSubset.size() > 0){
+			List<PreferredNameDTO> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+			lsThingLabelsList.addAll(lsThingLabels);
+		}
+
 		
 		logger.info("number of thing labels found: " + lsThingLabelsList.size());
 		MultiValueMap mvm = new MultiValueMap();

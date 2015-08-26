@@ -117,7 +117,8 @@ public class ItxLsThingLsThingValue extends AbstractValue {
     
 	@Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class")
+        return new JSONSerializer()
+        		.exclude("*.class")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }

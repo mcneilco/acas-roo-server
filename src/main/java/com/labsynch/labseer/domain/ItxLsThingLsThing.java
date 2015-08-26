@@ -18,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -25,6 +27,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.service.ItxLsThingLsThingServiceTests;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -36,6 +39,8 @@ import flexjson.JSONSerializer;
 @RooJson
 @RooJpaActiveRecord(finders = { "findItxLsThingLsThingsByCodeNameEquals" } )
 public class ItxLsThingLsThing extends AbstractThing {
+
+	private static final Logger logger = LoggerFactory.getLogger(ItxLsThingLsThing.class);
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
@@ -55,7 +60,6 @@ public class ItxLsThingLsThing extends AbstractThing {
     	this.setRecordedDate(itxLsThingLsThing.getRecordedDate());
     	this.setIgnored(itxLsThingLsThing.isIgnored());
     	this.setDeleted(itxLsThingLsThing.isDeleted());
-    	this.setVersion(itxLsThingLsThing.getVersion());
     	this.setLsTransaction(itxLsThingLsThing.getLsTransaction());
     	this.setModifiedBy(itxLsThingLsThing.getModifiedBy());
     	this.setModifiedDate(itxLsThingLsThing.getModifiedDate());
@@ -68,8 +72,19 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
         
     public static ItxLsThingLsThing update(ItxLsThingLsThing itxLsThingLsThing) {
-    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
-    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	ItxLsThingLsThing updatedItxLsThingLsThing = ItxLsThingLsThing.findItxLsThingLsThing(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setRecordedBy(itxLsThingLsThing.getRecordedBy());
+    	updatedItxLsThingLsThing.setRecordedDate(itxLsThingLsThing.getRecordedDate());
+    	updatedItxLsThingLsThing.setIgnored(itxLsThingLsThing.isIgnored());
+    	updatedItxLsThingLsThing.setDeleted(itxLsThingLsThing.isDeleted());
+    	updatedItxLsThingLsThing.setLsTransaction(itxLsThingLsThing.getLsTransaction());
+    	updatedItxLsThingLsThing.setModifiedBy(itxLsThingLsThing.getModifiedBy());
+    	updatedItxLsThingLsThing.setCodeName(itxLsThingLsThing.getCodeName());
+    	updatedItxLsThingLsThing.setLsType(itxLsThingLsThing.getLsType());
+    	updatedItxLsThingLsThing.setLsKind(itxLsThingLsThing.getLsKind());
+    	updatedItxLsThingLsThing.setLsTypeAndKind(itxLsThingLsThing.getLsTypeAndKind());
+    	updatedItxLsThingLsThing.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
+    	updatedItxLsThingLsThing.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());    	
     	updatedItxLsThingLsThing.setModifiedDate(new Date());
     	updatedItxLsThingLsThing.setLsStates(itxLsThingLsThing.getLsStates());
     	updatedItxLsThingLsThing.merge();
@@ -77,18 +92,44 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
     
     public static ItxLsThingLsThing updateNoMerge(ItxLsThingLsThing itxLsThingLsThing) {
-    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
-    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	ItxLsThingLsThing updatedItxLsThingLsThing = ItxLsThingLsThing.findItxLsThingLsThing(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setRecordedBy(itxLsThingLsThing.getRecordedBy());
+    	updatedItxLsThingLsThing.setRecordedDate(itxLsThingLsThing.getRecordedDate());
+    	updatedItxLsThingLsThing.setIgnored(itxLsThingLsThing.isIgnored());
+    	updatedItxLsThingLsThing.setDeleted(itxLsThingLsThing.isDeleted());
+    	updatedItxLsThingLsThing.setLsTransaction(itxLsThingLsThing.getLsTransaction());
+    	updatedItxLsThingLsThing.setModifiedBy(itxLsThingLsThing.getModifiedBy());
+    	updatedItxLsThingLsThing.setCodeName(itxLsThingLsThing.getCodeName());
+    	updatedItxLsThingLsThing.setLsType(itxLsThingLsThing.getLsType());
+    	updatedItxLsThingLsThing.setLsKind(itxLsThingLsThing.getLsKind());
+    	updatedItxLsThingLsThing.setLsTypeAndKind(itxLsThingLsThing.getLsTypeAndKind());
+    	updatedItxLsThingLsThing.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
+    	updatedItxLsThingLsThing.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());    	
     	updatedItxLsThingLsThing.setModifiedDate(new Date());
     	updatedItxLsThingLsThing.setLsStates(itxLsThingLsThing.getLsStates());
         return updatedItxLsThingLsThing;
     }
     
     public static ItxLsThingLsThing updateNoStates(ItxLsThingLsThing itxLsThingLsThing) {
-    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
-    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	ItxLsThingLsThing updatedItxLsThingLsThing = ItxLsThingLsThing.findItxLsThingLsThing(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setRecordedBy(itxLsThingLsThing.getRecordedBy());
+    	updatedItxLsThingLsThing.setRecordedDate(itxLsThingLsThing.getRecordedDate());
+    	updatedItxLsThingLsThing.setIgnored(itxLsThingLsThing.isIgnored());
+    	updatedItxLsThingLsThing.setDeleted(itxLsThingLsThing.isDeleted());
+    	updatedItxLsThingLsThing.setLsTransaction(itxLsThingLsThing.getLsTransaction());
+    	updatedItxLsThingLsThing.setModifiedBy(itxLsThingLsThing.getModifiedBy());
+    	updatedItxLsThingLsThing.setCodeName(itxLsThingLsThing.getCodeName());
+    	updatedItxLsThingLsThing.setLsType(itxLsThingLsThing.getLsType());
+    	updatedItxLsThingLsThing.setLsKind(itxLsThingLsThing.getLsKind());
+    	updatedItxLsThingLsThing.setLsTypeAndKind(itxLsThingLsThing.getLsTypeAndKind());
+    	updatedItxLsThingLsThing.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
+    	updatedItxLsThingLsThing.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());    	
     	updatedItxLsThingLsThing.setModifiedDate(new Date());
     	updatedItxLsThingLsThing.merge();
+    	
+    	logger.debug("------------ Just updated the itxLsThingLsthing: ");
+    	if(logger.isDebugEnabled()) logger.debug(updatedItxLsThingLsThing.toJson());
+    	
         return updatedItxLsThingLsThing;
     }
     

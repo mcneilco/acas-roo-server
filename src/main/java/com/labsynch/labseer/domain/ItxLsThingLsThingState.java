@@ -14,6 +14,8 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -31,6 +33,9 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord
 @RooJson
 public class ItxLsThingLsThingState extends AbstractState {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ItxLsThingLsThingState.class);
+
 
     public ItxLsThingLsThingState(ItxLsThingLsThingState itxState) {
 		super.setLsType(itxState.getLsType());

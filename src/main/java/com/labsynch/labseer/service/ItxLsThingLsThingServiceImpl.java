@@ -135,17 +135,23 @@ public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {
 	public ItxLsThingLsThing updateItxLsThingLsThing(ItxLsThingLsThing jsonItxLsThingLsThing){
 		
 		ItxLsThingLsThing updatedItxLsThingLsThing = ItxLsThingLsThing.updateNoStates(jsonItxLsThingLsThing);
+		updatedItxLsThingLsThing.merge();
+		logger.debug("here is the updated itx: " + updatedItxLsThingLsThing.toJson());
+		logger.debug("----------------- here is the itx id " + updatedItxLsThingLsThing.getId() + "   -----------");
 		
 		if(jsonItxLsThingLsThing.getLsStates() != null){
 			for(ItxLsThingLsThingState itxLsThingLsThingState : jsonItxLsThingLsThing.getLsStates()){
+				logger.debug("-------- current itxLsThingLsThingState ID: " + itxLsThingLsThingState.getId());
 				ItxLsThingLsThingState updatedItxLsThingLsThingState;
 				if (itxLsThingLsThingState.getId() == null){
 					updatedItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
-					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					updatedItxLsThingLsThingState.setItxLsThingLsThing(ItxLsThingLsThing.findItxLsThingLsThing(updatedItxLsThingLsThing.getId()));
 					updatedItxLsThingLsThingState.persist();
 					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
 				} else {
-					updatedItxLsThingLsThingState = ItxLsThingLsThingState.update(itxLsThingLsThingState);
+
+					if (itxLsThingLsThingState.getItxLsThingLsThing() == null) itxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					updatedItxLsThingLsThingState = ItxLsThingLsThingState.update(itxLsThingLsThingState);			
 					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
 					logger.debug("updated itxLsThingLsThing state " + updatedItxLsThingLsThingState.getId());
 
@@ -155,17 +161,15 @@ public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {
 						ItxLsThingLsThingValue updatedItxLsThingLsThingValue;
 						if (itxLsThingLsThingValue.getId() == null){
 							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.create(itxLsThingLsThingValue);
-							updatedItxLsThingLsThingValue.setLsState(ItxLsThingLsThingState.findItxLsThingLsThingState(updatedItxLsThingLsThingState.getId()));
+							updatedItxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
 							updatedItxLsThingLsThingValue.persist();
 							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
-							logger.debug("created itxLsThingLsThing value " + updatedItxLsThingLsThingValue.getId());
 
 						} else {
 							//itxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
+							itxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
 							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.update(itxLsThingLsThingValue);
-							//updatedItxLsThingLsThingValue.merge();
 							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
-							logger.debug("updated itxLsThingLsThing value " + updatedItxLsThingLsThingValue.getId());
 						}
 					}	
 				} else {

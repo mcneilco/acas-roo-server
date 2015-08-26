@@ -287,7 +287,7 @@ public class LsThingLabel extends AbstractLabel {
 
 	}
 
-	public static TypedQuery<PreferredNameDTO> findLsThingPreferredName(String thingType, String thingKind, String labelType, String labelKind, Set<String> requestNameList) {
+	public static TypedQuery<PreferredNameDTO> findLsThingPreferredName(String thingType, String thingKind, String labelType, String labelKind, Collection<String> requestNameList) {
 		
 		EntityManager em = LsThingLabel.entityManager();
 		String query = "SELECT new com.labsynch.labseer.dto.PreferredNameDTO( o.labelText as requestName, o.labelText as preferredName, lst.codeName as referenceName) " 
