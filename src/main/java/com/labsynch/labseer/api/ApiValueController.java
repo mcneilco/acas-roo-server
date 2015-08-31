@@ -681,6 +681,23 @@ public class ApiValueController {
 		containerValues = (List<ContainerValue>) containerValueService.saveContainerValues(containerValues);
         return new ResponseEntity<String>(ContainerValue.toJsonArray(containerValues),headers, HttpStatus.OK);
 	}
+	
+	//finders
+	@RequestMapping(value = "/lsthingvalues/findByCodeValueEquals", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createLsThingValuesFromJsonArray (@RequestParam("codeValue") String codeValue) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		try{
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByCodeValueEquals(codeValue).getResultList();
+			return new ResponseEntity<String>(LsThingValue.toJsonArray(lsThingValues),headers, HttpStatus.OK);
+		}catch (Exception e){
+			logger.error("Caught exception trying to find LsThingValues by codeValue equals: "+codeValue,e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        
+	}
 		
 	
 }

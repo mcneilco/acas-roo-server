@@ -286,4 +286,34 @@ public class LsThingValue extends AbstractValue {
         q.setParameter("stringValue", stringValue);
         return q;
     }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByTypeKindFullPath(
+			String thingType, String thingKind,
+			String stateType, String stateKind,
+			String valueType, String valueKind) {
+    	if (thingType == null || thingType.length() == 0) throw new IllegalArgumentException("The thingType argument is required");
+		if (thingKind == null || thingKind.length() == 0) throw new IllegalArgumentException("The thingKind argument is required");
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT lstv FROM LsThingValue AS lstv " +
+				"JOIN lstv.lsState lsts " +
+				"JOIN lsts.lsThing lst " +
+				"WHERE lst.lsType = :thingType AND lst.lsKind = :thingKind AND lst.ignored IS NOT :ignored " +
+				"AND lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+				"AND lstv.lsType = :valueType AND lstv.lsKind = :valueKind AND lstv.ignored IS NOT :ignored "
+				;
+		TypedQuery<LsThingValue> q = em.createQuery(hsqlQuery, LsThingValue.class);
+		q.setParameter("thingType", thingType);
+		q.setParameter("thingKind", thingKind);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 }
