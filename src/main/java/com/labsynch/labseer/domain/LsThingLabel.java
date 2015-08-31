@@ -290,15 +290,41 @@ public class LsThingLabel extends AbstractLabel {
 	public static TypedQuery<PreferredNameDTO> findLsThingPreferredName(String thingType, String thingKind, String labelType, String labelKind, Collection<String> requestNameList) {
 		
 		EntityManager em = LsThingLabel.entityManager();
-		String query = "SELECT new com.labsynch.labseer.dto.PreferredNameDTO( o.labelText as requestName, o.labelText as preferredName, lst.codeName as referenceName) " 
-				+ "FROM LsThingLabel AS o "
-				+ "JOIN o.lsThing lst "
-				+ "WHERE o.lsType = :labelType  "
-				+ "AND o.lsKind = :labelKind "
+		String query = "SELECT new com.labsynch.labseer.dto.PreferredNameDTO( tl1.labelText as requestName, tl2.labelText as preferredName, lst.codeName as referenceName) " 
+				+ "FROM LsThing AS lst "
+				+ "JOIN lst.lsLabels tl1 "
+				+ "JOIN lst.lsLabels tl2 "
+				+ "WHERE tl1.lsType = :labelType "
+				+ "AND tl1.lsKind = :labelKind "
+				+ "AND tl1.ignored IS NOT :ignored "
+				+ "AND tl2.lsType = :labelType "
+				+ "AND tl2.lsKind = :labelKind "
+				+ "AND tl2.preferred = :preferred AND tl2.ignored IS NOT :ignored "
 				+ "AND lst.lsType = :thingType "
 				+ "AND lst.lsKind = :thingKind "
-				+ "AND o.preferred = :preferred AND o.ignored IS NOT :ignored "
-				+ "AND o.labelText in (:requestNameList)";
+				+ "AND lst.ignored IS NOT :ignored  "
+				+ "AND tl1.labelText in (:requestNameList) ";
+		
+//		+ "FROM LsThingLabel AS o "
+//		+ ", LsThingLabel AS o2 "
+//		+ "JOIN o.lsThing lst "
+//		+ "WHERE o.lsType = :labelType  "
+//		+ "AND o.lsKind = :labelKind "
+//		+ "AND lst.lsType = :thingType "
+//		+ "AND lst.lsKind = :thingKind "
+//		+ "AND lst.ignored IS NOT :ignored  "
+//		+ "AND o.preferred = :preferred AND o.ignored IS NOT :ignored "
+//		+ "AND o.labelText in (:requestNameList) "
+//		+ "AND o.lsThing = o2.lsThing "
+//		+ "AND o2.preferred != :preferred "
+//		+ "AND o2.lsType = :labelType  "
+//		+ "AND o2.lsKind = :labelKind ";
+		
+//		select tl2.label_text as reference, tl1.label_text as other, tl1.preferred
+//		from ls_thing lst
+//		join  ls_thing_label tl1 on lst.id = tl1.lsthing_id
+//		join  ls_thing_label tl2 on lst.id = tl2.lsthing_id AND tl2.preferred = 1
+//		where tl1.label_text in ('380653','380654') ;		
 		
 		logger.debug("sql query " + query);
 		TypedQuery<PreferredNameDTO> q = em.createQuery(query, PreferredNameDTO.class);
