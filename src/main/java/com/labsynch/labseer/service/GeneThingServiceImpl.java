@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -717,6 +719,37 @@ public class GeneThingServiceImpl implements GeneThingService {
 			logger.debug("-------- gene is registered via old id   geneIdCount: " + geneIdCount + "  newGeneIdCount: " + newGeneIdCount);
 			
 //			if (logger.isDebugEnabled()) logger.debug("old gene: " + LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()).getResultList().get(0).toPrettyJson());
+			
+			
+			List<LsThing> genes = LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId()).getResultList();
+			if (genes.size() == 0){
+				logger.error("Gene not found");
+			} else if (genes.size() > 1){
+				logger.error("multiple genes found with the same gene ID");
+				List<Long> thingIds = new ArrayList();
+				for (LsThing lsThing : genes){
+					thingIds.add(lsThing.getId());
+					logger.error("Found this gene ID: " + lsThing.toJson());
+					
+				}
+				Collections.sort(thingIds);
+				boolean first = true;
+				for (Long geneId : thingIds){
+					if (first){
+						first = false;
+						geneThing = LsThing.findLsThing(geneId);
+					} else {
+						logger.debug("ignored this gene thing ID " + geneId);
+						LsThing queryGene = LsThing.findLsThing(geneId);
+						queryGene.setIgnored(true);
+						queryGene.merge();
+					}
+				}
+				
+			} else {
+				geneThing = genes.get(0);
+			}	
+			
 			
 			//check the modification date
 			boolean isNewDate = false;
