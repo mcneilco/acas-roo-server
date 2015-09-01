@@ -140,7 +140,6 @@
             <menu:item id="i_experimentvalue_new" messageCode="global_menu_new" url="/experimentvalues?form" z="dv8tE4L0crSnTYkUjPl7c6HwixI="/>
             <menu:item id="i_experimentvalue_list" messageCode="global_menu_list" url="/experimentvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="Qui9XKTtYE1Dsym9RpQJEF66oek="/>
             <menu:item id="fi_experimentvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="TkQpcyXT3kCx8QtfIhMU1s1sVJQ="/>
-            <menu:item id="fi_experimentvalue_lskindequalsanddatevalueequals" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndDateValueEquals&amp;form" z="peU0BfMs+8hHKaxtGjkcWvulPac="/>
             <menu:item id="fi_experimentvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="6Qb9CBQGfKxEpfaKiiWPzblfnN8="/>
             <menu:item id="fi_experimentvalue_lsstate" messageCode="global_menu_find" url="/experimentvalues?find=ByLsState&amp;form" z="9GTDsaIh52NGmUSF7Nmpi7Y11+o="/>
             <menu:item id="fi_experimentvalue_lsstateandignorednotandlskindequalsandlstypeequalsandstringvalueequals" messageCode="global_menu_find" url="/experimentvalues?find=ByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals&amp;form" z="7er6Ts6GhGJENszpULj1IVCpeR8="/>
@@ -371,6 +370,7 @@
             <menu:item id="i_lsthing_list" messageCode="global_menu_list" url="/lsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KdnkBXuo2MoJ5nhgfl2rt3i2KCQ="/>
             <menu:item id="fi_lsthing_codenameequals" messageCode="global_menu_find" url="/lsthings?find=ByCodeNameEquals&amp;form" z="k9kkRKddWM2bGHmLfsOoz3tA5+E="/>
             <menu:item id="fi_lsthing_codenamelike" messageCode="global_menu_find" url="/lsthings?find=ByCodeNameLike&amp;form" z="irkgn326gCwbL/fD67flKwdT5s0="/>
+            <menu:item id="fi_lsthing_lskindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsKindEquals&amp;form" z="Tkm9zDUFZoZYbCuWMi/nNyErXcM="/>
             <menu:item id="fi_lsthing_lskindlike" messageCode="global_menu_find" url="/lsthings?find=ByLsKindLike&amp;form" z="Jy9T+1sJZwHFty3E4zgV4H9MAj0="/>
             <menu:item id="fi_lsthing_lstransactionequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTransactionEquals&amp;form" z="20eTek0wKMABLzD+DeD98giqJt0="/>
             <menu:item id="fi_lsthing_lstypeandkindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeAndKindEquals&amp;form" z="dmBfpocGcW2wsusk0jXLxUC3tmU="/>
@@ -406,6 +406,7 @@
             <menu:item id="fi_lsthingvalue_lskindequalsandnumericvalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueEquals&amp;form" z="QC9IiYKfRrQeFHpWglx0orbOvUY="/>
             <menu:item id="fi_lsthingvalue_lskindequalsandnumericvaluegreaterthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueGreaterThanEquals&amp;form" z="KgWRwRcPu2U0NuZLfH6ZzRKPZFY="/>
             <menu:item id="fi_lsthingvalue_lskindequalsandnumericvaluelessthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueLessThanEquals&amp;form" z="LzDWS6atGPcpHjOuC4rarllBelk="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandstringvalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndStringValueEquals&amp;form" z="87X7rX51P28FDve2JAApilyp7uo="/>
             <menu:item id="fi_lsthingvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="gdD732nq+S08YPAF+25/386b6dA="/>
             <menu:item id="fi_lsthingvalue_lsstate" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsState&amp;form" z="2LyWlqa1YNYldDLQ5u0XhjzLmnU="/>
             <menu:item id="fi_lsthingvalue_lstransactionequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsTransactionEquals&amp;form" z="7Bny+xW4b8yhnsbcOas/S479ufI="/>

@@ -163,8 +163,13 @@ public class LsThingServiceImpl implements LsThingService {
 			} else {
 				try{
 					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
-					request.setPreferredName(pickBestLabel(codeNameMatch));
-					request.setReferenceName(codeNameMatch.getCodeName());
+					if (codeNameMatch.getLsKind().equals(thingKind) && codeNameMatch.getLsType().equals(thingType)){
+						logger.info("Made it to the codeMatch");
+						request.setPreferredName(pickBestLabel(codeNameMatch));
+	 					request.setReferenceName(codeNameMatch.getCodeName());
+					}else{
+						logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+					}
 				}catch (EmptyResultDataAccessException e){
 					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
 				}
@@ -992,7 +997,7 @@ public class LsThingServiceImpl implements LsThingService {
 		/*
 		 * List of Search params:
 		 * documentCode - codeName of document LsThing
-		 * documentType - LsType of document LsThing
+		 * documentType - LsKind of document LsThing
 		 * titleContains - like query on labelText of LsThingLabel of document (name_document name)
 		 * project - lsThing
 		 * owner - stringValue_owner in Document
@@ -1017,7 +1022,7 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThings.clear();
 		}
 		if (paramName.equals("documentType")){
-			List<LsThing> lsThings = LsThing.findLsThingsByLsTypeEquals(param).getResultList();
+			List<LsThing> lsThings = LsThing.findLsThingsByLsKindEquals(param).getResultList();
 			if (!lsThings.isEmpty()){
 				for (LsThing lsThing : lsThings){
 					lsThingIdList.add(lsThing.getId());
@@ -1033,6 +1038,17 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 			}
 			lsThingLabels.clear();
+		}
+		if (paramName.equals("company")){
+			LsThing company = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentCompany", company).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+			company.clear();
 		}
 		if (paramName.equals("project")){
 			LsThing project = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
@@ -1075,9 +1091,8 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThingValues.clear();
 		}
 		if (paramName.equals("createdDateFrom")){
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 			try{
-				Date date = df.parse(param);
+				Date date = new Date(new Long(param));
 				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateGreaterThan(date).getResultList();
 				if (!lsThings.isEmpty()){
 					for (LsThing lsThing : lsThings) {
@@ -1086,13 +1101,12 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 				lsThings.clear();
 			} catch (Exception e){
-				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+				logger.error("Error parsing date: " + param);
 			}
 		}
 		if (paramName.equals("createdDateTo")){
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 			try{
-				Date date = df.parse(param);
+				Date date = new Date(new Long(param));
 				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateLessThan(date).getResultList();
 				if (!lsThings.isEmpty()){
 					for (LsThing lsThing : lsThings) {
@@ -1101,7 +1115,7 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 				lsThings.clear();
 			} catch (Exception e){
-				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+				logger.error("Error parsing date: " + param);
 			}
 		}
 		if (paramName.equals("active")) {
@@ -1114,7 +1128,6 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThingValues.clear();
 		}
 		if (paramName.equals("termType")){
-			LsThingValue.findLsThingValuesByCodeValueEquals(param);
 			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByCodeValueEquals(param).getResultList();
 			Collection<LsThing> terms = new HashSet<LsThing>();
 			if (!lsThingValues.isEmpty()){
@@ -1137,32 +1150,36 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			terms.clear();
 		}
-		if (paramName.equals("daysBefore")){
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals("days before", new BigDecimal(param)).getResultList();
-			Collection<LsThing> terms = new HashSet<LsThing>();
-			if (!lsThingValues.isEmpty()){
-				for(LsThingValue lsThingValue: lsThingValues){
-					terms.add(lsThingValue.getLsState().getLsThing());
-				}
-			}
-			lsThingValues.clear();
-			if (!terms.isEmpty()){
-				for (LsThing term: terms){
-					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
-					if (!lsThings.isEmpty()){
-						for (LsThing lsThing : lsThings){
-							lsThingIdList.add(lsThing.getId());
-						}
+		if (paramName.equals("daysBeforeTerm")){
+			try{
+				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals("daysBefore", new BigDecimal(param)).getResultList();
+				Collection<LsThing> terms = new HashSet<LsThing>();
+				if (!lsThingValues.isEmpty()){
+					for(LsThingValue lsThingValue: lsThingValues){
+						terms.add(lsThingValue.getLsState().getLsThing());
 					}
-					lsThings.clear();
 				}
+				lsThingValues.clear();
+				if (!terms.isEmpty()){
+					for (LsThing term: terms){
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
+						if (!lsThings.isEmpty()){
+							for (LsThing lsThing : lsThings){
+								lsThingIdList.add(lsThing.getId());
+							}
+						}
+						lsThings.clear();
+					}
+				}
+				terms.clear();
+			}catch (NumberFormatException e){
+				logger.debug("Couldn't parse the number "+param+" to search for daysBeforeTerm");
 			}
-			terms.clear();
+			
 		}
 		if (paramName.equals("termDateFrom")){
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 			try{
-				Date date = df.parse(param);
+				Date date = new Date(new Long(param));
 				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals("date",date).getResultList();
 				Collection<LsThing> terms = new HashSet<LsThing>();
 				if (!lsThingValues.isEmpty()){
@@ -1184,13 +1201,12 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 				terms.clear();
 			} catch (Exception e){
-				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+				logger.error("Error parsing date: " + param);
 			}
 		}
 		if (paramName.equals("termDateTo")){
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 			try{
-				Date date = df.parse(param);
+				Date date = new Date(new Long(param));
 				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals("date",date).getResultList();
 				Collection<LsThing> terms = new HashSet<LsThing>();
 				if (!lsThingValues.isEmpty()){
@@ -1212,10 +1228,34 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 				terms.clear();
 			} catch (Exception e){
-				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+				logger.error("Error parsing date: " + param);
 			}		}
-		if (paramName.equals("missingAnnotation")){
-			//TODO: figure out what this is, then code it
+		if (paramName.equals("nonSolicit")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals("nonSolicit", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("nonTransfer")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals("nonTransfer", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("restrictedMaterialsContains")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEqualsIgnoreCase("restrictedMaterialName", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
 		}
 		
 		return lsThingIdList;
