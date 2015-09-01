@@ -33,7 +33,7 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(finders = { "findLsThingLabelsByLsThing", "findLsThingLabelsByLsTransactionEquals", 
 		"findLsThingLabelsByLabelTextEquals",
 		"findLsThingLabelsByLabelTextEqualsAndIgnoredNot",
-		"findLsThingLabelsByLabelTextEqualsAndIgnoredNot", "findLsThingLabelsByLabelTextLike" })
+	     "findLsThingLabelsByLabelTextLike" })
 public class LsThingLabel extends AbstractLabel {
 
 	private static final Logger logger = LoggerFactory.getLogger(LsThingLabel.class);

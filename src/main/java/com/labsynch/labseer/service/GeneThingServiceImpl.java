@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.TypedQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -540,7 +542,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 				Long geneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId());
 //				Long oldGeneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", historyResults.getUpdatedGenes().get(geneDTO.getGeneId()).getDiscontinuedGeneId());
 
-				logger.debug("geneId count"  + geneIdCount);
+				logger.debug("Process Entrez Genes ------------------- geneId count"  + geneIdCount);
 
 				
 				// check if discontinued gene
@@ -576,7 +578,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 					// updating existing gene info with new gene label and meta (merging genes if new gene does not exist)
 					// else keep 2 gene entities
 					geneThing = registerUpdatedGene(geneDTO, historyResults.getUpdatedGenes().get(geneDTO.getGeneId()), lsTransaction);					
-					if (logger.isDebugEnabled()) logger.debug("updated the gene entry: " + LsThing.findLsThing(geneThing.getId()).toPrettyJson());
+					//if (logger.isDebugEnabled()) logger.debug("updated the gene entry: " + LsThing.findLsThing(geneThing.getId()).toPrettyJson());
 
 				} else if (geneIdCount == 0L ) {
 					// brand new gene to register
@@ -623,24 +625,40 @@ public class GeneThingServiceImpl implements GeneThingService {
 		
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
-		Long geneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId());
-		Long newGeneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId());
+//		Long geneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId());
+//		Long newGeneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId());
+		
+//		things = LsThing.findLsThingByLabelKindAndLabelText(geneTypeString, geneKindString, labelKind, labelText);
+		List<LsThing> discontinuedGenes = LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()).getResultList();
+		List<LsThing> newGenes = LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID",  geneDTO.getGeneId()).getResultList();
 
-		logger.debug("------------ the gene ID count is: " + geneIdCount + "  for discontinued gene " + entrezDiscontinuedGeneDTO.getDiscontinuedGeneId());
-		logger.debug("------------ the gene ID count is: " + newGeneIdCount + "  for new gene " + geneDTO.getGeneId());
+		int geneIdCount = discontinuedGenes.size();
+		int newGeneIdCount = newGenes.size();
+		
+		logger.debug("------------ the gene ID count is: " + discontinuedGenes.size() + "  for discontinued gene " + entrezDiscontinuedGeneDTO.getDiscontinuedGeneId());
+		logger.debug("------------ the gene ID count is: " + newGenes.size() + "  for new gene " + geneDTO.getGeneId());
+		
+		//are the genes the same?
+		boolean sameGene = false;
+		if (discontinuedGenes.size() == 1 && newGenes.size() == 1){
+			if (discontinuedGenes.get(0).getId() == newGenes.get(0).getId()){
+				logger.debug("@@@@@@  Mapping back to the same gene   @@@@@@");
+				sameGene = true;
+			}
+		}
 		
 		LsThing geneThing = null ;
 		if (geneIdCount == 0 && newGeneIdCount == 0){
 			logger.debug("gene is not registered yet");
 			geneThing = registerNewGene(geneDTO, entrezDiscontinuedGeneDTO, lsTransaction);
-		} else if (geneIdCount == 1 && newGeneIdCount == 1){
-			logger.debug("------ both genes are currently registered");
+		} else if (geneIdCount == 1 && newGeneIdCount == 1 && sameGene){
+			logger.debug("------ both gene IDs are currently registered with the same geneThing");
 			// add discontinued meta to the old gene
 			
 			LsThing oldGene = discontinueGene(entrezDiscontinuedGeneDTO, lsTransaction);
-			if (logger.isDebugEnabled()) logger.debug("added discontinued gene meta to the old gene: " + oldGene.toPrettyJson());
+			//if (logger.isDebugEnabled()) logger.debug("added discontinued gene meta to the old gene: " + oldGene.toPrettyJson());
 						
-			// update the new gene with the new info
+			// update the gene with the new info
 			List<LsThing> genes = LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", geneDTO.getGeneId()).getResultList();
 			if (genes.size() == 0){
 				logger.error("Gene not found");
@@ -650,7 +668,33 @@ public class GeneThingServiceImpl implements GeneThingService {
 			} else {
 				geneThing = genes.get(0);
 //				geneThing = updateGeneID(geneThing, geneDTO, entrezDiscontinuedGeneDTO, lsTransaction);
-				geneThing = updateGeneMetaData(geneThing, geneDTO, lsTransaction);
+				
+				//check the modification date
+				boolean isNewDate = false;
+				List<LsThingValue> dateValues = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(geneThing.getId(), "metadata", "gene metadata", "dateValue", "modification date").getResultList();
+				logger.debug("number of mod dates found: " + dateValues.size());
+				if (dateValues.size() > 1) logger.error("Found more than 1 mod date: " + dateValues.size());
+				for (LsThingValue dateValue : dateValues){
+					if (geneDTO.getModificationDate().after(dateValue.getDateValue())){
+						isNewDate = true;
+						logger.debug("It is a recent update");
+					} else {
+						logger.debug("It is a not a recent update");
+					}
+				}
+
+				
+				if (isNewDate){
+					logger.debug("Updating the gene metadata");
+					geneThing = updateGeneMetaData(geneThing, geneDTO, lsTransaction);
+				}
+				
+				
+				if (LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()) == 0){
+					logger.debug("adding old gene ID");
+					geneThing = addOldGeneID(geneThing, geneDTO, entrezDiscontinuedGeneDTO, lsTransaction);
+				}
+				
 			}
 			
 		} else if (geneIdCount == 0 && newGeneIdCount == 1){
@@ -670,9 +714,30 @@ public class GeneThingServiceImpl implements GeneThingService {
 				geneThing = addOldGeneID(geneThing, geneDTO, entrezDiscontinuedGeneDTO, lsTransaction);
 			}			
 		} else {
-			logger.debug("gene is registered via old id");
+			logger.debug("-------- gene is registered via old id   geneIdCount: " + geneIdCount + "  newGeneIdCount: " + newGeneIdCount);
+			
 //			if (logger.isDebugEnabled()) logger.debug("old gene: " + LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()).getResultList().get(0).toPrettyJson());
-			geneThing = updateGene(geneDTO, entrezDiscontinuedGeneDTO, lsTransaction);
+			
+			//check the modification date
+			boolean isNewDate = false;
+			List<LsThingValue> dateValues = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(geneThing.getId(), "metadata", "gene metadata", "dateValue", "modification date").getResultList();
+			logger.debug("number of mod dates found: " + dateValues.size());
+			if (dateValues.size() > 1) logger.error("Found more than 1 mod date: " + dateValues.size());
+			for (LsThingValue dateValue : dateValues){
+				if (geneDTO.getModificationDate().after(dateValue.getDateValue())){
+					isNewDate = true;
+					logger.debug("It is a recent update");
+				} else {
+					logger.debug("It is a not a recent update");
+				}
+			}
+
+			
+			if (isNewDate){
+				logger.debug("Updating the gene metadata");
+				geneThing = updateGeneMetaData(geneThing, geneDTO, lsTransaction);
+				geneThing = updateGene(geneDTO, entrezDiscontinuedGeneDTO, lsTransaction);
+			}
 
 		}
 
@@ -683,13 +748,12 @@ public class GeneThingServiceImpl implements GeneThingService {
 	
 	
 	public LsThing addOldGeneID(LsThing geneThing, EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
-		geneThing.getLsLabels().add(saveGeneLabel(lsTransaction, geneThing, "name", "Entrez Gene ID", false, entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()));
-		geneThing.getLsLabels().add(saveGeneLabel(lsTransaction, geneThing, "name", "gene symbol", false, entrezDiscontinuedGeneDTO.getDiscontinuedSymbol()));
+		if (entrezDiscontinuedGeneDTO.getDiscontinuedGeneId() != null)  geneThing.getLsLabels().add(saveGeneLabel(lsTransaction, geneThing, "name", "Entrez Gene ID", false, entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()));
+		if (entrezDiscontinuedGeneDTO.getDiscontinuedSymbol() != null)  geneThing.getLsLabels().add(saveGeneLabel(lsTransaction, geneThing, "name", "gene symbol", false, entrezDiscontinuedGeneDTO.getDiscontinuedSymbol()));
 		return geneThing;
 	}
 
 	public LsThing discontinueGene(EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO, LsTransaction lsTransaction) {
-		// TODO Auto-generated method stub
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
 		List<LsThing> genes = LsThing.findLsThingByLabelText(geneTypeString, geneKindString, "name", "Entrez Gene ID", entrezDiscontinuedGeneDTO.getDiscontinuedGeneId()).getResultList();
@@ -782,6 +846,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 
 		// ignore all old labels
 		for (LsThingLabel geneLabel : geneThing.getLsLabels()){
+			    logger.debug("@@@@@@@@@@@@@@  IGNORING GENE LABELS @@@@@@@@@@@@@    GeneThing: " + geneThing.getCodeName() + "  " + geneLabel.getLabelText() );
 				// ignore all of the existing labels
 				geneLabel.setIgnored(true);
 		}
@@ -934,6 +999,9 @@ public class GeneThingServiceImpl implements GeneThingService {
 	public void processDiscontinuedGenes(HashMap<String, EntrezDiscontinuedGeneDTO> discontinuedGenes,
 			String taxonomyId, LsTransaction lsTransaction) {
 
+		logger.info("########### PROCESSING DISCONTINUED GENES ##############");
+		logger.info("number of discontinued genes:  " + discontinuedGenes.size());
+		
 		EntrezDiscontinuedGeneDTO discontinuedGene;
 		String geneTypeString = "gene";
 		String geneKindString = "entrez gene";
@@ -941,11 +1009,15 @@ public class GeneThingServiceImpl implements GeneThingService {
 		int geneCount = 0;
 		int batchSize = 25;
 		for (String key : discontinuedGenes.keySet()){
+			
+			logger.debug("the key is: " + key);
 			discontinuedGene = discontinuedGenes.get(key);
 			// check if gene currently exists
 			Long geneIdCount = LsThingLabel.countOfLsThingByName(geneTypeString, geneKindString, "name", "Entrez Gene ID", discontinuedGene.getDiscontinuedGeneId());
 //			Long geneIdCount = LsThingLabel.countOfLsLabelsByName("name", "Entrez Gene ID", discontinuedGene.getDiscontinuedGeneId());
 
+			logger.debug("------------- number of genes found: " + geneIdCount + "  geneId: " + discontinuedGene.getDiscontinuedGeneId());
+			
 			if (geneIdCount == 0){
 				geneThing = createDiscontinuedGene(discontinuedGene, lsTransaction);
 			}
