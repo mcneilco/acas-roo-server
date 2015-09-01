@@ -153,6 +153,55 @@ public class ApiValueController {
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
 	}
 	
+	@RequestMapping(value = "/values/{entity}/{idOrCodeName}/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> getValueByPath (
+			@PathVariable("entity") String entity,
+			@PathVariable("idOrCodeName") String idOrCodeName,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("valueType") String valueType,
+			@PathVariable("valueKind") String valueKind) {
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//this if/else if block controls which lsThing is being hit
+		logger.debug("ENTITY IS: " + entity);
+		if (entity.equals("protocol")) {
+			ProtocolValue protocolValue = protocolValueService.getProtocolValue(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			if (protocolValue==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(protocolValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("experiment")) {
+			ExperimentValue experimentValue = experimentValueService.getExperimentValue(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			if (experimentValue==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(experimentValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("analysisGroup")) {
+			AnalysisGroupValue analysisGroupValue = analysisGroupValueService.getAnalysisGroupValue(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			if (analysisGroupValue==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(analysisGroupValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("treatmentGroup")) {
+			TreatmentGroupValue treatmentGroupValue = treatmentGroupValueService.getTreatmentGroupValue(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			if (treatmentGroupValue==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(treatmentGroupValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("subject")) {
+			SubjectValue subjectValue = subjectValueService.getSubjectValue(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			if (subjectValue==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(subjectValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("lsThing")) {
+			LsThingValue lsThingValue = lsThingValueService.getLsThingValue(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			if (lsThingValue==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+	}
+	
 	//List values as jsonArray (GET)
 	
 	@RequestMapping(value = "/protocolvalues", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -631,6 +680,23 @@ public class ApiValueController {
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		containerValues = (List<ContainerValue>) containerValueService.saveContainerValues(containerValues);
         return new ResponseEntity<String>(ContainerValue.toJsonArray(containerValues),headers, HttpStatus.OK);
+	}
+	
+	//finders
+	@RequestMapping(value = "/lsthingvalues/findByCodeValueEquals", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> createLsThingValuesFromJsonArray (@RequestParam("codeValue") String codeValue) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		try{
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByCodeValueEquals(codeValue).getResultList();
+			return new ResponseEntity<String>(LsThingValue.toJsonArray(lsThingValues),headers, HttpStatus.OK);
+		}catch (Exception e){
+			logger.error("Caught exception trying to find LsThingValues by codeValue equals: "+codeValue,e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        
 	}
 		
 	

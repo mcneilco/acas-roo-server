@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.DataDictionaryService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -201,7 +202,7 @@ public class ApiDDictValueController {
 		logger.info("incoming lsKind: " + codeTableDTO.getCodeKind());
 		logger.info("incoming codeTableDTO: " + codeTableDTO.toJson());
 
-		CodeTableDTO codeTableValue = dataDictionaryService.saveCodeTableValue(codeTableDTO, createTypeKind);
+		CodeTableDTO codeTableValue = dataDictionaryService.getOrCreateCodeTable(codeTableDTO, createTypeKind);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		if (codeTableValue == null){
@@ -214,15 +215,20 @@ public class ApiDDictValueController {
 	@RequestMapping(value = "/codetable/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> createCodeTablesFromJsonArray(@RequestBody List<CodeTableDTO> codeTableDTOs,
 			@RequestParam(value = "createTypeKind", required = false) String createTypeKindString) {
-		
-		Boolean createTypeKind = false;
-		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
-		
-		List<CodeTableDTO> savedCodeTableValues = dataDictionaryService.saveCodeTableValueArray(codeTableDTOs, createTypeKind);
-
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(CodeTableDTO.toJsonArray(savedCodeTableValues), headers, HttpStatus.CREATED);
+		Boolean createTypeKind = false;
+		if (createTypeKindString != null && createTypeKindString.equalsIgnoreCase("true")) createTypeKind = true;
+		try{
+			List<CodeTableDTO> savedCodeTableValues = dataDictionaryService.getOrCreateCodeTableArray(codeTableDTOs, createTypeKind);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(savedCodeTableValues), headers, HttpStatus.CREATED);
+		}catch(Exception e){
+			ErrorMessage error = new ErrorMessage();
+			error.setErrorLevel("error");
+			error.setMessage(e.getMessage());
+			return new ResponseEntity<String>(error.toJson(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
 	}
 
 	@RequestMapping(value = "/codetable/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")

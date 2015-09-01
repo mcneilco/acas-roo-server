@@ -33,16 +33,16 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord
+@RooJpaActiveRecord(finders = { "findItxLsThingLsThingsByCodeNameEquals" } )
 public class ItxLsThingLsThing extends AbstractThing {
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "first_ls_thing_id")
     private LsThing firstLsThing;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "second_ls_thing_id")
     private LsThing secondLsThing;
 
@@ -52,6 +52,9 @@ public class ItxLsThingLsThing extends AbstractThing {
     public ItxLsThingLsThing(com.labsynch.labseer.domain.ItxLsThingLsThing itxLsThingLsThing) {
     	this.setRecordedBy(itxLsThingLsThing.getRecordedBy());
     	this.setRecordedDate(itxLsThingLsThing.getRecordedDate());
+    	this.setIgnored(itxLsThingLsThing.isIgnored());
+    	this.setDeleted(itxLsThingLsThing.isDeleted());
+    	this.setVersion(itxLsThingLsThing.getVersion());
     	this.setLsTransaction(itxLsThingLsThing.getLsTransaction());
     	this.setModifiedBy(itxLsThingLsThing.getModifiedBy());
     	this.setModifiedDate(itxLsThingLsThing.getModifiedDate());
@@ -63,17 +66,25 @@ public class ItxLsThingLsThing extends AbstractThing {
         this.secondLsThing = itxLsThingLsThing.getSecondLsThing();
     }
     
-    public static ItxLsThingLsThing update(ItxLsThingLsThing object) {
-    	ItxLsThingLsThing updatedObject = new JSONDeserializer<ItxLsThingLsThing>().use(null, ItxLsThingLsThing.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
-        				ItxLsThingLsThing.findItxLsThingLsThing(object.getId()));
-    	updatedObject.setModifiedDate(new Date());
-    	updatedObject.merge();
-        return updatedObject;
+    public static ItxLsThingLsThing update(ItxLsThingLsThing itxLsThingLsThing) {
+    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setModifiedDate(new Date());
+    	updatedItxLsThingLsThing.setLsStates(itxLsThingLsThing.getLsStates());
+    	updatedItxLsThingLsThing.merge();
+        return updatedItxLsThingLsThing;
+    }
+    
+    public static ItxLsThingLsThing updateNoMerge(ItxLsThingLsThing itxLsThingLsThing) {
+    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setModifiedDate(new Date());
+    	updatedItxLsThingLsThing.setLsStates(itxLsThingLsThing.getLsStates());
+        return updatedItxLsThingLsThing;
     }
     
     public String toJson() {
-        return new JSONSerializer().exclude("*.class")
+        return new JSONSerializer().exclude("*.class", "lsStates.itxLsThingLsThing")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }
@@ -151,7 +162,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         return q;
     }
     
-    public int getOrder() {
+    public int retrieveOrder() {
     	EntityManager em = ItxLsThingLsThing.entityManager();
 		String query = "SELECT v.numericValue FROM ItxLsThingLsThingValue v " +
 				"JOIN v.lsState s " + 
@@ -172,4 +183,17 @@ public class ItxLsThingLsThing extends AbstractThing {
         }
     	return order;
     }
+    
+    public int grabItxOrder() {
+		Set<ItxLsThingLsThingState> lsStates = this.getLsStates();
+		for (ItxLsThingLsThingState lsState : lsStates){
+			Set<ItxLsThingLsThingValue> lsValues = lsState.getLsValues();
+			for (ItxLsThingLsThingValue lsValue : lsValues){
+				if (lsValue.getLsKind().equals("order")){
+					return lsValue.getNumericValue().intValue();
+				}
+			}
+		}
+		return 0;
+	}
 }

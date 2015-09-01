@@ -6,6 +6,7 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.web.LsThingValueController;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -120,12 +121,60 @@ privileged aspect LsThingValueController_Roo_Controller_Json {
         return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndCodeValueLike(lsKind, codeValue).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueGreaterThanEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals(lsKind, dateValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLessThanEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndDateValueLessThanEquals(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals(lsKind, dateValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLsKindEqualsAndDateValueLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndDateValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLike(lsKind, dateValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndNumericValueEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndNumericValueEquals(@RequestParam("lsKind") String lsKind, @RequestParam("numericValue") BigDecimal numericValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals(lsKind, numericValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndNumericValueGreaterThanEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals(@RequestParam("lsKind") String lsKind, @RequestParam("numericValue") BigDecimal numericValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals(lsKind, numericValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndNumericValueLessThanEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals(@RequestParam("lsKind") String lsKind, @RequestParam("numericValue") BigDecimal numericValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals(lsKind, numericValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEqualsAndStringValueEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndStringValueEquals(@RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals(lsKind, stringValue).getResultList()), headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByLsKindEqualsAndStringValueLike", headers = "Accept=application/json")

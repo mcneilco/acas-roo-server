@@ -5,6 +5,8 @@ package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.web.LsThingController;
+import java.util.Date;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,6 +33,17 @@ privileged aspect LsThingController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByCodeNameLike", method = RequestMethod.GET)
     public String LsThingController.findLsThingsByCodeNameLike(@RequestParam("codeName") String codeName, Model uiModel) {
         uiModel.addAttribute("lsthings", LsThing.findLsThingsByCodeNameLike(codeName).getResultList());
+        return "lsthings/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsKindEquals", "form" }, method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByLsKindEqualsForm(Model uiModel) {
+        return "lsthings/findLsThingsByLsKindEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByLsKindEquals(@RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findLsThingsByLsKindEquals(lsKind).getResultList());
         return "lsthings/list";
     }
     
@@ -67,6 +80,17 @@ privileged aspect LsThingController_Roo_Controller_Finder {
         return "lsthings/list";
     }
     
+    @RequestMapping(params = { "find=ByLsTypeEquals", "form" }, method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByLsTypeEqualsForm(Model uiModel) {
+        return "lsthings/findLsThingsByLsTypeEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByLsTypeEquals(@RequestParam("lsType") String lsType, Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findLsThingsByLsTypeEquals(lsType).getResultList());
+        return "lsthings/list";
+    }
+    
     @RequestMapping(params = { "find=ByRecordedByLike", "form" }, method = RequestMethod.GET)
     public String LsThingController.findLsThingsByRecordedByLikeForm(Model uiModel) {
         return "lsthings/findLsThingsByRecordedByLike";
@@ -75,6 +99,32 @@ privileged aspect LsThingController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByRecordedByLike", method = RequestMethod.GET)
     public String LsThingController.findLsThingsByRecordedByLike(@RequestParam("recordedBy") String recordedBy, Model uiModel) {
         uiModel.addAttribute("lsthings", LsThing.findLsThingsByRecordedByLike(recordedBy).getResultList());
+        return "lsthings/list";
+    }
+    
+    @RequestMapping(params = { "find=ByRecordedDateGreaterThan", "form" }, method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByRecordedDateGreaterThanForm(Model uiModel) {
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthings/findLsThingsByRecordedDateGreaterThan";
+    }
+    
+    @RequestMapping(params = "find=ByRecordedDateGreaterThan", method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByRecordedDateGreaterThan(@RequestParam("recordedDate") @DateTimeFormat(style = "MM") Date recordedDate, Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findLsThingsByRecordedDateGreaterThan(recordedDate).getResultList());
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthings/list";
+    }
+    
+    @RequestMapping(params = { "find=ByRecordedDateLessThan", "form" }, method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByRecordedDateLessThanForm(Model uiModel) {
+        addDateTimeFormatPatterns(uiModel);
+        return "lsthings/findLsThingsByRecordedDateLessThan";
+    }
+    
+    @RequestMapping(params = "find=ByRecordedDateLessThan", method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByRecordedDateLessThan(@RequestParam("recordedDate") @DateTimeFormat(style = "MM") Date recordedDate, Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findLsThingsByRecordedDateLessThan(recordedDate).getResultList());
+        addDateTimeFormatPatterns(uiModel);
         return "lsthings/list";
     }
     

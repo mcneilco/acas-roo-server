@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -180,34 +181,42 @@ public class ApiAnalysisGroupController {
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
 		Collection<AnalysisGroup> analysisGroups = AnalysisGroup.fromJsonArrayToAnalysisGroups(json);
+		Collection<AnalysisGroup> savedAnalysisGroups = new HashSet<AnalysisGroup>();
         for (AnalysisGroup analysisGroup: analysisGroups) {
-        	analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+        	AnalysisGroup savedAnalysisGroup = analysisGroupService.saveLsAnalysisGroup(analysisGroup);
+        	savedAnalysisGroups.add(savedAnalysisGroup);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(savedAnalysisGroups), headers, HttpStatus.CREATED);
     }
-
+	
+	@Transactional
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody AnalysisGroup analysisGroup) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (analysisGroup.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+        AnalysisGroup updatedAnalysisGroup = analysisGroupService.updateLsAnalysisGroup(analysisGroup);
+//        if (analysisGroup.merge() == null) {
+//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+//        }
+        return new ResponseEntity<String>(updatedAnalysisGroup.toJson(), headers, HttpStatus.OK);
     }
 
+	@Transactional
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJsonArray(@RequestBody List<AnalysisGroup> analysisGroups) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
+		Collection<AnalysisGroup> updatedAnalysisGroups = new HashSet<AnalysisGroup>();
         for (AnalysisGroup analysisGroup: analysisGroups) {
-            if (analysisGroup.merge() == null) {
-                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-            }
+        	AnalysisGroup updatedAnalysisGroup = analysisGroupService.updateLsAnalysisGroup(analysisGroup);
+        	updatedAnalysisGroups.add(updatedAnalysisGroup);
+//            if (analysisGroup.merge() == null) {
+//                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+//            }
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+        return new ResponseEntity<String>(AnalysisGroup.toJsonArray(updatedAnalysisGroups), headers, HttpStatus.OK);
     }
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")

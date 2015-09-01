@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,13 +39,21 @@ import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolLabel;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.UniqueInteractionsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
+import com.labsynch.labseer.utils.ItxLsThingLsThingComparator;
+import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
+import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 public class LsThingServiceImpl implements LsThingService {
@@ -117,8 +126,8 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThings.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorCode("MULTIPLE RESULTS");
-				error.setErrorMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				error.setLevel("error");
+				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
@@ -143,19 +152,36 @@ public class LsThingServiceImpl implements LsThingService {
 		for (PreferredNameDTO request : requests){
 			request.setPreferredName("");
 			request.setReferenceName("");
-			List<LsThing> lsThings = LsThing.findLsThingByLabelText(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
+			List<LsThing> lsThings = new ArrayList<LsThing>();
+			if (labelType==null || labelKind==null || labelType.length()==0 || labelKind.length()==0){
+				lsThings = LsThing.findLsThingByLabelText(thingType, thingKind, request.getRequestName()).getResultList();
+
+			}else{
+				lsThings = LsThing.findLsThingByLabelText(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
+			}
 			if (lsThings.size() == 1){
-				request.setPreferredName(lsThings.get(0).getCodeName());
+				request.setPreferredName(pickBestLabel(lsThings.get(0)));
 				request.setReferenceName(lsThings.get(0).getCodeName());
 			} else if (lsThings.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorCode("MULTIPLE RESULTS");
-				error.setErrorMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				error.setLevel("MULTIPLE RESULTS");
+				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
-				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				try{
+					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
+					if (codeNameMatch.getLsKind().equals(thingKind) && codeNameMatch.getLsType().equals(thingType)){
+						logger.info("Made it to the codeMatch");
+						request.setPreferredName(pickBestLabel(codeNameMatch));
+	 					request.setReferenceName(codeNameMatch.getCodeName());
+					}else{
+						logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+					}
+				}catch (EmptyResultDataAccessException e){
+					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				}
 			}
 		}
 		responseOutput.setResults(requests);
@@ -205,8 +231,8 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThingLabels != null && lsThingLabels.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorCode("MULTIPLE RESULTS");
-				error.setErrorMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				error.setLevel("MULTIPLE RESULTS");
+				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
@@ -261,8 +287,8 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (lsThingLabels != null && lsThingLabels.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setErrorCode("MULTIPLE RESULTS");
-				error.setErrorMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				error.setLevel("MULTIPLE RESULTS");
+				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
@@ -278,127 +304,11 @@ public class LsThingServiceImpl implements LsThingService {
 		
 		return responseOutput;
 	}
-
-
-	@Override
-	public boolean validateComponentName(String componentName, String lsKind) {
-		Collection<LsThing> foundLsThings = null;
-		boolean isValid = true;
-		try{
-			foundLsThings = LsThing.findLsThingByLabelTextAndLsKind(componentName, lsKind).getResultList();
-		} catch (EmptyResultDataAccessException e){
-			return true;
-		}
-		if (foundLsThings!=null && !foundLsThings.isEmpty()){
-			return false;
-		}
-		return isValid;
-	}
-	
-	@Override
-	public boolean validateComponentName(LsThing lsThing) {
-		boolean isValid = true;
-		Set<LsThingLabel> lsThingLabels = lsThing.getLsLabels();
-		String lsKind = lsThing.getLsKind();
-		for (LsThingLabel label : lsThingLabels){
-			String labelText = label.getLabelText();
-			if (!label.isIgnored()) isValid = validateComponentName(labelText, lsKind);
-		}
-		return isValid;
-	}
-
-
-	@Override
-	public boolean validateAssembly(List<String> componentCodeNames) {
-		HashSet<LsThing> assemblySet = null;
-		int order = 0;
-		boolean isValid = true;
-		for (String componentCodeName : componentCodeNames){
-			LsThing component = LsThing.findLsThingsByCodeNameEquals(componentCodeName).getSingleResult();
-			order+=1;
-			if (assemblySet == null){
-				//on the first component, instantiate the HashSet, add all the assemblies with component and order (order in list, starting with 1)
-				assemblySet = new HashSet<LsThing>();
-				assemblySet.addAll(findAssembliesByComponentAndOrder(component, order));
-			} else{
-				//otherwise, filter the existing list to be the intersection of the results of this component/order with those from the last
-				assemblySet.retainAll(findAssembliesByComponentAndOrder(component, order));
-			}
-		}
-		if (assemblySet != null & !assemblySet.isEmpty()){
-			//if anything remains, it was found for every component with the correct order.
-			//It's a match, which means the assembly described by componentCodeNames is not unique
-			return false;
-		}
-		//iterate through the list backwards and do the same, in case the order was simply reversed (not a unique assembly)
-		order = 0;
-		ListIterator<String> li = componentCodeNames.listIterator(componentCodeNames.size());
-		while(li.hasPrevious()) {
-			String componentCodeName = li.previous();
-			LsThing component = LsThing.findLsThingsByCodeNameEquals(componentCodeName).getSingleResult();
-			order+=1;
-			if (assemblySet == null){
-				assemblySet = new HashSet<LsThing>();
-				assemblySet.addAll(findAssembliesByComponentAndOrder(component, order));
-			} else{
-				assemblySet.retainAll(findAssembliesByComponentAndOrder(component, order));
-			}
-		}
-		if (assemblySet != null & !assemblySet.isEmpty()){
-			return false;
-		}
-		
-		return isValid;
-	}
-	
-	@Override
-	public boolean validateAssembly(LsThing assembly){
-		return validateAssembly(getComponentCodeNamesFromNewAssembly(assembly));
-	}
-	
-	private static Collection<LsThing> findAssembliesByComponentAndOrder(LsThing component, int order){
-		Collection<ItxLsThingLsThing> interactions = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals("incorporates", "assembly_component", component).getResultList();
-		Collection<LsThing> assemblies = new HashSet<LsThing>();
-		for (ItxLsThingLsThing interaction : interactions){
-			if (interaction.getOrder() == order) assemblies.add(interaction.getFirstLsThing());
-		}
-		return assemblies;
-	}
-	
-	@Override
-	public List<String> getComponentCodeNamesFromNewAssembly(LsThing assembly){
-		String componentsClob = getComponentsClobFromAssembly(assembly);
-		List<String> componentCodeNames = parseComponentsClob(componentsClob);
-		return componentCodeNames;
-	}
-	
-	private List<String> parseComponentsClob(String componentsClob) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-	private static String getComponentsClobFromAssembly(LsThing assembly){
-		Collection<LsThingState> states = assembly.getLsStates();
-		Collection<LsThingValue> values = new HashSet<LsThingValue>();
-		for (LsThingState state : states ){
-			if (state.getLsType().equals("metadata")){
-				values.addAll(state.getLsValues());
-			}
-		}
-		for (LsThingValue value : values){
-			if (value.getLsType().equals("clobValue") && value.getLsKind().equals("components")){
-				String componentsClob = value.getClobValue();
-				return componentsClob;
-			}
-		}
-		return null;
-	}
 	
 	@Override
 	@Transactional
 	public LsThing updateLsThing(LsThing jsonLsThing){
-		LsThing updatedLsThing = LsThing.update(jsonLsThing);
+		LsThing updatedLsThing = LsThing.updateNoMerge(jsonLsThing);
 		if (jsonLsThing.getLsLabels() != null) {
 			for(LsThingLabel lsThingLabel : jsonLsThing.getLsLabels()){
 				logger.debug("Label in hand: " + lsThingLabel.getLabelText());			
@@ -415,42 +325,102 @@ public class LsThingServiceImpl implements LsThingService {
 		} else {
 			logger.debug("No lsThing labels to update");
 		}
-
-		if(jsonLsThing.getLsStates() != null){
-			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
-				LsThingState updatedLsThingState;
-				if (lsThingState.getId() == null){
-					updatedLsThingState = new LsThingState(lsThingState);
-					updatedLsThingState.setLsThing(updatedLsThing);
-					updatedLsThingState.persist();
-					updatedLsThing.getLsStates().add(updatedLsThingState);
-				} else {
-					updatedLsThingState = LsThingState.update(lsThingState);
-					logger.debug("updated lsThing state " + updatedLsThingState.getId());
-
-				}
-				if (lsThingState.getLsValues() != null){
-					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
-						LsThingValue updatedLsThingValue;
-						if (lsThingValue.getId() == null){
-							updatedLsThingValue = LsThingValue.create(lsThingValue);
-							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
-							updatedLsThingValue.persist();
-							updatedLsThingState.getLsValues().add(updatedLsThingValue);
-						} else {
-							updatedLsThingValue = LsThingValue.update(lsThingValue);
-							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
-						}
-					}	
-				} else {
-					logger.debug("No lsThing values to update");
+		updateLsStates(jsonLsThing, updatedLsThing);
+		//updated itx and nested LsThings
+		if(jsonLsThing.getFirstLsThings() != null){
+			//there are itx's
+			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
+				ItxLsThingLsThing updatedItxLsThingLsThing;
+				if (itxLsThingLsThing.getId() == null){
+					//need to save a new itx
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					updateNestedFirstLsThing(itxLsThingLsThing);
+					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					firstLsThings.add(updatedItxLsThingLsThing);
+				}else {
+					//old itx needs to be updated
+					updateNestedFirstLsThing(itxLsThingLsThing);
+					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = ItxLsThingLsThing.updateNoMerge(itxLsThingLsThing);
+					updateItxLsStates(itxLsThingLsThing, updatedItxLsThingLsThing);
+					updatedItxLsThingLsThing.merge();
+					firstLsThings.add(updatedItxLsThingLsThing);
 				}
 			}
+			updatedLsThing.setFirstLsThings(firstLsThings);
 		}
-
+		
+		if(jsonLsThing.getSecondLsThings() != null){
+			//there are itx's
+			Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getSecondLsThings()){
+				ItxLsThingLsThing updatedItxLsThingLsThing;
+				if (itxLsThingLsThing.getId() == null){
+					//need to save a new itx
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					updateNestedSecondLsThing(itxLsThingLsThing);
+					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					secondLsThings.add(updatedItxLsThingLsThing);
+				}else {
+					//old itx needs to be updated
+					updateNestedSecondLsThing(itxLsThingLsThing);
+					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
+					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
+					updateItxLsStates(itxLsThingLsThing, updatedItxLsThingLsThing);
+					secondLsThings.add(updatedItxLsThingLsThing);
+				}
+			}
+			updatedLsThing.setSecondLsThings(secondLsThings);
+		}
+		updatedLsThing.merge();
+		
 		return updatedLsThing;
 
 	}
+
+	private void updateNestedFirstLsThing(ItxLsThingLsThing itxLsThingLsThing) {
+		LsThing updatedNestedLsThing;
+		if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+			//need to save a new nested lsthing
+			logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+			try{
+				updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+				itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+			} catch (UniqueNameException e){
+				logger.error("Caught UniqueNameException trying to update nested LsThing");
+			}
+		}
+		else{
+			//just need to update the old nested lsThing inside the new itx
+			updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getFirstLsThing());
+			updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
+			itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
+		}
+	}
+	
+	private void updateNestedSecondLsThing(ItxLsThingLsThing itxLsThingLsThing) {
+		LsThing updatedNestedLsThing;
+		if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+			//need to save a new nested lsthing
+			logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
+			try{
+				updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+				itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+			} catch (UniqueNameException e){
+				logger.error("Caught UniqueNameException trying to update nested LsThing");
+			}
+		}
+		else{
+			//just need to update the old nested lsThing inside the new itx
+			updatedNestedLsThing = LsThing.update(itxLsThingLsThing.getSecondLsThing());
+			updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
+			itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
+		}
+	}
+
 
 	@Override
 	@Transactional
@@ -534,30 +504,94 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			newLsThing.setLsStates(lsStates);
 		}
-
+		
+		if(lsThing.getFirstLsThings() != null){
+			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : lsThing.getFirstLsThings()){
+				if (itxLsThingLsThing.getId() == null){
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					if (itxLsThingLsThing.getFirstLsThing().getId() == null){
+						logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+						LsThing nestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
+						itxLsThingLsThing.setFirstLsThing(nestedLsThing);
+					}
+					itxLsThingLsThing.setSecondLsThing(newLsThing);
+					ItxLsThingLsThing newItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					firstLsThings.add(newItxLsThingLsThing);
+				}else {
+					firstLsThings.add(itxLsThingLsThing);
+				}
+			}
+			newLsThing.setFirstLsThings(firstLsThings);
+		}
+		
+		if(lsThing.getSecondLsThings() != null){
+			Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
+			for (ItxLsThingLsThing itxLsThingLsThing : lsThing.getSecondLsThings()){
+				if (itxLsThingLsThing.getId() == null){
+					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					if (itxLsThingLsThing.getSecondLsThing().getId() == null){
+						logger.debug("saving new nested LsThing: " + itxLsThingLsThing.getSecondLsThing().toJson());
+						LsThing nestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
+						itxLsThingLsThing.setSecondLsThing(nestedLsThing);
+					}
+					itxLsThingLsThing.setFirstLsThing(newLsThing);
+					ItxLsThingLsThing newItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
+					secondLsThings.add(newItxLsThingLsThing);
+				}else {
+					secondLsThings.add(itxLsThingLsThing);
+				}
+			}
+			newLsThing.setSecondLsThings(secondLsThings);
+		}
 		return newLsThing;
 	}
 	
 	@Override
 	@Transactional
-	public LsThing saveLsThing(LsThing lsThing, boolean isParent, boolean isBatch, boolean isAssembly, boolean isComponent, Long parentId) throws UniqueNameException{
+	public LsThing saveLsThing(LsThing lsThing, boolean isParent, boolean isBatch, Long parentId) throws UniqueNameException{
 		//only check that the name is unique upon save if it's a parent and a component
-		boolean checkUniqueLsThingName = (isParent & isComponent);
+		boolean checkUniqueLsThingName = propertiesUtilService.getUniqueLsThingName();
 		LsThing savedLsThing = saveLsThing(lsThing, checkUniqueLsThingName);
 		//after saving the lsThing, save the necessary interactions
 		if (isBatch){
 			LsThing parent = LsThing.findLsThing(parentId);
 			saveItxLsThingLsThing("instantiates", "batch_parent", savedLsThing, parent, lsThing.getRecordedBy(), lsThing.getRecordedDate());
 		}
-		if (isAssembly){
-			List<String> componentCodeNames = getComponentCodeNamesFromNewAssembly(lsThing);
-			int order = 1;
-			for (String componentCodeName: componentCodeNames){
-				LsThing component = LsThing.findLsThingsByCodeNameEquals(componentCodeName).getSingleResult();
-				saveItxLsThingLsThing("incorporates", "assembly_component", savedLsThing, component, order, lsThing.getRecordedBy(), lsThing.getRecordedDate());
-			}
-		}
 		return savedLsThing;
+	}
+	
+	
+	private ItxLsThingLsThing saveItxLsThingLsThing(ItxLsThingLsThing itxLsThingLsThing){
+		ItxLsThingLsThing newItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
+		newItxLsThingLsThing.persist();
+		if(itxLsThingLsThing.getLsStates() != null){
+			Set<ItxLsThingLsThingState> lsStates = new HashSet<ItxLsThingLsThingState>();
+			for(ItxLsThingLsThingState itxLsThingLsThingState : itxLsThingLsThing.getLsStates()){
+				ItxLsThingLsThingState newItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
+				newItxLsThingLsThingState.setItxLsThingLsThing(newItxLsThingLsThing);
+				logger.debug("here is the newItxLsThingLsThingState before save: " + newItxLsThingLsThingState.toJson());
+				newItxLsThingLsThingState.persist();
+				logger.debug("persisted the newItxLsThingLsThingState: " + newItxLsThingLsThingState.toJson());
+				if (itxLsThingLsThingState.getLsValues() != null){
+					Set<ItxLsThingLsThingValue> lsValues = new HashSet<ItxLsThingLsThingValue>();
+					for(ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()){
+						logger.debug("itxLsThingLsThingValue: " + itxLsThingLsThingValue.toJson());
+						ItxLsThingLsThingValue newItxLsThingLsThingValue = new ItxLsThingLsThingValue(itxLsThingLsThingValue);
+						newItxLsThingLsThingValue.setLsState(newItxLsThingLsThingState);
+						newItxLsThingLsThingValue.persist();
+						lsValues.add(newItxLsThingLsThingValue);
+						logger.debug("persisted the itxLsThingLsThingValue: " + newItxLsThingLsThingValue.toJson());
+					}	
+					newItxLsThingLsThingState.setLsValues(lsValues);
+				} else {
+					logger.debug("No itxLsThingLsThing values to save");
+				}
+				lsStates.add(newItxLsThingLsThingState);
+			}
+			newItxLsThingLsThing.setLsStates(lsStates);
+		}
+		return newItxLsThingLsThing;
 	}
 	
 	private void saveItxLsThingLsThing(String lsType, String lsKind,
@@ -636,6 +670,17 @@ public class LsThingServiceImpl implements LsThingService {
 	}
 	
 	@Override
+	public Collection<LsThing> findCompositesByComponentEquals(LsThing component) {
+		Collection<LsThing> batches;
+		try{
+			batches = LsThing.findFirstLsThingsByItxTypeEqualsAndSecondLsThingEquals("incorporates", component).getResultList();
+		} catch (EmptyResultDataAccessException e){
+			batches = null;
+		}
+		return batches;
+	}
+	
+	@Override
 	public LsThing findParentByBatchEquals(LsThing batch) {
 		LsThing parent;
 		try{
@@ -656,8 +701,8 @@ public class LsThingServiceImpl implements LsThingService {
 		HashSet<Long> lsThingAllIdList = new HashSet<Long>();
 		Collection<LsThing> lsThingList = new HashSet<LsThing>();
 		//Split the query up on spaces
-		String[] splitQuery = queryString.split("\\s+");
-		logger.debug("Number of search terms: " + splitQuery.length);
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
 		//Make the Map of terms and HashSets of lsThing id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {
@@ -823,6 +868,7 @@ public class LsThingServiceImpl implements LsThingService {
 	
 	private String pickBestLabel(LsThing lsThing) {
 		Collection<LsThingLabel> labels = lsThing.getLsLabels();
+		if (labels.isEmpty()) return null;
 		return LsThingLabel.pickBestLabel(labels).getLabelText();
 	}
 
@@ -841,5 +887,536 @@ public class LsThingServiceImpl implements LsThingService {
 			} catch (EmptyResultDataAccessException e){}
 		}
 		return searchResults;
+	}
+	
+	private void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
+		if(jsonLsThing.getLsStates() != null){
+			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
+				LsThingState updatedLsThingState;
+				if (lsThingState.getId() == null){
+					updatedLsThingState = new LsThingState(lsThingState);
+					updatedLsThingState.setLsThing(updatedLsThing);
+					updatedLsThingState.persist();
+					updatedLsThing.getLsStates().add(updatedLsThingState);
+				} else {
+					updatedLsThingState = LsThingState.update(lsThingState);
+					logger.debug("updated lsThing state " + updatedLsThingState.getId());
+
+				}
+				if (lsThingState.getLsValues() != null){
+					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
+						LsThingValue updatedLsThingValue;
+						if (lsThingValue.getId() == null){
+							updatedLsThingValue = LsThingValue.create(lsThingValue);
+							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
+							updatedLsThingValue.persist();
+							updatedLsThingState.getLsValues().add(updatedLsThingValue);
+						} else {
+							updatedLsThingValue = LsThingValue.update(lsThingValue);
+							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
+						}
+					}	
+				} else {
+					logger.debug("No lsThing values to update");
+				}
+			}
+		}
+	}
+	
+	private void updateItxLsStates(ItxLsThingLsThing jsonItxLsThingLsThing, ItxLsThingLsThing updatedItxLsThingLsThing){
+		if(jsonItxLsThingLsThing.getLsStates() != null){
+			for(ItxLsThingLsThingState itxLsThingLsThingState : jsonItxLsThingLsThing.getLsStates()){
+				ItxLsThingLsThingState updatedItxLsThingLsThingState;
+				if (itxLsThingLsThingState.getId() == null){
+					updatedItxLsThingLsThingState = new ItxLsThingLsThingState(itxLsThingLsThingState);
+					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					updatedItxLsThingLsThingState.persist();
+					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
+				} else {
+					updatedItxLsThingLsThingState = ItxLsThingLsThingState.update(itxLsThingLsThingState);
+					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					logger.debug("updated itxLsThingLsThing state " + updatedItxLsThingLsThingState.getId());
+
+				}
+				if (itxLsThingLsThingState.getLsValues() != null){
+					for(ItxLsThingLsThingValue itxLsThingLsThingValue : itxLsThingLsThingState.getLsValues()){
+						ItxLsThingLsThingValue updatedItxLsThingLsThingValue;
+						if (itxLsThingLsThingValue.getId() == null){
+							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.create(itxLsThingLsThingValue);
+							updatedItxLsThingLsThingValue.setLsState(ItxLsThingLsThingState.findItxLsThingLsThingState(updatedItxLsThingLsThingState.getId()));
+							updatedItxLsThingLsThingValue.persist();
+							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
+						} else {
+							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.update(itxLsThingLsThingValue);
+							updatedItxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
+							logger.debug("updated itxLsThingLsThing value " + updatedItxLsThingLsThingValue.getId());
+						}
+					}	
+				} else {
+					logger.debug("No itxLsThingLsThing values to update");
+				}
+			}
+		}
+	}
+
+
+	@Override
+	@Transactional
+	public Collection<LsThing> searchForDocumentThings(
+			Map<String, String> searchParamsMap) {
+		//make our HashSets: lsThingIdList will be filled/cleared/refilled for each term
+		HashSet<Long> lsThingIdList = new HashSet<Long>();
+		//allLsThingIdList aggregates all the search results, which we will then filter down by intersections
+		HashSet<Long> allLsThingIdList = new HashSet<Long>();
+		//lsThingList is the final search result
+		Collection<LsThing> lsThingList = new HashSet<LsThing>();
+		//map where key is paramName and value is list of ids found matching that param
+		Map<String, HashSet<Long>> resultsByParam = new HashMap<String, HashSet<Long>>();
+		searchParamsMap.remove("with");
+		for (String paramName : searchParamsMap.keySet()){
+			String param = searchParamsMap.get(paramName);
+			logger.debug("Searching by "+paramName+" = "+param);
+			lsThingIdList.addAll(findDocumentLsThingsByParam(paramName, param));
+			resultsByParam.put(paramName, new HashSet<Long>(lsThingIdList));
+			allLsThingIdList.addAll(lsThingIdList);
+			lsThingIdList.clear();
+		}
+		//Here is the intersect logic
+		for (String paramName: searchParamsMap.keySet()) {
+			allLsThingIdList.retainAll(resultsByParam.get(paramName));
+		}
+		for (Long id: allLsThingIdList) lsThingList.add(LsThing.findLsThing(id));
+        //This method uses finders that will find everything, whether or not it is ignored or deleted
+		Collection<LsThing> result = new HashSet<LsThing>();
+		for (LsThing lsThing: lsThingList) {
+			//For Protocol Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+			if (lsThing.isDeleted()){
+				logger.debug("removing a deleted lsThing from the results");
+			} else {
+				result.add(lsThing);
+			}
+		}
+		return result;
+	}
+
+
+	private Collection<Long> findDocumentLsThingsByParam(
+			String paramName, String param) {
+		Collection<Long> lsThingIdList = new HashSet<Long>();
+		/*
+		 * List of Search params:
+		 * documentCode - codeName of document LsThing
+		 * documentType - LsKind of document LsThing
+		 * titleContains - like query on labelText of LsThingLabel of document (name_document name)
+		 * project - lsThing
+		 * owner - stringValue_owner in Document
+		 * amountFrom - numericValue_amount in state with lsType=metadata
+		 * amountTo - numericValue_amount in state with lsType=metadata
+		 * createdDateFrom - recordedDate on Document LsThing (MM/dd/yyyy)
+		 * createdDateTo - ???? should be dateValue in lsType = metadata
+		 * active - stringValue_active in metadata state
+		 * termType - another lsThing
+		 * daysBefore - numericValue of TERM lsThing
+		 * termDateFrom - dateValue_date of TERM lsThing
+		 * termDateTo - dateValue_date of TERM lsThing
+		 * missingAnnotation - ????
+		 */
+		if (paramName.equals("documentCode")){
+			List<LsThing> lsThings = LsThing.findLsThingsByCodeNameLike(param).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+		}
+		if (paramName.equals("documentType")){
+			List<LsThing> lsThings = LsThing.findLsThingsByLsKindEquals(param).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+		}
+		if (paramName.equals("titleContains")){
+			List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingLabelsByLabelTextLike(param).getResultList();
+			if (!lsThingLabels.isEmpty()){
+				for (LsThingLabel lsThingLabel : lsThingLabels){
+					lsThingIdList.add(lsThingLabel.getLsThing().getId());
+				}
+			}
+			lsThingLabels.clear();
+		}
+		if (paramName.equals("company")){
+			LsThing company = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentCompany", company).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+			company.clear();
+		}
+		if (paramName.equals("project")){
+			LsThing project = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentProject", project).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+			project.clear();
+		}
+		if (paramName.equals("owner")){
+			LsThing owner = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentOwner", owner).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+			owner.clear();
+		}
+		if (paramName.equals("amountFrom")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals("amount", new BigDecimal(param)).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("amountTo")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals("amount", new BigDecimal(param)).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("createdDateFrom")){
+			try{
+				Date date = new Date(new Long(param));
+				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateGreaterThan(date).getResultList();
+				if (!lsThings.isEmpty()){
+					for (LsThing lsThing : lsThings) {
+						lsThingIdList.add(lsThing.getId());
+					}
+				}
+				lsThings.clear();
+			} catch (Exception e){
+				logger.error("Error parsing date: " + param);
+			}
+		}
+		if (paramName.equals("createdDateTo")){
+			try{
+				Date date = new Date(new Long(param));
+				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateLessThan(date).getResultList();
+				if (!lsThings.isEmpty()){
+					for (LsThing lsThing : lsThings) {
+						lsThingIdList.add(lsThing.getId());
+					}
+				}
+				lsThings.clear();
+			} catch (Exception e){
+				logger.error("Error parsing date: " + param);
+			}
+		}
+		if (paramName.equals("active")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike("active", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("termType")){
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByCodeValueEquals(param).getResultList();
+			Collection<LsThing> terms = new HashSet<LsThing>();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					LsThing term = LsThing.findLsThing(lsThingValue.getLsState().getLsThing().getId());
+					terms.add(term);
+				}
+			}
+			lsThingValues.clear();
+			if (!terms.isEmpty()){
+				for (LsThing term: terms){
+					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
+					if (!lsThings.isEmpty()){
+						for (LsThing lsThing : lsThings){
+							lsThingIdList.add(lsThing.getId());
+						}
+					}
+					lsThings.clear();
+				}
+			}
+			terms.clear();
+		}
+		if (paramName.equals("daysBeforeTerm")){
+			try{
+				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals("daysBefore", new BigDecimal(param)).getResultList();
+				Collection<LsThing> terms = new HashSet<LsThing>();
+				if (!lsThingValues.isEmpty()){
+					for(LsThingValue lsThingValue: lsThingValues){
+						terms.add(lsThingValue.getLsState().getLsThing());
+					}
+				}
+				lsThingValues.clear();
+				if (!terms.isEmpty()){
+					for (LsThing term: terms){
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
+						if (!lsThings.isEmpty()){
+							for (LsThing lsThing : lsThings){
+								lsThingIdList.add(lsThing.getId());
+							}
+						}
+						lsThings.clear();
+					}
+				}
+				terms.clear();
+			}catch (NumberFormatException e){
+				logger.debug("Couldn't parse the number "+param+" to search for daysBeforeTerm");
+			}
+			
+		}
+		if (paramName.equals("termDateFrom")){
+			try{
+				Date date = new Date(new Long(param));
+				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals("date",date).getResultList();
+				Collection<LsThing> terms = new HashSet<LsThing>();
+				if (!lsThingValues.isEmpty()){
+					for(LsThingValue lsThingValue: lsThingValues){
+						terms.add(lsThingValue.getLsState().getLsThing());
+					}
+				}
+				lsThingValues.clear();
+				if (!terms.isEmpty()){
+					for (LsThing term: terms){
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
+						if (!lsThings.isEmpty()){
+							for (LsThing lsThing : lsThings){
+								lsThingIdList.add(lsThing.getId());
+							}
+						}
+						lsThings.clear();
+					}
+				}
+				terms.clear();
+			} catch (Exception e){
+				logger.error("Error parsing date: " + param);
+			}
+		}
+		if (paramName.equals("termDateTo")){
+			try{
+				Date date = new Date(new Long(param));
+				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals("date",date).getResultList();
+				Collection<LsThing> terms = new HashSet<LsThing>();
+				if (!lsThingValues.isEmpty()){
+					for(LsThingValue lsThingValue: lsThingValues){
+						terms.add(lsThingValue.getLsState().getLsThing());
+					}
+				}
+				lsThingValues.clear();
+				if (!terms.isEmpty()){
+					for (LsThing term: terms){
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
+						if (!lsThings.isEmpty()){
+							for (LsThing lsThing : lsThings){
+								lsThingIdList.add(lsThing.getId());
+							}
+						}
+						lsThings.clear();
+					}
+				}
+				terms.clear();
+			} catch (Exception e){
+				logger.error("Error parsing date: " + param);
+			}		}
+		if (paramName.equals("nonSolicit")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals("nonSolicit", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("nonTransfer")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals("nonTransfer", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("restrictedMaterialsContains")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEqualsIgnoreCase("restrictedMaterialName", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		
+		return lsThingIdList;
+	}
+
+
+	@Override
+	public ArrayList<ErrorMessage> validateLsThing(LsThing lsThing,
+			boolean checkUniqueName, boolean checkUniqueInteractions,
+			boolean checkOrderMatters, boolean checkForwardAndReverseAreSame) {
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		if (checkUniqueName){
+			try{
+				checkLsThingUniqueName(lsThing);
+			} catch (UniqueNameException e){
+				logger.error("Caught UniqueNameException validating LsThing: " + e.getMessage().toString() + " whole message  " + e.toString());
+	            ErrorMessage error = new ErrorMessage();
+	            error.setErrorLevel("error");
+	            error.setMessage(e.getMessage());
+	            errors.add(error);
+			}
+		}
+		if (checkUniqueInteractions){
+			try{
+				checkLsThingUniqueInteractions(lsThing, checkOrderMatters, checkForwardAndReverseAreSame);
+			} catch (UniqueInteractionsException e){
+				logger.error("Caught UniqueInteractionsException validating LsThing: " + e.getMessage().toString() + " whole message  " + e.toString());
+	            ErrorMessage error = new ErrorMessage();
+	            error.setErrorLevel("error");
+	            error.setMessage(e.getMessage());
+	            errors.add(error);
+			}
+		}
+		
+		return errors;
+	}
+
+
+	private void checkLsThingUniqueInteractions(LsThing lsThing,
+			boolean checkOrderMatters, boolean checkForwardAndReverseAreSame) throws UniqueInteractionsException {
+		Set<ItxLsThingLsThing> secondItxLsThings = lsThing.getFirstLsThings();
+		if (!checkOrderMatters){
+			//order doesn't matter. We're just checking for a unique set of "incorporates" interactions
+			HashSet<LsThing> foundLsThings = null;
+			for (ItxLsThingLsThing secondItxLsThing : secondItxLsThings){
+				LsThing secondLsThing = secondItxLsThing.getSecondLsThing();
+				String lsKind = secondItxLsThing.getLsKind();
+				Collection<LsThing> foundFirstLsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", lsKind, secondLsThing).getResultList();
+				//look for "firstLsThings" that are like the one we're validating, i.e. those that have an "incorporates" interaction to the same secondLsThing
+				if (foundLsThings == null){
+					//on the second one, instantiate the HashSet, then add all the foundFirstLsThings.
+					foundLsThings = new HashSet<LsThing>();
+					foundLsThings.addAll(foundFirstLsThings);
+				} else{
+					//otherwise, filter the existing list to be the intersection of the results of the most recent query with the previous results
+					foundLsThings.retainAll(foundFirstLsThings);
+				}
+			}
+			if (foundLsThings != null && !foundLsThings.isEmpty()){
+				//if anything remains, it was found for every interaction so it is a duplicate
+				throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions");
+			}
+		} else{
+			//order matters. for each interaction, we will grab the order, then search using it.
+			HashSet<LsThing> foundLsThings = null;
+			for (ItxLsThingLsThing secondItxLsThing : secondItxLsThings){
+				LsThing secondLsThing = secondItxLsThing.getSecondLsThing();
+				String lsKind = secondItxLsThing.getLsKind();
+				int order = secondItxLsThing.grabItxOrder();
+				Collection<LsThing> foundFirstLsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEqualsAndOrderEquals("incorporates", lsKind, secondLsThing, order).getResultList();
+				if (foundLsThings == null){
+					foundLsThings = new HashSet<LsThing>();
+					foundLsThings.addAll(foundFirstLsThings);
+				} else{
+					foundLsThings.retainAll(foundFirstLsThings);
+				}
+			}
+			if (foundLsThings != null && !foundLsThings.isEmpty()){
+				//if anything remains, it was found for every interaction so it is a duplicate
+				throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
+			}
+			if (checkForwardAndReverseAreSame){
+				//if we need to check backwards as well, by this point we have already passed "forwards validation"
+				//we need to get the total number of "incorporates" interactions
+				ArrayList<ItxLsThingLsThing> orderedIncorporatesInteractions = new ArrayList<ItxLsThingLsThing>();
+				for (ItxLsThingLsThing secondItxLsThing : secondItxLsThings){
+					if (secondItxLsThing.getLsType().equals("incorporates")){
+						orderedIncorporatesInteractions.add(secondItxLsThing);
+					}
+				}
+				//then we sort
+				Collections.sort(orderedIncorporatesInteractions, new ItxLsThingLsThingComparator());
+				//then do the same search as above, but with new "order" parameters:
+				int order = 1;
+				for (ItxLsThingLsThing secondItxLsThing : orderedIncorporatesInteractions){
+					LsThing secondLsThing = secondItxLsThing.getSecondLsThing();
+					String lsKind = secondItxLsThing.getLsKind();
+					Collection<LsThing> foundFirstLsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEqualsAndOrderEquals("incorporates", lsKind, secondLsThing, order).getResultList();
+					if (foundLsThings == null){
+						foundLsThings = new HashSet<LsThing>();
+						foundLsThings.addAll(foundFirstLsThings);
+					} else{
+						foundLsThings.retainAll(foundFirstLsThings);
+					}
+					order++;
+				}
+				if (foundLsThings != null && !foundLsThings.isEmpty()){
+					//if anything remains, it was found for every interaction so it is a duplicate
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
+				}
+			}
+		}
+	}
+
+
+	private void checkLsThingUniqueName(LsThing lsThing) throws UniqueNameException{
+		String lsKind = lsThing.getLsKind();
+		Set<LsThingLabel> lsThingLabels = lsThing.getLsLabels();
+		for (LsThingLabel lsThingLabel : lsThingLabels){
+			if (!lsThingLabel.isIgnored()){
+				String labelText = lsThingLabel.getLabelText();
+				Collection<LsThing> foundLsThings = new HashSet<LsThing>();
+				try{
+					foundLsThings = LsThing.findLsThingByLabelTextAndLsKind(labelText, lsKind).getResultList();
+				} catch (EmptyResultDataAccessException e){
+					//found nothing
+				}
+				if (!foundLsThings.isEmpty()){
+					for (LsThing foundLsThing: foundLsThings){
+						if (lsThing.getId() == null || lsThing.getId().compareTo(foundLsThing.getId()) != 0){
+							//we found an lsThing that is not the same as the one being validated that has the same label
+							throw new UniqueNameException("LsThing with lsKind "+lsKind+" and with the name "+labelText+" already exists! "+foundLsThing.getCodeName());
+						}
+					}
+				}
+			}	
+		}
+		
+	}
+	
+	@Override
+	public Collection<LsThing> sortLsThingsByCodeName(Collection<LsThing> lsThings) {
+		List<LsThing> listLsThings = new ArrayList<LsThing>(lsThings);
+		Collections.sort(listLsThings, new LsThingComparatorByCodeName());
+		return listLsThings;
+	}
+
+
+	@Override
+	public Collection<LsThing> sortBatches(Collection<LsThing> lsThings) {
+		List<LsThing> listLsThings = new ArrayList<LsThing>(lsThings);
+		Collections.sort(listLsThings, new LsThingComparatorByBatchNumber());
+		return listLsThings;
 	}
 }

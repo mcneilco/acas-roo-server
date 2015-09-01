@@ -31,4 +31,16 @@
 <definition extends="default" name="lsthings/findLsThingsByRecordedByLike">
         <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByRecordedByLike.jspx"/>
     </definition>
+<definition extends="default" name="lsthings/findLsThingsByLsTypeEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByLsTypeEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsthings/findLsThingsByRecordedDateGreaterThan">
+        <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByRecordedDateGreaterThan.jspx"/>
+    </definition>
+<definition extends="default" name="lsthings/findLsThingsByRecordedDateLessThan">
+        <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByRecordedDateLessThan.jspx"/>
+    </definition>
+<definition extends="default" name="lsthings/findLsThingsByLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByLsKindEquals.jspx"/>
+    </definition>
 </tiles-definitions>

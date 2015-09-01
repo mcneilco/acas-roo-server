@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="itxlsthinglsthings/list">
+        <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/list.jspx"/>
+    </definition>
+<definition extends="default" name="itxlsthinglsthings/show">
+        <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/show.jspx"/>
+    </definition>
+<definition extends="default" name="itxlsthinglsthings/create">
+        <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/create.jspx"/>
+    </definition>
+<definition extends="default" name="itxlsthinglsthings/update">
+        <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/update.jspx"/>
+    </definition>
+<definition extends="default" name="itxlsthinglsthings/findItxLsThingLsThingsByCodeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/findItxLsThingLsThingsByCodeNameEquals.jspx"/>
+    </definition>
+</tiles-definitions>

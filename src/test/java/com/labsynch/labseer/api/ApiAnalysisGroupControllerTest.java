@@ -2,11 +2,16 @@ package com.labsynch.labseer.api;
 
 
 import java.security.InvalidParameterException;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 import static org.springframework.test.web.ModelAndViewAssert.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,9 +23,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.ui.Model;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerExecutionChain;
 import org.springframework.web.servlet.HandlerMapping;
@@ -39,157 +47,84 @@ import org.springframework.http.converter.json.MappingJacksonHttpMessageConverte
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter;
- 
+
 import java.util.List;
- 
+
 import static org.junit.Assert.assertEquals;
 //import static org.mockito.Mockito.mock;
 //import static org.mockito.Mockito.when;
 
+
+
+
+
+
+
+import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.service.AnalysisGroupService;
 
-//Swap the default JUnit4 with the spring specific SpringJUnit4ClassRunner.
-//This will allow spring to inject the application context
 @RunWith(SpringJUnit4ClassRunner.class)
-//Remove the MockStaticEntityMethods annotation
-//Setup the configuration of the application context and the web mvc layer
-@ContextConfiguration({"classpath:META-INF/spring/applicationContext*.xml", "file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+@WebAppConfiguration
+@ContextConfiguration(locations = {
+		"classpath:/META-INF/spring/applicationContext.xml",
+		"classpath:/META-INF/spring/applicationContext-security.xml",
+		"file:src/main/webapp/WEB-INF/spring/webmvc-config-test.xml"})
+@Transactional
 public class ApiAnalysisGroupControllerTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupControllerTest.class);
 
 	
-    @Autowired
-    private ApplicationContext applicationContext;
+	@Autowired
+    private WebApplicationContext wac;
 
-    private MockHttpServletRequest request;
-    private MockHttpServletResponse response;
-    private RequestMappingHandlerAdapter handlerAdapter;
-    private ApiAnalysisGroupController controller;
-     
-//        @Before
-//        public void before() throws Exception {
-//            AnalysisGroupService dealerService = mock(AnalysisGroupService.class);
-//            when(dealerService.getAllDealers()).thenReturn(mockDealers());
-//             
-//            dealerController = new DealerController();
-//            ReflectionTestUtils.setField(dealerController, "dealerService", dealerService);
-//        }
-//     
-//        @Test
-//        public void testGetAllDealers() throws Exception {
-//            MockHttpServletRequest mockRequest = new MockHttpServletRequest();
-//            mockRequest.setContentType(MediaType.APPLICATION_JSON.toString());
-//            mockRequest.addHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
-//            mockRequest.setMethod("GET");
-//            mockRequest.setRequestURI("/dealer/json/all");
-//     
-//            AnnotationMethodHandlerAdapter handlerAdapter = new AnnotationMethodHandlerAdapter();
-//            HttpMessageConverter[] messageConverters = {new MappingJacksonHttpMessageConverter()};
-//            handlerAdapter.setMessageConverters(messageConverters);
-//     
-//            MockHttpServletResponse mockResponse = new MockHttpServletResponse();
-//            handlerAdapter.handle(mockRequest, mockResponse, dealerController);
-//     
-//            String expected="[{\"id\":\"01\",\"name\":\"dealer-01\"}, {\"id\":\"02\",\"name\":\"dealer-02\"}]";
-//            assertEquals(expected, mockResponse.getContentAsString());
-//        }
-//     
-//        private List<Dealer> mockDealers() {
-//            Dealer dealer01 = new Dealer();
-//            dealer01.setId("01");
-//            dealer01.setName("dealer-01");
-//     
-//            Dealer dealer02 = new Dealer();
-//            dealer02.setId("02");
-//            dealer02.setName("dealer-02");
-//     
-//            return Lists.newArrayList(dealer01, dealer02);
-//        }
+    private MockMvc mockMvc;
     
+    @Autowired
+    private AnalysisGroupService analysisGroupService;
+
     @Before
-    public void setUp() {
-       request = new MockHttpServletRequest();
-       response = new MockHttpServletResponse();
-       
-       handlerAdapter = applicationContext.getBean(RequestMappingHandlerAdapter.class);
-       // I could get the controller from the context here
-       controller = new ApiAnalysisGroupController();
+    public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
     
     @Test
-    public void testMethod() throws Exception {
-    	
-    	final String expectedMessage = "Hello jack, from the controller";
-        final String requestUri = "/api/v1/analysisgroups/subjectsstatus/";
-        final String message;
-        final Object handler;
-        final HandlerMethod expectedHandlerMethod;
-        final ModelAndView mav;
-        final MockHttpServletRequest request;
-        final MockHttpServletResponse response;
-
-        request = new MockHttpServletRequest();
-        response = new MockHttpServletResponse();
-
-        request.setRequestURI(requestUri);
-        
-        expectedHandlerMethod = new HandlerMethod(controller, "findByTypeAndKind", String.class);
-        handler = this.getHandler(request);
-        
-        // For the most part we will be expecting HandlerMethod objects to be returned for our controllers.
-        // Calling the to string method will print the complete method signature.
-        Assert.assertEquals("Correct handler found for request url: " + requestUri, expectedHandlerMethod.toString(), handler.toString());
-        
-        // Handle the actual request
-        mav = handlerAdapter.handle(request, response, handler);
-
-        // Ensure that the right view is returned
-        assertViewName(mav, "message-show");
-        // Ensure that the view will receive the message object and that it is
-        // a string
-        message = assertAndReturnModelAttributeOfType(mav, "message", String.class);
-        // We can test the message in case
-        Assert.assertEquals(("Message returned was " + expectedMessage), expectedMessage, message);
-        
-    }
-
-    /**
-     * This method finds the handler for a given request URI. 
-     * 
-     * It will also ensure that the URI Parameters i.e. /context/test/{name} are added to the request
-     * 
-     * @param request
-     * @return 
-     * @throws Exception
-     */
-    private Object getHandler(MockHttpServletRequest request) throws Exception {
-        HandlerExecutionChain chain = null;
-
-        Map<String, HandlerMapping> map = applicationContext.getBeansOfType(HandlerMapping.class);
-        Iterator<HandlerMapping> itt = map.values().iterator();
-
-    	logger.info("attempting to iterate through the request " + request.toString() );
-    	Set<String> keys = map.keySet();
-    	for (String key : keys){
-    		logger.info("here are the keys: " + key);
+    public void parseAnalysisGroupsFromJSONTest() throws Exception {
+    	String json = "[{\"id\":16752,\"lsKind\":\"default\",\"lsStates\":[{\"lsKind\":\"dose response\",\"lsTransaction\":65,\"lsType\":\"data\",\"lsValues\":[{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Min\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":17.1522,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"efficacy\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"SSE\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":1640.4174,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"SST\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":30844.8291,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"rSquared\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":0.9468,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Rendering Hint\",\"lsTransaction\":65,\"lsType\":\"stringValue\",\"numericValue\":null,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":\"TRUE\",\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"category\",\"lsTransaction\":65,\"lsType\":\"stringValue\",\"numericValue\":null,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":\"sigmoid\",\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":\"\",\"lsKind\":\"algorithm flag status\",\"lsTransaction\":65,\"lsType\":\"codeValue\",\"numericValue\":null,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Max\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":91.5111,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"efficacy\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Slope\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":1.2444,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"EC50\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":0.5135,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"uM\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"curve id\",\"lsTransaction\":65,\"lsType\":\"stringValue\",\"numericValue\":null,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":\"AG-00000205_65\",\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Fitted Slope\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":-1.2444,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Fitted Min\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":17.1522,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"efficacy\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Fitted Max\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":91.5111,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"efficacy\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Fitted EC50\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":0.5135,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"uM\"}],\"recordedBy\":\"bob\",\"recordedDate\":1433969151000},{\"lsKind\":\"results\",\"lsTransaction\":65,\"lsType\":\"data\",\"lsValues\":[{\"clobValue\":null,\"codeValue\":\"CMPD-0000011-01A\",\"lsKind\":\"batch code\",\"lsTransaction\":65,\"lsType\":\"codeValue\",\"numericValue\":null,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null}],\"recordedBy\":\"bob\",\"recordedDate\":1433969151000}],\"lsType\":\"default\",\"recordedBy\":\"bob\",\"recordedDate\":1433969152000}]";
+    	try{
+    		Collection<AnalysisGroup> analysisGroups = AnalysisGroup.fromJsonArrayToAnalysisGroups(json);
+    	}catch (Exception e){
+    		logger.error(e.toString());
     	}
-    	
-        while (itt.hasNext()) {
-        	logger.info("iterating through ------------");
-            HandlerMapping mapping = itt.next();
-            chain = mapping.getHandler(request);
-            if (chain != null) {
-                break;
-            }
-
-        }
-        
-        if (chain == null) {
-            throw new InvalidParameterException("Unable to find handler for request URI: " + request.getRequestURI());
-        }
-        
-        return chain.getHandler();
+    }
+    
+    @Test
+    @Transactional
+    public void updateAnalysisGroupsFromJSONServiceTest() {
+    	String json = "[{\"id\":546,\"lsKind\":\"default\",\"lsStates\":[{\"lsKind\":\"dose response\",\"lsTransaction\":65,\"lsType\":\"data\",\"lsValues\":[{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Min\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":17.1522,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"efficacy\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"SSE\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":1640.4174,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"SST\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":30844.8291,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"rSquared\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":0.9468,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Rendering Hint\",\"lsTransaction\":65,\"lsType\":\"stringValue\",\"numericValue\":null,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":\"TRUE\",\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"category\",\"lsTransaction\":65,\"lsType\":\"stringValue\",\"numericValue\":null,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":\"sigmoid\",\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":\"\",\"lsKind\":\"algorithm flag status\",\"lsTransaction\":65,\"lsType\":\"codeValue\",\"numericValue\":null,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Max\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":91.5111,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"efficacy\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Slope\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":1.2444,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"EC50\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":0.5135,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"uM\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"curve id\",\"lsTransaction\":65,\"lsType\":\"stringValue\",\"numericValue\":null,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":\"AG-00000205_65\",\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Fitted Slope\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":-1.2444,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Fitted Min\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":17.1522,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"efficacy\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Fitted Max\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":91.5111,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"efficacy\"},{\"clobValue\":null,\"codeValue\":null,\"lsKind\":\"Fitted EC50\",\"lsTransaction\":65,\"lsType\":\"numericValue\",\"numericValue\":0.5135,\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":\"uM\"}],\"recordedBy\":\"bob\",\"recordedDate\":1433969151000},{\"lsKind\":\"results\",\"lsTransaction\":65,\"lsType\":\"data\",\"lsValues\":[{\"clobValue\":null,\"codeValue\":\"CMPD-0000011-01A\",\"lsKind\":\"batch code\",\"lsTransaction\":65,\"lsType\":\"codeValue\",\"numericValue\":null,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433969151000,\"stringValue\":null,\"uncertainty\":null,\"uncertaintyType\":null,\"unitKind\":null}],\"recordedBy\":\"bob\",\"recordedDate\":1433969151000}],\"lsType\":\"default\",\"recordedBy\":\"bob\",\"recordedDate\":1433969152000}]";
+		Collection<AnalysisGroup> analysisGroups = AnalysisGroup.fromJsonArrayToAnalysisGroups(json);
+		for (AnalysisGroup analysisGroup : analysisGroups){
+			analysisGroupService.updateLsAnalysisGroup(analysisGroup);
+		}
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(value=false)
+    public void updateAnalysisGroupsFromJSONTest() throws Exception {
+    	String json = "[{\"id\":3,\"lsStates\":[{\"lsKind\":\"dose response\",\"lsTransaction\":3,\"lsType\":\"data\",\"lsValues\":[{\"lsKind\":\"Min\",\"lsTransaction\":3,\"lsType\":\"numericValue\",\"numericValue\":17.1522,\"publicData\":true,\"recordedBy\":\"bob\",\"recordedDate\":1433979304000,\"unitKind\":\"efficacy\"}],\"recordedBy\":\"bob\",\"recordedDate\":1433979304000}]}]";
+    	MockHttpServletResponse response = this.mockMvc.perform(put("/api/v1/analysisgroups/jsonArray")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
     }
 }

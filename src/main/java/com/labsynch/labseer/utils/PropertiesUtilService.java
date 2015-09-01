@@ -1,7 +1,5 @@
 package com.labsynch.labseer.utils;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,10 +26,8 @@ public interface PropertiesUtilService {
 	String getClientFullPath();
 
 	boolean getUniqueLsThingName();
-
-	List<String> getComponentKindList();
 	
-	List<String> getAssemblyKindList();
+	boolean getEnableSwagger();
 
 	
 }

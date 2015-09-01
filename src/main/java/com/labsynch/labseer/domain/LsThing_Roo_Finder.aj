@@ -4,6 +4,7 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.LsThing;
+import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -29,6 +30,14 @@ privileged aspect LsThing_Roo_Finder {
         EntityManager em = LsThing.entityManager();
         TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", LsThing.class);
         q.setParameter("codeName", codeName);
+        return q;
+    }
+    
+    public static TypedQuery<LsThing> LsThing.findLsThingsByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE o.lsKind = :lsKind", LsThing.class);
+        q.setParameter("lsKind", lsKind);
         return q;
     }
     
@@ -63,6 +72,14 @@ privileged aspect LsThing_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThing> LsThing.findLsThingsByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE o.lsType = :lsType", LsThing.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
     public static TypedQuery<LsThing> LsThing.findLsThingsByRecordedByLike(String recordedBy) {
         if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
         recordedBy = recordedBy.replace('*', '%');
@@ -75,6 +92,22 @@ privileged aspect LsThing_Roo_Finder {
         EntityManager em = LsThing.entityManager();
         TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", LsThing.class);
         q.setParameter("recordedBy", recordedBy);
+        return q;
+    }
+    
+    public static TypedQuery<LsThing> LsThing.findLsThingsByRecordedDateGreaterThan(Date recordedDate) {
+        if (recordedDate == null) throw new IllegalArgumentException("The recordedDate argument is required");
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE o.recordedDate > :recordedDate", LsThing.class);
+        q.setParameter("recordedDate", recordedDate);
+        return q;
+    }
+    
+    public static TypedQuery<LsThing> LsThing.findLsThingsByRecordedDateLessThan(Date recordedDate) {
+        if (recordedDate == null) throw new IllegalArgumentException("The recordedDate argument is required");
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE o.recordedDate < :recordedDate", LsThing.class);
+        q.setParameter("recordedDate", recordedDate);
         return q;
     }
     

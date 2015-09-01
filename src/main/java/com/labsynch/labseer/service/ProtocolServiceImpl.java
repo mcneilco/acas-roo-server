@@ -31,6 +31,7 @@ import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 public class ProtocolServiceImpl implements ProtocolService {
@@ -151,7 +152,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 				for (ProtocolLabel pl : protocolLabels){
 					Protocol pro = pl.getProtocol();
 					//if the protocol is not hard deleted or soft deleted, there is a name conflict
-					if (!pro.isIgnored() && !pl.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
+					if (!pro.isIgnored() && !pl.isIgnored() && !label.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
 						protocolExists = true;
 					}
 				}
@@ -205,7 +206,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 						ProtocolValue updatedProtocolValue;
 						if (protocolValue.getId() == null){
 							updatedProtocolValue = new ProtocolValue(protocolValue);
-							updatedProtocolValue.setLsState(ProtocolState.findProtocolState(protocolState.getId()));
+							updatedProtocolValue.setLsState(updatedProtocolState);
 							updatedProtocolValue.persist();
 							updatedProtocolValues.add(updatedProtocolValue);
 						} else {
@@ -272,8 +273,8 @@ public class ProtocolServiceImpl implements ProtocolService {
 		HashSet<Long> protocolAllIdList = new HashSet<Long>();
 		Collection<Protocol> protocolList = new HashSet<Protocol>();
 		//Split the query up on spaces
-		String[] splitQuery = queryString.split("\\s+");
-		logger.debug("Number of search terms: " + splitQuery.length);
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
 		//Make the Map of terms and HashSets of protocol id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {
@@ -389,12 +390,12 @@ public class ProtocolServiceImpl implements ProtocolService {
 			try {
 				Date date = df.parse(queryString);
 				logger.debug("Successfully parsed date: "+queryString);
-				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
+				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
 					logger.debug("Successfully parsed date: "+queryString);
-					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
+					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}

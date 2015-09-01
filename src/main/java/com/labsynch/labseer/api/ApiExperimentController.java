@@ -1052,7 +1052,7 @@ public class ApiExperimentController {
     @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(
-    		@RequestBody ExperimentSearchRequestDTO searchRequest, 
+    		@RequestBody String searchRequestJSON, 
     		@RequestParam(value = "format", required = false) String format,
 			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
 
@@ -1061,6 +1061,7 @@ public class ApiExperimentController {
 			publicData = true;
 		}
 		
+		ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(searchRequestJSON);
         logger.debug("converted json: " + searchRequest.toJson());
         List<AnalysisGroupValueDTO> agValues = null;
         try {
@@ -1378,7 +1379,7 @@ public class ApiExperimentController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			String result = Experiment.toJsonArrayStub(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery));
+			String result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery));
 			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 		} catch(Exception e){
 			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);

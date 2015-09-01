@@ -52,6 +52,7 @@ import com.labsynch.labseer.dto.ValueTypeKindDTO;
 import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
@@ -115,6 +116,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		
 		
 		Experiment updatedExperiment = Experiment.update(jsonExperiment);
+		
 		if (jsonExperiment.getLsLabels() != null) {
 			for(ExperimentLabel experimentLabel : jsonExperiment.getLsLabels()){
 				logger.debug("Label in hand: " + experimentLabel.getLabelText());			
@@ -991,10 +993,10 @@ public class ExperimentServiceImpl implements ExperimentService {
 		HashSet<Long> experimentAllIdList = new HashSet<Long>();
 		Collection<Experiment> experimentList = new HashSet<Experiment>();
 		//Split the query up on spaces
-		String[] splitQuery = queryString.split("\\s+");
-		logger.debug("Number of search terms: " + splitQuery.length);
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
 		//Protection from searching * in a database with too many experiments:
-		if (splitQuery.length == 1 && splitQuery[0].equals("*")){
+		if (splitQuery.contains("*")){
 			logger.warn("Query for '*' detected. Determining if number of results is too many.");
 			int experimentCount = (int) Experiment.countExperiments();
 			logger.debug("Found "+experimentCount +" experiments.");
@@ -1191,11 +1193,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 			try {
 				Date date = df.parse(queryString);
-				experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals("completion date", date).getResultList();
+				experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike("completion date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
-					experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals("completion date", date).getResultList();
+					experimentValues = ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueLike("completion date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}

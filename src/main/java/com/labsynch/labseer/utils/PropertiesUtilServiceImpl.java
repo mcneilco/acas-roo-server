@@ -110,7 +110,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 
 	@Value("${autoCreateKinds}")
 	public void setAutoCreateKinds(String autoCreateKinds) {
-	    this.uniqueExperimentName = autoCreateKinds;
+	    this.autoCreateKinds = autoCreateKinds;
 	}
 	
 	@Override
@@ -142,31 +142,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 		return Boolean.parseBoolean(this.uniqueLsThingName);
 	}
 	
-	String componentKindList;
+	String enableSwagger;
 	
-	@Value("${componentKindList}")
-	public void setComponentKindList(String componentKindList) {
-	    this.componentKindList = componentKindList;
+	@Value("${enableSwagger}")
+	public void setEnableSwagger(String enableSwagger) {
+	    this.enableSwagger = enableSwagger;
 	}
 	
 	@Override
-	public List<String> getComponentKindList() {
-		List<String> componentKindListList = new ArrayList<String>();
-		componentKindListList.addAll(Arrays.asList(componentKindList.split(",")));
-		return componentKindListList;
+	public boolean getEnableSwagger() {
+		return Boolean.parseBoolean(this.enableSwagger);
 	}
 	
-	String assemblyKindList;
-	
-	@Value("${assemblyKindList}")
-	public void setAssemblyKindList(String assemblyKindList) {
-	    this.assemblyKindList = assemblyKindList;
-	}
-	
-	@Override
-	public List<String> getAssemblyKindList() {
-		List<String> assemblyKindListList = new ArrayList<String>();
-		assemblyKindListList.addAll(Arrays.asList(assemblyKindList.split(",")));
-		return assemblyKindListList;
-	}
 }
