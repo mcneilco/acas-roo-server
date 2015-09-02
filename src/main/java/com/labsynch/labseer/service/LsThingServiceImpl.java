@@ -299,7 +299,7 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	@Transactional
 	public LsThing updateLsThing(LsThing jsonLsThing){
-		LsThing updatedLsThing = LsThing.updateNoMerge(jsonLsThing);
+		LsThing updatedLsThing = LsThing.update(jsonLsThing);
 		if (jsonLsThing.getLsLabels() != null) {
 			for(LsThingLabel lsThingLabel : jsonLsThing.getLsLabels()){
 				logger.debug("Label in hand: " + lsThingLabel.getLabelText());			
@@ -310,6 +310,7 @@ public class LsThingServiceImpl implements LsThingService {
 					updatedLsThing.getLsLabels().add(newLsThingLabel);
 				} else {
 					LsThingLabel updatedLabel = LsThingLabel.update(lsThingLabel);
+					updatedLsThing.getLsLabels().add(updatedLabel);
 					logger.debug("updated lsThing label " + updatedLabel.getId());
 				}
 			}			
@@ -317,10 +318,16 @@ public class LsThingServiceImpl implements LsThingService {
 			logger.debug("No lsThing labels to update");
 		}
 		updateLsStates(jsonLsThing, updatedLsThing);
+		
 		//updated itx and nested LsThings
+		// assume that the client may not send all of the nested data but wants all of the nested data back 
+		
+		Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+		firstLsThings.addAll(updatedLsThing.getFirstLsThings());
+		logger.debug("found number of first interactions: " + firstLsThings.size());
+		
 		if(jsonLsThing.getFirstLsThings() != null){
 			//there are itx's
-			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
 				ItxLsThingLsThing updatedItxLsThingLsThing;
 				if (itxLsThingLsThing.getId() == null){
@@ -334,19 +341,24 @@ public class LsThingServiceImpl implements LsThingService {
 					//old itx needs to be updated
 					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
-					updatedItxLsThingLsThing = ItxLsThingLsThing.updateNoMerge(itxLsThingLsThing);
+					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
 					updateItxLsStates(itxLsThingLsThing, updatedItxLsThingLsThing);
-					updatedItxLsThingLsThing.merge();
 					firstLsThings.add(updatedItxLsThingLsThing);
 				}
 			}
 			updatedLsThing.setFirstLsThings(firstLsThings);
 		}
 		
+		Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
+		secondLsThings.addAll(updatedLsThing.getSecondLsThings());
+//		secondLsThings.addAll(ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(updatedLsThing).getResultList());
+		logger.debug("found number of second interactions: " + secondLsThings.size());
+
+		
 		if(jsonLsThing.getSecondLsThings() != null){
 			//there are itx's
-			Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getSecondLsThings()){
+				logger.debug("updating itxLsThingLsThing");
 				ItxLsThingLsThing updatedItxLsThingLsThing;
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
@@ -366,7 +378,6 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			updatedLsThing.setSecondLsThings(secondLsThings);
 		}
-		updatedLsThing.merge();
 		
 		return updatedLsThing;
 
@@ -926,6 +937,8 @@ public class LsThingServiceImpl implements LsThingService {
 				} else {
 					updatedItxLsThingLsThingState = ItxLsThingLsThingState.update(itxLsThingLsThingState);
 					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					updatedItxLsThingLsThingState.merge();
+					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
 					logger.debug("updated itxLsThingLsThing state " + updatedItxLsThingLsThingState.getId());
 
 				}
@@ -940,6 +953,8 @@ public class LsThingServiceImpl implements LsThingService {
 						} else {
 							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.update(itxLsThingLsThingValue);
 							updatedItxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
+							updatedItxLsThingLsThingValue.merge();
+							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
 							logger.debug("updated itxLsThingLsThing value " + updatedItxLsThingLsThingValue.getId());
 						}
 					}	
