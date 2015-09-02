@@ -40,7 +40,7 @@ public class LsThingPreferredIdServiceTests {
 				
 		PreferredNameRequestDTO inputData = new PreferredNameRequestDTO();
 		List<PreferredNameDTO> requests = new ArrayList<PreferredNameDTO>();
-		String[] inputNames = {"1", "2", "2","2", "27"};
+		String[] inputNames = {"1", "2", "2","2", "27", "380653"};
 		for (String name : inputNames){
 			PreferredNameDTO requestName = new PreferredNameDTO();
 			requestName.setRequestName(name);
@@ -102,7 +102,7 @@ public class LsThingPreferredIdServiceTests {
 				
 		PreferredNameRequestDTO inputData = new PreferredNameRequestDTO();
 		List<PreferredNameDTO> requests = new ArrayList<PreferredNameDTO>();
-		String[] inputNames = {"380653", "380654", "633417", "664857"};
+		String[] inputNames = {"380653", "380654", "633417", "664857",  "399588", "212124", "101056086"};
 		for (String name : inputNames){
 			PreferredNameDTO requestName = new PreferredNameDTO();
 			requestName.setRequestName(name);

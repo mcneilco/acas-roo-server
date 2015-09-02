@@ -50,13 +50,13 @@ public class DiscontinuedGenesFromCSVFileTests {
 
 		geneThingService.updateEntrezGenes(entrezGenesFile, geneHistoryFile, taxonomyId);
 		
-		List<LsThingLabel> results = LsThingLabel.findLsThingLabelsByLabelTextEquals("633417").getResultList();
+		List<LsThingLabel> results = LsThingLabel.findLsThingLabelsByLabelTextEquals("664857").getResultList();
 		logger.info("number of genes found: " + results.size());
 		for (LsThingLabel result : results){
 			logger.debug(result.toJson());
 		}
 		
-		List<LsThingLabel> results2 = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot("633417", true).getResultList();
+		List<LsThingLabel> results2 = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot("664857", true).getResultList();
 		logger.info("--------- number of not ignored genes found: " + results2.size());
 		for (LsThingLabel result : results2){
 			logger.debug(result.toJson());
