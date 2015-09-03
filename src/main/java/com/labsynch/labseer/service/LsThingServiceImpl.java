@@ -185,25 +185,57 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public PreferredNameResultsDTO getPreferredNameFromName(String thingType, String thingKind, String labelType, String labelKind, String json){
 
-		logger.info("in getPreferredNameFromName");
+		logger.info("in getPreferredNameFromName with input json");
 
 		PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);	
 
 		logger.info("number of requests: " + requestDTO.getRequests().size());
 
-		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
+		List<PreferredNameDTO> requests = (List<PreferredNameDTO>) requestDTO.getRequests();
 
 		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
 		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
 
-		Set<String> requestNameList = new HashSet<String>();
+		List<String> requestNameList = new ArrayList<String>();
 		for (PreferredNameDTO request : requests){
 			requestNameList.add(request.getRequestName());
 		}
 
-		List<PreferredNameDTO> lsThingLabelsList = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNameList).getResultList();
+		List<PreferredNameDTO> lsThingLabelsList = new ArrayList<PreferredNameDTO>();	
+		int batchSize = 999;
+		int i = 1;
+		List<String> requestNamesSubset = new ArrayList<String>();
+		List<PreferredNameDTO> lsThingLabelsFound;
+		for (String requestName : requestNameList){
+//			requestNamesSubset.add(requestName);
+//			List<PreferredNameDTO> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+//			lsThingLabelsList.addAll(lsThingLabels);
+//			requestNamesSubset.clear();
+
+			requestNamesSubset.add(requestName);
+			if (i % batchSize  == 0 ) { 
+				lsThingLabelsFound = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+				lsThingLabelsList.addAll(lsThingLabelsFound);
+				requestNamesSubset.clear();
+				logger.debug("searching batch of names " + i);
+			}
+			i++;			
+			
+		}
+		
+		if (requestNamesSubset.size() > 0){
+			lsThingLabelsFound = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+			lsThingLabelsList.addAll(lsThingLabelsFound);
+			logger.debug("searching last batch of names " + requestNamesSubset.size());
+
+		}
+
 		
 		logger.info("number of thing labels found: " + lsThingLabelsList.size());
+		for (PreferredNameDTO preferredName : lsThingLabelsList){
+			logger.info(preferredName.toJson());
+		}
+		
 		MultiValueMap mvm = new MultiValueMap();
 		for (PreferredNameDTO pn : lsThingLabelsList){
 			mvm.put(pn.getRequestName(), pn);
@@ -212,7 +244,6 @@ public class LsThingServiceImpl implements LsThingService {
 		for (PreferredNameDTO request : requests){
 			request.setPreferredName("");
 			request.setReferenceName("");
-			//List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
 			@SuppressWarnings("unchecked")
 			List<PreferredNameDTO> lsThingLabels = (List<PreferredNameDTO>) mvm.get(request.getRequestName());
 
@@ -243,23 +274,44 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public PreferredNameResultsDTO getPreferredNameFromName(String thingType, String thingKind, String labelType, String labelKind, PreferredNameRequestDTO requestDTO){
 
-		logger.info("in getPreferredNameFromName");
+		logger.info("in getPreferredNameFromName with PreferredNameRequestDTO");
 
 		logger.info("number of requests: " + requestDTO.getRequests().size());
 
 		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
-
 		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
 		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
 
-		Set<String> requestNameList = new HashSet<String>();
+		List<String> requestNameList = new ArrayList<String>();
 		for (PreferredNameDTO request : requests){
 			requestNameList.add(request.getRequestName());
 		}
 
-		List<PreferredNameDTO> lsThingLabelsList = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNameList).getResultList();
+		List<PreferredNameDTO> lsThingLabelsList = new ArrayList<PreferredNameDTO>();	
+		int batchSize = 999;
+		int i = 1;
+		List<String> requestNamesSubset = new ArrayList<String>();
+		for (String requestName : requestNameList){
+			requestNamesSubset.add(requestName);
+			if (i % batchSize  == 0 ) { 
+				List<PreferredNameDTO> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+				lsThingLabelsList.addAll(lsThingLabels);
+				requestNamesSubset.clear();
+				logger.debug("searching batch of names " + i);
+
+			}
+			i++;			
+			
+		}
 		
+		if (requestNamesSubset.size() > 0){
+			List<PreferredNameDTO> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+			lsThingLabelsList.addAll(lsThingLabels);
+			logger.debug("searching last batch of names " + requestNamesSubset.size());
+
+		}				
 		logger.info("number of thing labels found: " + lsThingLabelsList.size());
+		
 		MultiValueMap mvm = new MultiValueMap();
 		for (PreferredNameDTO pn : lsThingLabelsList){
 			mvm.put(pn.getRequestName(), pn);
@@ -268,7 +320,6 @@ public class LsThingServiceImpl implements LsThingService {
 		for (PreferredNameDTO request : requests){
 			request.setPreferredName("");
 			request.setReferenceName("");
-			//List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
 			@SuppressWarnings("unchecked")
 			List<PreferredNameDTO> lsThingLabels = (List<PreferredNameDTO>) mvm.get(request.getRequestName());
 
@@ -891,7 +942,7 @@ public class LsThingServiceImpl implements LsThingService {
 		return searchResults;
 	}
 	
-	private void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
+	public void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
 		if(jsonLsThing.getLsStates() != null){
 			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
 				LsThingState updatedLsThingState;
@@ -900,13 +951,18 @@ public class LsThingServiceImpl implements LsThingService {
 					updatedLsThingState.setLsThing(updatedLsThing);
 					updatedLsThingState.persist();
 					updatedLsThing.getLsStates().add(updatedLsThingState);
+					logger.debug("persisted new lsThing state " + updatedLsThingState.getId());
+
 				} else {
 					updatedLsThingState = LsThingState.update(lsThingState);
+					updatedLsThing.getLsStates().add(updatedLsThingState);
+
 					logger.debug("updated lsThing state " + updatedLsThingState.getId());
 
 				}
 				if (lsThingState.getLsValues() != null){
 					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
+						if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedLsThingState);
 						LsThingValue updatedLsThingValue;
 						if (lsThingValue.getId() == null){
 							updatedLsThingValue = LsThingValue.create(lsThingValue);
@@ -917,6 +973,8 @@ public class LsThingServiceImpl implements LsThingService {
 							updatedLsThingValue = LsThingValue.update(lsThingValue);
 							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
 						}
+						logger.debug("checking lsThingValue " + updatedLsThingValue.toJson());
+
 					}	
 				} else {
 					logger.debug("No lsThing values to update");
