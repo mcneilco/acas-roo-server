@@ -10,6 +10,7 @@ public interface ItxLsThingLsThingService {
 	ItxLsThingLsThing saveItxLsThingLsThing(ItxLsThingLsThing itxLsThingLsThing);
 
 	ItxLsThingLsThing updateItxLsThingLsThing(ItxLsThingLsThing jsonItxLsThingLsThing);
+
 	
 	
 }

@@ -456,8 +456,9 @@ public class ApiLsThingController {
         headers.add("Content-Type", "application/json");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
-        LsThing lsThing = LsThing.fromJsonToLsThing(json);
+        LsThing lsThing = null;
 		try {
+			lsThing = LsThing.fromJsonToLsThing(json);
     		lsThing = lsThingService.updateLsThing(lsThing);
     	} catch (Exception e) {
     		logger.error("----from the controller----"

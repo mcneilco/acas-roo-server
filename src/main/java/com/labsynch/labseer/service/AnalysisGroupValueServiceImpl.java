@@ -140,7 +140,7 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		} else {
 			analysisGroupValue.setLsState(AnalysisGroupState.findAnalysisGroupState(analysisGroupValue.getLsState().getId()));
 		}
-		analysisGroupValue.setVersion(AnalysisGroupValue.findAnalysisGroupValue(analysisGroupValue.getId()).getVersion());
+//		analysisGroupValue.setVersion(AnalysisGroupValue.findAnalysisGroupValue(analysisGroupValue.getId()).getVersion());
 		analysisGroupValue.merge();
 		return analysisGroupValue;
 	}
