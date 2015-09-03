@@ -169,6 +169,14 @@ privileged aspect LsThingValueController_Roo_Controller_Json {
         return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals(lsKind, numericValue).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsKindEqualsAndStringValueEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndStringValueEquals(@RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThingValue.toJsonArray(LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals(lsKind, stringValue).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLsKindEqualsAndStringValueLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingValueController.jsonFindLsThingValuesByLsKindEqualsAndStringValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue) {

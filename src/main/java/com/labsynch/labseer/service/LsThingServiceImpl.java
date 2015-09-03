@@ -163,8 +163,13 @@ public class LsThingServiceImpl implements LsThingService {
 			} else {
 				try{
 					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
-					request.setPreferredName(pickBestLabel(codeNameMatch));
-					request.setReferenceName(codeNameMatch.getCodeName());
+					if (codeNameMatch.getLsKind().equals(thingKind) && codeNameMatch.getLsType().equals(thingType)){
+						logger.info("Made it to the codeMatch");
+						request.setPreferredName(pickBestLabel(codeNameMatch));
+	 					request.setReferenceName(codeNameMatch.getCodeName());
+					}else{
+						logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+					}
 				}catch (EmptyResultDataAccessException e){
 					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
 				}
@@ -180,25 +185,57 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public PreferredNameResultsDTO getPreferredNameFromName(String thingType, String thingKind, String labelType, String labelKind, String json){
 
-		logger.info("in getPreferredNameFromName");
+		logger.info("in getPreferredNameFromName with input json");
 
 		PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);	
 
 		logger.info("number of requests: " + requestDTO.getRequests().size());
 
-		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
+		List<PreferredNameDTO> requests = (List<PreferredNameDTO>) requestDTO.getRequests();
 
 		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
 		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
 
-		Set<String> requestNameList = new HashSet<String>();
+		List<String> requestNameList = new ArrayList<String>();
 		for (PreferredNameDTO request : requests){
 			requestNameList.add(request.getRequestName());
 		}
 
-		List<PreferredNameDTO> lsThingLabelsList = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNameList).getResultList();
+		List<PreferredNameDTO> lsThingLabelsList = new ArrayList<PreferredNameDTO>();	
+		int batchSize = 999;
+		int i = 1;
+		List<String> requestNamesSubset = new ArrayList<String>();
+		List<PreferredNameDTO> lsThingLabelsFound;
+		for (String requestName : requestNameList){
+//			requestNamesSubset.add(requestName);
+//			List<PreferredNameDTO> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+//			lsThingLabelsList.addAll(lsThingLabels);
+//			requestNamesSubset.clear();
+
+			requestNamesSubset.add(requestName);
+			if (i % batchSize  == 0 ) { 
+				lsThingLabelsFound = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+				lsThingLabelsList.addAll(lsThingLabelsFound);
+				requestNamesSubset.clear();
+				logger.debug("searching batch of names " + i);
+			}
+			i++;			
+			
+		}
+		
+		if (requestNamesSubset.size() > 0){
+			lsThingLabelsFound = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+			lsThingLabelsList.addAll(lsThingLabelsFound);
+			logger.debug("searching last batch of names " + requestNamesSubset.size());
+
+		}
+
 		
 		logger.info("number of thing labels found: " + lsThingLabelsList.size());
+		for (PreferredNameDTO preferredName : lsThingLabelsList){
+			logger.info(preferredName.toJson());
+		}
+		
 		MultiValueMap mvm = new MultiValueMap();
 		for (PreferredNameDTO pn : lsThingLabelsList){
 			mvm.put(pn.getRequestName(), pn);
@@ -207,7 +244,6 @@ public class LsThingServiceImpl implements LsThingService {
 		for (PreferredNameDTO request : requests){
 			request.setPreferredName("");
 			request.setReferenceName("");
-			//List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
 			@SuppressWarnings("unchecked")
 			List<PreferredNameDTO> lsThingLabels = (List<PreferredNameDTO>) mvm.get(request.getRequestName());
 
@@ -238,23 +274,44 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public PreferredNameResultsDTO getPreferredNameFromName(String thingType, String thingKind, String labelType, String labelKind, PreferredNameRequestDTO requestDTO){
 
-		logger.info("in getPreferredNameFromName");
+		logger.info("in getPreferredNameFromName with PreferredNameRequestDTO");
 
 		logger.info("number of requests: " + requestDTO.getRequests().size());
 
 		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
-
 		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
 		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
 
-		Set<String> requestNameList = new HashSet<String>();
+		List<String> requestNameList = new ArrayList<String>();
 		for (PreferredNameDTO request : requests){
 			requestNameList.add(request.getRequestName());
 		}
 
-		List<PreferredNameDTO> lsThingLabelsList = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNameList).getResultList();
+		List<PreferredNameDTO> lsThingLabelsList = new ArrayList<PreferredNameDTO>();	
+		int batchSize = 999;
+		int i = 1;
+		List<String> requestNamesSubset = new ArrayList<String>();
+		for (String requestName : requestNameList){
+			requestNamesSubset.add(requestName);
+			if (i % batchSize  == 0 ) { 
+				List<PreferredNameDTO> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+				lsThingLabelsList.addAll(lsThingLabels);
+				requestNamesSubset.clear();
+				logger.debug("searching batch of names " + i);
+
+			}
+			i++;			
+			
+		}
 		
+		if (requestNamesSubset.size() > 0){
+			List<PreferredNameDTO> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, requestNamesSubset).getResultList();
+			lsThingLabelsList.addAll(lsThingLabels);
+			logger.debug("searching last batch of names " + requestNamesSubset.size());
+
+		}				
 		logger.info("number of thing labels found: " + lsThingLabelsList.size());
+		
 		MultiValueMap mvm = new MultiValueMap();
 		for (PreferredNameDTO pn : lsThingLabelsList){
 			mvm.put(pn.getRequestName(), pn);
@@ -263,7 +320,6 @@ public class LsThingServiceImpl implements LsThingService {
 		for (PreferredNameDTO request : requests){
 			request.setPreferredName("");
 			request.setReferenceName("");
-			//List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
 			@SuppressWarnings("unchecked")
 			List<PreferredNameDTO> lsThingLabels = (List<PreferredNameDTO>) mvm.get(request.getRequestName());
 
@@ -294,7 +350,7 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	@Transactional
 	public LsThing updateLsThing(LsThing jsonLsThing){
-		LsThing updatedLsThing = LsThing.updateNoMerge(jsonLsThing);
+		LsThing updatedLsThing = LsThing.update(jsonLsThing);
 		if (jsonLsThing.getLsLabels() != null) {
 			for(LsThingLabel lsThingLabel : jsonLsThing.getLsLabels()){
 				logger.debug("Label in hand: " + lsThingLabel.getLabelText());			
@@ -305,6 +361,7 @@ public class LsThingServiceImpl implements LsThingService {
 					updatedLsThing.getLsLabels().add(newLsThingLabel);
 				} else {
 					LsThingLabel updatedLabel = LsThingLabel.update(lsThingLabel);
+					updatedLsThing.getLsLabels().add(updatedLabel);
 					logger.debug("updated lsThing label " + updatedLabel.getId());
 				}
 			}			
@@ -312,10 +369,16 @@ public class LsThingServiceImpl implements LsThingService {
 			logger.debug("No lsThing labels to update");
 		}
 		updateLsStates(jsonLsThing, updatedLsThing);
+		
 		//updated itx and nested LsThings
+		// assume that the client may not send all of the nested data but wants all of the nested data back 
+		
+		Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
+		firstLsThings.addAll(updatedLsThing.getFirstLsThings());
+		logger.debug("found number of first interactions: " + firstLsThings.size());
+		
 		if(jsonLsThing.getFirstLsThings() != null){
 			//there are itx's
-			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
 				ItxLsThingLsThing updatedItxLsThingLsThing;
 				if (itxLsThingLsThing.getId() == null){
@@ -329,19 +392,24 @@ public class LsThingServiceImpl implements LsThingService {
 					//old itx needs to be updated
 					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
-					updatedItxLsThingLsThing = ItxLsThingLsThing.updateNoMerge(itxLsThingLsThing);
+					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
 					updateItxLsStates(itxLsThingLsThing, updatedItxLsThingLsThing);
-					updatedItxLsThingLsThing.merge();
 					firstLsThings.add(updatedItxLsThingLsThing);
 				}
 			}
 			updatedLsThing.setFirstLsThings(firstLsThings);
 		}
 		
+		Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
+		secondLsThings.addAll(updatedLsThing.getSecondLsThings());
+//		secondLsThings.addAll(ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(updatedLsThing).getResultList());
+		logger.debug("found number of second interactions: " + secondLsThings.size());
+
+		
 		if(jsonLsThing.getSecondLsThings() != null){
 			//there are itx's
-			Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getSecondLsThings()){
+				logger.debug("updating itxLsThingLsThing");
 				ItxLsThingLsThing updatedItxLsThingLsThing;
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
@@ -361,7 +429,6 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			updatedLsThing.setSecondLsThings(secondLsThings);
 		}
-		updatedLsThing.merge();
 		
 		return updatedLsThing;
 
@@ -875,7 +942,7 @@ public class LsThingServiceImpl implements LsThingService {
 		return searchResults;
 	}
 	
-	private void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
+	public void updateLsStates(LsThing jsonLsThing, LsThing updatedLsThing){
 		if(jsonLsThing.getLsStates() != null){
 			for(LsThingState lsThingState : jsonLsThing.getLsStates()){
 				LsThingState updatedLsThingState;
@@ -884,13 +951,18 @@ public class LsThingServiceImpl implements LsThingService {
 					updatedLsThingState.setLsThing(updatedLsThing);
 					updatedLsThingState.persist();
 					updatedLsThing.getLsStates().add(updatedLsThingState);
+					logger.debug("persisted new lsThing state " + updatedLsThingState.getId());
+
 				} else {
 					updatedLsThingState = LsThingState.update(lsThingState);
+					updatedLsThing.getLsStates().add(updatedLsThingState);
+
 					logger.debug("updated lsThing state " + updatedLsThingState.getId());
 
 				}
 				if (lsThingState.getLsValues() != null){
 					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
+						if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedLsThingState);
 						LsThingValue updatedLsThingValue;
 						if (lsThingValue.getId() == null){
 							updatedLsThingValue = LsThingValue.create(lsThingValue);
@@ -901,6 +973,8 @@ public class LsThingServiceImpl implements LsThingService {
 							updatedLsThingValue = LsThingValue.update(lsThingValue);
 							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
 						}
+						logger.debug("checking lsThingValue " + updatedLsThingValue.toJson());
+
 					}	
 				} else {
 					logger.debug("No lsThing values to update");
@@ -921,6 +995,8 @@ public class LsThingServiceImpl implements LsThingService {
 				} else {
 					updatedItxLsThingLsThingState = ItxLsThingLsThingState.update(itxLsThingLsThingState);
 					updatedItxLsThingLsThingState.setItxLsThingLsThing(updatedItxLsThingLsThing);
+					updatedItxLsThingLsThingState.merge();
+					updatedItxLsThingLsThing.getLsStates().add(updatedItxLsThingLsThingState);
 					logger.debug("updated itxLsThingLsThing state " + updatedItxLsThingLsThingState.getId());
 
 				}
@@ -935,6 +1011,8 @@ public class LsThingServiceImpl implements LsThingService {
 						} else {
 							updatedItxLsThingLsThingValue = ItxLsThingLsThingValue.update(itxLsThingLsThingValue);
 							updatedItxLsThingLsThingValue.setLsState(updatedItxLsThingLsThingState);
+							updatedItxLsThingLsThingValue.merge();
+							updatedItxLsThingLsThingState.getLsValues().add(updatedItxLsThingLsThingValue);
 							logger.debug("updated itxLsThingLsThing value " + updatedItxLsThingLsThingValue.getId());
 						}
 					}	
@@ -992,7 +1070,7 @@ public class LsThingServiceImpl implements LsThingService {
 		/*
 		 * List of Search params:
 		 * documentCode - codeName of document LsThing
-		 * documentType - LsType of document LsThing
+		 * documentType - LsKind of document LsThing
 		 * titleContains - like query on labelText of LsThingLabel of document (name_document name)
 		 * project - lsThing
 		 * owner - stringValue_owner in Document
@@ -1017,7 +1095,7 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThings.clear();
 		}
 		if (paramName.equals("documentType")){
-			List<LsThing> lsThings = LsThing.findLsThingsByLsTypeEquals(param).getResultList();
+			List<LsThing> lsThings = LsThing.findLsThingsByLsKindEquals(param).getResultList();
 			if (!lsThings.isEmpty()){
 				for (LsThing lsThing : lsThings){
 					lsThingIdList.add(lsThing.getId());
@@ -1033,6 +1111,17 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 			}
 			lsThingLabels.clear();
+		}
+		if (paramName.equals("company")){
+			LsThing company = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
+			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentCompany", company).getResultList();
+			if (!lsThings.isEmpty()){
+				for (LsThing lsThing : lsThings){
+					lsThingIdList.add(lsThing.getId());
+				}
+			}
+			lsThings.clear();
+			company.clear();
 		}
 		if (paramName.equals("project")){
 			LsThing project = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
@@ -1075,9 +1164,8 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThingValues.clear();
 		}
 		if (paramName.equals("createdDateFrom")){
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 			try{
-				Date date = df.parse(param);
+				Date date = new Date(new Long(param));
 				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateGreaterThan(date).getResultList();
 				if (!lsThings.isEmpty()){
 					for (LsThing lsThing : lsThings) {
@@ -1086,13 +1174,12 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 				lsThings.clear();
 			} catch (Exception e){
-				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+				logger.error("Error parsing date: " + param);
 			}
 		}
 		if (paramName.equals("createdDateTo")){
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 			try{
-				Date date = df.parse(param);
+				Date date = new Date(new Long(param));
 				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateLessThan(date).getResultList();
 				if (!lsThings.isEmpty()){
 					for (LsThing lsThing : lsThings) {
@@ -1101,7 +1188,7 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 				lsThings.clear();
 			} catch (Exception e){
-				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+				logger.error("Error parsing date: " + param);
 			}
 		}
 		if (paramName.equals("active")) {
@@ -1114,7 +1201,6 @@ public class LsThingServiceImpl implements LsThingService {
 			lsThingValues.clear();
 		}
 		if (paramName.equals("termType")){
-			LsThingValue.findLsThingValuesByCodeValueEquals(param);
 			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByCodeValueEquals(param).getResultList();
 			Collection<LsThing> terms = new HashSet<LsThing>();
 			if (!lsThingValues.isEmpty()){
@@ -1137,32 +1223,36 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			terms.clear();
 		}
-		if (paramName.equals("daysBefore")){
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals("days before", new BigDecimal(param)).getResultList();
-			Collection<LsThing> terms = new HashSet<LsThing>();
-			if (!lsThingValues.isEmpty()){
-				for(LsThingValue lsThingValue: lsThingValues){
-					terms.add(lsThingValue.getLsState().getLsThing());
-				}
-			}
-			lsThingValues.clear();
-			if (!terms.isEmpty()){
-				for (LsThing term: terms){
-					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
-					if (!lsThings.isEmpty()){
-						for (LsThing lsThing : lsThings){
-							lsThingIdList.add(lsThing.getId());
-						}
+		if (paramName.equals("daysBeforeTerm")){
+			try{
+				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals("daysBefore", new BigDecimal(param)).getResultList();
+				Collection<LsThing> terms = new HashSet<LsThing>();
+				if (!lsThingValues.isEmpty()){
+					for(LsThingValue lsThingValue: lsThingValues){
+						terms.add(lsThingValue.getLsState().getLsThing());
 					}
-					lsThings.clear();
 				}
+				lsThingValues.clear();
+				if (!terms.isEmpty()){
+					for (LsThing term: terms){
+						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
+						if (!lsThings.isEmpty()){
+							for (LsThing lsThing : lsThings){
+								lsThingIdList.add(lsThing.getId());
+							}
+						}
+						lsThings.clear();
+					}
+				}
+				terms.clear();
+			}catch (NumberFormatException e){
+				logger.debug("Couldn't parse the number "+param+" to search for daysBeforeTerm");
 			}
-			terms.clear();
+			
 		}
 		if (paramName.equals("termDateFrom")){
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 			try{
-				Date date = df.parse(param);
+				Date date = new Date(new Long(param));
 				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals("date",date).getResultList();
 				Collection<LsThing> terms = new HashSet<LsThing>();
 				if (!lsThingValues.isEmpty()){
@@ -1184,13 +1274,12 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 				terms.clear();
 			} catch (Exception e){
-				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+				logger.error("Error parsing date: " + param);
 			}
 		}
 		if (paramName.equals("termDateTo")){
-			DateFormat df = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 			try{
-				Date date = df.parse(param);
+				Date date = new Date(new Long(param));
 				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals("date",date).getResultList();
 				Collection<LsThing> terms = new HashSet<LsThing>();
 				if (!lsThingValues.isEmpty()){
@@ -1212,10 +1301,34 @@ public class LsThingServiceImpl implements LsThingService {
 				}
 				terms.clear();
 			} catch (Exception e){
-				logger.error("Error parsing date: " + param + ". Should be in format: MM/dd/yyyy");
+				logger.error("Error parsing date: " + param);
 			}		}
-		if (paramName.equals("missingAnnotation")){
-			//TODO: figure out what this is, then code it
+		if (paramName.equals("nonSolicit")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals("nonSolicit", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("nonTransfer")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals("nonTransfer", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
+		}
+		if (paramName.equals("restrictedMaterialsContains")) {
+			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEqualsIgnoreCase("restrictedMaterialName", param).getResultList();
+			if (!lsThingValues.isEmpty()){
+				for (LsThingValue lsThingValue : lsThingValues) {
+					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
+				}
+			}
+			lsThingValues.clear();
 		}
 		
 		return lsThingIdList;

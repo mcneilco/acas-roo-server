@@ -33,7 +33,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "lsLabels" })
 @RooJson
-@RooJpaActiveRecord(finders = { "findLsThingsByCodeNameEquals", "findLsThingsByCodeNameLike", "findLsThingsByLsKindLike", "findLsThingsByLsTransactionEquals", "findLsThingsByLsTypeAndKindEquals", "findLsThingsByRecordedByLike", "findLsThingsByLsTypeEquals", "findLsThingsByRecordedDateGreaterThan", "findLsThingsByRecordedDateLessThan" })
+@RooJpaActiveRecord(finders = { "findLsThingsByCodeNameEquals", "findLsThingsByCodeNameLike", "findLsThingsByLsKindLike", "findLsThingsByLsTransactionEquals", "findLsThingsByLsTypeAndKindEquals", "findLsThingsByRecordedByLike", "findLsThingsByLsTypeEquals", "findLsThingsByLsKindEquals", "findLsThingsByRecordedDateGreaterThan", "findLsThingsByRecordedDateLessThan" })
 public class LsThing extends AbstractThing {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsThing")

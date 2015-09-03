@@ -49,4 +49,7 @@
 <definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals">
         <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals.jspx"/>
     </definition>
+<definition extends="default" name="lsthingvalues/findLsThingValuesByLsKindEqualsAndStringValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthingvalues/findLsThingValuesByLsKindEqualsAndStringValueEquals.jspx"/>
+    </definition>
 </tiles-definitions>
