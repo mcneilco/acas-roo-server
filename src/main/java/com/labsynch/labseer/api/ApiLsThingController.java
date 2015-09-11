@@ -55,7 +55,7 @@ public class ApiLsThingController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			String result = LsThing.toJsonArray(lsThingService.findLsThingsByGenericMetaDataSearch(lsType, searchQuery));
+			String result = LsThing.toJsonArray(lsThingService.findLsThingsByGenericMetaDataSearch(searchQuery, lsType));
 			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 		} catch(Exception e){
 			String error = e.getMessage() + e.getStackTrace();
