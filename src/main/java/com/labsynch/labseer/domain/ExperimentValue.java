@@ -32,7 +32,7 @@ import flexjson.JSONDeserializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findExperimentValuesByLsState", "findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals", "findExperimentValuesByLsKindEqualsAndCodeValueLike", "findExperimentValuesByLsKindEqualsAndStringValueLike", "findExperimentValuesByLsKindEqualsAndDateValueEquals" })
+@RooJpaActiveRecord(finders = { "findExperimentValuesByLsState", "findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals", "findExperimentValuesByLsKindEqualsAndCodeValueLike", "findExperimentValuesByLsKindEqualsAndStringValueLike" })
 public class ExperimentValue extends AbstractValue {
 
     private static final Logger logger = LoggerFactory.getLogger(ExperimentValue.class);
@@ -166,11 +166,11 @@ public class ExperimentValue extends AbstractValue {
         return q;
     }
     
-    public static TypedQuery<ExperimentValue> findExperimentValuesByLsKindEqualsAndDateValueEquals(String lsKind, Date dateValue) {
+    public static TypedQuery<ExperimentValue> findExperimentValuesByLsKindEqualsAndDateValueLike(String lsKind, Date dateValue) {
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
         EntityManager em = ExperimentValue.entityManager();
-        TypedQuery<ExperimentValue> q = em.createQuery("SELECT o FROM ExperimentValue AS o WHERE o.lsKind = :lsKind  AND CAST(o.dateValue, date) = CAST(:dateValue, date) ", ExperimentValue.class);
+        TypedQuery<ExperimentValue> q = em.createQuery("SELECT o FROM ExperimentValue AS o WHERE o.lsKind = :lsKind AND o.ignored =false AND CAST(o.dateValue, date) LIKE CAST(:dateValue, date) ", ExperimentValue.class);
         q.setParameter("lsKind", lsKind);
         q.setParameter("dateValue", dateValue);
         return q;

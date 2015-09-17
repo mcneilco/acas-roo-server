@@ -6,8 +6,6 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.web.ExperimentValueController;
-import java.util.Date;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,19 +21,6 @@ privileged aspect ExperimentValueController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByLsKindEqualsAndCodeValueLike", method = RequestMethod.GET)
     public String ExperimentValueController.findExperimentValuesByLsKindEqualsAndCodeValueLike(@RequestParam("lsKind") String lsKind, @RequestParam("codeValue") String codeValue, Model uiModel) {
         uiModel.addAttribute("experimentvalues", ExperimentValue.findExperimentValuesByLsKindEqualsAndCodeValueLike(lsKind, codeValue).getResultList());
-        return "experimentvalues/list";
-    }
-    
-    @RequestMapping(params = { "find=ByLsKindEqualsAndDateValueEquals", "form" }, method = RequestMethod.GET)
-    public String ExperimentValueController.findExperimentValuesByLsKindEqualsAndDateValueEqualsForm(Model uiModel) {
-        addDateTimeFormatPatterns(uiModel);
-        return "experimentvalues/findExperimentValuesByLsKindEqualsAndDateValueEquals";
-    }
-    
-    @RequestMapping(params = "find=ByLsKindEqualsAndDateValueEquals", method = RequestMethod.GET)
-    public String ExperimentValueController.findExperimentValuesByLsKindEqualsAndDateValueEquals(@RequestParam("lsKind") String lsKind, @RequestParam("dateValue") @DateTimeFormat(style = "MM") Date dateValue, Model uiModel) {
-        uiModel.addAttribute("experimentvalues", ExperimentValue.findExperimentValuesByLsKindEqualsAndDateValueEquals(lsKind, dateValue).getResultList());
-        addDateTimeFormatPatterns(uiModel);
         return "experimentvalues/list";
     }
     

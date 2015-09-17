@@ -152,7 +152,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 				for (ProtocolLabel pl : protocolLabels){
 					Protocol pro = pl.getProtocol();
 					//if the protocol is not hard deleted or soft deleted, there is a name conflict
-					if (!pro.isIgnored() && !pl.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
+					if (!pro.isIgnored() && !pl.isIgnored() && !label.isIgnored() && pro.getId().compareTo(protocol.getId())!=0){
 						protocolExists = true;
 					}
 				}
@@ -390,12 +390,12 @@ public class ProtocolServiceImpl implements ProtocolService {
 			try {
 				Date date = df.parse(queryString);
 				logger.debug("Successfully parsed date: "+queryString);
-				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
+				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
 					logger.debug("Successfully parsed date: "+queryString);
-					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueEquals("creation date", date).getResultList();
+					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing
 				}
