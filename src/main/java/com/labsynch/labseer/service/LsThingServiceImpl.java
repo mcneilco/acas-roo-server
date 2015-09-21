@@ -14,6 +14,15 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -744,42 +753,143 @@ public class LsThingServiceImpl implements LsThingService {
 		return parent;
 	}
 
+	@Override
+	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
+			String searchQuery) {
+		return findLsThingsByGenericMetaDataSearch(searchQuery, null);
+	}
 
 	@Override
 	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
-			String queryString) {
-		//make our HashSets: lsThingIdList will be filled/cleared/refilled for each term
-		//lsThingList is the final search result
-		HashSet<Long> lsThingIdList = new HashSet<Long>();
-		HashSet<Long> lsThingAllIdList = new HashSet<Long>();
-		Collection<LsThing> lsThingList = new HashSet<LsThing>();
-		//Split the query up on spaces
+			String queryString, String lsType){
+		List<Long> lsThingIdList = new ArrayList<Long>();
+		queryString = queryString.replaceAll("\\*", "%");
 		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
 		logger.debug("Number of search terms: " + splitQuery.size());
-		//Make the Map of terms and HashSets of lsThing id's then fill. We will run intersect logic later.
-		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
-		for (String term : splitQuery) {
-			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "CODENAME"));
-			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "PARENT NAME"));
-			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "RECORDEDBY"));
-			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "SCIENTIST"));
-			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "LSKIND"));
-			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "DATE"));
-			lsThingIdList.addAll(findLsThingIdsByMetadata(term, "NOTEBOOK"));
-
-			resultsByTerm.put(term, new HashSet<Long>(lsThingIdList));
-			lsThingAllIdList.addAll(lsThingIdList);
-			lsThingIdList.clear();
+		EntityManager em = LsThing.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+		Root<LsThing> lsThingRoot = criteria.from(LsThing.class);
+//		Join<LsThing, ItxLsThingLsThing> lsThingFirstItx = lsThingRoot.join("firstLsThings", JoinType.LEFT);
+//		Join<ItxLsThingLsThing, LsThing> lsThingFirstLsThing = lsThingRoot.join("firstLsThings", JoinType.LEFT).join("firstLsThing", JoinType.LEFT);
+		Join<LsThing, ItxLsThingLsThing> lsThingSecondItx = lsThingRoot.join("secondLsThings", JoinType.LEFT);
+		Join<ItxLsThingLsThing, LsThing> lsThingSecondLsThing = lsThingRoot.join("secondLsThings", JoinType.LEFT).join("secondLsThing", JoinType.LEFT);
+		Join<LsThing, LsThingLabel> lsThingSecondLsThingLabel = lsThingRoot.join("secondLsThings", JoinType.LEFT).join("secondLsThing", JoinType.LEFT).join("lsLabels", JoinType.LEFT);
+		Join<LsThing, LsThingState> lsThingState = lsThingRoot.join("lsStates", JoinType.LEFT);
+		Join<LsThingState, LsThingValue> lsThingValue = lsThingRoot.join("lsStates", JoinType.LEFT).join("lsValues", JoinType.LEFT);
+		
+		criteria.select(lsThingRoot.<Long>get("id"));
+		criteria.distinct(true);
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		if (lsType != null && lsType.length() > 0){
+			Predicate predicate = criteriaBuilder.equal(lsThingRoot.<String>get("lsType"), lsType);
+			predicateList.add(predicate);
 		}
-		//Here is the intersect logic
-		for (String term: splitQuery) {
-			lsThingAllIdList.retainAll(resultsByTerm.get(term));
+		for (String term : splitQuery){
+			Predicate[] predicatesByTerm = new Predicate[0];
+			List<Predicate> predicateListByTerm = new ArrayList<Predicate>();
+			
+			//Reusable predicates
+			Predicate lsThingValueNotIgnored = criteriaBuilder.not(lsThingValue.<Boolean>get("ignored"));
+			Predicate lsThingStateNotIgnored = criteriaBuilder.not(lsThingState.<Boolean>get("ignored"));
+			
+			//CodeName
+			Predicate codeNamePredicate = criteriaBuilder.like(lsThingRoot.<String>get("codeName"), term);
+			predicateListByTerm.add(codeNamePredicate);
+			
+			//parent name
+			Predicate parentNameItxTypePredicate = criteriaBuilder.equal(lsThingSecondItx.<String>get("lsType"), "instantiates");
+			Predicate parentNameItxKindPredicate = criteriaBuilder.equal(lsThingSecondItx.<String>get("lsKind"), "batch_parent");
+			Predicate parentNameLabelPredicate = criteriaBuilder.equal(lsThingSecondLsThingLabel.<String>get("labelText"), term);
+			Predicate lsThingSecondItxNotIgnored = criteriaBuilder.not(lsThingSecondItx.<Boolean>get("ignored"));
+			Predicate lsThingSecondLsThingNotIgnored = criteriaBuilder.not(lsThingSecondLsThing.<Boolean>get("ignored"));
+			Predicate lsThingSecondLsThingLabelNotIgnored = criteriaBuilder.not(lsThingSecondLsThingLabel.<Boolean>get("ignored"));
+			Predicate parentNamePredicate = criteriaBuilder.and(parentNameItxTypePredicate, 
+					lsThingSecondItxNotIgnored, 
+					parentNameItxKindPredicate,
+					lsThingSecondLsThingNotIgnored,
+					parentNameLabelPredicate,
+					lsThingSecondLsThingLabelNotIgnored);
+			predicateListByTerm.add(parentNamePredicate);
+			
+			//recordedby
+			Predicate recordedByPredicate = criteriaBuilder.like(lsThingRoot.<String>get("recordedBy"), term);
+			predicateListByTerm.add(recordedByPredicate);
+			
+			//scientist
+			Predicate scientistPredicate1 = criteriaBuilder.like(lsThingValue.<String>get("codeValue"), term);
+			Predicate scientistPredicate2 = criteriaBuilder.equal(lsThingValue.<String>get("lsKind"), "scientist");
+			Predicate scientistPredicate = criteriaBuilder.and(scientistPredicate1, scientistPredicate2, lsThingValueNotIgnored, lsThingStateNotIgnored);
+			predicateListByTerm.add(scientistPredicate);
+			
+			//lskind
+			Predicate lsKindPredicate = criteriaBuilder.equal(lsThingRoot.<String>get("lsKind"), term);
+			predicateListByTerm.add(lsKindPredicate);
+			
+			//date
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+			try {
+				Date date = df.parse(queryString);
+				Date beforeDate = new Date(date.getTime());
+				beforeDate.setHours(0);
+				beforeDate.setMinutes(0);
+				beforeDate.setSeconds(0);
+				Date afterDate = new Date(date.getTime());
+				afterDate.setDate(afterDate.getDate()+1);
+				afterDate.setHours(0);
+				afterDate.setMinutes(0);
+				afterDate.setSeconds(0);
+				Predicate datePredicate1 = criteriaBuilder.between(lsThingValue.<Date>get("dateValue"), beforeDate, afterDate);
+				Predicate datePredicate2 = criteriaBuilder.equal(lsThingValue.<String>get("lsKind"), "completion date");
+				Predicate datePredicate = criteriaBuilder.and(datePredicate1, datePredicate2, lsThingValueNotIgnored, lsThingStateNotIgnored);
+				predicateListByTerm.add(datePredicate);
+			} catch (Exception e) {
+				try {
+					Date date = df2.parse(queryString);
+					Date beforeDate = new Date(date.getTime());
+					beforeDate.setHours(0);
+					beforeDate.setMinutes(0);
+					beforeDate.setSeconds(0);
+					Date afterDate = new Date(date.getTime());
+					afterDate.setDate(afterDate.getDate()+1);
+					afterDate.setHours(0);
+					afterDate.setMinutes(0);
+					afterDate.setSeconds(0);
+					Predicate datePredicate1 = criteriaBuilder.between(lsThingValue.<Date>get("dateValue"), beforeDate, afterDate);
+					Predicate datePredicate2 = criteriaBuilder.equal(lsThingValue.<String>get("lsKind"), "completion date");
+					Predicate datePredicate = criteriaBuilder.and(datePredicate1, datePredicate2, lsThingValueNotIgnored, lsThingStateNotIgnored);
+					predicateListByTerm.add(datePredicate);
+				} catch (Exception e2) {
+					//do nothing
+				}
+			}
+			
+			//notebook
+			Predicate notebookPredicate1 = criteriaBuilder.like(lsThingValue.<String>get("stringValue"), term);
+			Predicate notebookPredicate2 = criteriaBuilder.equal(lsThingValue.<String>get("lsKind"), "notebook");
+			Predicate notebookPredicate = criteriaBuilder.and(notebookPredicate1, notebookPredicate2, lsThingValueNotIgnored, lsThingStateNotIgnored);
+			predicateListByTerm.add(notebookPredicate);
+			
+			//join all the predicatesByTerm with OR
+			predicatesByTerm = predicateListByTerm.toArray(predicatesByTerm);
+			predicateList.add(criteriaBuilder.or(predicatesByTerm));
 		}
-		for (Long id: lsThingAllIdList) lsThingList.add(LsThing.findLsThing(id));
+		//make sure lsThing is not ignored. All of the other layers of not ignored are in predicates above
+		Predicate lsThingNotIgnored = criteriaBuilder.not(lsThingRoot.<Boolean>get("ignored"));		
+		predicateList.add(lsThingNotIgnored);
 
-		//This method uses finders that will find everything, whether or not it is ignored or deleted
+		
+		predicates = predicateList.toArray(predicates);
+		criteria.where(criteriaBuilder.and(predicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		lsThingIdList = q.getResultList();
+		logger.debug("Found "+lsThingIdList.size()+" results.");
 		Collection<LsThing> result = new HashSet<LsThing>();
-		for (LsThing lsThing: lsThingList) {
+		for (Long lsThingId: lsThingIdList) {
+			LsThing lsThing = LsThing.findLsThing(lsThingId);
 			//For LsThing Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
 			if (lsThing.isDeleted()){
 				logger.debug("removing a deleted lsThing from the results");
@@ -793,113 +903,6 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 		}
 		return result;
-	}
-
-
-	private Collection<? extends Long> findLsThingIdsByMetadata(String queryString,
-			String searchBy) {
-		Collection<Long> lsThingIdList = new HashSet<Long>();
-		if (searchBy == "CODENAME") {
-			List<LsThing> lsThings = LsThing.findLsThingsByCodeNameLike(queryString).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing:lsThings) {
-					lsThingIdList.add(lsThing.getId());
-				}
-			}
-			lsThings.clear();
-		}
-		if (searchBy == "LSKIND") {
-			List<LsThing> lsThings = LsThing.findLsThingsByLsKindLike(queryString).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing:lsThings) {
-					lsThingIdList.add(lsThing.getId());
-				}
-			}
-			lsThings.clear();
-		}
-		if (searchBy == "PARENT NAME") {
-			Collection<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingLabelsByLabelTextLike(queryString).getResultList();
-			if (!lsThingLabels.isEmpty()) {
-				for (LsThingLabel lsThingLabel: lsThingLabels) {
-					LsThing parent = lsThingLabel.getLsThing();
-					Collection<LsThing> batches = findBatchesByParentEquals(parent);
-					for (LsThing batch : batches){
-						lsThingIdList.add(batch.getId());
-					}
-					lsThingIdList.add(parent.getId());
-				}
-			}
-			lsThingLabels.clear();
-		}
-		if (searchBy == "RECORDEDBY") {
-			List<LsThing> lsThings = LsThing.findLsThingsByRecordedByLike(queryString).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing:lsThings) {
-					lsThingIdList.add(lsThing.getId());
-				}
-			}
-			lsThings.clear();
-		}
-		if (searchBy == "SCIENTIST") {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndCodeValueLike("scientist", queryString).getResultList();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-
-		if (searchBy == "DATE") {
-			Collection<LsThingValue> lsThingValues = new HashSet<LsThingValue>();
-			DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
-			try {
-				Date date = df.parse(queryString);
-				lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLike("completion date", date).getResultList();
-			} catch (Exception e) {
-				try {
-					Date date = df2.parse(queryString);
-					lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLike("completion date", date).getResultList();
-				} catch (Exception e2) {
-					//do nothing
-				}
-			}
-			if (!lsThingValues.isEmpty()) {
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-		if (searchBy == "NOTEBOOK") {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike("notebook", queryString).getResultList();
-			if (!lsThingValues.isEmpty()) {
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-
-		return lsThingIdList;
-	}
-
-
-	@Override
-	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
-			String lsType, String queryString) {
-		Collection<LsThing> searchResults = findLsThingsByGenericMetaDataSearch(queryString);
-		if (lsType != null){
-			Collection<LsThing> filteredResults = new HashSet<LsThing>();
-			for (LsThing result : searchResults){
-				if (result.getLsType().equals(lsType)) filteredResults.add(result);
-			}
-			return filteredResults;
-		} else {
-			return searchResults;
-		}
-		
 	}
 
 
