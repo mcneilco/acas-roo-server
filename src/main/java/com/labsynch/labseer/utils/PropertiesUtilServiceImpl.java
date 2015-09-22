@@ -154,4 +154,17 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 		return Boolean.parseBoolean(this.enableSwagger);
 	}
 	
+	String acasLicenseFile;
+
+	@Value("${server.acas.license}")
+	public void setAcaslicenseFile(String acasLicenseFile) {
+	    this.acasLicenseFile = acasLicenseFile;
+	}
+
+	@Override
+	public String getAcaslicenseFile() {
+	    return this.acasLicenseFile;
+	}
+	
+
 }
