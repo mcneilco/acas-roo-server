@@ -30,7 +30,6 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord(sequenceName = "VALUE_PKSEQ", inheritanceType = "TABLE_PER_CLASS")
-@RooJson
 @Transactional
 public abstract class AbstractValue {
 

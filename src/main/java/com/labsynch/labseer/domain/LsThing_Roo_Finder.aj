@@ -33,6 +33,14 @@ privileged aspect LsThing_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThing> LsThing.findLsThingsByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE o.lsKind = :lsKind", LsThing.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
     public static TypedQuery<LsThing> LsThing.findLsThingsByLsKindLike(String lsKind) {
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         lsKind = lsKind.replace('*', '%');

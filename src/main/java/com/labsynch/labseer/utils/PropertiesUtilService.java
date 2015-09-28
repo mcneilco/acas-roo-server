@@ -29,5 +29,7 @@ public interface PropertiesUtilService {
 	
 	boolean getEnableSwagger();
 
+	String getAcaslicenseFile();
+
 	
 }

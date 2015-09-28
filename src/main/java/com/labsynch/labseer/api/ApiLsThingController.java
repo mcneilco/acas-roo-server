@@ -56,7 +56,7 @@ public class ApiLsThingController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			String result = LsThing.toJsonArray(lsThingService.findLsThingsByGenericMetaDataSearch(lsType, searchQuery));
+			String result = LsThing.toJsonArray(lsThingService.findLsThingsByGenericMetaDataSearch(searchQuery, lsType));
 			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 		} catch(Exception e){
 			String error = e.getMessage() + e.getStackTrace();
@@ -456,8 +456,9 @@ public class ApiLsThingController {
         headers.add("Content-Type", "application/json");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
-        LsThing lsThing = LsThing.fromJsonToLsThing(json);
+        LsThing lsThing = null;
 		try {
+			lsThing = LsThing.fromJsonToLsThing(json);
     		lsThing = lsThingService.updateLsThing(lsThing);
     	} catch (Exception e) {
     		logger.error("----from the controller----"
@@ -495,6 +496,24 @@ public class ApiLsThingController {
       } catch (IOException e) {
           logger.error("IOException: " + e.toString());
           return new ResponseEntity<String>("ERROR: IOError. Unable to load file. " + fileName, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+      }
+      return new ResponseEntity<String>(headers, HttpStatus.OK);
+  }
+  
+  @RequestMapping(value = "/gene/v1/updateGeneEntities", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> updateGeneEntities(
+		  @RequestParam(value = "entrezGenesFile", required = true) String entrezGenesFile,
+		  @RequestParam(value = "geneHistoryFile", required = true) String geneHistoryFile,
+		  @RequestParam(value = "taxonomyId", required = true) String taxonomyId
+		  ) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json; charset=utf-8");
+      logger.info("loading genes from tab delimited file: " + entrezGenesFile);
+      try {
+		geneThingService.updateEntrezGenes(entrezGenesFile, geneHistoryFile, taxonomyId);
+      } catch (IOException e) {
+          logger.error("IOException: " + e.toString());
+          return new ResponseEntity<String>("ERROR: IOError. Unable to load file. " + entrezGenesFile, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
       }
       return new ResponseEntity<String>(headers, HttpStatus.OK);
   }

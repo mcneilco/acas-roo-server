@@ -32,6 +32,7 @@ import flexjson.JSONDeserializer;
 		 "findLsThingValuesByCodeValueEquals", "findLsThingValuesByIgnoredNotAndCodeValueEquals",
 		 "findLsThingValuesByLsKindEqualsAndStringValueLike", "findLsThingValuesByLsKindEqualsAndDateValueLike",
 		 "findLsThingValuesByLsKindEqualsAndCodeValueLike",
+		 "findLsThingValuesByLsKindEqualsAndStringValueEquals",
 		 "findLsThingValuesByLsKindEqualsAndNumericValueEquals",
 		 "findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals",
 		 "findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals",
@@ -115,11 +116,21 @@ public class LsThingValue extends AbstractValue {
 
 
 	public static LsThingValue update(LsThingValue lsThingValue) {
-		LsThingValue updatedLsThingValue = new JSONDeserializer<LsThingValue>().
-		use(null, LsThingValue.class).
-		use(BigDecimal.class, new CustomBigDecimalFactory()).
-		deserializeInto(lsThingValue.toJson(), LsThingValue.findLsThingValue(lsThingValue.getId()));
-		updatedLsThingValue.merge();
+		
+		logger.debug("attempting to update lsThingValue: "  + lsThingValue.toJson());
+		
+		LsThingValue updatedLsThingValue = null;
+
+		try {
+			updatedLsThingValue = new JSONDeserializer<LsThingValue>().
+					use(null, LsThingValue.class).
+					use(BigDecimal.class, new CustomBigDecimalFactory()).
+					deserializeInto(lsThingValue.toJson(), LsThingValue.findLsThingValue(lsThingValue.getId()));
+					updatedLsThingValue.merge();
+			
+		} catch (Exception e){
+			logger.error("caught the error " + e);
+		}
 		return updatedLsThingValue;
 	}
 
@@ -282,6 +293,16 @@ public class LsThingValue extends AbstractValue {
         }
         EntityManager em = LsThingValue.entityManager();
         TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind AND o.ignored IS false AND LOWER(o.stringValue) LIKE LOWER(:stringValue)", LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndStringValueEqualsIgnoreCase(String lsKind, String stringValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.stringValue) = LOWER(:stringValue)", LsThingValue.class);
         q.setParameter("lsKind", lsKind);
         q.setParameter("stringValue", stringValue);
         return q;

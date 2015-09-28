@@ -33,7 +33,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "lsLabels" })
 @RooJson
-@RooJpaActiveRecord(finders = { "findLsThingsByCodeNameEquals", "findLsThingsByCodeNameLike", "findLsThingsByLsKindLike", "findLsThingsByLsTransactionEquals", "findLsThingsByLsTypeAndKindEquals", "findLsThingsByRecordedByLike", "findLsThingsByLsTypeEquals", "findLsThingsByRecordedDateGreaterThan", "findLsThingsByRecordedDateLessThan" })
+@RooJpaActiveRecord(finders = { "findLsThingsByCodeNameEquals", "findLsThingsByCodeNameLike", "findLsThingsByLsKindLike", "findLsThingsByLsTransactionEquals", "findLsThingsByLsTypeAndKindEquals", "findLsThingsByRecordedByLike", "findLsThingsByLsTypeEquals", "findLsThingsByLsKindEquals", "findLsThingsByRecordedDateGreaterThan", "findLsThingsByRecordedDateLessThan" })
 public class LsThing extends AbstractThing {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsThing")
@@ -284,10 +284,11 @@ public class LsThing extends AbstractThing {
         
         EntityManager em = LsThing.entityManager();
 		String query = "SELECT DISTINCT o FROM LsThing o " +
-				"JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText " +
+				"JOIN o.lsLabels ll " +
 				"WHERE o.ignored IS NOT :ignored " +
 				"AND o.lsType = :thingType " +
-				"AND o.lsKind = :thingKind ";
+				"AND o.lsKind = :thingKind " +
+				"AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
         
         TypedQuery<LsThing> q = em.createQuery(query, LsThing.class);
         q.setParameter("thingType", thingType);
