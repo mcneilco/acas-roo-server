@@ -27,13 +27,13 @@ public class AnalysisGroupValueDTO {
 	public AnalysisGroupValueDTO(){
 		//empty constructor
 	}
-	
-//	select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, 
-//			el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, agv.stringValue as stringValue, 
-//			agv.numericValue as numericValue, agv2.codeValue AS testedLot  
-	
-	
-	
+
+	//	select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, 
+	//			el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, agv.stringValue as stringValue, 
+	//			agv.numericValue as numericValue, agv2.codeValue AS testedLot  
+
+
+
 	public AnalysisGroupValueDTO(
 			Long id,
 			Long protocolId,
@@ -77,24 +77,24 @@ public class AnalysisGroupValueDTO {
 		if (uncertainty != null) this.uncertainty = uncertainty.toString();
 		this.uncertaintyUnit = uncertaintyUnit;
 		if (testedTime != null) this.testedTime = testedTime.toString();
-		
+
 		if (testedLot.startsWith("GENE")){
 			this.testedLot = geneId;
-//			Long lsThingId = LsThing.findLsThingsByCodeNameEquals(testedLot).getSingleResult().getId();
-//			List<LsThingLabel> thingNames = LsThingLabel.findLsThingPreferredName(lsThingId, "name", "Entrez Gene ID").getResultList();
-//			if (thingNames != null){
-//				if (thingNames.size() == 1){
-//					this.testedLot = thingNames.get(0).getLabelText();
-//				} else if (thingNames.size() > 1) {
-//					logger.error("found mulitiple preferred names");
-//				} else {
-//					logger.error("no preferred names");
-//				}
-//			}	
+			//			Long lsThingId = LsThing.findLsThingsByCodeNameEquals(testedLot).getSingleResult().getId();
+			//			List<LsThingLabel> thingNames = LsThingLabel.findLsThingPreferredName(lsThingId, "name", "Entrez Gene ID").getResultList();
+			//			if (thingNames != null){
+			//				if (thingNames.size() == 1){
+			//					this.testedLot = thingNames.get(0).getLabelText();
+			//				} else if (thingNames.size() > 1) {
+			//					logger.error("found mulitiple preferred names");
+			//				} else {
+			//					logger.error("no preferred names");
+			//				}
+			//			}	
 		} else {
 			this.testedLot = testedLot;
 		}
-		
+
 		if (lsType != null){
 			if (lsType.equals("stringValue")){
 				this.result=stringValue;				
@@ -106,26 +106,28 @@ public class AnalysisGroupValueDTO {
 				this.result=codeValue;
 			} else if (lsType.equals("inlineFileValue")){
 				this.result=fileValue;
+			} else if (lsType.equals("fileValue")){
+				this.result=fileValue;
 			} else if (lsType.equals("dateValue")){
 				this.result=dateValue.toString();
 			}
 		}
 
-//		List<ExperimentLabel> experimentNames = ExperimentLabel.findExperimentPreferredName(experimentId).getResultList();
-//		if (experimentNames != null){
-//			if (experimentNames.size() == 1){
-//				this.experimentName = experimentNames.get(0).getLabelText();
-//			} else if (experimentNames.size() > 1) {
-//				logger.error("found mulitiple preferred names");
-//			} else {
-//				logger.error("no preferred names");
-//			}			
-//		}
+		//		List<ExperimentLabel> experimentNames = ExperimentLabel.findExperimentPreferredName(experimentId).getResultList();
+		//		if (experimentNames != null){
+		//			if (experimentNames.size() == 1){
+		//				this.experimentName = experimentNames.get(0).getLabelText();
+		//			} else if (experimentNames.size() > 1) {
+		//				logger.error("found mulitiple preferred names");
+		//			} else {
+		//				logger.error("no preferred names");
+		//			}			
+		//		}
 
 		this.experimentName  = prefName;
 
-//		Protocol protocol = Protocol.findProtocol(Experiment.findExperiment(experimentId).getProtocol().getId());
-//		this.protocolId = protocol.getId();
+		//		Protocol protocol = Protocol.findProtocol(Experiment.findExperiment(experimentId).getProtocol().getId());
+		//		this.protocolId = protocol.getId();
 
 	}
 
@@ -172,7 +174,7 @@ public class AnalysisGroupValueDTO {
 				"uncertaintyUnit",
 				"testedTime",
 				"testedTimeUnit"
-				};
+		};
 
 		return headerColumns;
 
@@ -204,30 +206,30 @@ public class AnalysisGroupValueDTO {
 	}
 
 
-	
+
 	public String toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
-    }
-	
+		return new JSONSerializer().exclude("*.class").serialize(this);
+	}
+
 	public String toPrettyJson() {
-        return new JSONSerializer().exclude("*.class").prettyPrint(true).serialize(this);
-    }
+		return new JSONSerializer().exclude("*.class").prettyPrint(true).serialize(this);
+	}
 
 	public static AnalysisGroupValueDTO fromJsonToAnalysisGroupValueDTO(String json) {
-        return new JSONDeserializer<AnalysisGroupValueDTO>().use(null, AnalysisGroupValueDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<AnalysisGroupValueDTO>().use(null, AnalysisGroupValueDTO.class).deserialize(json);
+	}
 
 	public static String toJsonArray(Collection<AnalysisGroupValueDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
-    }
-	
+		return new JSONSerializer().exclude("*.class").serialize(collection);
+	}
+
 	public static String toPrettyJsonArray(Collection<AnalysisGroupValueDTO> collection) {
-        return new JSONSerializer().exclude("*.class").prettyPrint(true).serialize(collection);
-    }
+		return new JSONSerializer().exclude("*.class").prettyPrint(true).serialize(collection);
+	}
 
 	public static Collection<AnalysisGroupValueDTO> fromJsonArrayToAnalysisGroes(String json) {
-        return new JSONDeserializer<List<AnalysisGroupValueDTO>>().use(null, ArrayList.class).use("values", AnalysisGroupValueDTO.class).deserialize(json);
-    }
+		return new JSONDeserializer<List<AnalysisGroupValueDTO>>().use(null, ArrayList.class).use("values", AnalysisGroupValueDTO.class).deserialize(json);
+	}
 }
 
 

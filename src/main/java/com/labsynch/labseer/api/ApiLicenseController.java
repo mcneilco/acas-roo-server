@@ -29,24 +29,30 @@ public class ApiLicenseController {
 
 	@Autowired
 	private LicenseService licenseService;
-	
-    @RequestMapping(value = "/checkLicense", method = RequestMethod.GET, headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<java.lang.String> getLicenseInfo() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-    	LicenseDTO licenseInfo = null;
+
+	@RequestMapping(value = "/checkLicense", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<java.lang.String> getLicenseInfo() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		LicenseDTO licenseInfo = null;
 		try {
 			licenseInfo = licenseService.getLicenseInfo();
-		} catch (IOException | PGPException | URISyntaxException e) {
+		} catch (IOException e) {
 			logger.error(e.toString());
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		} catch (PGPException  e) {
+			logger.error(e.toString());
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		} catch (URISyntaxException e) {
+			logger.error(e.toString());
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
-        if (licenseInfo == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(licenseInfo.toJson(), headers, HttpStatus.OK);
-    }
+		if (licenseInfo == null) {
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<String>(licenseInfo.toJson(), headers, HttpStatus.OK);
+	}
 
 
 }

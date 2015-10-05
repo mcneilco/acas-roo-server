@@ -950,7 +950,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		List<AnalysisGroupValueDTO> agValues = null;
 		if (finalUniqueBatchCodes.size() > 0){
 			logger.debug("looking by expriment codes and batch codes");
-			if (onlyPublicData) agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList(), onlyPublicData).getResultList();
+			if (onlyPublicData) agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList(), onlyPublicData);
 			else agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
 			logger.debug("number of agValues found: " + agValues.size());
 		} else if (!filteredGeneData && finalUniqueBatchCodes.size() == 0) {

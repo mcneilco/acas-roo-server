@@ -1,7 +1,9 @@
 package com.labsynch.labseer.domainImpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.NoResultException;
 
@@ -16,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
@@ -25,7 +28,7 @@ public class AnalysisGroupValueTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueTest.class);
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
 			
@@ -91,7 +94,7 @@ public class AnalysisGroupValueTest {
 		assert(results.size() == 2);
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByAnalysisGroupIdStateTypeAndKind() {
 		Long analysisGroupId = 10L;
@@ -101,7 +104,7 @@ public class AnalysisGroupValueTest {
 		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
 	
-	@Test
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByAnalysisGroupIdStateTypeAndKindAndValueTypeKind() {
 		Long analysisGroupId = 10L;
@@ -112,6 +115,31 @@ public class AnalysisGroupValueTest {
 		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind).getResultList();
 		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
+	
+	@Test
+	@Transactional
+	public void queryAGDataTest() {
+		Set<String> finalUniqueBatchCodes = new HashSet<String>();
+		finalUniqueBatchCodes.add("CMPD-0000001-01A");
+		finalUniqueBatchCodes.add("CMPD-0000002-01A");
+		finalUniqueBatchCodes.add("CMPD-0000003-01A");
+
+		ExperimentSearchRequestDTO searchRequest = new ExperimentSearchRequestDTO();
+		Set<String> experimentCodeList = new HashSet<String>();
+		experimentCodeList.add("EXPT-00000036");
+		searchRequest.setExperimentCodeList(experimentCodeList);
+		searchRequest.setBatchCodeList(finalUniqueBatchCodes);
+		logger.info(searchRequest.toJson());
+		boolean onlyPublicData = true;
+		List<AnalysisGroupValueDTO> results = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList(), onlyPublicData);
+		logger.info("number of results found: " + results.size());
+		logger.info(AnalysisGroupValueDTO.toPrettyJsonArray(results));
+		
+//		Experiment experiment = Experiment.findExperiment(17151L);
+//		logger.info(experiment.toJson());
+		
+	}
+
 	
 	
 }
