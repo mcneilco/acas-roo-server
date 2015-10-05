@@ -980,8 +980,11 @@ public class LsThingServiceImpl implements LsThingService {
 		
 		//always present predicates
 		Predicate documentType = criteriaBuilder.equal(document.<String>get("lsType"), "legalDocument");
-		predicateList.add(documentType);
+		Predicate documentNotIgnored = criteriaBuilder.not(document.<Boolean>get("ignored"));
+		Predicate documentTypePredicate = criteriaBuilder.and(documentType, documentNotIgnored);
+		predicateList.add(documentTypePredicate);
 		//Reusable predicates
+		Predicate documentStateNotIgnored = criteriaBuilder.not(documentState.<Boolean>get("ignored"));
 //		Predicate lsThingValueNotIgnored = criteriaBuilder.not(lsThingValue.<Boolean>get("ignored"));
 //		Predicate lsThingStateNotIgnored = criteriaBuilder.not(lsThingState.<Boolean>get("ignored"));
 		
@@ -998,7 +1001,9 @@ public class LsThingServiceImpl implements LsThingService {
 		//titleContains : LsThingLabel LabelText LIKE
 		if (searchParamsMap.keySet().contains("titleContains")){
 			Predicate titleContains = criteriaBuilder.like(documentLabel.<String>get("labelText"), "%"+searchParamsMap.get("titleContains")+"%");
-			predicateList.add(titleContains);
+			Predicate documentLabelNotIgnored = criteriaBuilder.not(documentLabel.<Boolean>get("ignored"));
+			Predicate titleContainsPredicate = criteriaBuilder.and(titleContains, documentLabelNotIgnored);
+			predicateList.add(titleContainsPredicate);
 		}
 		//company : SecondLsThingsItx type/kind EQUALS "incorporates"/"documentCompany", SecondLsThings.SecondLsThing codeName EQUALS
 		if (searchParamsMap.keySet().contains("company")){
@@ -1007,7 +1012,9 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate companyItxType = criteriaBuilder.equal(companyItx.<String>get("lsType"), "incorporates");
 			Predicate companyItxKind = criteriaBuilder.equal(companyItx.<String>get("lsKind"), "documentCompany");
 			Predicate companyCode = criteriaBuilder.equal(company.<String>get("codeName"), searchParamsMap.get("company"));
-			Predicate companyPredicate = criteriaBuilder.and(companyItxType, companyItxKind, companyCode);
+			Predicate companyItxNotIgnored = criteriaBuilder.not(companyItx.<Boolean>get("ignored"));
+			Predicate companyNotIgnored = criteriaBuilder.not(company.<Boolean>get("ignored"));
+			Predicate companyPredicate = criteriaBuilder.and(companyItxType, companyItxKind, companyCode, companyItxNotIgnored, companyNotIgnored);
 			predicateList.add(companyPredicate);
 		}
 		//project : SecondLsThingsItx type/kind EQUALS "incorporates"/"documentProject", SecondLsThings.SecondLsThing codeName EQUALS
@@ -1017,7 +1024,9 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate projectItxType = criteriaBuilder.equal(projectItx.<String>get("lsType"), "incorporates");
 			Predicate projectItxKind = criteriaBuilder.equal(projectItx.<String>get("lsKind"), "documentProject");
 			Predicate projectCode = criteriaBuilder.equal(project.<String>get("codeName"), searchParamsMap.get("project"));
-			Predicate projectPredicate = criteriaBuilder.and(projectItxType, projectItxKind, projectCode);
+			Predicate projectItxNotIgnored = criteriaBuilder.not(projectItx.<Boolean>get("ignored"));
+			Predicate projectNotIgnored = criteriaBuilder.not(project.<Boolean>get("ignored"));
+			Predicate projectPredicate = criteriaBuilder.and(projectItxType, projectItxKind, projectCode, projectItxNotIgnored, projectNotIgnored);
 			predicateList.add(projectPredicate);
 		}
 		//owner : SecondLsThingsItx type/kind EQUALS "incorporates"/"documentOwner", SecondLsThings.SecondLsThing codeName EQUALS
@@ -1027,7 +1036,9 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate ownerItxType = criteriaBuilder.equal(ownerItx.<String>get("lsType"), "incorporates");
 			Predicate ownerItxKind = criteriaBuilder.equal(ownerItx.<String>get("lsKind"), "documentOwner");
 			Predicate ownerCode = criteriaBuilder.equal(owner.<String>get("codeName"), searchParamsMap.get("owner"));
-			Predicate ownerPredicate = criteriaBuilder.and(ownerItxType, ownerItxKind, ownerCode);
+			Predicate ownerItxNotIgnored = criteriaBuilder.not(ownerItx.<Boolean>get("ignored"));
+			Predicate ownerNotIgnored = criteriaBuilder.not(owner.<Boolean>get("ignored"));
+			Predicate ownerPredicate = criteriaBuilder.and(ownerItxType, ownerItxKind, ownerCode, ownerItxNotIgnored, ownerNotIgnored);
 			predicateList.add(ownerPredicate);
 		}
 		//amountBetween
@@ -1037,7 +1048,8 @@ public class LsThingServiceImpl implements LsThingService {
 				Predicate amountType = criteriaBuilder.equal(amountValue.<String>get("lsType"), "numericValue");
 				Predicate amountKind = criteriaBuilder.equal(amountValue.<String>get("lsKind"), "amount");
 				Predicate amountBetween = criteriaBuilder.between(amountValue.<BigDecimal>get("numericValue"), new BigDecimal(searchParamsMap.get("amountFrom")), new BigDecimal(searchParamsMap.get("amountTo")));
-				Predicate amountBetweenPredicate = criteriaBuilder.and(amountType, amountKind, amountBetween);
+				Predicate amountValueNotIgnored = criteriaBuilder.not(amountValue.<Boolean>get("ignored"));
+				Predicate amountBetweenPredicate = criteriaBuilder.and(amountType, amountKind, amountBetween, documentStateNotIgnored, amountValueNotIgnored);
 				predicateList.add(amountBetweenPredicate);
 			}catch (Exception e){
 				logger.error("Caught exception trying to parse "+searchParamsMap.get("amountFrom")+" or "+searchParamsMap.get("amountTo")+" as a number.",e);
@@ -1051,7 +1063,8 @@ public class LsThingServiceImpl implements LsThingService {
 				Predicate amountType = criteriaBuilder.equal(amountValue.<String>get("lsType"), "numericValue");
 				Predicate amountKind = criteriaBuilder.equal(amountValue.<String>get("lsKind"), "amount");
 				Predicate amountFrom = criteriaBuilder.greaterThanOrEqualTo(amountValue.<BigDecimal>get("numericValue"), new BigDecimal(searchParamsMap.get("amountFrom")));
-				Predicate amountFromPredicate = criteriaBuilder.and(amountType, amountKind, amountFrom);
+				Predicate amountValueNotIgnored = criteriaBuilder.not(amountValue.<Boolean>get("ignored"));
+				Predicate amountFromPredicate = criteriaBuilder.and(amountType, amountKind, amountFrom, documentStateNotIgnored, amountValueNotIgnored);
 				predicateList.add(amountFromPredicate);
 			}catch (Exception e){
 				logger.error("Caught exception trying to parse "+searchParamsMap.get("amountFrom")+" as a number.",e);
@@ -1065,7 +1078,8 @@ public class LsThingServiceImpl implements LsThingService {
 				Predicate amountType = criteriaBuilder.equal(amountValue.<String>get("lsType"), "numericValue");
 				Predicate amountKind = criteriaBuilder.equal(amountValue.<String>get("lsKind"), "amount");
 				Predicate amountTo = criteriaBuilder.lessThanOrEqualTo(amountValue.<BigDecimal>get("numericValue"), new BigDecimal(searchParamsMap.get("amountTo")));
-				Predicate amountToPredicate = criteriaBuilder.and(amountType, amountKind, amountTo);
+				Predicate amountValueNotIgnored = criteriaBuilder.not(amountValue.<Boolean>get("ignored"));
+				Predicate amountToPredicate = criteriaBuilder.and(amountType, amountKind, amountTo, documentStateNotIgnored, amountValueNotIgnored);
 				predicateList.add(amountToPredicate);
 			}catch (Exception e){
 				logger.error("Caught exception trying to parse "+searchParamsMap.get("amountTo")+" as a number.",e);
@@ -1108,7 +1122,8 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate activeType = criteriaBuilder.equal(activeValue.<String>get("lsType"), "stringValue");
 			Predicate activeKind = criteriaBuilder.equal(activeValue.<String>get("lsKind"), "active");
 			Predicate active = criteriaBuilder.like(activeValue.<String>get("stringValue"), "%"+searchParamsMap.get("active")+"%");
-			Predicate activePredicate = criteriaBuilder.and(activeType, activeKind, active);
+			Predicate activeValueNotIgnored = criteriaBuilder.not(activeValue.<Boolean>get("ignored"));
+			Predicate activePredicate = criteriaBuilder.and(activeType, activeKind, active, documentStateNotIgnored, activeValueNotIgnored);
 			predicateList.add(activePredicate);
 		}
 		//collect all term predicates together
@@ -1120,27 +1135,33 @@ public class LsThingServiceImpl implements LsThingService {
 			//SecondLsThingsItx type/kind EQUALS "incorporates"/"documentTerm", secondLsThing => Term
 			Predicate termItxType = criteriaBuilder.equal(termItx.<String>get("lsType"), "incorporates");
 			Predicate termItxKind = criteriaBuilder.equal(termItx.<String>get("lsKind"), "documentTerm");
+			Predicate termItxNotIgnored = criteriaBuilder.not(termItx.<Boolean>get("ignored"));
 			Predicate termLsKind = criteriaBuilder.equal(term.<String>get("lsKind"), "term");
+			Predicate termNotIgnored = criteriaBuilder.not(term.<Boolean>get("ignored"));
 			termPredicateList.add(termItxType);
 			termPredicateList.add(termItxKind);
+			termPredicateList.add(termItxNotIgnored);
 			termPredicateList.add(termLsKind);
+			termPredicateList.add(termNotIgnored);
 			//termType : TermValue type/kind = "codeValue, "termType", codeValue EQUALS
 			if (searchParamsMap.keySet().contains("termType")){
 				Join<LsThingState, LsThingValue> termTypeValue = termState.join("lsValues", JoinType.LEFT);
 				Predicate termTypeType = criteriaBuilder.equal(termTypeValue.<String>get("lsType"), "codeValue");
 				Predicate termTypeKind = criteriaBuilder.equal(termTypeValue.<String>get("lsKind"), "termType");
 				Predicate termType = criteriaBuilder.equal(termTypeValue.<String>get("codeValue"), searchParamsMap.get("termType"));
-				Predicate termTypePredicate = criteriaBuilder.and(termTypeType, termTypeKind, termType);
+				Predicate termTypeNotIgnored = criteriaBuilder.not(termTypeValue.<Boolean>get("ignored"));
+				Predicate termTypePredicate = criteriaBuilder.and(termTypeType, termTypeKind, termType, termTypeNotIgnored);
 				termPredicateList.add(termTypePredicate);
 			}
 			//daysBeforeTerm : TermValue type/kind = "numericValue"/"daysBefore", numericValue =
 			if (searchParamsMap.keySet().contains("daysBeforeTerm")){
 				try{
 					Join<LsThingState, LsThingValue> daysBeforeTermValue = termState.join("lsValues", JoinType.LEFT);
-					Predicate daysBeforeTermType = criteriaBuilder.equal(daysBeforeTermValue.<String>get("lsType"), "codeValue");
+					Predicate daysBeforeTermType = criteriaBuilder.equal(daysBeforeTermValue.<String>get("lsType"), "numericValue");
 					Predicate daysBeforeTermKind = criteriaBuilder.equal(daysBeforeTermValue.<String>get("lsKind"), "daysBefore");
 					Predicate daysBeforeTerm = criteriaBuilder.equal(daysBeforeTermValue.<BigDecimal>get("numericValue"), new BigDecimal(searchParamsMap.get("daysBeforeTerm")));
-					Predicate daysBeforeTermPredicate = criteriaBuilder.and(daysBeforeTermType, daysBeforeTermKind, daysBeforeTerm);
+					Predicate daysBeforeTermNotIgnored = criteriaBuilder.not(daysBeforeTermValue.<Boolean>get("ignored"));
+					Predicate daysBeforeTermPredicate = criteriaBuilder.and(daysBeforeTermType, daysBeforeTermKind, daysBeforeTerm, daysBeforeTermNotIgnored);
 					termPredicateList.add(daysBeforeTermPredicate);
 				}catch (Exception e){
 					logger.error("Caught exception trying to parse "+searchParamsMap.get("daysBeforeTerm")+" as a number.",e);
@@ -1154,7 +1175,8 @@ public class LsThingServiceImpl implements LsThingService {
 					Predicate termDateType = criteriaBuilder.equal(termDateValue.<String>get("lsType"), "dateValue");
 					Predicate termDateKind = criteriaBuilder.equal(termDateValue.<String>get("lsKind"), "date");
 					Predicate termDateBetween = criteriaBuilder.between(termDateValue.<Date>get("dateValue"), new Date(new Long(searchParamsMap.get("termDateFrom"))), new Date(new Long(searchParamsMap.get("termDateTo"))));
-					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateBetween);
+					Predicate termDateNotIgnored = criteriaBuilder.not(termDateValue.<Boolean>get("ignored"));
+					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateBetween, termDateNotIgnored);
 					termPredicateList.add(termDatePredicate);
 				}catch (Exception e){
 					logger.error("Caught exception trying to parse "+searchParamsMap.get("termDateFrom")+" or "+searchParamsMap.get("termDateTo")+" as a date.",e);
@@ -1168,7 +1190,8 @@ public class LsThingServiceImpl implements LsThingService {
 					Predicate termDateType = criteriaBuilder.equal(termDateValue.<String>get("lsType"), "dateValue");
 					Predicate termDateKind = criteriaBuilder.equal(termDateValue.<String>get("lsKind"), "date");
 					Predicate termDateFrom = criteriaBuilder.greaterThanOrEqualTo(termDateValue.<Date>get("dateValue"), new Date(new Long(searchParamsMap.get("termDateFrom"))));
-					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateFrom);
+					Predicate termDateNotIgnored = criteriaBuilder.not(termDateValue.<Boolean>get("ignored"));
+					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateFrom, termDateNotIgnored);
 					termPredicateList.add(termDatePredicate);
 				}catch (Exception e){
 					logger.error("Caught exception trying to parse "+searchParamsMap.get("termDateFrom")+" as a date.",e);
@@ -1183,7 +1206,8 @@ public class LsThingServiceImpl implements LsThingService {
 					Predicate termDateType = criteriaBuilder.equal(termDateValue.<String>get("lsType"), "dateValue");
 					Predicate termDateKind = criteriaBuilder.equal(termDateValue.<String>get("lsKind"), "date");
 					Predicate termDateTo = criteriaBuilder.lessThanOrEqualTo(termDateValue.<Date>get("dateValue"), new Date(new Long(searchParamsMap.get("termDateTo"))));
-					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateTo);
+					Predicate termDateNotIgnored = criteriaBuilder.not(termDateValue.<Boolean>get("ignored"));
+					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateTo, termDateNotIgnored);
 					termPredicateList.add(termDatePredicate);
 				}catch (Exception e){
 					logger.error("Caught exception trying to parse "+searchParamsMap.get("termDateFrom")+" as a date.",e);
@@ -1200,7 +1224,8 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate nonSolicitType = criteriaBuilder.equal(nonSolicitValue.<String>get("lsType"), "stringValue");
 			Predicate nonSolicitKind = criteriaBuilder.equal(nonSolicitValue.<String>get("lsKind"), "nonSolicit");
 			Predicate nonSolicit = criteriaBuilder.like(nonSolicitValue.<String>get("stringValue"), searchParamsMap.get("nonSolicit"));
-			Predicate nonSolicitPredicate = criteriaBuilder.and(nonSolicitType, nonSolicitKind, nonSolicit);
+			Predicate nonSolicitNotIgnored = criteriaBuilder.not(nonSolicitValue.<Boolean>get("ignored"));
+			Predicate nonSolicitPredicate = criteriaBuilder.and(nonSolicitType, nonSolicitKind, nonSolicit, nonSolicitNotIgnored);
 			predicateList.add(nonSolicitPredicate);
 		}
 		//nonTransfer : LsThingValue type/kind = "stringValue"/"nonTransfer", stringValue EQUALS
@@ -1209,7 +1234,8 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate nonTransferType = criteriaBuilder.equal(nonTransferValue.<String>get("lsType"), "stringValue");
 			Predicate nonTransferKind = criteriaBuilder.equal(nonTransferValue.<String>get("lsKind"), "nonTransfer");
 			Predicate nonTransfer = criteriaBuilder.like(nonTransferValue.<String>get("stringValue"), searchParamsMap.get("nonTransfer"));
-			Predicate nonTransferPredicate = criteriaBuilder.and(nonTransferType, nonTransferKind, nonTransfer);
+			Predicate nonTransferNotIgnored = criteriaBuilder.not(nonTransferValue.<Boolean>get("ignored"));
+			Predicate nonTransferPredicate = criteriaBuilder.and(nonTransferType, nonTransferKind, nonTransfer, nonTransferNotIgnored);
 			predicateList.add(nonTransferPredicate);
 		}
 		//restrictedMaterialContains : LsThingValue type/kind = "stringValue"/"restrictedMaterialName", equals ignore case
@@ -1218,7 +1244,8 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate restrictedMaterialType = criteriaBuilder.equal(restrictedMaterialValue.<String>get("lsType"), "stringValue");
 			Predicate restrictedMaterialKind = criteriaBuilder.equal(restrictedMaterialValue.<String>get("lsKind"), "restrictedMaterialName");
 			Predicate restrictedMaterialContains = criteriaBuilder.like(criteriaBuilder.upper(restrictedMaterialValue.<String>get("stringValue")), "%"+searchParamsMap.get("restrictedMaterialContains").toUpperCase()+"%");
-			Predicate restrictedMaterialPredicate = criteriaBuilder.and(restrictedMaterialType, restrictedMaterialKind, restrictedMaterialContains);
+			Predicate restrictedMaterialNotIgnored = criteriaBuilder.not(restrictedMaterialValue.<Boolean>get("ignored"));
+			Predicate restrictedMaterialPredicate = criteriaBuilder.and(restrictedMaterialType, restrictedMaterialKind, restrictedMaterialContains, restrictedMaterialNotIgnored);
 			predicateList.add(restrictedMaterialPredicate);
 		}
 
