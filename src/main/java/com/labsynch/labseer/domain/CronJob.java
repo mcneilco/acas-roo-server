@@ -68,7 +68,7 @@ public class CronJob {
         updatedCronJob.setScriptJSONData(cronJob.getScriptJSONData());
         updatedCronJob.setActive(cronJob.isActive());
         updatedCronJob.setIgnored(cronJob.isIgnored());
-        updatedCronJob.setUser(cronJob.getUser());
+        updatedCronJob.setRunUser(cronJob.getRunUser());
         updatedCronJob.setCodeName(cronJob.getCodeName());
         updatedCronJob.setLastStartTime(cronJob.getLastStartTime());
         updatedCronJob.setLastDuration(cronJob.getLastDuration());
