@@ -4,6 +4,7 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.web.ItxLsThingLsThingController;
 import java.util.List;
 import org.springframework.http.HttpHeaders;
@@ -99,6 +100,22 @@ privileged aspect ItxLsThingLsThingController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArray(ItxLsThingLsThing.findItxLsThingLsThingsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByFirstLsThing", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ItxLsThingLsThingController.jsonFindItxLsThingLsThingsByFirstLsThing(@RequestParam("firstLsThing") LsThing firstLsThing) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArray(ItxLsThingLsThing.findItxLsThingLsThingsByFirstLsThing(firstLsThing).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=BySecondLsThing", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ItxLsThingLsThingController.jsonFindItxLsThingLsThingsBySecondLsThing(@RequestParam("secondLsThing") LsThing secondLsThing) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArray(ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(secondLsThing).getResultList()), headers, HttpStatus.OK);
     }
     
 }

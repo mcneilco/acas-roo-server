@@ -24,7 +24,7 @@ public class PreferredNameRequestDTO {
 	
 
 	public String toJson() {
-        return new JSONSerializer().exclude("*.class").include("errorMessages", "results").serialize(this);
+        return new JSONSerializer().exclude("*.class").include("errorMessages", "requests").serialize(this);
     }
 
 	public static PreferredNameRequestDTO fromJsonToPreferredNameResultsDTO(String json) {
@@ -32,7 +32,7 @@ public class PreferredNameRequestDTO {
     }
 
 	public static String toJsonArray(Collection<PreferredNameRequestDTO> collection) {
-        return new JSONSerializer().exclude("*.class").include("errorMessages", "results").serialize(collection);
+        return new JSONSerializer().exclude("*.class").include("errorMessages", "requests").serialize(collection);
     }
 
 	public static Collection<PreferredNameRequestDTO> fromJsonArrayToPreferredNameResultsDTO(String json) {
