@@ -44,7 +44,7 @@ public class CronJob {
     boolean ignored;
     
     @NotNull
-    String user;
+    String runUser;
     
     @NotNull
     @Column(unique=true)

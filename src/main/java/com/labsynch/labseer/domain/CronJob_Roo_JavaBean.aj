@@ -64,12 +64,12 @@ privileged aspect CronJob_Roo_JavaBean {
         this.ignored = ignored;
     }
     
-    public String CronJob.getUser() {
-        return this.user;
+    public String CronJob.getRunUser() {
+        return this.runUser;
     }
     
-    public void CronJob.setUser(String user) {
-        this.user = user;
+    public void CronJob.setRunUser(String runUser) {
+        this.runUser = runUser;
     }
     
     public String CronJob.getCodeName() {
