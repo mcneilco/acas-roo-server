@@ -508,5 +508,17 @@
             <menu:item id="i_itxlsthinglsthingstate_new" messageCode="global_menu_new" url="/itxlsthinglsthingstates?form" z="URYzXejwc0AbOnmQGDN6sxGn1lA="/>
             <menu:item id="i_itxlsthinglsthingstate_list" messageCode="global_menu_list" url="/itxlsthinglsthingstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iJT8vqWzUsI32g9p3HD98Dus48A="/>
         </menu:category>
+        <menu:category id="c_controller" z="nj8Dm3hojIyIEyPkwE1UMDIs+K8=">
+            <menu:item id="i_controller__roletypeindex_id" messageCode="global_generic" url="/roletype/index" z="gs+g1fCnUGGv4zQWe5YErru7LTA="/>
+            <menu:item id="i_controller__rolekindindex_id" messageCode="global_generic" url="/rolekind/index" z="LfFj9WYIdt4YWtztUFJlCCU1F5Q="/>
+        </menu:category>
+        <menu:category id="c_roletype" z="4j93y9HnrS9b1iYCpRnc2GT4nVQ=">
+            <menu:item id="i_roletype_new" messageCode="global_menu_new" url="/roletypes?form" z="SCsoXt9FKGH0QpEfNXFbsigT8AE="/>
+            <menu:item id="i_roletype_list" messageCode="global_menu_list" url="/roletypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="pXs+olwjk4QH+ztDyWQ6jt195ng="/>
+        </menu:category>
+        <menu:category id="c_rolekind" z="KVQVdwzOfGV720M7rpWWHWu1/ZM=">
+            <menu:item id="i_rolekind_new" messageCode="global_menu_new" url="/rolekinds?form" z="pg+83KKlLmJSjIPVompKUXMYHV8="/>
+            <menu:item id="i_rolekind_list" messageCode="global_menu_list" url="/rolekinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="ovIkKR/Umvr6j9+j7iArQWnO5o4="/>
+        </menu:category>
     </menu:menu>
 </div>

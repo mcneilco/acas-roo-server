@@ -2,7 +2,7 @@
 <div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
-    <form:find finderName="ByRoleNameEquals" id="ff_com_labsynch_labseer_domain_LsRole" path="/roles" z="F7hZE2P3AB9wb5oWTDpjNoP1k7c=">
-        <field:input disableFormBinding="true" field="roleName" id="f_com_labsynch_labseer_domain_LsRole_roleName" min="1" required="true" z="zTQToBRFGWO6B3H8nkA0SAHLf+Q="/>
-    </form:find>
+    <form:update id="fu_com_labsynch_labseer_domain_RoleKind" modelAttribute="roleKind" path="/rolekinds" versionField="Version" z="j9eJjZAjCNxppcHxC64yvbHYq1Q=">
+        <field:textarea field="kindName" id="c_com_labsynch_labseer_domain_RoleKind_kindName" required="true" z="TVaSQasEHlgwS0PVRC0HU5QjkSY="/>
+    </form:update>
 </div>

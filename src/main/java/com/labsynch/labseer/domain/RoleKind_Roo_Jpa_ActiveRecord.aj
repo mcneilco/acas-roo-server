@@ -3,73 +3,73 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.LsRole;
+import com.labsynch.labseer.domain.RoleKind;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
-privileged aspect LsRole_Roo_Jpa_ActiveRecord {
+privileged aspect RoleKind_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
-    transient EntityManager LsRole.entityManager;
+    transient EntityManager RoleKind.entityManager;
     
-    public static final EntityManager LsRole.entityManager() {
-        EntityManager em = new LsRole().entityManager;
+    public static final EntityManager RoleKind.entityManager() {
+        EntityManager em = new RoleKind().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
     
-    public static long LsRole.countLsRoles() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM LsRole o", Long.class).getSingleResult();
+    public static long RoleKind.countRoleKinds() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM RoleKind o", Long.class).getSingleResult();
     }
     
-    public static List<LsRole> LsRole.findAllLsRoles() {
-        return entityManager().createQuery("SELECT o FROM LsRole o", LsRole.class).getResultList();
+    public static List<RoleKind> RoleKind.findAllRoleKinds() {
+        return entityManager().createQuery("SELECT o FROM RoleKind o", RoleKind.class).getResultList();
     }
     
-    public static LsRole LsRole.findLsRole(Long id) {
+    public static RoleKind RoleKind.findRoleKind(Long id) {
         if (id == null) return null;
-        return entityManager().find(LsRole.class, id);
+        return entityManager().find(RoleKind.class, id);
     }
     
-    public static List<LsRole> LsRole.findLsRoleEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM LsRole o", LsRole.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<RoleKind> RoleKind.findRoleKindEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM RoleKind o", RoleKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional
-    public void LsRole.persist() {
+    public void RoleKind.persist() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
     
     @Transactional
-    public void LsRole.remove() {
+    public void RoleKind.remove() {
         if (this.entityManager == null) this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
-            LsRole attached = LsRole.findLsRole(this.id);
+            RoleKind attached = RoleKind.findRoleKind(this.id);
             this.entityManager.remove(attached);
         }
     }
     
     @Transactional
-    public void LsRole.flush() {
+    public void RoleKind.flush() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.flush();
     }
     
     @Transactional
-    public void LsRole.clear() {
+    public void RoleKind.clear() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.clear();
     }
     
     @Transactional
-    public LsRole LsRole.merge() {
+    public RoleKind RoleKind.merge() {
         if (this.entityManager == null) this.entityManager = entityManager();
-        LsRole merged = this.entityManager.merge(this);
+        RoleKind merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }

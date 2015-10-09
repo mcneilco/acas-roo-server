@@ -5,5 +5,7 @@
     <page:show id="ps_com_labsynch_labseer_domain_LsRole" object="${lsrole}" path="/lsroles" z="MYX0UIPYJNeAexok15e4WgiXogw=">
         <field:display field="roleName" id="s_com_labsynch_labseer_domain_LsRole_roleName" object="${lsrole}" z="uL3l7e20dbjKTOTYFDVgF17/gKI="/>
         <field:display field="roleDescription" id="s_com_labsynch_labseer_domain_LsRole_roleDescription" object="${lsrole}" z="AnKuIYuaLnJna/2fsGP3XABBm7U="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_LsRole_lsType" object="${lsrole}" z="Gx2HA0yQRUR7UAGvJmT9vUD1bSM="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_LsRole_lsKind" object="${lsrole}" z="qOhPcpVMA9KpuGshNe0bhe+irO8="/>
     </page:show>
 </div>

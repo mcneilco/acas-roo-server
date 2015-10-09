@@ -3,20 +3,20 @@ package com.labsynch.labseer.domain;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -27,9 +27,13 @@ import org.springframework.roo.addon.json.RooJson;
 @RooJpaActiveRecord(sequenceName = "LSROLE_PKSEQ", finders = { "findLsRolesByRoleNameEquals" })
 public class LsRole {
 
+    @Size(max = 255)
+    private String lsType;
+
+    @Size(max = 255)
+    private String lsKind;
 	
     @NotNull
-    @Column(unique = true)
     @Size(min = 1)
     private String roleName;
 
@@ -50,7 +54,7 @@ public class LsRole {
     private Integer version;
 
     public String toString() {
-        return new StringBuilder().append(this.id).append(' ').append(this.roleName).toString();
+        return new StringBuilder().append(this.id).append(' ').append(this.lsType).append(' ').append(this.lsKind).append(' ').append(this.roleName).toString();
     }
 
     public Long getId() {
@@ -83,4 +87,13 @@ public class LsRole {
 		}
 		
 	}
+
+
+	public static TypedQuery<LsRole> findLsRolesByRoleNameEquals(String roleName) {
+        if (roleName == null || roleName.length() == 0) throw new IllegalArgumentException("The roleName argument is required");
+        EntityManager em = LsRole.entityManager();
+        TypedQuery<LsRole> q = em.createQuery("SELECT o FROM LsRole AS o WHERE o.roleName = :roleName", LsRole.class);
+        q.setParameter("roleName", roleName);
+        return q;
+    }
 }

@@ -10,6 +10,8 @@ import com.labsynch.labseer.domain.ItxExperimentExperimentValue;
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
+import com.labsynch.labseer.domain.RoleKind;
+import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
 
@@ -179,6 +181,47 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ItxLsThingLsThingValue>() {
             public com.labsynch.labseer.domain.ItxLsThingLsThingValue convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), ItxLsThingLsThingValue.class);
+            }
+        };
+    }
+    
+    
+    public Converter<Long, RoleKind> ApplicationConversionServiceFactoryBean.getIdToRoleKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.RoleKind>() {
+            public com.labsynch.labseer.domain.RoleKind convert(java.lang.Long id) {
+                return RoleKind.findRoleKind(id);
+            }
+        };
+    }
+    
+    public Converter<String, RoleKind> ApplicationConversionServiceFactoryBean.getStringToRoleKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.RoleKind>() {
+            public com.labsynch.labseer.domain.RoleKind convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), RoleKind.class);
+            }
+        };
+    }
+    
+    public Converter<RoleType, String> ApplicationConversionServiceFactoryBean.getRoleTypeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.RoleType, java.lang.String>() {
+            public String convert(RoleType roleType) {
+                return new StringBuilder().append(roleType.getTypeName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, RoleType> ApplicationConversionServiceFactoryBean.getIdToRoleTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.RoleType>() {
+            public com.labsynch.labseer.domain.RoleType convert(java.lang.Long id) {
+                return RoleType.findRoleType(id);
+            }
+        };
+    }
+    
+    public Converter<String, RoleType> ApplicationConversionServiceFactoryBean.getStringToRoleTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.RoleType>() {
+            public com.labsynch.labseer.domain.RoleType convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), RoleType.class);
             }
         };
     }

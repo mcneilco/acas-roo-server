@@ -36,12 +36,18 @@ public class ApiLicenseController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
     	LicenseDTO licenseInfo = null;
-		try {
-			licenseInfo = licenseService.getLicenseInfo();
-		} catch (IOException | PGPException | URISyntaxException e) {
-			logger.error(e.toString());
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-		}
+      	try {
+      		licenseInfo = licenseService.getLicenseInfo();
+      	} catch (IOException e) {
+      		logger.error(e.toString());
+      		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+      	} catch (PGPException  e) {
+      		logger.error(e.toString());
+      		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+      	} catch (URISyntaxException e) {
+      		logger.error(e.toString());
+      		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+      	}
         if (licenseInfo == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }

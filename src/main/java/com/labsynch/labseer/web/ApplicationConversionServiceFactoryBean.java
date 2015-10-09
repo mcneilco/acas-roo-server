@@ -64,6 +64,8 @@ import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolType;
 import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.domain.RoleKind;
+import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.domain.StateKind;
 import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.Subject;
@@ -1775,6 +1777,8 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
         registry.addConverter(getLsRoleToStringConverter());
         registry.addConverter(getDDictKindToStringConverter());
         registry.addConverter(getDDictTypeToStringConverter());
+        registry.addConverter(getLsRoleTypeToStringConverter());
+        registry.addConverter(getRoleKindToStringConverter());
 
         
         
@@ -1796,11 +1800,31 @@ public class ApplicationConversionServiceFactoryBean extends FormattingConversio
 //        };
 //    }
 //	
+
+	@Transactional
+    public Converter<RoleType, String> getLsRoleTypeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.RoleType, java.lang.String>() {
+            public String convert(RoleType roleType) {
+                return new StringBuilder().append(roleType.getTypeName()).toString();
+            }
+        };
+    }
+	
+	
+    public Converter<RoleKind, String> getRoleKindToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.RoleKind, java.lang.String>() {
+            public String convert(RoleKind roleKind) {
+                return new StringBuilder().append(roleKind.getKindName()).toString();
+            }
+        };
+    }
+	
+	
 	@Transactional
     public Converter<LsRole, String> getLsRoleToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.LsRole, java.lang.String>() {
             public String convert(LsRole lsRole) {
-                return new StringBuilder().append(lsRole.getRoleName()).append(' ').append(lsRole.getRoleDescription()).toString();
+                return new StringBuilder().append(lsRole.getLsType()).append(' ').append(lsRole.getLsKind()).append(' ').append(lsRole.getRoleName()).toString();
             }
         };
     }
