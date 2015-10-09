@@ -18,7 +18,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders={"findCronJobsByCodeNameEquals"})
+@RooJpaActiveRecord(sequenceName = "CRON_JOB_PKSEQ", finders={"findCronJobsByCodeNameEquals"})
 public class CronJob {
 
 	private static final Logger logger = LoggerFactory.getLogger(CronJob.class);

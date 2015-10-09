@@ -8,12 +8,14 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
 privileged aspect CronJob_Roo_Jpa_Entity {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "cronJobGen", sequenceName = "CRON_JOB_PKSEQ")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "cronJobGen")
     @Column(name = "id")
     private Long CronJob.id;
     
