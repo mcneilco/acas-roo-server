@@ -40,9 +40,10 @@ public class CronJobServiceImpl implements CronJobService {
 
 	@Override
 	public CronJob updateCronJob(CronJob cronJob) {
-		logger.debug("here is the incoming cron job: " + cronJob.toJson());
-		cronJob.merge();
-		return cronJob;
+		logger.debug("Here is the incoming cron job: " + cronJob.toJson());
+		CronJob updatedCronJob = CronJob.update(cronJob);
+        logger.debug("Updated cron job: "+updatedCronJob.toJson());
+		return updatedCronJob;
 	}
 
 }

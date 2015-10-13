@@ -75,6 +75,7 @@ public class CronJob {
         updatedCronJob.setLastResultJSON(cronJob.getLastResultJSON());
         updatedCronJob.setNumberOfExecutions(cronJob.getNumberOfExecutions());
         updatedCronJob.merge();
+        updatedCronJob.setVersion(CronJob.findCronJob(cronJob.getId()).getVersion());
         return updatedCronJob;
     }
     
