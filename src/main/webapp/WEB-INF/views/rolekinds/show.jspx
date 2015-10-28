@@ -4,5 +4,6 @@
     <jsp:output omit-xml-declaration="yes"/>
     <page:show id="ps_com_labsynch_labseer_domain_RoleKind" object="${rolekind}" path="/rolekinds" z="qbfDOOLKyhVisOlwvdK6BicaMXM=">
         <field:display field="kindName" id="s_com_labsynch_labseer_domain_RoleKind_kindName" object="${rolekind}" z="8ibI+MueIjZE0SvEcIqRbYcUIyQ="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_RoleKind_lsType" object="${rolekind}" z="t+mY28LRi8t4Mye+MUbJCcDBVJI="/>
     </page:show>
 </div>

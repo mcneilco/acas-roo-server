@@ -43,4 +43,7 @@
 <definition extends="default" name="lsthings/findLsThingsByLsKindEquals">
         <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByLsKindEquals.jspx"/>
     </definition>
+<definition extends="default" name="lsthings/findLsThingsByLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsthings/findLsThingsByLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
 </tiles-definitions>

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect LsRoleController_Roo_Controller_Json {
@@ -90,6 +91,46 @@ privileged aspect LsRoleController_Roo_Controller_Json {
         }
         lsRole.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsRoleController.jsonFindLsRolesByLsTypeEquals(@RequestParam("lsType") String lsType) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsRole.toJsonArray(LsRole.findLsRolesByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsRoleController.jsonFindLsRolesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsRole.toJsonArray(LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsRoleController.jsonFindLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("roleName") String roleName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsRole.toJsonArray(LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(lsType, lsKind, roleName).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndRoleNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsRoleController.jsonFindLsRolesByLsTypeEqualsAndRoleNameEquals(@RequestParam("lsType") String lsType, @RequestParam("roleName") String roleName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsRole.toJsonArray(LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals(lsType, roleName).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByRoleNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsRoleController.jsonFindLsRolesByRoleNameEquals(@RequestParam("roleName") String roleName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsRole.toJsonArray(LsRole.findLsRolesByRoleNameEquals(roleName).getResultList()), headers, HttpStatus.OK);
     }
     
 }

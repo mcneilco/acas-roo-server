@@ -41,99 +41,173 @@ import com.labsynch.labseer.dto.AutoLabelDTO;
 public class CreateProjectsTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(CreateProjectsTests.class);
-	
-    @Autowired
-    private AutoLabelService autoLabelService;
 
-	@Test
-//	@Transactional
+	@Autowired
+	private AutoLabelService autoLabelService;
+
+	//@Test
+	//@Transactional
 	public void SaveProject_Test1() throws IOException{
 
-			LsTransaction lsTransaction = new LsTransaction();
-			lsTransaction.setComments("saving new project info");
-			lsTransaction.setRecordedDate(new Date());
-			lsTransaction.persist();
+		LsTransaction lsTransaction = new LsTransaction();
+		lsTransaction.setComments("saving new project info");
+		lsTransaction.setRecordedDate(new Date());
+		lsTransaction.persist();
 
-			//set up project type and kinds (check if already exists)
-			String thingTypeString = "project";
-			String thingKindString = "project";
-			ThingType geneType = ThingType.getOrCreate(thingTypeString);
-			ThingKind.getOrCreate(geneType, thingKindString);
+		//set up project type and kinds (check if already exists)
+		String thingTypeString = "project";
+		String thingKindString = "project";
+		ThingType geneType = ThingType.getOrCreate(thingTypeString);
+		ThingKind.getOrCreate(geneType, thingKindString);
 
-			LabelType labelType = LabelType.findLabelTypesByTypeNameEquals("name").getSingleResult();
-			LabelKind.getOrCreate(labelType, "project name");
+		LabelType.getOrCreate("name");
+		LabelType labelType = LabelType.findLabelTypesByTypeNameEquals("name").getSingleResult();
+		LabelKind.getOrCreate(labelType, "project name");
+		LabelKind.getOrCreate(labelType, "project alias");
 
-			StateType stateType = StateType.getOrCreate("metadata");
-			StateKind.getOrCreate(stateType, "project metadata");
+		StateType stateType = StateType.getOrCreate("metadata");
+		StateKind.getOrCreate(stateType, "project metadata");
 
-			ValueType valueType = ValueType.getOrCreate("stringValue");
-			ValueKind.getOrCreate(valueType, "project status");
+		ValueType valueType = ValueType.getOrCreate("stringValue");
+		ValueKind.getOrCreate(valueType, "project status");
 
-			ValueType valueTypeDate = ValueType.getOrCreate("dateValue");
-			ValueKind.getOrCreate(valueTypeDate, "creation date");
-			ValueKind.getOrCreate(valueTypeDate, "modification date");
+		ValueType valueTypeDate = ValueType.getOrCreate("dateValue");
+		ValueKind.getOrCreate(valueTypeDate, "creation date");
+		ValueKind.getOrCreate(valueTypeDate, "modification date");
 
-			String thingTypeAndKind = "project_project";
-			String labelTypeAndKind = "name_project name";
-			List<LabelSequence> labelSeqs = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
-			if (labelSeqs.size() == 0){
-				LabelSequence newLabelSeq = new LabelSequence();
-				newLabelSeq.setDigits(6);
-				newLabelSeq.setLabelPrefix("PROJ");
-				newLabelSeq.setLabelSeparator("-");
-				newLabelSeq.setLatestNumber(1L);
-				newLabelSeq.setLabelTypeAndKind(labelTypeAndKind);
-				newLabelSeq.setThingTypeAndKind(thingTypeAndKind);
-				newLabelSeq.persist();
-			} 
-			
-			Long numberOfLabels = 1L;
-			List<AutoLabelDTO> thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);			
-			
-			LsThing lsThing = new LsThing();
-			lsThing.setCodeName(thingCodes.get(0).getAutoLabel());
-			lsThing.setLsType(thingTypeString);
-			lsThing.setLsKind(thingKindString);
-			lsThing.setLsTransaction(lsTransaction.getId());
-			lsThing.setRecordedBy("acas admin");
-			lsThing.persist();
+		ValueType valueTypeString = ValueType.getOrCreate("stringValue");
+		ValueKind.getOrCreate(valueTypeString, "short description");
 
-			LsThingLabel.saveLsThingLabel(lsTransaction, "acas admin", lsThing, "name", "project name", true, "Fluomics Project 1");
+		String thingTypeAndKind = "project_project";
+		String labelTypeAndKind = "name_project name";
+		List<LabelSequence> labelSeqs = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
+		if (labelSeqs.size() == 0){
+			LabelSequence newLabelSeq = new LabelSequence();
+			newLabelSeq.setDigits(4);
+			newLabelSeq.setLabelPrefix("PROJ");
+			newLabelSeq.setLabelSeparator("-");
+			newLabelSeq.setLatestNumber(1L);
+			newLabelSeq.setLabelTypeAndKind(labelTypeAndKind);
+			newLabelSeq.setThingTypeAndKind(thingTypeAndKind);
+			newLabelSeq.persist();
+		} 
 
-			LsThingState lsThingState = new LsThingState();
-			lsThingState.setLsThing(lsThing);
-			lsThingState.setLsType("metadata");
-			lsThingState.setLsKind("project metadata");
-			lsThingState.setLsTransaction(lsTransaction.getId());
-			lsThingState.setRecordedBy("acas admin");
-			lsThingState.persist();
-			logger.info("thing state: " + lsThingState.toJson());
+		
+		////////////////////////////////
 
-			LsThingValue val1 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "project status", "active");
-			val1.setRecordedBy("acas admin");
-			val1.persist();
-			LsThingValue val2 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "dateValue", "creation date", new Date());
-			val2.setRecordedBy("acas admin");
-			val2.persist();
-			
-logger.info("value 1: " + val1.toJson());
-logger.info("value 1 nested json: " + LsThingState.toJsonArray(LsThingState.findLsThingStatesByLsTransactionEquals(lsTransaction.getId()).getResultList()));
-logger.info("value 1 nested json: " + LsThingState.toJsonArray(LsThingState.findLsThingStatesByLsThing(lsThing).getResultList()));
-List<LsThingState> lsStates = LsThingState.findLsThingStatesByLsThing(lsThing).getResultList();
-Set<LsThingState> lsStatesSet = new HashSet<LsThingState>();
-lsStatesSet.addAll(lsStates);
-lsThing.setLsStates(lsStatesSet);
-			//logger.info("Done saving the project" + (lsThing.toPrettyJsonStub()));
+		Long numberOfLabels = 1L;
+		List<AutoLabelDTO> thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);			
 
-		}
+		LsThing lsThing = new LsThing();
+		lsThing.setCodeName(thingCodes.get(0).getAutoLabel());
+		lsThing.setLsType(thingTypeString);
+		lsThing.setLsKind(thingKindString);
+		lsThing.setLsTransaction(lsTransaction.getId());
+		lsThing.setRecordedBy("acas admin");
+		lsThing.persist();
+
+		LsThingLabel.saveLsThingLabel(lsTransaction, "acas admin", lsThing, "name", "project name", true, "Apple");
+		LsThingLabel.saveLsThingLabel(lsTransaction, "acas admin", lsThing, "name", "project alias", false, "app");
+
+		LsThingState lsThingState = new LsThingState();
+		lsThingState.setLsThing(lsThing);
+		lsThingState.setLsType("metadata");
+		lsThingState.setLsKind("project metadata");
+		lsThingState.setLsTransaction(lsTransaction.getId());
+		lsThingState.setRecordedBy("acas admin");
+		lsThingState.persist();
+		logger.info("thing state: " + lsThingState.toJson());
+
+		LsThingValue val1 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "project status", "active");
+		val1.setRecordedBy("acas admin");
+		val1.persist();
+		LsThingValue val2 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "dateValue", "creation date", new Date());
+		val2.setRecordedBy("acas admin");
+		val2.persist();
+		LsThingValue val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description", "project short description");
+		val3.setRecordedBy("acas admin");
+		val3.persist();
+		
+		////////////////////////////////
+
+
+		numberOfLabels = 1L;
+		thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);	
+
+		lsThing = new LsThing();
+		lsThing.setCodeName(thingCodes.get(0).getAutoLabel());
+		lsThing.setLsType(thingTypeString);
+		lsThing.setLsKind(thingKindString);
+		lsThing.setLsTransaction(lsTransaction.getId());
+		lsThing.setRecordedBy("acas admin");
+		lsThing.persist();
+
+		LsThingLabel.saveLsThingLabel(lsTransaction, "acas admin", lsThing, "name", "project name", true, "Banana");
+		LsThingLabel.saveLsThingLabel(lsTransaction, "acas admin", lsThing, "name", "project alias", false, "bann");
+
+		lsThingState = new LsThingState();
+		lsThingState.setLsThing(lsThing);
+		lsThingState.setLsType("metadata");
+		lsThingState.setLsKind("project metadata");
+		lsThingState.setLsTransaction(lsTransaction.getId());
+		lsThingState.setRecordedBy("acas admin");
+		lsThingState.persist();
+		logger.info("thing state: " + lsThingState.toJson());
+
+		val1 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "project status", "active");
+		val1.setRecordedBy("acas admin");
+		val1.persist();
+		val2 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "dateValue", "creation date", new Date());
+		val2.setRecordedBy("acas admin");
+		val2.persist();
+		val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description", "project short description");
+		val3.setRecordedBy("acas admin");
+		val3.persist();		
+		
+		
+		////////////////////////////////
+
+		numberOfLabels = 1L;
+		thingCodes = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels);	
+
+		lsThing = new LsThing();
+		lsThing.setCodeName(thingCodes.get(0).getAutoLabel());
+		lsThing.setLsType(thingTypeString);
+		lsThing.setLsKind(thingKindString);
+		lsThing.setLsTransaction(lsTransaction.getId());
+		lsThing.setRecordedBy("acas admin");
+		lsThing.persist();
+
+		LsThingLabel.saveLsThingLabel(lsTransaction, "acas admin", lsThing, "name", "project name", true, "Pear");
+		LsThingLabel.saveLsThingLabel(lsTransaction, "acas admin", lsThing, "name", "project alias", false, "pear");
+
+		lsThingState = new LsThingState();
+		lsThingState.setLsThing(lsThing);
+		lsThingState.setLsType("metadata");
+		lsThingState.setLsKind("project metadata");
+		lsThingState.setLsTransaction(lsTransaction.getId());
+		lsThingState.setRecordedBy("acas admin");
+		lsThingState.persist();
+		logger.info("thing state: " + lsThingState.toJson());
+
+		val1 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "project status", "active");
+		val1.setRecordedBy("acas admin");
+		val1.persist();
+		val2 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "dateValue", "creation date", new Date());
+		val2.setRecordedBy("acas admin");
+		val2.persist();
+		val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description", "project short description");
+		val3.setRecordedBy("acas admin");
+		val3.persist();		
+	}
 
 	//@Test
 	@Transactional
-	public void GetProject_Test2() throws IOException{
+	public void GetProject_Test5() throws IOException{
 
 		LsThing lsThing = LsThing.findLsThingsByCodeNameEquals("PROJ-000003").getSingleResult();
 		logger.info(lsThing.toPrettyJsonStub());
-		
+
 	}
 
 

@@ -5,6 +5,7 @@
     <page:list id="pl_com_labsynch_labseer_domain_RoleKind" items="${rolekinds}" z="mlGdLVaPrPi3DvlsJ0DGxkBDb7k=">
         <table:table data="${rolekinds}" id="l_com_labsynch_labseer_domain_RoleKind" path="/rolekinds" z="ue8z4vm8cq6OfrbN1Cekpn8/ls4=">
             <table:column id="c_com_labsynch_labseer_domain_RoleKind_kindName" property="kindName" z="SPqEbub83mBEmE700L14uUKtAoY="/>
+            <table:column id="c_com_labsynch_labseer_domain_RoleKind_lsType" property="lsType" z="tP1k791YSDCI+RUFJ6vQ8t69BK0="/>
         </table:table>
     </page:list>
 </div>

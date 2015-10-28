@@ -4,8 +4,11 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.RoleKind;
+import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.web.RoleKindController;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.ui.Model;
@@ -33,6 +36,11 @@ privileged aspect RoleKindController_Roo_Controller {
     @RequestMapping(params = "form", produces = "text/html")
     public String RoleKindController.createForm(Model uiModel) {
         populateEditForm(uiModel, new RoleKind());
+        List<String[]> dependencies = new ArrayList<String[]>();
+        if (RoleType.countRoleTypes() == 0) {
+            dependencies.add(new String[] { "roletype", "roletypes" });
+        }
+        uiModel.addAttribute("dependencies", dependencies);
         return "rolekinds/create";
     }
     
@@ -86,6 +94,7 @@ privileged aspect RoleKindController_Roo_Controller {
     
     void RoleKindController.populateEditForm(Model uiModel, RoleKind roleKind) {
         uiModel.addAttribute("roleKind", roleKind);
+        uiModel.addAttribute("roletypes", RoleType.findAllRoleTypes());
     }
     
     String RoleKindController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

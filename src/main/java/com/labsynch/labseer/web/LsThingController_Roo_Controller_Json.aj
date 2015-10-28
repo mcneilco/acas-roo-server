@@ -151,6 +151,14 @@ privileged aspect LsThingController_Roo_Controller_Json {
         return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsThingController.jsonFindLsThingsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByRecordedByLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByRecordedByLike(@RequestParam("recordedBy") String recordedBy) {

@@ -33,7 +33,13 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "lsLabels" })
 @RooJson
-@RooJpaActiveRecord(finders = { "findLsThingsByCodeNameEquals", "findLsThingsByCodeNameLike", "findLsThingsByLsKindLike", "findLsThingsByLsTransactionEquals", "findLsThingsByLsTypeAndKindEquals", "findLsThingsByRecordedByLike", "findLsThingsByLsTypeEquals", "findLsThingsByLsKindEquals", "findLsThingsByRecordedDateGreaterThan", "findLsThingsByRecordedDateLessThan" })
+@RooJpaActiveRecord(finders = { "findLsThingsByCodeNameEquals", "findLsThingsByCodeNameLike", 
+		"findLsThingsByLsKindLike", "findLsThingsByLsTransactionEquals", 
+		"findLsThingsByLsTypeAndKindEquals", "findLsThingsByRecordedByLike", 
+		"findLsThingsByLsTypeEquals", "findLsThingsByLsKindEquals", 
+		"findLsThingsByLsTypeEqualsAndLsKindEquals",
+		"findLsThingsByRecordedDateGreaterThan", "findLsThingsByRecordedDateLessThan" })
+
 public class LsThing extends AbstractThing {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsThing")
@@ -122,7 +128,7 @@ public class LsThing extends AbstractThing {
 
     @Transactional
     public String toJsonStub() {
-        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "lsStates.lsThing").include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     @Transactional

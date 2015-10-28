@@ -185,7 +185,6 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
-    
     public Converter<Long, RoleKind> ApplicationConversionServiceFactoryBean.getIdToRoleKindConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.RoleKind>() {
             public com.labsynch.labseer.domain.RoleKind convert(java.lang.Long id) {

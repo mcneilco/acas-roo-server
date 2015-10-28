@@ -24,7 +24,13 @@ import org.springframework.roo.addon.json.RooJson;
 @Entity
 @RooJson
 @RooJavaBean
-@RooJpaActiveRecord(sequenceName = "LSROLE_PKSEQ", finders = { "findLsRolesByRoleNameEquals" })
+@RooJpaActiveRecord(sequenceName = "LSROLE_PKSEQ", finders = { 
+		"findLsRolesByRoleNameEquals", 
+		"findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals", 
+		"findLsRolesByLsTypeEqualsAndRoleNameEquals", 
+		"findLsRolesByLsTypeEqualsAndLsKindEquals", 
+		"findLsRolesByLsTypeEquals" })
+
 public class LsRole {
 
     @Size(max = 255)
@@ -32,7 +38,7 @@ public class LsRole {
 
     @Size(max = 255)
     private String lsKind;
-	
+
     @NotNull
     @Size(min = 1)
     private String roleName;
@@ -73,23 +79,20 @@ public class LsRole {
         this.version = version;
     }
 
-	public static LsRole getOrCreateRole(String roleName) {
-		List<LsRole> lsRoles = LsRole.findLsRolesByRoleNameEquals(roleName).getResultList();
-		if (lsRoles.size() == 0){
-			LsRole newRole = new LsRole();
-			newRole.setRoleName(roleName);
-			newRole.setRoleDescription(roleName);
-			newRole.persist();
-			return newRole;
-		} else {
+    public static com.labsynch.labseer.domain.LsRole getOrCreateRole(String roleName) {
+        List<LsRole> lsRoles = LsRole.findLsRolesByRoleNameEquals(roleName).getResultList();
+        if (lsRoles.size() == 0) {
+            LsRole newRole = new LsRole();
+            newRole.setRoleName(roleName);
+            newRole.setRoleDescription(roleName);
+            newRole.persist();
+            return newRole;
+        } else {
+            return lsRoles.get(0);
+        }
+    }
 
-			return lsRoles.get(0);
-		}
-		
-	}
-
-
-	public static TypedQuery<LsRole> findLsRolesByRoleNameEquals(String roleName) {
+    public static TypedQuery<com.labsynch.labseer.domain.LsRole> findLsRolesByRoleNameEquals(String roleName) {
         if (roleName == null || roleName.length() == 0) throw new IllegalArgumentException("The roleName argument is required");
         EntityManager em = LsRole.entityManager();
         TypedQuery<LsRole> q = em.createQuery("SELECT o FROM LsRole AS o WHERE o.roleName = :roleName", LsRole.class);

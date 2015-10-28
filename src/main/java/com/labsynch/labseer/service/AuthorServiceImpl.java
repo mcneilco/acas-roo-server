@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,11 @@ import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.LsRole;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
+import com.labsynch.labseer.dto.AuthGroupsDTO;
+import com.labsynch.labseer.dto.AuthProjectGroupsDTO;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 
@@ -56,13 +62,114 @@ public class AuthorServiceImpl implements AuthorService {
 	
 	@Override
 	public Collection<Author> findAuthorsByAuthorRoleName(String authorRoleName){
-		LsRole roleEntry = LsRole.findLsRolesByRoleNameEquals(authorRoleName).getSingleResult();
-		Collection<AuthorRole> authorRoles = AuthorRole.findAuthorRolesByRoleEntry(roleEntry).getResultList();
+		List<LsRole> roleEntries = LsRole.findLsRolesByRoleNameEquals(authorRoleName).getResultList();
 		Collection<Author> authors = new HashSet<Author>();
-		for (AuthorRole authorRole : authorRoles){
-			authors.add(authorRole.getUserEntry());
+		for (LsRole roleEntry : roleEntries){
+			Collection<AuthorRole> authorRoles = AuthorRole.findAuthorRolesByRoleEntry(roleEntry).getResultList();
+			for (AuthorRole authorRole : authorRoles){
+				authors.add(authorRole.getUserEntry());
+			}	
 		}
 		return authors;
 	}
 	
+	@Override
+	public Collection<LsThing> getUserProjects(String userName	){
+		Collection<LsThing> projectThings = new HashSet<LsThing>();
+		Author author = Author.findAuthorsByUserName(userName).getSingleResult();
+		Set<AuthorRole> roles = author.getAuthorRoles();
+		for (AuthorRole role : roles){
+			LsRole entry = role.getRoleEntry();
+			if (entry.getLsType().equalsIgnoreCase("Project")){
+				projectThings.addAll(LsThing.findLsThingsByCodeNameEquals(entry.getLsKind()).getResultList());
+			}
+		}
+		
+		return projectThings;
+		
+	}
+	
+	@Override
+	public AuthGroupsAndProjectsDTO getAuthGroupsAndProjects(){
+		AuthGroupsAndProjectsDTO agp = new AuthGroupsAndProjectsDTO();
+		Collection<AuthProjectGroupsDTO> authProjectsGroups = new ArrayList<AuthProjectGroupsDTO>();
+		Collection<AuthGroupsDTO> authGroups = new HashSet<AuthGroupsDTO>() ;
+		List<LsRole> allRoles = LsRole.findAllLsRoles();
+		AuthGroupsDTO ag;
+		Collection<String> members;
+		
+		for (LsRole lsRole : allRoles){
+			ag = new AuthGroupsDTO();
+			members = new HashSet<String>();
+			ag.setName(new StringBuilder().append(lsRole.getLsType()).append("_").append(lsRole.getLsKind()).append("_").append(lsRole.getRoleName()).toString());
+			Set<AuthorRole> authorRoles = lsRole.getAuthorRoles();
+			for (AuthorRole authorRole : authorRoles){
+				members.add(authorRole.getUserEntry().getUserName());
+			}
+			ag.setMembers(members);
+			authGroups.add(ag);			
+		}
+		
+		Collection<LsThing> projectCollection = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
+		AuthProjectGroupsDTO authProjectGroup;
+		Collection<String> groups;
+		List<LsRole> projectRoles;
+		Set<LsThingLabel> projectLabels;
+		String projectName = null;
+		String projectAlias = null;
+
+		for (LsThing project : projectCollection){
+			if (!project.isIgnored()){
+				projectRoles = LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals("Project", project.getCodeName()).getResultList();
+				groups = new HashSet<String>();
+				for (LsRole projectRole : projectRoles){
+					groups.add(new StringBuilder().append(projectRole.getLsType()).append("_").append(projectRole.getLsKind()).append("_").append(projectRole.getRoleName()).toString());
+				}
+
+				projectLabels = project.getLsLabels();
+				for (LsThingLabel projectLabel : projectLabels){
+					if (!projectLabel.isIgnored()){
+						if (projectLabel.getLsType().equalsIgnoreCase("name")){
+							if (projectLabel.getLsKind().equalsIgnoreCase("Project Name")){
+								projectName = projectLabel.getLabelText();
+							} else if (projectLabel.getLsKind().equalsIgnoreCase("Project Alias")){
+								projectAlias = projectLabel.getLabelText();
+							}						
+						}
+					}
+				}
+				
+				//id set
+				authProjectGroup = new AuthProjectGroupsDTO();
+				authProjectGroup.setId(project.getId());				
+				authProjectGroup.setGroups(groups);
+				authProjectsGroups.add(authProjectGroup);
+				
+				//codeName set
+				authProjectGroup = new AuthProjectGroupsDTO();
+				authProjectGroup.setAlias(project.getCodeName());
+				authProjectGroup.setGroups(groups);
+				authProjectsGroups.add(authProjectGroup);
+				
+				//alias set
+				authProjectGroup = new AuthProjectGroupsDTO();
+				authProjectGroup.setAlias(projectAlias);
+				authProjectGroup.setGroups(groups);
+				authProjectsGroups.add(authProjectGroup);				
+
+				//name set
+				authProjectGroup = new AuthProjectGroupsDTO();
+				authProjectGroup.setName(projectName);
+				authProjectGroup.setGroups(groups);
+				authProjectsGroups.add(authProjectGroup);
+			}
+		}
+		
+		logger.debug(AuthProjectGroupsDTO.toJsonArray(authProjectsGroups));
+		agp.setGroups(authGroups);
+		agp.setProjects(authProjectsGroups);
+		
+		return agp;
+
+	}
 }

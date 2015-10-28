@@ -4,8 +4,17 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.RoleKind;
+import com.labsynch.labseer.domain.RoleType;
 
 privileged aspect RoleKind_Roo_JavaBean {
+    
+    public RoleType RoleKind.getLsType() {
+        return this.lsType;
+    }
+    
+    public void RoleKind.setLsType(RoleType lsType) {
+        this.lsType = lsType;
+    }
     
     public String RoleKind.getKindName() {
         return this.kindName;

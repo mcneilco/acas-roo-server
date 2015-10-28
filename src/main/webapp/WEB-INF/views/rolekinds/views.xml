@@ -13,4 +13,10 @@
 <definition extends="default" name="rolekinds/update">
         <put-attribute name="body" value="/WEB-INF/views/rolekinds/update.jspx"/>
     </definition>
+<definition extends="default" name="rolekinds/findRoleKindsByKindNameEqualsAndLsType">
+        <put-attribute name="body" value="/WEB-INF/views/rolekinds/findRoleKindsByKindNameEqualsAndLsType.jspx"/>
+    </definition>
+<definition extends="default" name="rolekinds/findRoleKindsByLsType">
+        <put-attribute name="body" value="/WEB-INF/views/rolekinds/findRoleKindsByLsType.jspx"/>
+    </definition>
 </tiles-definitions>

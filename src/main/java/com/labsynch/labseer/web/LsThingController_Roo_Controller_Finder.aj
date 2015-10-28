@@ -91,6 +91,17 @@ privileged aspect LsThingController_Roo_Controller_Finder {
         return "lsthings/list";
     }
     
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndLsKindEquals", "form" }, method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByLsTypeEqualsAndLsKindEqualsForm(Model uiModel) {
+        return "lsthings/findLsThingsByLsTypeEqualsAndLsKindEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
+    public String LsThingController.findLsThingsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+        return "lsthings/list";
+    }
+    
     @RequestMapping(params = { "find=ByRecordedByLike", "form" }, method = RequestMethod.GET)
     public String LsThingController.findLsThingsByRecordedByLikeForm(Model uiModel) {
         return "lsthings/findLsThingsByRecordedByLike";

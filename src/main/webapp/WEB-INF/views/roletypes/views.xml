@@ -13,4 +13,7 @@
 <definition extends="default" name="roletypes/update">
         <put-attribute name="body" value="/WEB-INF/views/roletypes/update.jspx"/>
     </definition>
+<definition extends="default" name="roletypes/findRoleTypesByTypeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/roletypes/findRoleTypesByTypeNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

@@ -23,6 +23,7 @@ import com.labsynch.labseer.domain.RoleKind;
 @RooWebFinder
 public class RoleKindController {
 
+	
 //    @RequestMapping(method = RequestMethod.POST, value = "{id}")
 //    public void post(@PathVariable Long id, ModelMap modelMap, HttpServletRequest request, HttpServletResponse response) {
 //    }
