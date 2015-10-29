@@ -80,6 +80,16 @@ privileged aspect LsThing_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThing> LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = LsThing.entityManager();
+        TypedQuery<LsThing> q = em.createQuery("SELECT o FROM LsThing AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", LsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
     public static TypedQuery<LsThing> LsThing.findLsThingsByRecordedByLike(String recordedBy) {
         if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
         recordedBy = recordedBy.replace('*', '%');

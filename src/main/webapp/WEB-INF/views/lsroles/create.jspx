@@ -6,6 +6,8 @@
         <field:input field="roleName" id="c_com_labsynch_labseer_domain_LsRole_roleName" min="1" required="true" z="QdQpVTw5MvkEog65cob+4TS/KDo="/>
         <field:textarea field="roleDescription" id="c_com_labsynch_labseer_domain_LsRole_roleDescription" z="X6Ua5aln4PWWg1nRI43kjCcl6os="/>
         <field:simple field="authorRoles" id="c_com_labsynch_labseer_domain_LsRole_authorRoles" messageCode="entity_reference_not_managed" messageCodeAttribute="Author Role" z="TjEJUhNHtQ7b726dUyHLP/alA0o="/>
+        <field:select field="lsType" id="c_com_labsynch_labseer_domain_LsRole_lsType" itemValue="typeName" items="${collectiontypes}" path="/roletypes" required="true" z="user-managed"/>
+        <field:select field="lsKind" id="c_com_labsynch_labseer_domain_LsRole_lsKind" itemValue="kindName" items="${collectionkinds}" path="/rolekinds" required="true" z="user-managed"/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_LsRole" render="${not empty dependencies}" z="TykgQ91lls/cNe5dvXiA1QiL+9M="/>
 </div>

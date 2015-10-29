@@ -9,6 +9,22 @@ import java.util.Set;
 
 privileged aspect LsRole_Roo_JavaBean {
     
+    public String LsRole.getLsType() {
+        return this.lsType;
+    }
+    
+    public void LsRole.setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+    
+    public String LsRole.getLsKind() {
+        return this.lsKind;
+    }
+    
+    public void LsRole.setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+    
     public String LsRole.getRoleName() {
         return this.roleName;
     }
