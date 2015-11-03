@@ -16,4 +16,10 @@
 <definition extends="default" name="itxlsthinglsthings/findItxLsThingLsThingsByCodeNameEquals">
         <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/findItxLsThingLsThingsByCodeNameEquals.jspx"/>
     </definition>
+<definition extends="default" name="itxlsthinglsthings/findItxLsThingLsThingsByFirstLsThing">
+        <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/findItxLsThingLsThingsByFirstLsThing.jspx"/>
+    </definition>
+<definition extends="default" name="itxlsthinglsthings/findItxLsThingLsThingsBySecondLsThing">
+        <put-attribute name="body" value="/WEB-INF/views/itxlsthinglsthings/findItxLsThingLsThingsBySecondLsThing.jspx"/>
+    </definition>
 </tiles-definitions>

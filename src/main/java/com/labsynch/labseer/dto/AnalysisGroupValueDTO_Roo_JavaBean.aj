@@ -23,6 +23,14 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
         this.protocolId = protocolId;
     }
     
+    public String AnalysisGroupValueDTO.getProtocolName() {
+        return this.protocolName;
+    }
+    
+    public void AnalysisGroupValueDTO.setProtocolName(String protocolName) {
+        this.protocolName = protocolName;
+    }
+    
     public Long AnalysisGroupValueDTO.getExperimentId() {
         return this.experimentId;
     }
@@ -77,6 +85,70 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
     
     public void AnalysisGroupValueDTO.setResult(String result) {
         this.result = result;
+    }
+    
+    public String AnalysisGroupValueDTO.getResultUnit() {
+        return this.resultUnit;
+    }
+    
+    public void AnalysisGroupValueDTO.setResultUnit(String resultUnit) {
+        this.resultUnit = resultUnit;
+    }
+    
+    public String AnalysisGroupValueDTO.getOperator() {
+        return this.operator;
+    }
+    
+    public void AnalysisGroupValueDTO.setOperator(String operator) {
+        this.operator = operator;
+    }
+    
+    public String AnalysisGroupValueDTO.getTestedConcentration() {
+        return this.testedConcentration;
+    }
+    
+    public void AnalysisGroupValueDTO.setTestedConcentration(String testedConcentration) {
+        this.testedConcentration = testedConcentration;
+    }
+    
+    public String AnalysisGroupValueDTO.getTestedConcentrationUnit() {
+        return this.testedConcentrationUnit;
+    }
+    
+    public void AnalysisGroupValueDTO.setTestedConcentrationUnit(String testedConcentrationUnit) {
+        this.testedConcentrationUnit = testedConcentrationUnit;
+    }
+    
+    public String AnalysisGroupValueDTO.getUncertainty() {
+        return this.uncertainty;
+    }
+    
+    public void AnalysisGroupValueDTO.setUncertainty(String uncertainty) {
+        this.uncertainty = uncertainty;
+    }
+    
+    public String AnalysisGroupValueDTO.getUncertaintyUnit() {
+        return this.uncertaintyUnit;
+    }
+    
+    public void AnalysisGroupValueDTO.setUncertaintyUnit(String uncertaintyUnit) {
+        this.uncertaintyUnit = uncertaintyUnit;
+    }
+    
+    public String AnalysisGroupValueDTO.getTestedTime() {
+        return this.testedTime;
+    }
+    
+    public void AnalysisGroupValueDTO.setTestedTime(String testedTime) {
+        this.testedTime = testedTime;
+    }
+    
+    public String AnalysisGroupValueDTO.getTestedTimeUnit() {
+        return this.testedTimeUnit;
+    }
+    
+    public void AnalysisGroupValueDTO.setTestedTimeUnit(String testedTimeUnit) {
+        this.testedTimeUnit = testedTimeUnit;
     }
     
 }

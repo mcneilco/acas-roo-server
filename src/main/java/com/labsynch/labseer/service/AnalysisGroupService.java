@@ -7,11 +7,12 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.exceptions.NotFoundException;
 
 @Service
 public interface AnalysisGroupService {
 
-	AnalysisGroup saveLsAnalysisGroup(AnalysisGroup analysisGroup);
+	AnalysisGroup saveLsAnalysisGroup(AnalysisGroup analysisGroup) throws NotFoundException;
 
 	AnalysisGroup updateLsAnalysisGroup(AnalysisGroup analysisGroup);
 

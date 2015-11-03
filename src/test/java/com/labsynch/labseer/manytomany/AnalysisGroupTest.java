@@ -30,6 +30,7 @@ import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.AnalysisGroupService;
 import com.labsynch.labseer.service.ExperimentService;
@@ -340,7 +341,7 @@ public class AnalysisGroupTest {
 	
 	@Transactional
 	//@Test
-	public void saveWithExistingTreatmentGroups() throws UniqueNameException {
+	public void saveWithExistingTreatmentGroups() throws UniqueNameException, NotFoundException {
 		
 		Protocol protocol = Protocol.findProtocolEntries(0, 1).get(0);
 		

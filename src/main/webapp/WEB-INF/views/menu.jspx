@@ -234,10 +234,10 @@
             <menu:item id="i_analysisgroupstate_new" messageCode="global_menu_new" url="/analysisgroupstates?form" z="TZjDw5kV1aMgHZc7aH+dV+wGFNY="/>
             <menu:item id="i_analysisgroupstate_list" messageCode="global_menu_list" url="/analysisgroupstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="+c6SxQdchuqmmpTuPtgYFpUl2NI="/>
             <menu:item id="fi_analysisgroupstate_analysisgroup" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroup&amp;form" z="2+M5p4bKObib0x+zWt6V9//EhSU="/>
+            <menu:item id="fi_analysisgroupstate_analysisgroupandlstypeequalsandlskindequalsandignorednot" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot&amp;form" z="4Oh740mFWIyjcwBiwN5lw9aVp3A="/>
             <menu:item id="fi_analysisgroupstate_lstransactionequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTransactionEquals&amp;form" z="vGHNTtmEd9lwxe3fSyQxzne+vyY="/>
             <menu:item id="fi_analysisgroupstate_lstypeandkindequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTypeAndKindEquals&amp;form" z="heUs1Kgk6b7vaf9Xgj7fPtEps0U="/>
             <menu:item id="fi_analysisgroupstate_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="8yJM+iV1XzrrXDwRfpPtPGM3aQ8="/>
-            <menu:item id="fi_analysisgroupstate_analysisgroupandlstypeequalsandlskindequalsandignorednot" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot&amp;form" z="4Oh740mFWIyjcwBiwN5lw9aVp3A="/>
         </menu:category>
         <menu:category id="c_itxsubjectcontainervalue" z="p7hvR3xhX4SPAM9hlDwQBFuAa7M=">
             <menu:item id="i_itxsubjectcontainervalue_new" messageCode="global_menu_new" url="/itxsubjectcontainervalues?form" z="LIS5Tx5kNDL+DroDTf1heIb29xQ="/>
@@ -253,6 +253,9 @@
         <menu:category id="c_author" z="DETG4XqcVC9sb/BVL/ybUSG8lUM=">
             <menu:item id="i_author_new" messageCode="global_menu_new" url="/authors?form" z="e6WikSiFx46UnQunBmCd54pmrYE="/>
             <menu:item id="i_author_list" messageCode="global_menu_list" url="/authors?page=1&amp;size=${empty param.size ? 10 : param.size}" z="/71/+sYxLDw3jeyTZyEHzZ9CQQQ="/>
+            <menu:item id="fi_author_activationkeyandemailaddress" messageCode="global_menu_find" url="/authors?find=ByActivationKeyAndEmailAddress&amp;form" z="dgxuoGzO3W8UP8TfwWk8eIxUSO8="/>
+            <menu:item id="fi_author_emailaddress" messageCode="global_menu_find" url="/authors?find=ByEmailAddress&amp;form" z="IpLDZFbmjaRzpOMH/1TxEanN5bY="/>
+            <menu:item id="fi_author_username" messageCode="global_menu_find" url="/authors?find=ByUserName&amp;form" z="5HYW0rrXepMBuslnaPQKUc1sxDw="/>
         </menu:category>
         <menu:category id="c_thingpagearchive" z="Poh907U09OYMInXDxCLHjmgu4v8=">
             <menu:item id="i_thingpagearchive_new" messageCode="global_menu_new" url="/thingpagearchives?form" z="DSXfkjU0T0xjJ2VoGdbj00jaelg="/>
@@ -426,7 +429,7 @@
         <menu:category id="c_lsrole" z="eIIF+3Nwhg0gA4BZWz9IqeIfBr0=">
             <menu:item id="i_lsrole_new" messageCode="global_menu_new" url="/lsroles?form" z="sQQU8eIYjr52rryeIj1mbQvh070="/>
             <menu:item id="i_lsrole_list" messageCode="global_menu_list" url="/lsroles?page=1&amp;size=${empty param.size ? 10 : param.size}" z="zSPyhLyoG501CR+jtEld7yKrcKg="/>
-            <menu:item id="fi_lsrole_rolenameequals" messageCode="global_menu_find" url="/roles?find=ByRoleNameEquals&amp;form" z="g4tKmMKgc5y7Al2PlFSVNBHvXVo="/>
+            <menu:item id="fi_lsrole_rolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByRoleNameEquals&amp;form" z="cO0ad/jaBLJZl79Xpta3al6Z7mM="/>
         </menu:category>
         <menu:category id="c_authorrole" z="5H5j5FexDI0Q/OjfqVeghRk3SBQ=">
             <menu:item id="i_authorrole_new" messageCode="global_menu_new" url="/authorroles?form" z="R8JUiR8CbsbtSUAeFyXKb8jet5k="/>
@@ -494,6 +497,8 @@
             <menu:item id="i_itxlsthinglsthing_new" messageCode="global_menu_new" url="/itxlsthinglsthings?form" z="Sv7z8vH12pw4uXJL4KvD5bntOUk="/>
             <menu:item id="i_itxlsthinglsthing_list" messageCode="global_menu_list" url="/itxlsthinglsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dTBbXYSN3UodAC+gzSIDn7jQ2LQ="/>
             <menu:item id="fi_itxlsthinglsthing_codenameequals" messageCode="global_menu_find" url="/itxlsthinglsthings?find=ByCodeNameEquals&amp;form" z="BEKIehLO6xE9H85uNGTFPB4mVJ4="/>
+            <menu:item id="fi_itxlsthinglsthing_firstlsthing" messageCode="global_menu_find" url="/itxlsthinglsthings?find=ByFirstLsThing&amp;form" z="ZZJRfrNA3gWAokYxcfofVeMdEQ0="/>
+            <menu:item id="fi_itxlsthinglsthing_secondlsthing" messageCode="global_menu_find" url="/itxlsthinglsthings?find=BySecondLsThing&amp;form" z="HSzcUMc8kzGBOsMmcZLWbdLAz/c="/>
         </menu:category>
         <menu:category id="c_itxlsthinglsthingvalue" z="16NynK8hvte1Jz5OlnZk7yx2Cws=">
             <menu:item id="i_itxlsthinglsthingvalue_new" messageCode="global_menu_new" url="/itxlsthinglsthingvalues?form" z="lSlbM5i6/TIvqxkWP3izDKm7cSg="/>

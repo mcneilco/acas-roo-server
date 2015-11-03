@@ -24,6 +24,7 @@ import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ExperimentService;
 
@@ -330,7 +331,7 @@ public class ExperimentTest {
 
 	@Transactional
 	//@Test
-	public void CreateFullExperimentFromJson1_Test() throws UniqueNameException {
+	public void CreateFullExperimentFromJson1_Test() throws UniqueNameException, NotFoundException {
 		
 		String json = "{\"analysisGroups\":[{\"id\":null,\"ignored\":false,\"lsKind\":\"results\",\"lsLabels\":[],\"lsStates\":[],\"lsType\":\"data\",\"lsTypeAndKind\":\"data_results\",\"recordedBy\":\"tester\",\"recordedDate\":1403419760648,\"treatmentGroups\":[{\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[],\"lsStates\":[],\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"tester\",\"recordedDate\":1403419760694,\"subjects\":[{\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[],\"lsStates\":[],\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"tester\",\"recordedDate\":1403419760738,\"version\":0}],\"version\":0}],\"version\":0}],\"codeName\":null,\"id\":null,\"ignored\":false,\"lsKind\":\"default\",\"lsLabels\":[],\"lsStates\":[],\"lsTags\":[],\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"protocol\":{\"codeName\":\"PROT-00000002\",\"id\":1,\"ignored\":false,\"lsKind\":\"default\",\"lsTransaction\":1,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_default\",\"recordedBy\":\"smeyer\",\"recordedDate\":1402943976000,\"shortDescription\":\"confirmation screen\",\"version\":1},\"recordedBy\":\"tester\",\"recordedDate\":1403419760597,\"version\":0}";
 		Experiment output = experimentService.saveLsExperiment(Experiment.fromJsonToExperiment(json));
