@@ -336,7 +336,7 @@ public class CurveFitDTO {
 	public static Collection<CurveFitDTO> getFitData(Collection<String> curveIds){
 		EntityManager em = SubjectValue.entityManager();
 		if (curveIds.isEmpty()) return new ArrayList<CurveFitDTO>();
-		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( curveIdValue.stringValue as curveId, "
+		String queryString = "SELECT NEW MAP( curveIdValue.stringValue as curveId, "
 				+ "ag.codeName as analysisGroupCode, "
 				+ "curveIdValue.recordedBy as recordedBy, "
         		+ "curveIdValue.lsTransaction as lsTransaction, "
@@ -417,8 +417,37 @@ public class CurveFitDTO {
         		+ "WHERE ag.ignored = false " 
         		+ "AND ags.ignored = false "
         		+ "AND curveIdValue.ignored = false "
-        		+ "AND curveIdValue.stringValue IN :curveIds", Map.class);
-        q.setParameter("curveIds", curveIds);
+        		+ "AND (";
+        Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCurveIds = new ArrayList<String>();
+    	allCurveIds.addAll(curveIds);
+    	int startIndex = 0;
+    	while (startIndex < curveIds.size()){
+    		int endIndex;
+    		if (startIndex+999 < curveIds.size()) endIndex = startIndex+999;
+    		else endIndex = curveIds.size();
+    		List<String> nextCurveIds = allCurveIds.subList(startIndex, endIndex);
+    		String groupName = "curveIds"+startIndex;
+    		String sqlClause = " curveIdValue.stringValue IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCurveIds);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+		TypedQuery<Map> q = em.createQuery(queryString, Map.class);
+        for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+        logger.debug("Querying with string: \n"+queryString);
         List<Map> queryResults = q.getResultList();
         logger.debug(queryResults.size()+" results found");
         List<CurveFitDTO> curveFitDTOList = new ArrayList<CurveFitDTO>();
