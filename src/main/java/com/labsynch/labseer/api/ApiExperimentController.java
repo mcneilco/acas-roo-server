@@ -1428,7 +1428,7 @@ public class ApiExperimentController {
         }
     }
 
-    
+    @Transactional
     @RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<String> experimentBrowserSearch(@RequestParam("q") String searchQuery) {
