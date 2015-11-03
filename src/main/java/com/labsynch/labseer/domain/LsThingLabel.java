@@ -365,6 +365,27 @@ public class LsThingLabel extends AbstractLabel {
 		return q;
 	}
 	
+public static TypedQuery<PreferredNameDTO> findLsThingPreferredName(Set<String> requestNameList) {
+	
+		logger.info("in the correct sql generation");
+		
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT new com.labsynch.labseer.dto.PreferredNameDTO( o.labelText as requestName, o2.labelText as preferredName, lst.codeName as referenceName) " 
+				+ "FROM LsThingLabel AS o, LsThingLabel AS o2 "
+				+ "JOIN o.lsThing lst "
+				+ "JOIN o2.lsThing lst2 "
+//				+ "JOIN o o2"
+				+ "WHERE o.ignored IS NOT :ignored AND o.labelText in (:requestNameList) AND lst.codeName = lst2.codeName "
+				+ "AND o2.preferred = :preferred AND o2.ignored IS NOT :ignored";
+		
+		logger.debug("sql query " + query);
+		TypedQuery<PreferredNameDTO> q = em.createQuery(query, PreferredNameDTO.class);
+		q.setParameter("requestNameList", requestNameList);
+		q.setParameter("preferred", true);
+		q.setParameter("ignored", true);
+		return q;
+	}
+	
 	public static LsThingLabel pickBestLabel(Collection<LsThingLabel> labels) {
 		if (labels.isEmpty()) return null;
 		Collection<LsThingLabel> preferredLabels = new HashSet<LsThingLabel>();

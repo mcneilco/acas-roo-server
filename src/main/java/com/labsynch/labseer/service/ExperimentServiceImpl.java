@@ -926,10 +926,15 @@ public class ExperimentServiceImpl implements ExperimentService {
 					logger.debug("size of intersectCodes: " + collectionOfCodes.size());
 				}
 			}
-		} else {
+		} else if (uniqueBatchCodes.size() > 0) {
+          	collectionOfCodes = uniqueBatchCodes;
+        }else {
 			collectionOfCodes = uniqueBatchCodes;
+			logger.debug("Searching for Compound Batch Codes using experiment codes: "+searchRequest.getExperimentCodeList());
+			collectionOfCodes.addAll(findCompoundBatchCodes(searchRequest.getExperimentCodeList()));
+			logger.debug("Found: "+collectionOfCodes.toString());
 		}
-
+		logger.debug("collected these batch codes:" + collectionOfCodes.toString());
 		Set<String> finalUniqueBatchCodes = new HashSet<String>();
 
 		if (collectionOfCodes != null){
@@ -945,7 +950,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		List<AnalysisGroupValueDTO> agValues = null;
 		if (finalUniqueBatchCodes.size() > 0){
 			logger.debug("looking by expriment codes and batch codes");
-			if (onlyPublicData) agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList(), onlyPublicData).getResultList();
+			if (onlyPublicData) agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList(), onlyPublicData);
 			else agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
 			logger.debug("number of agValues found: " + agValues.size());
 		} else if (!filteredGeneData && finalUniqueBatchCodes.size() == 0) {
@@ -1028,6 +1033,22 @@ public class ExperimentServiceImpl implements ExperimentService {
 		//
 		//		}
 
+	}
+	
+	private Collection<String> findCompoundBatchCodes(Collection<String> experimentCodes){
+		EntityManager em = AnalysisGroupValue.entityManager();
+		String sql = "SELECT agv.codeValue FROM AnalysisGroupValue agv "
+				+ "JOIN agv.lsState as ags "
+				+ "JOIN ags.analysisGroup as ag "
+				+ "JOIN ag.experiments as e "
+				+ "WHERE e.codeName in :experimentCodes "
+				+ "AND agv.lsType = 'codeValue' "
+				+ "AND agv.lsKind = 'batch code' ";
+		TypedQuery<String> q = em.createQuery(sql, String.class);
+		q.setParameter("experimentCodes", experimentCodes);
+		Collection<String> results = q.getResultList();
+		logger.debug("results are"+results.toString());
+		return results;
 	}
 
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString) throws TooManyResultsException {
