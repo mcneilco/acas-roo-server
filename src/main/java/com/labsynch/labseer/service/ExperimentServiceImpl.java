@@ -17,6 +17,12 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -36,6 +42,7 @@ import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.LsTag;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;
@@ -989,59 +996,229 @@ public class ExperimentServiceImpl implements ExperimentService {
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString) throws TooManyResultsException {
 		//make our HashSets: experimentIdList will be filled/cleared/refilled for each term
 		//experimentList is the final search result
-		HashSet<Long> experimentIdList = new HashSet<Long>();
-		HashSet<Long> experimentAllIdList = new HashSet<Long>();
-		Collection<Experiment> experimentList = new HashSet<Experiment>();
+		List<Long> experimentIdList = new ArrayList<Long>();
+		queryString = queryString.replaceAll("\\*", "%");
 		//Split the query up on spaces
 		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
 		logger.debug("Number of search terms: " + splitQuery.size());
 		//Protection from searching * in a database with too many experiments:
-		if (splitQuery.contains("*")){
+		if (splitQuery.contains("%")){
 			logger.warn("Query for '*' detected. Determining if number of results is too many.");
 			int experimentCount = (int) Experiment.countExperiments();
 			logger.debug("Found "+experimentCount +" experiments.");
 			if (experimentCount > 1000){
 				throw new TooManyResultsException("Too many experiments will be returned with the query: "+"*");
+			}else if (queryString.equals("%")){
+				Collection<Experiment> allExperiments = Experiment.findAllExperiments();
+				Collection<Experiment> result = new HashSet<Experiment>();
+				for (Experiment experiment : allExperiments){
+					if (!experiment.isDeleted()) result.add(experiment);
+				}
+				return result;
 			}
 		}
-		//Make the Map of terms and HashSets of experiment id's then fill. We will run intersect logic later.
-		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
+		//TODO: add in case to return all experiments if search is only *
+		//Set up Criteria Query
+		EntityManager em = LsThing.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+		Root<Experiment> experimentRoot = criteria.from(Experiment.class);
+		Join<Experiment, ExperimentState> experimentState = experimentRoot.join("lsStates", JoinType.LEFT);
+		Join<ExperimentState, ExperimentValue> experimentValue = experimentState.join("lsValues", JoinType.LEFT);
+		Join<Experiment, ExperimentLabel> experimentLabel = experimentRoot.join("lsLabels", JoinType.LEFT);
+		Join<Experiment, Protocol> protocol = experimentRoot.join("protocol", JoinType.LEFT);
+		Join<Protocol, ProtocolLabel> protocolLabel = protocol.join("lsLabels", JoinType.LEFT);
+		Join<Experiment, LsTag> tag = experimentRoot.join("lsTags", JoinType.LEFT);
+		Root<DDictValue> ddictValue = criteria.from(DDictValue.class);
+		
+		criteria.select(experimentRoot.<Long>get("id"));
+		criteria.distinct(true);
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		
+		//experiment not ignored
+		Predicate experimentNotIgnored = criteriaBuilder.not(experimentRoot.<Boolean>get("ignored"));
+		predicateList.add(experimentNotIgnored);
+		
+		//We construct the query by making clauses for each term, then joining them with AND
 		for (String term : splitQuery) {
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "CODENAME"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "NAME"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "SCIENTIST"));
-//			experimentIdList.addAll(findExperimentIdsByMetadata(term, "RECORDEDBY"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "KIND"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "STATUS"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ANALYSIS STATUS"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL TYPE"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL KIND"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL CODENAME"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "PROTOCOL NAME"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "DATE"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "NOTEBOOK"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "KEYWORD"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ASSAY ACTIVITY"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "MOLECULAR TARGET"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ASSAY TYPE"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ASSAY TECHNOLOGY"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "CELL LINE"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "TARGET ORIGIN"));
-			experimentIdList.addAll(findExperimentIdsByMetadata(term, "ASSAY STAGE"));
-
-			resultsByTerm.put(term, new HashSet<Long>(experimentIdList));
-			experimentAllIdList.addAll(experimentIdList);
-			experimentIdList.clear();
+			Predicate[] predicatesByTerm = new Predicate[0];
+			List<Predicate> predicateListByTerm = new ArrayList<Predicate>();
+			
+			//Reusable predicates
+			Predicate experimentValueNotIgnored = criteriaBuilder.not(experimentValue.<Boolean>get("ignored"));
+			Predicate experimentStateNotIgnored = criteriaBuilder.not(experimentState.<Boolean>get("ignored"));
+			Predicate protocolNotIgnored = criteriaBuilder.not(protocol.<Boolean>get("ignored"));
+			Predicate ddictValueNotIgnored = criteriaBuilder.not(ddictValue.<Boolean>get("ignored"));
+			Predicate ddictExperimentValueCodeMatch = criteriaBuilder.like(ddictValue.<String>get("shortName"), experimentValue.<String>get("codeValue"));
+			
+			//CodeName
+			Predicate codeNamePredicate = criteriaBuilder.like(criteriaBuilder.upper(experimentRoot.<String>get("codeName")),  "%"+term.toUpperCase()+"%");
+			predicateListByTerm.add(codeNamePredicate);
+			
+			//kind
+			Predicate kindPredicate = criteriaBuilder.like(criteriaBuilder.upper(experimentRoot.<String>get("lsKind")),  "%"+term.toUpperCase()+"%");
+			predicateListByTerm.add(kindPredicate);
+			
+			//Name
+			Predicate nameLabelPredicate = criteriaBuilder.like(criteriaBuilder.upper(experimentLabel.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate nameNotIgnored = criteriaBuilder.not(experimentLabel.<Boolean>get("ignored"));
+			Predicate namePredicate = criteriaBuilder.and(nameLabelPredicate, nameNotIgnored);
+			predicateListByTerm.add(namePredicate);
+			
+			//scientist
+			Predicate scientistCodeValuePredicate = criteriaBuilder.like(criteriaBuilder.upper(experimentValue.<String>get("codeValue")),  "%"+term.toUpperCase()+"%");
+			Predicate scientistLsKindPredicate = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "scientist");
+			Predicate scientistPredicate = criteriaBuilder.and(scientistCodeValuePredicate, scientistLsKindPredicate, experimentValueNotIgnored, experimentStateNotIgnored);
+			predicateListByTerm.add(scientistPredicate); 
+			
+			//status
+			Predicate statusCodeValuePredicate = criteriaBuilder.like(criteriaBuilder.upper(experimentValue.<String>get("codeValue")),  "%"+term.toUpperCase()+"%");
+			Predicate statusLsKindPredicate = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "experiment status");
+			Predicate statusPredicate = criteriaBuilder.and(statusCodeValuePredicate, statusLsKindPredicate, experimentValueNotIgnored, experimentStateNotIgnored);
+			predicateListByTerm.add(statusPredicate); 
+			
+			//analysis status
+			Predicate analysisStatusCodeValuePredicate = criteriaBuilder.like(criteriaBuilder.upper(experimentValue.<String>get("codeValue")),  "%"+term.toUpperCase()+"%");
+			Predicate analysisStatusLsKindPredicate = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "analysis status");
+			Predicate analysisStatusPredicate = criteriaBuilder.and(analysisStatusCodeValuePredicate, analysisStatusLsKindPredicate, experimentValueNotIgnored, experimentStateNotIgnored);
+			predicateListByTerm.add(analysisStatusPredicate); 
+			
+			//protocol type
+			Predicate protocolType = criteriaBuilder.like(criteriaBuilder.upper(protocol.<String>get("lsType")),  "%"+term.toUpperCase()+"%");
+			Predicate protocolTypePredicate = criteriaBuilder.and(protocolType, protocolNotIgnored);
+			predicateListByTerm.add(protocolTypePredicate);
+			
+			//protocol kind
+			Predicate protocolKind = criteriaBuilder.like(criteriaBuilder.upper(protocol.<String>get("lsKind")),  "%"+term.toUpperCase()+"%");
+			Predicate protocolKindPredicate = criteriaBuilder.and(protocolKind, protocolNotIgnored);
+			predicateListByTerm.add(protocolKindPredicate);
+			
+			//protocol codename
+			Predicate protocolCodeName = criteriaBuilder.like(criteriaBuilder.upper(protocol.<String>get("codeName")),  "%"+term.toUpperCase()+"%");
+			Predicate protocolCodeNamePredicate = criteriaBuilder.and(protocolCodeName, protocolNotIgnored);
+			predicateListByTerm.add(protocolCodeNamePredicate);
+			
+			//protocol name
+			Predicate protocolNameLabelPredicate = criteriaBuilder.like(criteriaBuilder.upper(protocolLabel.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate protocolNameNotIgnored = criteriaBuilder.not(protocolLabel.<Boolean>get("ignored"));
+			Predicate protocolNamePredicate = criteriaBuilder.and(protocolNameLabelPredicate, protocolNameNotIgnored, protocolNotIgnored);
+			predicateListByTerm.add(protocolNamePredicate);
+			
+			//date
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+			try {
+				Date date = df.parse(term);
+				Date beforeDate = new Date(date.getTime());
+				beforeDate.setHours(0);
+				beforeDate.setMinutes(0);
+				beforeDate.setSeconds(0);
+				Date afterDate = new Date(date.getTime());
+				afterDate.setDate(afterDate.getDate()+1);
+				afterDate.setHours(0);
+				afterDate.setMinutes(0);
+				afterDate.setSeconds(0);
+				Predicate datePredicate1 = criteriaBuilder.between(experimentValue.<Date>get("dateValue"), beforeDate, afterDate);
+				Predicate datePredicate2 = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "completion date");
+				Predicate datePredicate = criteriaBuilder.and(datePredicate1, datePredicate2, experimentValueNotIgnored, experimentStateNotIgnored);
+				predicateListByTerm.add(datePredicate);
+			} catch (Exception e) {
+				try {
+					Date date = df2.parse(queryString);
+					Date beforeDate = new Date(date.getTime());
+					beforeDate.setHours(0);
+					beforeDate.setMinutes(0);
+					beforeDate.setSeconds(0);
+					Date afterDate = new Date(date.getTime());
+					afterDate.setDate(afterDate.getDate()+1);
+					afterDate.setHours(0);
+					afterDate.setMinutes(0);
+					afterDate.setSeconds(0);
+					Predicate datePredicate1 = criteriaBuilder.between(experimentValue.<Date>get("dateValue"), beforeDate, afterDate);
+					Predicate datePredicate2 = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "completion date");
+					Predicate datePredicate = criteriaBuilder.and(datePredicate1, datePredicate2, experimentValueNotIgnored, experimentStateNotIgnored);
+					predicateListByTerm.add(datePredicate);
+				} catch (Exception e2) {
+					//do nothing
+				}
+			}
+			
+			//notebook
+			Predicate notebookStringValuePredicate = criteriaBuilder.like(criteriaBuilder.upper(experimentValue.<String>get("stringValue")),  "%"+term.toUpperCase()+"%");
+			Predicate notebookLsKindPredicate = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "notebook");
+			Predicate notebookPredicate = criteriaBuilder.and(notebookStringValuePredicate, notebookLsKindPredicate, experimentValueNotIgnored, experimentStateNotIgnored);
+			predicateListByTerm.add(notebookPredicate); 
+			
+			//keyword
+			Predicate keyword = criteriaBuilder.like(criteriaBuilder.upper(tag.<String>get("tagText")),  "%"+term.toUpperCase()+"%");
+			predicateListByTerm.add(keyword);
+			
+			//assay activity
+			Predicate assayActivityLike = criteriaBuilder.like(criteriaBuilder.upper(ddictValue.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate assayActivityExperimentValueKind = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "assay activity");
+			Predicate assayActivityPredicate = criteriaBuilder.and(assayActivityLike, ddictValueNotIgnored, ddictExperimentValueCodeMatch, 
+					experimentStateNotIgnored, experimentValueNotIgnored, assayActivityExperimentValueKind);
+			predicateListByTerm.add(assayActivityPredicate);
+			
+			//molecular target
+			Predicate molecularTargetLike = criteriaBuilder.like(criteriaBuilder.upper(ddictValue.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate molecularTargetExperimentValueKind = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "molecular target");
+			Predicate molecularTargetPredicate = criteriaBuilder.and(molecularTargetLike, ddictValueNotIgnored, ddictExperimentValueCodeMatch, 
+					experimentStateNotIgnored, experimentValueNotIgnored, molecularTargetExperimentValueKind);
+			predicateListByTerm.add(molecularTargetPredicate);
+			
+			//assay type
+			Predicate assayTypeLike = criteriaBuilder.like(criteriaBuilder.upper(ddictValue.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate assayTypeExperimentValueKind = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "assay type");
+			Predicate assayTypePredicate = criteriaBuilder.and(assayTypeLike, ddictValueNotIgnored, ddictExperimentValueCodeMatch, 
+					experimentStateNotIgnored, experimentValueNotIgnored, assayTypeExperimentValueKind);
+			predicateListByTerm.add(assayTypePredicate);
+			
+			//assay technology
+			Predicate assayTechnologyLike = criteriaBuilder.like(criteriaBuilder.upper(ddictValue.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate assayTechnologyExperimentValueKind = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "assay technology");
+			Predicate assayTechnologyPredicate = criteriaBuilder.and(assayTechnologyLike, ddictValueNotIgnored, ddictExperimentValueCodeMatch, 
+					experimentStateNotIgnored, experimentValueNotIgnored, assayTechnologyExperimentValueKind);
+			predicateListByTerm.add(assayTechnologyPredicate);
+			
+			//cell line
+			Predicate cellLineLike = criteriaBuilder.like(criteriaBuilder.upper(ddictValue.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate cellLineExperimentValueKind = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "cell line");
+			Predicate cellLinePredicate = criteriaBuilder.and(cellLineLike, ddictValueNotIgnored, ddictExperimentValueCodeMatch, 
+					experimentStateNotIgnored, experimentValueNotIgnored, cellLineExperimentValueKind);
+			predicateListByTerm.add(cellLinePredicate);
+			
+			//target origin
+			Predicate targetOriginLike = criteriaBuilder.like(criteriaBuilder.upper(ddictValue.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate targetOriginExperimentValueKind = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "target origin");
+			Predicate targetOriginPredicate = criteriaBuilder.and(targetOriginLike, ddictValueNotIgnored, ddictExperimentValueCodeMatch, 
+					experimentStateNotIgnored, experimentValueNotIgnored, targetOriginExperimentValueKind);
+			predicateListByTerm.add(targetOriginPredicate);
+			
+			//assay stage
+			Predicate assayStageLike = criteriaBuilder.like(criteriaBuilder.upper(ddictValue.<String>get("labelText")),  "%"+term.toUpperCase()+"%");
+			Predicate assayStageExperimentValueKind = criteriaBuilder.equal(experimentValue.<String>get("lsKind"), "assay stage");
+			Predicate assayStagePredicate = criteriaBuilder.and(assayStageLike, ddictValueNotIgnored, ddictExperimentValueCodeMatch, 
+					experimentStateNotIgnored, experimentValueNotIgnored, assayStageExperimentValueKind);
+			predicateListByTerm.add(assayStagePredicate);
+			
+			//join all the predicatesByTerm with OR
+			predicatesByTerm = predicateListByTerm.toArray(predicatesByTerm);
+			predicateList.add(criteriaBuilder.or(predicatesByTerm));
 		}
-		//Here is the intersect logic
-		for (String term: splitQuery) {
-			experimentAllIdList.retainAll(resultsByTerm.get(term));
-		}
-		for (Long id: experimentAllIdList) experimentList.add(Experiment.findExperiment(id));
-
+		
+		predicates = predicateList.toArray(predicates);
+		criteria.where(criteriaBuilder.and(predicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		experimentIdList = q.getResultList();
+		logger.debug("Found "+experimentIdList.size()+" results");
+		
 		//This method uses finders that will find everything, whether or not it is ignored or deleted
 		Collection<Experiment> result = new HashSet<Experiment>();
-		for (Experiment experiment: experimentList) {
+		for (Long experimentId: experimentIdList) {
+			Experiment experiment = Experiment.findExperiment(experimentId);
 			//For Experiment Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
 			if (experiment.isDeleted()){
 				logger.debug("removing a deleted experiment from the results");
