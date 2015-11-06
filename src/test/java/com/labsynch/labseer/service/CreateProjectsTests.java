@@ -3,6 +3,7 @@
 package com.labsynch.labseer.service;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -14,13 +15,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LabelKind;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LabelType;
+import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
@@ -45,7 +50,7 @@ public class CreateProjectsTests {
 	@Autowired
 	private AutoLabelService autoLabelService;
 
-	//@Test
+	@Test
 	//@Transactional
 	public void SaveProject_Test1() throws IOException{
 
@@ -208,6 +213,109 @@ public class CreateProjectsTests {
 		LsThing lsThing = LsThing.findLsThingsByCodeNameEquals("PROJ-000003").getSingleResult();
 		logger.info(lsThing.toPrettyJsonStub());
 
+	}
+	
+	@Test
+//	@Transactional
+	public void createProjectRoles() {
+		//create users
+		Author jappleseed = null;
+		try{
+			jappleseed = Author.findAuthorsByUserName("jappleseed").getSingleResult();
+		}catch (EmptyResultDataAccessException e){
+			jappleseed = new Author();
+			jappleseed.setFirstName("Johnny");
+			jappleseed.setLastName("Appleseed");
+			jappleseed.setUserName("jappleseed");
+			jappleseed.setEmailAddress("jappleseed@mcneilco.com");
+			jappleseed.setEnabled(true);
+			jappleseed.setPassword("0L4txCG+T80BcuWvzuo5cOLz2UA="); //apple
+			jappleseed.persist();
+		}
+		Author bsplit = null;
+		try{
+			bsplit = Author.findAuthorsByUserName("bsplit").getSingleResult();
+		}catch (EmptyResultDataAccessException e){
+			bsplit = new Author();
+			bsplit.setFirstName("Banana");
+			bsplit.setLastName("Split");
+			bsplit.setUserName("bsplit");
+			bsplit.setEmailAddress("bsplit@mcneilco.com");
+			bsplit.setEnabled(true);
+			bsplit.setPassword("JQ538SpatpcqCJXSkMR5Lwoybqg="); //banana
+			bsplit.persist();
+		}
+		//create roles based on existing projects
+		String appleCodeName = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot("Apple", true).getSingleResult().getLsThing().getCodeName();
+		String bananaCodeName = LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot("Banana", true).getSingleResult().getLsThing().getCodeName();;
+		LsRole appleUser = null;
+		try{
+			appleUser = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", appleCodeName, "User").getSingleResult();
+		}catch(EmptyResultDataAccessException e){
+			appleUser = new LsRole();
+			appleUser.setLsType("Project");
+			appleUser.setLsKind(appleCodeName);
+			appleUser.setRoleName("User");
+			appleUser.persist();
+		}
+		LsRole appleAdministrator = null;
+		try{
+			appleAdministrator = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", appleCodeName, "Administrator").getSingleResult();
+		}catch(EmptyResultDataAccessException e){
+			appleAdministrator = new LsRole();
+			appleAdministrator.setLsType("Project");
+			appleAdministrator.setLsKind(appleCodeName);
+			appleAdministrator.setRoleName("Administrator");
+			appleAdministrator.persist();
+		}
+		LsRole bananaUser = null;
+		try{
+			bananaUser = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", bananaCodeName, "User").getSingleResult();
+		}catch(EmptyResultDataAccessException e){
+			bananaUser = new LsRole();
+			bananaUser.setLsType("Project");
+			bananaUser.setLsKind(bananaCodeName);
+			bananaUser.setRoleName("User");
+			bananaUser.persist();
+		}
+		LsRole bananaAdministrator = null;
+		try{
+			bananaAdministrator = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", bananaCodeName, "Administrator").getSingleResult();
+		}catch(EmptyResultDataAccessException e){
+			bananaAdministrator = new LsRole();
+			bananaAdministrator.setLsType("Project");
+			bananaAdministrator.setLsKind(bananaCodeName);
+			bananaAdministrator.setRoleName("Administrator");
+			bananaAdministrator.persist();
+		}
+		//create author roles
+		AuthorRole appleUserRole = null;
+		try{
+			appleUserRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(appleUser, jappleseed).getSingleResult();
+		}catch (EmptyResultDataAccessException e){
+			appleUserRole = new AuthorRole();
+			appleUserRole.setRoleEntry(appleUser);
+			appleUserRole.setUserEntry(jappleseed);
+			appleUserRole.persist();
+		}
+		AuthorRole appleAdministratorRole = null;
+		try{
+			appleAdministratorRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(appleAdministrator, jappleseed).getSingleResult();
+		}catch (EmptyResultDataAccessException e){
+			appleAdministratorRole = new AuthorRole();
+			appleAdministratorRole.setRoleEntry(appleAdministrator);
+			appleAdministratorRole.setUserEntry(jappleseed);
+			appleAdministratorRole.persist();
+		}
+		AuthorRole bananaUserRole = null;
+		try{
+			bananaUserRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(bananaUser, bsplit).getSingleResult();
+		}catch (EmptyResultDataAccessException e){
+			bananaUserRole = new AuthorRole();
+			bananaUserRole.setRoleEntry(bananaUser);
+			bananaUserRole.setUserEntry(bsplit);
+			bananaUserRole.persist();
+		}
 	}
 
 

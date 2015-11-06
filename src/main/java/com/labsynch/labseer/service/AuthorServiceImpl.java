@@ -172,4 +172,24 @@ public class AuthorServiceImpl implements AuthorService {
 		return agp;
 
 	}
+	
+	@Override
+	public CodeTableDTO getProjectCodeTable(LsThing project) {
+		CodeTableDTO codeTable = new CodeTableDTO();
+		codeTable.setName(LsThingLabel.pickBestLabel(project.getLsLabels()).getLabelText());
+		codeTable.setCode(project.getCodeName());
+		codeTable.setIgnored(project.isIgnored());
+		return codeTable;
+	}
+
+
+	@Override
+	public List<CodeTableDTO> convertProjectsToCodeTables(Collection<LsThing> projects) {
+		List<CodeTableDTO> codeTableList = new ArrayList<CodeTableDTO>();
+		for (LsThing project : projects) {
+			CodeTableDTO codeTable = getProjectCodeTable(project);
+			codeTableList.add(codeTable);
+		}
+		return codeTableList;	
+	}
 }

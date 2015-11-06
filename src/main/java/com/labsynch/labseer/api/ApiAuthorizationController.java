@@ -43,12 +43,15 @@ public class ApiAuthorizationController {
 
 	@RequestMapping(value = "/projects", params = { "find=ByUserName", "userName" }, method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> jsonFindAuthorProjectsByUserName(@RequestParam("userName") String userName) {
+	public ResponseEntity<java.lang.String> jsonFindAuthorProjectsByUserName(@RequestParam("userName") String userName, @RequestParam(value="format", required=false) String format) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		Collection<LsThing> projects = authorService.getUserProjects(userName);
 		logger.debug("searching for user: " + userName);
-
+		if (format != null && format.equalsIgnoreCase("codeTable")){
+			Collection<CodeTableDTO> codeTableProjects = authorService.convertProjectsToCodeTables(projects);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTableProjects), headers, HttpStatus.OK);
+		}
 		return new ResponseEntity<String>(LsThing.toJsonArrayStub(projects), headers, HttpStatus.OK);
 	}
 	

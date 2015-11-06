@@ -23,4 +23,8 @@ public interface AuthorService {
 
 	AuthGroupsAndProjectsDTO getAuthGroupsAndProjects();
 
+	CodeTableDTO getProjectCodeTable(LsThing project);
+
+	List<CodeTableDTO> convertProjectsToCodeTables(Collection<LsThing> projects);
+
 }
