@@ -6,6 +6,17 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +28,8 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONTokener;
@@ -262,6 +275,59 @@ public class ContainerServiceImpl implements ContainerService {
 			savedContainers.add(savedContainer);
 		}
 		return savedContainers;
+	}
+	
+	@Override
+	public Collection<ContainerLocationDTO> getContainersInLocation(Collection<String> locationCodeNames){
+		return getContainersInLocation(locationCodeNames, null, null);
+	}
+	
+	@Override
+	public Collection<ContainerLocationDTO> getContainersInLocation(Collection<String> locationCodeNames, String containerType, String containerKind){
+		EntityManager em = Container.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContainerLocationDTO> cq = cb.createQuery(ContainerLocationDTO.class);
+		Root<Container> location = cq.from(Container.class);
+		Join<Container, ItxContainerContainer> firstItx = location.join("firstContainers");
+		Join<Container, ItxContainerContainer> container = firstItx.join("firstContainer");
+		Join<Container, ContainerLabel> barcode = container.join("lsLabels", JoinType.LEFT);
+		
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		Expression<String> locationCodeName = location.<String>get("codeName");
+		Predicate locationCodeNameEquals = locationCodeName.in(locationCodeNames);
+		predicateList.add(locationCodeNameEquals);
+		Predicate itxType = cb.equal(firstItx.<String>get("lsType"), "moved to");
+		predicateList.add(itxType);
+		Predicate barcodeLsKind = cb.equal(barcode.<String>get("lsKind"), "barcode");
+		predicateList.add(barcodeLsKind);
+		
+		//optional container type/kind
+		if (containerType != null && containerType.length()>0){
+			Predicate containerTypeEquals = cb.equal(container.<String>get("lsType"), containerType);
+			predicateList.add(containerTypeEquals);
+		}
+		if (containerType != null && containerType.length()>0){
+			Predicate containerKindEquals = cb.equal(container.<String>get("lsKind"), containerKind);
+			predicateList.add(containerKindEquals);
+		}
+		//not ignored predicates
+		Predicate locationNotIgnored = cb.not(location.<Boolean>get("ignored"));
+		Predicate firstItxNotIgnored = cb.not(firstItx.<Boolean>get("ignored")); 
+		Predicate containerNotIgnored =  cb.not(container.<Boolean>get("ignored"));
+		Predicate barcodeNotIgnored =  cb.not(barcode.<Boolean>get("ignored"));
+		predicateList.add(locationNotIgnored);
+		predicateList.add(firstItxNotIgnored);
+		predicateList.add(containerNotIgnored);
+		predicateList.add(barcodeNotIgnored);
+		
+		predicates = predicateList.toArray(predicates);
+		cq.where(cb.and(predicates));
+		cq.multiselect(location.<String>get("codeName"), container.<String>get("codeName"), barcode.<String>get("labelText"));
+		TypedQuery<ContainerLocationDTO> q = em.createQuery(cq);
+//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<ContainerLocationDTO> results = q.getResultList();
+		return results;
 	}
 
 }

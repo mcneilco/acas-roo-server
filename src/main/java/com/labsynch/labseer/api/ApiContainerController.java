@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
+import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.service.ContainerService;
@@ -290,5 +291,16 @@ public class ApiContainerController {
         return new ResponseEntity<String>(Container.toJsonArray(Container.findContainerByContainerLabel(labelText)), headers, HttpStatus.OK);
     }
 
-	
+    @Transactional
+    @RequestMapping(value = "/getContainersInLocation", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getContainersInLocation(@RequestBody List<String> locationCodeNames,
+    		@RequestParam(value="containerType", required=false) String containerType,
+    		@RequestParam(value="containerKind", required=false) String containerKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        Collection<ContainerLocationDTO> searchResults = containerService.getContainersInLocation(locationCodeNames, containerType, containerKind);
+        return new ResponseEntity<String>(ContainerLocationDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+    }
+    
 }

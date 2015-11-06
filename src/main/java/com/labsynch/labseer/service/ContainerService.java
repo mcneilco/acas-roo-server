@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.dto.ContainerLocationDTO;
 
 @Service
 public interface ContainerService {
@@ -22,6 +23,13 @@ public interface ContainerService {
 	Collection<Container> saveLsContainersFile(String jsonFile);
 
 	Container saveLsContainer(String json);
+
+	Collection<ContainerLocationDTO> getContainersInLocation(
+			Collection<String> locationCodeNames);
+
+	Collection<ContainerLocationDTO> getContainersInLocation(
+			Collection<String> locationCodeNames, String containerType,
+			String containerKind);
 	
 	
 	
