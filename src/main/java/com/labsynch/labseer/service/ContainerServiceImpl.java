@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -277,6 +278,11 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 	
 	@Override
+	public Collection<ContainerLocationDTO> getContainersInLocation(Collection<String> locationCodeNames){
+		return getContainersInLocation(locationCodeNames, null, null);
+	}
+	
+	@Override
 	public Collection<ContainerLocationDTO> getContainersInLocation(Collection<String> locationCodeNames, String containerType, String containerKind){
 		EntityManager em = Container.entityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -298,10 +304,12 @@ public class ContainerServiceImpl implements ContainerService {
 		
 		//optional container type/kind
 		if (containerType != null && containerType.length()>0){
-			Predicate containerTypeEquals = cb.equal(x, y)
+			Predicate containerTypeEquals = cb.equal(container.<String>get("lsType"), containerType);
+			predicateList.add(containerTypeEquals);
 		}
 		if (containerType != null && containerType.length()>0){
-			
+			Predicate containerKindEquals = cb.equal(container.<String>get("lsKind"), containerKind);
+			predicateList.add(containerKindEquals);
 		}
 		//not ignored predicates
 		Predicate locationNotIgnored = cb.not(location.<Boolean>get("ignored"));
@@ -313,9 +321,12 @@ public class ContainerServiceImpl implements ContainerService {
 		predicateList.add(containerNotIgnored);
 		predicateList.add(barcodeNotIgnored);
 		
+		predicates = predicateList.toArray(predicates);
 		cq.where(cb.and(predicates));
 		cq.multiselect(location.<String>get("codeName"), container.<String>get("codeName"), barcode.<String>get("labelText"));
-		Collection<ContainerLocationDTO> results = em.createQuery(cq).getResultList();
+		TypedQuery<ContainerLocationDTO> q = em.createQuery(cq);
+//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<ContainerLocationDTO> results = q.getResultList();
 		return results;
 	}
 

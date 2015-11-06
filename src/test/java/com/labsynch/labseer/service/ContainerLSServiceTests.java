@@ -12,6 +12,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,14 +24,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.domain.InteractionKind;
+import com.labsynch.labseer.domain.InteractionType;
+import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.LabelKind;
+import com.labsynch.labseer.domain.LabelType;
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -35,7 +48,7 @@ import flexjson.JSONTokener;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext.xml")
+@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
 public class ContainerLSServiceTests {
 
@@ -47,6 +60,12 @@ public class ContainerLSServiceTests {
 	@Autowired
 	private ContainerStateService csService;
 
+	@Autowired
+	private ContainerService containerService;
+	
+	@Autowired
+	private AutoLabelService autoLabelService;
+	
 	//@Test
 	//@Transactional
 	public void SaveContainerValues_3() throws FileNotFoundException{
@@ -317,6 +336,92 @@ public class ContainerLSServiceTests {
 		LsTransaction uplogTransaction= csService.ignoreByContainer(json, lsKind);
 		logger.info(uplogTransaction.toJson());
 		
+	}
+	
+	@Test
+//	@Transactional
+	public void createTestContainers(){
+		//physical/plate
+		Container plate = new Container();
+		plate.setCodeName(autoLabelService.getAutoLabels("material_container", "id_codeName", 1L).get(0).getAutoLabel());
+		plate.setLsType("physical");
+		plate.setLsKind("plate");
+		plate.setRecordedBy("acas admin");
+		plate.setRecordedDate(new Date());
+		//barcode/barcode
+		try{
+			LabelType labelType = LabelType.findLabelTypesByTypeNameEquals("barcode").getSingleResult();
+		}catch (EmptyResultDataAccessException e){
+			LabelType labelType = new LabelType();
+			labelType.setTypeName("barcode");
+			labelType.persist();
+		}
+		try{
+			LabelKind labelKind = LabelKind.findLabelKindsByKindNameEqualsAndLsType("barcode", LabelType.findLabelTypesByTypeNameEquals("barcode").getSingleResult()).getSingleResult();
+		}catch (EmptyResultDataAccessException e){
+			LabelKind labelKind = new LabelKind();
+			labelKind.setLsType(LabelType.findLabelTypesByTypeNameEquals("barcode").getSingleResult());
+			labelKind.setKindName("barcode");
+			labelKind.persist();
+		}
+		ContainerLabel plateBarcode = new ContainerLabel();
+		plateBarcode.setLsType("barcode");
+		plateBarcode.setLsKind("barcode");
+		plateBarcode.setRecordedBy("acas admin");
+		plateBarcode.setLabelText("TESTBARCODE-0000001");
+		plateBarcode.setRecordedDate(new Date());
+		Set<ContainerLabel> labels = new HashSet<ContainerLabel>();
+		labels.add(plateBarcode);
+		plate.setLsLabels(labels);
+		//physical/racks
+		Container racks = new Container();
+		racks.setCodeName(autoLabelService.getAutoLabels("material_container", "id_codeName", 1L).get(0).getAutoLabel());
+		racks.setLsType("physical");
+		racks.setLsKind("racks");
+		racks.setRecordedBy("acas admin");
+		racks.setRecordedDate(new Date());
+		//moved to/plate container
+		try{
+			InteractionKind itxKind = InteractionKind.findInteractionKindsByKindNameEqualsAndLsType("plate container", InteractionType.findInteractionTypesByTypeNameEquals("moved to").getSingleResult()).getSingleResult();
+		}catch (EmptyResultDataAccessException e){
+			InteractionKind itxKind = new InteractionKind();
+			itxKind.setLsType(InteractionType.findInteractionTypesByTypeNameEquals("moved to").getSingleResult());
+			itxKind.setKindName("plate container");
+			itxKind.persist();
+		}
+		ItxContainerContainer movedToItx = new ItxContainerContainer();
+		movedToItx.setCodeName(autoLabelService.getAutoLabels("interaction_containerContainer", "id_codeName", 1L).get(0).getAutoLabel());
+		movedToItx.setLsType("moved to");
+		movedToItx.setLsKind("plate container");
+		movedToItx.setRecordedBy("acas admin");
+		movedToItx.setRecordedDate(new Date());
+		
+		plate = containerService.saveLsContainer(plate);
+		racks = containerService.saveLsContainer(racks);
+		movedToItx.setFirstContainer(plate);
+		movedToItx.setSecondContainer(racks);
+		movedToItx.persist();
+	}
+	
+	@Test
+	@Transactional
+	public void getContainersByLocation(){
+		List<String> locationCodeNameList = new ArrayList<String>();
+		locationCodeNameList.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","racks").getResultList().get(0).getCodeName());
+		Collection<ContainerLocationDTO> result = containerService.getContainersInLocation(locationCodeNameList);
+		logger.info(ContainerLocationDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
+	}
+	
+	@Test
+	@Transactional
+	public void getContainersByLocationAndTypeKind(){
+		List<String> locationCodeNameList = new ArrayList<String>();
+		locationCodeNameList.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","racks").getResultList().get(0).getCodeName());
+		Collection<ContainerLocationDTO> result = containerService.getContainersInLocation(locationCodeNameList, "physical", "plate");
+		logger.info(ContainerLocationDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
+
 	}
 
 }
