@@ -526,11 +526,13 @@ public class AnalysisGroupValue extends AbstractValue {
 
 	public static TypedQuery<com.labsynch.labseer.dto.ValueTypeKindDTO> findAnalysisGroupValueTypeKindDTO(String exptCode) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) " 
-	+ "FROM AnalysisGroupValue agv " + "join agv.lsState ags " 
-				+ "join ags.analysisGroup ag " 
-	+ "join ag.experiments exp " + "where exp.codeName = :exptCode " 
-				+ "AND agv.lsType IN ('stringValue', 'numericValue') " 
-	+ "and ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false " 
+				+ "FROM AnalysisGroupValue agv " 
+				+ "JOIN agv.lsState ags " 
+				+ "JOIN ags.analysisGroup ag " 
+				+ "JOIN ag.experiments exp " 
+				+ "where exp.codeName = :exptCode " 
+				+ "AND agv.lsType IN ('stringValue', 'numericValue', 'dateValue', 'fileValue', 'urlValue') " 
+				+ "AND ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false " 
 				+ "group by agv.lsType, agv.lsKind";
 		EntityManager em = entityManager();
 		TypedQuery<ValueTypeKindDTO> q = em.createQuery(sqlQuery, ValueTypeKindDTO.class);
