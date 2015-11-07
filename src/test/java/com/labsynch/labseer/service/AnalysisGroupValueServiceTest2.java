@@ -78,7 +78,7 @@ public class AnalysisGroupValueServiceTest2 {
 		
 		ExperimentSearchRequestDTO searchRequest = new ExperimentSearchRequestDTO();
 		Set<String> experimentCodeList = new HashSet<String>();
-		experimentCodeList.add("EXPT-00000003");
+		experimentCodeList.add("EXPT-00000005");
 		searchRequest.setExperimentCodeList(experimentCodeList );
 		
         logger.debug("converted json: " + searchRequest.toJson());

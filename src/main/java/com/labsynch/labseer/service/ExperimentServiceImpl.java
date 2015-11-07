@@ -923,7 +923,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 					} else {
 						collectionOfCodes = CollectionUtils.union(collectionOfCodes, batchCodes);
 					}
-					logger.debug("size of intersectCodes: " + collectionOfCodes.size());
+					logger.info("size of intersectCodes: " + collectionOfCodes.size());
 				}
 			}
 		} else if (uniqueBatchCodes.size() > 0) {
