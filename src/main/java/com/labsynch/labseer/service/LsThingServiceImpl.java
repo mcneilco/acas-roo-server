@@ -1732,7 +1732,7 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		Collection<LsThing> foundFirstLsThings = new HashSet<LsThing>();
 		for (ItxLsThingLsThing matchingItx : matchingItxLsThingLsThings){
-			foundFirstLsThings.add(matchingItx.getFirstLsThing());
+			if (!matchingItx.getFirstLsThing().isIgnored()) foundFirstLsThings.add(matchingItx.getFirstLsThing());
 		}
 		logger.debug("Found these " + foundFirstLsThings.size() + " lsThing matches for current itx: "+LsThing.toJsonArray(foundFirstLsThings));
 		return foundFirstLsThings;
