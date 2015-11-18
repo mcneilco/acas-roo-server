@@ -39,6 +39,7 @@ import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -1762,5 +1763,43 @@ public class LsThingServiceImpl implements LsThingService {
 			if (foundLsThingReferencedComponentIds.isEmpty()) filteredFoundLsThings.add(foundLsThing);
 		}
 		return filteredFoundLsThings;
+	}
+	
+	@Override
+	public DependencyCheckDTO checkBatchDependencies(LsThing batch){
+		DependencyCheckDTO result = new DependencyCheckDTO();
+		result.getQueryCodeNames().add(batch.getCodeName());
+		Collection<LsThing> assemblies = findCompositesByComponentEquals(batch);
+		if (assemblies != null && !assemblies.isEmpty()){
+			for (LsThing assembly : assemblies){
+				LsThingLabel corpNameLabel = assembly.pickBestCorpName();
+				if (corpNameLabel != null) result.getDependentCorpNames().add(corpNameLabel.getLabelText());
+			}
+		}
+		if (!result.getDependentCorpNames().isEmpty()) result.setLinkedDataExists(true);
+		result.checkForDependentData();
+		return result;
+	}
+	
+	@Override
+	public DependencyCheckDTO checkParentDependencies(LsThing parent){
+		DependencyCheckDTO result = new DependencyCheckDTO();
+		result.getQueryCodeNames().add(parent.getCodeName());
+		Collection<LsThing> assemblies = findCompositesByComponentEquals(parent);
+		if (assemblies != null && !assemblies.isEmpty()){
+			for (LsThing assembly : assemblies){
+				LsThingLabel corpNameLabel = assembly.pickBestCorpName();
+				if (corpNameLabel != null) result.getDependentCorpNames().add(corpNameLabel.getLabelText());
+			}
+		}
+		Collection<LsThing> batches = findBatchesByParentEquals(parent);
+		if (batches != null && !batches.isEmpty()){
+			for (LsThing batch : batches){
+				result.getQueryCodeNames().add(batch.getCodeName());
+			}
+		}
+		if (!result.getDependentCorpNames().isEmpty()) result.setLinkedDataExists(true);
+		result.checkForDependentData();
+		return result;
 	}
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
@@ -76,6 +77,10 @@ public interface LsThingService {
 
 	PreferredNameResultsDTO getCodeNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, String json);
+
+	DependencyCheckDTO checkBatchDependencies(LsThing batch);
+
+	DependencyCheckDTO checkParentDependencies(LsThing parent);
 	
 	
 }
