@@ -1051,7 +1051,7 @@ public class LsThingServiceImpl implements LsThingService {
 			} else {
 				//Inject parent preferred label to all batch lsThings
 				if (lsThing.getLsType().equals("batch")){
-					LsThingLabel bestParentLabel = LsThingLabel.pickBestLabel(findParentByBatchEquals(lsThing).getLsLabels());
+					LsThingLabel bestParentLabel = findParentByBatchEquals(lsThing).pickBestName();
 					lsThing.getLsLabels().add(bestParentLabel);
 				}
 				result.add(lsThing);
