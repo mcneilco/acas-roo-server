@@ -81,6 +81,12 @@ public interface LsThingService {
 	DependencyCheckDTO checkBatchDependencies(LsThing batch);
 
 	DependencyCheckDTO checkParentDependencies(LsThing parent);
+
+	boolean deleteBatch(LsThing batch);
+
+	boolean deleteParent(LsThing parent);
+
+	int getBatchNumber(LsThing parent);
 	
 	
 }

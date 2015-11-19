@@ -860,16 +860,32 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public String generateBatchCodeName(LsThing parent){
 		String parentCodeName = parent.getCodeName();
-		int batchNumber = getBatchNumber(parent);
+		int batchNumber = getNextBatchNumber(parent);
 		String batchCodeName = parentCodeName.concat("-"+ String.valueOf(batchNumber));
 		return batchCodeName;
 	}
 
 
-	private int getBatchNumber(LsThing parent) {
+	@Override
+	public int getBatchNumber(LsThing parent) {
+		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+		int batchNumber = batchNumberValue.getNumericValue().intValue();
+		return batchNumber;
+	}
+	
+	private int getNextBatchNumber(LsThing parent) {
 		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
 		int batchNumber = batchNumberValue.getNumericValue().intValue();
 		batchNumber += 1;
+		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
+		batchNumberValue.merge();
+		return batchNumber;
+	}
+	
+	private int decrementBatchNumber(LsThing parent) {
+		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+		int batchNumber = batchNumberValue.getNumericValue().intValue();
+		batchNumber -= 1;
 		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
 		batchNumberValue.merge();
 		return batchNumber;
@@ -1801,5 +1817,55 @@ public class LsThingServiceImpl implements LsThingService {
 		if (!result.getDependentCorpNames().isEmpty()) result.setLinkedDataExists(true);
 		result.checkForDependentData();
 		return result;
+	}
+	
+	private void logicalDeleteLsThingAndInteractions(LsThing lsThing){
+		lsThing.logicalDelete();
+		lsThing.merge();
+		if (lsThing.getFirstLsThings() != null && !lsThing.getFirstLsThings().isEmpty()){
+			for (ItxLsThingLsThing itx : lsThing.getFirstLsThings()){
+				itx.logicalDelete();
+				itx.merge();
+			}
+		}
+		if (lsThing.getSecondLsThings() != null && !lsThing.getSecondLsThings().isEmpty()){
+			for (ItxLsThingLsThing itx : lsThing.getSecondLsThings()){
+				itx.logicalDelete();
+				itx.merge();
+			}
+		}
+	}
+
+
+	@Override
+	public boolean deleteBatch(LsThing batch) {
+		LsThing parent = findParentByBatchEquals(batch);
+		int lastBatchNumber = getBatchNumber(parent);
+		boolean isLastBatch = false;
+		if (batch.pickBestCorpName().getLabelText().equals(parent.pickBestCorpName().getLabelText()+"-"+lastBatchNumber)) isLastBatch = true;
+		logicalDeleteLsThingAndInteractions(batch);
+		if (isLastBatch){
+			decrementBatchNumber(parent);
+		}
+		return true;
+	}
+
+
+	@Override
+	public boolean deleteParent(LsThing parent) {
+		String lastParentCorpName = autoLabelService.getLastLabel(parent.getLsTypeAndKind(), "corpName_ACAS LsThing").getAutoLabel();
+		boolean isLastParent = false;
+		if (parent.pickBestCorpName().getLabelText().equals(lastParentCorpName)) isLastParent = true;
+		Collection<LsThing> batches = findBatchesByParentEquals(parent);
+		if (batches != null && !batches.isEmpty()){
+			for (LsThing batch : batches){
+				logicalDeleteLsThingAndInteractions(batch);
+			}
+		}
+		logicalDeleteLsThingAndInteractions(parent);
+		if (isLastParent){
+			autoLabelService.decrementLabelSequence(parent.getLsTypeAndKind(), "corpName_ACAS LsThing");
+		}
+		return true;
 	}
 }

@@ -60,6 +60,9 @@ public class LsThingServiceTests {
 	@Autowired
 	private LsThingService lsThingService;
 	
+	@Autowired
+	private AutoLabelService autoLabelService;
+	
 	@Transactional
 	@Rollback(value=false)
 	public LsThing createLsThingStack(){
@@ -799,6 +802,68 @@ public class LsThingServiceTests {
 		DependencyCheckDTO result = lsThingService.checkParentDependencies(parent);
 		logger.info(result.toJson());
 		Assert.assertTrue(result.getLinkedDataExists());
+	}
+	
+	@Transactional
+	@Test
+	public void deleteBatch(){
+		LsThing batch = LsThing.findLsThingsByCodeNameEquals("CB000004-6").getSingleResult();
+		LsThing parent = LsThing.findLsThingsByCodeNameEquals("CB000004").getSingleResult();
+		int lastBatchNumber = lsThingService.getBatchNumber(parent);
+		lsThingService.deleteBatch(batch);
+		LsThing checkBatch = LsThing.findLsThingsByCodeNameEquals("CB000004-6").getSingleResult();
+		LsThing checkParent = LsThing.findLsThingsByCodeNameEquals("CB000004").getSingleResult();
+		int newLastBatchNumber = lsThingService.getBatchNumber(checkParent);
+		logger.info(checkBatch.toJsonWithNestedFull());
+		Assert.assertTrue(checkBatch.isIgnored());
+		Assert.assertTrue(checkBatch.isDeleted());
+		for (ItxLsThingLsThing itxLsThingLsThing : checkBatch.getFirstLsThings()){
+			Assert.assertTrue(itxLsThingLsThing.isIgnored());
+			Assert.assertTrue(itxLsThingLsThing.isDeleted());
+		}
+		for (ItxLsThingLsThing itxLsThingLsThing : checkBatch.getSecondLsThings()){
+			Assert.assertTrue(itxLsThingLsThing.isIgnored());
+			Assert.assertTrue(itxLsThingLsThing.isDeleted());
+		}
+		logger.info("Old lastBatchNumber: "+lastBatchNumber+" newLastBatchNumber: "+newLastBatchNumber);
+		Assert.assertTrue(newLastBatchNumber == lastBatchNumber - 1);
+	}
+	
+	@Transactional
+	@Test
+	public void deleteParent(){
+		LsThing parent = LsThing.findLsThingsByCodeNameEquals("PEG000003").getSingleResult();
+		logger.info(parent.toJsonWithNestedFull());
+		String lastCorpName = autoLabelService.getLastLabel(parent.getLsTypeAndKind(), "corpName_ACAS LsThing").getAutoLabel();
+		lsThingService.deleteParent(parent);
+		LsThing checkParent = LsThing.findLsThingsByCodeNameEquals("PEG000003").getSingleResult();
+		logger.info(checkParent.toJsonWithNestedFull());
+		Assert.assertTrue(checkParent.isIgnored());
+		Assert.assertTrue(checkParent.isDeleted());
+		for (ItxLsThingLsThing itxLsThingLsThing : checkParent.getFirstLsThings()){
+			Assert.assertTrue(itxLsThingLsThing.isIgnored());
+			Assert.assertTrue(itxLsThingLsThing.isDeleted());
+			if (itxLsThingLsThing.getLsType().equals("instantiates")){
+				LsThing checkBatch = itxLsThingLsThing.getFirstLsThing();
+				Assert.assertTrue(checkBatch.isIgnored());
+				Assert.assertTrue(checkBatch.isDeleted());
+				for (ItxLsThingLsThing batchItxLsThingLsThing : checkBatch.getFirstLsThings()){
+					Assert.assertTrue(itxLsThingLsThing.isIgnored());
+					Assert.assertTrue(itxLsThingLsThing.isDeleted());
+				}
+				for (ItxLsThingLsThing batchItxLsThingLsThing : checkBatch.getSecondLsThings()){
+					Assert.assertTrue(itxLsThingLsThing.isIgnored());
+					Assert.assertTrue(itxLsThingLsThing.isDeleted());
+				}
+			}
+		}
+		for (ItxLsThingLsThing itxLsThingLsThing : checkParent.getSecondLsThings()){
+			Assert.assertTrue(itxLsThingLsThing.isIgnored());
+			Assert.assertTrue(itxLsThingLsThing.isDeleted());
+		}
+		String newLastCorpName = autoLabelService.getLastLabel(parent.getLsTypeAndKind(), "corpName_ACAS LsThing").getAutoLabel();
+		logger.info("Old lastCorpName: "+lastCorpName+" New lastCorpName: "+newLastCorpName);
+		Assert.assertFalse(lastCorpName.equals(newLastCorpName));
 	}
 
 }
