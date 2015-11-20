@@ -394,7 +394,6 @@ public class ApiLsThingController {
     	            errorsFound = true;
     			}
     		}
-            lsThing.setCodeName(lsThingService.generateBatchCodeName(parent));
             parentId = parent.getId();
         }
         //if all's well so far, go ahead with the save

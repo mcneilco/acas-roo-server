@@ -857,13 +857,13 @@ public class LsThingServiceImpl implements LsThingService {
 	}
 
 
-	@Override
-	public String generateBatchCodeName(LsThing parent){
-		String parentCodeName = parent.getCodeName();
-		int batchNumber = getNextBatchNumber(parent);
-		String batchCodeName = parentCodeName.concat("-"+ String.valueOf(batchNumber));
-		return batchCodeName;
-	}
+//	@Override
+//	public String generateBatchCodeName(LsThing parent){
+//		String parentCodeName = parent.getCodeName();
+//		int batchNumber = getNextBatchNumber(parent);
+//		String batchCodeName = parentCodeName.concat("-"+ String.valueOf(batchNumber));
+//		return batchCodeName;
+//	}
 
 
 	@Override
@@ -873,14 +873,14 @@ public class LsThingServiceImpl implements LsThingService {
 		return batchNumber;
 	}
 	
-	private int getNextBatchNumber(LsThing parent) {
-		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
-		int batchNumber = batchNumberValue.getNumericValue().intValue();
-		batchNumber += 1;
-		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
-		batchNumberValue.merge();
-		return batchNumber;
-	}
+//	private int getNextBatchNumber(LsThing parent) {
+//		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+//		int batchNumber = batchNumberValue.getNumericValue().intValue();
+//		batchNumber += 1;
+//		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
+//		batchNumberValue.merge();
+//		return batchNumber;
+//	}
 	
 	private int decrementBatchNumber(LsThing parent) {
 		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();

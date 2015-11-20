@@ -44,8 +44,6 @@ public interface LsThingService {
 	LsThing saveLsThing(LsThing lsThing, boolean checkLsThingName)
 			throws UniqueNameException;
 
-	String generateBatchCodeName(LsThing parent);
-
 	Collection<LsThing> findBatchesByParentEquals(LsThing parent);
 
 	LsThing saveLsThing(LsThing lsThing, boolean isParent, boolean isBatch,
