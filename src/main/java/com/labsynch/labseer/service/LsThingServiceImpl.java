@@ -775,6 +775,7 @@ public class LsThingServiceImpl implements LsThingService {
 		if (isBatch){
 			LsThing parent = LsThing.findLsThing(parentId);
 			saveItxLsThingLsThing("instantiates", "batch_parent", savedLsThing, parent, lsThing.getRecordedBy(), lsThing.getRecordedDate());
+			incrementBatchNumber(parent);
 		}
 		return savedLsThing;
 	}
@@ -886,6 +887,15 @@ public class LsThingServiceImpl implements LsThingService {
 		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
 		int batchNumber = batchNumberValue.getNumericValue().intValue();
 		batchNumber -= 1;
+		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
+		batchNumberValue.merge();
+		return batchNumber;
+	}
+	
+	private int incrementBatchNumber(LsThing parent) {
+		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+		int batchNumber = batchNumberValue.getNumericValue().intValue();
+		batchNumber += 1;
 		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
 		batchNumberValue.merge();
 		return batchNumber;
