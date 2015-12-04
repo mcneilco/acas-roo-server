@@ -1606,7 +1606,7 @@ public class LsThingServiceImpl implements LsThingService {
 					for (LsThing foundLsThing : foundLsThings){
 						logger.debug(foundLsThing.getCodeName());
 						}
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+foundLsThing.pickBestCorpName());
 					}
 				}
 		} else{
@@ -1639,7 +1639,7 @@ public class LsThingServiceImpl implements LsThingService {
 					for (LsThing foundLsThing : foundLsThings){
 						logger.debug(foundLsThing.getCodeName());
 					}
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+foundLsThing.pickBestCorpName());
 				}
 			}
 			if (checkForwardAndReverseAreSame){
@@ -1683,7 +1683,7 @@ public class LsThingServiceImpl implements LsThingService {
 						for (LsThing foundLsThing : foundLsThings){
 							logger.debug(foundLsThing.getCodeName());
 							}
-						throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reversed order");
+						throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reversed order. "+foundLsThing.pickBestCorpName());
 						}
 					}
 			}
@@ -1759,7 +1759,11 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		Collection<LsThing> foundFirstLsThings = new HashSet<LsThing>();
 		for (ItxLsThingLsThing matchingItx : matchingItxLsThingLsThings){
-			if (!matchingItx.getFirstLsThing().isIgnored()) foundFirstLsThings.add(matchingItx.getFirstLsThing());
+			if (!matchingItx.getFirstLsThing().isIgnored()
+					&& matchingItx.getFirstLsThing().getLsType().equals(validationDTO.getLsThing().getLsType())
+					&& matchingItx.getFirstLsThing().getLsKind().equals(validationDTO.getLsThing().getLsKind())){
+				foundFirstLsThings.add(matchingItx.getFirstLsThing());
+			}
 		}
 		logger.debug("Found these " + foundFirstLsThings.size() + " lsThing matches for current itx: "+LsThing.toJsonArray(foundFirstLsThings));
 		return foundFirstLsThings;
