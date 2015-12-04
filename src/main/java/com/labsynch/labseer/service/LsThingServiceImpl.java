@@ -1603,10 +1603,13 @@ public class LsThingServiceImpl implements LsThingService {
 				//then we check for LsThing value rules
 				if (!checkLsThingUniqueValueByRules(validationDTO)){
 					logger.debug("Found matches:");
+					String corpNames = "";
 					for (LsThing foundLsThing : foundLsThings){
 						logger.debug(foundLsThing.getCodeName());
+						if (corpNames.length() == 0) corpNames += foundLsThing.pickBestCorpName().getLabelText();
+						else corpNames += ", "+foundLsThing.pickBestCorpName().getLabelText();
 						}
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+foundLsThing.pickBestCorpName().getLabelText());
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+corpNames);
 					}
 				}
 		} else{
@@ -1636,10 +1639,13 @@ public class LsThingServiceImpl implements LsThingService {
 				//then we check for LsThing value rules
 				if (!checkLsThingUniqueValueByRules(validationDTO)){
 					logger.debug("Found matches:");
+					String corpNames = "";
 					for (LsThing foundLsThing : foundLsThings){
 						logger.debug(foundLsThing.getCodeName());
-					}
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+foundLsThing.pickBestCorpName().getLabelText());
+						if (corpNames.length() == 0) corpNames += foundLsThing.pickBestCorpName().getLabelText();
+						else corpNames += ", "+foundLsThing.pickBestCorpName().getLabelText();
+						}
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+corpNames);
 				}
 			}
 			if (checkForwardAndReverseAreSame){
@@ -1680,10 +1686,13 @@ public class LsThingServiceImpl implements LsThingService {
 					//then we check for LsThing value rules
 					if (!checkLsThingUniqueValueByRules(validationDTO)){
 						logger.debug("Found matches:");
+						String corpNames = "";
 						for (LsThing foundLsThing : foundLsThings){
 							logger.debug(foundLsThing.getCodeName());
+							if (corpNames.length() == 0) corpNames += foundLsThing.pickBestCorpName().getLabelText();
+							else corpNames += ", "+foundLsThing.pickBestCorpName().getLabelText();
 							}
-						throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reversed order. "+foundLsThing.pickBestCorpName().getLabelText());
+						throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reversed order. "+corpNames);
 						}
 					}
 			}
