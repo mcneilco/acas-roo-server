@@ -1606,7 +1606,7 @@ public class LsThingServiceImpl implements LsThingService {
 					for (LsThing foundLsThing : foundLsThings){
 						logger.debug(foundLsThing.getCodeName());
 						}
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+foundLsThing.pickBestCorpName());
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+foundLsThing.pickBestCorpName().getLabelText());
 					}
 				}
 		} else{
@@ -1639,7 +1639,7 @@ public class LsThingServiceImpl implements LsThingService {
 					for (LsThing foundLsThing : foundLsThings){
 						logger.debug(foundLsThing.getCodeName());
 					}
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+foundLsThing.pickBestCorpName());
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order. "+foundLsThing.pickBestCorpName().getLabelText());
 				}
 			}
 			if (checkForwardAndReverseAreSame){
@@ -1683,7 +1683,7 @@ public class LsThingServiceImpl implements LsThingService {
 						for (LsThing foundLsThing : foundLsThings){
 							logger.debug(foundLsThing.getCodeName());
 							}
-						throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reversed order. "+foundLsThing.pickBestCorpName());
+						throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reversed order. "+foundLsThing.pickBestCorpName().getLabelText());
 						}
 					}
 			}
