@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.dto.ContainerCodeDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 
@@ -35,6 +36,9 @@ public interface ContainerService {
 
 	Collection<PlateWellDTO> getWellCodesByPlateBarcodes(
 			List<String> plateBarcodes);
+
+	Collection<ContainerCodeDTO> getContainerCodesByLabels(
+			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind);
 	
 	
 	
