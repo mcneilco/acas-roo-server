@@ -236,6 +236,17 @@ public class ProtocolServiceTest {
 	
 	@Transactional
 	@Test
+	public void protocolBrowserSearchByDate() {
+		String date = "2015-12-01";
+		String query = date;
+		logger.info("Searching with the query: "+ query);
+		Collection<Protocol> resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultProtocols.toString());
+		Assert.assertNotNull(resultProtocols);
+	}
+	
+	@Transactional
+	@Test
 	public void protocolBrowserSearchTestWithQuotes() {
 		String query = "Target Y binding";
 		logger.info("Searching with the query: "+ query);
