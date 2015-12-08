@@ -32,6 +32,7 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ContainerCodeDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -82,6 +83,54 @@ public class ApiContainerControllerTest {
     	}
     }
     
+    @Test
+    @Transactional
+    public void getContainerCodesByLabels() throws Exception{
+    	List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add("\""+Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText()+"\"");	
+		String json = plateBarcodes.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainerCodesByLabels")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerCodeDTO> results = ContainerCodeDTO.fromJsonArrayToContainerCoes(responseJson);
+    	for (ContainerCodeDTO result : results){
+    		Assert.assertNotNull(result.getCodeName());
+    		Assert.assertNotNull(result.getBarcode());
+    	}
+    }
+    
+    @Test
+    @Transactional
+    public void getContainerCodesByLabelsWithTypeKinds() throws Exception{
+    	List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add("\""+Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText()+"\"");	
+		String json = plateBarcodes.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainerCodesByLabels"
+    			+ "?containerType=container&containerKind=plate&labelType=barcode&labelKind=barcode")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerCodeDTO> results = ContainerCodeDTO.fromJsonArrayToContainerCoes(responseJson);
+    	for (ContainerCodeDTO result : results){
+    		Assert.assertNotNull(result.getCodeName());
+    		Assert.assertNotNull(result.getBarcode());
+    	}
+    }
     
 
 }

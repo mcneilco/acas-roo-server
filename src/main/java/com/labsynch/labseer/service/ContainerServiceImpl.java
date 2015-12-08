@@ -29,6 +29,7 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.dto.ContainerCodeDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -308,7 +309,7 @@ public class ContainerServiceImpl implements ContainerService {
 			Predicate containerTypeEquals = cb.equal(container.<String>get("lsType"), containerType);
 			predicateList.add(containerTypeEquals);
 		}
-		if (containerType != null && containerType.length()>0){
+		if (containerKind != null && containerKind.length()>0){
 			Predicate containerKindEquals = cb.equal(container.<String>get("lsKind"), containerKind);
 			predicateList.add(containerKindEquals);
 		}
@@ -379,6 +380,60 @@ public class ContainerServiceImpl implements ContainerService {
 		TypedQuery<PlateWellDTO> q = em.createQuery(cq);
 //		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<PlateWellDTO> results = q.getResultList();
+		return results;
+	}
+
+	@Override
+	public Collection<ContainerCodeDTO> getContainerCodesByLabels(
+			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind) {
+		EntityManager em = Container.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContainerCodeDTO> cq = cb.createQuery(ContainerCodeDTO.class);
+		Root<Container> container = cq.from(Container.class);
+		Join<Container, ContainerLabel> barcode = container.join("lsLabels");
+		Join<Container, ContainerLabel> containerLabel = container.join("lsLabels");
+		
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		Expression<String> containerLabelText = containerLabel.<String>get("labelText");
+		Predicate containerLabelTextEquals = containerLabelText.in(labelTexts);
+		predicateList.add(containerLabelTextEquals);
+		Predicate barcodeLsType = cb.equal(barcode.<String>get("lsType"), "barcode");
+		Predicate barcodeLsKind = cb.equal(barcode.<String>get("lsKind"), "barcode");
+		predicateList.add(barcodeLsType);
+		predicateList.add(barcodeLsKind);
+		
+		//optional container type/kind and label type/kind
+		if (containerType != null && containerType.length()>0){
+			Predicate containerTypeEquals = cb.equal(container.<String>get("lsType"), containerType);
+			predicateList.add(containerTypeEquals);
+		}
+		if (containerKind != null && containerKind.length()>0){
+			Predicate containerKindEquals = cb.equal(container.<String>get("lsKind"), containerKind);
+			predicateList.add(containerKindEquals);
+		}
+		if (labelType != null && labelType.length()>0){
+			Predicate containerLabelTypeEquals = cb.equal(containerLabel.<String>get("lsType"), labelType);
+			predicateList.add(containerLabelTypeEquals);
+		}
+		if (labelKind != null && labelKind.length()>0){
+			Predicate containerLabelKindEquals = cb.equal(containerLabel.<String>get("lsKind"), labelKind);
+			predicateList.add(containerLabelKindEquals);
+		}
+		//not ignored predicates
+		Predicate containerNotIgnored =  cb.not(container.<Boolean>get("ignored"));
+		Predicate barcodeNotIgnored =  cb.not(barcode.<Boolean>get("ignored"));
+		Predicate containerLabelNotIgnored =  cb.not(barcode.<Boolean>get("ignored"));		
+		predicateList.add(containerNotIgnored);
+		predicateList.add(barcodeNotIgnored);
+		predicateList.add(containerLabelNotIgnored);
+		
+		predicates = predicateList.toArray(predicates);
+		cq.where(cb.and(predicates));
+		cq.multiselect(container.<String>get("codeName"), barcode.<String>get("labelText"));
+		TypedQuery<ContainerCodeDTO> q = em.createQuery(cq);
+//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<ContainerCodeDTO> results = q.getResultList();
 		return results;
 	}
 

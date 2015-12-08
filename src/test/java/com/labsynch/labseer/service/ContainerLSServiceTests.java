@@ -39,6 +39,7 @@ import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.LabelKind;
 import com.labsynch.labseer.domain.LabelType;
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.dto.ContainerCodeDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
@@ -435,5 +436,38 @@ public class ContainerLSServiceTests {
 		logger.info(PlateWellDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
 	}
-
+	
+	@Test
+	@Transactional
+	public void getContainerCodesByLabels(){
+		List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
+		logger.info("querying with: "+plateBarcodes.toString());
+		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null);
+		logger.info(ContainerCodeDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
+	}
+	
+	@Test
+	@Transactional
+	public void getContainerCodesByLabelsWithTypeKinds(){
+		List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
+		logger.info("querying with: "+plateBarcodes.toString());
+		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "container", "plate", "barcode", "barcode");
+		logger.info(ContainerCodeDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
+	}
+	
+	@Test
+	@Transactional
+	public void getContainerCodesByLabelsWithConflictingTypeKinds(){
+		List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
+		logger.info("querying with: "+plateBarcodes.toString());
+		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "plate", "plate", "name", "barcode");
+		logger.info(ContainerCodeDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() == 0);
+	}
+	
 }
