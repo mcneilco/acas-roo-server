@@ -1180,316 +1180,317 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 		}
 	}
-
-
+	
 	@Override
 	@Transactional
-	public Collection<LsThing> searchForDocumentThings(
-			Map<String, String> searchParamsMap) {
-		//make our HashSets: lsThingIdList will be filled/cleared/refilled for each term
-		HashSet<Long> lsThingIdList = new HashSet<Long>();
-		//allLsThingIdList aggregates all the search results, which we will then filter down by intersections
-		HashSet<Long> allLsThingIdList = new HashSet<Long>();
-		//lsThingList is the final search result
-		Collection<LsThing> lsThingList = new HashSet<LsThing>();
-		//map where key is paramName and value is list of ids found matching that param
-		Map<String, HashSet<Long>> resultsByParam = new HashMap<String, HashSet<Long>>();
-		searchParamsMap.remove("with");
-		for (String paramName : searchParamsMap.keySet()){
-			String param = searchParamsMap.get(paramName);
-			logger.debug("Searching by "+paramName+" = "+param);
-			lsThingIdList.addAll(findDocumentLsThingsByParam(paramName, param));
-			resultsByParam.put(paramName, new HashSet<Long>(lsThingIdList));
-			allLsThingIdList.addAll(lsThingIdList);
-			lsThingIdList.clear();
+	public Collection<LsThing> searchForDocumentThings(Map<String, String> searchParamsMap){
+		List<Long> lsThingIdList = new ArrayList<Long>();
+		EntityManager em = LsThing.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+		Root<LsThing> document = criteria.from(LsThing.class);
+		Join<LsThing, LsThingState> documentState = document.join("lsStates", JoinType.LEFT);
+		Join<LsThing, LsThingLabel> documentLabel = document.join("lsLabels", JoinType.LEFT);
+		
+		criteria.select(document.<Long>get("id"));
+		criteria.distinct(true);
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		
+		//always present predicates
+		Predicate documentType = criteriaBuilder.equal(document.<String>get("lsType"), "legalDocument");
+		Predicate documentNotIgnored = criteriaBuilder.not(document.<Boolean>get("ignored"));
+		Predicate documentTypePredicate = criteriaBuilder.and(documentType, documentNotIgnored);
+		predicateList.add(documentTypePredicate);
+		//Reusable predicates
+		Predicate documentStateNotIgnored = criteriaBuilder.not(documentState.<Boolean>get("ignored"));
+//		Predicate lsThingValueNotIgnored = criteriaBuilder.not(lsThingValue.<Boolean>get("ignored"));
+//		Predicate lsThingStateNotIgnored = criteriaBuilder.not(lsThingState.<Boolean>get("ignored"));
+		
+		//documentCode : LsThing CodeName LIKE
+		if (searchParamsMap.keySet().contains("documentCode")){
+			Predicate documentCode = criteriaBuilder.like(document.<String>get("codeName"), "%"+searchParamsMap.get("documentCode")+"%");
+			predicateList.add(documentCode);
 		}
-		//Here is the intersect logic
-		for (String paramName: searchParamsMap.keySet()) {
-			allLsThingIdList.retainAll(resultsByParam.get(paramName));
+		//documentType : LsThing LsKind EQUALS
+		if (searchParamsMap.keySet().contains("documentType")){
+			Predicate documentKind = criteriaBuilder.equal(document.<String>get("lsKind"), searchParamsMap.get("documentType"));
+			predicateList.add(documentKind);
 		}
-		for (Long id: allLsThingIdList) lsThingList.add(LsThing.findLsThing(id));
-        //This method uses finders that will find everything, whether or not it is ignored or deleted
+		//titleContains : LsThingLabel LabelText LIKE
+		if (searchParamsMap.keySet().contains("titleContains")){
+			Predicate titleContains = criteriaBuilder.like(documentLabel.<String>get("labelText"), "%"+searchParamsMap.get("titleContains")+"%");
+			Predicate documentLabelNotIgnored = criteriaBuilder.not(documentLabel.<Boolean>get("ignored"));
+			Predicate titleContainsPredicate = criteriaBuilder.and(titleContains, documentLabelNotIgnored);
+			predicateList.add(titleContainsPredicate);
+		}
+		//company : SecondLsThingsItx type/kind EQUALS "incorporates"/"documentCompany", SecondLsThings.SecondLsThing codeName EQUALS
+		if (searchParamsMap.keySet().contains("company")){
+			Join<LsThing, ItxLsThingLsThing> companyItx = document.join("secondLsThings", JoinType.LEFT);
+			Join<ItxLsThingLsThing, LsThing> company = companyItx.join("secondLsThing", JoinType.LEFT);
+			Predicate companyItxType = criteriaBuilder.equal(companyItx.<String>get("lsType"), "incorporates");
+			Predicate companyItxKind = criteriaBuilder.equal(companyItx.<String>get("lsKind"), "documentCompany");
+			Predicate companyCode = criteriaBuilder.equal(company.<String>get("codeName"), searchParamsMap.get("company"));
+			Predicate companyItxNotIgnored = criteriaBuilder.not(companyItx.<Boolean>get("ignored"));
+			Predicate companyNotIgnored = criteriaBuilder.not(company.<Boolean>get("ignored"));
+			Predicate companyPredicate = criteriaBuilder.and(companyItxType, companyItxKind, companyCode, companyItxNotIgnored, companyNotIgnored);
+			predicateList.add(companyPredicate);
+		}
+		//project : SecondLsThingsItx type/kind EQUALS "incorporates"/"documentProject", SecondLsThings.SecondLsThing codeName EQUALS
+		if (searchParamsMap.keySet().contains("project")){
+			Join<LsThing, ItxLsThingLsThing> projectItx = document.join("secondLsThings", JoinType.LEFT);
+			Join<ItxLsThingLsThing, LsThing> project = projectItx.join("secondLsThing", JoinType.LEFT);
+			Predicate projectItxType = criteriaBuilder.equal(projectItx.<String>get("lsType"), "incorporates");
+			Predicate projectItxKind = criteriaBuilder.equal(projectItx.<String>get("lsKind"), "documentProject");
+			Predicate projectCode = criteriaBuilder.equal(project.<String>get("codeName"), searchParamsMap.get("project"));
+			Predicate projectItxNotIgnored = criteriaBuilder.not(projectItx.<Boolean>get("ignored"));
+			Predicate projectNotIgnored = criteriaBuilder.not(project.<Boolean>get("ignored"));
+			Predicate projectPredicate = criteriaBuilder.and(projectItxType, projectItxKind, projectCode, projectItxNotIgnored, projectNotIgnored);
+			predicateList.add(projectPredicate);
+		}
+		//owner : SecondLsThingsItx type/kind EQUALS "incorporates"/"documentOwner", SecondLsThings.SecondLsThing codeName EQUALS
+		if (searchParamsMap.keySet().contains("owner")){
+			Join<LsThing, ItxLsThingLsThing> ownerItx = document.join("secondLsThings", JoinType.LEFT);
+			Join<ItxLsThingLsThing, LsThing> owner = ownerItx.join("secondLsThing", JoinType.LEFT);
+			Predicate ownerItxType = criteriaBuilder.equal(ownerItx.<String>get("lsType"), "incorporates");
+			Predicate ownerItxKind = criteriaBuilder.equal(ownerItx.<String>get("lsKind"), "documentOwner");
+			Predicate ownerCode = criteriaBuilder.equal(owner.<String>get("codeName"), searchParamsMap.get("owner"));
+			Predicate ownerItxNotIgnored = criteriaBuilder.not(ownerItx.<Boolean>get("ignored"));
+			Predicate ownerNotIgnored = criteriaBuilder.not(owner.<Boolean>get("ignored"));
+			Predicate ownerPredicate = criteriaBuilder.and(ownerItxType, ownerItxKind, ownerCode, ownerItxNotIgnored, ownerNotIgnored);
+			predicateList.add(ownerPredicate);
+		}
+		//amountBetween
+		if (searchParamsMap.keySet().contains("amountTo") && searchParamsMap.keySet().contains("amountFrom")){
+			try{
+				Join<LsThingState, LsThingValue> amountValue = documentState.join("lsValues", JoinType.LEFT);
+				Predicate amountType = criteriaBuilder.equal(amountValue.<String>get("lsType"), "numericValue");
+				Predicate amountKind = criteriaBuilder.equal(amountValue.<String>get("lsKind"), "amount");
+				Predicate amountBetween = criteriaBuilder.between(amountValue.<BigDecimal>get("numericValue"), new BigDecimal(searchParamsMap.get("amountFrom")), new BigDecimal(searchParamsMap.get("amountTo")));
+				Predicate amountValueNotIgnored = criteriaBuilder.not(amountValue.<Boolean>get("ignored"));
+				Predicate amountBetweenPredicate = criteriaBuilder.and(amountType, amountKind, amountBetween, documentStateNotIgnored, amountValueNotIgnored);
+				predicateList.add(amountBetweenPredicate);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+searchParamsMap.get("amountFrom")+" or "+searchParamsMap.get("amountTo")+" as a number.",e);
+				//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+			}
+		}
+		//amountFrom : LsThingState.LsThingValue type/kind EQUALS "numericValue"/"amount", numericValue >=
+		else if (searchParamsMap.keySet().contains("amountFrom")){
+			try{
+				Join<LsThingState, LsThingValue> amountValue = documentState.join("lsValues", JoinType.LEFT);
+				Predicate amountType = criteriaBuilder.equal(amountValue.<String>get("lsType"), "numericValue");
+				Predicate amountKind = criteriaBuilder.equal(amountValue.<String>get("lsKind"), "amount");
+				Predicate amountFrom = criteriaBuilder.greaterThanOrEqualTo(amountValue.<BigDecimal>get("numericValue"), new BigDecimal(searchParamsMap.get("amountFrom")));
+				Predicate amountValueNotIgnored = criteriaBuilder.not(amountValue.<Boolean>get("ignored"));
+				Predicate amountFromPredicate = criteriaBuilder.and(amountType, amountKind, amountFrom, documentStateNotIgnored, amountValueNotIgnored);
+				predicateList.add(amountFromPredicate);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+searchParamsMap.get("amountFrom")+" as a number.",e);
+				//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+			}
+		}
+		//amountTo : LsThingState.LsThingValue type/kind EQUALS "numericValue"/"amount", numericValue <=
+		else if (searchParamsMap.keySet().contains("amountTo")){
+			try{
+				Join<LsThingState, LsThingValue> amountValue = documentState.join("lsValues", JoinType.LEFT);
+				Predicate amountType = criteriaBuilder.equal(amountValue.<String>get("lsType"), "numericValue");
+				Predicate amountKind = criteriaBuilder.equal(amountValue.<String>get("lsKind"), "amount");
+				Predicate amountTo = criteriaBuilder.lessThanOrEqualTo(amountValue.<BigDecimal>get("numericValue"), new BigDecimal(searchParamsMap.get("amountTo")));
+				Predicate amountValueNotIgnored = criteriaBuilder.not(amountValue.<Boolean>get("ignored"));
+				Predicate amountToPredicate = criteriaBuilder.and(amountType, amountKind, amountTo, documentStateNotIgnored, amountValueNotIgnored);
+				predicateList.add(amountToPredicate);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+searchParamsMap.get("amountTo")+" as a number.",e);
+				//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+			}
+		}
+		//createdDateBetween
+		if (searchParamsMap.keySet().contains("createdDateTo") && searchParamsMap.keySet().contains("createdDateFrom")){
+			try{
+				Predicate createdDateBetween = criteriaBuilder.between(document.<Date>get("recordedDate"), new Date(new Long(searchParamsMap.get("createdDateFrom"))), new Date(new Long(searchParamsMap.get("createdDateTo"))));
+				predicateList.add(createdDateBetween);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+searchParamsMap.get("createdDateFrom")+" or "+searchParamsMap.get("createdDateTo")+" as a date.",e);
+				//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+			}
+		}
+		//createdDateFrom : LsThing recordedDate >= (date in Long)
+		else if (searchParamsMap.keySet().contains("createdDateFrom")){
+			try{
+				Predicate createdDateFrom = criteriaBuilder.greaterThanOrEqualTo(document.<Date>get("recordedDate"), new Date(new Long(searchParamsMap.get("createdDateFrom"))));
+				predicateList.add(createdDateFrom);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+searchParamsMap.get("createdDateFrom")+" as a date.",e);
+				//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+			}
+		}
+		//createdDateTo : LsThing recordedDate <= (date in Long)
+		else if (searchParamsMap.keySet().contains("createdDateTo")){
+			try{
+				Predicate createdDateTo = criteriaBuilder.greaterThanOrEqualTo(document.<Date>get("recordedDate"), new Date(new Long(searchParamsMap.get("createdDateTo"))));
+				predicateList.add(createdDateTo);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+searchParamsMap.get("createdDateTo")+" as a date.",e);
+				//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+			}
+		}		
+		//active : LsThingState.LsThingValue type/kind EQUALS "stringValue"/"active", stringValue LIKE
+		if (searchParamsMap.keySet().contains("active")){
+			Join<LsThingState, LsThingValue> activeValue = documentState.join("lsValues", JoinType.LEFT);
+			Predicate activeType = criteriaBuilder.equal(activeValue.<String>get("lsType"), "stringValue");
+			Predicate activeKind = criteriaBuilder.equal(activeValue.<String>get("lsKind"), "active");
+			Predicate active = criteriaBuilder.like(activeValue.<String>get("stringValue"), "%"+searchParamsMap.get("active")+"%");
+			Predicate activeValueNotIgnored = criteriaBuilder.not(activeValue.<Boolean>get("ignored"));
+			Predicate activePredicate = criteriaBuilder.and(activeType, activeKind, active, documentStateNotIgnored, activeValueNotIgnored);
+			predicateList.add(activePredicate);
+		}
+		//collect all term predicates together
+		if (searchParamsMap.keySet().contains("termType") || searchParamsMap.keySet().contains("daysBeforeTerm") || searchParamsMap.keySet().contains("termDateTo") || searchParamsMap.keySet().contains("termDateFrom")){
+			List<Predicate> termPredicateList = new ArrayList<Predicate>();
+			Join<LsThing, ItxLsThingLsThing> termItx = document.join("secondLsThings", JoinType.LEFT);
+			Join<ItxLsThingLsThing, LsThing> term = termItx.join("secondLsThing", JoinType.LEFT);
+			Join<LsThing, LsThingState> termState = term.join("lsStates", JoinType.LEFT);
+			//SecondLsThingsItx type/kind EQUALS "incorporates"/"documentTerm", secondLsThing => Term
+			Predicate termItxType = criteriaBuilder.equal(termItx.<String>get("lsType"), "incorporates");
+			Predicate termItxKind = criteriaBuilder.equal(termItx.<String>get("lsKind"), "documentTerm");
+			Predicate termItxNotIgnored = criteriaBuilder.not(termItx.<Boolean>get("ignored"));
+			Predicate termLsKind = criteriaBuilder.equal(term.<String>get("lsKind"), "term");
+			Predicate termNotIgnored = criteriaBuilder.not(term.<Boolean>get("ignored"));
+			termPredicateList.add(termItxType);
+			termPredicateList.add(termItxKind);
+			termPredicateList.add(termItxNotIgnored);
+			termPredicateList.add(termLsKind);
+			termPredicateList.add(termNotIgnored);
+			//termType : TermValue type/kind = "codeValue, "termType", codeValue EQUALS
+			if (searchParamsMap.keySet().contains("termType")){
+				Join<LsThingState, LsThingValue> termTypeValue = termState.join("lsValues", JoinType.LEFT);
+				Predicate termTypeType = criteriaBuilder.equal(termTypeValue.<String>get("lsType"), "codeValue");
+				Predicate termTypeKind = criteriaBuilder.equal(termTypeValue.<String>get("lsKind"), "termType");
+				Predicate termType = criteriaBuilder.equal(termTypeValue.<String>get("codeValue"), searchParamsMap.get("termType"));
+				Predicate termTypeNotIgnored = criteriaBuilder.not(termTypeValue.<Boolean>get("ignored"));
+				Predicate termTypePredicate = criteriaBuilder.and(termTypeType, termTypeKind, termType, termTypeNotIgnored);
+				termPredicateList.add(termTypePredicate);
+			}
+			//daysBeforeTerm : TermValue type/kind = "numericValue"/"daysBefore", numericValue =
+			if (searchParamsMap.keySet().contains("daysBeforeTerm")){
+				try{
+					Join<LsThingState, LsThingValue> daysBeforeTermValue = termState.join("lsValues", JoinType.LEFT);
+					Predicate daysBeforeTermType = criteriaBuilder.equal(daysBeforeTermValue.<String>get("lsType"), "numericValue");
+					Predicate daysBeforeTermKind = criteriaBuilder.equal(daysBeforeTermValue.<String>get("lsKind"), "daysBefore");
+					Predicate daysBeforeTerm = criteriaBuilder.equal(daysBeforeTermValue.<BigDecimal>get("numericValue"), new BigDecimal(searchParamsMap.get("daysBeforeTerm")));
+					Predicate daysBeforeTermNotIgnored = criteriaBuilder.not(daysBeforeTermValue.<Boolean>get("ignored"));
+					Predicate daysBeforeTermPredicate = criteriaBuilder.and(daysBeforeTermType, daysBeforeTermKind, daysBeforeTerm, daysBeforeTermNotIgnored);
+					termPredicateList.add(daysBeforeTermPredicate);
+				}catch (Exception e){
+					logger.error("Caught exception trying to parse "+searchParamsMap.get("daysBeforeTerm")+" as a number.",e);
+					//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+				}
+			}
+			//termDateBetween
+			if (searchParamsMap.keySet().contains("termDateTo") && searchParamsMap.keySet().contains("termDateFrom")){
+				try{
+					Join<LsThingState, LsThingValue> termDateValue = termState.join("lsValues", JoinType.LEFT);
+					Predicate termDateType = criteriaBuilder.equal(termDateValue.<String>get("lsType"), "dateValue");
+					Predicate termDateKind = criteriaBuilder.equal(termDateValue.<String>get("lsKind"), "date");
+					Predicate termDateBetween = criteriaBuilder.between(termDateValue.<Date>get("dateValue"), new Date(new Long(searchParamsMap.get("termDateFrom"))), new Date(new Long(searchParamsMap.get("termDateTo"))));
+					Predicate termDateNotIgnored = criteriaBuilder.not(termDateValue.<Boolean>get("ignored"));
+					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateBetween, termDateNotIgnored);
+					termPredicateList.add(termDatePredicate);
+				}catch (Exception e){
+					logger.error("Caught exception trying to parse "+searchParamsMap.get("termDateFrom")+" or "+searchParamsMap.get("termDateTo")+" as a date.",e);
+					//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+				}
+			}
+			//termDateFrom : TermValue type/kind = "dateValue"/"date", dateValue >
+			else if (searchParamsMap.keySet().contains("termDateFrom")){
+				try{
+					Join<LsThingState, LsThingValue> termDateValue = termState.join("lsValues", JoinType.LEFT);
+					Predicate termDateType = criteriaBuilder.equal(termDateValue.<String>get("lsType"), "dateValue");
+					Predicate termDateKind = criteriaBuilder.equal(termDateValue.<String>get("lsKind"), "date");
+					Predicate termDateFrom = criteriaBuilder.greaterThanOrEqualTo(termDateValue.<Date>get("dateValue"), new Date(new Long(searchParamsMap.get("termDateFrom"))));
+					Predicate termDateNotIgnored = criteriaBuilder.not(termDateValue.<Boolean>get("ignored"));
+					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateFrom, termDateNotIgnored);
+					termPredicateList.add(termDatePredicate);
+				}catch (Exception e){
+					logger.error("Caught exception trying to parse "+searchParamsMap.get("termDateFrom")+" as a date.",e);
+					//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+				}
+				
+			}
+			//termDateTo : TermValue type/kind = "dateValue"/"date", dateValue <
+			else if (searchParamsMap.keySet().contains("termDateTo")){
+				try{
+					Join<LsThingState, LsThingValue> termDateValue = termState.join("lsValues", JoinType.LEFT);
+					Predicate termDateType = criteriaBuilder.equal(termDateValue.<String>get("lsType"), "dateValue");
+					Predicate termDateKind = criteriaBuilder.equal(termDateValue.<String>get("lsKind"), "date");
+					Predicate termDateTo = criteriaBuilder.lessThanOrEqualTo(termDateValue.<Date>get("dateValue"), new Date(new Long(searchParamsMap.get("termDateTo"))));
+					Predicate termDateNotIgnored = criteriaBuilder.not(termDateValue.<Boolean>get("ignored"));
+					Predicate termDatePredicate = criteriaBuilder.and(termDateType, termDateKind, termDateTo, termDateNotIgnored);
+					termPredicateList.add(termDatePredicate);
+				}catch (Exception e){
+					logger.error("Caught exception trying to parse "+searchParamsMap.get("termDateFrom")+" as a date.",e);
+					//TODO:throw Exception, catch exception at higher levels. Ask about desired behavior on this error.
+				}
+			}
+			Predicate[] termPredicates = new Predicate[0];
+			termPredicates = termPredicateList.toArray(termPredicates);
+			predicateList.add(criteriaBuilder.and(termPredicates));
+		}
+		//nonSolicit : LsThingValue type/kind = "stringValue"/"nonSolicit", stringValue EQUALS
+		if (searchParamsMap.keySet().contains("nonSolicit")){
+			Join<LsThingState, LsThingValue> nonSolicitValue = documentState.join("lsValues", JoinType.LEFT);
+			Predicate nonSolicitType = criteriaBuilder.equal(nonSolicitValue.<String>get("lsType"), "stringValue");
+			Predicate nonSolicitKind = criteriaBuilder.equal(nonSolicitValue.<String>get("lsKind"), "nonSolicit");
+			Predicate nonSolicit = criteriaBuilder.like(nonSolicitValue.<String>get("stringValue"), searchParamsMap.get("nonSolicit"));
+			Predicate nonSolicitNotIgnored = criteriaBuilder.not(nonSolicitValue.<Boolean>get("ignored"));
+			Predicate nonSolicitPredicate = criteriaBuilder.and(nonSolicitType, nonSolicitKind, nonSolicit, nonSolicitNotIgnored);
+			predicateList.add(nonSolicitPredicate);
+		}
+		//nonTransfer : LsThingValue type/kind = "stringValue"/"nonTransfer", stringValue EQUALS
+		if (searchParamsMap.keySet().contains("nonTransfer")){
+			Join<LsThingState, LsThingValue> nonTransferValue = documentState.join("lsValues", JoinType.LEFT);
+			Predicate nonTransferType = criteriaBuilder.equal(nonTransferValue.<String>get("lsType"), "stringValue");
+			Predicate nonTransferKind = criteriaBuilder.equal(nonTransferValue.<String>get("lsKind"), "nonTransfer");
+			Predicate nonTransfer = criteriaBuilder.like(nonTransferValue.<String>get("stringValue"), searchParamsMap.get("nonTransfer"));
+			Predicate nonTransferNotIgnored = criteriaBuilder.not(nonTransferValue.<Boolean>get("ignored"));
+			Predicate nonTransferPredicate = criteriaBuilder.and(nonTransferType, nonTransferKind, nonTransfer, nonTransferNotIgnored);
+			predicateList.add(nonTransferPredicate);
+		}
+		//restrictedMaterialContains : LsThingValue type/kind = "stringValue"/"restrictedMaterialName", equals ignore case
+		if (searchParamsMap.keySet().contains("restrictedMaterialContains")){
+			Join<LsThingState, LsThingValue> restrictedMaterialValue = documentState.join("lsValues", JoinType.LEFT);
+			Predicate restrictedMaterialType = criteriaBuilder.equal(restrictedMaterialValue.<String>get("lsType"), "stringValue");
+			Predicate restrictedMaterialKind = criteriaBuilder.equal(restrictedMaterialValue.<String>get("lsKind"), "restrictedMaterialName");
+			Predicate restrictedMaterialContains = criteriaBuilder.like(criteriaBuilder.upper(restrictedMaterialValue.<String>get("stringValue")), "%"+searchParamsMap.get("restrictedMaterialContains").toUpperCase()+"%");
+			Predicate restrictedMaterialNotIgnored = criteriaBuilder.not(restrictedMaterialValue.<Boolean>get("ignored"));
+			Predicate restrictedMaterialPredicate = criteriaBuilder.and(restrictedMaterialType, restrictedMaterialKind, restrictedMaterialContains, restrictedMaterialNotIgnored);
+			predicateList.add(restrictedMaterialPredicate);
+		}
+
+		
+		predicates = predicateList.toArray(predicates);
+		criteria.where(criteriaBuilder.and(predicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		lsThingIdList = q.getResultList();
+		logger.debug("Found "+lsThingIdList.size()+" results.");
 		Collection<LsThing> result = new HashSet<LsThing>();
-		for (LsThing lsThing: lsThingList) {
-			//For Protocol Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
+		for (Long lsThingId: lsThingIdList) {
+			LsThing lsThing = LsThing.findLsThing(lsThingId);
+			//For LsThing Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
 			if (lsThing.isDeleted()){
 				logger.debug("removing a deleted lsThing from the results");
 			} else {
+				//Inject parent preferred label to all batch lsThings
+				if (lsThing.getLsType().equals("batch")){
+					LsThingLabel bestParentLabel = LsThingLabel.pickBestLabel(findParentByBatchEquals(lsThing).getLsLabels());
+					lsThing.getLsLabels().add(bestParentLabel);
+				}
 				result.add(lsThing);
 			}
 		}
 		return result;
-	}
-
-
-	private Collection<Long> findDocumentLsThingsByParam(
-			String paramName, String param) {
-		Collection<Long> lsThingIdList = new HashSet<Long>();
-		/*
-		 * List of Search params:
-		 * documentCode - codeName of document LsThing
-		 * documentType - LsKind of document LsThing
-		 * titleContains - like query on labelText of LsThingLabel of document (name_document name)
-		 * project - lsThing
-		 * owner - stringValue_owner in Document
-		 * amountFrom - numericValue_amount in state with lsType=metadata
-		 * amountTo - numericValue_amount in state with lsType=metadata
-		 * createdDateFrom - recordedDate on Document LsThing (MM/dd/yyyy)
-		 * createdDateTo - ???? should be dateValue in lsType = metadata
-		 * active - stringValue_active in metadata state
-		 * termType - another lsThing
-		 * daysBefore - numericValue of TERM lsThing
-		 * termDateFrom - dateValue_date of TERM lsThing
-		 * termDateTo - dateValue_date of TERM lsThing
-		 * missingAnnotation - ????
-		 */
-		if (paramName.equals("documentCode")){
-			List<LsThing> lsThings = LsThing.findLsThingsByCodeNameLike(param).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing : lsThings){
-					lsThingIdList.add(lsThing.getId());
-				}
-			}
-			lsThings.clear();
-		}
-		if (paramName.equals("documentType")){
-			List<LsThing> lsThings = LsThing.findLsThingsByLsKindEquals(param).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing : lsThings){
-					lsThingIdList.add(lsThing.getId());
-				}
-			}
-			lsThings.clear();
-		}
-		if (paramName.equals("titleContains")){
-			List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingLabelsByLabelTextLike(param).getResultList();
-			if (!lsThingLabels.isEmpty()){
-				for (LsThingLabel lsThingLabel : lsThingLabels){
-					lsThingIdList.add(lsThingLabel.getLsThing().getId());
-				}
-			}
-			lsThingLabels.clear();
-		}
-		if (paramName.equals("company")){
-			LsThing company = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
-			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentCompany", company).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing : lsThings){
-					lsThingIdList.add(lsThing.getId());
-				}
-			}
-			lsThings.clear();
-			company.clear();
-		}
-		if (paramName.equals("project")){
-			LsThing project = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
-			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentProject", project).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing : lsThings){
-					lsThingIdList.add(lsThing.getId());
-				}
-			}
-			lsThings.clear();
-			project.clear();
-		}
-		if (paramName.equals("owner")){
-			LsThing owner = LsThing.findLsThingsByCodeNameEquals(param).getSingleResult();
-			List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentOwner", owner).getResultList();
-			if (!lsThings.isEmpty()){
-				for (LsThing lsThing : lsThings){
-					lsThingIdList.add(lsThing.getId());
-				}
-			}
-			lsThings.clear();
-			owner.clear();
-		}
-		if (paramName.equals("amountFrom")) {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals("amount", new BigDecimal(param)).getResultList();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-		if (paramName.equals("amountTo")) {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals("amount", new BigDecimal(param)).getResultList();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-		if (paramName.equals("createdDateFrom")){
-			try{
-				Date date = new Date(new Long(param));
-				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateGreaterThan(date).getResultList();
-				if (!lsThings.isEmpty()){
-					for (LsThing lsThing : lsThings) {
-						lsThingIdList.add(lsThing.getId());
-					}
-				}
-				lsThings.clear();
-			} catch (Exception e){
-				logger.error("Error parsing date: " + param);
-			}
-		}
-		if (paramName.equals("createdDateTo")){
-			try{
-				Date date = new Date(new Long(param));
-				Collection<LsThing> lsThings = LsThing.findLsThingsByRecordedDateLessThan(date).getResultList();
-				if (!lsThings.isEmpty()){
-					for (LsThing lsThing : lsThings) {
-						lsThingIdList.add(lsThing.getId());
-					}
-				}
-				lsThings.clear();
-			} catch (Exception e){
-				logger.error("Error parsing date: " + param);
-			}
-		}
-		if (paramName.equals("active")) {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueLike("active", param).getResultList();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-		if (paramName.equals("termType")){
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByCodeValueEquals(param).getResultList();
-			Collection<LsThing> terms = new HashSet<LsThing>();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					LsThing term = LsThing.findLsThing(lsThingValue.getLsState().getLsThing().getId());
-					terms.add(term);
-				}
-			}
-			lsThingValues.clear();
-			if (!terms.isEmpty()){
-				for (LsThing term: terms){
-					List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
-					if (!lsThings.isEmpty()){
-						for (LsThing lsThing : lsThings){
-							lsThingIdList.add(lsThing.getId());
-						}
-					}
-					lsThings.clear();
-				}
-			}
-			terms.clear();
-		}
-		if (paramName.equals("daysBeforeTerm")){
-			try{
-				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndNumericValueEquals("daysBefore", new BigDecimal(param)).getResultList();
-				Collection<LsThing> terms = new HashSet<LsThing>();
-				if (!lsThingValues.isEmpty()){
-					for(LsThingValue lsThingValue: lsThingValues){
-						terms.add(lsThingValue.getLsState().getLsThing());
-					}
-				}
-				lsThingValues.clear();
-				if (!terms.isEmpty()){
-					for (LsThing term: terms){
-						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
-						if (!lsThings.isEmpty()){
-							for (LsThing lsThing : lsThings){
-								lsThingIdList.add(lsThing.getId());
-							}
-						}
-						lsThings.clear();
-					}
-				}
-				terms.clear();
-			}catch (NumberFormatException e){
-				logger.debug("Couldn't parse the number "+param+" to search for daysBeforeTerm");
-			}
-			
-		}
-		if (paramName.equals("termDateFrom")){
-			try{
-				Date date = new Date(new Long(param));
-				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals("date",date).getResultList();
-				Collection<LsThing> terms = new HashSet<LsThing>();
-				if (!lsThingValues.isEmpty()){
-					for(LsThingValue lsThingValue: lsThingValues){
-						terms.add(lsThingValue.getLsState().getLsThing());
-					}
-				}
-				lsThingValues.clear();
-				if (!terms.isEmpty()){
-					for (LsThing term: terms){
-						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
-						if (!lsThings.isEmpty()){
-							for (LsThing lsThing : lsThings){
-								lsThingIdList.add(lsThing.getId());
-							}
-						}
-						lsThings.clear();
-					}
-				}
-				terms.clear();
-			} catch (Exception e){
-				logger.error("Error parsing date: " + param);
-			}
-		}
-		if (paramName.equals("termDateTo")){
-			try{
-				Date date = new Date(new Long(param));
-				Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals("date",date).getResultList();
-				Collection<LsThing> terms = new HashSet<LsThing>();
-				if (!lsThingValues.isEmpty()){
-					for(LsThingValue lsThingValue: lsThingValues){
-						terms.add(lsThingValue.getLsState().getLsThing());
-					}
-				}
-				lsThingValues.clear();
-				if (!terms.isEmpty()){
-					for (LsThing term: terms){
-						List<LsThing> lsThings = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("incorporates", "documentTerm", term).getResultList();
-						if (!lsThings.isEmpty()){
-							for (LsThing lsThing : lsThings){
-								lsThingIdList.add(lsThing.getId());
-							}
-						}
-						lsThings.clear();
-					}
-				}
-				terms.clear();
-			} catch (Exception e){
-				logger.error("Error parsing date: " + param);
-			}		}
-		if (paramName.equals("nonSolicit")) {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals("nonSolicit", param).getResultList();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-		if (paramName.equals("nonTransfer")) {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEquals("nonTransfer", param).getResultList();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-		if (paramName.equals("restrictedMaterialsContains")) {
-			Collection<LsThingValue> lsThingValues = LsThingValue.findLsThingValuesByLsKindEqualsAndStringValueEqualsIgnoreCase("restrictedMaterialName", param).getResultList();
-			if (!lsThingValues.isEmpty()){
-				for (LsThingValue lsThingValue : lsThingValues) {
-					lsThingIdList.add(lsThingValue.getLsState().getLsThing().getId());
-				}
-			}
-			lsThingValues.clear();
-		}
-		
-		return lsThingIdList;
 	}
 
 
