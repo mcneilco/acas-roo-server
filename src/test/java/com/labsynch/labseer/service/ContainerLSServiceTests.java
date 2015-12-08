@@ -42,6 +42,7 @@ import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
+import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONTokener;
@@ -422,6 +423,17 @@ public class ContainerLSServiceTests {
 		logger.info(ContainerLocationDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
 
+	}
+	
+	@Test
+	@Transactional
+	public void getWellCodesByPlateBarcodes(){
+		List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
+		logger.info("querying with: "+plateBarcodes.toString());
+		Collection<PlateWellDTO> result = containerService.getWellCodesByPlateBarcodes(plateBarcodes);
+		logger.info(PlateWellDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
 	}
 
 }
