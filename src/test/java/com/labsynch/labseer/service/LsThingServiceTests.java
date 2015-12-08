@@ -574,6 +574,36 @@ public class LsThingServiceTests {
 		Assert.assertTrue(resultLsThings2.size() < resultLsThings.size());
 	}
 	
+	@Transactional
+	@Test
+	public void lsThingBrowserSearchByName() {
+		//testing partial match and case sensitivity
+		String query = "CDAP(PEG2k)20";
+		logger.info("Searching with the query: "+ query);
+		Collection<LsThing> resultLsThings = lsThingService.findLsThingsByGenericMetaDataSearch(query);
+//		logger.info("Found: "+ resultLsThings.toString());
+		logger.info("Number of results: "+resultLsThings.size());
+		Assert.assertTrue(resultLsThings.size() > 1);
+		query = "CDAP";
+		logger.info("Searching with the query: "+ query);
+		resultLsThings = lsThingService.findLsThingsByGenericMetaDataSearch(query);
+//		logger.info("Found: "+ resultLsThings.toString());
+		logger.info("Number of results: "+resultLsThings.size());
+		Assert.assertTrue(resultLsThings.size() > 1);
+		query = "cdap(peg2k)20";
+		logger.info("Searching with the query: "+ query);
+		resultLsThings = lsThingService.findLsThingsByGenericMetaDataSearch(query);
+//		logger.info("Found: "+ resultLsThings.toString());
+		logger.info("Number of results: "+resultLsThings.size());
+		Assert.assertTrue(resultLsThings.size() > 1);
+		query = "cdap";
+		logger.info("Searching with the query: "+ query);
+		resultLsThings = lsThingService.findLsThingsByGenericMetaDataSearch(query);
+//		logger.info("Found: "+ resultLsThings.toString());
+		logger.info("Number of results: "+resultLsThings.size());
+		Assert.assertTrue(resultLsThings.size() > 1);
+	}
+	
 	@Test
 	public void getCodeNameFromCodeNameRequest() {
 		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
