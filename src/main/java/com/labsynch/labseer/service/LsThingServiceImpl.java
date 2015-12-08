@@ -983,7 +983,7 @@ public class LsThingServiceImpl implements LsThingService {
 			//parent name
 			Predicate parentNameItxTypePredicate = criteriaBuilder.equal(lsThingSecondItx.<String>get("lsType"), "instantiates");
 			Predicate parentNameItxKindPredicate = criteriaBuilder.equal(lsThingSecondItx.<String>get("lsKind"), "batch_parent");
-			Predicate parentNameLabelPredicate = criteriaBuilder.equal(lsThingSecondLsThingLabel.<String>get("labelText"), term);
+			Predicate parentNameLabelPredicate = criteriaBuilder.like(criteriaBuilder.lower(lsThingSecondLsThingLabel.<String>get("labelText")), "%"+term.toLowerCase()+"%");
 			Predicate lsThingSecondItxNotIgnored = criteriaBuilder.not(lsThingSecondItx.<Boolean>get("ignored"));
 			Predicate lsThingSecondLsThingNotIgnored = criteriaBuilder.not(lsThingSecondLsThing.<Boolean>get("ignored"));
 			Predicate lsThingSecondLsThingLabelNotIgnored = criteriaBuilder.not(lsThingSecondLsThingLabel.<Boolean>get("ignored"));
