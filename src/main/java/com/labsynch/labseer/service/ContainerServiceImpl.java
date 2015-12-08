@@ -30,6 +30,7 @@ import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONTokener;
@@ -327,6 +328,57 @@ public class ContainerServiceImpl implements ContainerService {
 		TypedQuery<ContainerLocationDTO> q = em.createQuery(cq);
 //		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<ContainerLocationDTO> results = q.getResultList();
+		return results;
+	}
+
+	@Override
+	public Collection<PlateWellDTO> getWellCodesByPlateBarcodes(
+			List<String> plateBarcodes) {
+		EntityManager em = Container.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<PlateWellDTO> cq = cb.createQuery(PlateWellDTO.class);
+		Root<Container> plate = cq.from(Container.class);
+		Join<Container, ItxContainerContainer> secondItx = plate.join("secondContainers");
+		Join<Container, ItxContainerContainer> well = secondItx.join("secondContainer");
+		Join<Container, ContainerLabel> plateBarcode = plate.join("lsLabels");
+		Join<Container, ContainerLabel> wellLabel = well.join("lsLabels");
+		
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		Predicate plateBarcodeLsType = cb.equal(plateBarcode.<String>get("lsType"), "barcode");
+		Predicate plateBarcodeLsKind = cb.equal(plateBarcode.<String>get("lsKind"), "barcode");
+		predicateList.add(plateBarcodeLsType);
+		predicateList.add(plateBarcodeLsKind);
+		Expression<String> plateBarcodeLabelText = plateBarcode.<String>get("labelText");
+		Predicate plateBarcodeEquals = plateBarcodeLabelText.in(plateBarcodes);
+		predicateList.add(plateBarcodeEquals);
+		Predicate itxType = cb.equal(secondItx.<String>get("lsType"), "has member");
+		Predicate itxKind = cb.equal(secondItx.<String>get("lsKind"), "plate well");
+		predicateList.add(itxType);
+		predicateList.add(itxKind);
+		Predicate wellLabelLsType = cb.equal(wellLabel.<String>get("lsType"), "name");
+		Predicate wellLabelLsKind = cb.equal(wellLabel.<String>get("lsKind"), "well name");
+		predicateList.add(wellLabelLsType);
+		predicateList.add(wellLabelLsKind);
+		
+		//not ignored predicates
+		Predicate plateNotIgnored = cb.not(plate.<Boolean>get("ignored"));
+		Predicate secondItxNotIgnored = cb.not(secondItx.<Boolean>get("ignored")); 
+		Predicate wellNotIgnored =  cb.not(well.<Boolean>get("ignored"));
+		Predicate plateBarcodeNotIgnored =  cb.not(plateBarcode.<Boolean>get("ignored"));
+		Predicate wellBarcodeNotIgnored =  cb.not(plateBarcode.<Boolean>get("ignored"));
+		predicateList.add(plateNotIgnored);
+		predicateList.add(secondItxNotIgnored);
+		predicateList.add(wellNotIgnored);
+		predicateList.add(plateBarcodeNotIgnored);
+		predicateList.add(wellBarcodeNotIgnored);
+		
+		predicates = predicateList.toArray(predicates);
+		cq.where(cb.and(predicates));
+		cq.multiselect(plateBarcode.<String>get("labelText"), plate.<String>get("codeName"), well.<String>get("codeName"), wellLabel.<String>get("labelText"));
+		TypedQuery<PlateWellDTO> q = em.createQuery(cq);
+//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<PlateWellDTO> results = q.getResultList();
 		return results;
 	}
 
