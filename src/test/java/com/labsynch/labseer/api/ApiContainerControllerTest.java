@@ -34,6 +34,7 @@ import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerCodeDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.WellContentDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -129,6 +130,29 @@ public class ApiContainerControllerTest {
     	for (ContainerCodeDTO result : results){
     		Assert.assertNotNull(result.getCodeName());
     		Assert.assertNotNull(result.getBarcode());
+    	}
+    }
+    
+    @Test
+    @Transactional
+    public void getWellContent() throws Exception{
+    	List<String> wellCodes = new ArrayList<String>();
+		wellCodes.add("\""+Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","well").getResultList().get(0).getCodeName()+"\"");
+		String json = wellCodes.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
+    	for (WellContentDTO result : results){
+    		Assert.assertNotNull(result.getWellCodeName());
     	}
     }
     

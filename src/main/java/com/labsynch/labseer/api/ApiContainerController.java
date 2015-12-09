@@ -30,6 +30,7 @@ import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.service.ContainerService;
 import com.labsynch.labseer.service.GeneThingService;
 import com.labsynch.labseer.service.LsThingService;
@@ -327,6 +328,16 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         Collection<ContainerCodeDTO> searchResults = containerService.getContainerCodesByLabels(labelTexts, containerType, containerKind, labelType, labelKind);
         return new ResponseEntity<String>(ContainerCodeDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/getWellContent", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getWellContent(@RequestBody List<String> wellCodes) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        Collection<WellContentDTO> searchResults = containerService.getWellContent(wellCodes);
+        return new ResponseEntity<String>(WellContentDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
     }
     
 }
