@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.dto.ContainerCodeDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONTokener;
@@ -435,6 +437,43 @@ public class ContainerServiceImpl implements ContainerService {
 //		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<ContainerCodeDTO> results = q.getResultList();
 		return results;
+	}
+
+	@Override
+	public Collection<WellContentDTO> getWellContent(List<String> wellCodes) {
+		EntityManager em = Container.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.WellContentDTO( ";
+		queryString += "well.codeName, ";
+		queryString += "grossMassValue.numericValue, grossMassValue.unitKind,  ";
+		queryString += "netMassValue.numericValue, netMassValue.unitKind, ";
+		queryString += " batchCodeValue.codeValue, batchCodeValue.concentration, batchCodeValue.concUnit,  ";
+		queryString += " solventCodeValue.codeValue,  ";
+		queryString += " physicalStateValue.codeValue,  ";
+		queryString += " volumeValue.numericValue, volumeValue.unitKind ";
+		queryString += " )  ";
+		queryString += " from Container as well ";
+		queryString += makeInnerJoinHql("well.lsStates", "statusContentState", "status", "test compound content");
+		queryString += makeLeftJoinHql("statusContentState.lsValues","grossMassValue", "numericValue","gross mass");
+		queryString += makeLeftJoinHql("statusContentState.lsValues","netMassValue", "numericValue","net mass");
+		queryString += makeLeftJoinHql("statusContentState.lsValues","batchCodeValue", "codeValue","batch code");
+		queryString += makeLeftJoinHql("statusContentState.lsValues","solventCodeValue", "codeValue","solvent code");
+		queryString += makeLeftJoinHql("statusContentState.lsValues","physicalStateValue", "codeValue","physical state");
+		queryString += makeLeftJoinHql("statusContentState.lsValues","volumeValue", "numericValue","volume");
+		queryString += "where ( well.codeName in (:wellCodes) ) and ( well.ignored <> true ) ";
+		TypedQuery<WellContentDTO> q = em.createQuery(queryString, WellContentDTO.class);
+		q.setParameter("wellCodes", wellCodes);
+//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<WellContentDTO> results = q.getResultList();
+		return results;
+	}
+	
+	private String makeLeftJoinHql(String table, String alias, String lsType, String lsKind){
+		String queryString = "left join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
+		return queryString;
+	}
+	private String makeInnerJoinHql(String table, String alias, String lsType, String lsKind){
+		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
+		return queryString;
 	}
 
 }

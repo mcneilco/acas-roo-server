@@ -44,6 +44,7 @@ import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONTokener;
@@ -468,6 +469,33 @@ public class ContainerLSServiceTests {
 		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "plate", "plate", "name", "barcode");
 		logger.info(ContainerCodeDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() == 0);
+	}
+	
+	@Test
+	@Transactional
+	public void getWellContent(){
+		List<String> wellCodes = new ArrayList<String>();
+		wellCodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","well").getResultList().get(0).getCodeName());
+		logger.info("querying with: "+wellCodes.toString());
+		Collection<WellContentDTO> result = containerService.getWellContent(wellCodes);
+		logger.info(WellContentDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
+	}
+	
+	@Test
+	@Transactional
+	public void getManyWellContent(){
+		List<String> wellCodes = new ArrayList<String>();
+		for (Container well : Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","well").getResultList()){
+			wellCodes.add(well.getCodeName());
+		}
+		logger.info("querying with: "+wellCodes.size() + " well codes");
+		Long before = (new Date()).getTime();
+		Collection<WellContentDTO> result = containerService.getWellContent(wellCodes);
+		logger.info(WellContentDTO.toJsonArray(result));
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+		Assert.assertTrue(result.size() > 0);
 	}
 	
 }

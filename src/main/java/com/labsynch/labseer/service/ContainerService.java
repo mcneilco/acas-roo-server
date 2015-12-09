@@ -9,6 +9,7 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.dto.ContainerCodeDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.WellContentDTO;
 
 @Service
 public interface ContainerService {
@@ -39,6 +40,8 @@ public interface ContainerService {
 
 	Collection<ContainerCodeDTO> getContainerCodesByLabels(
 			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind);
+
+	Collection<WellContentDTO> getWellContent(List<String> wellCodes);
 	
 	
 	
