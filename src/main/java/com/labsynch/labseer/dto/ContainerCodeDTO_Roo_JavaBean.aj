@@ -15,12 +15,12 @@ privileged aspect ContainerCodeDTO_Roo_JavaBean {
         this.codeName = codeName;
     }
     
-    public String ContainerCodeDTO.getBarcode() {
-        return this.barcode;
+    public String ContainerCodeDTO.getLabel() {
+        return this.label;
     }
     
-    public void ContainerCodeDTO.setBarcode(String barcode) {
-        this.barcode = barcode;
+    public void ContainerCodeDTO.setLabel(String label) {
+        this.label = label;
     }
     
 }

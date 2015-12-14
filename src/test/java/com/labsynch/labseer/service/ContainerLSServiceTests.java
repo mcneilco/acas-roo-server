@@ -498,4 +498,15 @@ public class ContainerLSServiceTests {
 		Assert.assertTrue(result.size() > 0);
 	}
 	
+	@Test
+	@Transactional
+	public void getContainerCodesWithoutBarcodes(){
+		List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add("hitpick master plate");
+		logger.info("querying with: "+plateBarcodes.toString());
+		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null);
+		logger.info(ContainerCodeDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
+	}
+	
 }

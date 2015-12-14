@@ -104,7 +104,7 @@ public class ApiContainerControllerTest {
     	Collection<ContainerCodeDTO> results = ContainerCodeDTO.fromJsonArrayToContainerCoes(responseJson);
     	for (ContainerCodeDTO result : results){
     		Assert.assertNotNull(result.getCodeName());
-    		Assert.assertNotNull(result.getBarcode());
+    		Assert.assertNotNull(result.getLabel());
     	}
     }
     
@@ -129,7 +129,7 @@ public class ApiContainerControllerTest {
     	Collection<ContainerCodeDTO> results = ContainerCodeDTO.fromJsonArrayToContainerCoes(responseJson);
     	for (ContainerCodeDTO result : results){
     		Assert.assertNotNull(result.getCodeName());
-    		Assert.assertNotNull(result.getBarcode());
+    		Assert.assertNotNull(result.getLabel());
     	}
     }
     

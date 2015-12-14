@@ -10,14 +10,14 @@ import org.springframework.roo.addon.tostring.RooToString;
 public class ContainerCodeDTO {
 	
 	private String codeName;
-	private String barcode;
+	private String label;
 	
 	public ContainerCodeDTO(){
 	}
 	
-	public ContainerCodeDTO(String codeName, String barcode){
+	public ContainerCodeDTO(String codeName, String label){
 		this.codeName = codeName;
-		this.barcode = barcode;
+		this.label = label;
 	}
 	
 
