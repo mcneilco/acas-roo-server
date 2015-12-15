@@ -9,9 +9,14 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +31,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.ItxContainerContainerState;
+import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.ItxLsThingLsThingState;
+import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
@@ -35,7 +47,7 @@ import flexjson.JSONTokener;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext.xml")
+@ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
 public class ContainerLSServiceTests {
 
@@ -43,6 +55,9 @@ public class ContainerLSServiceTests {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+	private ContainerService containerService;
 	
 	@Autowired
 	private ContainerStateService csService;
@@ -318,5 +333,141 @@ public class ContainerLSServiceTests {
 		logger.info(uplogTransaction.toJson());
 		
 	}
+	
+	public Container createTransientContainerStack(){
+		Container container1 = new Container();
+		container1.setCodeName("CONT-01");
+		container1.setLsType("container");
+		container1.setLsKind("test container");
+		container1.setRecordedBy("bfielder");
+		container1.setRecordedDate(new Date());
+		container1.setDeleted(false);
+		container1.setIgnored(false);
+		
+		Container container2 = new Container();
+		container2.setCodeName("CONT-02");
+		container2.setLsType("container");
+		container2.setLsKind("test container");
+		container2.setRecordedBy("bfielder");
+		container2.setRecordedDate(new Date());
+		container2.setDeleted(false);
+		container2.setIgnored(false);
+		
+		ContainerState state1 = new ContainerState();
+		state1.setLsType("test");
+		state1.setLsKind("test");
+		state1.setRecordedBy("bfielder");
+		state1.setRecordedDate(new Date());
+		state1.setDeleted(false);
+		state1.setIgnored(false);
+		state1.setContainer(container1);
+		
+		ContainerValue value1 = new ContainerValue();
+		value1.setLsType("test");
+		value1.setLsKind("test");
+		value1.setRecordedBy("bfielder");
+		value1.setRecordedDate(new Date());
+		value1.setDeleted(false);
+		value1.setIgnored(false);
+		value1.setLsState(state1);
+		
+		Set<ContainerValue> values = new HashSet<ContainerValue>();
+		values.add(value1);
+		Set<ContainerState> states = new HashSet<ContainerState>();
+		states.add(state1);
+		state1.setLsValues(values);
+		container1.setLsStates(states);
+		
+		ItxContainerContainer inc12 = makeItxContainerContainer("ITXCONT-01", "incorporates", "container_container", container1, container2);
+		container1.getSecondContainers().add(inc12);
+		
+		return container1;
+		
+	}
+	
+	public ItxContainerContainer makeItxContainerContainer(String codeName, String lsType, String lsKind, Container firstContainer, Container secondContainer){
+		ItxContainerContainer itx = new ItxContainerContainer();
+		itx.setCodeName(codeName);
+		itx.setLsType(lsType);
+		itx.setLsKind(lsKind);
+		itx.setRecordedBy("bfielder");
+		itx.setRecordedDate(new Date());
+		itx.setFirstContainer(firstContainer);
+		itx.setSecondContainer(secondContainer);
+		ItxContainerContainerState itxState = new ItxContainerContainerState();
+		itxState.setLsType("metadata");
+		itxState.setLsKind("composition");
+		itxState.setItxContainerContainer(itx);
+		itxState.setRecordedBy("bfielder");
+		itxState.setRecordedDate(new Date());
+		ItxContainerContainerValue itxValue = new ItxContainerContainerValue();
+		itxValue.setLsType("numericValue");
+		itxValue.setLsKind("order");
+		itxValue.setRecordedBy("bfielder");
+		itxValue.setRecordedDate(new Date());
+		itxValue.setNumericValue(new BigDecimal(1));
+		itxValue.setLsState(itxState);
+		ItxContainerContainerValue itxValue2 = new ItxContainerContainerValue();
+		itxValue2.setLsType("numericValue");
+		itxValue2.setLsKind("pegylated");
+		itxValue2.setRecordedBy("bfielder");
+		itxValue2.setRecordedDate(new Date());
+		itxValue2.setNumericValue(new BigDecimal(50));
+		itxValue2.setLsState(itxState);
+		Set<ItxContainerContainerState> itxStates = new HashSet<ItxContainerContainerState>();
+		Set<ItxContainerContainerValue> itxValues = new HashSet<ItxContainerContainerValue>();
+		itxValues.add(itxValue);
+		itxValues.add(itxValue2);
+		itxState.setLsValues(itxValues);
+		itxStates.add(itxState);
+		itx.setLsStates(itxStates);
+		return itx;
+	}
+	
+	@Transactional
+	@Test
+	public void saveNestedContainer(){
+		Container container = createTransientContainerStack();
+		Container savedContainer = containerService.saveLsContainer(container);
+		logger.info(savedContainer.toJsonWithNestedFull());
+		Assert.assertNotNull(savedContainer.getLsStates());
+		Assert.assertFalse(savedContainer.getLsStates().isEmpty());
+		for (ContainerState state : savedContainer.getLsStates()){
+			Assert.assertNotNull(state.getLsValues());
+			Assert.assertFalse(state.getLsValues().isEmpty());
+		}
+		Assert.assertNotNull(savedContainer.getSecondContainers());
+		Assert.assertFalse(savedContainer.getSecondContainers().isEmpty());
+		for (ItxContainerContainer itx : savedContainer.getSecondContainers()){
+			Assert.assertNotNull(itx.getLsStates());
+			Assert.assertFalse(itx.getLsStates().isEmpty());
+			for (ItxContainerContainerState state : itx.getLsStates()){
+				Assert.assertNotNull(state.getLsValues());
+				Assert.assertFalse(state.getLsValues().isEmpty());
+			}
+			Assert.assertNotNull(itx.getSecondContainer());
+		}
+		Container jsonParsedSavedContainer = Container.fromJsonToContainer(savedContainer.toJsonWithNestedFull());
+		Assert.assertNotNull(jsonParsedSavedContainer.getLsStates());
+		Assert.assertFalse(jsonParsedSavedContainer.getLsStates().isEmpty());
+		for (ContainerState state : jsonParsedSavedContainer.getLsStates()){
+			Assert.assertNotNull(state.getLsValues());
+			Assert.assertFalse(state.getLsValues().isEmpty());
+		}
+		Assert.assertNotNull(jsonParsedSavedContainer.getSecondContainers());
+		Assert.assertFalse(jsonParsedSavedContainer.getSecondContainers().isEmpty());
+		for (ItxContainerContainer itx : jsonParsedSavedContainer.getSecondContainers()){
+			Assert.assertNotNull(itx.getLsStates());
+			Assert.assertFalse(itx.getLsStates().isEmpty());
+			for (ItxContainerContainerState state : itx.getLsStates()){
+				Assert.assertNotNull(state.getLsValues());
+				Assert.assertFalse(state.getLsValues().isEmpty());
+			}
+			Assert.assertNotNull(itx.getSecondContainer());
+		}
+		
+	}
+	
+	
 
 }

@@ -39,6 +39,8 @@ public interface AutoLabelService {
 	AutoLabelDTO getLastLabel(String thingTypeAndKind, String labelTypeAndKind)
 			throws NonUniqueResultException;
 
+	String getContainerCodeName();
+
 	
 	
 	

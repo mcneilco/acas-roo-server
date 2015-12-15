@@ -10,8 +10,5 @@ privileged aspect Container_Roo_Jpa_Entity {
     
     declare @type: Container: @Entity;
     
-    public Container.new() {
-        super();
-    }
 
 }
