@@ -298,7 +298,7 @@ public class ContainerServiceImpl implements ContainerService {
 		updateLsStates(container, updatedContainer);
 
 		Set<ItxContainerContainer> firstContainers = new HashSet<ItxContainerContainer>();
-		firstContainers.addAll(updatedContainer.getFirstContainers());
+//		firstContainers.addAll(updatedContainer.getFirstContainers());
 		logger.debug("found number of first interactions: " + firstContainers.size());
 		
 		if(container.getFirstContainers() != null){
@@ -325,7 +325,7 @@ public class ContainerServiceImpl implements ContainerService {
 		}
 		
 		Set<ItxContainerContainer> secondContainers = new HashSet<ItxContainerContainer>();
-		secondContainers.addAll(updatedContainer.getSecondContainers());
+//		secondContainers.addAll(updatedContainer.getSecondContainers());
 //		secondContainers.addAll(ItxContainerContainer.findItxContainerContainersBySecondContainer(updatedContainer).getResultList());
 		logger.debug("found number of second interactions: " + secondContainers.size());
 

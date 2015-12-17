@@ -652,4 +652,22 @@ public class ContainerLSServiceTests {
 		Assert.assertTrue(result.size() > 0);
 	}
 	
+	@Test
+	@Transactional
+	public void updateContainer(){
+		String json = "{\"codeName\":\"CONT-3075\",\"deleted\":false,\"id\":6147,\"ignored\":false,\"lsKind\":\"CUSTOM_LOCATION\","
+				+ "\"lsLabels\":[{\"deleted\":false,\"id\":3075,\"ignored\":false,\"labelText\":\"screen system plate\",\"lsKind\":\"common\",\"lsTransaction\":1,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_common\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"bob\",\"recordedDate\":1449581762000,\"version\":0}],"
+				+ "\"lsStates\":[{\"deleted\":false,\"id\":6151,\"ignored\":true,\"lsKind\":\"location information\",\"lsTransaction\":1,\"lsType\":\"metadata\",\"lsTypeAndKind\":\"metadata_location information\","
+					+ "\"lsValues\":[{\"codeKind\":\"screen system plate\",\"codeOrigin\":\"CMGLOCATION\",\"codeType\":\"screen system plate\",\"codeTypeAndKind\":\"screen system plate_screen system plate\",\"codeValue\":\"screen system plate\",\"deleted\":false,\"id\":24602,\"ignored\":false,\"lsKind\":\"CUSTOM_LOCATION\",\"lsTransaction\":1,\"lsType\":\"codeValue\",\"lsTypeAndKind\":\"codeValue_CUSTOM_LOCATION\",\"modifiedBy\":\"\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":false,\"recordedBy\":\"bob\",\"recordedDate\":1449581762000,\"unitKind\":\"NA\",\"unitTypeAndKind\":\"null_NA\",\"version\":0}]"
+				+ ",\"modifiedBy\":\"\",\"recordedBy\":\"bob\",\"recordedDate\":1449581762000,\"version\":0}]"
+				+ ",\"lsTransaction\":1,\"lsType\":\"storage\",\"lsTypeAndKind\":\"storage_CUSTOM_LOCATION\",\"modifiedBy\":\"\",\"recordedBy\":\"bob\",\"recordedDate\":1449581762000,\"version\":0}";
+		Container container = Container.fromJsonToContainer(json);
+		Container updatedContainer = containerService.updateContainer(container);
+		Assert.assertTrue(updatedContainer.getLsStates().iterator().next().isIgnored());
+		Assert.assertTrue(updatedContainer.getVersion() == container.getVersion() + 1);
+		Container fetchedContainer = Container.findContainer(container.getId());
+		Assert.assertTrue(updatedContainer.getVersion() == fetchedContainer.getVersion());
+	}
+	
+	
 }
