@@ -21,12 +21,6 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxContainerContainerValue;
-import com.labsynch.labseer.domain.ItxLsThingLsThing;
-import com.labsynch.labseer.domain.ItxLsThingLsThingState;
-import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
-import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONTokener;
@@ -229,7 +223,7 @@ public class ContainerServiceImpl implements ContainerService {
 					logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
 					if (itxContainerContainer.getFirstContainer().getId() == null){
 						logger.debug("saving new nested Container" + itxContainerContainer.getFirstContainer().toJson());
-						Container nestedContainer = saveContainer(itxContainerContainer.getFirstContainer());
+						Container nestedContainer = saveLsContainer(itxContainerContainer.getFirstContainer());
 						itxContainerContainer.setFirstContainer(nestedContainer);
 					}
 					itxContainerContainer.setSecondContainer(newContainer);
@@ -275,41 +269,73 @@ public class ContainerServiceImpl implements ContainerService {
 				if (containerLabel.getId() == null){
 					ContainerLabel newContainerLabel = new ContainerLabel(containerLabel);
 					newContainerLabel.setContainer(updatedContainer);
-					newContainerLabel.persist();						
+					newContainerLabel.persist();
+					updatedContainer.getLsLabels().add(newContainerLabel);
 				} else {
-					ContainerLabel.update(containerLabel).merge();
+					ContainerLabel updatedLabel = ContainerLabel.update(containerLabel);
+					updatedContainer.getLsLabels().add(updatedLabel);
 				}
 			}	
 		} else {
-			logger.info("No container labels to save");	
+			logger.info("No container labels to update");	
 		}
+		updateLsStates(container, updatedContainer);
 
-		if (container.getLsStates() != null){
-			for(ContainerState containerState : container.getLsStates()){
-				if (containerState.getId() == null){
-					ContainerState newContainerState = new ContainerState(containerState);
-					newContainerState.setContainer(updatedContainer);
-					newContainerState.persist();		
-					containerState.setId(newContainerState.getId());
-				} else {
-					ContainerState updatedContainerState = ContainerState.update(containerState);
-					logger.debug("updatedContainerState: " + updatedContainerState.toJson());
-				}
-
-				if (containerState.getLsValues() != null){
-					for(ContainerValue containerValue : containerState.getLsValues()){
-						if (containerValue.getId() == null){
-							containerValue.setLsState(ContainerState.findContainerState(containerState.getId()));
-							containerValue.persist();							
-						} else {
-							ContainerValue updatedContainerValue = ContainerValue.update(containerValue);
-							logger.debug("updatedContainerValue: " + updatedContainerValue.toJson());
-						}
-					}				
-				} else {
-					logger.info("No container values to save");
+		Set<ItxContainerContainer> firstContainers = new HashSet<ItxContainerContainer>();
+		firstContainers.addAll(updatedContainer.getFirstContainers());
+		logger.debug("found number of first interactions: " + firstContainers.size());
+		
+		if(container.getFirstContainers() != null){
+			//there are itx's
+			for (ItxContainerContainer itxContainerContainer : container.getFirstContainers()){
+				ItxContainerContainer updatedItxContainerContainer;
+				if (itxContainerContainer.getId() == null){
+					//need to save a new itx
+					logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
+					updateNestedFirstContainer(itxContainerContainer);
+					itxContainerContainer.setSecondContainer(updatedContainer);
+					updatedItxContainerContainer = saveItxContainerContainer(itxContainerContainer);
+					firstContainers.add(updatedItxContainerContainer);
+				}else {
+					//old itx needs to be updated
+					updateNestedFirstContainer(itxContainerContainer);
+					itxContainerContainer.setSecondContainer(updatedContainer);
+					updatedItxContainerContainer = ItxContainerContainer.update(itxContainerContainer);
+					updateItxLsStates(itxContainerContainer, updatedItxContainerContainer);
+					firstContainers.add(updatedItxContainerContainer);
 				}
 			}
+			updatedContainer.setFirstContainers(firstContainers);
+		}
+		
+		Set<ItxContainerContainer> secondContainers = new HashSet<ItxContainerContainer>();
+		secondContainers.addAll(updatedContainer.getSecondContainers());
+//		secondContainers.addAll(ItxContainerContainer.findItxContainerContainersBySecondContainer(updatedContainer).getResultList());
+		logger.debug("found number of second interactions: " + secondContainers.size());
+
+		
+		if(container.getSecondContainers() != null){
+			//there are itx's
+			for (ItxContainerContainer itxContainerContainer : container.getSecondContainers()){
+				logger.debug("updating itxContainerContainer");
+				ItxContainerContainer updatedItxContainerContainer;
+				if (itxContainerContainer.getId() == null){
+					//need to save a new itx
+					logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
+					updateNestedSecondContainer(itxContainerContainer);
+					itxContainerContainer.setFirstContainer(updatedContainer);
+					updatedItxContainerContainer = saveItxContainerContainer(itxContainerContainer);
+					secondContainers.add(updatedItxContainerContainer);
+				}else {
+					//old itx needs to be updated
+					updateNestedSecondContainer(itxContainerContainer);
+					itxContainerContainer.setFirstContainer(updatedContainer);
+					updatedItxContainerContainer = ItxContainerContainer.update(itxContainerContainer);
+					updateItxLsStates(itxContainerContainer, updatedItxContainerContainer);
+					secondContainers.add(updatedItxContainerContainer);
+				}
+			}
+			updatedContainer.setSecondContainers(secondContainers);
 		}
 
 		return Container.findContainer(updatedContainer.getId());
@@ -361,6 +387,119 @@ public class ContainerServiceImpl implements ContainerService {
 			newItxContainerContainer.setLsStates(lsStates);
 		}
 		return newItxContainerContainer;
+	}
+	
+	public void updateLsStates(Container jsonContainer, Container updatedContainer){
+		if(jsonContainer.getLsStates() != null){
+			for(ContainerState lsThingState : jsonContainer.getLsStates()){
+				ContainerState updatedContainerState;
+				if (lsThingState.getId() == null){
+					updatedContainerState = new ContainerState(lsThingState);
+					updatedContainerState.setContainer(updatedContainer);
+					updatedContainerState.persist();
+					updatedContainer.getLsStates().add(updatedContainerState);
+					logger.debug("persisted new lsThing state " + updatedContainerState.getId());
+
+				} else {
+					updatedContainerState = ContainerState.update(lsThingState);
+					updatedContainer.getLsStates().add(updatedContainerState);
+
+					logger.debug("updated lsThing state " + updatedContainerState.getId());
+
+				}
+				if (lsThingState.getLsValues() != null){
+					for(ContainerValue lsThingValue : lsThingState.getLsValues()){
+						if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedContainerState);
+						ContainerValue updatedContainerValue;
+						if (lsThingValue.getId() == null){
+							updatedContainerValue = ContainerValue.create(lsThingValue);
+							updatedContainerValue.setLsState(ContainerState.findContainerState(updatedContainerState.getId()));
+							updatedContainerValue.persist();
+							updatedContainerState.getLsValues().add(updatedContainerValue);
+						} else {
+							updatedContainerValue = ContainerValue.update(lsThingValue);
+							logger.debug("updated lsThing value " + updatedContainerValue.getId());
+						}
+						logger.debug("checking lsThingValue " + updatedContainerValue.toJson());
+
+					}	
+				} else {
+					logger.debug("No lsThing values to update");
+				}
+			}
+		}
+	}
+	
+	private void updateNestedFirstContainer(ItxContainerContainer itxContainerContainer) {
+		Container updatedNestedContainer;
+		if (itxContainerContainer.getFirstContainer().getId() == null){
+			//need to save a new nested lsthing
+			logger.debug("saving new nested Container" + itxContainerContainer.getFirstContainer().toJson());
+			updatedNestedContainer = saveContainer(itxContainerContainer.getFirstContainer());
+			itxContainerContainer.setFirstContainer(updatedNestedContainer);
+		}
+		else{
+			//just need to update the old nested lsThing inside the new itx
+			updatedNestedContainer = Container.update(itxContainerContainer.getFirstContainer());
+			updateLsStates(itxContainerContainer.getFirstContainer(), updatedNestedContainer);
+			itxContainerContainer.setFirstContainer(updatedNestedContainer);
+		}
+	}
+	
+	private void updateNestedSecondContainer(ItxContainerContainer itxContainerContainer) {
+		Container updatedNestedContainer;
+		if (itxContainerContainer.getSecondContainer().getId() == null){
+			//need to save a new nested lsthing
+			logger.debug("saving new nested Container" + itxContainerContainer.getSecondContainer().toJson());
+			updatedNestedContainer = saveContainer(itxContainerContainer.getSecondContainer());
+			itxContainerContainer.setSecondContainer(updatedNestedContainer);
+		}
+		else{
+			//just need to update the old nested lsThing inside the new itx
+			updatedNestedContainer = Container.update(itxContainerContainer.getSecondContainer());
+			updateLsStates(itxContainerContainer.getSecondContainer(), updatedNestedContainer);
+			itxContainerContainer.setSecondContainer(updatedNestedContainer);
+		}
+	}
+	
+	private void updateItxLsStates(ItxContainerContainer jsonItxContainerContainer, ItxContainerContainer updatedItxContainerContainer){
+		if(jsonItxContainerContainer.getLsStates() != null){
+			for(ItxContainerContainerState itxContainerContainerState : jsonItxContainerContainer.getLsStates()){
+				ItxContainerContainerState updatedItxContainerContainerState;
+				if (itxContainerContainerState.getId() == null){
+					updatedItxContainerContainerState = new ItxContainerContainerState(itxContainerContainerState);
+					updatedItxContainerContainerState.setItxContainerContainer(updatedItxContainerContainer);
+					updatedItxContainerContainerState.persist();
+					updatedItxContainerContainer.getLsStates().add(updatedItxContainerContainerState);
+				} else {
+					updatedItxContainerContainerState = ItxContainerContainerState.update(itxContainerContainerState);
+					updatedItxContainerContainerState.setItxContainerContainer(updatedItxContainerContainer);
+					updatedItxContainerContainerState.merge();
+					updatedItxContainerContainer.getLsStates().add(updatedItxContainerContainerState);
+					logger.debug("updated itxContainerContainer state " + updatedItxContainerContainerState.getId());
+
+				}
+				if (itxContainerContainerState.getLsValues() != null){
+					for(ItxContainerContainerValue itxContainerContainerValue : itxContainerContainerState.getLsValues()){
+						ItxContainerContainerValue updatedItxContainerContainerValue;
+						if (itxContainerContainerValue.getId() == null){
+							updatedItxContainerContainerValue = ItxContainerContainerValue.create(itxContainerContainerValue);
+							updatedItxContainerContainerValue.setLsState(ItxContainerContainerState.findItxContainerContainerState(updatedItxContainerContainerState.getId()));
+							updatedItxContainerContainerValue.persist();
+							updatedItxContainerContainerState.getLsValues().add(updatedItxContainerContainerValue);
+						} else {
+							updatedItxContainerContainerValue = ItxContainerContainerValue.update(itxContainerContainerValue);
+							updatedItxContainerContainerValue.setLsState(updatedItxContainerContainerState);
+							updatedItxContainerContainerValue.merge();
+							updatedItxContainerContainerState.getLsValues().add(updatedItxContainerContainerValue);
+							logger.debug("updated itxContainerContainer value " + updatedItxContainerContainerValue.getId());
+						}
+					}	
+				} else {
+					logger.debug("No itxContainerContainer values to update");
+				}
+			}
+		}
 	}
 
 }
