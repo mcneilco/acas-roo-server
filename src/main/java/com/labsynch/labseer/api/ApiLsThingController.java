@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
+import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
@@ -55,7 +57,7 @@ public class ApiLsThingController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			String result = LsThing.toJsonArray(lsThingService.findLsThingsByGenericMetaDataSearch(lsType, searchQuery));
+			String result = LsThing.toJsonArray(lsThingService.findLsThingsByGenericMetaDataSearch(searchQuery, lsType));
 			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 		} catch(Exception e){
 			String error = e.getMessage() + e.getStackTrace();
@@ -425,26 +427,14 @@ public class ApiLsThingController {
     }
     
     @RequestMapping(value = "/validate", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> validateLsThing(@RequestParam(value = "uniqueName", required = false) Boolean uniqueName,
-    		@RequestParam(value = "uniqueInteractions", required = false) Boolean uniqueInteractions,
-    		@RequestParam(value = "orderMatters", required = false) Boolean orderMatters,
-    		@RequestParam(value = "forwardAndReverseAreSame", required = false) Boolean forwardAndReverseAreSame,
+    public ResponseEntity<String> validateLsThing(
     		@RequestBody String json) {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         
-    	boolean checkUniqueName = false;
-    	boolean checkUniqueInteractions = false;
-    	boolean checkOrderMatters = false;
-    	boolean checkForwardAndReverseAreSame = false;
-    	if (uniqueName!=null) checkUniqueName = uniqueName;
-    	if (uniqueInteractions!=null) checkUniqueInteractions = uniqueInteractions;
-    	if (orderMatters!=null) checkOrderMatters = orderMatters;
-    	if (forwardAndReverseAreSame!=null) checkForwardAndReverseAreSame = forwardAndReverseAreSame;
-    	
-    	LsThing lsThing = LsThing.fromJsonToLsThing(json);
-    	
-        ArrayList<ErrorMessage> errorMessages = lsThingService.validateLsThing(lsThing, checkUniqueName, checkUniqueInteractions, checkOrderMatters, checkForwardAndReverseAreSame);
+    	LsThingValidationDTO validationDTO = LsThingValidationDTO.fromJsonToLsThingValidationDTO(json);
+    	logger.debug("FROM THE LSTHING VALIDATE CONTROLLER: "+validationDTO.toJson());
+        ArrayList<ErrorMessage> errorMessages = lsThingService.validateLsThing(validationDTO);
         if (!errorMessages.isEmpty()){
         	return new ResponseEntity<String>(ErrorMessage.toJsonArray(errorMessages), headers, HttpStatus.CONFLICT);
         }
@@ -467,8 +457,9 @@ public class ApiLsThingController {
         headers.add("Content-Type", "application/json");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
-        LsThing lsThing = LsThing.fromJsonToLsThing(json);
+        LsThing lsThing = null;
 		try {
+			lsThing = LsThing.fromJsonToLsThing(json);
     		lsThing = lsThingService.updateLsThing(lsThing);
     	} catch (Exception e) {
     		logger.error("----from the controller----"
@@ -510,6 +501,24 @@ public class ApiLsThingController {
       return new ResponseEntity<String>(headers, HttpStatus.OK);
   }
   
+  @RequestMapping(value = "/gene/v1/updateGeneEntities", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> updateGeneEntities(
+		  @RequestParam(value = "entrezGenesFile", required = true) String entrezGenesFile,
+		  @RequestParam(value = "geneHistoryFile", required = true) String geneHistoryFile,
+		  @RequestParam(value = "taxonomyId", required = true) String taxonomyId
+		  ) {
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json; charset=utf-8");
+      logger.info("loading genes from tab delimited file: " + entrezGenesFile);
+      try {
+		geneThingService.updateEntrezGenes(entrezGenesFile, geneHistoryFile, taxonomyId);
+      } catch (IOException e) {
+          logger.error("IOException: " + e.toString());
+          return new ResponseEntity<String>("ERROR: IOError. Unable to load file. " + entrezGenesFile, headers, HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+      }
+      return new ResponseEntity<String>(headers, HttpStatus.OK);
+  }
+  
   @RequestMapping(value = "/documentmanagersearch", method = RequestMethod.GET)
   public ResponseEntity<java.lang.String> documentManagerSearch(@RequestParam Map<String,String> searchParamsMap){
 	  HttpHeaders headers = new HttpHeaders();
@@ -535,5 +544,160 @@ public class ApiLsThingController {
       }
       return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
   }
+  
+  @RequestMapping(value = "/{lsType}/{lsKind}/deleteBatch/{idOrCodeName}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> deleteLsThingBatchByIdOrCodeName(@PathVariable("lsType") String lsType, 
+  		@PathVariable("lsKind") String lsKind,
+  		@PathVariable("idOrCodeName") String idOrCodeName) {
+  	logger.debug("----from the LsThing DELETE controller----");
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json");
+      ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+      boolean errorsFound = false;
+      LsThing lsThing;
+      if(SimpleUtil.isNumeric(idOrCodeName)) {
+			lsThing = LsThing.findLsThing(Long.valueOf(idOrCodeName));
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(idOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				lsThing = null;
+				ErrorMessage error = new ErrorMessage();
+	            error.setErrorLevel("error");
+	            error.setMessage("lsThing:" + idOrCodeName +" not found");
+	            errors.add(error);
+	            errorsFound = true;
+			}
+		}
+      if (errorsFound) {
+          return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+      }
+      if (lsThing != null){
+    	  if (lsType.equals("batch") && lsThing.getLsType().equals("batch")){
+    		  try{
+    	      		lsThingService.deleteBatch(lsThing);
+    	      	} catch(Exception ex) {
+    	      		ErrorMessage error = new ErrorMessage();
+    	      		error.setErrorLevel("error");
+    	      		error.setMessage(ex.getMessage());
+    	      		errors.add(error);
+    	      		errorsFound = true;
+    	      	}
+          }else{
+        	  ErrorMessage error = new ErrorMessage();
+              error.setErrorLevel("error");
+              error.setMessage("LsThing lsType provided is not batch");
+              errors.add(error);
+              errorsFound = true;
+        	  
+          }
+      }
+      if (errorsFound) {
+          return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+          return new ResponseEntity<String>(headers, HttpStatus.OK);
+      }
+  }
+  
+  @RequestMapping(value = "/{lsType}/{lsKind}/deleteParent/{idOrCodeName}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> deleteLsThingParentByIdOrCodeName(@PathVariable("lsType") String lsType, 
+  		@PathVariable("lsKind") String lsKind,
+  		@PathVariable("idOrCodeName") String idOrCodeName) {
+  	logger.debug("----from the LsThing DELETE controller----");
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json");
+      ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+      boolean errorsFound = false;
+      LsThing lsThing;
+      if(SimpleUtil.isNumeric(idOrCodeName)) {
+			lsThing = LsThing.findLsThing(Long.valueOf(idOrCodeName));
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(idOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				lsThing = null;
+				ErrorMessage error = new ErrorMessage();
+	            error.setErrorLevel("error");
+	            error.setMessage("lsThing:" + idOrCodeName +" not found");
+	            errors.add(error);
+	            errorsFound = true;
+			}
+		}
+      if (errorsFound) {
+          return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+      }
+      if (lsThing != null){
+    	  if (lsType.equals("parent") && lsThing.getLsType().equals("parent")){
+    		  try{
+    	      		lsThingService.deleteParent(lsThing);
+    	      	} catch(Exception ex) {
+    	      		ErrorMessage error = new ErrorMessage();
+    	      		error.setErrorLevel("error");
+    	      		error.setMessage(ex.getMessage());
+    	      		errors.add(error);
+    	      		errorsFound = true;
+    	      	}
+          }else{
+        	  ErrorMessage error = new ErrorMessage();
+              error.setErrorLevel("error");
+              error.setMessage("LsThing lsType provided is not parent");
+              errors.add(error);
+              errorsFound = true;
+        	  
+          }
+      }
+      if (errorsFound) {
+          return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+      } else {
+          return new ResponseEntity<String>(headers, HttpStatus.OK);
+      }
+  }
+  
+  @RequestMapping(value = "/{lsType}/{lsKind}/checkDependencies/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
+  public ResponseEntity<String> checkDependencies(@PathVariable("lsType") String lsType, 
+	  		@PathVariable("lsKind") String lsKind,
+	  		@PathVariable("idOrCodeName") String idOrCodeName) {
+	  logger.debug("----from the LsThing Dependency Check controller----");
+	  HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json");
+      ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+      boolean errorsFound = false;
+      LsThing lsThing;
+      if(SimpleUtil.isNumeric(idOrCodeName)) {
+      	lsThing = LsThing.findLsThing(Long.valueOf(idOrCodeName));
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(idOrCodeName).getSingleResult();
+			} catch(Exception ex) {
+				lsThing = null;
+				ErrorMessage error = new ErrorMessage();
+	            error.setErrorLevel("error");
+	            error.setMessage("parent:" + idOrCodeName +" not found");
+	            errors.add(error);
+	            errorsFound = true;
+			}
+		}
+      DependencyCheckDTO result;
+      if (lsType.equals("parent") && lsThing.getLsType().equals("parent")){
+    	  result = lsThingService.checkParentDependencies(lsThing);
+      }else if(lsType.equals("batch") && lsThing.getLsType().equals("batch")){
+    	  result = lsThingService.checkBatchDependencies(lsThing);
+      }else{
+    	  result = null;
+    	  ErrorMessage error = new ErrorMessage();
+          error.setErrorLevel("error");
+          error.setMessage("LsType provided is not batch or parent");
+          errors.add(error);
+          errorsFound = true;
+    	  
+      }
+      if (errorsFound) {
+          return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+      } else {
+          return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+      }
+  }
+  
+  
 	
 }

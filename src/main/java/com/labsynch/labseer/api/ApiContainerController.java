@@ -240,7 +240,7 @@ public class ApiContainerController {
 //    }
 
     @Transactional
-    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+    @RequestMapping(value = { "/{id}", "/" }, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Container container) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");

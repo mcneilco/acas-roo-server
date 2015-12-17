@@ -4,6 +4,7 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.web.ItxLsThingLsThingController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,30 @@ privileged aspect ItxLsThingLsThingController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET)
     public String ItxLsThingLsThingController.findItxLsThingLsThingsByCodeNameEquals(@RequestParam("codeName") String codeName, Model uiModel) {
         uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsByCodeNameEquals(codeName).getResultList());
+        return "itxlsthinglsthings/list";
+    }
+    
+    @RequestMapping(params = { "find=ByFirstLsThing", "form" }, method = RequestMethod.GET)
+    public String ItxLsThingLsThingController.findItxLsThingLsThingsByFirstLsThingForm(Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findAllLsThings());
+        return "itxlsthinglsthings/findItxLsThingLsThingsByFirstLsThing";
+    }
+    
+    @RequestMapping(params = "find=ByFirstLsThing", method = RequestMethod.GET)
+    public String ItxLsThingLsThingController.findItxLsThingLsThingsByFirstLsThing(@RequestParam("firstLsThing") LsThing firstLsThing, Model uiModel) {
+        uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsByFirstLsThing(firstLsThing).getResultList());
+        return "itxlsthinglsthings/list";
+    }
+    
+    @RequestMapping(params = { "find=BySecondLsThing", "form" }, method = RequestMethod.GET)
+    public String ItxLsThingLsThingController.findItxLsThingLsThingsBySecondLsThingForm(Model uiModel) {
+        uiModel.addAttribute("lsthings", LsThing.findAllLsThings());
+        return "itxlsthinglsthings/findItxLsThingLsThingsBySecondLsThing";
+    }
+    
+    @RequestMapping(params = "find=BySecondLsThing", method = RequestMethod.GET)
+    public String ItxLsThingLsThingController.findItxLsThingLsThingsBySecondLsThing(@RequestParam("secondLsThing") LsThing secondLsThing, Model uiModel) {
+        uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(secondLsThing).getResultList());
         return "itxlsthinglsthings/list";
     }
     

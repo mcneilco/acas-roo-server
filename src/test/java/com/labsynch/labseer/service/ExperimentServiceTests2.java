@@ -9,7 +9,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.TypedQuery;
+
 import org.apache.commons.collections.CollectionUtils;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -322,6 +325,19 @@ public class ExperimentServiceTests2 {
 	    } catch (Exception e) {
 	        logger.error(e.toString());
 	    }
+	}
+	
+	@Test
+	@Transactional
+	public void getCompoundDataViaGeneIdQuery(){
+		String json = "{\"advancedFilter\":\"\",\"advancedFilterSQL\":null,\"batchCodeList\":[],\"booleanFilter\":\"and\",\"experimentCodeList\":[\"EXPT-00000806\"],\"searchFilters\":[]}";
+	    ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
+//		Collection<AnalysisGroupValueDTO> dtos = AnalysisGroupValue.findAnalysisGroupValueDTO( searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), true).getResultList(); 
+	    List<AnalysisGroupValueDTO> agData = experimentService.getFilteredAGData(searchRequest,true);
+		logger.info(AnalysisGroupValueDTO.toJsonArray(agData));
+		for (AnalysisGroupValueDTO dto : agData){
+			Assert.assertTrue(dto.getProtocolId() != 0L);
+		}
 	}
 	
 

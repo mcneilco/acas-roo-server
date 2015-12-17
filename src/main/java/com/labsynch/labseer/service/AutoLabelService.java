@@ -33,6 +33,14 @@ public interface AutoLabelService {
 
 	String getLsThingCodeName(String lsTypeAndKind);
 
+	void decrementLabelSequence(String thingTypeAndKind, String labelTypeAndKind)
+			throws NonUniqueResultException;
+
+	AutoLabelDTO getLastLabel(String thingTypeAndKind, String labelTypeAndKind)
+			throws NonUniqueResultException;
+
+	String getContainerCodeName();
+
 	
 	
 	

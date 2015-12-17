@@ -1,5 +1,11 @@
 package com.labsynch.labseer.domain;
 
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
+
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,11 +24,14 @@ import javax.persistence.OneToMany;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -33,8 +42,10 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findItxLsThingLsThingsByCodeNameEquals" } )
+@RooJpaActiveRecord(finders = { "findItxLsThingLsThingsByCodeNameEquals", "findItxLsThingLsThingsByFirstLsThing", "findItxLsThingLsThingsBySecondLsThing" })
 public class ItxLsThingLsThing extends AbstractThing {
+
+	private static final Logger logger = LoggerFactory.getLogger(ItxLsThingLsThing.class);
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
@@ -54,7 +65,6 @@ public class ItxLsThingLsThing extends AbstractThing {
     	this.setRecordedDate(itxLsThingLsThing.getRecordedDate());
     	this.setIgnored(itxLsThingLsThing.isIgnored());
     	this.setDeleted(itxLsThingLsThing.isDeleted());
-    	this.setVersion(itxLsThingLsThing.getVersion());
     	this.setLsTransaction(itxLsThingLsThing.getLsTransaction());
     	this.setModifiedBy(itxLsThingLsThing.getModifiedBy());
     	this.setModifiedDate(itxLsThingLsThing.getModifiedDate());
@@ -62,13 +72,24 @@ public class ItxLsThingLsThing extends AbstractThing {
     	this.setLsType(itxLsThingLsThing.getLsType());
     	this.setLsKind(itxLsThingLsThing.getLsKind());
     	this.setLsTypeAndKind(itxLsThingLsThing.getLsTypeAndKind());
-        this.firstLsThing = itxLsThingLsThing.getFirstLsThing();
-        this.secondLsThing = itxLsThingLsThing.getSecondLsThing();
+        this.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
+        this.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());
     }
-    
+        
     public static ItxLsThingLsThing update(ItxLsThingLsThing itxLsThingLsThing) {
-    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
-    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	ItxLsThingLsThing updatedItxLsThingLsThing = ItxLsThingLsThing.findItxLsThingLsThing(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setRecordedBy(itxLsThingLsThing.getRecordedBy());
+    	updatedItxLsThingLsThing.setRecordedDate(itxLsThingLsThing.getRecordedDate());
+    	updatedItxLsThingLsThing.setIgnored(itxLsThingLsThing.isIgnored());
+    	updatedItxLsThingLsThing.setDeleted(itxLsThingLsThing.isDeleted());
+    	updatedItxLsThingLsThing.setLsTransaction(itxLsThingLsThing.getLsTransaction());
+    	updatedItxLsThingLsThing.setModifiedBy(itxLsThingLsThing.getModifiedBy());
+    	updatedItxLsThingLsThing.setCodeName(itxLsThingLsThing.getCodeName());
+    	updatedItxLsThingLsThing.setLsType(itxLsThingLsThing.getLsType());
+    	updatedItxLsThingLsThing.setLsKind(itxLsThingLsThing.getLsKind());
+    	updatedItxLsThingLsThing.setLsTypeAndKind(itxLsThingLsThing.getLsTypeAndKind());
+    	updatedItxLsThingLsThing.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
+    	updatedItxLsThingLsThing.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());    	
     	updatedItxLsThingLsThing.setModifiedDate(new Date());
     	updatedItxLsThingLsThing.setLsStates(itxLsThingLsThing.getLsStates());
     	updatedItxLsThingLsThing.merge();
@@ -76,18 +97,54 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
     
     public static ItxLsThingLsThing updateNoMerge(ItxLsThingLsThing itxLsThingLsThing) {
-    	ItxLsThingLsThing updatedItxLsThingLsThing = new ItxLsThingLsThing(itxLsThingLsThing);
-    	updatedItxLsThingLsThing.setId(itxLsThingLsThing.getId());
+    	ItxLsThingLsThing updatedItxLsThingLsThing = ItxLsThingLsThing.findItxLsThingLsThing(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setRecordedBy(itxLsThingLsThing.getRecordedBy());
+    	updatedItxLsThingLsThing.setRecordedDate(itxLsThingLsThing.getRecordedDate());
+    	updatedItxLsThingLsThing.setIgnored(itxLsThingLsThing.isIgnored());
+    	updatedItxLsThingLsThing.setDeleted(itxLsThingLsThing.isDeleted());
+    	updatedItxLsThingLsThing.setLsTransaction(itxLsThingLsThing.getLsTransaction());
+    	updatedItxLsThingLsThing.setModifiedBy(itxLsThingLsThing.getModifiedBy());
+    	updatedItxLsThingLsThing.setCodeName(itxLsThingLsThing.getCodeName());
+    	updatedItxLsThingLsThing.setLsType(itxLsThingLsThing.getLsType());
+    	updatedItxLsThingLsThing.setLsKind(itxLsThingLsThing.getLsKind());
+    	updatedItxLsThingLsThing.setLsTypeAndKind(itxLsThingLsThing.getLsTypeAndKind());
+    	updatedItxLsThingLsThing.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
+    	updatedItxLsThingLsThing.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());    	
     	updatedItxLsThingLsThing.setModifiedDate(new Date());
     	updatedItxLsThingLsThing.setLsStates(itxLsThingLsThing.getLsStates());
         return updatedItxLsThingLsThing;
     }
     
-    public String toJson() {
-        return new JSONSerializer().exclude("*.class", "lsStates.itxLsThingLsThing")
-            	.transform(new ExcludeNulls(), void.class)
-        		.serialize(this);
+    public static ItxLsThingLsThing updateNoStates(ItxLsThingLsThing itxLsThingLsThing) {
+    	ItxLsThingLsThing updatedItxLsThingLsThing = ItxLsThingLsThing.findItxLsThingLsThing(itxLsThingLsThing.getId());
+    	updatedItxLsThingLsThing.setRecordedBy(itxLsThingLsThing.getRecordedBy());
+    	updatedItxLsThingLsThing.setRecordedDate(itxLsThingLsThing.getRecordedDate());
+    	updatedItxLsThingLsThing.setIgnored(itxLsThingLsThing.isIgnored());
+    	updatedItxLsThingLsThing.setDeleted(itxLsThingLsThing.isDeleted());
+    	updatedItxLsThingLsThing.setLsTransaction(itxLsThingLsThing.getLsTransaction());
+    	updatedItxLsThingLsThing.setModifiedBy(itxLsThingLsThing.getModifiedBy());
+    	updatedItxLsThingLsThing.setCodeName(itxLsThingLsThing.getCodeName());
+    	updatedItxLsThingLsThing.setLsType(itxLsThingLsThing.getLsType());
+    	updatedItxLsThingLsThing.setLsKind(itxLsThingLsThing.getLsKind());
+    	updatedItxLsThingLsThing.setLsTypeAndKind(itxLsThingLsThing.getLsTypeAndKind());
+    	updatedItxLsThingLsThing.firstLsThing = LsThing.findLsThing(itxLsThingLsThing.getFirstLsThing().getId());
+    	updatedItxLsThingLsThing.secondLsThing = LsThing.findLsThing(itxLsThingLsThing.getSecondLsThing().getId());    	
+    	updatedItxLsThingLsThing.setModifiedDate(new Date());
+    	updatedItxLsThingLsThing.merge();
+    	
+    	logger.debug("------------ Just updated the itxLsThingLsthing: ");
+    	if(logger.isDebugEnabled()) logger.debug(updatedItxLsThingLsThing.toJson());
+    	
+        return updatedItxLsThingLsThing;
     }
+    
+//    @Transactional
+//    public String toJson() {
+//        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class", "lsStates.itxLsThingLsThing", "lsStates.lsValues.lsState")
+//            	.transform(new ExcludeNulls(), void.class)
+//        		.serialize(this);
+//    }
+    
     
     public static ItxLsThingLsThing fromJsonToItxLsThingLsThing(String json) {
         return new JSONDeserializer<ItxLsThingLsThing>()
@@ -97,7 +154,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     }
     
     public static String toJsonArray(Collection<ItxLsThingLsThing> collection) {
-        return new JSONSerializer().exclude("*.class")
+        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class", "lsStates.itxLsThingLsThing", "lsStates.lsValues.lsState")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
@@ -162,6 +219,58 @@ public class ItxLsThingLsThing extends AbstractThing {
         return q;
     }
     
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEqualsAndOrderEquals(String lsType, String lsKind, LsThing secondLsThing, int order){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"JOIN o.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND itxvalue.numericValue = :order " +
+				"AND o.secondLsThing = :secondLsThing ";
+        
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("order", new BigDecimal(order));
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndFirstLsThingEqualsAndSecondLsThingEquals(String lsType, String lsKind, LsThing firstLsThing, LsThing secondLsThing){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND o.firstLsThing = :firstLsThing " +
+				"AND o.secondLsThing = :secondLsThing ";
+        
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("firstLsThing", firstLsThing);        
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
     public int retrieveOrder() {
     	EntityManager em = ItxLsThingLsThing.entityManager();
 		String query = "SELECT v.numericValue FROM ItxLsThingLsThingValue v " +
@@ -183,17 +292,110 @@ public class ItxLsThingLsThing extends AbstractThing {
         }
     	return order;
     }
-    
+
     public int grabItxOrder() {
-		Set<ItxLsThingLsThingState> lsStates = this.getLsStates();
-		for (ItxLsThingLsThingState lsState : lsStates){
-			Set<ItxLsThingLsThingValue> lsValues = lsState.getLsValues();
-			for (ItxLsThingLsThingValue lsValue : lsValues){
-				if (lsValue.getLsKind().equals("order")){
-					return lsValue.getNumericValue().intValue();
-				}
-			}
-		}
-		return 0;
+        Set<ItxLsThingLsThingState> lsStates = this.getLsStates();
+        for (ItxLsThingLsThingState lsState : lsStates) {
+            Set<ItxLsThingLsThingValue> lsValues = lsState.getLsValues();
+            for (ItxLsThingLsThingValue lsValue : lsValues) {
+                if (lsValue.getLsKind().equals("order")) {
+                    return lsValue.getNumericValue().intValue();
+                }
+            }
+        }
+        return 0;
+    }
+    
+    public String toJson() {
+        return new JSONSerializer()
+        	.include("lsStates.lsValues")
+        	.exclude("*.class", "lsStates.itxLsThingLsThing")
+        	.transform(new ExcludeNulls(), void.class)
+        	.serialize(this);
+    }
+
+	public String toJsonWithNestedFull() {
+		return new JSONSerializer()
+				.exclude("*.class", "lsStates.lsValues.lsState", "lsStates.itxLsThingLsThing", "lsLabels.itxLsThingLsThing")
+				.include("lsStates.lsValues", 
+						"firstLsThing.lsStates.lsValues", 
+						"firstLsThing.lsLabels", 
+						"secondLsThing.lsStates.lsValues",
+						"secondLsThing.lsLabels")
+				.transform(new ExcludeNulls(), void.class)
+				.serialize(this);
+	}
+
+	public String toPrettyJson() {
+        return new JSONSerializer()
+        		.exclude("*.class", "lsStates.itxLsThingLsThing")
+            	.include("lsStates.lsValues")
+        		.prettyPrint(true)
+        		.transform(new ExcludeNulls(), void.class)
+        		.serialize(this);
+
+	}
+
+	public String toJsonWithNestedStubs() {
+        return new JSONSerializer().
+        		exclude("*.class").
+        		include("lsStates.lsValues", 
+						"firstLsThing.lsLabels", 
+						"secondLsThing.lsLabels").
+        		transform(new ExcludeNulls(), void.class).
+        		serialize(this);
+
+	}
+
+	public String toJsonStub() {
+        return new JSONSerializer()
+    	.include()
+    	.exclude("*.class")
+    	.transform(new ExcludeNulls(), void.class)
+    	.serialize(this);
+	}
+
+	public static String toJsonArrayWithNestedFull(
+			Collection<ItxLsThingLsThing> updatedItxLsThingLsThings) {
+        return new JSONSerializer().
+        		exclude("*.class").
+        		include("lsStates.lsValues", 
+						"firstLsThing.lsStates.lsValues", 
+						"firstLsThing.lsLabels", 
+						"secondLsThing.lsStates.lsValues",
+						"secondLsThing.lsLabels").
+        		transform(new ExcludeNulls(), void.class).serialize(updatedItxLsThingLsThings);
+
+	}
+
+	public static String toPrettyJsonArray(
+			Collection<ItxLsThingLsThing> updatedItxLsThingLsThings) {
+        return new JSONSerializer().
+        		exclude("*.class").
+        		include("lsStates.lsValues", 
+						"firstLsThing.lsStates.lsValues", 
+						"firstLsThing.lsLabels", 
+						"secondLsThing.lsStates.lsValues",
+						"secondLsThing.lsLabels").
+		        prettyPrint(true).
+        		transform(new ExcludeNulls(), void.class).serialize(updatedItxLsThingLsThings);
+	}
+
+	public static String toJsonArrayWithNestedStub(
+			Collection<ItxLsThingLsThing> updatedItxLsThingLsThings) {
+        return new JSONSerializer().
+        		exclude("*.class").
+        		include("lsStates.lsValues", 
+						"firstLsThing.lsLabels", 
+						"secondLsThing.lsLabels").
+        		transform(new ExcludeNulls(), void.class).serialize(updatedItxLsThingLsThings);
+	}
+
+	public static String toJsonArrayStub(
+			Collection<ItxLsThingLsThing> updatedItxLsThingLsThings) {
+        return new JSONSerializer().
+        		exclude("*.class").
+        		include("lsStates.lsValues").
+        		transform(new ExcludeNulls(), void.class).serialize(updatedItxLsThingLsThings);
 	}
 }
