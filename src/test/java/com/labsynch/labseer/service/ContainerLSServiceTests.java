@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -654,6 +655,7 @@ public class ContainerLSServiceTests {
 	
 	@Test
 	@Transactional
+	@Rollback(value=false)
 	public void updateContainer(){
 		String json = "{\"codeName\":\"CONT-3075\",\"deleted\":false,\"id\":6147,\"ignored\":false,\"lsKind\":\"CUSTOM_LOCATION\","
 				+ "\"lsLabels\":[{\"deleted\":false,\"id\":3075,\"ignored\":false,\"labelText\":\"screen system plate\",\"lsKind\":\"common\",\"lsTransaction\":1,\"lsType\":\"name\",\"lsTypeAndKind\":\"name_common\",\"physicallyLabled\":false,\"preferred\":true,\"recordedBy\":\"bob\",\"recordedDate\":1449581762000,\"version\":0}],"

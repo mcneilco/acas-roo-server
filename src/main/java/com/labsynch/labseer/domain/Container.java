@@ -75,13 +75,13 @@ public class Container extends AbstractThing {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "container", fetch =  FetchType.LAZY)
 	private Set<ContainerState> lsStates = new HashSet<ContainerState>();
 
-	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "secondContainer", fetch =  FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(cascade = {}, mappedBy = "secondContainer", fetch =  FetchType.LAZY)
 	private Set<ItxContainerContainer> firstContainers = new HashSet<ItxContainerContainer>();
 
-	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "firstContainer", fetch =  FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(cascade = {}, mappedBy = "firstContainer", fetch =  FetchType.LAZY)
 	private Set<ItxContainerContainer> secondContainers = new HashSet<ItxContainerContainer>();
 
-	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "container", fetch =  FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(cascade = {}, mappedBy = "container", fetch =  FetchType.LAZY)
 	private Set<ItxSubjectContainer> subjects = new HashSet<ItxSubjectContainer>();
 
 	public String toJson() {
