@@ -56,12 +56,31 @@ public class ContainerState extends AbstractState {
         this.setIgnored(containerState.isIgnored());
     }
 
-    public static com.labsynch.labseer.domain.ContainerState update(com.labsynch.labseer.domain.ContainerState containerState) {
-        ContainerState updatedContainerState = new JSONDeserializer<ContainerState>().use(null, ArrayList.class).use("values", ContainerState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(containerState.toJson(), ContainerState.findContainerState(containerState.getId()));
-        updatedContainerState.setModifiedDate(new Date());
-        updatedContainerState.merge();
-        return updatedContainerState;
-    }
+//    public static com.labsynch.labseer.domain.ContainerState update(com.labsynch.labseer.domain.ContainerState containerState) {
+//        ContainerState updatedContainerState = new JSONDeserializer<ContainerState>().use(null, ArrayList.class).use("values", ContainerState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(containerState.toJson(), ContainerState.findContainerState(containerState.getId()));
+//        updatedContainerState.setModifiedDate(new Date());
+//        updatedContainerState.merge();
+//        return updatedContainerState;
+//    }
+    
+    public static ContainerState update(ContainerState lsState) {
+		ContainerState updatedContainerState = ContainerState.findContainerState(lsState.getId());
+		if (updatedContainerState != null){
+			updatedContainerState.setRecordedBy(lsState.getRecordedBy());
+			updatedContainerState.setRecordedDate(lsState.getRecordedDate());
+			updatedContainerState.setLsTransaction(lsState.getLsTransaction());
+			updatedContainerState.setModifiedBy(lsState.getModifiedBy());
+			updatedContainerState.setModifiedDate(new Date());
+			updatedContainerState.setLsType(lsState.getLsType());
+			updatedContainerState.setLsKind(lsState.getLsKind());
+			updatedContainerState.setIgnored(lsState.isIgnored());
+			updatedContainerState.merge();
+			return updatedContainerState;
+		} else {
+			return null;
+		}
+		
+	}
 
     @Transactional
     public String toJson() {
