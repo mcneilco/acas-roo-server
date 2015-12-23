@@ -955,6 +955,37 @@ public class AnalysisGroupValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+	
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIdList(Set<Long> idList, Boolean onlyPublicData) {
+		if (idList == null ) throw new IllegalArgumentException("The idList argument is required");
+		if (onlyPublicData == null ) throw new IllegalArgumentException("The onlyPublicData argument is required");
+
+		EntityManager em = entityManager();
+		
+		
+		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
+				"WHERE agv.id in (:idList) AND agv.ignored IS NOT :ignored ";
+		
+		String hsqlQueryPublic = "SELECT agv FROM AnalysisGroupValue AS agv " +
+				"WHERE agv.id in (:idList) AND agv.ignored IS NOT :ignored " +
+				"AND agv.publicData IS :publicData ";
+
+		if (onlyPublicData){
+			TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQueryPublic, AnalysisGroupValue.class);
+			q.setParameter("idList", idList);
+			q.setParameter("ignored", true);
+			q.setParameter("publicData", true);
+			logger.debug("query running: hsqlQueryPublic   " + hsqlQueryPublic);
+			return q;
+			
+		} else {
+			TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
+			q.setParameter("idList", idList);
+			q.setParameter("ignored", true);
+			logger.debug("query running: hsqlQuery   " + hsqlQuery);
+			return q;			
+		}
+	}
 
 	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(Long analysisGroupId, String stateType,
 			String stateKind, String valueType, String valueKind) {

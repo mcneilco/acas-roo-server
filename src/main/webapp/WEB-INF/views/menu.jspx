@@ -234,10 +234,10 @@
             <menu:item id="i_analysisgroupstate_new" messageCode="global_menu_new" url="/analysisgroupstates?form" z="TZjDw5kV1aMgHZc7aH+dV+wGFNY="/>
             <menu:item id="i_analysisgroupstate_list" messageCode="global_menu_list" url="/analysisgroupstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="+c6SxQdchuqmmpTuPtgYFpUl2NI="/>
             <menu:item id="fi_analysisgroupstate_analysisgroup" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroup&amp;form" z="2+M5p4bKObib0x+zWt6V9//EhSU="/>
+            <menu:item id="fi_analysisgroupstate_analysisgroupandlstypeequalsandlskindequalsandignorednot" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot&amp;form" z="4Oh740mFWIyjcwBiwN5lw9aVp3A="/>
             <menu:item id="fi_analysisgroupstate_lstransactionequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTransactionEquals&amp;form" z="vGHNTtmEd9lwxe3fSyQxzne+vyY="/>
             <menu:item id="fi_analysisgroupstate_lstypeandkindequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTypeAndKindEquals&amp;form" z="heUs1Kgk6b7vaf9Xgj7fPtEps0U="/>
             <menu:item id="fi_analysisgroupstate_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="8yJM+iV1XzrrXDwRfpPtPGM3aQ8="/>
-            <menu:item id="fi_analysisgroupstate_analysisgroupandlstypeequalsandlskindequalsandignorednot" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot&amp;form" z="4Oh740mFWIyjcwBiwN5lw9aVp3A="/>
         </menu:category>
         <menu:category id="c_itxsubjectcontainervalue" z="p7hvR3xhX4SPAM9hlDwQBFuAa7M=">
             <menu:item id="i_itxsubjectcontainervalue_new" messageCode="global_menu_new" url="/itxsubjectcontainervalues?form" z="LIS5Tx5kNDL+DroDTf1heIb29xQ="/>
@@ -253,6 +253,9 @@
         <menu:category id="c_author" z="DETG4XqcVC9sb/BVL/ybUSG8lUM=">
             <menu:item id="i_author_new" messageCode="global_menu_new" url="/authors?form" z="e6WikSiFx46UnQunBmCd54pmrYE="/>
             <menu:item id="i_author_list" messageCode="global_menu_list" url="/authors?page=1&amp;size=${empty param.size ? 10 : param.size}" z="/71/+sYxLDw3jeyTZyEHzZ9CQQQ="/>
+            <menu:item id="fi_author_activationkeyandemailaddress" messageCode="global_menu_find" url="/authors?find=ByActivationKeyAndEmailAddress&amp;form" z="dgxuoGzO3W8UP8TfwWk8eIxUSO8="/>
+            <menu:item id="fi_author_emailaddress" messageCode="global_menu_find" url="/authors?find=ByEmailAddress&amp;form" z="IpLDZFbmjaRzpOMH/1TxEanN5bY="/>
+            <menu:item id="fi_author_username" messageCode="global_menu_find" url="/authors?find=ByUserName&amp;form" z="5HYW0rrXepMBuslnaPQKUc1sxDw="/>
         </menu:category>
         <menu:category id="c_thingpagearchive" z="Poh907U09OYMInXDxCLHjmgu4v8=">
             <menu:item id="i_thingpagearchive_new" messageCode="global_menu_new" url="/thingpagearchives?form" z="DSXfkjU0T0xjJ2VoGdbj00jaelg="/>
