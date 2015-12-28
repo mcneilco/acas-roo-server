@@ -3,13 +3,13 @@
 
 package com.labsynch.labseer.dto;
 
-import com.labsynch.labseer.dto.ContainerCodeDTO;
+import com.labsynch.labseer.dto.CodeLabelDTO;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-privileged aspect ContainerCodeDTO_Roo_ToString {
+privileged aspect CodeLabelDTO_Roo_ToString {
     
-    public String ContainerCodeDTO.toString() {
+    public String CodeLabelDTO.toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     

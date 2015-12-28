@@ -7,15 +7,15 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-public class ContainerCodeDTO {
+public class CodeLabelDTO {
 	
 	private String codeName;
 	private String label;
 	
-	public ContainerCodeDTO(){
+	public CodeLabelDTO(){
 	}
 	
-	public ContainerCodeDTO(String codeName, String label){
+	public CodeLabelDTO(String codeName, String label){
 		this.codeName = codeName;
 		this.label = label;
 	}

@@ -47,7 +47,7 @@ import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
-import com.labsynch.labseer.dto.ContainerCodeDTO;
+import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
@@ -588,8 +588,8 @@ public class ContainerLSServiceTests {
 		List<String> plateBarcodes = new ArrayList<String>();
 		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
 		logger.info("querying with: "+plateBarcodes.toString());
-		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null);
-		logger.info(ContainerCodeDTO.toJsonArray(result));
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null);
+		logger.info(CodeLabelDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
 	}
 	
@@ -599,8 +599,8 @@ public class ContainerLSServiceTests {
 		List<String> plateBarcodes = new ArrayList<String>();
 		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
 		logger.info("querying with: "+plateBarcodes.toString());
-		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "container", "plate", "barcode", "barcode");
-		logger.info(ContainerCodeDTO.toJsonArray(result));
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "container", "plate", "barcode", "barcode");
+		logger.info(CodeLabelDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
 	}
 	
@@ -610,8 +610,8 @@ public class ContainerLSServiceTests {
 		List<String> plateBarcodes = new ArrayList<String>();
 		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
 		logger.info("querying with: "+plateBarcodes.toString());
-		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "plate", "plate", "name", "barcode");
-		logger.info(ContainerCodeDTO.toJsonArray(result));
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "plate", "plate", "name", "barcode");
+		logger.info(CodeLabelDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() == 0);
 	}
 	
@@ -648,8 +648,8 @@ public class ContainerLSServiceTests {
 		List<String> plateBarcodes = new ArrayList<String>();
 		plateBarcodes.add("hitpick master plate");
 		logger.info("querying with: "+plateBarcodes.toString());
-		Collection<ContainerCodeDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null);
-		logger.info(ContainerCodeDTO.toJsonArray(result));
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null);
+		logger.info(CodeLabelDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
 	}
 	
