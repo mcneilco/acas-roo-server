@@ -32,7 +32,7 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ContainerCodeDTO;
+import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 
@@ -101,8 +101,8 @@ public class ApiContainerControllerTest {
     			.andReturn().getResponse();
     	String responseJson = response.getContentAsString();
     	logger.info(responseJson);
-    	Collection<ContainerCodeDTO> results = ContainerCodeDTO.fromJsonArrayToContainerCoes(responseJson);
-    	for (ContainerCodeDTO result : results){
+    	Collection<CodeLabelDTO> results = CodeLabelDTO.fromJsonArrayToContainerCoes(responseJson);
+    	for (CodeLabelDTO result : results){
     		Assert.assertNotNull(result.getCodeName());
     		Assert.assertNotNull(result.getLabel());
     	}
@@ -126,8 +126,8 @@ public class ApiContainerControllerTest {
     			.andReturn().getResponse();
     	String responseJson = response.getContentAsString();
     	logger.info(responseJson);
-    	Collection<ContainerCodeDTO> results = ContainerCodeDTO.fromJsonArrayToContainerCoes(responseJson);
-    	for (ContainerCodeDTO result : results){
+    	Collection<CodeLabelDTO> results = CodeLabelDTO.fromJsonArrayToContainerCoes(responseJson);
+    	for (CodeLabelDTO result : results){
     		Assert.assertNotNull(result.getCodeName());
     		Assert.assertNotNull(result.getLabel());
     	}

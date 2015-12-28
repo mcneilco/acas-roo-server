@@ -31,7 +31,7 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
-import com.labsynch.labseer.dto.ContainerCodeDTO;
+import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
@@ -125,12 +125,12 @@ public class ContainerServiceImpl implements ContainerService {
 	private Container saveContainer(Container container) {
 		Container newContainer = new Container(container);
 		newContainer.persist();
-		logger.debug("container: " + container.toJson());
+		if (logger.isDebugEnabled()) logger.debug("container: " + container.toJson());
 		if (container.getLsLabels() != null){
 			for(ContainerLabel containerLabel : container.getLsLabels()){
 				ContainerLabel newContainerLabel = new ContainerLabel(containerLabel);
 				newContainerLabel.setContainer(newContainer);
-				logger.debug("here is the newcontainerLabel before save: " + newContainerLabel.toJson());
+				if (logger.isDebugEnabled()) logger.debug("here is the newcontainerLabel before save: " + newContainerLabel.toJson());
 				newContainerLabel.persist();	
 			}			
 		} else {
@@ -141,18 +141,18 @@ public class ContainerServiceImpl implements ContainerService {
 			for(ContainerState LsState : container.getLsStates()){
 				ContainerState newLsState = new ContainerState(LsState);
 				newLsState.setContainer(newContainer);
-				logger.debug("here is the newLsState before save: " + newLsState.toJson());
+				if (logger.isDebugEnabled()) logger.debug("here is the newLsState before save: " + newLsState.toJson());
 				newLsState.persist();
-				logger.debug("persisted the newLsState: " + newLsState.toJson());
+				if (logger.isDebugEnabled()) logger.debug("persisted the newLsState: " + newLsState.toJson());
 				if (LsState.getLsValues() != null){
 					for(ContainerValue containerValue : LsState.getLsValues()){
-						logger.debug("containerValue: " + containerValue.toJson());
+						if (logger.isDebugEnabled()) logger.debug("containerValue: " + containerValue.toJson());
 						containerValue.setLsState(newLsState);
 						containerValue.persist();
-						logger.debug("persisted the containerValue: " + containerValue.toJson());
+						if (logger.isDebugEnabled()) logger.debug("persisted the containerValue: " + containerValue.toJson());
 					}				
 				} else {
-					logger.debug("No container values to save");
+					if (logger.isDebugEnabled()) logger.debug("No container values to save");
 				}
 			}
 		}
@@ -184,7 +184,7 @@ public class ContainerServiceImpl implements ContainerService {
 	
 	@Override
 	public Container saveLsContainer(Container container){
-		logger.debug("incoming meta container: " + container.toJson() + "\n");
+		if (logger.isDebugEnabled()) logger.debug("incoming meta container: " + container.toJson() + "\n");
 		Container newContainer = new Container(container);
 		if (newContainer.getCodeName() == null){
 			if (newContainer.getLsTypeAndKind() == null) newContainer.setLsTypeAndKind(newContainer.getLsType()+"_"+newContainer.getLsKind());
@@ -196,13 +196,13 @@ public class ContainerServiceImpl implements ContainerService {
 			for(ContainerLabel containerLabel : container.getLsLabels()){
 				ContainerLabel newContainerLabel = new ContainerLabel(containerLabel);
 				newContainerLabel.setContainer(newContainer);
-				logger.debug("here is the newcontainerLabel before save: " + newContainerLabel.toJson());
+				if (logger.isDebugEnabled()) logger.debug("here is the newcontainerLabel before save: " + newContainerLabel.toJson());
 				newContainerLabel.persist();
 				lsLabels.add(newContainerLabel);
 			}
 			newContainer.setLsLabels(lsLabels);
 		} else {
-			logger.debug("No container labels to save");	
+			if (logger.isDebugEnabled()) logger.debug("No container labels to save");	
 		}
 
 		if (container.getLsStates() != null){
@@ -210,22 +210,22 @@ public class ContainerServiceImpl implements ContainerService {
 			for(ContainerState lsState : container.getLsStates()){
 				ContainerState newLsState = new ContainerState(lsState);
 				newLsState.setContainer(newContainer);
-				logger.debug("here is the newLsState before save: " + newLsState.toJson());
+				if (logger.isDebugEnabled()) logger.debug("here is the newLsState before save: " + newLsState.toJson());
 				newLsState.persist();
-				logger.debug("persisted the newLsState: " + newLsState.toJson());
+				if (logger.isDebugEnabled()) logger.debug("persisted the newLsState: " + newLsState.toJson());
 				if (lsState.getLsValues() != null){
 					Set<ContainerValue> lsValues = new HashSet<ContainerValue>();
 					for(ContainerValue containerValue : lsState.getLsValues()){
-						logger.debug("containerValue: " + containerValue.toJson());
+						if (logger.isDebugEnabled()) logger.debug("containerValue: " + containerValue.toJson());
 						ContainerValue newContainerValue = new ContainerValue(containerValue);
 						newContainerValue.setLsState(newLsState);
 						newContainerValue.persist();
 						lsValues.add(newContainerValue);
-						logger.debug("persisted the containerValue: " + newContainerValue.toJson());
+						if (logger.isDebugEnabled()) logger.debug("persisted the containerValue: " + newContainerValue.toJson());
 					}
 					newLsState.setLsValues(lsValues);
 				} else {
-					logger.debug("No container values to save");
+					if (logger.isDebugEnabled()) logger.debug("No container values to save");
 				}
 				lsStates.add(newLsState);
 			}
@@ -236,9 +236,9 @@ public class ContainerServiceImpl implements ContainerService {
 			Set<ItxContainerContainer> firstContainers = new HashSet<ItxContainerContainer>();
 			for (ItxContainerContainer itxContainerContainer : container.getFirstContainers()){
 				if (itxContainerContainer.getId() == null){
-					logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
+					if (logger.isDebugEnabled()) logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
 					if (itxContainerContainer.getFirstContainer().getId() == null){
-						logger.debug("saving new nested Container" + itxContainerContainer.getFirstContainer().toJson());
+						if (logger.isDebugEnabled()) logger.debug("saving new nested Container" + itxContainerContainer.getFirstContainer().toJson());
 						Container nestedContainer = saveLsContainer(itxContainerContainer.getFirstContainer());
 						itxContainerContainer.setFirstContainer(nestedContainer);
 					}
@@ -256,9 +256,9 @@ public class ContainerServiceImpl implements ContainerService {
 			Set<ItxContainerContainer> secondContainers = new HashSet<ItxContainerContainer>();
 			for (ItxContainerContainer itxContainerContainer : container.getSecondContainers()){
 				if (itxContainerContainer.getId() == null){
-					logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
+					if (logger.isDebugEnabled()) logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
 					if (itxContainerContainer.getSecondContainer().getId() == null){
-						logger.debug("saving new nested Container: " + itxContainerContainer.getSecondContainer().toJson());
+						if (logger.isDebugEnabled()) logger.debug("saving new nested Container: " + itxContainerContainer.getSecondContainer().toJson());
 						Container nestedContainer = saveContainer(itxContainerContainer.getSecondContainer());
 						itxContainerContainer.setSecondContainer(nestedContainer);
 					}
@@ -299,7 +299,7 @@ public class ContainerServiceImpl implements ContainerService {
 
 		Set<ItxContainerContainer> firstContainers = new HashSet<ItxContainerContainer>();
 //		firstContainers.addAll(updatedContainer.getFirstContainers());
-		logger.debug("found number of first interactions: " + firstContainers.size());
+		if (logger.isDebugEnabled()) logger.debug("found number of first interactions: " + firstContainers.size());
 		
 		if(container.getFirstContainers() != null){
 			//there are itx's
@@ -307,7 +307,7 @@ public class ContainerServiceImpl implements ContainerService {
 				ItxContainerContainer updatedItxContainerContainer;
 				if (itxContainerContainer.getId() == null){
 					//need to save a new itx
-					logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
+					if (logger.isDebugEnabled()) logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
 					updateNestedFirstContainer(itxContainerContainer);
 					itxContainerContainer.setSecondContainer(updatedContainer);
 					updatedItxContainerContainer = saveItxContainerContainer(itxContainerContainer);
@@ -327,17 +327,17 @@ public class ContainerServiceImpl implements ContainerService {
 		Set<ItxContainerContainer> secondContainers = new HashSet<ItxContainerContainer>();
 //		secondContainers.addAll(updatedContainer.getSecondContainers());
 //		secondContainers.addAll(ItxContainerContainer.findItxContainerContainersBySecondContainer(updatedContainer).getResultList());
-		logger.debug("found number of second interactions: " + secondContainers.size());
+		if (logger.isDebugEnabled()) logger.debug("found number of second interactions: " + secondContainers.size());
 
 		
 		if(container.getSecondContainers() != null){
 			//there are itx's
 			for (ItxContainerContainer itxContainerContainer : container.getSecondContainers()){
-				logger.debug("updating itxContainerContainer");
+				if (logger.isDebugEnabled()) logger.debug("updating itxContainerContainer");
 				ItxContainerContainer updatedItxContainerContainer;
 				if (itxContainerContainer.getId() == null){
 					//need to save a new itx
-					logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
+					if (logger.isDebugEnabled()) logger.debug("saving new itxContainerContainer: " + itxContainerContainer.toJson());
 					updateNestedSecondContainer(itxContainerContainer);
 					itxContainerContainer.setFirstContainer(updatedContainer);
 					updatedItxContainerContainer = saveItxContainerContainer(itxContainerContainer);
@@ -421,7 +421,7 @@ public class ContainerServiceImpl implements ContainerService {
 		cq.where(cb.and(predicates));
 		cq.multiselect(location.<String>get("codeName"), container.<String>get("codeName"), barcode.<String>get("labelText"));
 		TypedQuery<ContainerLocationDTO> q = em.createQuery(cq);
-//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<ContainerLocationDTO> results = q.getResultList();
 		return results;
 	}
@@ -434,22 +434,22 @@ public class ContainerServiceImpl implements ContainerService {
 			for(ItxContainerContainerState itxContainerContainerState : itxContainerContainer.getLsStates()){
 				ItxContainerContainerState newItxContainerContainerState = new ItxContainerContainerState(itxContainerContainerState);
 				newItxContainerContainerState.setItxContainerContainer(newItxContainerContainer);
-				logger.debug("here is the newItxContainerContainerState before save: " + newItxContainerContainerState.toJson());
+				if (logger.isDebugEnabled()) logger.debug("here is the newItxContainerContainerState before save: " + newItxContainerContainerState.toJson());
 				newItxContainerContainerState.persist();
-				logger.debug("persisted the newItxContainerContainerState: " + newItxContainerContainerState.toJson());
+				if (logger.isDebugEnabled()) logger.debug("persisted the newItxContainerContainerState: " + newItxContainerContainerState.toJson());
 				if (itxContainerContainerState.getLsValues() != null){
 					Set<ItxContainerContainerValue> lsValues = new HashSet<ItxContainerContainerValue>();
 					for(ItxContainerContainerValue itxContainerContainerValue : itxContainerContainerState.getLsValues()){
-						logger.debug("itxContainerContainerValue: " + itxContainerContainerValue.toJson());
+						if (logger.isDebugEnabled()) logger.debug("itxContainerContainerValue: " + itxContainerContainerValue.toJson());
 						ItxContainerContainerValue newItxContainerContainerValue = new ItxContainerContainerValue(itxContainerContainerValue);
 						newItxContainerContainerValue.setLsState(newItxContainerContainerState);
 						newItxContainerContainerValue.persist();
 						lsValues.add(newItxContainerContainerValue);
-						logger.debug("persisted the itxContainerContainerValue: " + newItxContainerContainerValue.toJson());
+						if (logger.isDebugEnabled()) logger.debug("persisted the itxContainerContainerValue: " + newItxContainerContainerValue.toJson());
 					}	
 					newItxContainerContainerState.setLsValues(lsValues);
 				} else {
-					logger.debug("No itxContainerContainer values to save");
+					if (logger.isDebugEnabled()) logger.debug("No itxContainerContainer values to save");
 				}
 				lsStates.add(newItxContainerContainerState);
 			}
@@ -467,13 +467,13 @@ public class ContainerServiceImpl implements ContainerService {
 					updatedContainerState.setContainer(updatedContainer);
 					updatedContainerState.persist();
 					updatedContainer.getLsStates().add(updatedContainerState);
-					logger.debug("persisted new lsThing state " + updatedContainerState.getId());
+					if (logger.isDebugEnabled()) logger.debug("persisted new lsThing state " + updatedContainerState.getId());
 
 				} else {
 					updatedContainerState = ContainerState.update(lsThingState);
 					updatedContainer.getLsStates().add(updatedContainerState);
 
-					logger.debug("updated lsThing state " + updatedContainerState.getId());
+					if (logger.isDebugEnabled()) logger.debug("updated lsThing state " + updatedContainerState.getId());
 
 				}
 				if (lsThingState.getLsValues() != null){
@@ -487,13 +487,13 @@ public class ContainerServiceImpl implements ContainerService {
 							updatedContainerState.getLsValues().add(updatedContainerValue);
 						} else {
 							updatedContainerValue = ContainerValue.update(lsThingValue);
-							logger.debug("updated lsThing value " + updatedContainerValue.getId());
+							if (logger.isDebugEnabled()) logger.debug("updated lsThing value " + updatedContainerValue.getId());
 						}
-						logger.debug("checking lsThingValue " + updatedContainerValue.toJson());
+						if (logger.isDebugEnabled()) logger.debug("checking lsThingValue " + updatedContainerValue.toJson());
 
 					}	
 				} else {
-					logger.debug("No lsThing values to update");
+					if (logger.isDebugEnabled()) logger.debug("No lsThing values to update");
 				}
 			}
 		}
@@ -503,7 +503,7 @@ public class ContainerServiceImpl implements ContainerService {
 		Container updatedNestedContainer;
 		if (itxContainerContainer.getFirstContainer().getId() == null){
 			//need to save a new nested lsthing
-			logger.debug("saving new nested Container" + itxContainerContainer.getFirstContainer().toJson());
+			if (logger.isDebugEnabled()) logger.debug("saving new nested Container" + itxContainerContainer.getFirstContainer().toJson());
 			updatedNestedContainer = saveContainer(itxContainerContainer.getFirstContainer());
 			itxContainerContainer.setFirstContainer(updatedNestedContainer);
 		}
@@ -519,7 +519,7 @@ public class ContainerServiceImpl implements ContainerService {
 		Container updatedNestedContainer;
 		if (itxContainerContainer.getSecondContainer().getId() == null){
 			//need to save a new nested lsthing
-			logger.debug("saving new nested Container" + itxContainerContainer.getSecondContainer().toJson());
+			if (logger.isDebugEnabled()) logger.debug("saving new nested Container" + itxContainerContainer.getSecondContainer().toJson());
 			updatedNestedContainer = saveContainer(itxContainerContainer.getSecondContainer());
 			itxContainerContainer.setSecondContainer(updatedNestedContainer);
 		}
@@ -545,7 +545,7 @@ public class ContainerServiceImpl implements ContainerService {
 					updatedItxContainerContainerState.setItxContainerContainer(updatedItxContainerContainer);
 					updatedItxContainerContainerState.merge();
 					updatedItxContainerContainer.getLsStates().add(updatedItxContainerContainerState);
-					logger.debug("updated itxContainerContainer state " + updatedItxContainerContainerState.getId());
+					if (logger.isDebugEnabled()) logger.debug("updated itxContainerContainer state " + updatedItxContainerContainerState.getId());
 
 				}
 				if (itxContainerContainerState.getLsValues() != null){
@@ -561,11 +561,11 @@ public class ContainerServiceImpl implements ContainerService {
 							updatedItxContainerContainerValue.setLsState(updatedItxContainerContainerState);
 							updatedItxContainerContainerValue.merge();
 							updatedItxContainerContainerState.getLsValues().add(updatedItxContainerContainerValue);
-							logger.debug("updated itxContainerContainer value " + updatedItxContainerContainerValue.getId());
+							if (logger.isDebugEnabled()) logger.debug("updated itxContainerContainer value " + updatedItxContainerContainerValue.getId());
 						}
 					}	
 				} else {
-					logger.debug("No itxContainerContainer values to update");
+					if (logger.isDebugEnabled()) logger.debug("No itxContainerContainer values to update");
 				}
 			}
 		}
@@ -617,17 +617,17 @@ public class ContainerServiceImpl implements ContainerService {
 		cq.where(cb.and(predicates));
 		cq.multiselect(plateBarcode.<String>get("labelText"), plate.<String>get("codeName"), well.<String>get("codeName"), wellLabel.<String>get("labelText"));
 		TypedQuery<PlateWellDTO> q = em.createQuery(cq);
-//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<PlateWellDTO> results = q.getResultList();
 		return results;
 	}
 
 	@Override
-	public Collection<ContainerCodeDTO> getContainerCodesByLabels(
+	public Collection<CodeLabelDTO> getContainerCodesByLabels(
 			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind) {
 		EntityManager em = Container.entityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ContainerCodeDTO> cq = cb.createQuery(ContainerCodeDTO.class);
+		CriteriaQuery<CodeLabelDTO> cq = cb.createQuery(CodeLabelDTO.class);
 		Root<Container> container = cq.from(Container.class);
 		Join<Container, ContainerLabel> label = container.join("lsLabels");
 		
@@ -663,9 +663,9 @@ public class ContainerServiceImpl implements ContainerService {
 		predicates = predicateList.toArray(predicates);
 		cq.where(cb.and(predicates));
 		cq.multiselect(container.<String>get("codeName"), label.<String>get("labelText"));
-		TypedQuery<ContainerCodeDTO> q = em.createQuery(cq);
-//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		Collection<ContainerCodeDTO> results = q.getResultList();
+		TypedQuery<CodeLabelDTO> q = em.createQuery(cq);
+//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<CodeLabelDTO> results = q.getResultList();
 		return results;
 	}
 
@@ -692,7 +692,7 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += "where ( well.codeName in (:wellCodes) ) and ( well.ignored <> true ) ";
 		TypedQuery<WellContentDTO> q = em.createQuery(queryString, WellContentDTO.class);
 		q.setParameter("wellCodes", wellCodes);
-//		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<WellContentDTO> results = q.getResultList();
 		return results;
 	}

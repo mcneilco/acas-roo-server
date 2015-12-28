@@ -3,23 +3,23 @@
 
 package com.labsynch.labseer.dto;
 
-import com.labsynch.labseer.dto.ContainerCodeDTO;
+import com.labsynch.labseer.dto.CodeLabelDTO;
 
-privileged aspect ContainerCodeDTO_Roo_JavaBean {
+privileged aspect CodeLabelDTO_Roo_JavaBean {
     
-    public String ContainerCodeDTO.getCodeName() {
+    public String CodeLabelDTO.getCodeName() {
         return this.codeName;
     }
     
-    public void ContainerCodeDTO.setCodeName(String codeName) {
+    public void CodeLabelDTO.setCodeName(String codeName) {
         this.codeName = codeName;
     }
     
-    public String ContainerCodeDTO.getLabel() {
+    public String CodeLabelDTO.getLabel() {
         return this.label;
     }
     
-    public void ContainerCodeDTO.setLabel(String label) {
+    public void CodeLabelDTO.setLabel(String label) {
         this.label = label;
     }
     
