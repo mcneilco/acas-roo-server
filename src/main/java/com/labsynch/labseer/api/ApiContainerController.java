@@ -52,7 +52,8 @@ public class ApiContainerController {
     @RequestMapping(value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
-        HttpHeaders headers = new HttpHeaders();
+        Container container = Container.findContainer(id);
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (container == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -303,10 +304,10 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
             Collection<ContainerLocationDTO> searchResults = containerService.getContainersInLocation(locationCodeNames, containerType, containerKind);
+            return new ResponseEntity<String>(ContainerLocationDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(ContainerLocationDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
     }
     
     @Transactional
@@ -317,10 +318,10 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
         	Collection<PlateWellDTO> searchResults = containerService.getWellCodesByPlateBarcodes(plateBarcodes);
+            return new ResponseEntity<String>(PlateWellDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(PlateWellDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
     }
     
     @Transactional
@@ -335,10 +336,10 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
         	Collection<CodeLabelDTO> searchResults = containerService.getContainerCodesByLabels(labelTexts, containerType, containerKind, labelType, labelKind);
+            return new ResponseEntity<String>(CodeLabelDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(CodeLabelDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
     }
     
     @Transactional
@@ -349,10 +350,10 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
         	Collection<WellContentDTO> searchResults = containerService.getWellContent(wellCodes);
+            return new ResponseEntity<String>(WellContentDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(WellContentDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
     }
     
 }
