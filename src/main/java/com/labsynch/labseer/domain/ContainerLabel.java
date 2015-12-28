@@ -57,7 +57,7 @@ public class ContainerLabel extends AbstractLabel {
     	updatedContainerLabel.setModifiedDate(new Date());
     	updatedContainerLabel.setPhysicallyLabled(containerLabel.isPhysicallyLabled());
     	updatedContainerLabel.setIgnored(containerLabel.isIgnored());
-//    	updatedContainerLabel.merge();
+    	updatedContainerLabel.merge();
     	return updatedContainerLabel;
     }
      

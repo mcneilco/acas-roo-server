@@ -27,11 +27,15 @@ import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
-@RooJpaActiveRecord
+@RooJpaActiveRecord(finders = { "findContainersByLsTypeEqualsAndLsKindEquals" })
 @RooJson
 public class Container extends AbstractThing {
 
 	private Long locationId;
+	
+	public Container() {
+		
+	}
 
 	//constructor to instantiate a new Container from nested json objects
 	public Container (Container container){
@@ -71,13 +75,13 @@ public class Container extends AbstractThing {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "container", fetch =  FetchType.LAZY)
 	private Set<ContainerState> lsStates = new HashSet<ContainerState>();
 
-	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "secondContainer", fetch =  FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(cascade = {}, mappedBy = "secondContainer", fetch =  FetchType.LAZY)
 	private Set<ItxContainerContainer> firstContainers = new HashSet<ItxContainerContainer>();
 
-	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "firstContainer", fetch =  FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(cascade = {}, mappedBy = "firstContainer", fetch =  FetchType.LAZY)
 	private Set<ItxContainerContainer> secondContainers = new HashSet<ItxContainerContainer>();
 
-	@OneToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE}, mappedBy = "container", fetch =  FetchType.LAZY, orphanRemoval = true)
+	@OneToMany(cascade = {}, mappedBy = "container", fetch =  FetchType.LAZY)
 	private Set<ItxSubjectContainer> subjects = new HashSet<ItxSubjectContainer>();
 
 	public String toJson() {
@@ -94,6 +98,11 @@ public class Container extends AbstractThing {
 				.serialize(this);
 	}
 	
+	@Transactional
+    public String toJsonWithNestedFull() {
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstContainers.firstContainer.lsStates.lsValues","firstContainers.firstContainer.lsLabels", "secondContainers.secondContainer.lsStates.lsValues","secondContainers.secondContainer.lsLabels","firstContainers.lsStates.lsValues","firstContainers.lsLabels","secondContainers.lsStates.lsValues","secondContainers.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
+    }
+	
 	public static Container fromJsonToContainer(String json) {
 		return new JSONDeserializer<Container>().
 				use(null, Container.class).
@@ -108,6 +117,11 @@ public class Container extends AbstractThing {
 			.transform(new ExcludeNulls(), void.class)
 			.serialize(collection);
 	}
+	
+	@Transactional
+    public static String toJsonArrayWithNestedFull(Collection<com.labsynch.labseer.domain.Container> collection) {
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstContainers.firstContainer.lsStates.lsValues","secondContainers.secondContainer.lsStates.lsValues","firstContainers.firstContainer.lsLabels","secondContainers.secondContainer.lsLabels","firstContainers.lsStates.lsValues","secondContainers.lsStates.lsValues","firstContainers.lsLabels","secondContainers.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
 	
 	public static String toJsonArray(Collection<Container> collection) {
 		return new JSONSerializer()

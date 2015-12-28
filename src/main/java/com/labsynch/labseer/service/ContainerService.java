@@ -1,10 +1,15 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.WellContentDTO;
 
 @Service
 public interface ContainerService {
@@ -22,6 +27,21 @@ public interface ContainerService {
 	Collection<Container> saveLsContainersFile(String jsonFile);
 
 	Container saveLsContainer(String json);
+
+	Collection<ContainerLocationDTO> getContainersInLocation(
+			Collection<String> locationCodeNames);
+
+	Collection<ContainerLocationDTO> getContainersInLocation(
+			Collection<String> locationCodeNames, String containerType,
+			String containerKind);
+
+	Collection<PlateWellDTO> getWellCodesByPlateBarcodes(
+			List<String> plateBarcodes);
+
+	Collection<CodeLabelDTO> getContainerCodesByLabels(
+			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind);
+
+	Collection<WellContentDTO> getWellContent(List<String> wellCodes);
 	
 	
 	
