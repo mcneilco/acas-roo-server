@@ -13,6 +13,7 @@ import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
@@ -67,7 +68,7 @@ public interface LsThingService {
 
 	Collection<LsThing> findCompositesByComponentEquals(LsThing component);
 
-	ArrayList<ErrorMessage> validateLsThing(LsThingValidationDTO validationDTO);
+	ArrayList<LsThingValidationErrorMessage> validateLsThing(LsThingValidationDTO validationDTO);
 
 	Collection<LsThing> sortLsThingsByCodeName(Collection<LsThing> lsThings);
 	
