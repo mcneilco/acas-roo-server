@@ -64,6 +64,7 @@ public class AnalysisGroupValue extends AbstractValue {
     	this.setCodeKind(analysisGroupDTO.getCodeKind());
     	this.setLsType(analysisGroupDTO.getValueType());
     	this.setLsKind(analysisGroupDTO.getValueKind());
+    	this.setClobValue(analysisGroupDTO.getClobValue());
     	this.setStringValue(analysisGroupDTO.getStringValue());
     	this.setFileValue(analysisGroupDTO.getFileValue());
     	this.setUrlValue(analysisGroupDTO.getUrlValue());
@@ -96,6 +97,7 @@ public class AnalysisGroupValue extends AbstractValue {
     	this.setLsType(analysisGroupDTO.getValueType());
     	this.setLsKind(analysisGroupDTO.getValueKind());
     	this.setStringValue(analysisGroupDTO.getStringValue());
+    	this.setClobValue(analysisGroupDTO.getClobValue());
     	this.setFileValue(analysisGroupDTO.getFileValue());
     	this.setUrlValue(analysisGroupDTO.getUrlValue());
     	this.setDateValue(analysisGroupDTO.getDateValue());

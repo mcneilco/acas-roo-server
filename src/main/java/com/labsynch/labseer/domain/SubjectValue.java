@@ -61,6 +61,7 @@ public class SubjectValue extends AbstractValue {
     	this.setLsType(subjectDTO.getValueType());
     	this.setLsKind(subjectDTO.getValueKind());
     	this.setStringValue(subjectDTO.getStringValue());
+    	this.setClobValue(subjectDTO.getClobValue());
     	this.setFileValue(subjectDTO.getFileValue());
     	this.setUrlValue(subjectDTO.getUrlValue());
     	this.setDateValue(subjectDTO.getDateValue());
