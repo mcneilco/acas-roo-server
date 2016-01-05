@@ -3,7 +3,11 @@ package com.labsynch.labseer.api;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -32,6 +36,7 @@ import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.IdSetDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -54,7 +59,7 @@ public class ApiValueControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
     
-    @Test
+    //@Test
     public void getProtocolValue() throws Exception {
     	String entity = "protocol";
     	String idOrCodeName = "PROT-00000005";
@@ -74,7 +79,7 @@ public class ApiValueControllerTest {
     	Assert.assertNotNull(value.getId());
     }
     
-    @Test
+    //@Test
     public void getExperimentValue() throws Exception {
     	String entity = "experiment";
     	String idOrCodeName = "EXPT-00000532";
@@ -94,7 +99,7 @@ public class ApiValueControllerTest {
     	Assert.assertNotNull(value.getId());
     }
     
-    @Test
+    //@Test
     public void getAnalysisGroupValue() throws Exception {
     	String entity = "analysisGroup";
     	String idOrCodeName = "AG-00000099";
@@ -114,7 +119,7 @@ public class ApiValueControllerTest {
     	Assert.assertNotNull(value.getId());
     }
     
-    @Test
+    //@Test
     public void getTreatmentGroupValue() throws Exception {
     	String entity = "treatmentGroup";
     	String idOrCodeName = "TG-00033284";
@@ -134,7 +139,7 @@ public class ApiValueControllerTest {
     	Assert.assertNotNull(value.getId());
     }
     
-    @Test
+    //@Test
     public void getSubjectValue() throws Exception {
     	String entity = "subject";
     	String idOrCodeName = "SUBJ-00551063";
@@ -154,7 +159,7 @@ public class ApiValueControllerTest {
     	Assert.assertNotNull(value.getId());
     }
     
-    @Test
+    //@Test
     public void getLsThingValue() throws Exception {
     	String entity = "lsThing";
     	String idOrCodeName = "PEG000010";
@@ -173,7 +178,43 @@ public class ApiValueControllerTest {
     	LsThingValue value = LsThingValue.fromJsonToLsThingValue(responseJson);
     	Assert.assertNotNull(value.getId());
     }
+
     
+    @Test
+    @Transactional
+    public void getAGValueTest() throws Exception {
+    	Set<Long> idList = new HashSet<Long>();
+    	idList.add(8L);
+    	idList.add(9L);
+    	idList.add(10L);
+    	IdSetDTO idSet = new IdSetDTO();
+    	idSet.setIdSet(idList);
+    	logger.info("here is the ID list: " + idSet.toJson());
+
+    	List<AnalysisGroupValue> results = AnalysisGroupValue.findAnalysisGroupValuesByIdList(idList, false).getResultList();
+    	logger.info("number of results = " + results.size());
+    	
+    }
     
+    @Test
+    @Transactional
+    public void getAGValue() throws Exception {
+    	Set<Long> idList = new HashSet<Long>();
+    	idList.add(3202L);
+    	idList.add(3203L);
+    	idList.add(3209L);
+    	IdSetDTO idSet = new IdSetDTO();
+    	idSet.setIdSet(idList);
+    	logger.info("here is the ID list: " + idSet.toJson());
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/analysisgroupvalues/getValues/byIdList?onlyPublicData=false&format=tsv" )
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(idSet.toJson())
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+//    	LsThingValue value = LsThingValue.fromJsonToLsThingValue(responseJson);
+//    	Assert.assertNotNull(value.getId());
+    }
 
 }
