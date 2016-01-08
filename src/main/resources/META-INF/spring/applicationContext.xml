@@ -7,9 +7,6 @@
 
     <context:property-placeholder ignore-unresolvable="true" location="classpath*:META-INF/spring/*.properties" order="1"/>
 
-    <context:property-placeholder location="file:///mnt/environments/acas/acas.env" order="2" ignore-unresolvable="true" />
-
-
 
 <!--
     <context:property-placeholder location="file:///opt/acas-dataexplorer/acas/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" />
