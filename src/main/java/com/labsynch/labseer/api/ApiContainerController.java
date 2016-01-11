@@ -96,8 +96,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByIdsDTO/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getContainersFromIDsTwo(@RequestBody List<IdCollectionDTO> idCollections) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getContainersFromIDsTwo(@RequestBody String json) {
+        Collection<IdCollectionDTO> idCollections = IdCollectionDTO.fromJsonArrayToIdCollectioes(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (IdCollectionDTO idCollection : idCollections) {
             Container container = Container.findContainer(idCollection.getId());
             foundContainers.add(container);
@@ -109,8 +110,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByIds/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getContainersFromIDs(@RequestBody List<Container> containers) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getContainersFromIDs(@RequestBody String json) {
+        Collection<Container> containers = Container.fromJsonArrayToContainers(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (Container container : containers) {
             foundContainers.add(Container.findContainer(container.getId()));
         }
@@ -121,8 +123,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByIds/jsonArrayStub", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getContainerStubsFromIDs(ArrayList<IdCollectionDTO> idCollections) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getContainerStubsFromIDs(@RequestBody String json) {
+        Collection<IdCollectionDTO> idCollections = IdCollectionDTO.fromJsonArrayToIdCollectioes(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (IdCollectionDTO idCollection : idCollections) {
             Container container = Container.findContainer(idCollection.getId());
             foundContainers.add(container);
@@ -134,8 +137,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByIds/states/jsonArrayStub", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getContainerStateStubsFromIDs(@RequestBody List<IdCollectionDTO> idCollections) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getContainerStateStubsFromIDs(@RequestBody String json) {
+        Collection<IdCollectionDTO> idCollections = IdCollectionDTO.fromJsonArrayToIdCollectioes(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (IdCollectionDTO idCollection : idCollections) {
             Container container = Container.findContainer(idCollection.getId());
             foundContainers.add(container);
@@ -147,8 +151,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findIdsByLabels/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getIdsFromJsonLabels(@RequestBody List<ContainerLabel> labels) {
-        Collection<IdCollectionDTO> foundContainers = new ArrayList<IdCollectionDTO>();
+    public ResponseEntity<java.lang.String> getIdsFromJsonLabels(@RequestBody String json) {
+        Collection<ContainerLabel> labels = ContainerLabel.fromJsonArrayToContainerLabels(json);
+    	Collection<IdCollectionDTO> foundContainers = new ArrayList<IdCollectionDTO>();
         for (ContainerLabel label : labels) {
             List<Container> containers = Container.findContainerByContainerLabel(label.getLabelText());
             for (Container query : containers) {
@@ -164,8 +169,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByLabels/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getFromJsonLabels(ArrayList<ContainerLabel> labels) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getFromJsonLabels(@ReqiestBody String json) {
+        Collection<ContainerLabel> labels = ContainerLabel.fromJsonArrayToContainerLabels(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (ContainerLabel label : labels) {
             List<Container> containers = Container.findContainerByContainerLabel(label.getLabelText());
             for (Container query : containers) {
@@ -195,7 +201,8 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Container container) {
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    	Container container = Container.fromJsonToContainer(json);
         container = containerService.saveLsContainer(container);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -204,8 +211,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<Container> containers) {
-        Collection<Container> savedContainers = containerService.saveLsContainers(containers);
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+        Collection<Container> containers  = Container.fromJsonArrayToContainers(json);
+    	Collection<Container> savedContainers = containerService.saveLsContainers(containers);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(Container.toJsonArray(savedContainers), headers, HttpStatus.CREATED);
@@ -241,8 +249,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = { "/{id}", "/" }, method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Container container) {
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
+        Container container = Container.fromJsonToContainer(json);
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         container = containerService.updateContainer(container);
         if (container.getId() == null) {
@@ -253,8 +262,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<Container> containers) {
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
+        Collection<Container> containers  = Container.fromJsonArrayToContainers(json);
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<Container> updatedContainers = new ArrayList<Container>();
         for (Container container : containers) {
