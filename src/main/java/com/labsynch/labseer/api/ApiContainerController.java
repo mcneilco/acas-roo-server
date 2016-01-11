@@ -169,7 +169,7 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByLabels/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getFromJsonLabels(@ReqiestBody String json) {
+    public ResponseEntity<java.lang.String> getFromJsonLabels(@RequestBody String json) {
         Collection<ContainerLabel> labels = ContainerLabel.fromJsonArrayToContainerLabels(json);
     	Collection<Container> foundContainers = new ArrayList<Container>();
         for (ContainerLabel label : labels) {
