@@ -35,11 +35,13 @@ public class ItxContainerContainer extends AbstractThing {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Index(name = "ITX_CNTR_CNTR_FIRST_CONTAINER")
     @JoinColumn(name = "first_container_id")
     private Container firstContainer;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Index(name = "ITX_CNTR_CNTR_SECOND_CONTAINER")
     @JoinColumn(name = "second_container_id")
     private Container secondContainer;
 
