@@ -9,6 +9,22 @@ import javax.persistence.TypedQuery;
 
 privileged aspect Container_Roo_Finder {
     
+    public static TypedQuery<Container> Container.findContainersByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Container.entityManager();
+        TypedQuery<Container> q = em.createQuery("SELECT o FROM Container AS o WHERE o.lsKind = :lsKind", Container.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
+    public static TypedQuery<Container> Container.findContainersByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Container.entityManager();
+        TypedQuery<Container> q = em.createQuery("SELECT o FROM Container AS o WHERE o.lsType = :lsType", Container.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
     public static TypedQuery<Container> Container.findContainersByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
         if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");

@@ -56,6 +56,64 @@ public class ApiContainerControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
     
+    @Test
+    @Transactional
+    public void getContainerByLsTypeAndLsKind() throws Exception{
+    	MockHttpServletResponse response;
+    	String responseJson;
+    	Collection<Container> foundContainers;
+    	//no type and kind
+    	response = this.mockMvc.perform(get("/api/v1/containers")
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	foundContainers = Container.fromJsonArrayToContainers(responseJson);
+    	Assert.assertFalse(foundContainers.isEmpty());
+    	//only type
+    	response = this.mockMvc.perform(get("/api/v1/containers?lsType=subject")
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	foundContainers = Container.fromJsonArrayToContainers(responseJson);
+    	Assert.assertFalse(foundContainers.isEmpty());
+    	//only kind
+    	response = this.mockMvc.perform(get("/api/v1/containers?lsKind=nhp test subject")
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	foundContainers = Container.fromJsonArrayToContainers(responseJson);
+    	Assert.assertFalse(foundContainers.isEmpty());
+    	//type and kind
+    	response = this.mockMvc.perform(get("/api/v1/containers?lsType=subject&lsKind=nhp test subject")
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	foundContainers = Container.fromJsonArrayToContainers(responseJson);
+    	Assert.assertFalse(foundContainers.isEmpty());
+    	//find no results
+    	response = this.mockMvc.perform(get("/api/v1/containers?lsType=nope&lsKind=")
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	foundContainers = Container.fromJsonArrayToContainers(responseJson);
+    	Assert.assertTrue(foundContainers.isEmpty());
+    }
+    
     
     @Test
     @Transactional

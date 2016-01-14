@@ -77,10 +77,20 @@ public class ApiContainerController {
     @Transactional
     @RequestMapping(headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> listJson() {
+    public ResponseEntity<java.lang.String> listJson(@RequestParam(value = "lsType", required = false) String lsType,
+    		@RequestParam(value = "lsKind", required = false) String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<Container> containers = Container.findAllContainers();
+        List<Container> containers = new ArrayList<Container>();
+        if (lsType != null && lsType.length() > 0 && lsKind != null && lsKind.length() > 0){
+        	containers = Container.findContainersByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+        }else if (lsType != null && lsType.length() > 0 && (lsKind == null || lsKind.length() == 0)){
+        	containers = Container.findContainersByLsTypeEquals(lsType).getResultList();
+        }else if((lsType == null || lsType.length()==0) && lsKind != null && lsKind.length() > 0){
+        	containers = Container.findContainersByLsKindEquals(lsKind).getResultList();
+        }else{
+        	containers = Container.findAllContainers();
+        }
         return new ResponseEntity<String>(Container.toJsonArray(containers), headers, HttpStatus.OK);
     }
 
