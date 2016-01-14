@@ -36,7 +36,7 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 import flexjson.JSONTokener;
 
 @Controller
-@RequestMapping("api/v1/containers")
+@RequestMapping("api/v1/containerstates")
 @Transactional
 public class ApiContainerStateController {
 
@@ -142,7 +142,7 @@ public class ApiContainerStateController {
       return new ResponseEntity<String>(ContainerStateMiniDTO.toJsonArray(savedContainerStates), headers, HttpStatus.CREATED);
   }
 
-  @RequestMapping(value = { "/jsonArray", "/jsonArrayParse" }, method = RequestMethod.POST, headers = "Accept=application/json")
+  @RequestMapping(value = "/jsonArrayParse", method = RequestMethod.POST, headers = "Accept=application/json")
   public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", "application/json");
@@ -180,7 +180,7 @@ public class ApiContainerStateController {
       return new ResponseEntity<String>(ContainerStateMiniDTO.toJsonArray(savedContainerStates), headers, HttpStatus.CREATED);
   }
 
-  @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+  @RequestMapping(value = "/jsonArrayParse", method = RequestMethod.PUT, headers = "Accept=application/json")
   public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", "application/json");
@@ -267,18 +267,6 @@ public class ApiContainerStateController {
           IOUtils.closeQuietly(br);
       }
       return new ResponseEntity<String>("[]", headers, HttpStatus.OK);
-  }
-
-  @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-  public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
-      ContainerState containerState = ContainerState.findContainerState(id);
-      HttpHeaders headers = new HttpHeaders();
-      headers.add("Content-Type", "application/json");
-      if (containerState == null) {
-          return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-      }
-      containerState.remove();
-      return new ResponseEntity<String>(headers, HttpStatus.OK);
   }
 
 	
