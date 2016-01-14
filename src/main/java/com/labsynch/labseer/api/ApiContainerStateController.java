@@ -1,9 +1,11 @@
 package com.labsynch.labseer.api;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -15,28 +17,34 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Container;
-import com.labsynch.labseer.domain.ContainerLabel;
-import com.labsynch.labseer.dto.IdCollectionDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.domain.ContainerState;
+import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.UpdateLog;
+import com.labsynch.labseer.dto.ContainerMiniDTO;
+import com.labsynch.labseer.dto.ContainerStateMiniDTO;
 import com.labsynch.labseer.service.ContainerService;
-import com.labsynch.labseer.service.GeneThingService;
-import com.labsynch.labseer.service.LsThingService;
+import com.labsynch.labseer.service.ContainerStateService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
+import flexjson.JSONTokener;
 
 @Controller
 @RequestMapping("api/v1/containers")
 @Transactional
 public class ApiContainerStateController {
 
+	private static final Logger logger = LoggerFactory.getLogger(ApiContainerStateController.class);
+	
+  @Autowired
+  private ContainerStateService csService;
+	
 	@Autowired
     private ContainerService containerService;
 
