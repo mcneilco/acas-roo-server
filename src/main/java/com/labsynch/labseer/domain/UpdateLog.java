@@ -17,7 +17,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJpaActiveRecord(sequenceName = "UPDATE_LOG_PKSEQ")
 public class UpdateLog {
 
-	@org.hibernate.annotations.Index(name="UPDATELOG_THING_IDX")
     private Long thing;
 
     @Size(max = 255)
@@ -26,7 +25,6 @@ public class UpdateLog {
 	@Size(max = 512)
 	private String comments;
 	
-	@org.hibernate.annotations.Index(name="UPDATELOG_TRXN_IDX")
 	private Long lsTransaction;
 
 	@NotNull
