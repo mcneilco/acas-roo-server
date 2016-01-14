@@ -217,7 +217,7 @@ public class ContainerServiceImpl implements ContainerService {
 					Set<ContainerValue> lsValues = new HashSet<ContainerValue>();
 					for(ContainerValue containerValue : lsState.getLsValues()){
 						if (logger.isDebugEnabled()) logger.debug("containerValue: " + containerValue.toJson());
-						ContainerValue newContainerValue = new ContainerValue(containerValue);
+						ContainerValue newContainerValue = ContainerValue.create(containerValue);
 						newContainerValue.setLsState(newLsState);
 						newContainerValue.persist();
 						lsValues.add(newContainerValue);
