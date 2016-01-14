@@ -1,12 +1,9 @@
 package com.labsynch.labseer.api;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,18 +25,19 @@ import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.ContainerService;
-import com.labsynch.labseer.service.GeneThingService;
-import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("api/v1/containers")
 @Transactional
 public class ApiContainerController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApiContainerController.class);
+	
 	@Autowired
     private ContainerService containerService;
 
@@ -312,6 +309,27 @@ public class ApiContainerController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Container.toJsonArray(Container.findContainerByContainerLabel(labelText)), headers, HttpStatus.OK);
+    }
+    
+    @ApiOperation(value="Validates container name is unique", notes="Name is determined by label lsType=name."
+    		+ "Search is across all containers, for other lsType=name labels, with an exact string match."
+    		+ "Successful validation (name is unique) gives HTTP Status 202: Accepted"
+    		+ "Failure on validation gives HTTP Status 409: Conflict")
+    @RequestMapping(value = "/validate", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> validateContainer(
+    		@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        
+    	Container container = Container.fromJsonToContainer(json);
+    	logger.debug("FROM THE Container VALIDATE CONTROLLER: "+container.toJson());
+        ArrayList<ErrorMessage> errorMessages = containerService.validateContainer(container);
+        if (!errorMessages.isEmpty()){
+        	return new ResponseEntity<String>(ErrorMessage.toJsonArray(errorMessages), headers, HttpStatus.CONFLICT);
+        }
+        else{
+        	return new ResponseEntity<String>(headers, HttpStatus.ACCEPTED);
+        }
     }
 
     @Transactional

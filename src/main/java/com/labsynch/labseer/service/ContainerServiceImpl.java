@@ -23,6 +23,7 @@ import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +32,18 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.UniqueInteractionsException;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONTokener;
@@ -424,6 +431,52 @@ public class ContainerServiceImpl implements ContainerService {
 //		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<ContainerLocationDTO> results = q.getResultList();
 		return results;
+	}
+	
+	@Override
+	public ArrayList<ErrorMessage> validateContainer(Container container) {
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		try{
+			checkContainerUniqueName(container);
+		} catch (UniqueNameException e){
+			logger.error("Caught UniqueNameException validating Container: " + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage(e.getMessage());
+            errors.add(error);
+		}
+		
+		return errors;
+	}
+	
+	private void checkContainerUniqueName(Container container) throws UniqueNameException{
+		Set<ContainerLabel> containerLabels = container.getLsLabels();
+		for (ContainerLabel containerLabel : containerLabels){
+			if (!containerLabel.isIgnored() && containerLabel.getLsType().equals("name")){
+				String labelText = containerLabel.getLabelText();
+				Collection<Container> foundContainers = new HashSet<Container>();
+				Collection<ContainerLabel> foundContainerLabels = new HashSet<ContainerLabel>();
+				try{
+					foundContainerLabels = ContainerLabel.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(containerLabel.getLsType(), labelText, true).getResultList();
+				} catch (EmptyResultDataAccessException e){
+					//found nothing
+				}
+				if (!foundContainerLabels.isEmpty()){
+					for (ContainerLabel foundLabel : foundContainerLabels){
+						foundContainers.add(foundLabel.getContainer());
+					}
+				}
+				if (!foundContainers.isEmpty()){
+					for (Container foundContainer: foundContainers){
+						if (container.getId() == null || container.getId().compareTo(foundContainer.getId()) != 0){
+							//we found an container that is not the same as the one being validated that has the same label
+							throw new UniqueNameException("Container with the name "+labelText+" already exists! "+foundContainer.getCodeName());
+						}
+					}
+				}
+			}	
+		}
+		
 	}
 	
 	private ItxContainerContainer saveItxContainerContainer(ItxContainerContainer itxContainerContainer){

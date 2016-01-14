@@ -306,6 +306,7 @@
             <menu:item id="fi_containerlabel_containerandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByContainerAndIgnoredNot&amp;form" z="C3QRAvcrFKojvrsCALvkkEek1WE="/>
             <menu:item id="fi_containerlabel_labeltextequalsandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByLabelTextEqualsAndIgnoredNot&amp;form" z="AQQAt+RSW5CAUJ8cgK8WU2g+5gg="/>
             <menu:item id="fi_containerlabel_lstransactionequals" messageCode="global_menu_find" url="/containerlabels?find=ByLsTransactionEquals&amp;form" z="hEHslYtx3QnVYc63TxO+tNTsVE0="/>
+            <menu:item id="fi_containerlabel_lstypeequalsandlabeltextequalsandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot&amp;form" z="EPn/ky8CBvowtPJEhqWTck1L1nM="/>
         </menu:category>
         <menu:category id="c_treatmentgrouplabel" z="M25GmMAOZgXnpUGLXGdWZzjBKwM=">
             <menu:item id="i_treatmentgrouplabel_new" messageCode="global_menu_new" url="/treatmentgrouplabels?form" z="sM2bs+bTfWIwnBAsnUNR62U9B90="/>

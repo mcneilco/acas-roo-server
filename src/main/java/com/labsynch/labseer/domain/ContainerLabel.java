@@ -23,7 +23,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findContainerLabelsByLsTransactionEquals","findContainerLabelsByLabelTextEqualsAndIgnoredNot", "findContainerLabelsByContainerAndIgnoredNot" })
+@RooJpaActiveRecord(finders = { "findContainerLabelsByLsTransactionEquals","findContainerLabelsByLabelTextEqualsAndIgnoredNot","findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot", "findContainerLabelsByContainerAndIgnoredNot" })
 public class ContainerLabel extends AbstractLabel {
 
     @NotNull

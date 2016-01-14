@@ -17,4 +17,15 @@ privileged aspect ContainerLabel_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<ContainerLabel> ContainerLabel.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(String lsType, String labelText, boolean ignored) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        TypedQuery<ContainerLabel> q = em.createQuery("SELECT o FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored IS NOT :ignored", ContainerLabel.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
 }
