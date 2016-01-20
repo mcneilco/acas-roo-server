@@ -139,27 +139,11 @@ public class AuthorServiceImpl implements AuthorService {
 					}
 				}
 				
-				//id set
 				authProjectGroup = new AuthProjectGroupsDTO();
 				authProjectGroup.setId(project.getId());				
-				authProjectGroup.setGroups(groups);
-				authProjectsGroups.add(authProjectGroup);
-				
-				//codeName set
-				authProjectGroup = new AuthProjectGroupsDTO();
-				authProjectGroup.setAlias(project.getCodeName());
-				authProjectGroup.setGroups(groups);
-				authProjectsGroups.add(authProjectGroup);
-				
-				//alias set
-				authProjectGroup = new AuthProjectGroupsDTO();
-				authProjectGroup.setAlias(projectAlias);
-				authProjectGroup.setGroups(groups);
-				authProjectsGroups.add(authProjectGroup);				
-
-				//name set
-				authProjectGroup = new AuthProjectGroupsDTO();
+				authProjectGroup.setCode(project.getCodeName());
 				authProjectGroup.setName(projectName);
+				authProjectGroup.setAlias(projectAlias);
 				authProjectGroup.setGroups(groups);
 				authProjectsGroups.add(authProjectGroup);
 			}

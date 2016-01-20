@@ -19,6 +19,8 @@ public class AuthProjectGroupsDTO {
 
 	private String name;
 	
+	private String code;
+	
 	private String alias;
 
 	private Long id;

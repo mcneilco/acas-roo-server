@@ -16,6 +16,14 @@ privileged aspect AuthProjectGroupsDTO_Roo_JavaBean {
         this.name = name;
     }
     
+    public String AuthProjectGroupsDTO.getCode() {
+        return this.code;
+    }
+    
+    public void AuthProjectGroupsDTO.setCode(String code) {
+        this.code = code;
+    }
+    
     public String AuthProjectGroupsDTO.getAlias() {
         return this.alias;
     }
