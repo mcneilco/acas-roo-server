@@ -23,7 +23,6 @@ import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.Index;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -47,21 +46,17 @@ public class DDictValue {
     private static final Logger logger = LoggerFactory.getLogger(DDictValue.class);
     
     @NotNull
-    @Index(name = "DD_VALUE_TYPE_IDX")
     @Size(max = 255)
     private String lsType;
 
     @NotNull
-    @Index(name = "DD_VALUE_KIND_IDX")
     @Size(max = 255)
     private String lsKind;
 
     @Size(max = 255)
-    @Index(name = "DD_VALUE_TK_IDX")
     private String lsTypeAndKind;
 
     @Size(max = 256)
-    @Index(name = "DD_VALUE_SNAME_IDX")
     private String shortName;
 
     @NotNull
@@ -81,7 +76,6 @@ public class DDictValue {
 
     @NotNull
     @Size(max = 255)
-    @Index(name = "DD_VALUE_CODE_IDX")
     private String codeName;
 
     @Id
