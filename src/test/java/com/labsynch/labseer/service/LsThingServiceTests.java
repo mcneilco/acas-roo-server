@@ -32,6 +32,7 @@ import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ThingKind;
 import com.labsynch.labseer.domain.ThingType;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
@@ -58,6 +59,9 @@ public class LsThingServiceTests {
 	
 	@Autowired
 	private LsThingService lsThingService;
+	
+	@Autowired
+	private AutoLabelService autoLabelService;
 	
 	@Transactional
 	@Rollback(value=false)
@@ -667,6 +671,199 @@ public class LsThingServiceTests {
 		LsThingValidationDTO validationDTO = LsThingValidationDTO.fromJsonToLsThingValidationDTO(json);
 		Collection<ErrorMessage> errorMessages = lsThingService.validateLsThing(validationDTO);
 		Assert.assertTrue(errorMessages.isEmpty());
+	}
+	
+	@Transactional
+	@Rollback(value=false)
+	public LsThing createParentBatchStack(){
+		LsThing componentParent = makeLsThing("COMPONENT-01","parent","test component");
+		componentParent = addLsThingLabel("COMPONENT-01", "corpName", "ACAS LsThing", true, componentParent);
+		componentParent.persist();
+		
+		LsThing assemblyParent = makeLsThing("ASSEMBLY-01","parent","test assembly");
+		assemblyParent = addLsThingLabel("ASSEMBLY-01", "corpName", "ACAS LsThing", true, assemblyParent);
+		assemblyParent.persist();
+		
+		LsThing componentBatch = makeLsThing("COMPONENT-01-1","batch","test component");
+		componentBatch = addLsThingLabel("COMPONENT-01-1", "corpName", "ACAS LsThing", true, componentBatch);
+		componentBatch.persist();
+		
+		LsThing assemblyBatch = makeLsThing("ASSEMBLY-01-1","batch","test assembly");
+		assemblyBatch = addLsThingLabel("ASSEMBLY-01-1", "corpName", "ACAS LsThing", true, assemblyBatch);
+		assemblyBatch.persist();
+		
+		ItxLsThingLsThing parentInc = makeItxLsThingLsThing("ITXTHING-01", "incorporates", "assembly_component", assemblyParent, componentParent);
+		assemblyParent.getSecondLsThings().add(parentInc);
+		componentParent.getFirstLsThings().add(parentInc);
+
+		ItxLsThingLsThing batchInc = makeItxLsThingLsThing("ITXTHING-02", "incorporates", "assembly_component", assemblyBatch, componentBatch);
+		assemblyBatch.getSecondLsThings().add(batchInc);
+		componentBatch.getFirstLsThings().add(batchInc);
+
+		
+		ItxLsThingLsThing componentParentBatch = makeItxLsThingLsThing("ITXTHING-01", "instantiates", "batch_parent", componentBatch, componentParent);
+		componentBatch.getSecondLsThings().add(componentParentBatch);
+		componentParent.getFirstLsThings().add(componentParentBatch);
+
+		
+		ItxLsThingLsThing assemblyParentBatch = makeItxLsThingLsThing("ITXTHING-01", "instantiates", "batch_parent", assemblyBatch, assemblyParent);
+		assemblyBatch.getSecondLsThings().add(assemblyParentBatch);
+		assemblyParent.getFirstLsThings().add(assemblyParentBatch);
+		
+		assemblyBatch.merge();
+		assemblyParent.merge();
+		componentBatch.merge();
+		componentParent.merge();
+		
+		return componentParent;
+	}
+	
+	private LsThing makeLsThing(String codeName, String lsType, String lsKind){
+		LsThing lsThing = new LsThing();
+		lsThing.setCodeName(codeName);
+		lsThing.setLsType(lsType);
+		lsThing.setLsKind(lsKind);
+		lsThing.setRecordedBy("bfielder");
+		lsThing.setRecordedDate(new Date());
+		lsThing.setDeleted(false);
+		lsThing.setIgnored(false);
+		return lsThing;
+	}
+	
+	private LsThing addLsThingLabel(String labelText, String lsType, String lsKind, Boolean preferred, LsThing lsThing){
+		LsThingLabel label = new LsThingLabel();
+		//(id, label_text, ls_kind, ls_type, ls_type_and_kind, preferred, physically_labled, ignored, deleted, recorded_by, recorded_date, version, lsthing_id)
+		label.setLabelText(labelText);
+		label.setLsType(lsType);
+		label.setLsKind(lsKind);
+		label.setRecordedBy("bfielder");
+		label.setRecordedDate(new Date());
+		label.setDeleted(false);
+		label.setIgnored(false);
+		label.setPreferred(preferred);
+		label.setPhysicallyLabled(false);
+		label.setLsThing(lsThing);
+		lsThing.getLsLabels().add(label);
+		return lsThing;
+	}
+	
+	public LsThing createTransientParentBatchStack(){
+		
+		
+		LsThing componentParent = makeLsThing("COMPONENT-01","parent","test component");		
+		LsThing assemblyParent = makeLsThing("ASSEMBLY-01","parent","test assembly");
+		LsThing componentBatch = makeLsThing("COMPONENT-01-1","batch","test component");
+		LsThing assemblyBatch = makeLsThing("ASSEMBLY-01-1","batch","test assembly");
+		
+		ItxLsThingLsThing parentInc = makeItxLsThingLsThing("ITXTHING-01", "incorporates", "assembly_component", assemblyParent, componentParent);
+		assemblyParent.getSecondLsThings().add(parentInc);
+		componentParent.getFirstLsThings().add(parentInc);
+
+		ItxLsThingLsThing batchInc = makeItxLsThingLsThing("ITXTHING-02", "incorporates", "assembly_component", assemblyBatch, componentBatch);
+		assemblyBatch.getSecondLsThings().add(batchInc);
+		componentBatch.getFirstLsThings().add(batchInc);
+
+		
+		ItxLsThingLsThing componentParentBatch = makeItxLsThingLsThing("ITXTHING-01", "instantiates", "batch_parent", componentBatch, componentParent);
+		componentBatch.getSecondLsThings().add(componentParentBatch);
+		componentParent.getFirstLsThings().add(componentParentBatch);
+
+		
+		ItxLsThingLsThing assemblyParentBatch = makeItxLsThingLsThing("ITXTHING-01", "instantiates", "batch_parent", assemblyBatch, assemblyParent);
+		assemblyBatch.getSecondLsThings().add(assemblyParentBatch);
+		assemblyParent.getFirstLsThings().add(assemblyParentBatch);
+		
+		return componentParent;
+	}
+	
+	@Test
+	public void buildBatchParentLsThingStack(){
+		LsThing thing1 = createParentBatchStack();
+	}
+	
+	@Transactional
+	@Test
+	public void checkBatchDependencies(){
+//		LsThing componentParent = createParentBatchStack();
+//		logger.info(componentParent.toJsonWithNestedFull());
+		LsThing batch = LsThing.findLsThingsByCodeNameEquals("PEG000003-1").getSingleResult();
+		logger.info(batch.toJsonWithNestedFull());
+		DependencyCheckDTO result = lsThingService.checkBatchDependencies(batch);
+		logger.info(result.toJson());
+		Assert.assertTrue(result.getLinkedDataExists());
+	}
+	
+	@Transactional
+	@Test
+	public void checkParentDependencies(){
+//		LsThing componentParent = createParentBatchStack();
+//		logger.info(componentParent.toJsonWithNestedFull());
+		LsThing parent = LsThing.findLsThingsByCodeNameEquals("PEG000003").getSingleResult();
+		DependencyCheckDTO result = lsThingService.checkParentDependencies(parent);
+		logger.info(result.toJson());
+		Assert.assertTrue(result.getLinkedDataExists());
+	}
+	
+	@Transactional
+	@Test
+	public void deleteBatch(){
+		LsThing batch = LsThing.findLsThingsByCodeNameEquals("CB000004-6").getSingleResult();
+		LsThing parent = LsThing.findLsThingsByCodeNameEquals("CB000004").getSingleResult();
+		int lastBatchNumber = lsThingService.getBatchNumber(parent);
+		lsThingService.deleteBatch(batch);
+		LsThing checkBatch = LsThing.findLsThingsByCodeNameEquals("CB000004-6").getSingleResult();
+		LsThing checkParent = LsThing.findLsThingsByCodeNameEquals("CB000004").getSingleResult();
+		int newLastBatchNumber = lsThingService.getBatchNumber(checkParent);
+		logger.info(checkBatch.toJsonWithNestedFull());
+		Assert.assertTrue(checkBatch.isIgnored());
+		Assert.assertTrue(checkBatch.isDeleted());
+		for (ItxLsThingLsThing itxLsThingLsThing : checkBatch.getFirstLsThings()){
+			Assert.assertTrue(itxLsThingLsThing.isIgnored());
+			Assert.assertTrue(itxLsThingLsThing.isDeleted());
+		}
+		for (ItxLsThingLsThing itxLsThingLsThing : checkBatch.getSecondLsThings()){
+			Assert.assertTrue(itxLsThingLsThing.isIgnored());
+			Assert.assertTrue(itxLsThingLsThing.isDeleted());
+		}
+		logger.info("Old lastBatchNumber: "+lastBatchNumber+" newLastBatchNumber: "+newLastBatchNumber);
+		Assert.assertTrue(newLastBatchNumber == lastBatchNumber - 1);
+	}
+	
+	@Transactional
+	@Test
+	public void deleteParent(){
+		LsThing parent = LsThing.findLsThingsByCodeNameEquals("PEG000003").getSingleResult();
+		logger.info(parent.toJsonWithNestedFull());
+		String lastCorpName = autoLabelService.getLastLabel(parent.getLsTypeAndKind(), "corpName_ACAS LsThing").getAutoLabel();
+		lsThingService.deleteParent(parent);
+		LsThing checkParent = LsThing.findLsThingsByCodeNameEquals("PEG000003").getSingleResult();
+		logger.info(checkParent.toJsonWithNestedFull());
+		Assert.assertTrue(checkParent.isIgnored());
+		Assert.assertTrue(checkParent.isDeleted());
+		for (ItxLsThingLsThing itxLsThingLsThing : checkParent.getFirstLsThings()){
+			Assert.assertTrue(itxLsThingLsThing.isIgnored());
+			Assert.assertTrue(itxLsThingLsThing.isDeleted());
+			if (itxLsThingLsThing.getLsType().equals("instantiates")){
+				LsThing checkBatch = itxLsThingLsThing.getFirstLsThing();
+				Assert.assertTrue(checkBatch.isIgnored());
+				Assert.assertTrue(checkBatch.isDeleted());
+				for (ItxLsThingLsThing batchItxLsThingLsThing : checkBatch.getFirstLsThings()){
+					Assert.assertTrue(itxLsThingLsThing.isIgnored());
+					Assert.assertTrue(itxLsThingLsThing.isDeleted());
+				}
+				for (ItxLsThingLsThing batchItxLsThingLsThing : checkBatch.getSecondLsThings()){
+					Assert.assertTrue(itxLsThingLsThing.isIgnored());
+					Assert.assertTrue(itxLsThingLsThing.isDeleted());
+				}
+			}
+		}
+		for (ItxLsThingLsThing itxLsThingLsThing : checkParent.getSecondLsThings()){
+			Assert.assertTrue(itxLsThingLsThing.isIgnored());
+			Assert.assertTrue(itxLsThingLsThing.isDeleted());
+		}
+		String newLastCorpName = autoLabelService.getLastLabel(parent.getLsTypeAndKind(), "corpName_ACAS LsThing").getAutoLabel();
+		logger.info("Old lastCorpName: "+lastCorpName+" New lastCorpName: "+newLastCorpName);
+		Assert.assertFalse(lastCorpName.equals(newLastCorpName));
 	}
 
 }

@@ -39,6 +39,7 @@ import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -101,7 +102,7 @@ public class LsThingServiceImpl implements LsThingService {
 		String labelKind = "Entrez Gene ID";
 
 		PreferredNameResultsDTO responseOutput = getPreferredNameFromName(thingType, thingKind, labelType, labelKind, json);
-
+		
 		return responseOutput;
 	}
 
@@ -182,6 +183,39 @@ public class LsThingServiceImpl implements LsThingService {
 				}catch (EmptyResultDataAccessException e){
 					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
 				}
+			}
+		}
+		responseOutput.setResults(requests);
+		responseOutput.setErrorMessages(errors);
+
+		return responseOutput;
+	}
+	
+	
+	public PreferredNameResultsDTO getCodeNameFromName(PreferredNameRequestDTO requestDTO){
+
+		logger.info("number of requests: " + requestDTO.getRequests().size());
+		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
+
+		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
+		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
+
+		for (PreferredNameDTO request : requests){
+			request.setPreferredName("");
+			request.setReferenceName("");
+			List<LsThing> lsThings = LsThing.findLsThingByLabelText(request.getRequestName()).getResultList();
+			if (lsThings.size() == 1){
+				request.setPreferredName(lsThings.get(0).getCodeName());
+				request.setReferenceName(lsThings.get(0).getCodeName());
+			} else if (lsThings.size() > 1){
+				responseOutput.setError(true);
+				ErrorMessageDTO error = new ErrorMessageDTO();
+				error.setLevel("error");
+				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
+				errors.add(error);
+			} else {
+				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
 			}
 		}
 		responseOutput.setResults(requests);
@@ -280,6 +314,68 @@ public class LsThingServiceImpl implements LsThingService {
 		return responseOutput;
 	}
 	
+	public PreferredNameResultsDTO getPreferredNameFromName(String json){
+
+		logger.info("in getPreferredNameFromName");
+
+		PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);	
+
+		logger.info("number of requests: " + requestDTO.getRequests().size());
+
+		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
+
+		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
+		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
+
+		Set<String> requestNameList = new HashSet<String>();
+		for (PreferredNameDTO request : requests){
+			requestNameList.add(request.getRequestName());
+		}
+		
+		
+
+		List<PreferredNameDTO> lsThingLabelsList =LsThingLabel.findLsThingPreferredName(requestNameList).getResultList();
+		
+	
+		
+		logger.info("number of thing labels found: " + lsThingLabelsList.size());
+		MultiValueMap mvm = new MultiValueMap();
+		for (PreferredNameDTO pn : lsThingLabelsList){
+			mvm.put(pn.getRequestName(), pn);
+		}
+
+		for (PreferredNameDTO request : requests){
+			request.setPreferredName("");
+			request.setReferenceName("");
+			//List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
+			@SuppressWarnings("unchecked")
+			List<PreferredNameDTO> lsThingLabels = (List<PreferredNameDTO>) mvm.get(request.getRequestName());
+
+			if (lsThingLabels != null && lsThingLabels.size() == 1){
+				request.setPreferredName(lsThingLabels.get(0).getPreferredName());
+				request.setReferenceName(lsThingLabels.get(0).getReferenceName());
+			} else if (lsThingLabels != null && lsThingLabels.size() > 1){
+				responseOutput.setError(true);
+				ErrorMessageDTO error = new ErrorMessageDTO();
+				error.setLevel("error");
+				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
+				errors.add(error);
+			} else {
+				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+			}
+		}
+
+
+		responseOutput.setResults(requests);
+		responseOutput.setErrorMessages(errors);
+
+		logger.info(responseOutput.toJson());
+		
+		return responseOutput;
+	}
+	
+	 
 	@Override
 	public PreferredNameResultsDTO getPreferredNameFromName(String thingType, String thingKind, String labelType, String labelKind, PreferredNameRequestDTO requestDTO){
 
@@ -342,6 +438,66 @@ public class LsThingServiceImpl implements LsThingService {
 				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
+			} else {
+				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+			}
+		}
+
+
+		responseOutput.setResults(requests);
+		responseOutput.setErrorMessages(errors);
+
+		logger.info(responseOutput.toJson());
+		
+		return responseOutput;
+	}
+	
+	public PreferredNameResultsDTO getPreferredNameFromName(PreferredNameRequestDTO requestDTO){
+
+		logger.info("in getPreferredNameFromName -- right route");
+
+		logger.info("number of requests: " + requestDTO.getRequests().size());
+
+		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
+
+		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
+		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
+
+		Set<String> requestNameList = new HashSet<String>();
+		for (PreferredNameDTO request : requests){
+			requestNameList.add(request.getRequestName());
+		}
+
+		logger.info("about to run hybernate query");
+		List<PreferredNameDTO> lsThingLabelsList = LsThingLabel.findLsThingPreferredName(requestNameList).getResultList();
+		logger.info("returned from hybernate query");
+		
+		logger.info("number of thing labels found: " + lsThingLabelsList.size());
+		MultiValueMap mvm = new MultiValueMap();
+		for (PreferredNameDTO pn : lsThingLabelsList){
+			mvm.put(pn.getRequestName(), pn);
+		}
+
+		for (PreferredNameDTO request : requests){
+			request.setPreferredName("");
+			request.setReferenceName("");
+			//List<LsThingLabel> lsThingLabels = LsThingLabel.findLsThingPreferredName(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
+			@SuppressWarnings("unchecked")
+			List<PreferredNameDTO> lsThingLabels = (List<PreferredNameDTO>) mvm.get(request.getRequestName());
+
+			if (lsThingLabels != null && lsThingLabels.size() == 1){
+				request.setPreferredName(lsThingLabels.get(0).getPreferredName());
+				request.setReferenceName(lsThingLabels.get(0).getReferenceName());
+			} else if (lsThingLabels != null && lsThingLabels.size() > 1){
+//				responseOutput.setError(true);
+//				ErrorMessageDTO error = new ErrorMessageDTO();
+//				error.setErrorCode("MULTIPLE RESULTS");
+//				error.setErrorMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				logger.info("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME, RETURNING ONLY THE FIRST: " + request.getRequestName());
+//				errors.add(error);
+				request.setPreferredName(lsThingLabels.get(0).getPreferredName());
+				request.setReferenceName(lsThingLabels.get(0).getReferenceName());
+				
 			} else {
 				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
 			}
@@ -704,16 +860,32 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public String generateBatchCodeName(LsThing parent){
 		String parentCodeName = parent.getCodeName();
-		int batchNumber = getBatchNumber(parent);
+		int batchNumber = getNextBatchNumber(parent);
 		String batchCodeName = parentCodeName.concat("-"+ String.valueOf(batchNumber));
 		return batchCodeName;
 	}
 
 
-	private int getBatchNumber(LsThing parent) {
+	@Override
+	public int getBatchNumber(LsThing parent) {
+		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+		int batchNumber = batchNumberValue.getNumericValue().intValue();
+		return batchNumber;
+	}
+	
+	private int getNextBatchNumber(LsThing parent) {
 		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
 		int batchNumber = batchNumberValue.getNumericValue().intValue();
 		batchNumber += 1;
+		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
+		batchNumberValue.merge();
+		return batchNumber;
+	}
+	
+	private int decrementBatchNumber(LsThing parent) {
+		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+		int batchNumber = batchNumberValue.getNumericValue().intValue();
+		batchNumber -= 1;
 		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
 		batchNumberValue.merge();
 		return batchNumber;
@@ -896,7 +1068,7 @@ public class LsThingServiceImpl implements LsThingService {
 			} else {
 				//Inject parent preferred label to all batch lsThings
 				if (lsThing.getLsType().equals("batch")){
-					LsThingLabel bestParentLabel = LsThingLabel.pickBestLabel(findParentByBatchEquals(lsThing).getLsLabels());
+					LsThingLabel bestParentLabel = findParentByBatchEquals(lsThing).pickBestName();
 					lsThing.getLsLabels().add(bestParentLabel);
 				}
 				result.add(lsThing);
@@ -1577,7 +1749,7 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		Collection<LsThing> foundFirstLsThings = new HashSet<LsThing>();
 		for (ItxLsThingLsThing matchingItx : matchingItxLsThingLsThings){
-			foundFirstLsThings.add(matchingItx.getFirstLsThing());
+			if (!matchingItx.getFirstLsThing().isIgnored()) foundFirstLsThings.add(matchingItx.getFirstLsThing());
 		}
 		logger.debug("Found these " + foundFirstLsThings.size() + " lsThing matches for current itx: "+LsThing.toJsonArray(foundFirstLsThings));
 		return foundFirstLsThings;
@@ -1607,5 +1779,93 @@ public class LsThingServiceImpl implements LsThingService {
 			if (foundLsThingReferencedComponentIds.isEmpty()) filteredFoundLsThings.add(foundLsThing);
 		}
 		return filteredFoundLsThings;
+	}
+	
+	@Override
+	public DependencyCheckDTO checkBatchDependencies(LsThing batch){
+		DependencyCheckDTO result = new DependencyCheckDTO();
+		result.getQueryCodeNames().add(batch.getCodeName());
+		Collection<LsThing> assemblies = findCompositesByComponentEquals(batch);
+		if (assemblies != null && !assemblies.isEmpty()){
+			for (LsThing assembly : assemblies){
+				LsThingLabel corpNameLabel = assembly.pickBestCorpName();
+				if (corpNameLabel != null) result.getDependentCorpNames().add(corpNameLabel.getLabelText());
+			}
+		}
+		if (!result.getDependentCorpNames().isEmpty()) result.setLinkedDataExists(true);
+		result.checkForDependentData();
+		return result;
+	}
+	
+	@Override
+	public DependencyCheckDTO checkParentDependencies(LsThing parent){
+		DependencyCheckDTO result = new DependencyCheckDTO();
+		result.getQueryCodeNames().add(parent.getCodeName());
+		Collection<LsThing> assemblies = findCompositesByComponentEquals(parent);
+		if (assemblies != null && !assemblies.isEmpty()){
+			for (LsThing assembly : assemblies){
+				LsThingLabel corpNameLabel = assembly.pickBestCorpName();
+				if (corpNameLabel != null) result.getDependentCorpNames().add(corpNameLabel.getLabelText());
+			}
+		}
+		Collection<LsThing> batches = findBatchesByParentEquals(parent);
+		if (batches != null && !batches.isEmpty()){
+			for (LsThing batch : batches){
+				result.getQueryCodeNames().add(batch.getCodeName());
+			}
+		}
+		if (!result.getDependentCorpNames().isEmpty()) result.setLinkedDataExists(true);
+		result.checkForDependentData();
+		return result;
+	}
+	
+	private void logicalDeleteLsThingAndInteractions(LsThing lsThing){
+		lsThing.logicalDelete();
+		lsThing.merge();
+		if (lsThing.getFirstLsThings() != null && !lsThing.getFirstLsThings().isEmpty()){
+			for (ItxLsThingLsThing itx : lsThing.getFirstLsThings()){
+				itx.logicalDelete();
+				itx.merge();
+			}
+		}
+		if (lsThing.getSecondLsThings() != null && !lsThing.getSecondLsThings().isEmpty()){
+			for (ItxLsThingLsThing itx : lsThing.getSecondLsThings()){
+				itx.logicalDelete();
+				itx.merge();
+			}
+		}
+	}
+
+
+	@Override
+	public boolean deleteBatch(LsThing batch) {
+		LsThing parent = findParentByBatchEquals(batch);
+		int lastBatchNumber = getBatchNumber(parent);
+		boolean isLastBatch = false;
+		if (batch.pickBestCorpName().getLabelText().equals(parent.pickBestCorpName().getLabelText()+"-"+lastBatchNumber)) isLastBatch = true;
+		logicalDeleteLsThingAndInteractions(batch);
+		if (isLastBatch){
+			decrementBatchNumber(parent);
+		}
+		return true;
+	}
+
+
+	@Override
+	public boolean deleteParent(LsThing parent) {
+		String lastParentCorpName = autoLabelService.getLastLabel(parent.getLsTypeAndKind(), "corpName_ACAS LsThing").getAutoLabel();
+		boolean isLastParent = false;
+		if (parent.pickBestCorpName().getLabelText().equals(lastParentCorpName)) isLastParent = true;
+		Collection<LsThing> batches = findBatchesByParentEquals(parent);
+		if (batches != null && !batches.isEmpty()){
+			for (LsThing batch : batches){
+				logicalDeleteLsThingAndInteractions(batch);
+			}
+		}
+		logicalDeleteLsThingAndInteractions(parent);
+		if (isLastParent){
+			autoLabelService.decrementLabelSequence(parent.getLsTypeAndKind(), "corpName_ACAS LsThing");
+		}
+		return true;
 	}
 }

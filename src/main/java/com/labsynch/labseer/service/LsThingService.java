@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
@@ -24,11 +25,16 @@ public interface LsThingService {
 
 	PreferredNameResultsDTO getPreferredNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, String json);
+	
+	PreferredNameResultsDTO getPreferredNameFromName(String json);
 
 	String getProjectCodes();
 
 	PreferredNameResultsDTO getPreferredNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind,
+			PreferredNameRequestDTO requestDTO);
+
+	PreferredNameResultsDTO getPreferredNameFromName(
 			PreferredNameRequestDTO requestDTO);
 
 	LsThing saveLsThing(LsThing lsThing) throws UniqueNameException;
@@ -71,6 +77,16 @@ public interface LsThingService {
 
 	PreferredNameResultsDTO getCodeNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, String json);
+
+	DependencyCheckDTO checkBatchDependencies(LsThing batch);
+
+	DependencyCheckDTO checkParentDependencies(LsThing parent);
+
+	boolean deleteBatch(LsThing batch);
+
+	boolean deleteParent(LsThing parent);
+
+	int getBatchNumber(LsThing parent);
 	
 	
 }
