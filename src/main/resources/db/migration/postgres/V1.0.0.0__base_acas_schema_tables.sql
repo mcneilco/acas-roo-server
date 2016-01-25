@@ -10,28 +10,6 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 
 --
--- Name: acas; Type: SCHEMA; Schema: -; Owner: acas
---
-
-CREATE SCHEMA IF NOT EXISTS acas WITH AUTHORIZATION acas;
-
-
-ALTER SCHEMA acas OWNER TO acas;
-
---
--- Name: SCHEMA acas; Type: COMMENT; Schema: -; Owner: acas
---
-
-COMMENT ON SCHEMA acas IS 'ACAS Schema';
-
-
-SET search_path = acas;
-
-SET default_tablespace = '';
-
-SET default_with_oids = false;
-
---
 -- Name: analysis_group; Type: TABLE; Schema: acas; Owner: acas; Tablespace: 
 --
 
