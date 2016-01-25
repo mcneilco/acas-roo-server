@@ -28,6 +28,7 @@ privileged aspect ContainerDataOnDemand_Roo_DataOnDemand {
     public Container ContainerDataOnDemand.getNewTransientContainer(int index) {
         Container obj = new Container();
         setCodeName(obj, index);
+        setColumnIndex(obj, index);
         setDeleted(obj, index);
         setIgnored(obj, index);
         setLocationId(obj, index);
@@ -39,6 +40,7 @@ privileged aspect ContainerDataOnDemand_Roo_DataOnDemand {
         setModifiedDate(obj, index);
         setRecordedBy(obj, index);
         setRecordedDate(obj, index);
+        setRowIndex(obj, index);
         return obj;
     }
     
@@ -48,6 +50,11 @@ privileged aspect ContainerDataOnDemand_Roo_DataOnDemand {
             codeName = new Random().nextInt(10) + codeName.substring(1, 255);
         }
         obj.setCodeName(codeName);
+    }
+    
+    public void ContainerDataOnDemand.setColumnIndex(Container obj, int index) {
+        int columnIndex = index;
+        obj.setColumnIndex(columnIndex);
     }
     
     public void ContainerDataOnDemand.setDeleted(Container obj, int index) {
@@ -118,6 +125,11 @@ privileged aspect ContainerDataOnDemand_Roo_DataOnDemand {
     public void ContainerDataOnDemand.setRecordedDate(Container obj, int index) {
         Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
+    }
+    
+    public void ContainerDataOnDemand.setRowIndex(Container obj, int index) {
+        int rowIndex = index;
+        obj.setRowIndex(rowIndex);
     }
     
     public Container ContainerDataOnDemand.getSpecificContainer(int index) {

@@ -32,6 +32,8 @@ import flexjson.JSONSerializer;
 public class Container extends AbstractThing {
 
 	private Long locationId;
+	private int rowIndex;
+	private int columnIndex;
 	
 	public Container() {
 		
@@ -49,7 +51,9 @@ public class Container extends AbstractThing {
 		this.setLsType(container.getLsType());
 		this.setLsTypeAndKind(container.getLsTypeAndKind());
 		this.setSubjects(container.getSubjects());
-		this.locationId = container.getLocationId();
+		this.setLocationId = container.getLocationId();
+		this.setRowIndex = container.getRowIndex();
+		this.setColumnIndex = container.getColumnIndex();
 	}
 
 	public static Container update(Container container) {
@@ -64,6 +68,8 @@ public class Container extends AbstractThing {
 		updatedContainer.setLsType(container.getLsType());
 		updatedContainer.setLsTypeAndKind(container.getLsTypeAndKind());
 		updatedContainer.setLocationId(container.getLocationId());
+		updatedContainer.setRowIndex(container.getRowIndex());
+		updatedContainer.setColumnIndex(container.getColumnIndex());
 		updatedContainer.merge();
 		return updatedContainer;
 
