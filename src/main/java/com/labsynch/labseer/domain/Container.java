@@ -51,9 +51,9 @@ public class Container extends AbstractThing {
 		this.setLsType(container.getLsType());
 		this.setLsTypeAndKind(container.getLsTypeAndKind());
 		this.setSubjects(container.getSubjects());
-		this.setLocationId = container.getLocationId();
-		this.setRowIndex = container.getRowIndex();
-		this.setColumnIndex = container.getColumnIndex();
+		this.locationId = container.getLocationId();
+		this.rowIndex = container.getRowIndex();
+		this.columnIndex = container.getColumnIndex();
 	}
 
 	public static Container update(Container container) {
