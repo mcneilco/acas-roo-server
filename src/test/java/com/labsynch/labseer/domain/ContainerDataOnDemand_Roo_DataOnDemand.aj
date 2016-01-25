@@ -53,7 +53,7 @@ privileged aspect ContainerDataOnDemand_Roo_DataOnDemand {
     }
     
     public void ContainerDataOnDemand.setColumnIndex(Container obj, int index) {
-        int columnIndex = index;
+        Integer columnIndex = new Integer(index);
         obj.setColumnIndex(columnIndex);
     }
     
@@ -128,7 +128,7 @@ privileged aspect ContainerDataOnDemand_Roo_DataOnDemand {
     }
     
     public void ContainerDataOnDemand.setRowIndex(Container obj, int index) {
-        int rowIndex = index;
+        Integer rowIndex = new Integer(index);
         obj.setRowIndex(rowIndex);
     }
     

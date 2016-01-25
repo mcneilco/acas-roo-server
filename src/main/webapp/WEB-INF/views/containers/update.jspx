@@ -21,7 +21,7 @@
         <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_Container_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Container Label" z="8BA/p4Fv+3O3Umgi2tImlZOGQbU="/>
         <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_Container_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Container State" z="XW2jhs1bOB1sJ5KGUM8eBtk6zXI="/>
         <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_Container_deleted" z="psP5+0SByLLdDw3of8Y2Z8uRP5M="/>
-        <field:input field="rowIndex" id="c_com_labsynch_labseer_domain_Container_rowIndex" z="7+gos0nK+dBLPSKTpc8Jl9Wumjs="/>
-        <field:input field="columnIndex" id="c_com_labsynch_labseer_domain_Container_columnIndex" z="YPu7iZ6rZRcatu7loK/GzWcMYkc="/>
+        <field:input field="rowIndex" id="c_com_labsynch_labseer_domain_Container_rowIndex" validationMessageCode="field_invalid_integer" z="QcMNiazsI3hyy9/kK1Mpu+hmkCQ="/>
+        <field:input field="columnIndex" id="c_com_labsynch_labseer_domain_Container_columnIndex" validationMessageCode="field_invalid_integer" z="0eW3rqVqcpjJykmcaSe4fi/5y1I="/>
     </form:update>
 </div>

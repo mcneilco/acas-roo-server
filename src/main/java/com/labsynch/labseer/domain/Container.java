@@ -32,8 +32,8 @@ import flexjson.JSONSerializer;
 public class Container extends AbstractThing {
 
 	private Long locationId;
-	private int rowIndex;
-	private int columnIndex;
+	private Integer rowIndex;
+	private Integer columnIndex;
 	
 	public Container() {
 		
