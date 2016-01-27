@@ -96,6 +96,30 @@ public class ApiCurveFitController {
 		}
 	}
 	
+	@ApiOperation(value="getRawAgonistCurveDataByCurveId")
+	@Transactional
+	@RequestMapping(value = "/rawdataagonist", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> getRawCurveDataAgonistByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format) {
+		try {
+			//This route currently assumes that all the curveIds specified have the same rendering hint. It will not pull back the correct data if a mix of rendering hints is expected.
+			Collection<RawCurveDataDTO> filledRawCurveDataDTOs = RawCurveDataDTO.getRawCurveDataAgonist(curveIds);
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Type", "application/json");
+			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+				String outFileString = RawCurveDataDTO.getCsvList(filledRawCurveDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
+			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+			} else {
+			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(filledRawCurveDataDTOs), headers, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
+	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	
 	@Transactional
 	@RequestMapping(value = "/tgdata", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> getTgDataByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format) {
@@ -161,6 +185,28 @@ public class ApiCurveFitController {
     }
 	
 	@Transactional
+    @RequestMapping(value = "/rawdataagonist", method = RequestMethod.GET, headers = "Accept=application/json")
+    public ResponseEntity<String> getRawDataAgonistByExperimentIdOrCodeName(@RequestParam(value = "experiment") String experimentIdOrCodeName, 
+    		@RequestParam(value = "format", required = false) String format) {
+        try {
+			Collection<RawCurveDataDTO> rawCurveDataDTOs = RawCurveDataDTO.getRawAgonistCurveDataByExperiment(experimentIdOrCodeName);
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Content-Type", "application/json");
+			if (format != null && (format.equalsIgnoreCase("csv") || format.equalsIgnoreCase("tsv"))) {
+				String outFileString = RawCurveDataDTO.getCsvList(rawCurveDataDTOs, format);
+				outFileString = outFileString.replaceAll("\"\"", "\\\"");
+			    return new ResponseEntity<String>(outFileString, headers, HttpStatus.OK);
+			} else {
+			    return new ResponseEntity<String>(RawCurveDataDTO.toJsonArray(rawCurveDataDTOs), headers, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+//			String error = e.getMessage() + e.getStackTrace();
+	    	logger.error("Caught error: "+e.toString());
+	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+    }
+	
+	@Transactional
     @RequestMapping(value = "/rawdata", method = RequestMethod.GET, headers = "Accept=application/json")
     public ResponseEntity<String> getRawDataByExperimentIdOrCodeName(@RequestParam(value = "experiment") String experimentIdOrCodeName, 
     		@RequestParam(value = "format", required = false) String format) {
@@ -181,6 +227,7 @@ public class ApiCurveFitController {
 	    	return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
     }
+
 	
 	@Transactional
     @RequestMapping(value = "/tgdata", method = RequestMethod.GET, headers = "Accept=application/json")
