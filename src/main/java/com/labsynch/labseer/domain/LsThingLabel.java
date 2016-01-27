@@ -404,9 +404,9 @@ public static TypedQuery<PreferredNameDTO> findLsThingPreferredName(Set<String> 
 				if (label.getLsType().equals("name")) nameLabels.add(label);
 			}
 			if (!nameLabels.isEmpty()){
-				LsThingLabel bestLabel = preferredLabels.iterator().next();
-				for (LsThingLabel preferredLabel : preferredLabels){
-					if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+				LsThingLabel bestLabel = nameLabels.iterator().next();
+				for (LsThingLabel nameLabel : nameLabels){
+					if (nameLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = nameLabel;
 				}
 				return bestLabel;
 			} else {
