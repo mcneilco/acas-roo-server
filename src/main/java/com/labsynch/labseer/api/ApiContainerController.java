@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
@@ -361,6 +362,22 @@ public class ApiContainerController {
         try{
         	Collection<WellContentDTO> searchResults = containerService.getWellContent(wellCodes);
             return new ResponseEntity<String>(WellContentDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/throwInTrash", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> throwInTrash(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<CodeModifiedByModifiedDateDTO> containersToTrash = CodeModifiedByModifiedDateDTO.fromJsonArrayToCodeModifiedByMoes(json);
+        	Boolean success = containerService.throwInTrash(containersToTrash);
+        	if (success) return new ResponseEntity<String>(HttpStatus.OK);
+        	else return new ResponseEntity<String>("Failed to throw containers in trash", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }

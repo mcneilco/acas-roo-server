@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,7 @@ import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +33,9 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
@@ -704,6 +708,93 @@ public class ContainerServiceImpl implements ContainerService {
 	private String makeInnerJoinHql(String table, String alias, String lsType, String lsKind){
 		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
 		return queryString;
+	}
+
+	@Override
+	public Boolean throwInTrash(
+			Collection<CodeModifiedByModifiedDateDTO> containersToTrash) throws Exception {
+		for (CodeModifiedByModifiedDateDTO dto : containersToTrash){
+			Container container = Container.findContainerByCodeNameEquals(dto.getContainerCodeName());
+			//ignore the old movedTo interaction to preserve history
+			ItxContainerContainer movedTo = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndFirstContainerEquals("moved to", "storage move", container).getSingleResult();
+			movedTo.setIgnored(true);
+			movedTo.setModifiedBy(dto.getModifiedBy());
+			movedTo.setModifiedDate(dto.getModifiedDate());
+			//create trash interaction to show container has been moved to the trash
+			ItxContainerContainer trashItx = new ItxContainerContainer();
+			trashItx.setLsType("moved to");
+			trashItx.setLsKind("storage move");
+			trashItx.setRecordedBy(dto.getModifiedBy());
+			trashItx.setRecordedDate(dto.getModifiedDate());
+			trashItx.setFirstContainer(container);
+			trashItx.setSecondContainer(getOrCreateTrash());
+			trashItx.persist();
+			//ignore container since it is now in the trash
+			container.setIgnored(true);
+			container.setModifiedBy(dto.getModifiedBy());
+			container.setModifiedDate(dto.getModifiedDate());		
+		}
+		return true;
+	}
+	
+	private Container getOrCreateTrash() throws Exception{
+		try{
+			List<Container> trashes = Container.findContainerByContainerLabel("trash");
+			if (trashes.size() > 0 ) throw new Exception("Multiple containers called 'trash' exist.");
+			Container trash = trashes.get(0);
+			return trash;
+		}catch(EmptyResultDataAccessException e){
+			Container trash = new Container();
+			trash.setCodeName(autoLabelService.getContainerCodeName());
+			trash.setLsType("location");
+			trash.setLsKind("default");
+			trash.setRecordedBy("acas");
+			trash.setRecordedDate(new Date());
+			ContainerLabel trashLabel = new ContainerLabel();
+			trashLabel.setLsType("name");
+			trashLabel.setLsKind("common");
+			trashLabel.setLabelText("trash");
+			trashLabel.setRecordedBy("acas");
+			trashLabel.setRecordedDate(new Date());
+			trashLabel.setPreferred(true);
+			trash.getLsLabels().add(trashLabel);
+			
+			ContainerState trashState = new ContainerState();
+			trashState.setLsType("metadata");
+			trashState.setLsKind("information");
+			trashState.setRecordedBy("acas");
+			trashState.setRecordedDate(new Date());
+			
+			ContainerValue trashUserValue = new ContainerValue();
+			trashUserValue.setLsType("stringValue");
+			trashUserValue.setLsKind("created user");
+			trashUserValue.setRecordedBy("acas");
+			trashUserValue.setRecordedDate(new Date());
+			trashUserValue.setStringValue("acas");
+			trashState.getLsValues().add(trashUserValue);
+			
+			ContainerValue trashDescriptionValue = new ContainerValue();
+			trashDescriptionValue.setLsType("stringValue");
+			trashDescriptionValue.setLsKind("description");
+			trashDescriptionValue.setRecordedBy("acas");
+			trashDescriptionValue.setRecordedDate(new Date());
+			trashDescriptionValue.setStringValue("trash");
+			trashState.getLsValues().add(trashDescriptionValue);
+			
+			ContainerValue trashDateValue = new ContainerValue();
+			trashDateValue.setLsType("dateValue");
+			trashDateValue.setLsKind("created date");
+			trashDateValue.setRecordedBy("acas");
+			trashDateValue.setRecordedDate(new Date());
+			trashDateValue.setDateValue(new Date());
+			trashState.getLsValues().add(trashDateValue);
+			
+			trash.getLsStates().add(trashState);
+			
+			Container newTrash = saveLsContainer(trash);
+			
+			return newTrash;
+		}
 	}
 
 }

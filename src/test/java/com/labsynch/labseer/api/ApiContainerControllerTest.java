@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -22,6 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,6 +33,7 @@ import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
+import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
@@ -154,6 +157,43 @@ public class ApiContainerControllerTest {
     	for (WellContentDTO result : results){
     		Assert.assertNotNull(result.getWellCodeName());
     	}
+    }
+    
+    @Test
+    @Transactional
+    public void throwInTrash() throws Exception{
+    	//TODO: add query with containerCodeName modifiedBy and modifiedDate
+    	Collection<CodeModifiedByModifiedDateDTO> containerCodeDTOs = new HashSet<CodeModifiedByModifiedDateDTO>();
+		CodeModifiedByModifiedDateDTO containerCodeDTO = new CodeModifiedByModifiedDateDTO();
+		containerCodeDTO.setContainerCodeName(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getCodeName());
+		containerCodeDTO.setModifiedBy("bfielder");
+		containerCodeDTO.setModifiedDate(new Date());
+		containerCodeDTOs.add(containerCodeDTO);
+		String json = CodeModifiedByModifiedDateDTO.toJsonArray(containerCodeDTOs);
+		logger.info(json);
+		Assert.assertFalse(json.equals("[{}]"));
+    	ResultActions response = this.mockMvc.perform(post("/api/v1/containers/throwInTrash")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk());
+    }
+    
+    @Test
+    @Transactional
+    public void throwInTrashError() throws Exception{
+		String json = "[{\"containerCodeName\":\"total-garbage\",\"modifiedDate\":\"not-a-date\"}]";
+		logger.info(json);
+		Assert.assertFalse(json.equals("[{}]"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/throwInTrash")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isInternalServerError())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();;
+		logger.info(response.getContentAsString());
+		Assert.assertTrue(response.getContentAsString().length() > 0);
     }
     
 

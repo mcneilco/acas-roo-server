@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -217,6 +219,14 @@ public class Container extends AbstractThing {
 		this.entityManager.flush();
 		return merged;
 	}
+	
+	public static Container findContainerByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Container.entityManager();
+        TypedQuery<Container> q = em.createQuery("SELECT o FROM Container AS o WHERE o.codeName = :codeName", Container.class);
+        q.setParameter("codeName", codeName);
+        return q.getSingleResult();
+    }
 
 
 

@@ -48,6 +48,7 @@ import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
@@ -669,6 +670,19 @@ public class ContainerLSServiceTests {
 		Assert.assertTrue(updatedContainer.getVersion() == container.getVersion() + 1);
 		Container fetchedContainer = Container.findContainer(container.getId());
 		Assert.assertTrue(updatedContainer.getVersion() == fetchedContainer.getVersion());
+	}
+	
+	@Test
+	@Transactional
+	public void throwInTrash() throws Exception{
+		Collection<CodeModifiedByModifiedDateDTO> containerCodeDTOs = new HashSet<CodeModifiedByModifiedDateDTO>();
+		CodeModifiedByModifiedDateDTO containerCodeDTO = new CodeModifiedByModifiedDateDTO();
+		containerCodeDTO.setContainerCodeName(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getCodeName());
+		containerCodeDTO.setModifiedBy("bfielder");
+		containerCodeDTO.setModifiedDate(new Date());
+		containerCodeDTOs.add(containerCodeDTO);
+		Boolean success = containerService.throwInTrash(containerCodeDTOs);
+		Assert.assertTrue(success);
 	}
 	
 	
