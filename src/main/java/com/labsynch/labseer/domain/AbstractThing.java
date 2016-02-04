@@ -43,18 +43,15 @@ public abstract class AbstractThing {
     @Column(name = "version")
     private Integer version;
 	
-	@org.hibernate.annotations.Index(name="_TYPE_IDX")
 	@NotNull
 	@Size(max = 255)
 	private String lsType;
 	
-	@org.hibernate.annotations.Index(name="_KIND_IDX")
 	@NotNull
 	@Size(max = 255)
 	private String lsKind;	
 
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name="_TK_IDX")
 	private String lsTypeAndKind;
 	
     @Column(unique = true)
@@ -77,14 +74,12 @@ public abstract class AbstractThing {
 	@DateTimeFormat(style = "MM")
 	private Date modifiedDate;
 
-	@org.hibernate.annotations.Index(name="_IGN_IDX")
 	@NotNull
 	private boolean ignored;
 	
 	@NotNull
 	private boolean deleted;
 
-	@org.hibernate.annotations.Index(name="_TRXN_IDX")
 	private Long lsTransaction;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "thing")
