@@ -10,6 +10,8 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 
@@ -46,6 +48,12 @@ public interface ContainerService {
 	Collection<WellContentDTO> getWellContent(List<String> wellCodes);
 
 	ArrayList<ErrorMessage> validateContainer(Container container);
+
+	PreferredNameResultsDTO getCodeNameFromName(String containerType,
+			String containerKind, String labelType, String labelKind,
+			PreferredNameRequestDTO requestDTO);
+
+	String pickBestLabel(Container container);
 	
 	
 	

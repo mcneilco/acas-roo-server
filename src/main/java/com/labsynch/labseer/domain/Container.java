@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -211,8 +214,63 @@ public class Container extends AbstractThing {
 		this.entityManager.flush();
 		return merged;
 	}
+	
+	public static Container findContainerByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Container.entityManager();
+        TypedQuery<Container> q = em.createQuery("SELECT o FROM Container AS o WHERE o.codeName = :codeName", Container.class);
+        q.setParameter("codeName", codeName);
+        return q.getSingleResult();
+    }
 
-
-
+	public static TypedQuery<Container> findContainerByLabelText(String containerType, String containerKind, String labelText) {
+        if (containerType == null || containerType.length() == 0) throw new IllegalArgumentException("The containerType argument is required");
+        if (containerKind == null || containerKind.length() == 0) throw new IllegalArgumentException("The containerKind argument is required");
+		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        
+        boolean ignored = true;
+        EntityManager em = Container.entityManager();
+		String query = "SELECT DISTINCT o FROM Container o " +
+				"JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :containerType " +
+				"AND o.lsKind = :containerKind ";
+        
+        TypedQuery<Container> q = em.createQuery(query, Container.class);
+        q.setParameter("containerType", containerType);
+        q.setParameter("containerKind", containerKind);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
+	
+	public static TypedQuery<Container> findContainerByLabelText(String containerType, String containerKind, String labelType, String labelKind, String labelText) {
+        if (containerType == null || containerType.length() == 0) throw new IllegalArgumentException("The containerType argument is required");
+        if (containerKind == null || containerKind.length() == 0) throw new IllegalArgumentException("The containerKind argument is required");
+        if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+        if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = Container.entityManager();
+		String query = "SELECT DISTINCT o FROM Container o " +
+				"JOIN o.lsLabels ll " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :containerType " +
+				"AND o.lsKind = :containerKind " +
+				"AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+        
+        TypedQuery<Container> q = em.createQuery(query, Container.class);
+        q.setParameter("containerType", containerType);
+        q.setParameter("containerKind", containerKind);
+        q.setParameter("labelType", labelType);        
+        q.setParameter("labelKind", labelKind);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
 
 }

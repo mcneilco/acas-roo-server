@@ -21,14 +21,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.ContainerService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
 
 @Controller
@@ -46,10 +50,15 @@ public class ApiContainerController {
     private PropertiesUtilService propertiesUtilService;
 
     @Transactional
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{idOrCodeName}", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
-        Container container = Container.findContainer(id);
+    public ResponseEntity<java.lang.String> showJson(@PathVariable("idOrCodeName") String idOrCodeName) {
+    	Container container;
+    	if(SimpleUtil.isNumeric(idOrCodeName)) {
+    	    	container = Container.findContainer(Long.valueOf(idOrCodeName));
+ 		} else {
+ 			container = Container.findContainerByCodeNameEquals(idOrCodeName);
+ 		}
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (container == null) {
@@ -392,6 +401,20 @@ public class ApiContainerController {
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @RequestMapping(value = "/getCodeNameFromNameRequest", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getCodeNameFromName(@RequestBody String json, 
+    		@RequestParam(value = "containerType", required = true) String containerType, 
+    		@RequestParam(value = "containerKind", required = true) String containerKind, 
+    		@RequestParam(value = "labelType", required = false) String labelType, 
+    		@RequestParam(value = "labelKind", required = false) String labelKind) {
+    	PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);
+        logger.info("getCodeNameFromNameRequest incoming json: " + requestDTO.toJson());
+        PreferredNameResultsDTO results = containerService.getCodeNameFromName(containerType, containerKind, labelType, labelKind, requestDTO);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
     }
     
 }
