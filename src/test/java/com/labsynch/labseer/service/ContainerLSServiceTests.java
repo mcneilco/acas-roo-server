@@ -48,6 +48,7 @@ import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
@@ -651,6 +652,48 @@ public class ContainerLSServiceTests {
 		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null);
 		logger.info(CodeLabelDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
+	}
+	
+	@Test
+	@Transactional
+	public void checkDependencies_pass(){
+    	String codeName = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getCodeName();
+    	Container container = Container.findContainersByCodeNameEquals(codeName).getSingleResult();
+    	logger.info(container.toJson());
+		Long before = (new Date()).getTime();
+    	ContainerDependencyCheckDTO result = containerService.checkDependencies(container);
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+		logger.info(result.toJson());
+		Assert.assertFalse(result.isLinkedDataExists());
+	}
+	
+	@Test
+	@Transactional
+	public void checkDependencies_fail_on_added_to(){
+//		String codeName = Container.findContainersByLsTypeEqualsAndLsKindEquals("location","default").getResultList().get(0).getCodeName();
+		String codeName = "CONT-388802";
+    	Container container = Container.findContainersByCodeNameEquals(codeName).getSingleResult();
+    	logger.info(container.toJson());
+		Long before = (new Date()).getTime();
+    	ContainerDependencyCheckDTO result = containerService.checkDependencies(container);
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+		logger.info(result.toJson());
+		Assert.assertTrue(result.isLinkedDataExists());
+		Assert.assertFalse(result.getDependentCorpNames().isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void checkDependencies_fail_on_subject_itx(){
+		
+	}
+	
+	@Test
+	@Transactional
+	public void checkDependencies_fail_on_member_subject_itx(){
+		
 	}
 	
 	@Test

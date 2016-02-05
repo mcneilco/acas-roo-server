@@ -25,16 +25,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.ContainerService;
 import com.labsynch.labseer.service.GeneThingService;
 import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
+import com.wordnik.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("api/v1/containers")
@@ -274,6 +279,40 @@ public class ApiContainerController {
         }
         container.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @ApiOperation(value = "Checks for dependent containers that would preclude deletion",
+    		notes="A container will fail the dependency check if: \n"
+    				+ "A) It has other containers stored in it (added to interaction) \n"
+    				+ "B) It has referenced Subjects (Subject-Container interactions) \n"
+    				+ "C) Any members (member interaction) have referenced Subjects")
+    @RequestMapping(value = "/checkDependencies/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public ResponseEntity<String> checkDependencies(@PathVariable("idOrCodeName") String idOrCodeName) {
+  	  HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        Container container;
+        if(SimpleUtil.isNumeric(idOrCodeName)) {
+        	container = Container.findContainer(Long.valueOf(idOrCodeName));
+  		} else {		
+  			try {
+  				container = Container.findContainersByCodeNameEquals(idOrCodeName).getSingleResult();
+  			} catch(Exception ex) {
+  				container = null;
+  				ErrorMessage error = new ErrorMessage();
+  	            error.setErrorLevel("error");
+  	            error.setMessage("parent:" + idOrCodeName +" not found");
+  	            errors.add(error);
+  	            errorsFound = true;
+  			}
+  		}
+        ContainerDependencyCheckDTO result = containerService.checkDependencies(container);
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+        }
     }
 
     @Transactional

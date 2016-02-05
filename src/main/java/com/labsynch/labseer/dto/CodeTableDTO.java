@@ -8,6 +8,8 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.DDictValue;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentLabel;
 
 @RooJavaBean
 @RooToString
@@ -28,6 +30,13 @@ public class CodeTableDTO {
 		this.setComments(dDictVal.getComments());
 		this.setCodeKind(dDictVal.getLsKind());
 		this.setCodeType(dDictVal.getLsType());
+	}
+	
+	public CodeTableDTO(Experiment experiment) {
+		this.setId(experiment.getId());
+		this.setCode(experiment.getCodeName());
+		this.setName(ExperimentLabel.findExperimentPreferredName(experiment.getId()).getSingleResult().getLabelText());
+		this.setIgnored(experiment.isIgnored());
 	}
 
 	private String code;

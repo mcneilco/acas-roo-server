@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -101,4 +103,91 @@ public class ItxContainerContainer extends AbstractThing {
         		.use(BigDecimal.class, new CustomBigDecimalFactory())
         		.deserialize(json);
     }
+    
+    public static TypedQuery<ItxContainerContainer> findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndFirstContainerEquals(String lsType, String lsKind, Container firstContainer){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (firstContainer == null) throw new IllegalArgumentException("The firstContainer argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxContainerContainer.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND o.firstContainer = :firstContainer ";
+        
+        TypedQuery<ItxContainerContainer> q = em.createQuery(query, ItxContainerContainer.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("firstContainer", firstContainer);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public static TypedQuery<ItxContainerContainer> findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndSecondContainerEquals(String lsType, String lsKind, Container secondContainer){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (secondContainer == null) throw new IllegalArgumentException("The secondContainer argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxContainerContainer.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND o.secondContainer = :secondContainer ";
+        
+        TypedQuery<ItxContainerContainer> q = em.createQuery(query, ItxContainerContainer.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("secondContainer", secondContainer);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public static TypedQuery<ItxContainerContainer> findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(String lsType, Container firstContainer){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (firstContainer == null) throw new IllegalArgumentException("The firstContainer argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxContainerContainer.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.firstContainer = :firstContainer ";
+        
+        TypedQuery<ItxContainerContainer> q = em.createQuery(query, ItxContainerContainer.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("firstContainer", firstContainer);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public static TypedQuery<ItxContainerContainer> findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(String lsType, Container secondContainer){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (secondContainer == null) throw new IllegalArgumentException("The secondContainer argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = ItxContainerContainer.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.secondContainer = :secondContainer ";
+        
+        TypedQuery<ItxContainerContainer> q = em.createQuery(query, ItxContainerContainer.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("secondContainer", secondContainer);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
 }

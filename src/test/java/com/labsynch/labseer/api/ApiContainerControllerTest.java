@@ -33,6 +33,7 @@ import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 
@@ -154,6 +155,21 @@ public class ApiContainerControllerTest {
     	for (WellContentDTO result : results){
     		Assert.assertNotNull(result.getWellCodeName());
     	}
+    }
+    
+    @Test
+    @Transactional
+    public void containerDependencyCheck_Well() throws Exception{
+    	String codeName = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getCodeName();
+    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/containers/checkDependencies/"+codeName)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+//    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	DependencyCheckDTO results = DependencyCheckDTO.fromJsonToDependencyCheckDTO(responseJson);
+    	
     }
     
 

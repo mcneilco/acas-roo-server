@@ -31,8 +31,12 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
@@ -704,6 +708,35 @@ public class ContainerServiceImpl implements ContainerService {
 	private String makeInnerJoinHql(String table, String alias, String lsType, String lsKind){
 		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
 		return queryString;
+	}
+
+	@Override
+	public ContainerDependencyCheckDTO checkDependencies(Container container) {
+		ContainerDependencyCheckDTO result = new ContainerDependencyCheckDTO();
+		result.setQueryContainer(container);
+		Collection<ItxContainerContainer> movedToItxs = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals("moved to", container).getResultList();
+		if (movedToItxs != null && !movedToItxs.isEmpty()){
+			for (ItxContainerContainer movedToItx : movedToItxs){
+				Container contents = movedToItx.getFirstContainer();
+				if (!contents.isIgnored()){
+					result.getDependentCorpNames().add(contents.getCodeName());
+				}
+			}
+		}
+		Collection<ItxContainerContainer> hasMemberItxs = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals("has member", container).getResultList();
+		Collection<Container> members = new HashSet<Container>();
+		if (hasMemberItxs != null && !hasMemberItxs.isEmpty()){
+			for (ItxContainerContainer hasMemberItx : hasMemberItxs){
+				Container contents = hasMemberItx.getSecondContainer();
+				if (!contents.isIgnored()){
+					members.add(contents);
+				}
+			}
+		}
+		if (!result.getDependentCorpNames().isEmpty()) result.setLinkedDataExists(true);
+		logger.debug("finished checking for linked containers. Now checking for dependent experimental data");
+		result.checkForDependentData(result.getQueryContainer(), members);
+		return result;
 	}
 
 }
