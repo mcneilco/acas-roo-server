@@ -70,6 +70,9 @@
                 <prop key=".MissingServletRequestParameterException">resourceNotFound</prop>
             </props>
         </property>
+        <property name="defaultStatusCode">
+        	<value>500</value>
+    	</property>
     </bean>
 
     <!-- Enable this for integration of file upload functionality -->
