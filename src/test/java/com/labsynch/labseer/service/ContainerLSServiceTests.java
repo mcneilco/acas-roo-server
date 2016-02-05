@@ -48,6 +48,9 @@ import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -691,6 +694,27 @@ public class ContainerLSServiceTests {
 		Container jsonContainer = Container.fromJsonToContainer(json);
 		ArrayList<ErrorMessage> errors = containerService.validateContainer(jsonContainer);
 		Assert.assertFalse(errors.isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void getCodeNameFromName(){
+		Container container = Container.findContainersByLsTypeEqualsAndLsKindEquals("container", "plate").getResultList().get(0);
+    	String containerType = container.getLsType();
+    	String containerKind = container.getLsKind();
+		String label = container.getLsLabels().iterator().next().getLabelText();
+		PreferredNameDTO request = new PreferredNameDTO(label, null, null);
+		Collection<PreferredNameDTO> requests = new HashSet<PreferredNameDTO>();
+		requests.add(request);
+		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
+		requestDTO.setRequests(requests);
+		PreferredNameResultsDTO results = containerService.getCodeNameFromName(containerType, containerKind, null, null, requestDTO);
+		logger.info(results.toJson());
+		for (PreferredNameDTO result : results.getResults()){
+    		Assert.assertNotNull(result.getRequestName());
+    		Assert.assertNotNull(result.getReferenceName());
+    		Assert.assertNotNull(result.getPreferredName());
+    	}
 	}
 	
 	

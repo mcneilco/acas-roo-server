@@ -36,8 +36,12 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxContainerContainerValue;
@@ -757,6 +761,64 @@ public class ContainerServiceImpl implements ContainerService {
 	private String makeInnerJoinHql(String table, String alias, String lsType, String lsKind){
 		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
 		return queryString;
+	}
+
+	@Override
+	public PreferredNameResultsDTO getCodeNameFromName(String containerType,
+			String containerKind, String labelType, String labelKind,
+			PreferredNameRequestDTO requestDTO) {
+		logger.info("number of requests: " + requestDTO.getRequests().size());
+		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
+
+		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
+		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
+
+		for (PreferredNameDTO request : requests){
+			request.setPreferredName("");
+			request.setReferenceName("");
+			List<Container> lsThings = new ArrayList<Container>();
+			if (labelType==null || labelKind==null || labelType.length()==0 || labelKind.length()==0){
+				lsThings = Container.findContainerByLabelText(containerType, containerKind, request.getRequestName()).getResultList();
+
+			}else{
+				lsThings = Container.findContainerByLabelText(containerType, containerKind, labelType, labelKind, request.getRequestName()).getResultList();
+			}
+			if (lsThings.size() == 1){
+				request.setPreferredName(pickBestLabel(lsThings.get(0)));
+				request.setReferenceName(lsThings.get(0).getCodeName());
+			} else if (lsThings.size() > 1){
+				responseOutput.setError(true);
+				ErrorMessageDTO error = new ErrorMessageDTO();
+				error.setLevel("MULTIPLE RESULTS");
+				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
+				errors.add(error);
+			} else {
+				try{
+					Container codeNameMatch = Container.findContainerByCodeNameEquals(request.getRequestName());
+					if (codeNameMatch.getLsKind().equals(containerKind) && codeNameMatch.getLsType().equals(containerType)){
+						logger.info("Made it to the codeMatch");
+						request.setPreferredName(pickBestLabel(codeNameMatch));
+	 					request.setReferenceName(codeNameMatch.getCodeName());
+					}else{
+						logger.info("Did not find a Container with the requested name: " + request.getRequestName());
+					}
+				}catch (EmptyResultDataAccessException e){
+					logger.info("Did not find a Container with the requested name: " + request.getRequestName());
+				}
+			}
+		}
+		responseOutput.setResults(requests);
+		responseOutput.setErrorMessages(errors);
+
+		return responseOutput;
+	}
+	
+	@Override
+	public String pickBestLabel(Container container) {
+		Collection<ContainerLabel> labels = container.getLsLabels();
+		if (labels.isEmpty()) return null;
+		return ContainerLabel.pickBestLabel(labels).getLabelText();
 	}
 
 }

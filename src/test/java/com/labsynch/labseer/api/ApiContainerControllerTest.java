@@ -35,6 +35,9 @@ import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 
@@ -232,6 +235,70 @@ public class ApiContainerControllerTest {
 		logger.info(responseJson);
 		Collection<ErrorMessage> errors = ErrorMessage.fromJsonArrayToErrorMessages(responseJson);
 		Assert.assertFalse(errors.isEmpty());
+    }
+    
+    @Test
+    @Transactional
+    public void getContainerById() throws Exception{
+    	Container container = Container.findContainersByLsTypeEqualsAndLsKindEquals("container", "plate").getResultList().get(0);
+    	String id = container.getId().toString();
+    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/containers/"+id)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Container result = Container.fromJsonToContainer(responseJson);
+    	Assert.assertNotNull(result.getCodeName());
+    }
+    
+    @Test
+    @Transactional
+    public void getContainerByCodeName() throws Exception{
+    	Container container = Container.findContainersByLsTypeEqualsAndLsKindEquals("container", "plate").getResultList().get(0);
+    	String codeName = container.getCodeName();
+    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/containers/"+codeName)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Container result = Container.fromJsonToContainer(responseJson);
+    	Assert.assertNotNull(result.getCodeName());
+    }
+    
+    @Test
+    @Transactional
+    public void getCodeNameFromNameRequest() throws Exception{
+    	Container container = Container.findContainersByLsTypeEqualsAndLsKindEquals("container", "plate").getResultList().get(0);
+    	String containerType = container.getLsType();
+    	String containerKind = container.getLsKind();
+		String label = container.getLsLabels().iterator().next().getLabelText();
+		PreferredNameDTO request = new PreferredNameDTO(label, null, null);
+		Collection<PreferredNameDTO> requests = new HashSet<PreferredNameDTO>();
+		requests.add(request);
+		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
+		requestDTO.setRequests(requests);
+		String json = requestDTO.toJson();
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getCodeNameFromNameRequest"
+    			+ "?containerType="+containerType+"&containerKind="+containerKind)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	PreferredNameResultsDTO results = PreferredNameResultsDTO.fromJsonToPreferredNameResultsDTO(responseJson);
+    	for (PreferredNameDTO result : results.getResults()){
+    		Assert.assertNotNull(result.getRequestName());
+    		Assert.assertNotNull(result.getReferenceName());
+    		Assert.assertNotNull(result.getPreferredName());
+    	}
     }
 
 }
