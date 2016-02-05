@@ -5,47 +5,32 @@ package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.WellContentDTO;
 import java.math.BigDecimal;
+import java.util.Date;
 
 privileged aspect WellContentDTO_Roo_JavaBean {
     
-    public String WellContentDTO.getWellCodeName() {
-        return this.wellCodeName;
+    public String WellContentDTO.getContainerCodeName() {
+        return this.containerCodeName;
     }
     
-    public void WellContentDTO.setWellCodeName(String wellCodeName) {
-        this.wellCodeName = wellCodeName;
+    public void WellContentDTO.setContainerCodeName(String containerCodeName) {
+        this.containerCodeName = containerCodeName;
     }
     
-    public BigDecimal WellContentDTO.getGrossMass() {
-        return this.grossMass;
+    public BigDecimal WellContentDTO.getAmount() {
+        return this.amount;
     }
     
-    public void WellContentDTO.setGrossMass(BigDecimal grossMass) {
-        this.grossMass = grossMass;
+    public void WellContentDTO.setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
     
-    public String WellContentDTO.getGrossMassUnits() {
-        return this.grossMassUnits;
+    public String WellContentDTO.getAmountUnits() {
+        return this.amountUnits;
     }
     
-    public void WellContentDTO.setGrossMassUnits(String grossMassUnits) {
-        this.grossMassUnits = grossMassUnits;
-    }
-    
-    public BigDecimal WellContentDTO.getNetMass() {
-        return this.netMass;
-    }
-    
-    public void WellContentDTO.setNetMass(BigDecimal netMass) {
-        this.netMass = netMass;
-    }
-    
-    public String WellContentDTO.getNetMassUnits() {
-        return this.netMassUnits;
-    }
-    
-    public void WellContentDTO.setNetMassUnits(String netMassUnits) {
-        this.netMassUnits = netMassUnits;
+    public void WellContentDTO.setAmountUnits(String amountUnits) {
+        this.amountUnits = amountUnits;
     }
     
     public String WellContentDTO.getBatchCode() {
@@ -88,20 +73,60 @@ privileged aspect WellContentDTO_Roo_JavaBean {
         this.physicalState = physicalState;
     }
     
-    public BigDecimal WellContentDTO.getVolume() {
-        return this.volume;
+    public String WellContentDTO.getLevel() {
+        return this.level;
     }
     
-    public void WellContentDTO.setVolume(BigDecimal volume) {
-        this.volume = volume;
+    public void WellContentDTO.setLevel(String level) {
+        this.level = level;
     }
     
-    public String WellContentDTO.getVolumeUnits() {
-        return this.volumeUnits;
+    public String WellContentDTO.getMessage() {
+        return this.message;
     }
     
-    public void WellContentDTO.setVolumeUnits(String volumeUnits) {
-        this.volumeUnits = volumeUnits;
+    public void WellContentDTO.setMessage(String message) {
+        this.message = message;
+    }
+    
+    public String WellContentDTO.getWellName() {
+        return this.wellName;
+    }
+    
+    public void WellContentDTO.setWellName(String wellName) {
+        this.wellName = wellName;
+    }
+    
+    public Integer WellContentDTO.getRowIndex() {
+        return this.rowIndex;
+    }
+    
+    public void WellContentDTO.setRowIndex(Integer rowIndex) {
+        this.rowIndex = rowIndex;
+    }
+    
+    public Integer WellContentDTO.getColumnIndex() {
+        return this.columnIndex;
+    }
+    
+    public void WellContentDTO.setColumnIndex(Integer columnIndex) {
+        this.columnIndex = columnIndex;
+    }
+    
+    public String WellContentDTO.getRecordedBy() {
+        return this.recordedBy;
+    }
+    
+    public void WellContentDTO.setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+    
+    public Date WellContentDTO.getRecordedDate() {
+        return this.recordedDate;
+    }
+    
+    public void WellContentDTO.setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
     }
     
 }

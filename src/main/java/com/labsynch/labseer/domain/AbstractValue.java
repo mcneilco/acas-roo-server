@@ -36,39 +36,31 @@ public abstract class AbstractValue {
 	
 	@NotNull
 	@Size(max = 64)
-	@org.hibernate.annotations.Index(name="_TYPE_IDX")
 	private String lsType;
 
 	@NotNull
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name="_KIND_IDX")
 	private String lsKind;
 
 	@Size(max = 350)
-	@org.hibernate.annotations.Index(name="_TK_IDX")
 	private String lsTypeAndKind;
 
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name="_CDORGN_IDX")
 	private String codeOrigin;
 	
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name="_CDTYPE_IDX")
 	private String codeType;
 
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name="_CDKIND_IDX")
 	private String codeKind;
 
 	@Size(max = 350)
-	@org.hibernate.annotations.Index(name="_CDTK_IDX")
 	private String codeTypeAndKind;
 	
 	@Size(max = 255)
 	protected String stringValue;
 
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name="_CODE_IDX")
 	protected String codeValue;
 	
 	@Size(max = 512)
@@ -96,7 +88,6 @@ public abstract class AbstractValue {
 	private String operatorKind;
     
 	@Size(max = 50)
-	@org.hibernate.annotations.Index(name="_OPTK_IDX")
 	private String operatorTypeAndKind;
 
 	@Column(precision=38, scale=18)
@@ -119,7 +110,6 @@ public abstract class AbstractValue {
 	private String unitKind;
 	
 	@Size(max = 55)
-	@org.hibernate.annotations.Index(name="_UNTK_IDX")
 	private String unitTypeAndKind;
 	
 	private Double concentration;
@@ -131,13 +121,11 @@ public abstract class AbstractValue {
 	private String comments;
 
 	@NotNull
-	@org.hibernate.annotations.Index(name="_IGN_IDX")
 	private boolean ignored;
 	
 	@NotNull
 	private boolean deleted;
 	
-	@org.hibernate.annotations.Index(name="_TRXN_IDX")
 	private Long lsTransaction;
 
 	@NotNull

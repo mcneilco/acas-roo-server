@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -23,7 +24,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findContainerLabelsByLsTransactionEquals","findContainerLabelsByLabelTextEqualsAndIgnoredNot", "findContainerLabelsByContainerAndIgnoredNot" })
+@RooJpaActiveRecord(finders = { "findContainerLabelsByLsTransactionEquals","findContainerLabelsByLabelTextEqualsAndIgnoredNot","findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot", "findContainerLabelsByContainerAndIgnoredNot" })
 public class ContainerLabel extends AbstractLabel {
 
     @NotNull
@@ -99,4 +100,45 @@ public class ContainerLabel extends AbstractLabel {
     public static Collection<ContainerLabel> fromJsonArrayToContainerLabels(Reader json) {
         return new JSONDeserializer<List<ContainerLabel>>().use(null, ArrayList.class).use("values", ContainerLabel.class).deserialize(json);
     }
+    
+    public static ContainerLabel pickBestLabel(Collection<ContainerLabel> labels) {
+		if (labels.isEmpty()) return null;
+		Collection<ContainerLabel> preferredLabels = new HashSet<ContainerLabel>();
+		for (ContainerLabel label : labels){
+			if (label.isPreferred()) preferredLabels.add(label);
+		}
+		if (!preferredLabels.isEmpty()){
+			ContainerLabel bestLabel = preferredLabels.iterator().next();
+			for (ContainerLabel preferredLabel : preferredLabels){
+				if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+			}
+			return bestLabel;
+		} else {
+			Collection<ContainerLabel> nameLabels = new HashSet<ContainerLabel>();
+			for (ContainerLabel label : labels){
+				if (label.getLsType().equals("name")) nameLabels.add(label);
+			}
+			if (!nameLabels.isEmpty()){
+				ContainerLabel bestLabel = nameLabels.iterator().next();
+				for (ContainerLabel nameLabel : nameLabels){
+					if (nameLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = nameLabel;
+				}
+				return bestLabel;
+			} else {
+				Collection<ContainerLabel> notIgnoredLabels = new HashSet<ContainerLabel>();
+				for (ContainerLabel label : labels){
+					if (!label.isIgnored()) notIgnoredLabels.add(label);
+				}
+				if (!notIgnoredLabels.isEmpty()){
+					ContainerLabel bestLabel = notIgnoredLabels.iterator().next();
+					for (ContainerLabel notIgnoredLabel : notIgnoredLabels){
+						if (notIgnoredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = notIgnoredLabel;
+					}
+					return bestLabel;
+				} else {
+					return labels.iterator().next();
+				}
+			}
+		}
+	}
 }

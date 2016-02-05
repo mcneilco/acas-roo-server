@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect AuthorController_Roo_Controller_Json {
@@ -90,6 +91,30 @@ privileged aspect AuthorController_Roo_Controller_Json {
         }
         author.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByActivationKeyAndEmailAddress", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> AuthorController.jsonFindAuthorsByActivationKeyAndEmailAddress(@RequestParam("activationKey") String activationKey, @RequestParam("emailAddress") String emailAddress) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Author.toJsonArray(Author.findAuthorsByActivationKeyAndEmailAddress(activationKey, emailAddress).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByEmailAddress", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> AuthorController.jsonFindAuthorsByEmailAddress(@RequestParam("emailAddress") String emailAddress) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Author.toJsonArray(Author.findAuthorsByEmailAddress(emailAddress).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByUserName", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> AuthorController.jsonFindAuthorsByUserName(@RequestParam("userName") String userName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Author.toJsonArray(Author.findAuthorsByUserName(userName).getResultList()), headers, HttpStatus.OK);
     }
     
 }

@@ -20,6 +20,22 @@ privileged aspect Container_Roo_JavaBean {
         this.locationId = locationId;
     }
     
+    public Integer Container.getRowIndex() {
+        return this.rowIndex;
+    }
+    
+    public void Container.setRowIndex(Integer rowIndex) {
+        this.rowIndex = rowIndex;
+    }
+    
+    public Integer Container.getColumnIndex() {
+        return this.columnIndex;
+    }
+    
+    public void Container.setColumnIndex(Integer columnIndex) {
+        this.columnIndex = columnIndex;
+    }
+    
     public Set<ContainerLabel> Container.getLsLabels() {
         return this.lsLabels;
     }

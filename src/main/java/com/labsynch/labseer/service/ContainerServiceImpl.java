@@ -6,8 +6,11 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -23,6 +26,7 @@ import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,17 +35,29 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.ItxContainerContainerState;
+import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
+import com.labsynch.labseer.dto.ContainerRequestDTO;
+import com.labsynch.labseer.dto.CreatePlateRequestDTO;
+import com.labsynch.labseer.dto.ErrorMessageDTO;
+import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
-import com.labsynch.labseer.domain.ItxContainerContainerState;
-import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.dto.WellStubDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONTokener;
 
@@ -221,7 +237,7 @@ public class ContainerServiceImpl implements ContainerService {
 					Set<ContainerValue> lsValues = new HashSet<ContainerValue>();
 					for(ContainerValue containerValue : lsState.getLsValues()){
 						if (logger.isDebugEnabled()) logger.debug("containerValue: " + containerValue.toJson());
-						ContainerValue newContainerValue = new ContainerValue(containerValue);
+						ContainerValue newContainerValue = ContainerValue.create(containerValue);
 						newContainerValue.setLsState(newLsState);
 						newContainerValue.persist();
 						lsValues.add(newContainerValue);
@@ -430,6 +446,52 @@ public class ContainerServiceImpl implements ContainerService {
 		return results;
 	}
 	
+	@Override
+	public ArrayList<ErrorMessage> validateContainer(Container container) {
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		try{
+			checkContainerUniqueName(container);
+		} catch (UniqueNameException e){
+			logger.error("Caught UniqueNameException validating Container: " + e.getMessage().toString() + " whole message  " + e.toString());
+            ErrorMessage error = new ErrorMessage();
+            error.setErrorLevel("error");
+            error.setMessage(e.getMessage());
+            errors.add(error);
+		}
+		
+		return errors;
+	}
+	
+	private void checkContainerUniqueName(Container container) throws UniqueNameException{
+		Set<ContainerLabel> containerLabels = container.getLsLabels();
+		for (ContainerLabel containerLabel : containerLabels){
+			if (!containerLabel.isIgnored() && containerLabel.getLsType().equals("name")){
+				String labelText = containerLabel.getLabelText();
+				Collection<Container> foundContainers = new HashSet<Container>();
+				Collection<ContainerLabel> foundContainerLabels = new HashSet<ContainerLabel>();
+				try{
+					foundContainerLabels = ContainerLabel.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(containerLabel.getLsType(), labelText, true).getResultList();
+				} catch (EmptyResultDataAccessException e){
+					//found nothing
+				}
+				if (!foundContainerLabels.isEmpty()){
+					for (ContainerLabel foundLabel : foundContainerLabels){
+						foundContainers.add(foundLabel.getContainer());
+					}
+				}
+				if (!foundContainers.isEmpty()){
+					for (Container foundContainer: foundContainers){
+						if (container.getId() == null || container.getId().compareTo(foundContainer.getId()) != 0){
+							//we found an container that is not the same as the one being validated that has the same label
+							throw new UniqueNameException("Container with the name "+labelText+" already exists! "+foundContainer.getCodeName());
+						}
+					}
+				}
+			}	
+		}
+		
+	}
+	
 	private ItxContainerContainer saveItxContainerContainer(ItxContainerContainer itxContainerContainer){
 		ItxContainerContainer newItxContainerContainer = new ItxContainerContainer(itxContainerContainer);
 		newItxContainerContainer.persist();
@@ -597,7 +659,7 @@ public class ContainerServiceImpl implements ContainerService {
 		Predicate plateBarcodeEquals = plateBarcodeLabelText.in(plateBarcodes);
 		predicateList.add(plateBarcodeEquals);
 		Predicate itxType = cb.equal(secondItx.<String>get("lsType"), "has member");
-		Predicate itxKind = cb.equal(secondItx.<String>get("lsKind"), "plate well");
+		Predicate itxKind = cb.equal(secondItx.<String>get("lsKind"), "container_well");
 		predicateList.add(itxType);
 		predicateList.add(itxKind);
 		Predicate wellLabelLsType = cb.equal(wellLabel.<String>get("lsType"), "name");
@@ -674,30 +736,82 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 
 	@Override
-	public Collection<WellContentDTO> getWellContent(List<String> wellCodes) {
+	public Collection<WellContentDTO> getWellContent(Collection<ContainerRequestDTO> wellCodes) {
+		List<String> wellCodeStrings = new ArrayList<String>();
+		for (ContainerRequestDTO wellCode : wellCodes){
+			wellCodeStrings.add(wellCode.getContainerCodeName());
+		}
+		if (wellCodeStrings.isEmpty()) return new ArrayList<WellContentDTO>();
 		EntityManager em = Container.entityManager();
 		String queryString = "SELECT new com.labsynch.labseer.dto.WellContentDTO( ";
 		queryString += "well.codeName, ";
-		queryString += "grossMassValue.numericValue, grossMassValue.unitKind,  ";
-		queryString += "netMassValue.numericValue, netMassValue.unitKind, ";
+		queryString += "wellName.labelText, ";
+		queryString += "well.rowIndex, well.columnIndex, ";
+		queryString += "well.recordedBy, well.recordedDate, ";
+		queryString += "amountValue.numericValue, amountValue.unitKind,  ";
 		queryString += " batchCodeValue.codeValue, batchCodeValue.concentration, batchCodeValue.concUnit,  ";
 		queryString += " solventCodeValue.codeValue,  ";
-		queryString += " physicalStateValue.codeValue,  ";
-		queryString += " volumeValue.numericValue, volumeValue.unitKind ";
+		queryString += " physicalStateValue.codeValue  ";
 		queryString += " )  ";
 		queryString += " from Container as well ";
-		queryString += makeInnerJoinHql("well.lsStates", "statusContentState", "status", "test compound content");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","grossMassValue", "numericValue","gross mass");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","netMassValue", "numericValue","net mass");
+		queryString += makeLeftJoinHql("well.lsStates", "statusContentState", "status", "content");
+		queryString += makeLeftJoinHql("well.lsLabels", "wellName", "name", "well name");
+		queryString += makeLeftJoinHql("statusContentState.lsValues","amountValue", "numericValue","amount");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","batchCodeValue", "codeValue","batch code");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","solventCodeValue", "codeValue","solvent code");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","physicalStateValue", "codeValue","physical state");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","volumeValue", "numericValue","volume");
-		queryString += "where ( well.codeName in (:wellCodes) ) and ( well.ignored <> true ) ";
+		queryString += "where ( well.ignored <> true ) and ";
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(wellCodeStrings);
+    	int startIndex = 0;
+    	while (startIndex < wellCodeStrings.size()){
+    		int endIndex;
+    		if (startIndex+999 < wellCodeStrings.size()) endIndex = startIndex+999;
+    		else endIndex = wellCodeStrings.size();
+    		List<String> nextCurveIds = allCodes.subList(startIndex, endIndex);
+    		String groupName = "curveIds"+startIndex;
+    		String sqlClause = " well.codeName IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCurveIds);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
 		TypedQuery<WellContentDTO> q = em.createQuery(queryString, WellContentDTO.class);
-		q.setParameter("wellCodes", wellCodes);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
 //		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<WellContentDTO> results = q.getResultList();
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestWellCodeNames = new HashSet<String>();
+		for (ContainerRequestDTO request : wellCodes){
+			requestWellCodeNames.add(request.getContainerCodeName());
+		}
+		HashSet<String> foundWellCodeNames = new HashSet<String>();
+		for (WellContentDTO result : results){
+			foundWellCodeNames.add(result.getContainerCodeName());
+		}
+		requestWellCodeNames.removeAll(foundWellCodeNames);
+		if (!requestWellCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestWellCodeNames){
+				WellContentDTO notFoundDTO = new WellContentDTO();
+				notFoundDTO.setContainerCodeName(notFoundCodeName);
+				notFoundDTO.setLevel("error");
+				notFoundDTO.setMessage("containerCodeName not found");
+				results.add(notFoundDTO);
+			}
+		}
+		
 		return results;
 	}
 	
@@ -707,6 +821,11 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 	private String makeInnerJoinHql(String table, String alias, String lsType, String lsKind){
 		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
+		return queryString;
+	}
+	
+	private String makeInnerJoinHql(String table, String alias, String lsType){
+		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".ignored <> true ";
 		return queryString;
 	}
 
@@ -738,5 +857,756 @@ public class ContainerServiceImpl implements ContainerService {
 		result.checkForDependentData(result.getQueryContainer(), members);
 		return result;
 	}
+
+	@Override
+	public PreferredNameResultsDTO getCodeNameFromName(String containerType,
+			String containerKind, String labelType, String labelKind,
+			PreferredNameRequestDTO requestDTO) {
+		logger.info("number of requests: " + requestDTO.getRequests().size());
+		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
+
+		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
+		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
+
+		for (PreferredNameDTO request : requests){
+			request.setPreferredName("");
+			request.setReferenceName("");
+			List<Container> lsThings = new ArrayList<Container>();
+			if (labelType==null || labelKind==null || labelType.length()==0 || labelKind.length()==0){
+				lsThings = Container.findContainerByLabelText(containerType, containerKind, request.getRequestName()).getResultList();
+
+			}else{
+				lsThings = Container.findContainerByLabelText(containerType, containerKind, labelType, labelKind, request.getRequestName()).getResultList();
+			}
+			if (lsThings.size() == 1){
+				request.setPreferredName(pickBestLabel(lsThings.get(0)));
+				request.setReferenceName(lsThings.get(0).getCodeName());
+			} else if (lsThings.size() > 1){
+				responseOutput.setError(true);
+				ErrorMessageDTO error = new ErrorMessageDTO();
+				error.setLevel("MULTIPLE RESULTS");
+				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
+				errors.add(error);
+			} else {
+				try{
+					Container codeNameMatch = Container.findContainerByCodeNameEquals(request.getRequestName());
+					if (codeNameMatch.getLsKind().equals(containerKind) && codeNameMatch.getLsType().equals(containerType)){
+						logger.info("Made it to the codeMatch");
+						request.setPreferredName(pickBestLabel(codeNameMatch));
+	 					request.setReferenceName(codeNameMatch.getCodeName());
+					}else{
+						logger.info("Did not find a Container with the requested name: " + request.getRequestName());
+					}
+				}catch (EmptyResultDataAccessException e){
+					logger.info("Did not find a Container with the requested name: " + request.getRequestName());
+				}
+			}
+		}
+		responseOutput.setResults(requests);
+		responseOutput.setErrorMessages(errors);
+
+		return responseOutput;
+	}
+	
+	@Override
+	public String pickBestLabel(Container container) {
+		Collection<ContainerLabel> labels = container.getLsLabels();
+		if (labels.isEmpty()) return null;
+		return ContainerLabel.pickBestLabel(labels).getLabelText();
+	}
+
+	@Override
+	public Collection<ContainerErrorMessageDTO> throwInTrash(
+			Collection<ContainerRequestDTO> containersToTrash) throws Exception {
+		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
+		for (ContainerRequestDTO dto : containersToTrash){
+			ContainerErrorMessageDTO result = new ContainerErrorMessageDTO();
+			result.setContainerCodeName(dto.getContainerCodeName());
+			results.add(result);
+			Container container;
+			try{
+				container = Container.findContainerByCodeNameEquals(dto.getContainerCodeName());
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("containerCodeName not found");
+				continue;
+			}
+			//ignore the old movedTo interaction to preserve history
+			try{
+				ItxContainerContainer movedTo = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndFirstContainerEquals("moved to", "container_location", container).getSingleResult();
+				movedTo.setIgnored(true);
+				movedTo.setModifiedBy(dto.getModifiedBy());
+				movedTo.setModifiedDate(dto.getModifiedDate());
+				movedTo.merge();
+			} catch(Exception e){
+				result.setLevel("error");
+				result.setMessage("Error finding 'moved to'/'container_location' interaction to ignore.");
+				continue;
+			}
+			
+			//create trash interaction to show container has been moved to the trash
+			try{
+				ItxContainerContainer trashItx = new ItxContainerContainer();
+				trashItx.setLsType("moved to");
+				trashItx.setLsKind("container_location");
+				trashItx.setRecordedBy(dto.getModifiedBy());
+				trashItx.setRecordedDate(dto.getModifiedDate());
+				trashItx.setFirstContainer(container);
+				trashItx.setSecondContainer(getOrCreateTrash());
+				trashItx.persist();
+			}catch(Exception e){
+				result.setLevel("error");
+				result.setMessage("Error creating new interaction to trash");
+				continue;
+			}
+			//ignore container since it is now in the trash
+			try{
+				container.setIgnored(true);
+				container.setModifiedBy(dto.getModifiedBy());
+				container.setModifiedDate(dto.getModifiedDate());		
+				container.merge();
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("Error ignoring container");
+				continue;
+			}
+		}
+		return results;
+	}
+	
+	private Container getOrCreateTrash() throws Exception{
+		try{
+			List<Container> trashes = Container.findContainerByContainerLabel("trash");
+			if (trashes.size() > 1 ) throw new Exception("Multiple containers called 'trash' exist.");
+			Container trash = trashes.get(0);
+			return trash;
+		}catch(EmptyResultDataAccessException e){
+			Container trash = new Container();
+			trash.setCodeName(autoLabelService.getContainerCodeName());
+			trash.setLsType("location");
+			trash.setLsKind("default");
+			trash.setRecordedBy("acas");
+			trash.setRecordedDate(new Date());
+			ContainerLabel trashLabel = new ContainerLabel();
+			trashLabel.setLsType("name");
+			trashLabel.setLsKind("common");
+			trashLabel.setLabelText("trash");
+			trashLabel.setRecordedBy("acas");
+			trashLabel.setRecordedDate(new Date());
+			trashLabel.setPreferred(true);
+			trash.getLsLabels().add(trashLabel);
+			
+			ContainerState trashState = new ContainerState();
+			trashState.setLsType("metadata");
+			trashState.setLsKind("information");
+			trashState.setRecordedBy("acas");
+			trashState.setRecordedDate(new Date());
+			trashState.setLsValues(new HashSet<ContainerValue>());
+			
+			ContainerValue trashUserValue = new ContainerValue();
+			trashUserValue.setLsType("stringValue");
+			trashUserValue.setLsKind("created user");
+			trashUserValue.setRecordedBy("acas");
+			trashUserValue.setRecordedDate(new Date());
+			trashUserValue.setStringValue("acas");
+			trashState.getLsValues().add(trashUserValue);
+			
+			ContainerValue trashDescriptionValue = new ContainerValue();
+			trashDescriptionValue.setLsType("stringValue");
+			trashDescriptionValue.setLsKind("description");
+			trashDescriptionValue.setRecordedBy("acas");
+			trashDescriptionValue.setRecordedDate(new Date());
+			trashDescriptionValue.setStringValue("trash");
+			trashState.getLsValues().add(trashDescriptionValue);
+			
+			ContainerValue trashDateValue = new ContainerValue();
+			trashDateValue.setLsType("dateValue");
+			trashDateValue.setLsKind("created date");
+			trashDateValue.setRecordedBy("acas");
+			trashDateValue.setRecordedDate(new Date());
+			trashDateValue.setDateValue(new Date());
+			trashState.getLsValues().add(trashDateValue);
+			
+			trash.getLsStates().add(trashState);
+			
+			Container newTrash = saveLsContainer(trash);
+			
+			return newTrash;
+		}
+	}
+
+	@Override
+	public Collection<ContainerErrorMessageDTO> updateAmountInWell(
+			Collection<ContainerRequestDTO> wellsToUpdate) {
+		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
+		for (ContainerRequestDTO dto : wellsToUpdate){
+			ContainerErrorMessageDTO result = new ContainerErrorMessageDTO();
+			result.setContainerCodeName(dto.getContainerCodeName());
+			results.add(result);
+			Container container;
+			try{
+				container = Container.findContainerByCodeNameEquals(dto.getContainerCodeName());
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("containerCodeName not found");
+				continue;
+			}
+			//find amount value and update
+			ContainerValue amountValue;
+			try{
+				for (ContainerState state : container.getLsStates()){
+					if (state.getLsType().equals("status") && state.getLsKind().equals("content")){
+						for (ContainerValue value : state.getLsValues()){
+							if (value.getLsKind().equals("amount")){
+								amountValue = value;
+								amountValue.setNumericValue(dto.getAmount());
+								amountValue.setUnitKind(dto.getAmountUnits());
+								amountValue.setModifiedBy(dto.getModifiedBy());
+								amountValue.setModifiedDate(dto.getModifiedDate());
+								amountValue.merge();
+							}
+						}
+					}
+				}
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("Amount value not found");
+				continue;
+			}
+		}
+		return results;
+	}
+
+	@Override
+	public PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest) throws Exception {
+		Container definition;
+		try{
+			definition = Container.findContainerByCodeNameEquals(plateRequest.getDefinition());
+		}catch (Exception e){
+			throw new Exception("Error finding definition: "+plateRequest.getDefinition());
+		}
+		LsTransaction lsTransaction = new LsTransaction();
+		lsTransaction.setRecordedDate(new Date());
+		lsTransaction.persist();
+		Container plate = new Container();
+		plate.setCodeName(autoLabelService.getContainerCodeName());
+		plate.setRecordedBy(plateRequest.getRecordedBy());
+		plate.setRecordedDate(new Date());
+		plate.setLsType("container");
+		plate.setLsKind("plate");
+		plate.setLsTransaction(lsTransaction.getId());
+		ContainerLabel plateBarcode = new ContainerLabel();
+		plateBarcode.setRecordedBy(plate.getRecordedBy());
+		plateBarcode.setRecordedDate(plate.getRecordedDate());
+		plateBarcode.setLsType("barcode");
+		plateBarcode.setLsKind("barcode");
+		plateBarcode.setLabelText(plateRequest.getBarcode());
+		plateBarcode.setLsTransaction(plate.getLsTransaction());
+		plateBarcode.setContainer(plate);
+		plate.getLsLabels().add(plateBarcode);
+		plate.persist();
+		ItxContainerContainer defines = makeItxContainerContainer("defines", definition, plate, plateRequest.getRecordedBy());
+		defines.persist();
+		try{
+			Collection<Container> wells = createWellsFromDefinition(plate, definition);
+			//fill in recorded by for all wells to update
+			if (plateRequest.getWells() != null && !plateRequest.getWells().isEmpty()){
+				for (WellContentDTO wellDTO: plateRequest.getWells()){
+					if (wellDTO.getRecordedBy() == null) wellDTO.setRecordedBy(plate.getRecordedBy());
+				}
+				updateNewWellsByWellName(wells, plateRequest.getWells());
+			}
+			//TODO: do something with templates
+			PlateStubDTO result = new PlateStubDTO();
+			result.setBarcode(plateRequest.getBarcode());
+			result.setCodeName(plate.getCodeName());
+			Collection<WellStubDTO> wellStubs = WellStubDTO.convertToWellStubDTOs(wells);
+			result.setWells(wellStubs);
+			return result;
+		}catch (Exception e){
+			logger.error("Error creating wells from definition",e);
+			throw new Exception("Error creating wells from definition",e);
+		}
+	}
+
+	private void updateNewWellsByWellName(Collection<Container> wells, Collection<WellContentDTO> wellDTOs) {
+		for (WellContentDTO wellDTO : wellDTOs){
+			String wellName = wellDTO.getWellName();
+			List<String> possibleWellNames = new ArrayList<String>();
+			if (SimpleUtil.isNumeric(wellName)){
+				possibleWellNames.add(wellName);
+			}else{
+				//well name must be A1, A01, or A001 format
+				String letterPart = wellName.replaceAll("[0-9]+", "");
+				Integer numberPart = Integer.valueOf(wellName.replaceAll("[^0-9]+", ""));
+				try{
+					possibleWellNames.add(letterPart+Integer.toString(numberPart));
+				}catch (Exception e){}
+				try{
+				possibleWellNames.add(letterPart+String.format("%02d", numberPart));
+				}catch (Exception e){}
+				try{
+				possibleWellNames.add(letterPart+String.format("%03d", numberPart));
+				}catch (Exception e){}
+			}
+			for (Container well : wells){
+				for (ContainerLabel wellLabel : well.getLsLabels()){
+					if (possibleWellNames.contains(wellLabel.getLabelText())){
+						wellDTO.setContainerCodeName(well.getCodeName());
+						break;
+					}
+				}
+			}
+		}
+		updateWellStatus(wellDTOs);
+		
+	}
+
+	public Collection<Container> createWellsFromDefinition(Container plate,
+			Container definition) throws Exception {
+		Collection<Container> wells = new ArrayList<Container>();
+		String wellFormat = getWellFormat(definition);
+		Integer numberOfWells = getDefinitionIntegerValue(definition, "wells");
+		Integer numberOfColumns = getDefinitionIntegerValue(definition, "columns");
+		BigDecimal maxWellVolume = getDefinitionNumericValue(definition, "max well volume");
+		if (wellFormat != null){
+			int n = 0;
+			List<AutoLabelDTO> wellCodeNames = autoLabelService.getAutoLabels("material_container", "id_codeName", numberOfWells.longValue()); 
+			int batchSize = propertiesUtilService.getBatchSize();
+			logger.debug("wellFormat: "+wellFormat);
+			logger.debug("numberOfWells: "+numberOfWells.toString());
+			logger.debug("numberOfColumns: "+numberOfColumns.toString());
+			while (n < numberOfWells){
+				String letter = "";
+				String number = "";
+				int rowNum = n / numberOfColumns;
+				int colNum = n % numberOfColumns;
+				if (wellFormat.equals("1")) number = Integer.toString(n+1);
+				else if (wellFormat.equals("A1")){
+					letter = SimpleUtil.toAlphabetic(rowNum);
+					number = Integer.toString(colNum+1);
+				}
+				else if (wellFormat.equals("A01")){
+					letter = SimpleUtil.toAlphabetic(rowNum);
+					number = String.format("%02d", colNum+1);
+				}else if (wellFormat.equals("A001")){
+					letter = SimpleUtil.toAlphabetic(rowNum);
+					number = String.format("%03d", colNum+1);
+				}
+				//create well Container object
+				Container well = new Container();
+				well.setCodeName(wellCodeNames.get(n).getAutoLabel());
+				well.setRecordedBy(plate.getRecordedBy());
+				well.setRecordedDate(new Date());
+				well.setLsType("well");
+				well.setLsKind("default");
+				well.setRowIndex(rowNum);
+				well.setColumnIndex(colNum);
+				well.setLsTransaction(plate.getLsTransaction());
+				ContainerLabel wellName = new ContainerLabel();
+				wellName.setRecordedBy(plate.getRecordedBy());
+				wellName.setRecordedDate(new Date());
+				wellName.setLsType("name");
+				wellName.setLsKind("well name");
+				wellName.setLabelText(letter+number);
+				wellName.setLsTransaction(plate.getLsTransaction());
+				wellName.setContainer(well);
+				well.getLsLabels().add(wellName);
+				ContainerState constantsState = new ContainerState();
+				constantsState.setRecordedBy(plate.getRecordedBy());
+				constantsState.setRecordedDate(new Date());
+				constantsState.setLsType("constants");
+				constantsState.setLsKind("container");
+				constantsState.setLsTransaction(plate.getLsTransaction());
+				constantsState.setLsValues(new HashSet<ContainerValue>());
+				constantsState.setContainer(well);
+				ContainerValue maxVolume = new ContainerValue();
+				maxVolume.setRecordedBy(plate.getRecordedBy());
+				maxVolume.setRecordedDate(new Date());
+				maxVolume.setLsType("numericValue");
+				maxVolume.setLsKind("max volume");
+				maxVolume.setNumericValue(maxWellVolume);
+				maxVolume.setLsTransaction(plate.getLsTransaction());
+				maxVolume.setLsState(constantsState);
+				constantsState.getLsValues().add(maxVolume);
+				well.getLsStates().add(constantsState);
+				well.persist();
+				
+				//create ItxContainerContainer "has member" to link plate and well
+				ItxContainerContainer hasMemberItx = makeItxContainerContainer("has member", plate, well, plate.getRecordedBy());
+				hasMemberItx.persist();
+				if (n% batchSize == 0){
+					well.flush();
+				}
+				wells.add(well);
+				n++;
+			}
+			
+		} else{
+			throw new Exception("Well format could not be found for definition: "+definition.getCodeName());
+		}
+		return wells;
+	}
+	
+	private String getWellFormat(Container definition){
+		for (ContainerState state : definition.getLsStates()){
+			if( state.getLsType().equals("constants") && state.getLsKind().equals("format")){
+				for (ContainerValue value : state.getLsValues()){
+					if (value.getLsKind().equals("subcontainer naming convention")){
+						return value.getCodeValue();
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	private Integer getDefinitionIntegerValue(Container definition, String lsKind){
+		for (ContainerState state : definition.getLsStates()){
+			if( state.getLsType().equals("constants") && state.getLsKind().equals("format")){
+				logger.debug(state.getLsTypeAndKind());
+				for (ContainerValue value : state.getLsValues()){
+					logger.debug(value.getLsTypeAndKind());
+					if (value.getLsKind().equals(lsKind)){
+						return Integer.valueOf(value.getNumericValue().intValue());
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	private BigDecimal getDefinitionNumericValue(Container definition, String lsKind){
+		for (ContainerState state : definition.getLsStates()){
+			if( state.getLsType().equals("constants") && state.getLsKind().equals("format")){
+				logger.debug(state.getLsTypeAndKind());
+				for (ContainerValue value : state.getLsValues()){
+					logger.debug(value.getLsTypeAndKind());
+					if (value.getLsKind().equals(lsKind)){
+						return value.getNumericValue();
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	private ItxContainerContainer makeItxContainerContainer(String lsType, Container firstContainer, Container secondContainer, String recordedBy){
+		ItxContainerContainer itxContainerContainer = new ItxContainerContainer();
+		itxContainerContainer.setLsType(lsType);
+		itxContainerContainer.setLsKind(firstContainer.getLsType()+"_"+secondContainer.getLsType());
+		itxContainerContainer.setFirstContainer(firstContainer);
+		itxContainerContainer.setSecondContainer(secondContainer);
+		itxContainerContainer.setRecordedBy(recordedBy);
+		itxContainerContainer.setRecordedDate(new Date());
+		return itxContainerContainer;
+	}
+
+	@Override
+	public Collection<WellContentDTO> getWellContentByPlateBarcode(
+			String plateBarcode) {
+		List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add(plateBarcode);
+		Collection<PlateWellDTO> wellCodes = getWellCodesByPlateBarcodes(plateBarcodes);
+		Collection<ContainerRequestDTO> requestWellCodes = new HashSet<ContainerRequestDTO>();
+		for (PlateWellDTO wellCode : wellCodes){
+			ContainerRequestDTO requestWellCode = new ContainerRequestDTO();
+			requestWellCode.setContainerCodeName(wellCode.getWellCodeName());
+			requestWellCodes.add(requestWellCode);
+		}
+		Collection<WellContentDTO> results = getWellContent(requestWellCodes);
+		return results;
+	}
+
+	@Override
+	public Collection<ContainerErrorMessageDTO> updateWellStatus(
+			Collection<WellContentDTO> wellsToUpdate) {
+		Collection<ContainerErrorMessageDTO> results = new ArrayList<ContainerErrorMessageDTO>();
+		LsTransaction lsTransaction = new LsTransaction();
+		lsTransaction.setRecordedDate(new Date());
+		lsTransaction.persist();
+		for (WellContentDTO wellToUpdate : wellsToUpdate){
+			ContainerErrorMessageDTO result = new ContainerErrorMessageDTO();
+			result.setContainerCodeName(wellToUpdate.getContainerCodeName());
+			Container well;
+			try{
+				well = Container.findContainerByCodeNameEquals(wellToUpdate.getContainerCodeName());
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("containerCodeName not found");
+				continue;
+			}
+			ContainerState oldStatusContentState = null;
+			for (ContainerState state : well.getLsStates()){
+				if (!state.isIgnored() && state.getLsType().equals("status") && state.getLsKind().equals("content")){
+					oldStatusContentState = state;
+					oldStatusContentState.setIgnored(true);
+					oldStatusContentState.setModifiedBy(wellToUpdate.getRecordedBy());
+					oldStatusContentState.setModifiedDate(new Date());
+					oldStatusContentState.merge();
+					break;
+				}
+			}
+			BigDecimal oldAmount = null;
+			String oldAmountUnits = null;
+			String oldBatchCode = null;
+			Double oldBatchConcentration = null;
+			String oldBatchConcUnits = null;
+			String oldPhysicalState = null;
+			String oldSolventCode = null;
+			//extract old values from previous state if it existed
+			if (oldStatusContentState != null){
+				for (ContainerValue value : oldStatusContentState.getLsValues()){
+					if (!value.isIgnored() && value.getLsKind().equals("batch code")){
+						oldBatchCode = value.getCodeValue();
+						oldBatchConcentration = value.getConcentration();
+						oldBatchConcUnits = value.getConcUnit();
+					}else if (!value.isIgnored() && value.getLsKind().equals("amount")){
+						oldAmount = value.getNumericValue();
+						oldAmountUnits = value.getConcUnit();
+					}else if (!value.isIgnored() && value.getLsKind().equals("physical state")){
+						oldPhysicalState = value.getCodeValue();
+					}else if (!value.isIgnored() && value.getLsKind().equals("solvent code")){
+						oldSolventCode = value.getCodeValue();
+					}
+				}
+			}
+			//create a new state and new values
+			ContainerState newStatusContentState = new ContainerState();
+			newStatusContentState.setRecordedBy(wellToUpdate.getRecordedBy());
+			newStatusContentState.setRecordedDate(new Date());
+			newStatusContentState.setLsType("status");
+			newStatusContentState.setLsKind("content");
+			newStatusContentState.setLsTransaction(lsTransaction.getId());
+			newStatusContentState.setContainer(well);
+			newStatusContentState.setLsValues(new HashSet<ContainerValue>());
+			newStatusContentState.persist();
+			//fill in new values from DTO. if they are null, use the old value
+			BigDecimal newAmount = wellToUpdate.getAmount();
+			String newAmountUnits = wellToUpdate.getAmountUnits();
+			String newBatchCode = wellToUpdate.getBatchCode();
+			Double newBatchConcentration = wellToUpdate.getBatchConcentration();
+			String newBatchConcUnits = wellToUpdate.getBatchConcUnits();
+			String newPhysicalState = wellToUpdate.getPhysicalState();
+			String newSolventCode = wellToUpdate.getSolventCode();
+			if (newAmount == null) newAmount = oldAmount;
+			if (newAmountUnits == null) newAmountUnits = oldAmountUnits;
+			if (newBatchCode == null) newBatchCode = oldBatchCode;
+			if (newBatchConcentration == null) newBatchConcentration = oldBatchConcentration;
+			if (newBatchConcUnits == null) newBatchConcUnits = oldBatchConcUnits;
+			if (newPhysicalState == null) newPhysicalState = oldPhysicalState;
+			if (newSolventCode == null) newSolventCode = oldSolventCode;
+			//create new values for attributes that exist
+			if (newAmount != null || newAmountUnits != null){
+				ContainerValue amount = new ContainerValue();
+				amount.setRecordedBy(wellToUpdate.getRecordedBy());
+				amount.setRecordedDate(new Date());
+				amount.setLsType("numericValue");
+				amount.setLsKind("amount");
+				amount.setNumericValue(newAmount);
+				amount.setUnitKind(newAmountUnits);
+				amount.setLsTransaction(lsTransaction.getId());
+				amount.setLsState(newStatusContentState);
+				newStatusContentState.getLsValues().add(amount);
+				amount.persist();
+			}
+			if (newBatchCode != null || newBatchConcentration != null || newBatchConcUnits != null){
+				ContainerValue batchCode = new ContainerValue();
+				batchCode.setRecordedBy(wellToUpdate.getRecordedBy());
+				batchCode.setRecordedDate(new Date());
+				batchCode.setLsType("codeValue");
+				batchCode.setLsKind("batch code");
+				batchCode.setCodeValue(newBatchCode);
+				batchCode.setConcentration(newBatchConcentration);
+				batchCode.setConcUnit(newBatchConcUnits);
+				batchCode.setLsTransaction(lsTransaction.getId());
+				batchCode.setLsState(newStatusContentState);
+				newStatusContentState.getLsValues().add(batchCode);
+				batchCode.persist();
+			}
+			if (newPhysicalState != null){
+				ContainerValue physicalState = new ContainerValue();
+				physicalState.setRecordedBy(wellToUpdate.getRecordedBy());
+				physicalState.setRecordedDate(new Date());
+				physicalState.setLsType("codeValue");
+				physicalState.setLsKind("physical state");
+				physicalState.setCodeValue(newPhysicalState);
+				physicalState.setLsTransaction(lsTransaction.getId());
+				physicalState.setLsState(newStatusContentState);
+				newStatusContentState.getLsValues().add(physicalState);
+				physicalState.persist();
+			}
+			if (newSolventCode != null){
+				ContainerValue solventCode = new ContainerValue();
+				solventCode.setRecordedBy(wellToUpdate.getRecordedBy());
+				solventCode.setRecordedDate(new Date());
+				solventCode.setLsType("codeValue");
+				solventCode.setLsKind("solvent code");
+				solventCode.setCodeValue(newSolventCode);
+				solventCode.setLsTransaction(lsTransaction.getId());
+				solventCode.setLsState(newStatusContentState);
+				newStatusContentState.getLsValues().add(solventCode);
+				solventCode.persist();
+			}
+			well.getLsStates().add(newStatusContentState);
+			well.merge();
+			results.add(result);
+		}
+		return results;
+	}
+
+	@Override
+	public PlateStubDTO getPlateTypeByPlateBarcode(String plateBarcode) {
+		EntityManager em = Container.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.PlateStubDTO( ";
+		queryString += "barcode.labelText, ";
+		queryString += "plate.codeName, ";
+		queryString += "plateType.codeValue  ";
+		queryString += " )  ";
+		queryString += " from Container as plate ";
+		queryString += makeInnerJoinHql("plate.lsLabels", "barcode", "barcode", "barcode");
+		queryString += makeLeftJoinHql("plate.lsStates", "metadataInformationState", "metadata", "information");
+		queryString += makeLeftJoinHql("metadataInformationState.lsValues","plateType", "codeValue","plate type");
+		queryString += "where barcode.labelText = :plateBarcode";
+		TypedQuery<PlateStubDTO> q = em.createQuery(queryString, PlateStubDTO.class);
+		q.setParameter("plateBarcode", plateBarcode);
+		try{
+			PlateStubDTO result = q.getSingleResult();
+			return result;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+	
+	@Override
+	public Collection<ContainerErrorMessageDTO> getContainersByCodeNames(List<String> codeNames){
+		if (codeNames.isEmpty()) return new ArrayList<ContainerErrorMessageDTO>();
+		EntityManager em = Container.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.ContainerErrorMessageDTO( "
+				+ "container.codeName, "
+				+ "container )"
+				+ " FROM Container container ";
+		queryString += "where ( container.ignored <> true ) and ( ";
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(codeNames);
+    	int startIndex = 0;
+    	while (startIndex < codeNames.size()){
+    		int endIndex;
+    		if (startIndex+999 < codeNames.size()) endIndex = startIndex+999;
+    		else endIndex = codeNames.size();
+    		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
+    		String groupName = "codeNames"+startIndex;
+    		String sqlClause = " container.codeName IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCodes);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+//    	logger.debug(queryString);
+		TypedQuery<ContainerErrorMessageDTO> q = em.createQuery(queryString, ContainerErrorMessageDTO.class);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<ContainerErrorMessageDTO> results = q.getResultList();
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestCodeNames = new HashSet<String>();
+		requestCodeNames.addAll(codeNames);
+		HashSet<String> foundCodeNames = new HashSet<String>();
+		for (ContainerErrorMessageDTO result : results){
+			foundCodeNames.add(result.getContainerCodeName());
+		}
+		requestCodeNames.removeAll(foundCodeNames);
+		if (!requestCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestCodeNames){
+				ContainerErrorMessageDTO notFoundDTO = new ContainerErrorMessageDTO();
+				notFoundDTO.setContainerCodeName(notFoundCodeName);
+				notFoundDTO.setLevel("error");
+				notFoundDTO.setMessage("containerCodeName not found");
+				results.add(notFoundDTO);
+			}
+		}
+		
+		return results;
+	}
+
+	@Override
+	public Collection<ContainerErrorMessageDTO> getDefinitionContainersByContainerCodeNames(
+			List<String> codeNames) {
+		if (codeNames.isEmpty()) return new ArrayList<ContainerErrorMessageDTO>();
+		EntityManager em = Container.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.ContainerErrorMessageDTO( "
+				+ "container.codeName, "
+				+ "definition )"
+				+ " FROM Container container ";
+		queryString += makeInnerJoinHql("container.firstContainers", "itx", "defines", "definition container_container");
+		queryString += makeInnerJoinHql("itx.firstContainer", "definition", "definition container");
+		queryString += "where ( container.ignored <> true ) and ( ";
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(codeNames);
+    	int startIndex = 0;
+    	while (startIndex < codeNames.size()){
+    		int endIndex;
+    		if (startIndex+999 < codeNames.size()) endIndex = startIndex+999;
+    		else endIndex = codeNames.size();
+    		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
+    		String groupName = "codeNames"+startIndex;
+    		String sqlClause = " container.codeName IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCodes);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+//    	logger.debug(queryString);
+		TypedQuery<ContainerErrorMessageDTO> q = em.createQuery(queryString, ContainerErrorMessageDTO.class);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<ContainerErrorMessageDTO> results = q.getResultList();
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestCodeNames = new HashSet<String>();
+		requestCodeNames.addAll(codeNames);
+		HashSet<String> foundCodeNames = new HashSet<String>();
+		for (ContainerErrorMessageDTO result : results){
+			result.setDefinition(result.getContainer());
+			result.setContainer(null);
+			foundCodeNames.add(result.getContainerCodeName());
+		}
+		requestCodeNames.removeAll(foundCodeNames);
+		if (!requestCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestCodeNames){
+				ContainerErrorMessageDTO notFoundDTO = new ContainerErrorMessageDTO();
+				notFoundDTO.setContainerCodeName(notFoundCodeName);
+				notFoundDTO.setLevel("error");
+				notFoundDTO.setMessage("containerCodeName not found");
+				results.add(notFoundDTO);
+			}
+		}
+		
+		return results;
+	}
+
 
 }

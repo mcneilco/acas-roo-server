@@ -1,0 +1,1 @@
+ALTER TABLE ls_seq_itx_experiment_experiment RENAME TO ls_seq_itx_expt_expt;

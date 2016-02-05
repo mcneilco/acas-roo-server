@@ -13,6 +13,7 @@ import java.util.Set;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +33,8 @@ import org.supercsv.prefs.CsvPreference;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.IdSetDTO;
+import com.labsynch.labseer.service.AnalysisGroupValueService;
 
 import flexjson.JSONDeserializer;
 
@@ -42,6 +45,9 @@ import flexjson.JSONDeserializer;
 public class ApiAnalysisGroupValueController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupValueController.class);
+	
+	@Autowired
+	private AnalysisGroupValueService analysisGroupValueService;
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> deleteById(@PathVariable("id") Long id) {
@@ -103,9 +109,6 @@ public class ApiAnalysisGroupValueController {
 			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
 		logger.debug("incoming json: " + json);
 		Collection<String> batchCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class).use("values", String.class).deserialize(json);
-		for (String bc : batchCodes) {
-			logger.debug("batch code: " + bc);
-		}
 		Set<String> geneCodeList = new HashSet<String>();
 		geneCodeList.addAll(batchCodes);
 
@@ -159,4 +162,29 @@ public class ApiAnalysisGroupValueController {
 		}
 	}
 
+	
+	// custom code for agv queries
+	@Transactional
+	@RequestMapping(value = "/getValues/byIdList", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getAgValues(
+			@RequestBody String json, 
+			@RequestParam(value = "format", required = false) String format, 
+			@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
+		logger.debug("incoming json: " + json);
+		IdSetDTO idSet = IdSetDTO.fromJsonToIdSetDTO(json);
+		boolean onlyPublicDataBoolean = false;
+		if (onlyPublicData.trim().equalsIgnoreCase("true")){
+			onlyPublicDataBoolean = true;
+		} 
+		List<AnalysisGroupValue> agValues = AnalysisGroupValue.findAnalysisGroupValuesByIdList(idSet.getIdSet(), onlyPublicDataBoolean).getResultList();
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		if (format.equalsIgnoreCase("tsv")) {
+			String outputString = analysisGroupValueService.getCsvList(agValues);
+			return new ResponseEntity<String>(outputString, headers, HttpStatus.OK);
+		} else {
+			//default format is json
+			return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(agValues), headers, HttpStatus.OK);
+		}
+	}
 }

@@ -37,11 +37,13 @@ public class ItxContainerContainer extends AbstractThing {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Index(name = "ITX_CNTR_CNTR_FIRST_CONTAINER")
     @JoinColumn(name = "first_container_id")
     private Container firstContainer;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Index(name = "ITX_CNTR_CNTR_SECOND_CONTAINER")
     @JoinColumn(name = "second_container_id")
     private Container secondContainer;
 
@@ -150,28 +152,36 @@ public class ItxContainerContainer extends AbstractThing {
         return q;
     }
     
-    public static TypedQuery<ItxContainerContainer> findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(String lsType, Container firstContainer){
+    public static TypedQuery<ItxContainerContainer> findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndSecondContainerEqualsAndOrderEquals(String lsType, String lsKind, Container secondContainer, int order){
     	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        if (firstContainer == null) throw new IllegalArgumentException("The firstContainer argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (secondContainer == null) throw new IllegalArgumentException("The secondContainer argument is required");
         
         boolean ignored = true;
         
         EntityManager em = ItxContainerContainer.entityManager();
 		String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
+				"JOIN o.lsStates itxstate JOIN itxstate.lsValues itxvalue WITH itxvalue.lsKind = 'order' " +
 				"WHERE o.ignored IS NOT :ignored " +
 				"AND o.lsType = :lsType " +
-				"AND o.firstContainer = :firstContainer ";
+				"AND o.lsKind = :lsKind " +
+				"AND itxvalue.numericValue = :order " +
+				"AND o.secondContainer = :secondContainer ";
         
         TypedQuery<ItxContainerContainer> q = em.createQuery(query, ItxContainerContainer.class);
         q.setParameter("lsType", lsType);
-        q.setParameter("firstContainer", firstContainer);        
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("order", new BigDecimal(order));
+        q.setParameter("secondContainer", secondContainer);        
         q.setParameter("ignored", ignored);
         
         return q;
     }
     
-    public static TypedQuery<ItxContainerContainer> findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(String lsType, Container secondContainer){
+    public static TypedQuery<ItxContainerContainer> findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndFirstContainerEqualsAndSecondContainerEquals(String lsType, String lsKind, Container firstContainer, Container secondContainer){
     	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (firstContainer == null) throw new IllegalArgumentException("The firstContainer argument is required");
         if (secondContainer == null) throw new IllegalArgumentException("The secondContainer argument is required");
         
         boolean ignored = true;
@@ -180,14 +190,17 @@ public class ItxContainerContainer extends AbstractThing {
 		String query = "SELECT DISTINCT o FROM ItxContainerContainer o " +
 				"WHERE o.ignored IS NOT :ignored " +
 				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
+				"AND o.firstContainer = :firstContainer " +
 				"AND o.secondContainer = :secondContainer ";
         
         TypedQuery<ItxContainerContainer> q = em.createQuery(query, ItxContainerContainer.class);
         q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("firstContainer", firstContainer);        
         q.setParameter("secondContainer", secondContainer);        
         q.setParameter("ignored", ignored);
         
         return q;
     }
-    
 }

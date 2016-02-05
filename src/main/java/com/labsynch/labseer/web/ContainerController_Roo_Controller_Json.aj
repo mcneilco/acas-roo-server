@@ -93,12 +93,20 @@ privileged aspect ContainerController_Roo_Controller_Json {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
-    @RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsKindEquals", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> ContainerController.jsonFindContainersByCodeNameEquals(@RequestParam("codeName") String codeName) {
+    public ResponseEntity<String> ContainerController.jsonFindContainersByLsKindEquals(@RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(Container.toJsonArray(Container.findContainersByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Container.toJsonArray(Container.findContainersByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ContainerController.jsonFindContainersByLsTypeEquals(@RequestParam("lsType") String lsType) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(Container.toJsonArray(Container.findContainersByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")

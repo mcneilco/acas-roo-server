@@ -1,21 +1,22 @@
 package com.labsynch.labseer.api;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,16 +28,18 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerRequestDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
-import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
+import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
+import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.ContainerService;
-import com.labsynch.labseer.service.GeneThingService;
-import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -46,6 +49,8 @@ import com.wordnik.swagger.annotations.ApiOperation;
 @Transactional
 public class ApiContainerController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ApiContainerController.class);
+	
 	@Autowired
     private ContainerService containerService;
 
@@ -54,10 +59,15 @@ public class ApiContainerController {
     private PropertiesUtilService propertiesUtilService;
 
     @Transactional
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
-        Container container = Container.findContainer(id);
+    public ResponseEntity<java.lang.String> showJson(@PathVariable("idOrCodeName") String idOrCodeName) {
+    	Container container;
+    	if(SimpleUtil.isNumeric(idOrCodeName)) {
+    	    	container = Container.findContainer(Long.valueOf(idOrCodeName));
+ 		} else {
+ 			container = Container.findContainerByCodeNameEquals(idOrCodeName);
+ 		}
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (container == null) {
@@ -67,7 +77,7 @@ public class ApiContainerController {
     }
 
     @Transactional
-    @RequestMapping(value = "/stub/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/stub/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJsonStub(@PathVariable("id") Long id) {
         Container container = Container.findContainer(id);
@@ -80,12 +90,22 @@ public class ApiContainerController {
     }
 
     @Transactional
-    @RequestMapping(headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> listJson() {
+    public ResponseEntity<java.lang.String> listJson(@RequestParam(value = "lsType", required = false) String lsType,
+    		@RequestParam(value = "lsKind", required = false) String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<Container> containers = Container.findAllContainers();
+        List<Container> containers = new ArrayList<Container>();
+        if (lsType != null && lsType.length() > 0 && lsKind != null && lsKind.length() > 0){
+        	containers = Container.findContainersByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+        }else if (lsType != null && lsType.length() > 0 && (lsKind == null || lsKind.length() == 0)){
+        	containers = Container.findContainersByLsTypeEquals(lsType).getResultList();
+        }else if((lsType == null || lsType.length()==0) && lsKind != null && lsKind.length() > 0){
+        	containers = Container.findContainersByLsKindEquals(lsKind).getResultList();
+        }else{
+        	containers = Container.findAllContainers();
+        }
         return new ResponseEntity<String>(Container.toJsonArray(containers), headers, HttpStatus.OK);
     }
 
@@ -101,8 +121,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByIdsDTO/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getContainersFromIDsTwo(@RequestBody List<IdCollectionDTO> idCollections) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getContainersFromIDsTwo(@RequestBody String json) {
+        Collection<IdCollectionDTO> idCollections = IdCollectionDTO.fromJsonArrayToIdCollectioes(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (IdCollectionDTO idCollection : idCollections) {
             Container container = Container.findContainer(idCollection.getId());
             foundContainers.add(container);
@@ -114,8 +135,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByIds/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getContainersFromIDs(@RequestBody List<Container> containers) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getContainersFromIDs(@RequestBody String json) {
+        Collection<Container> containers = Container.fromJsonArrayToContainers(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (Container container : containers) {
             foundContainers.add(Container.findContainer(container.getId()));
         }
@@ -126,8 +148,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByIds/jsonArrayStub", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getContainerStubsFromIDs(ArrayList<IdCollectionDTO> idCollections) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getContainerStubsFromIDs(@RequestBody String json) {
+        Collection<IdCollectionDTO> idCollections = IdCollectionDTO.fromJsonArrayToIdCollectioes(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (IdCollectionDTO idCollection : idCollections) {
             Container container = Container.findContainer(idCollection.getId());
             foundContainers.add(container);
@@ -139,8 +162,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByIds/states/jsonArrayStub", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getContainerStateStubsFromIDs(@RequestBody List<IdCollectionDTO> idCollections) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getContainerStateStubsFromIDs(@RequestBody String json) {
+        Collection<IdCollectionDTO> idCollections = IdCollectionDTO.fromJsonArrayToIdCollectioes(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (IdCollectionDTO idCollection : idCollections) {
             Container container = Container.findContainer(idCollection.getId());
             foundContainers.add(container);
@@ -152,8 +176,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findIdsByLabels/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getIdsFromJsonLabels(@RequestBody List<ContainerLabel> labels) {
-        Collection<IdCollectionDTO> foundContainers = new ArrayList<IdCollectionDTO>();
+    public ResponseEntity<java.lang.String> getIdsFromJsonLabels(@RequestBody String json) {
+        Collection<ContainerLabel> labels = ContainerLabel.fromJsonArrayToContainerLabels(json);
+    	Collection<IdCollectionDTO> foundContainers = new ArrayList<IdCollectionDTO>();
         for (ContainerLabel label : labels) {
             List<Container> containers = Container.findContainerByContainerLabel(label.getLabelText());
             for (Container query : containers) {
@@ -169,8 +194,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/findByLabels/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getFromJsonLabels(ArrayList<ContainerLabel> labels) {
-        Collection<Container> foundContainers = new ArrayList<Container>();
+    public ResponseEntity<java.lang.String> getFromJsonLabels(@RequestBody String json) {
+        Collection<ContainerLabel> labels = ContainerLabel.fromJsonArrayToContainerLabels(json);
+    	Collection<Container> foundContainers = new ArrayList<Container>();
         for (ContainerLabel label : labels) {
             List<Container> containers = Container.findContainerByContainerLabel(label.getLabelText());
             for (Container query : containers) {
@@ -200,7 +226,8 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Container container) {
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    	Container container = Container.fromJsonToContainer(json);
         container = containerService.saveLsContainer(container);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -209,8 +236,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<Container> containers) {
-        Collection<Container> savedContainers = containerService.saveLsContainers(containers);
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+        Collection<Container> containers  = Container.fromJsonArrayToContainers(json);
+    	Collection<Container> savedContainers = containerService.saveLsContainers(containers);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(Container.toJsonArray(savedContainers), headers, HttpStatus.CREATED);
@@ -246,8 +274,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = { "/{id}", "/" }, method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Container container) {
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
+        Container container = Container.fromJsonToContainer(json);
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         container = containerService.updateContainer(container);
         if (container.getId() == null) {
@@ -258,8 +287,9 @@ public class ApiContainerController {
 
     @Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<Container> containers) {
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
+        Collection<Container> containers  = Container.fromJsonArrayToContainers(json);
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<Container> updatedContainers = new ArrayList<Container>();
         for (Container container : containers) {
@@ -332,6 +362,27 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(Container.toJsonArray(Container.findContainerByContainerLabel(labelText)), headers, HttpStatus.OK);
     }
+    
+    @ApiOperation(value="Validates container name is unique", notes="Name is determined by label lsType=name."
+    		+ "Search is across all containers, for other lsType=name labels, with an exact string match."
+    		+ "Successful validation (name is unique) gives HTTP Status 202: Accepted"
+    		+ "Failure on validation gives HTTP Status 409: Conflict")
+    @RequestMapping(value = "/validate", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> validateContainer(
+    		@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        
+    	Container container = Container.fromJsonToContainer(json);
+    	logger.debug("FROM THE Container VALIDATE CONTROLLER: "+container.toJson());
+        ArrayList<ErrorMessage> errorMessages = containerService.validateContainer(container);
+        if (!errorMessages.isEmpty()){
+        	return new ResponseEntity<String>(ErrorMessage.toJsonArray(errorMessages), headers, HttpStatus.CONFLICT);
+        }
+        else{
+        	return new ResponseEntity<String>(headers, HttpStatus.ACCEPTED);
+        }
+    }
 
     @Transactional
     @RequestMapping(value = "/getContainersInLocation", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -384,13 +435,195 @@ public class ApiContainerController {
     @Transactional
     @RequestMapping(value = "/getWellContent", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> getWellContent(@RequestBody List<String> wellCodes) {
+    public ResponseEntity<java.lang.String> getWellContent(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
-        	Collection<WellContentDTO> searchResults = containerService.getWellContent(wellCodes);
-            return new ResponseEntity<String>(WellContentDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+        	Collection<ContainerRequestDTO> queryWells = ContainerRequestDTO.fromJsonArrayToCoes(json);
+        	Collection<WellContentDTO> results = containerService.getWellContent(queryWells);
+        	boolean success = true;
+        	for (WellContentDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), headers, HttpStatus.OK);
+        	else return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
         } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @RequestMapping(value = "/getCodeNameFromNameRequest", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getCodeNameFromName(@RequestBody String json, 
+    		@RequestParam(value = "containerType", required = true) String containerType, 
+    		@RequestParam(value = "containerKind", required = true) String containerKind, 
+    		@RequestParam(value = "labelType", required = false) String labelType, 
+    		@RequestParam(value = "labelKind", required = false) String labelKind) {
+    	PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);
+        logger.info("getCodeNameFromNameRequest incoming json: " + requestDTO.toJson());
+        PreferredNameResultsDTO results = containerService.getCodeNameFromName(containerType, containerKind, labelType, labelKind, requestDTO);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/throwInTrash", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> throwInTrash(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<ContainerRequestDTO> containersToTrash = ContainerRequestDTO.fromJsonArrayToCoes(json);
+        	Collection<ContainerErrorMessageDTO> results = containerService.throwInTrash(containersToTrash);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/updateAmountInWell", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> updateAmountInWell(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<ContainerRequestDTO> wellsToUpdate = ContainerRequestDTO.fromJsonArrayToCoes(json);
+        	Collection<ContainerErrorMessageDTO> results = containerService.updateAmountInWell(wellsToUpdate);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/createPlate", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> createPlate(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+    	CreatePlateRequestDTO plateRequest = CreatePlateRequestDTO.fromJsonToCreatePlateRequestDTO(json);
+        try{
+        	Container dupeContainer = Container.findContainerByLabelText("container", "plate", "barcode", "barcode", plateRequest.getBarcode()).getSingleResult();
+        	if (dupeContainer != null){
+        		return new ResponseEntity<String>("Barcode already exists", headers, HttpStatus.BAD_REQUEST);
+        	}
+        }
+        catch (EmptyResultDataAccessException e){
+        	//barcode is unique, proceed to plate creation
+        }catch (IncorrectResultSizeDataAccessException e){
+    		return new ResponseEntity<String>("More than one of this barcode already exists!!", headers, HttpStatus.BAD_REQUEST);
+        }
+        try{
+        	PlateStubDTO result = containerService.createPlate(plateRequest);
+        	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/getWellContentByPlateBarcode/{plateBarcode}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getWellContentByPlateBarcode(@PathVariable("plateBarcode") String plateBarcode) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<WellContentDTO> results = containerService.getWellContentByPlateBarcode(plateBarcode);
+        	boolean success = true;
+        	for (WellContentDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), headers, HttpStatus.OK);
+        	else return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/getPlateTypeByPlateBarcode/{plateBarcode}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getPlateTypeByPlateBarcode(@PathVariable("plateBarcode") String plateBarcode) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	PlateStubDTO result = containerService.getPlateTypeByPlateBarcode(plateBarcode);
+        	if (result != null){
+        		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+        	}
+        	else return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/updateWellStatus", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> updateWellStatus(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<WellContentDTO> wellsToUpdate = WellContentDTO.fromJsonArrayToWellCoes(json);
+        	Collection<ContainerErrorMessageDTO> results = containerService.updateWellStatus(wellsToUpdate);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/getContainersByCodeNames", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getContainersByCodeNames(@RequestBody List<String> codeNames) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<ContainerErrorMessageDTO> searchResults = containerService.getContainersByCodeNames(codeNames);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: searchResults){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(searchResults), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+        	logger.error("Uncaught error in getContainersByCodeNames",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/getDefinitionContainersByContainerCodeNames", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getDefinitionContainersByContainerCodeNames(@RequestBody List<String> codeNames) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<ContainerErrorMessageDTO> searchResults = containerService.getDefinitionContainersByContainerCodeNames(codeNames);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: searchResults){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(searchResults), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+        	logger.error("Uncaught error in getContainersByCodeNames",e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
