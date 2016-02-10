@@ -49,6 +49,7 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
@@ -681,8 +682,18 @@ public class ContainerLSServiceTests {
 		containerCodeDTO.setModifiedBy("bfielder");
 		containerCodeDTO.setModifiedDate(new Date());
 		containerCodeDTOs.add(containerCodeDTO);
-		Boolean success = containerService.throwInTrash(containerCodeDTOs);
-		Assert.assertTrue(success);
+		Collection<ContainerErrorMessageDTO> results = containerService.throwInTrash(containerCodeDTOs);
+		Assert.assertFalse(results.isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void throwInTrash_tmp() throws Exception{
+		String json = "[{\"containerCodeName\":\"CONT-2265608\",\"modifiedBy\":\"acas\",\"modifiedDate\":1455057684000}]";
+		Collection<CodeModifiedByModifiedDateDTO> containerCodeDTOs = CodeModifiedByModifiedDateDTO.fromJsonArrayToCodeModifiedByMoes(json);
+		Collection<ContainerErrorMessageDTO> results = containerService.throwInTrash(containerCodeDTOs);
+		logger.info(ContainerErrorMessageDTO.toJsonArray(results));
+		Assert.assertFalse(results.isEmpty());
 	}
 	
 	

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +29,7 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
@@ -375,9 +378,13 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
         	Collection<CodeModifiedByModifiedDateDTO> containersToTrash = CodeModifiedByModifiedDateDTO.fromJsonArrayToCodeModifiedByMoes(json);
-        	Boolean success = containerService.throwInTrash(containersToTrash);
-        	if (success) return new ResponseEntity<String>(HttpStatus.OK);
-        	else return new ResponseEntity<String>("Failed to throw containers in trash", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        	Collection<ContainerErrorMessageDTO> results = containerService.throwInTrash(containersToTrash);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }

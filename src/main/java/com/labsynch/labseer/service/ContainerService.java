@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
@@ -44,7 +45,7 @@ public interface ContainerService {
 
 	Collection<WellContentDTO> getWellContent(List<String> wellCodes);
 
-	Boolean throwInTrash(
+	Collection<ContainerErrorMessageDTO> throwInTrash(
 			Collection<CodeModifiedByModifiedDateDTO> containersToTrash) throws Exception;
 	
 	

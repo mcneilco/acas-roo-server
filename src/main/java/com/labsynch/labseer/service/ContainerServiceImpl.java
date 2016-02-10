@@ -36,6 +36,7 @@ import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
@@ -711,30 +712,62 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 
 	@Override
-	public Boolean throwInTrash(
+	public Collection<ContainerErrorMessageDTO> throwInTrash(
 			Collection<CodeModifiedByModifiedDateDTO> containersToTrash) throws Exception {
+		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
 		for (CodeModifiedByModifiedDateDTO dto : containersToTrash){
-			Container container = Container.findContainerByCodeNameEquals(dto.getContainerCodeName());
+			ContainerErrorMessageDTO result = new ContainerErrorMessageDTO();
+			result.setContainerCodeName(dto.getContainerCodeName());
+			results.add(result);
+			Container container;
+			try{
+				container = Container.findContainerByCodeNameEquals(dto.getContainerCodeName());
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("containerCodeName not found");
+				continue;
+			}
 			//ignore the old movedTo interaction to preserve history
-			ItxContainerContainer movedTo = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndFirstContainerEquals("moved to", "storage move", container).getSingleResult();
-			movedTo.setIgnored(true);
-			movedTo.setModifiedBy(dto.getModifiedBy());
-			movedTo.setModifiedDate(dto.getModifiedDate());
+			try{
+				ItxContainerContainer movedTo = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndFirstContainerEquals("moved to", "storage move", container).getSingleResult();
+				movedTo.setIgnored(true);
+				movedTo.setModifiedBy(dto.getModifiedBy());
+				movedTo.setModifiedDate(dto.getModifiedDate());
+				movedTo.merge();
+			} catch(Exception e){
+				result.setLevel("error");
+				result.setMessage("Error finding 'moved to'/'storage move' interaction to ignore.");
+				continue;
+			}
+			
 			//create trash interaction to show container has been moved to the trash
-			ItxContainerContainer trashItx = new ItxContainerContainer();
-			trashItx.setLsType("moved to");
-			trashItx.setLsKind("storage move");
-			trashItx.setRecordedBy(dto.getModifiedBy());
-			trashItx.setRecordedDate(dto.getModifiedDate());
-			trashItx.setFirstContainer(container);
-			trashItx.setSecondContainer(getOrCreateTrash());
-			trashItx.persist();
+			try{
+				ItxContainerContainer trashItx = new ItxContainerContainer();
+				trashItx.setLsType("moved to");
+				trashItx.setLsKind("storage move");
+				trashItx.setRecordedBy(dto.getModifiedBy());
+				trashItx.setRecordedDate(dto.getModifiedDate());
+				trashItx.setFirstContainer(container);
+				trashItx.setSecondContainer(getOrCreateTrash());
+				trashItx.persist();
+			}catch(Exception e){
+				result.setLevel("error");
+				result.setMessage("Error creating new interaction to trash");
+				continue;
+			}
 			//ignore container since it is now in the trash
-			container.setIgnored(true);
-			container.setModifiedBy(dto.getModifiedBy());
-			container.setModifiedDate(dto.getModifiedDate());		
+			try{
+				container.setIgnored(true);
+				container.setModifiedBy(dto.getModifiedBy());
+				container.setModifiedDate(dto.getModifiedDate());		
+				container.merge();
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("Error ignoring container");
+				continue;
+			}
 		}
-		return true;
+		return results;
 	}
 	
 	private Container getOrCreateTrash() throws Exception{

@@ -36,6 +36,7 @@ import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 
@@ -181,7 +182,7 @@ public class ApiContainerControllerTest {
     
     @Test
     @Transactional
-    public void throwInTrashError() throws Exception{
+    public void throwInTrash_InternalError() throws Exception{
 		String json = "[{\"containerCodeName\":\"total-garbage\",\"modifiedDate\":\"not-a-date\"}]";
 		logger.info(json);
 		Assert.assertFalse(json.equals("[{}]"));
@@ -189,11 +190,30 @@ public class ApiContainerControllerTest {
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON)
     			.content(json))
-    			.andExpect(status().isInternalServerError())
+    			.andExpect(status().isBadRequest())
     			.andExpect(content().contentType("application/json;charset=utf-8"))
     			.andReturn().getResponse();;
 		logger.info(response.getContentAsString());
 		Assert.assertTrue(response.getContentAsString().length() > 0);
+    }
+    
+    @Test
+    @Transactional
+    public void throwInTrash_PartialError() throws Exception{
+		String json = "[{\"containerCodeName\":\"total-garbage\",\"modifiedDate\":1455057684000}]";
+		logger.info(json);
+		Assert.assertFalse(json.equals("[{}]"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/throwInTrash")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isBadRequest())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();;
+		logger.info(response.getContentAsString());
+		Assert.assertTrue(response.getContentAsString().length() > 0);
+		Collection<ContainerErrorMessageDTO> errors = ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(json);
+		Assert.assertFalse(errors.isEmpty());
     }
     
 
