@@ -1,7 +1,8 @@
 package com.labsynch.labseer.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,13 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Container;
-import com.labsynch.labseer.domain.LabelSequence;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
-import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
