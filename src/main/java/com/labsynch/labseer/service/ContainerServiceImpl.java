@@ -771,7 +771,7 @@ public class ContainerServiceImpl implements ContainerService {
 	private Container getOrCreateTrash() throws Exception{
 		try{
 			List<Container> trashes = Container.findContainerByContainerLabel("trash");
-			if (trashes.size() > 0 ) throw new Exception("Multiple containers called 'trash' exist.");
+			if (trashes.size() > 1 ) throw new Exception("Multiple containers called 'trash' exist.");
 			Container trash = trashes.get(0);
 			return trash;
 		}catch(EmptyResultDataAccessException e){
