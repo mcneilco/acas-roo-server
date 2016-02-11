@@ -29,6 +29,7 @@ import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.service.GeneThingService;
 import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -394,7 +395,6 @@ public class ApiLsThingController {
     	            errorsFound = true;
     			}
     		}
-            lsThing.setCodeName(lsThingService.generateBatchCodeName(parent));
             parentId = parent.getId();
         }
         //if all's well so far, go ahead with the save
@@ -434,9 +434,9 @@ public class ApiLsThingController {
         
     	LsThingValidationDTO validationDTO = LsThingValidationDTO.fromJsonToLsThingValidationDTO(json);
     	logger.debug("FROM THE LSTHING VALIDATE CONTROLLER: "+validationDTO.toJson());
-        ArrayList<ErrorMessage> errorMessages = lsThingService.validateLsThing(validationDTO);
+        ArrayList<LsThingValidationErrorMessage> errorMessages = lsThingService.validateLsThing(validationDTO);
         if (!errorMessages.isEmpty()){
-        	return new ResponseEntity<String>(ErrorMessage.toJsonArray(errorMessages), headers, HttpStatus.CONFLICT);
+        	return new ResponseEntity<String>(LsThingValidationErrorMessage.toJsonArray(errorMessages), headers, HttpStatus.CONFLICT);
         }
         else{
         	return new ResponseEntity<String>(headers, HttpStatus.ACCEPTED);

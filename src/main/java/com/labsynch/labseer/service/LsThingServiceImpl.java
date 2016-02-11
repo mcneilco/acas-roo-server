@@ -48,6 +48,7 @@ import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.ValuePathDTO;
 import com.labsynch.labseer.dto.ValueRuleDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueInteractionsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.ItxLsThingLsThingComparator;
@@ -775,6 +776,7 @@ public class LsThingServiceImpl implements LsThingService {
 		if (isBatch){
 			LsThing parent = LsThing.findLsThing(parentId);
 			saveItxLsThingLsThing("instantiates", "batch_parent", savedLsThing, parent, lsThing.getRecordedBy(), lsThing.getRecordedDate());
+			incrementBatchNumber(parent);
 		}
 		return savedLsThing;
 	}
@@ -857,13 +859,13 @@ public class LsThingServiceImpl implements LsThingService {
 	}
 
 
-	@Override
-	public String generateBatchCodeName(LsThing parent){
-		String parentCodeName = parent.getCodeName();
-		int batchNumber = getNextBatchNumber(parent);
-		String batchCodeName = parentCodeName.concat("-"+ String.valueOf(batchNumber));
-		return batchCodeName;
-	}
+//	@Override
+//	public String generateBatchCodeName(LsThing parent){
+//		String parentCodeName = parent.getCodeName();
+//		int batchNumber = getNextBatchNumber(parent);
+//		String batchCodeName = parentCodeName.concat("-"+ String.valueOf(batchNumber));
+//		return batchCodeName;
+//	}
 
 
 	@Override
@@ -873,19 +875,28 @@ public class LsThingServiceImpl implements LsThingService {
 		return batchNumber;
 	}
 	
-	private int getNextBatchNumber(LsThing parent) {
-		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
-		int batchNumber = batchNumberValue.getNumericValue().intValue();
-		batchNumber += 1;
-		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
-		batchNumberValue.merge();
-		return batchNumber;
-	}
+//	private int getNextBatchNumber(LsThing parent) {
+//		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+//		int batchNumber = batchNumberValue.getNumericValue().intValue();
+//		batchNumber += 1;
+//		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
+//		batchNumberValue.merge();
+//		return batchNumber;
+//	}
 	
 	private int decrementBatchNumber(LsThing parent) {
 		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
 		int batchNumber = batchNumberValue.getNumericValue().intValue();
 		batchNumber -= 1;
+		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
+		batchNumberValue.merge();
+		return batchNumber;
+	}
+	
+	private int incrementBatchNumber(LsThing parent) {
+		LsThingValue batchNumberValue = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(parent.getId(), "metadata", parent.getLsKind() + " " + parent.getLsType(), "numericValue", "batch number").getSingleResult();
+		int batchNumber = batchNumberValue.getNumericValue().intValue();
+		batchNumber += 1;
 		batchNumberValue.setNumericValue(new BigDecimal(batchNumber));
 		batchNumberValue.merge();
 		return batchNumber;
@@ -973,7 +984,7 @@ public class LsThingServiceImpl implements LsThingService {
 			//parent name
 			Predicate parentNameItxTypePredicate = criteriaBuilder.equal(lsThingSecondItx.<String>get("lsType"), "instantiates");
 			Predicate parentNameItxKindPredicate = criteriaBuilder.equal(lsThingSecondItx.<String>get("lsKind"), "batch_parent");
-			Predicate parentNameLabelPredicate = criteriaBuilder.equal(lsThingSecondLsThingLabel.<String>get("labelText"), term);
+			Predicate parentNameLabelPredicate = criteriaBuilder.like(criteriaBuilder.lower(lsThingSecondLsThingLabel.<String>get("labelText")), "%"+term.toLowerCase()+"%");
 			Predicate lsThingSecondItxNotIgnored = criteriaBuilder.not(lsThingSecondItx.<Boolean>get("ignored"));
 			Predicate lsThingSecondLsThingNotIgnored = criteriaBuilder.not(lsThingSecondLsThing.<Boolean>get("ignored"));
 			Predicate lsThingSecondLsThingLabelNotIgnored = criteriaBuilder.not(lsThingSecondLsThingLabel.<Boolean>get("ignored"));
@@ -1511,16 +1522,14 @@ public class LsThingServiceImpl implements LsThingService {
 
 
 	@Override
-	public ArrayList<ErrorMessage> validateLsThing(LsThingValidationDTO validationDTO) {
-		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+	public ArrayList<LsThingValidationErrorMessage> validateLsThing(LsThingValidationDTO validationDTO) {
+		ArrayList<LsThingValidationErrorMessage> errors = new ArrayList<LsThingValidationErrorMessage>();
 		if (validationDTO.isUniqueName()){
 			try{
 				checkLsThingUniqueName(validationDTO.getLsThing());
 			} catch (UniqueNameException e){
 				logger.error("Caught UniqueNameException validating LsThing: " + e.getMessage().toString() + " whole message  " + e.toString());
-	            ErrorMessage error = new ErrorMessage();
-	            error.setErrorLevel("error");
-	            error.setMessage(e.getMessage());
+				LsThingValidationErrorMessage error = new LsThingValidationErrorMessage(e);
 	            errors.add(error);
 			}
 		}
@@ -1529,9 +1538,7 @@ public class LsThingServiceImpl implements LsThingService {
 				checkLsThingUniqueInteractions(validationDTO);
 			} catch (UniqueInteractionsException e){
 				logger.error("Caught UniqueInteractionsException validating LsThing: " + e.getMessage().toString() + " whole message  " + e.toString());
-	            ErrorMessage error = new ErrorMessage();
-	            error.setErrorLevel("error");
-	            error.setMessage(e.getMessage());
+				LsThingValidationErrorMessage error = new LsThingValidationErrorMessage(e);
 	            errors.add(error);
 			}
 		}
@@ -1593,10 +1600,16 @@ public class LsThingServiceImpl implements LsThingService {
 				//then we check for LsThing value rules
 				if (!checkLsThingUniqueValueByRules(validationDTO)){
 					logger.debug("Found matches:");
+					String codeNames = "";
+					String corpNames = "";
 					for (LsThing foundLsThing : foundLsThings){
 						logger.debug(foundLsThing.getCodeName());
+						if (corpNames.length() == 0) corpNames += foundLsThing.pickBestCorpName().getLabelText();
+						else corpNames += ", "+foundLsThing.pickBestCorpName().getLabelText();
+						if (codeNames.length() == 0) codeNames += foundLsThing.getCodeName();
+						else codeNames += ", "+foundLsThing.getCodeName();
 						}
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order.", codeNames, corpNames);
 					}
 				}
 		} else{
@@ -1626,10 +1639,16 @@ public class LsThingServiceImpl implements LsThingService {
 				//then we check for LsThing value rules
 				if (!checkLsThingUniqueValueByRules(validationDTO)){
 					logger.debug("Found matches:");
+					String corpNames = "";
+					String codeNames = "";
 					for (LsThing foundLsThing : foundLsThings){
 						logger.debug(foundLsThing.getCodeName());
-					}
-					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order");
+						if (corpNames.length() == 0) corpNames += foundLsThing.pickBestCorpName().getLabelText();
+						else corpNames += ", "+foundLsThing.pickBestCorpName().getLabelText();
+						if (codeNames.length() == 0) codeNames += foundLsThing.getCodeName();
+						else codeNames += ", "+foundLsThing.getCodeName();
+						}
+					throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with same order.", codeNames, corpNames);
 				}
 			}
 			if (checkForwardAndReverseAreSame){
@@ -1670,10 +1689,16 @@ public class LsThingServiceImpl implements LsThingService {
 					//then we check for LsThing value rules
 					if (!checkLsThingUniqueValueByRules(validationDTO)){
 						logger.debug("Found matches:");
+						String corpNames = "";
+						String codeNames = "";
 						for (LsThing foundLsThing : foundLsThings){
 							logger.debug(foundLsThing.getCodeName());
+							if (corpNames.length() == 0) corpNames += foundLsThing.pickBestCorpName().getLabelText();
+							else corpNames += ", "+foundLsThing.pickBestCorpName().getLabelText();
+							if (codeNames.length() == 0) codeNames += foundLsThing.getCodeName();
+							else codeNames += ", "+foundLsThing.getCodeName();
 							}
-						throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reversed order");
+						throw new UniqueInteractionsException("Found existing LsThing with identical set of interactions with reversed order.", codeNames, corpNames);
 						}
 					}
 			}
@@ -1697,7 +1722,7 @@ public class LsThingServiceImpl implements LsThingService {
 					for (LsThing foundLsThing: foundLsThings){
 						if (lsThing.getId() == null || lsThing.getId().compareTo(foundLsThing.getId()) != 0){
 							//we found an lsThing that is not the same as the one being validated that has the same label
-							throw new UniqueNameException("LsThing with lsKind "+lsKind+" and with the name "+labelText+" already exists! "+foundLsThing.getCodeName());
+							throw new UniqueNameException("LsThing with lsKind "+lsKind+" and with the name "+labelText+" already exists! ", foundLsThing.getCodeName(), foundLsThing.pickBestCorpName().getLabelText());
 						}
 					}
 				}
@@ -1749,7 +1774,11 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		Collection<LsThing> foundFirstLsThings = new HashSet<LsThing>();
 		for (ItxLsThingLsThing matchingItx : matchingItxLsThingLsThings){
-			if (!matchingItx.getFirstLsThing().isIgnored()) foundFirstLsThings.add(matchingItx.getFirstLsThing());
+			if (!matchingItx.getFirstLsThing().isIgnored()
+					&& matchingItx.getFirstLsThing().getLsType().equals(validationDTO.getLsThing().getLsType())
+					&& matchingItx.getFirstLsThing().getLsKind().equals(validationDTO.getLsThing().getLsKind())){
+				foundFirstLsThings.add(matchingItx.getFirstLsThing());
+			}
 		}
 		logger.debug("Found these " + foundFirstLsThings.size() + " lsThing matches for current itx: "+LsThing.toJsonArray(foundFirstLsThings));
 		return foundFirstLsThings;
