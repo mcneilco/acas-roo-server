@@ -1,21 +1,15 @@
 package com.labsynch.labseer.api;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,14 +20,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.service.ContainerService;
-import com.labsynch.labseer.service.GeneThingService;
-import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
@@ -361,6 +354,26 @@ public class ApiContainerController {
         try{
         	Collection<WellContentDTO> searchResults = containerService.getWellContent(wellCodes);
             return new ResponseEntity<String>(WellContentDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/throwInTrash", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> throwInTrash(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<CodeModifiedByModifiedDateDTO> containersToTrash = CodeModifiedByModifiedDateDTO.fromJsonArrayToCodeModifiedByMoes(json);
+        	Collection<ContainerErrorMessageDTO> results = containerService.throwInTrash(containersToTrash);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }

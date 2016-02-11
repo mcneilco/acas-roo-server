@@ -48,6 +48,8 @@ import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
@@ -669,6 +671,29 @@ public class ContainerLSServiceTests {
 		Assert.assertTrue(updatedContainer.getVersion() == container.getVersion() + 1);
 		Container fetchedContainer = Container.findContainer(container.getId());
 		Assert.assertTrue(updatedContainer.getVersion() == fetchedContainer.getVersion());
+	}
+	
+	@Test
+	@Transactional
+	public void throwInTrash() throws Exception{
+		Collection<CodeModifiedByModifiedDateDTO> containerCodeDTOs = new HashSet<CodeModifiedByModifiedDateDTO>();
+		CodeModifiedByModifiedDateDTO containerCodeDTO = new CodeModifiedByModifiedDateDTO();
+		containerCodeDTO.setContainerCodeName(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getCodeName());
+		containerCodeDTO.setModifiedBy("bfielder");
+		containerCodeDTO.setModifiedDate(new Date());
+		containerCodeDTOs.add(containerCodeDTO);
+		Collection<ContainerErrorMessageDTO> results = containerService.throwInTrash(containerCodeDTOs);
+		Assert.assertFalse(results.isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void throwInTrash_tmp() throws Exception{
+		String json = "[{\"containerCodeName\":\"CONT-2265608\",\"modifiedBy\":\"acas\",\"modifiedDate\":1455057684000}]";
+		Collection<CodeModifiedByModifiedDateDTO> containerCodeDTOs = CodeModifiedByModifiedDateDTO.fromJsonArrayToCodeModifiedByMoes(json);
+		Collection<ContainerErrorMessageDTO> results = containerService.throwInTrash(containerCodeDTOs);
+		logger.info(ContainerErrorMessageDTO.toJsonArray(results));
+		Assert.assertFalse(results.isEmpty());
 	}
 	
 	
