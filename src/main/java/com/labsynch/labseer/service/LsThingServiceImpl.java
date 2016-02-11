@@ -1055,6 +1055,12 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate notebookPredicate = criteriaBuilder.and(notebookPredicate1, notebookPredicate2, lsThingValueNotIgnored, lsThingStateNotIgnored);
 			predicateListByTerm.add(notebookPredicate);
 			
+			//study code
+			Predicate studyCodePredicate1 = criteriaBuilder.like(lsThingValue.<String>get("stringValue"), term);
+			Predicate studyCodePredicate2 = criteriaBuilder.equal(lsThingValue.<String>get("lsKind"), "study code");
+			Predicate studyCodePredicate = criteriaBuilder.and(studyCodePredicate1, studyCodePredicate2, lsThingValueNotIgnored, lsThingStateNotIgnored);
+			predicateListByTerm.add(studyCodePredicate);
+			
 			//join all the predicatesByTerm with OR
 			predicatesByTerm = predicateListByTerm.toArray(predicatesByTerm);
 			predicateList.add(criteriaBuilder.or(predicatesByTerm));
