@@ -122,9 +122,19 @@ public class ProtocolValue extends AbstractValue {
 	        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
 	        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
 	        EntityManager em = ProtocolValue.entityManager();
-	        TypedQuery<ProtocolValue> q = em.createQuery("SELECT o FROM ProtocolValue AS o WHERE o.lsKind = :lsKind AND o.ignored = false AND CAST(o.dateValue, date) LIKE CAST(:dateValue, date) ", ProtocolValue.class);
+	        Date beforeDate = new Date(dateValue.getTime());
+	        beforeDate.setHours(0);
+	        beforeDate.setMinutes(0);
+	        beforeDate.setSeconds(0);
+	        Date afterDate = new Date(dateValue.getTime());
+	        afterDate.setHours(23);
+	        afterDate.setMinutes(59);
+	        afterDate.setSeconds(59);
+	        TypedQuery<ProtocolValue> q = em.createQuery("SELECT o FROM ProtocolValue AS o WHERE o.lsKind = :lsKind AND o.ignored = false AND CAST(o.dateValue, date) BETWEEN CAST(:beforeDate, date) AND CAST(:afterDate, date) ", ProtocolValue.class);
 	        q.setParameter("lsKind", lsKind);
-	        q.setParameter("dateValue", dateValue);
+	        q.setParameter("beforeDate", beforeDate);
+	        q.setParameter("afterDate", beforeDate);
+	        
 	        return q;
 	    }
 }
