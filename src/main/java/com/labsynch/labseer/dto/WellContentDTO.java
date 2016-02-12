@@ -15,46 +15,36 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJson
 public class WellContentDTO {
 	
-	private String wellCodeName;
-	private BigDecimal grossMass;
-	private String grossMassUnits;
-	private BigDecimal netMass;
-	private String netMassUnits;
+	private String containerCodeName;
+	private BigDecimal amount;
+	private String amountUnits;
 	private String batchCode;
 	private Double batchConcentration;
 	private String batchConcUnits;
 	private String solventCode;
 	private String physicalState;
-	private BigDecimal volume;
-	private String volumeUnits; 
+	private String level;
+	private String message;
 	
 	public WellContentDTO(){
 	}
 	
-	public WellContentDTO(String wellCodeName, 
-			BigDecimal grossMass,
-			String grossMassUnits,
-			BigDecimal netMass,
-			String netMassUnits,
+	public WellContentDTO(String containerCodeName, 
+			BigDecimal amount,
+			String amountUnits,
 			String batchCode,
 			Double batchConcentration,
 			String batchConcUnits,
 			String solventCode,
-			String physicalState,
-			BigDecimal volume,
-			String volumeUnits){
-		this.wellCodeName = wellCodeName; 
-		this.grossMass = grossMass;
-		this.grossMassUnits = grossMassUnits;
-		this.netMass = netMass;
-		this.netMassUnits = netMassUnits;
+			String physicalState){
+		this.containerCodeName = containerCodeName; 
+		this.amount = amount;
+		this.amountUnits = amountUnits;
 		this.batchCode = batchCode;
 		this.batchConcentration = batchConcentration;
 		this.batchConcUnits = batchConcUnits;
 		this.solventCode = solventCode;
 		this.physicalState = physicalState;
-		this.volume = volume;
-		this.volumeUnits = volumeUnits;
 	}
 	
 	

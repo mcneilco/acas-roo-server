@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.TypedQuery;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -48,7 +50,7 @@ import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.CodeLabelDTO;
-import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
@@ -620,9 +622,13 @@ public class ContainerLSServiceTests {
 	@Test
 	@Transactional
 	public void getWellContent(){
-		List<String> wellCodes = new ArrayList<String>();
-		wellCodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","well").getResultList().get(0).getCodeName());
-		logger.info("querying with: "+wellCodes.toString());
+		Collection<ContainerRequestDTO> wellCodes = new HashSet<ContainerRequestDTO>();
+		ContainerRequestDTO wellCode = new ContainerRequestDTO();
+		TypedQuery<Container> wellQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+		wellQuery.setMaxResults(1);
+		wellCode.setContainerCodeName(wellQuery.getSingleResult().getCodeName());
+		wellCodes.add(wellCode);
+		logger.info("querying with: "+ContainerRequestDTO.toJsonArray(wellCodes));
 		Collection<WellContentDTO> result = containerService.getWellContent(wellCodes);
 		logger.info(WellContentDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
@@ -631,9 +637,13 @@ public class ContainerLSServiceTests {
 	@Test
 	@Transactional
 	public void getManyWellContent(){
-		List<String> wellCodes = new ArrayList<String>();
-		for (Container well : Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","well").getResultList()){
-			wellCodes.add(well.getCodeName());
+		Collection<ContainerRequestDTO> wellCodes = new HashSet<ContainerRequestDTO>();
+		TypedQuery<Container> wellQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+		wellQuery.setMaxResults(2000);
+		for (Container well : wellQuery.getResultList()){
+			ContainerRequestDTO wellCode = new ContainerRequestDTO();
+			wellCode.setContainerCodeName(well.getCodeName());
+			wellCodes.add(wellCode);
 		}
 		logger.info("querying with: "+wellCodes.size() + " well codes");
 		Long before = (new Date()).getTime();
@@ -676,8 +686,8 @@ public class ContainerLSServiceTests {
 	@Test
 	@Transactional
 	public void throwInTrash() throws Exception{
-		Collection<CodeModifiedByModifiedDateDTO> containerCodeDTOs = new HashSet<CodeModifiedByModifiedDateDTO>();
-		CodeModifiedByModifiedDateDTO containerCodeDTO = new CodeModifiedByModifiedDateDTO();
+		Collection<ContainerRequestDTO> containerCodeDTOs = new HashSet<ContainerRequestDTO>();
+		ContainerRequestDTO containerCodeDTO = new ContainerRequestDTO();
 		containerCodeDTO.setContainerCodeName(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getCodeName());
 		containerCodeDTO.setModifiedBy("bfielder");
 		containerCodeDTO.setModifiedDate(new Date());
@@ -690,8 +700,26 @@ public class ContainerLSServiceTests {
 	@Transactional
 	public void throwInTrash_tmp() throws Exception{
 		String json = "[{\"containerCodeName\":\"CONT-2265608\",\"modifiedBy\":\"acas\",\"modifiedDate\":1455057684000}]";
-		Collection<CodeModifiedByModifiedDateDTO> containerCodeDTOs = CodeModifiedByModifiedDateDTO.fromJsonArrayToCodeModifiedByMoes(json);
+		Collection<ContainerRequestDTO> containerCodeDTOs = ContainerRequestDTO.fromJsonArrayToCoes(json);
 		Collection<ContainerErrorMessageDTO> results = containerService.throwInTrash(containerCodeDTOs);
+		logger.info(ContainerErrorMessageDTO.toJsonArray(results));
+		Assert.assertFalse(results.isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void updateAmountInWell_success() throws Exception{
+		Collection<ContainerRequestDTO> containerCodeDTOs = new HashSet<ContainerRequestDTO>();
+		ContainerRequestDTO containerCodeDTO = new ContainerRequestDTO();
+		TypedQuery<Container> wellQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+		wellQuery.setMaxResults(1);
+		containerCodeDTO.setContainerCodeName(wellQuery.getSingleResult().getCodeName());
+		containerCodeDTO.setAmount(new BigDecimal(10));
+		containerCodeDTO.setAmountUnits("mg");
+		containerCodeDTO.setModifiedBy("acas");
+		containerCodeDTO.setModifiedDate(new Date());
+		containerCodeDTOs.add(containerCodeDTO);
+		Collection<ContainerErrorMessageDTO> results = containerService.updateAmountInWell(containerCodeDTOs);
 		logger.info(ContainerErrorMessageDTO.toJsonArray(results));
 		Assert.assertFalse(results.isEmpty());
 	}

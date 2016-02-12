@@ -6,8 +6,10 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -35,7 +37,7 @@ import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxContainerContainerValue;
 import com.labsynch.labseer.dto.CodeLabelDTO;
-import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
@@ -673,28 +675,55 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 
 	@Override
-	public Collection<WellContentDTO> getWellContent(List<String> wellCodes) {
+	public Collection<WellContentDTO> getWellContent(Collection<ContainerRequestDTO> wellCodes) {
+		List<String> wellCodeStrings = new ArrayList<String>();
+		for (ContainerRequestDTO wellCode : wellCodes){
+			wellCodeStrings.add(wellCode.getContainerCodeName());
+		}
 		EntityManager em = Container.entityManager();
 		String queryString = "SELECT new com.labsynch.labseer.dto.WellContentDTO( ";
 		queryString += "well.codeName, ";
-		queryString += "grossMassValue.numericValue, grossMassValue.unitKind,  ";
-		queryString += "netMassValue.numericValue, netMassValue.unitKind, ";
+		queryString += "amountValue.numericValue, amountValue.unitKind,  ";
 		queryString += " batchCodeValue.codeValue, batchCodeValue.concentration, batchCodeValue.concUnit,  ";
 		queryString += " solventCodeValue.codeValue,  ";
-		queryString += " physicalStateValue.codeValue,  ";
-		queryString += " volumeValue.numericValue, volumeValue.unitKind ";
+		queryString += " physicalStateValue.codeValue  ";
 		queryString += " )  ";
 		queryString += " from Container as well ";
-		queryString += makeInnerJoinHql("well.lsStates", "statusContentState", "status", "test compound content");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","grossMassValue", "numericValue","gross mass");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","netMassValue", "numericValue","net mass");
+		queryString += makeInnerJoinHql("well.lsStates", "statusContentState", "status", "content");
+		queryString += makeLeftJoinHql("statusContentState.lsValues","amountValue", "numericValue","amount");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","batchCodeValue", "codeValue","batch code");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","solventCodeValue", "codeValue","solvent code");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","physicalStateValue", "codeValue","physical state");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","volumeValue", "numericValue","volume");
-		queryString += "where ( well.codeName in (:wellCodes) ) and ( well.ignored <> true ) ";
+		queryString += "where ( well.ignored <> true ) and ";
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(wellCodeStrings);
+    	int startIndex = 0;
+    	while (startIndex < wellCodeStrings.size()){
+    		int endIndex;
+    		if (startIndex+999 < wellCodeStrings.size()) endIndex = startIndex+999;
+    		else endIndex = wellCodeStrings.size();
+    		List<String> nextCurveIds = allCodes.subList(startIndex, endIndex);
+    		String groupName = "curveIds"+startIndex;
+    		String sqlClause = " well.codeName IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCurveIds);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
 		TypedQuery<WellContentDTO> q = em.createQuery(queryString, WellContentDTO.class);
-		q.setParameter("wellCodes", wellCodes);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
 //		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<WellContentDTO> results = q.getResultList();
 		return results;
@@ -711,9 +740,9 @@ public class ContainerServiceImpl implements ContainerService {
 
 	@Override
 	public Collection<ContainerErrorMessageDTO> throwInTrash(
-			Collection<CodeModifiedByModifiedDateDTO> containersToTrash) throws Exception {
+			Collection<ContainerRequestDTO> containersToTrash) throws Exception {
 		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
-		for (CodeModifiedByModifiedDateDTO dto : containersToTrash){
+		for (ContainerRequestDTO dto : containersToTrash){
 			ContainerErrorMessageDTO result = new ContainerErrorMessageDTO();
 			result.setContainerCodeName(dto.getContainerCodeName());
 			results.add(result);
@@ -826,6 +855,48 @@ public class ContainerServiceImpl implements ContainerService {
 			
 			return newTrash;
 		}
+	}
+
+	@Override
+	public Collection<ContainerErrorMessageDTO> updateAmountInWell(
+			Collection<ContainerRequestDTO> wellsToUpdate) {
+		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
+		for (ContainerRequestDTO dto : wellsToUpdate){
+			ContainerErrorMessageDTO result = new ContainerErrorMessageDTO();
+			result.setContainerCodeName(dto.getContainerCodeName());
+			results.add(result);
+			Container container;
+			try{
+				container = Container.findContainerByCodeNameEquals(dto.getContainerCodeName());
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("containerCodeName not found");
+				continue;
+			}
+			//find amount value and update
+			ContainerValue amountValue;
+			try{
+				for (ContainerState state : container.getLsStates()){
+					if (state.getLsType().equals("status") && state.getLsKind().equals("content")){
+						for (ContainerValue value : state.getLsValues()){
+							if (value.getLsKind().equals("amount")){
+								amountValue = value;
+								amountValue.setNumericValue(dto.getAmount());
+								amountValue.setUnitKind(dto.getAmountUnits());
+								amountValue.setModifiedBy(dto.getModifiedBy());
+								amountValue.setModifiedDate(dto.getModifiedDate());
+								amountValue.merge();
+							}
+						}
+					}
+				}
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("Amount value not found");
+				continue;
+			}
+		}
+		return results;
 	}
 
 }

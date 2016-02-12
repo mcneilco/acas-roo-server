@@ -4,11 +4,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+
+import javax.persistence.TypedQuery;
 
 import junit.framework.Assert;
 
@@ -30,11 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.dto.CodeLabelDTO;
-import com.labsynch.labseer.dto.CodeModifiedByModifiedDateDTO;
+import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
+import com.labsynch.labseer.service.ContainerService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -50,6 +55,9 @@ public class ApiContainerControllerTest {
     private WebApplicationContext wac;
 
     private MockMvc mockMvc;
+    
+    @Autowired
+	private ContainerService containerService;
 
     @Before
     public void setup() {
@@ -152,7 +160,7 @@ public class ApiContainerControllerTest {
     	logger.info(responseJson);
     	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
     	for (WellContentDTO result : results){
-    		Assert.assertNotNull(result.getWellCodeName());
+    		Assert.assertNotNull(result.getContainerCodeName());
     	}
     }
     
@@ -160,20 +168,20 @@ public class ApiContainerControllerTest {
     @Transactional
     public void throwInTrash() throws Exception{
     	//TODO: add query with containerCodeName modifiedBy and modifiedDate
-    	Collection<CodeModifiedByModifiedDateDTO> containerCodeDTOs = new HashSet<CodeModifiedByModifiedDateDTO>();
-		CodeModifiedByModifiedDateDTO containerCodeDTO = new CodeModifiedByModifiedDateDTO();
+    	Collection<ContainerRequestDTO> containerCodeDTOs = new HashSet<ContainerRequestDTO>();
+		ContainerRequestDTO containerCodeDTO = new ContainerRequestDTO();
 		containerCodeDTO.setContainerCodeName(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getCodeName());
 		containerCodeDTO.setModifiedBy("bfielder");
 		containerCodeDTO.setModifiedDate(new Date());
 		containerCodeDTOs.add(containerCodeDTO);
-		String json = CodeModifiedByModifiedDateDTO.toJsonArray(containerCodeDTOs);
+		String json = ContainerRequestDTO.toJsonArray(containerCodeDTOs);
 		logger.info(json);
 		Assert.assertFalse(json.equals("[{}]"));
     	ResultActions response = this.mockMvc.perform(post("/api/v1/containers/throwInTrash")
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON)
     			.content(json))
-    			.andExpect(status().isOk());
+    			.andExpect(status().isNoContent());
     }
     
     @Test
@@ -210,6 +218,29 @@ public class ApiContainerControllerTest {
 		Assert.assertTrue(response.getContentAsString().length() > 0);
 		Collection<ContainerErrorMessageDTO> errors = ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(json);
 		Assert.assertFalse(errors.isEmpty());
+    }
+    
+    @Test
+    @Transactional
+    public void updateAmountInWell_success() throws Exception{
+    	Collection<ContainerRequestDTO> containerCodeDTOs = new HashSet<ContainerRequestDTO>();
+		ContainerRequestDTO containerCodeDTO = new ContainerRequestDTO();
+		TypedQuery<Container> wellQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+		wellQuery.setMaxResults(1);
+		containerCodeDTO.setContainerCodeName(wellQuery.getSingleResult().getCodeName());
+		containerCodeDTO.setAmount(new BigDecimal(10));
+		containerCodeDTO.setAmountUnits("mg");
+		containerCodeDTO.setModifiedBy("acas");
+		containerCodeDTO.setModifiedDate(new Date());
+		containerCodeDTOs.add(containerCodeDTO);
+		String json = ContainerRequestDTO.toJsonArray(containerCodeDTOs);
+		logger.info(json);
+		Assert.assertFalse(json.equals("[{}]"));
+    	ResultActions response = this.mockMvc.perform(post("/api/v1/containers/updateAmountInWell")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk());
     }
     
 
