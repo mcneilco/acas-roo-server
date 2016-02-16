@@ -4,6 +4,7 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.LsThing;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -14,6 +15,22 @@ privileged aspect ItxLsThingLsThing_Roo_Finder {
         EntityManager em = ItxLsThingLsThing.entityManager();
         TypedQuery<ItxLsThingLsThing> q = em.createQuery("SELECT o FROM ItxLsThingLsThing AS o WHERE o.codeName = :codeName", ItxLsThingLsThing.class);
         q.setParameter("codeName", codeName);
+        return q;
+    }
+    
+    public static TypedQuery<ItxLsThingLsThing> ItxLsThingLsThing.findItxLsThingLsThingsByFirstLsThing(LsThing firstLsThing) {
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery("SELECT o FROM ItxLsThingLsThing AS o WHERE o.firstLsThing = :firstLsThing", ItxLsThingLsThing.class);
+        q.setParameter("firstLsThing", firstLsThing);
+        return q;
+    }
+    
+    public static TypedQuery<ItxLsThingLsThing> ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(LsThing secondLsThing) {
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery("SELECT o FROM ItxLsThingLsThing AS o WHERE o.secondLsThing = :secondLsThing", ItxLsThingLsThing.class);
+        q.setParameter("secondLsThing", secondLsThing);
         return q;
     }
     

@@ -28,7 +28,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -66,6 +68,22 @@ public class ApiLsThingControllerTest {
     	logger.info(responseJson);
     	LsThing postedLsThing = LsThing.fromJsonToLsThing(responseJson);
     	logger.info(postedLsThing.toJson());
+    }
+    
+    @Test
+    public void searchLabelText() throws Exception {
+    	logger.info("starting the test");
+    	String json = "{\"requests\":[{\"requestName\":\"GENE-000002\"}]}";
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/lsthings/getCodeNameFromNameRequest?thingType=gene&thingKind=entrez gene")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isCreated())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info("test finished: responseJSON is:");
+    	logger.info(responseJson);
     }
     
     @Test
@@ -426,5 +444,87 @@ public class ApiLsThingControllerTest {
         Collection<ErrorMessage> errors = ErrorMessage.fromJsonArrayToErrorMessages(json);
         Assert.assertEquals(1, errors.size());
     }
+    
+    @Transactional
+	@Test
+	public void checkBatchDependencies() throws Exception{
+    	String codeName = "PEG000003-1";
+        String json = this.mockMvc.perform(get("/api/v1/lsthings/batch/peg/checkDependencies/"+codeName)
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        
+		DependencyCheckDTO result = DependencyCheckDTO.fromJsonToDependencyCheckDTO(json);
+		logger.info(result.toJson());
+		Assert.assertTrue(result.getLinkedDataExists());
+	}
+	
+	@Transactional
+	@Test
+	public void checkParentDependencies() throws Exception{
+		String codeName = "PEG000003";
+        String json = this.mockMvc.perform(get("/api/v1/lsthings/parent/peg/checkDependencies/"+codeName)
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        
+		DependencyCheckDTO result = DependencyCheckDTO.fromJsonToDependencyCheckDTO(json);
+		logger.info(result.toJson());
+		Assert.assertTrue(result.getLinkedDataExists());
+	}
+	
+	@Transactional
+	@Test
+	public void deleteBatch() throws Exception{
+		String codeName = "CB000004-6";
+        String json = this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/lsthings/batch/cationic block/deleteBatch/"+codeName)
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+	}
+	
+	@Transactional
+	@Test
+	public void deleteBatchError() throws Exception{
+		String codeName = "CB000004-6";
+        String json = this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/lsthings/parent/cationic block/deleteBatch/"+codeName)
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isInternalServerError())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        logger.info(json);
+	}
+	
+	@Transactional
+	@Test
+	public void deleteParent() throws Exception{
+		String codeName = "CB000004";
+        String json = this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/lsthings/parent/cationic block/deleteParent/"+codeName)
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+	}
+	
+	@Transactional
+	@Test
+	public void deleteParentError() throws Exception{
+		String codeName = "CB000004-6";
+        String json = this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/lsthings/batch/cationic block/deleteParent/"+codeName)
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isInternalServerError())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        logger.info(json);
+	}
 
 }

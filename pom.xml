@@ -5,10 +5,10 @@
 	<groupId>com.labsynch.labseer</groupId>
 	<artifactId>acas</artifactId>
 	<packaging>war</packaging>
-	<version>1.6.0.0-BUILD-SNAPSHOT</version>
+	<version>1.7.0.0-BUILD-SNAPSHOT</version>
 	<properties>
 		<aspectj.version>1.7.0.RC1</aspectj.version>
-		<java.version>1.6</java.version>
+		<java.version>1.7</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
@@ -16,7 +16,8 @@
 		<slf4j.version>1.6.4</slf4j.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring-security.version>3.1.0.RELEASE</spring-security.version>
-		<git-sha-1>$buildNumber</git-sha-1>
+		<git-sha-1>${buildNumber}</git-sha-1>
+		<BuildScmBranch>${buildScmBranch}</BuildScmBranch>
 	</properties>
 	<scm>
 		<connection>scm:git:ssh://git@bitbucket.org/goshiro2013/mcneilco/acas-roo-server.git</connection>
@@ -73,6 +74,11 @@
 	</pluginRepositories>
 	<dependencies>
 		<!-- General dependencies for standard applications -->
+		 <dependency>
+                    <groupId>com.verhas</groupId>
+                    <artifactId>license3j</artifactId>
+                    <version>1.0.7</version>
+                </dependency>
 		<dependency>
 			<groupId>com.mangofactory</groupId>
 			<artifactId>swagger-springmvc</artifactId>
@@ -448,7 +454,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.1</version>
+				<version>1.3</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -471,6 +477,7 @@
 						<manifestEntries>
 							<!-- Adds ${buildNumber} as an entry in the manifest file -->
 							<Git-SHA-1>${buildNumber}</Git-SHA-1>
+							<Build-Scm-Branch>${buildScmBranch}</Build-Scm-Branch>
 						</manifestEntries>
 					</archive>
 				</configuration>

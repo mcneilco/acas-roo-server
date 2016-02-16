@@ -1,7 +1,6 @@
 package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
 import java.util.Map;
 
@@ -9,9 +8,12 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
+import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
@@ -24,11 +26,16 @@ public interface LsThingService {
 
 	PreferredNameResultsDTO getPreferredNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, String json);
+	
+	PreferredNameResultsDTO getPreferredNameFromName(String json);
 
 	String getProjectCodes();
 
 	PreferredNameResultsDTO getPreferredNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind,
+			PreferredNameRequestDTO requestDTO);
+
+	PreferredNameResultsDTO getPreferredNameFromName(
 			PreferredNameRequestDTO requestDTO);
 
 	LsThing saveLsThing(LsThing lsThing) throws UniqueNameException;
@@ -37,8 +44,6 @@ public interface LsThingService {
 
 	LsThing saveLsThing(LsThing lsThing, boolean checkLsThingName)
 			throws UniqueNameException;
-
-	String generateBatchCodeName(LsThing parent);
 
 	Collection<LsThing> findBatchesByParentEquals(LsThing parent);
 
@@ -63,9 +68,7 @@ public interface LsThingService {
 
 	Collection<LsThing> findCompositesByComponentEquals(LsThing component);
 
-	ArrayList<ErrorMessage> validateLsThing(LsThing lsThing,
-			boolean checkUniqueName, boolean checkUniqueInteractions,
-			boolean checkOrderMatters, boolean checkForwardAndReverseAreSame);
+	ArrayList<LsThingValidationErrorMessage> validateLsThing(LsThingValidationDTO validationDTO);
 
 	Collection<LsThing> sortLsThingsByCodeName(Collection<LsThing> lsThings);
 	
@@ -73,6 +76,16 @@ public interface LsThingService {
 
 	PreferredNameResultsDTO getCodeNameFromName(String thingType,
 			String thingKind, String labelType, String labelKind, String json);
+
+	DependencyCheckDTO checkBatchDependencies(LsThing batch);
+
+	DependencyCheckDTO checkParentDependencies(LsThing parent);
+
+	boolean deleteBatch(LsThing batch);
+
+	boolean deleteParent(LsThing parent);
+
+	int getBatchNumber(LsThing parent);
 	
 	
 }

@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord(sequenceName = "THING_PKSEQ", inheritanceType = "TABLE_PER_CLASS")
-@RooJson
 @Transactional
 public abstract class AbstractThing {
 
