@@ -958,6 +958,7 @@ public class LsThingServiceImpl implements LsThingService {
 		Join<LsThing, ItxLsThingLsThing> lsThingSecondItx = lsThingRoot.join("secondLsThings", JoinType.LEFT);
 		Join<ItxLsThingLsThing, LsThing> lsThingSecondLsThing = lsThingRoot.join("secondLsThings", JoinType.LEFT).join("secondLsThing", JoinType.LEFT);
 		Join<LsThing, LsThingLabel> lsThingSecondLsThingLabel = lsThingRoot.join("secondLsThings", JoinType.LEFT).join("secondLsThing", JoinType.LEFT).join("lsLabels", JoinType.LEFT);
+		Join<LsThing, LsThingLabel> lsThingLabel = lsThingRoot.join("lsLabels", JoinType.LEFT);
 		Join<LsThing, LsThingState> lsThingState = lsThingRoot.join("lsStates", JoinType.LEFT);
 		Join<LsThingState, LsThingValue> lsThingValue = lsThingRoot.join("lsStates", JoinType.LEFT).join("lsValues", JoinType.LEFT);
 		
@@ -1060,6 +1061,13 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate studyCodePredicate2 = criteriaBuilder.equal(lsThingValue.<String>get("lsKind"), "study code");
 			Predicate studyCodePredicate = criteriaBuilder.and(studyCodePredicate1, studyCodePredicate2, lsThingValueNotIgnored, lsThingStateNotIgnored);
 			predicateListByTerm.add(studyCodePredicate);
+			
+			//name
+			Predicate nameLabelPredicate = criteriaBuilder.like(criteriaBuilder.lower(lsThingLabel.<String>get("labelText")), "%"+term.toLowerCase()+"%");
+			Predicate lsThingLabelTypeName = criteriaBuilder.equal(lsThingLabel.<String>get("lsType"), "name");
+			Predicate lsThingLabelNotIgnored = criteriaBuilder.not(lsThingLabel.<Boolean>get("ignored"));
+			Predicate namePredicate = criteriaBuilder.and(nameLabelPredicate, lsThingLabelTypeName, lsThingLabelNotIgnored);
+			predicateListByTerm.add(namePredicate);
 			
 			//join all the predicatesByTerm with OR
 			predicatesByTerm = predicateListByTerm.toArray(predicatesByTerm);
