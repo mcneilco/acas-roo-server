@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -11,7 +12,10 @@ import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 
 @Service
 public interface ContainerService {
@@ -43,6 +47,15 @@ public interface ContainerService {
 	Collection<CodeLabelDTO> getContainerCodesByLabels(
 			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind);
 
+	Collection<WellContentDTO> getWellContent(Collection<ContainerRequestDTO> wellCodes);
+
+	ArrayList<ErrorMessage> validateContainer(Container container);
+
+	PreferredNameResultsDTO getCodeNameFromName(String containerType,
+			String containerKind, String labelType, String labelKind,
+			PreferredNameRequestDTO requestDTO);
+
+	String pickBestLabel(Container container);
 	Collection<WellContentDTO> getWellContent(Collection<ContainerRequestDTO> wellCodes);
 
 	Collection<ContainerErrorMessageDTO> throwInTrash(

@@ -118,4 +118,12 @@ privileged aspect ContainerLabelController_Roo_Controller_Json {
         return new ResponseEntity<String>(ContainerLabel.toJsonArray(ContainerLabel.findContainerLabelsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ContainerLabelController.jsonFindContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(@RequestParam("lsType") String lsType, @RequestParam("labelText") String labelText, @RequestParam(value = "ignored", required = false) boolean ignored) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ContainerLabel.toJsonArray(ContainerLabel.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(lsType, labelText, ignored).getResultList()), headers, HttpStatus.OK);
+    }
+    
 }

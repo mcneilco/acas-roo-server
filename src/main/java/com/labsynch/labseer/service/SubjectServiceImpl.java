@@ -231,9 +231,9 @@ public class SubjectServiceImpl implements SubjectService {
 				newSubject.getTreatmentGroups().add(TreatmentGroup.findTreatmentGroup(treatmentGroup.getId()));
 			}
 
-			newSubject.persist();
 			saveLabels(subject, newSubject, recordedDate );
 			saveStates(subject, newSubject, recordedDate );
+			newSubject.persist();
 
 		} else {
 			logger.debug("this is an existing subject -----------");
@@ -252,17 +252,22 @@ public class SubjectServiceImpl implements SubjectService {
 
 	private void saveStates(Subject subject, Subject newSubject, Date recordedDate) {
 		if (subject.getLsStates() != null){
+			Set<SubjectState> newSubjectStates = new HashSet<SubjectState>();
 			for(SubjectState subjectState : subject.getLsStates()){
 				SubjectState newSubjectState = new SubjectState(subjectState);
 				newSubjectState.setSubject(newSubject);
-				newSubjectState.persist();
+				newSubjectStates.add(newSubjectState);
+//				newSubjectState.persist();
 				if (subjectState.getLsValues() != null){
+					Set<SubjectValue> newSubjectValues = new HashSet<SubjectValue>();
 					for (SubjectValue subjectValue : subjectState.getLsValues()){
 						subjectValue.setLsState(newSubjectState);
-						subjectValue.persist();
-					}								
+						newSubjectValues.add(subjectValue);
+					}
+					newSubjectState.setLsValues(newSubjectValues);
 				}
 			}
+			newSubject.setLsStates(newSubjectStates);
 		}		
 	}
 

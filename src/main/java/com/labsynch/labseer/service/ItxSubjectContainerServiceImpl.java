@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.ItxSubjectContainerState;
 import com.labsynch.labseer.domain.ItxSubjectContainerValue;
+import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -20,6 +22,7 @@ public class ItxSubjectContainerServiceImpl implements ItxSubjectContainerServic
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
+	@Transactional
 	@Override
 	public ItxSubjectContainer saveLsItxSubjectContainer(ItxSubjectContainer itxSubjectContainer){
 		int i = 0;
@@ -27,6 +30,8 @@ public class ItxSubjectContainerServiceImpl implements ItxSubjectContainerServic
 		int batchSize = propertiesUtilService.getBatchSize();
 		logger.debug("incoming meta ItxSubjectContainer: " + itxSubjectContainer.toJson() + "\n");
 		ItxSubjectContainer newItxSubjContainer = new ItxSubjectContainer(itxSubjectContainer);
+		newItxSubjContainer.setContainer(Container.findContainer(newItxSubjContainer.getContainer().getId()));
+		newItxSubjContainer.setSubject(Subject.findSubject(newItxSubjContainer.getSubject().getId()));
 		newItxSubjContainer.persist();
 
 		if (itxSubjectContainer.getLsStates() != null){

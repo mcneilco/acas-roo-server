@@ -494,7 +494,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 
 	@Override
 	public String getContainerCodeName() {
-		String thingTypeAndKind = "container_container";
+		String thingTypeAndKind = "material_container";
 		String labelTypeAndKind = "id_codeName";
 		Long numberOfLabels = 1L;
 		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );

@@ -22,4 +22,7 @@
 <definition extends="default" name="containerlabels/findContainerLabelsByLsTransactionEquals">
         <put-attribute name="body" value="/WEB-INF/views/containerlabels/findContainerLabelsByLsTransactionEquals.jspx"/>
     </definition>
+<definition extends="default" name="containerlabels/findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/containerlabels/findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot.jspx"/>
+    </definition>
 </tiles-definitions>
