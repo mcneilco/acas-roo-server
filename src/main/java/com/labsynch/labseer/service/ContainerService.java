@@ -56,7 +56,6 @@ public interface ContainerService {
 			PreferredNameRequestDTO requestDTO);
 
 	String pickBestLabel(Container container);
-	Collection<WellContentDTO> getWellContent(Collection<ContainerRequestDTO> wellCodes);
 
 	Collection<ContainerErrorMessageDTO> throwInTrash(
 			Collection<ContainerRequestDTO> containersToTrash) throws Exception;
