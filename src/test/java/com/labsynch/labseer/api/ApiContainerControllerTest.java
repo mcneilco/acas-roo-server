@@ -69,7 +69,11 @@ public class ApiContainerControllerTest {
     @Transactional
     public void getWellCodesByPlateBarcodes() throws Exception{
     	List<String> plateBarcodes = new ArrayList<String>();
-		plateBarcodes.add("\""+Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText()+"\"");	
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(3);
+    	for (Container container : query.getResultList()){
+    		plateBarcodes.add("\""+container.getLsLabels().iterator().next().getLabelText()+"\"");	
+    	}
 		String json = plateBarcodes.toString();
 		logger.info(json);
 		Assert.assertFalse(json.equals("{}"));
@@ -96,7 +100,11 @@ public class ApiContainerControllerTest {
     @Transactional
     public void getContainerCodesByLabels() throws Exception{
     	List<String> plateBarcodes = new ArrayList<String>();
-		plateBarcodes.add("\""+Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText()+"\"");	
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(3);
+    	for (Container container : query.getResultList()){
+    		plateBarcodes.add("\""+container.getLsLabels().iterator().next().getLabelText()+"\"");	
+    	}	
 		String json = plateBarcodes.toString();
 		logger.info(json);
 		Assert.assertFalse(json.equals("{}"));
@@ -120,7 +128,11 @@ public class ApiContainerControllerTest {
     @Transactional
     public void getContainerCodesByLabelsWithTypeKinds() throws Exception{
     	List<String> plateBarcodes = new ArrayList<String>();
-		plateBarcodes.add("\""+Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText()+"\"");	
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(3);
+    	for (Container container : query.getResultList()){
+    		plateBarcodes.add("\""+container.getLsLabels().iterator().next().getLabelText()+"\"");	
+    	}	
 		String json = plateBarcodes.toString();
 		logger.info(json);
 		Assert.assertFalse(json.equals("{}"));
@@ -144,9 +156,15 @@ public class ApiContainerControllerTest {
     @Test
     @Transactional
     public void getWellContent() throws Exception{
-    	List<String> wellCodes = new ArrayList<String>();
-		wellCodes.add("\""+Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","well").getResultList().get(0).getCodeName()+"\"");
-		String json = wellCodes.toString();
+    	Collection<ContainerRequestDTO> wellCodes = new HashSet<ContainerRequestDTO>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(10);
+    	for (Container container : query.getResultList()){
+    		ContainerRequestDTO wellCode = new ContainerRequestDTO();
+    		wellCode.setContainerCodeName(container.getCodeName());
+    		wellCodes.add(wellCode);	
+    	}
+		String json = ContainerRequestDTO.toJsonArray(wellCodes);
 		logger.info(json);
 		Assert.assertFalse(json.equals("{}"));
     	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
@@ -154,6 +172,38 @@ public class ApiContainerControllerTest {
     			.accept(MediaType.APPLICATION_JSON)
     			.content(json))
     			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
+    	for (WellContentDTO result : results){
+    		Assert.assertNotNull(result.getContainerCodeName());
+    	}
+    }
+    
+    @Test
+    @Transactional
+    public void getWellContentPartialSuccess() throws Exception{
+    	Collection<ContainerRequestDTO> wellCodes = new HashSet<ContainerRequestDTO>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(2);
+    	for (Container container : query.getResultList()){
+    		ContainerRequestDTO wellCode = new ContainerRequestDTO();
+    		wellCode.setContainerCodeName(container.getCodeName());
+    		wellCodes.add(wellCode);	
+    	}
+    	ContainerRequestDTO badWellCode = new ContainerRequestDTO();
+    	badWellCode.setContainerCodeName("NOT-A-VALID-CODE");
+    	wellCodes.add(badWellCode);
+		String json = ContainerRequestDTO.toJsonArray(wellCodes);
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isBadRequest())
     			.andExpect(content().contentType("application/json;charset=utf-8"))
     			.andReturn().getResponse();
     	String responseJson = response.getContentAsString();
@@ -194,7 +244,7 @@ public class ApiContainerControllerTest {
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON)
     			.content(json))
-    			.andExpect(status().isBadRequest())
+    			.andExpect(status().isInternalServerError())
     			.andExpect(content().contentType("application/json;charset=utf-8"))
     			.andReturn().getResponse();;
 		logger.info(response.getContentAsString());
@@ -240,7 +290,7 @@ public class ApiContainerControllerTest {
     			.contentType(MediaType.APPLICATION_JSON)
     			.accept(MediaType.APPLICATION_JSON)
     			.content(json))
-    			.andExpect(status().isOk());
+    			.andExpect(status().isNoContent());
     }
     
 

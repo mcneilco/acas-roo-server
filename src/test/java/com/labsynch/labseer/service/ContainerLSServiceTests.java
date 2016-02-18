@@ -558,7 +558,12 @@ public class ContainerLSServiceTests {
 	@Transactional
 	public void getContainersByLocation(){
 		List<String> locationCodeNameList = new ArrayList<String>();
-		locationCodeNameList.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","racks").getResultList().get(0).getCodeName());
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("location","default");
+		query.setMaxResults(100);
+		for (Container container : query.getResultList()){
+			locationCodeNameList.add(container.getCodeName());
+		}
+		logger.info(locationCodeNameList.toString());
 		Collection<ContainerLocationDTO> result = containerService.getContainersInLocation(locationCodeNameList);
 		logger.info(ContainerLocationDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
@@ -568,7 +573,10 @@ public class ContainerLSServiceTests {
 	@Transactional
 	public void getContainersByLocationAndTypeKind(){
 		List<String> locationCodeNameList = new ArrayList<String>();
-		locationCodeNameList.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("physical","racks").getResultList().get(0).getCodeName());
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("location","default");
+		query.setMaxResults(1);
+		Container container = query.getSingleResult();
+		locationCodeNameList.add(container.getCodeName());
 		Collection<ContainerLocationDTO> result = containerService.getContainersInLocation(locationCodeNameList, "physical", "plate");
 		logger.info(ContainerLocationDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
@@ -612,7 +620,10 @@ public class ContainerLSServiceTests {
 	@Transactional
 	public void getContainerCodesByLabelsWithConflictingTypeKinds(){
 		List<String> plateBarcodes = new ArrayList<String>();
-		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+		query.setMaxResults(1);
+		Container container = query.getSingleResult();
+		plateBarcodes.add(container.getLsLabels().iterator().next().getLabelText());
 		logger.info("querying with: "+plateBarcodes.toString());
 		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "plate", "plate", "name", "barcode");
 		logger.info(CodeLabelDTO.toJsonArray(result));
