@@ -2,16 +2,16 @@
 
 --ddict changes
 
-ALTER TABLE acas.ddict_kind
+ALTER TABLE ddict_kind
   ADD CONSTRAINT ddict_kind_tk_uq UNIQUE (ls_type_and_kind);
 
-ALTER TABLE acas.ddict_value
-  ADD CONSTRAINT dd_value_tk_fk FOREIGN KEY (ls_type_and_kind) REFERENCES acas.ddict_kind (ls_type_and_kind)
+ALTER TABLE ddict_value
+  ADD CONSTRAINT dd_value_tk_fk FOREIGN KEY (ls_type_and_kind) REFERENCES ddict_kind (ls_type_and_kind)
    ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 --many to many changes
 CREATE INDEX fki_dd_value_tk_fk
-  ON acas.ddict_value(ls_type_and_kind);
+  ON ddict_value(ls_type_and_kind);
 
   CREATE INDEX expt_ag_exptid_idx
    ON experiment_analysisgroup (experiment_id ASC NULLS LAST);
