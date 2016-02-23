@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,9 @@ import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
+import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
@@ -398,13 +403,13 @@ public class ApiContainerController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
-        	Collection<ContainerRequestDTO> wellsToUpdate = ContainerRequestDTO.fromJsonArrayToCoes(json);
-        	Collection<WellContentDTO> results = containerService.getWellContent(wellsToUpdate);
+        	Collection<ContainerRequestDTO> queryWells = ContainerRequestDTO.fromJsonArrayToCoes(json);
+        	Collection<WellContentDTO> results = containerService.getWellContent(queryWells);
         	boolean success = true;
         	for (WellContentDTO result: results){
         		if (result.getLevel() != null) success = false;
         	}
-        	if (success) return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), HttpStatus.OK);
+        	if (success) return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), headers, HttpStatus.OK);
         	else return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -460,6 +465,50 @@ public class ApiContainerController {
         	}
         	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
         	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/createPlate", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> createPlate(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+    	CreatePlateRequestDTO plateRequest = CreatePlateRequestDTO.fromJsonToCreatePlateRequestDTO(json);
+        try{
+        	Container dupeContainer = Container.findContainerByLabelText("container", "plate", "name", "barcode", plateRequest.getBarcode()).getSingleResult();
+        	if (dupeContainer != null){
+        		return new ResponseEntity<String>("Barcode already exists", headers, HttpStatus.BAD_REQUEST);
+        	}
+        }catch (NonUniqueResultException e){
+    		return new ResponseEntity<String>("More than one of this barcode already exists!!", headers, HttpStatus.BAD_REQUEST);
+        }catch (NoResultException e){
+        	//barcode is unique, proceed to plate creation
+        }
+        try{
+        	PlateStubDTO result = containerService.createPlate(plateRequest);
+        	return new ResponseEntity<String>(result.toJson(), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/getWellContentByPlateBarcode", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getWellContentByPlateBarcode(@RequestParam(value = "plateBarcode", required = true) String plateBarcode) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<WellContentDTO> results = containerService.getWellContentByPlateBarcode(plateBarcode);
+        	boolean success = true;
+        	for (WellContentDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), headers, HttpStatus.OK);
+        	else return new ResponseEntity<String>(WellContentDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }

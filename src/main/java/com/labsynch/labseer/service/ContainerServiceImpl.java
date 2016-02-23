@@ -34,25 +34,26 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.ItxContainerContainerState;
+import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
-import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerRequestDTO;
+import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
-import com.labsynch.labseer.dto.LsThingValidationDTO;
+import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
-import com.labsynch.labseer.domain.ItxContainerContainerState;
-import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.dto.WellStubDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
-import com.labsynch.labseer.exceptions.UniqueInteractionsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONTokener;
 
@@ -654,7 +655,7 @@ public class ContainerServiceImpl implements ContainerService {
 		Predicate plateBarcodeEquals = plateBarcodeLabelText.in(plateBarcodes);
 		predicateList.add(plateBarcodeEquals);
 		Predicate itxType = cb.equal(secondItx.<String>get("lsType"), "has member");
-		Predicate itxKind = cb.equal(secondItx.<String>get("lsKind"), "plate well");
+		Predicate itxKind = cb.equal(secondItx.<String>get("lsKind"), "container_well");
 		predicateList.add(itxType);
 		predicateList.add(itxKind);
 		Predicate wellLabelLsType = cb.equal(wellLabel.<String>get("lsType"), "name");
@@ -782,6 +783,26 @@ public class ContainerServiceImpl implements ContainerService {
         }
 //		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<WellContentDTO> results = q.getResultList();
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestWellCodeNames = new HashSet<String>();
+		for (ContainerRequestDTO request : wellCodes){
+			requestWellCodeNames.add(request.getContainerCodeName());
+		}
+		HashSet<String> foundWellCodeNames = new HashSet<String>();
+		for (WellContentDTO result : results){
+			foundWellCodeNames.add(result.getContainerCodeName());
+		}
+		requestWellCodeNames.removeAll(foundWellCodeNames);
+		if (!requestWellCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestWellCodeNames){
+				WellContentDTO notFoundDTO = new WellContentDTO();
+				notFoundDTO.setContainerCodeName(notFoundCodeName);
+				notFoundDTO.setLevel("error");
+				notFoundDTO.setMessage("containerCodeName not found");
+				results.add(notFoundDTO);
+			}
+		}
+		
 		return results;
 	}
 	
@@ -870,14 +891,14 @@ public class ContainerServiceImpl implements ContainerService {
 			}
 			//ignore the old movedTo interaction to preserve history
 			try{
-				ItxContainerContainer movedTo = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndFirstContainerEquals("moved to", "storage move", container).getSingleResult();
+				ItxContainerContainer movedTo = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndLsKindEqualsAndFirstContainerEquals("moved to", "container_location", container).getSingleResult();
 				movedTo.setIgnored(true);
 				movedTo.setModifiedBy(dto.getModifiedBy());
 				movedTo.setModifiedDate(dto.getModifiedDate());
 				movedTo.merge();
 			} catch(Exception e){
 				result.setLevel("error");
-				result.setMessage("Error finding 'moved to'/'storage move' interaction to ignore.");
+				result.setMessage("Error finding 'moved to'/'container_location' interaction to ignore.");
 				continue;
 			}
 			
@@ -885,7 +906,7 @@ public class ContainerServiceImpl implements ContainerService {
 			try{
 				ItxContainerContainer trashItx = new ItxContainerContainer();
 				trashItx.setLsType("moved to");
-				trashItx.setLsKind("storage move");
+				trashItx.setLsKind("container_location");
 				trashItx.setRecordedBy(dto.getModifiedBy());
 				trashItx.setRecordedDate(dto.getModifiedDate());
 				trashItx.setFirstContainer(container);
@@ -1010,6 +1031,168 @@ public class ContainerServiceImpl implements ContainerService {
 				continue;
 			}
 		}
+		return results;
+	}
+
+	@Override
+	public PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest) throws Exception {
+		Container definition;
+		try{
+			definition = Container.findContainerByCodeNameEquals(plateRequest.getDefinition());
+		}catch (Exception e){
+			throw new Exception("Error finding definition: "+plateRequest.getDefinition());
+		}
+		Container plate = new Container();
+		plate.setCodeName(autoLabelService.getContainerCodeName());
+		plate.setRecordedBy(plateRequest.getRecordedBy());
+		plate.setRecordedDate(new Date());
+		plate.setLsType("container");
+		plate.setLsKind("plate");
+		ContainerLabel plateBarcode = new ContainerLabel();
+		plateBarcode.setRecordedBy(plate.getRecordedBy());
+		plateBarcode.setRecordedDate(plate.getRecordedDate());
+		plateBarcode.setLsType("name");
+		plateBarcode.setLsKind("well name");
+		plateBarcode.setLabelText(plateRequest.getBarcode());
+		plateBarcode.setContainer(plate);
+		plate.getLsLabels().add(plateBarcode);
+		plate.persist();
+		//TODO: finalize itx type/Kind
+		ItxContainerContainer defines = makeItxContainerContainer("defines", definition, plate, plateRequest.getRecordedBy());
+		defines.persist();
+		try{
+			Collection<Container> wells = createWellsFromDefinition(plate, definition);
+			//TODO:update wells based on information provided in nested wells
+			//TODO: do something with templates
+			Collection<WellStubDTO> wellStubs = WellStubDTO.convertToWellStubDTOs(wells);
+			PlateStubDTO result = new PlateStubDTO();
+			result.setBarcode(plateRequest.getBarcode());
+			result.setCodeName(plate.getCodeName());
+			result.setWells(wellStubs);
+			return result;
+		}catch (Exception e){
+			logger.error("Error creating wells from definition",e);
+			throw new Exception("Error creating wells from definition",e);
+		}
+	}
+
+	public Collection<Container> createWellsFromDefinition(Container plate,
+			Container definition) throws Exception {
+		Collection<Container> wells = new ArrayList<Container>();
+		String wellFormat = getWellFormat(definition);
+		Integer numberOfWells = getDefinitionIntegerValue(definition, "wells");
+		Integer numberOfColumns = getDefinitionIntegerValue(definition, "columns");
+		if (wellFormat != null){
+			int n = 0;
+			List<AutoLabelDTO> wellCodeNames = autoLabelService.getAutoLabels("material_container", "id_codeName", numberOfWells.longValue()); 
+			int batchSize = propertiesUtilService.getBatchSize();
+			logger.debug("wellFormat: "+wellFormat);
+			logger.debug("numberOfWells: "+numberOfWells.toString());
+			logger.debug("numberOfColumns: "+numberOfColumns.toString());
+			while (n < numberOfWells){
+				String letter = "";
+				String number = "";
+				int rowNum = n / numberOfColumns;
+				int colNum = n % numberOfColumns;
+				if (wellFormat.equals("1")) number = Integer.toString(n+1);
+				else if (wellFormat.equals("A1")){
+					letter = SimpleUtil.toAlphabetic(rowNum);
+					number = Integer.toString(colNum+1);
+				}
+				else if (wellFormat.equals("A01")){
+					letter = SimpleUtil.toAlphabetic(rowNum);
+					number = String.format("%02d", colNum+1);
+				}else if (wellFormat.equals("A001")){
+					letter = SimpleUtil.toAlphabetic(rowNum);
+					number = String.format("%03d", colNum+1);
+				}
+				//create well Container object
+				Container well = new Container();
+				well.setCodeName(wellCodeNames.get(n).getAutoLabel());
+				well.setRecordedBy(plate.getRecordedBy());
+				well.setRecordedDate(plate.getRecordedDate());
+				well.setLsType("well");
+				well.setLsKind("default");
+				well.setRowIndex(rowNum);
+				well.setColumnIndex(colNum);
+				ContainerLabel wellName = new ContainerLabel();
+				wellName.setRecordedBy(plate.getRecordedBy());
+				wellName.setRecordedDate(plate.getRecordedDate());
+				wellName.setLsType("name");
+				wellName.setLsKind("well name");
+				wellName.setLabelText(letter+number);
+				wellName.setContainer(well);
+				well.getLsLabels().add(wellName);
+				well.persist();
+				
+				//create ItxContainerContainer "has member" to link plate and well
+				ItxContainerContainer hasMemberItx = makeItxContainerContainer("has member", plate, well, plate.getRecordedBy());
+				hasMemberItx.persist();
+				if (n% batchSize == 0){
+					well.flush();
+				}
+				wells.add(well);
+				n++;
+			}
+			
+		} else{
+			throw new Exception("Well format could not be found for definition: "+definition.getCodeName());
+		}
+		return wells;
+	}
+	
+	private String getWellFormat(Container definition){
+		for (ContainerState state : definition.getLsStates()){
+			if( state.getLsType().equals("constants") && state.getLsKind().equals("format")){
+				for (ContainerValue value : state.getLsValues()){
+					if (value.getLsKind().equals("subcontainer naming convention")){
+						return value.getCodeValue();
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	private Integer getDefinitionIntegerValue(Container definition, String lsKind){
+		for (ContainerState state : definition.getLsStates()){
+			if( state.getLsType().equals("constants") && state.getLsKind().equals("format")){
+				logger.debug(state.getLsTypeAndKind());
+				for (ContainerValue value : state.getLsValues()){
+					logger.debug(value.getLsTypeAndKind());
+					if (value.getLsKind().equals(lsKind)){
+						return Integer.valueOf(value.getNumericValue().intValue());
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	private ItxContainerContainer makeItxContainerContainer(String lsType, Container firstContainer, Container secondContainer, String recordedBy){
+		ItxContainerContainer itxContainerContainer = new ItxContainerContainer();
+		itxContainerContainer.setLsType(lsType);
+		itxContainerContainer.setLsKind(firstContainer.getLsType()+"_"+secondContainer.getLsType());
+		itxContainerContainer.setFirstContainer(firstContainer);
+		itxContainerContainer.setSecondContainer(secondContainer);
+		itxContainerContainer.setRecordedBy(recordedBy);
+		itxContainerContainer.setRecordedDate(new Date());
+		return itxContainerContainer;
+	}
+
+	@Override
+	public Collection<WellContentDTO> getWellContentByPlateBarcode(
+			String plateBarcode) {
+		List<String> plateBarcodes = new ArrayList<String>();
+		plateBarcodes.add(plateBarcode);
+		Collection<PlateWellDTO> wellCodes = getWellCodesByPlateBarcodes(plateBarcodes);
+		Collection<ContainerRequestDTO> requestWellCodes = new HashSet<ContainerRequestDTO>();
+		for (PlateWellDTO wellCode : wellCodes){
+			ContainerRequestDTO requestWellCode = new ContainerRequestDTO();
+			requestWellCode.setContainerCodeName(wellCode.getWellCodeName());
+			requestWellCodes.add(requestWellCode);
+		}
+		Collection<WellContentDTO> results = getWellContent(requestWellCodes);
 		return results;
 	}
 

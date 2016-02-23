@@ -5,6 +5,7 @@ package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.WellContentDTO;
 import java.math.BigDecimal;
+import java.util.Date;
 
 privileged aspect WellContentDTO_Roo_JavaBean {
     
@@ -86,6 +87,46 @@ privileged aspect WellContentDTO_Roo_JavaBean {
     
     public void WellContentDTO.setMessage(String message) {
         this.message = message;
+    }
+    
+    public String WellContentDTO.getWellName() {
+        return this.wellName;
+    }
+    
+    public void WellContentDTO.setWellName(String wellName) {
+        this.wellName = wellName;
+    }
+    
+    public Integer WellContentDTO.getRowIndex() {
+        return this.rowIndex;
+    }
+    
+    public void WellContentDTO.setRowIndex(Integer rowIndex) {
+        this.rowIndex = rowIndex;
+    }
+    
+    public Integer WellContentDTO.getColumnIndex() {
+        return this.columnIndex;
+    }
+    
+    public void WellContentDTO.setColumnIndex(Integer columnIndex) {
+        this.columnIndex = columnIndex;
+    }
+    
+    public String WellContentDTO.getRecordedBy() {
+        return this.recordedBy;
+    }
+    
+    public void WellContentDTO.setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+    
+    public Date WellContentDTO.getRecordedDate() {
+        return this.recordedDate;
+    }
+    
+    public void WellContentDTO.setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
     }
     
 }

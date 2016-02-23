@@ -11,6 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -55,13 +56,17 @@ import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
+import com.labsynch.labseer.dto.CreatePlateRequestDTO;
+import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
+import com.labsynch.labseer.dto.WellStubDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONTokener;
 
@@ -784,6 +789,40 @@ public class ContainerLSServiceTests {
     		Assert.assertNotNull(result.getPreferredName());
     	}
 	}
+	
+	@Test
+	@Transactional
+	public void getAllWellsForPlate(){
+		Container container = Container.findContainer(289095L);
+    	Collection<Container> wells = new ArrayList<Container>();
+    	for (ItxContainerContainer itx : container.getSecondContainers()){
+    		Container well = itx.getSecondContainer();
+    		wells.add(well);
+    	}
+    	logger.info(Container.toJsonArray(wells));
+	}
+	
+	@Test
+	@Transactional
+	public void createEmptyPlate() throws Exception{
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+		query.setMaxResults(1);
+		Container definition = query.getSingleResult();
+		CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
+		plateRequest.setDefinition(definition.getCodeName());
+		plateRequest.setBarcode("TESTBARCODE-123");
+		plateRequest.setRecordedBy("acas");
+    	PlateStubDTO result = containerService.createPlate(plateRequest);
+    	logger.info(result.toJson());
+    	Assert.assertEquals(1536, result.getWells().size());
+    	String[][] plateLayout = new String[32][48];
+    	for (WellStubDTO well : result.getWells()){
+    		logger.debug(well.getRowIndex().toString() + ", "+well.getColumnIndex().toString());
+    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
+    	}
+    	logger.info(Arrays.deepToString(plateLayout));
+	}
+	
 	
 	
 }

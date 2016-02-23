@@ -2,6 +2,7 @@ package com.labsynch.labseer.dto;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,6 +26,12 @@ public class WellContentDTO {
 	private String physicalState;
 	private String level;
 	private String message;
+	
+	private String wellName;
+	private Integer rowIndex;
+	private Integer columnIndex;
+	private String recordedBy;
+	private Date recordedDate;
 	
 	public WellContentDTO(){
 	}
