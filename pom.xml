@@ -8,6 +8,7 @@
 	<version>1.6.5.0-BUILD-SNAPSHOT</version>
 	<properties>
 		<aspectj.version>1.7.0.RC1</aspectj.version>
+		<java.version>1.7</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
