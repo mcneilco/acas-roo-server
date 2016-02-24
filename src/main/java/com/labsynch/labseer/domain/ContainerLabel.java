@@ -119,9 +119,9 @@ public class ContainerLabel extends AbstractLabel {
 				if (label.getLsType().equals("name")) nameLabels.add(label);
 			}
 			if (!nameLabels.isEmpty()){
-				ContainerLabel bestLabel = preferredLabels.iterator().next();
-				for (ContainerLabel preferredLabel : preferredLabels){
-					if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+				ContainerLabel bestLabel = nameLabels.iterator().next();
+				for (ContainerLabel nameLabel : nameLabels){
+					if (nameLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = nameLabel;
 				}
 				return bestLabel;
 			} else {
@@ -130,9 +130,9 @@ public class ContainerLabel extends AbstractLabel {
 					if (!label.isIgnored()) notIgnoredLabels.add(label);
 				}
 				if (!notIgnoredLabels.isEmpty()){
-					ContainerLabel bestLabel = preferredLabels.iterator().next();
-					for (ContainerLabel preferredLabel : preferredLabels){
-						if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+					ContainerLabel bestLabel = notIgnoredLabels.iterator().next();
+					for (ContainerLabel notIgnoredLabel : notIgnoredLabels){
+						if (notIgnoredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = notIgnoredLabel;
 					}
 					return bestLabel;
 				} else {
