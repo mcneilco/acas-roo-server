@@ -253,6 +253,9 @@
         <menu:category id="c_author" z="DETG4XqcVC9sb/BVL/ybUSG8lUM=">
             <menu:item id="i_author_new" messageCode="global_menu_new" url="/authors?form" z="e6WikSiFx46UnQunBmCd54pmrYE="/>
             <menu:item id="i_author_list" messageCode="global_menu_list" url="/authors?page=1&amp;size=${empty param.size ? 10 : param.size}" z="/71/+sYxLDw3jeyTZyEHzZ9CQQQ="/>
+            <menu:item id="fi_author_activationkeyandemailaddress" messageCode="global_menu_find" url="/authors?find=ByActivationKeyAndEmailAddress&amp;form" z="dgxuoGzO3W8UP8TfwWk8eIxUSO8="/>
+            <menu:item id="fi_author_emailaddress" messageCode="global_menu_find" url="/authors?find=ByEmailAddress&amp;form" z="IpLDZFbmjaRzpOMH/1TxEanN5bY="/>
+            <menu:item id="fi_author_username" messageCode="global_menu_find" url="/authors?find=ByUserName&amp;form" z="5HYW0rrXepMBuslnaPQKUc1sxDw="/>
         </menu:category>
         <menu:category id="c_thingpagearchive" z="Poh907U09OYMInXDxCLHjmgu4v8=">
             <menu:item id="i_thingpagearchive_new" messageCode="global_menu_new" url="/thingpagearchives?form" z="DSXfkjU0T0xjJ2VoGdbj00jaelg="/>
@@ -427,7 +430,7 @@
         <menu:category id="c_lsrole" z="eIIF+3Nwhg0gA4BZWz9IqeIfBr0=">
             <menu:item id="i_lsrole_new" messageCode="global_menu_new" url="/lsroles?form" z="sQQU8eIYjr52rryeIj1mbQvh070="/>
             <menu:item id="i_lsrole_list" messageCode="global_menu_list" url="/lsroles?page=1&amp;size=${empty param.size ? 10 : param.size}" z="zSPyhLyoG501CR+jtEld7yKrcKg="/>
-            <menu:item id="fi_lsrole_rolenameequals" messageCode="global_menu_find" url="/roles?find=ByRoleNameEquals&amp;form" z="g4tKmMKgc5y7Al2PlFSVNBHvXVo="/>
+            <menu:item id="fi_lsrole_rolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByRoleNameEquals&amp;form" z="cO0ad/jaBLJZl79Xpta3al6Z7mM="/>
         </menu:category>
         <menu:category id="c_authorrole" z="5H5j5FexDI0Q/OjfqVeghRk3SBQ=">
             <menu:item id="i_authorrole_new" messageCode="global_menu_new" url="/authorroles?form" z="R8JUiR8CbsbtSUAeFyXKb8jet5k="/>
