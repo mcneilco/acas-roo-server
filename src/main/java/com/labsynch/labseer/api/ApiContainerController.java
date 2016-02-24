@@ -514,4 +514,24 @@ public class ApiContainerController {
         }
     }
     
+    @Transactional
+    @RequestMapping(value = "/updateWellStatus", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> updateWellStatus(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<WellContentDTO> wellsToUpdate = WellContentDTO.fromJsonArrayToWellCoes(json);
+        	Collection<ContainerErrorMessageDTO> results = containerService.updateWellStatus(wellsToUpdate);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }

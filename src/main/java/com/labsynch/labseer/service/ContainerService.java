@@ -68,6 +68,9 @@ public interface ContainerService {
 	PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest) throws Exception;
 
 	Collection<WellContentDTO> getWellContentByPlateBarcode(String plateBarcode);
+
+	Collection<ContainerErrorMessageDTO> updateWellStatus(
+			Collection<WellContentDTO> wellsToUpdate);
 	
 	
 }

@@ -823,6 +823,117 @@ public class ContainerLSServiceTests {
     	logger.info(Arrays.deepToString(plateLayout));
 	}
 	
+	@Test
+	@Transactional
+	public void createPartiallyFilledPlate() throws Exception{
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+		query.setMaxResults(1);
+		Container definition = query.getSingleResult();
+		CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
+		plateRequest.setDefinition(definition.getCodeName());
+		plateRequest.setBarcode("TESTBARCODE-123");
+		plateRequest.setRecordedBy("acas");
+		Collection<WellContentDTO> wellsToPopulate = new ArrayList<WellContentDTO>();
+		WellContentDTO wellA1 = new WellContentDTO();
+		wellA1.setWellName("A1");
+		wellA1.setAmount(new BigDecimal(1));
+		wellA1.setAmountUnits("µL");
+		wellsToPopulate.add(wellA1);
+		WellContentDTO wellB3 = new WellContentDTO();
+		wellB3.setWellName("B03");
+		wellB3.setAmount(new BigDecimal(2));
+		wellB3.setAmountUnits("µL");
+		wellsToPopulate.add(wellB3);
+		WellContentDTO wellC7 = new WellContentDTO();
+		wellC7.setWellName("AA007");
+		wellC7.setAmount(new BigDecimal(3));
+		wellC7.setAmountUnits("µL");
+		wellsToPopulate.add(wellC7);
+		plateRequest.setWells(wellsToPopulate);
+    	PlateStubDTO result = containerService.createPlate(plateRequest);
+    	Assert.assertEquals(1536, result.getWells().size());
+    	String[][] plateLayout = new String[32][48];
+    	for (WellStubDTO well : result.getWells()){
+    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
+    		if (well.getWellName().equals("A001")){
+    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
+    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
+    			checkWells.add(checkWell);
+    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			Assert.assertEquals(new BigDecimal(1), checkResult.getAmount());
+    			Assert.assertEquals("µL", checkResult.getAmountUnits());
+    			logger.info("checked well A001");
+    		}
+    		if (well.getWellName().equals("B003")){
+    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
+    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
+    			checkWells.add(checkWell);
+    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			Assert.assertEquals(new BigDecimal(2), checkResult.getAmount());
+    			Assert.assertEquals("µL", checkResult.getAmountUnits());
+    			logger.info("checked well B003");
+
+    		}
+    		if (well.getWellName().equals("AA007")){
+    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
+    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
+    			checkWells.add(checkWell);
+    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			Assert.assertEquals(new BigDecimal(3), checkResult.getAmount());
+    			Assert.assertEquals("µL", checkResult.getAmountUnits());
+    			logger.info("checked well AA007");
+
+    		}
+    	}
+    	logger.info(Arrays.deepToString(plateLayout));
+    	
+    	
+	}
+	
+	@Test
+	@Transactional
+	public void updateWellStatus() throws Exception{
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well", "default");
+		query.setMaxResults(100);
+		Collection<Container> wells = query.getResultList();
+		Assert.assertEquals(100, wells.size());
+		Collection<WellContentDTO> wellDTOs = new ArrayList<WellContentDTO>();
+		String recordedBy = "acas";
+		//values to set:
+		BigDecimal amount = new BigDecimal(10);
+		String amountUnits = "mg";
+		Double batchConcentration = new Double(1);
+		String batchConcUnits = "mM";
+		String physicalState = "liquid";
+		for(Container well : wells){
+			WellContentDTO wellDTO = new WellContentDTO(well.getCodeName(), amount, amountUnits, null, batchConcentration, batchConcUnits, null, physicalState);
+			wellDTO.setRecordedBy(recordedBy);
+			wellDTOs.add(wellDTO);
+		}
+		logger.info(WellContentDTO.toJsonArray(wellDTOs));
+		Assert.assertEquals(100, wellDTOs.size());
+		Collection<ContainerErrorMessageDTO> results = containerService.updateWellStatus(wellDTOs);
+		Assert.assertEquals(100, results.size());
+		logger.info(ContainerErrorMessageDTO.toJsonArray(results));
+		Collection<ContainerRequestDTO> checkWellCodes = new ArrayList<ContainerRequestDTO>();
+    	for (ContainerErrorMessageDTO result : results){
+    		Assert.assertNull(result.getLevel());
+    		Assert.assertNotNull(result.getContainerCodeName());
+    		ContainerRequestDTO wellCode = new ContainerRequestDTO(result.getContainerCodeName(), null, null);
+    		checkWellCodes.add(wellCode);
+    	}
+    	Collection<WellContentDTO> checkResults = containerService.getWellContent(checkWellCodes);
+    	for (WellContentDTO checkResult : checkResults){
+    		Assert.assertEquals(amount, checkResult.getAmount());
+    		Assert.assertEquals(amountUnits, checkResult.getAmountUnits());
+    		Assert.assertEquals(batchConcentration, checkResult.getBatchConcentration());
+    		Assert.assertEquals(batchConcUnits, checkResult.getBatchConcUnits());
+    		Assert.assertEquals(physicalState, checkResult.getPhysicalState());
+    		Assert.assertNotNull(checkResult.getBatchCode());
+    	}
+    	
+	}
+	
 	
 	
 }

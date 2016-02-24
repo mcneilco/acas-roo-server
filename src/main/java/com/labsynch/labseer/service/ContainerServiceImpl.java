@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -36,6 +37,7 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
@@ -737,6 +739,7 @@ public class ContainerServiceImpl implements ContainerService {
 		for (ContainerRequestDTO wellCode : wellCodes){
 			wellCodeStrings.add(wellCode.getContainerCodeName());
 		}
+		if (wellCodeStrings.isEmpty()) return new ArrayList<WellContentDTO>();
 		EntityManager em = Container.entityManager();
 		String queryString = "SELECT new com.labsynch.labseer.dto.WellContentDTO( ";
 		queryString += "well.codeName, ";
@@ -959,6 +962,7 @@ public class ContainerServiceImpl implements ContainerService {
 			trashState.setLsKind("information");
 			trashState.setRecordedBy("acas");
 			trashState.setRecordedDate(new Date());
+			trashState.setLsValues(new HashSet<ContainerValue>());
 			
 			ContainerValue trashUserValue = new ContainerValue();
 			trashUserValue.setLsType("stringValue");
@@ -1042,27 +1046,35 @@ public class ContainerServiceImpl implements ContainerService {
 		}catch (Exception e){
 			throw new Exception("Error finding definition: "+plateRequest.getDefinition());
 		}
+		LsTransaction lsTransaction = new LsTransaction();
+		lsTransaction.setRecordedDate(new Date());
+		lsTransaction.persist();
 		Container plate = new Container();
 		plate.setCodeName(autoLabelService.getContainerCodeName());
 		plate.setRecordedBy(plateRequest.getRecordedBy());
 		plate.setRecordedDate(new Date());
 		plate.setLsType("container");
 		plate.setLsKind("plate");
+		plate.setLsTransaction(lsTransaction.getId());
 		ContainerLabel plateBarcode = new ContainerLabel();
 		plateBarcode.setRecordedBy(plate.getRecordedBy());
 		plateBarcode.setRecordedDate(plate.getRecordedDate());
 		plateBarcode.setLsType("name");
 		plateBarcode.setLsKind("well name");
 		plateBarcode.setLabelText(plateRequest.getBarcode());
+		plateBarcode.setLsTransaction(plate.getLsTransaction());
 		plateBarcode.setContainer(plate);
 		plate.getLsLabels().add(plateBarcode);
 		plate.persist();
-		//TODO: finalize itx type/Kind
 		ItxContainerContainer defines = makeItxContainerContainer("defines", definition, plate, plateRequest.getRecordedBy());
 		defines.persist();
 		try{
 			Collection<Container> wells = createWellsFromDefinition(plate, definition);
-			//TODO:update wells based on information provided in nested wells
+			//fill in recorded by for all wells to update
+			for (WellContentDTO wellDTO: plateRequest.getWells()){
+				if (wellDTO.getRecordedBy() == null) wellDTO.setRecordedBy(plate.getRecordedBy());
+			}
+			updateNewWellsByWellName(wells, plateRequest.getWells());
 			//TODO: do something with templates
 			Collection<WellStubDTO> wellStubs = WellStubDTO.convertToWellStubDTOs(wells);
 			PlateStubDTO result = new PlateStubDTO();
@@ -1076,12 +1088,46 @@ public class ContainerServiceImpl implements ContainerService {
 		}
 	}
 
+	private void updateNewWellsByWellName(Collection<Container> wells, Collection<WellContentDTO> wellDTOs) {
+		for (WellContentDTO wellDTO : wellDTOs){
+			String wellName = wellDTO.getWellName();
+			List<String> possibleWellNames = new ArrayList<String>();
+			if (SimpleUtil.isNumeric(wellName)){
+				possibleWellNames.add(wellName);
+			}else{
+				//well name must be A1, A01, or A001 format
+				String letterPart = wellName.replaceAll("[0-9]+", "");
+				Integer numberPart = Integer.valueOf(wellName.replaceAll("[^0-9]+", ""));
+				try{
+					possibleWellNames.add(letterPart+Integer.toString(numberPart));
+				}catch (Exception e){}
+				try{
+				possibleWellNames.add(letterPart+String.format("%02d", numberPart));
+				}catch (Exception e){}
+				try{
+				possibleWellNames.add(letterPart+String.format("%03d", numberPart));
+				}catch (Exception e){}
+			}
+			for (Container well : wells){
+				for (ContainerLabel wellLabel : well.getLsLabels()){
+					if (possibleWellNames.contains(wellLabel.getLabelText())){
+						wellDTO.setContainerCodeName(well.getCodeName());
+						break;
+					}
+				}
+			}
+		}
+		updateWellStatus(wellDTOs);
+		
+	}
+
 	public Collection<Container> createWellsFromDefinition(Container plate,
 			Container definition) throws Exception {
 		Collection<Container> wells = new ArrayList<Container>();
 		String wellFormat = getWellFormat(definition);
 		Integer numberOfWells = getDefinitionIntegerValue(definition, "wells");
 		Integer numberOfColumns = getDefinitionIntegerValue(definition, "columns");
+		BigDecimal maxWellVolume = getDefinitionNumericValue(definition, "max well volume");
 		if (wellFormat != null){
 			int n = 0;
 			List<AutoLabelDTO> wellCodeNames = autoLabelService.getAutoLabels("material_container", "id_codeName", numberOfWells.longValue()); 
@@ -1110,19 +1156,39 @@ public class ContainerServiceImpl implements ContainerService {
 				Container well = new Container();
 				well.setCodeName(wellCodeNames.get(n).getAutoLabel());
 				well.setRecordedBy(plate.getRecordedBy());
-				well.setRecordedDate(plate.getRecordedDate());
+				well.setRecordedDate(new Date());
 				well.setLsType("well");
 				well.setLsKind("default");
 				well.setRowIndex(rowNum);
 				well.setColumnIndex(colNum);
+				well.setLsTransaction(plate.getLsTransaction());
 				ContainerLabel wellName = new ContainerLabel();
 				wellName.setRecordedBy(plate.getRecordedBy());
-				wellName.setRecordedDate(plate.getRecordedDate());
+				wellName.setRecordedDate(new Date());
 				wellName.setLsType("name");
 				wellName.setLsKind("well name");
 				wellName.setLabelText(letter+number);
+				wellName.setLsTransaction(plate.getLsTransaction());
 				wellName.setContainer(well);
 				well.getLsLabels().add(wellName);
+				ContainerState constantsState = new ContainerState();
+				constantsState.setRecordedBy(plate.getRecordedBy());
+				constantsState.setRecordedDate(new Date());
+				constantsState.setLsType("constants");
+				constantsState.setLsKind("container");
+				constantsState.setLsTransaction(plate.getLsTransaction());
+				constantsState.setLsValues(new HashSet<ContainerValue>());
+				constantsState.setContainer(well);
+				ContainerValue maxVolume = new ContainerValue();
+				maxVolume.setRecordedBy(plate.getRecordedBy());
+				maxVolume.setRecordedDate(new Date());
+				maxVolume.setLsType("numericValue");
+				maxVolume.setLsKind("max volume");
+				maxVolume.setNumericValue(maxWellVolume);
+				maxVolume.setLsTransaction(plate.getLsTransaction());
+				maxVolume.setLsState(constantsState);
+				constantsState.getLsValues().add(maxVolume);
+				well.getLsStates().add(constantsState);
 				well.persist();
 				
 				//create ItxContainerContainer "has member" to link plate and well
@@ -1169,6 +1235,21 @@ public class ContainerServiceImpl implements ContainerService {
 		return null;
 	}
 	
+	private BigDecimal getDefinitionNumericValue(Container definition, String lsKind){
+		for (ContainerState state : definition.getLsStates()){
+			if( state.getLsType().equals("constants") && state.getLsKind().equals("format")){
+				logger.debug(state.getLsTypeAndKind());
+				for (ContainerValue value : state.getLsValues()){
+					logger.debug(value.getLsTypeAndKind());
+					if (value.getLsKind().equals(lsKind)){
+						return value.getNumericValue();
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	private ItxContainerContainer makeItxContainerContainer(String lsType, Container firstContainer, Container secondContainer, String recordedBy){
 		ItxContainerContainer itxContainerContainer = new ItxContainerContainer();
 		itxContainerContainer.setLsType(lsType);
@@ -1193,6 +1274,143 @@ public class ContainerServiceImpl implements ContainerService {
 			requestWellCodes.add(requestWellCode);
 		}
 		Collection<WellContentDTO> results = getWellContent(requestWellCodes);
+		return results;
+	}
+
+	@Override
+	public Collection<ContainerErrorMessageDTO> updateWellStatus(
+			Collection<WellContentDTO> wellsToUpdate) {
+		Collection<ContainerErrorMessageDTO> results = new ArrayList<ContainerErrorMessageDTO>();
+		LsTransaction lsTransaction = new LsTransaction();
+		lsTransaction.setRecordedDate(new Date());
+		lsTransaction.persist();
+		for (WellContentDTO wellToUpdate : wellsToUpdate){
+			ContainerErrorMessageDTO result = new ContainerErrorMessageDTO();
+			result.setContainerCodeName(wellToUpdate.getContainerCodeName());
+			Container well;
+			try{
+				well = Container.findContainerByCodeNameEquals(wellToUpdate.getContainerCodeName());
+			}catch (Exception e){
+				result.setLevel("error");
+				result.setMessage("containerCodeName not found");
+				continue;
+			}
+			ContainerState oldStatusContentState = null;
+			for (ContainerState state : well.getLsStates()){
+				if (!state.isIgnored() && state.getLsType().equals("status") && state.getLsKind().equals("content")){
+					oldStatusContentState = state;
+					oldStatusContentState.setIgnored(true);
+					oldStatusContentState.setModifiedBy(wellToUpdate.getRecordedBy());
+					oldStatusContentState.setModifiedDate(new Date());
+					oldStatusContentState.merge();
+					break;
+				}
+			}
+			BigDecimal oldAmount = null;
+			String oldAmountUnits = null;
+			String oldBatchCode = null;
+			Double oldBatchConcentration = null;
+			String oldBatchConcUnits = null;
+			String oldPhysicalState = null;
+			String oldSolventCode = null;
+			//extract old values from previous state if it existed
+			if (oldStatusContentState != null){
+				for (ContainerValue value : oldStatusContentState.getLsValues()){
+					if (!value.isIgnored() && value.getLsKind().equals("batch code")){
+						oldBatchCode = value.getCodeValue();
+						oldBatchConcentration = value.getConcentration();
+						oldBatchConcUnits = value.getConcUnit();
+					}else if (!value.isIgnored() && value.getLsKind().equals("amount")){
+						oldAmount = value.getNumericValue();
+						oldAmountUnits = value.getConcUnit();
+					}else if (!value.isIgnored() && value.getLsKind().equals("physical state")){
+						oldPhysicalState = value.getCodeValue();
+					}else if (!value.isIgnored() && value.getLsKind().equals("solvent code")){
+						oldSolventCode = value.getCodeValue();
+					}
+				}
+			}
+			//create a new state and new values
+			ContainerState newStatusContentState = new ContainerState();
+			newStatusContentState.setRecordedBy(wellToUpdate.getRecordedBy());
+			newStatusContentState.setRecordedDate(new Date());
+			newStatusContentState.setLsType("status");
+			newStatusContentState.setLsKind("content");
+			newStatusContentState.setLsTransaction(lsTransaction.getId());
+			newStatusContentState.setContainer(well);
+			newStatusContentState.setLsValues(new HashSet<ContainerValue>());
+			newStatusContentState.persist();
+			//fill in new values from DTO. if they are null, use the old value
+			BigDecimal newAmount = wellToUpdate.getAmount();
+			String newAmountUnits = wellToUpdate.getAmountUnits();
+			String newBatchCode = wellToUpdate.getBatchCode();
+			Double newBatchConcentration = wellToUpdate.getBatchConcentration();
+			String newBatchConcUnits = wellToUpdate.getBatchConcUnits();
+			String newPhysicalState = wellToUpdate.getPhysicalState();
+			String newSolventCode = wellToUpdate.getSolventCode();
+			if (newAmount == null) newAmount = oldAmount;
+			if (newAmountUnits == null) newAmountUnits = oldAmountUnits;
+			if (newBatchCode == null) newBatchCode = oldBatchCode;
+			if (newBatchConcentration == null) newBatchConcentration = oldBatchConcentration;
+			if (newBatchConcUnits == null) newBatchConcUnits = oldBatchConcUnits;
+			if (newPhysicalState == null) newPhysicalState = oldPhysicalState;
+			if (newSolventCode == null) newSolventCode = oldSolventCode;
+			//create new values for attributes that exist
+			if (newAmount != null || newAmountUnits != null){
+				ContainerValue amount = new ContainerValue();
+				amount.setRecordedBy(wellToUpdate.getRecordedBy());
+				amount.setRecordedDate(new Date());
+				amount.setLsType("numericValue");
+				amount.setLsKind("amount");
+				amount.setNumericValue(newAmount);
+				amount.setUnitKind(newAmountUnits);
+				amount.setLsTransaction(lsTransaction.getId());
+				amount.setLsState(newStatusContentState);
+				newStatusContentState.getLsValues().add(amount);
+				amount.persist();
+			}
+			if (newBatchCode != null || newBatchConcentration != null || newBatchConcUnits != null){
+				ContainerValue batchCode = new ContainerValue();
+				batchCode.setRecordedBy(wellToUpdate.getRecordedBy());
+				batchCode.setRecordedDate(new Date());
+				batchCode.setLsType("codeValue");
+				batchCode.setLsKind("batch code");
+				batchCode.setCodeValue(newBatchCode);
+				batchCode.setConcentration(newBatchConcentration);
+				batchCode.setConcUnit(newBatchConcUnits);
+				batchCode.setLsTransaction(lsTransaction.getId());
+				batchCode.setLsState(newStatusContentState);
+				newStatusContentState.getLsValues().add(batchCode);
+				batchCode.persist();
+			}
+			if (newPhysicalState != null){
+				ContainerValue physicalState = new ContainerValue();
+				physicalState.setRecordedBy(wellToUpdate.getRecordedBy());
+				physicalState.setRecordedDate(new Date());
+				physicalState.setLsType("codeValue");
+				physicalState.setLsKind("physical state");
+				physicalState.setCodeValue(newPhysicalState);
+				physicalState.setLsTransaction(lsTransaction.getId());
+				physicalState.setLsState(newStatusContentState);
+				newStatusContentState.getLsValues().add(physicalState);
+				physicalState.persist();
+			}
+			if (newSolventCode != null){
+				ContainerValue solventCode = new ContainerValue();
+				solventCode.setRecordedBy(wellToUpdate.getRecordedBy());
+				solventCode.setRecordedDate(new Date());
+				solventCode.setLsType("codeValue");
+				solventCode.setLsKind("solvent code");
+				solventCode.setCodeValue(newSolventCode);
+				solventCode.setLsTransaction(lsTransaction.getId());
+				solventCode.setLsState(newStatusContentState);
+				newStatusContentState.getLsValues().add(solventCode);
+				solventCode.persist();
+			}
+			well.getLsStates().add(newStatusContentState);
+			well.merge();
+			results.add(result);
+		}
 		return results;
 	}
 
