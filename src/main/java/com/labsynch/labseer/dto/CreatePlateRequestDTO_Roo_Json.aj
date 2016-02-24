@@ -12,10 +12,6 @@ import java.util.List;
 
 privileged aspect CreatePlateRequestDTO_Roo_Json {
     
-    public String CreatePlateRequestDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
-    }
-    
     public static CreatePlateRequestDTO CreatePlateRequestDTO.fromJsonToCreatePlateRequestDTO(String json) {
         return new JSONDeserializer<CreatePlateRequestDTO>().use(null, CreatePlateRequestDTO.class).deserialize(json);
     }

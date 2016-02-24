@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -41,12 +43,15 @@ import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
+import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
+import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
+import com.labsynch.labseer.dto.WellStubDTO;
 import com.labsynch.labseer.service.ContainerService;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 
@@ -73,7 +78,7 @@ public class ApiContainerControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
     
-    @Test
+//    @Test
     @Transactional
     public void getContainerByLsTypeAndLsKind() throws Exception{
     	MockHttpServletResponse response;
@@ -440,6 +445,141 @@ public class ApiContainerControllerTest {
     			.content(json))
     			.andExpect(status().isNoContent());
     }
+    
+    @Test
+    @Transactional
+    public void getWellContentByPlateBarcode() throws Exception{
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(1);
+    	Container container = query.getSingleResult();
+    	String plateBarcode = container.getLsLabels().iterator().next().getLabelText();
+		logger.info(plateBarcode);
+    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/containers/getWellContentByPlateBarcode/"+plateBarcode)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
+    	for (WellContentDTO result : results){
+    		Assert.assertNotNull(result.getContainerCodeName());
+    		Assert.assertNotNull(result.getWellName());
+    		Assert.assertNotNull(result.getRowIndex());
+    		Assert.assertNotNull(result.getColumnIndex());
+    		Assert.assertNotNull(result.getRecordedBy());
+    		Assert.assertNotNull(result.getRecordedDate());
+    	}
+    }
+    
+    @Test
+	@Transactional
+	public void createEmptyPlate() throws Exception{
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+		query.setMaxResults(1);
+		Container definition = query.getSingleResult();
+		CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
+		plateRequest.setDefinition(definition.getCodeName());
+		plateRequest.setBarcode("TESTBARCODE-123");
+		plateRequest.setRecordedBy("acas");
+		String json = plateRequest.toJson();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/createPlate")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();;
+		logger.info(response.getContentAsString());
+		PlateStubDTO result = PlateStubDTO.fromJsonToPlateStubDTO(response.getContentAsString());
+    	logger.info(result.toJson());
+    	Assert.assertEquals(1536, result.getWells().size());
+    	String[][] plateLayout = new String[32][48];
+    	for (WellStubDTO well : result.getWells()){
+    		logger.debug(well.getRowIndex().toString() + ", "+well.getColumnIndex().toString());
+    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
+    	}
+    	logger.info(Arrays.deepToString(plateLayout));
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(value=true)
+	public void createPartiallyFilledPlate() throws Exception{
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+		query.setMaxResults(1);
+		Container definition = query.getSingleResult();
+		CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
+		plateRequest.setDefinition(definition.getCodeName());
+		plateRequest.setBarcode("TESTBARCODE-123");
+		plateRequest.setRecordedBy("acas");
+		Collection<WellContentDTO> wellsToPopulate = new ArrayList<WellContentDTO>();
+		WellContentDTO wellA1 = new WellContentDTO();
+		wellA1.setWellName("A1");
+		wellA1.setAmount(new BigDecimal(1));
+		wellA1.setAmountUnits("µL");
+		wellsToPopulate.add(wellA1);
+		WellContentDTO wellB3 = new WellContentDTO();
+		wellB3.setWellName("B03");
+		wellB3.setAmount(new BigDecimal(2));
+		wellB3.setAmountUnits("µL");
+		wellsToPopulate.add(wellB3);
+		WellContentDTO wellC7 = new WellContentDTO();
+		wellC7.setWellName("AA007");
+		wellC7.setAmount(new BigDecimal(3));
+		wellC7.setAmountUnits("µL");
+		wellsToPopulate.add(wellC7);
+		plateRequest.setWells(wellsToPopulate);
+		String json = plateRequest.toJson();
+		logger.info(json);
+		Assert.assertFalse(json.equals("[{}]"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/createPlate")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();;
+		logger.info(response.getContentAsString());
+		PlateStubDTO result = PlateStubDTO.fromJsonToPlateStubDTO(response.getContentAsString());
+    	logger.info(result.toJson());
+    	Assert.assertEquals(1536, result.getWells().size());
+    	String[][] plateLayout = new String[32][48];
+    	for (WellStubDTO well : result.getWells()){
+    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
+    		if (well.getWellName().equals("A001")){
+    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
+    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
+    			checkWells.add(checkWell);
+    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			Assert.assertEquals(new BigDecimal(1), checkResult.getAmount());
+    			logger.info("checked well A001");
+    		}
+    		if (well.getWellName().equals("B003")){
+    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
+    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
+    			checkWells.add(checkWell);
+    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			Assert.assertEquals(new BigDecimal(2), checkResult.getAmount());
+    			logger.info("checked well B003");
+
+    		}
+    		if (well.getWellName().equals("AA007")){
+    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
+    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
+    			checkWells.add(checkWell);
+    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			Assert.assertEquals(new BigDecimal(3), checkResult.getAmount());
+    			logger.info("checked well AA007");
+
+    		}
+    	}
+    	logger.info(Arrays.deepToString(plateLayout));
+    	
+    	
+	}
     
 
 }

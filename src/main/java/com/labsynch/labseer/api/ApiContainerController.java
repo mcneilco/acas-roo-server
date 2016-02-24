@@ -10,6 +10,8 @@ import javax.persistence.NonUniqueResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +59,7 @@ public class ApiContainerController {
     private PropertiesUtilService propertiesUtilService;
 
     @Transactional
-    @RequestMapping(value = "/{idOrCodeName}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("idOrCodeName") String idOrCodeName) {
     	Container container;
@@ -75,7 +77,7 @@ public class ApiContainerController {
     }
 
     @Transactional
-    @RequestMapping(value = "/stub/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/stub/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJsonStub(@PathVariable("id") Long id) {
         Container container = Container.findContainer(id);
@@ -88,7 +90,7 @@ public class ApiContainerController {
     }
 
     @Transactional
-    @RequestMapping(headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> listJson(@RequestParam(value = "lsType", required = false) String lsType,
     		@RequestParam(value = "lsKind", required = false) String lsKind) {
@@ -482,23 +484,24 @@ public class ApiContainerController {
         	if (dupeContainer != null){
         		return new ResponseEntity<String>("Barcode already exists", headers, HttpStatus.BAD_REQUEST);
         	}
-        }catch (NonUniqueResultException e){
-    		return new ResponseEntity<String>("More than one of this barcode already exists!!", headers, HttpStatus.BAD_REQUEST);
-        }catch (NoResultException e){
+        }
+        catch (EmptyResultDataAccessException e){
         	//barcode is unique, proceed to plate creation
+        }catch (IncorrectResultSizeDataAccessException e){
+    		return new ResponseEntity<String>("More than one of this barcode already exists!!", headers, HttpStatus.BAD_REQUEST);
         }
         try{
         	PlateStubDTO result = containerService.createPlate(plateRequest);
-        	return new ResponseEntity<String>(result.toJson(), HttpStatus.OK);
+        	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
     @Transactional
-    @RequestMapping(value = "/getWellContentByPlateBarcode", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/getWellContentByPlateBarcode/{plateBarcode}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> getWellContentByPlateBarcode(@RequestParam(value = "plateBarcode", required = true) String plateBarcode) {
+    public ResponseEntity<java.lang.String> getWellContentByPlateBarcode(@PathVariable("plateBarcode") String plateBarcode) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{

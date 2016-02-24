@@ -743,13 +743,17 @@ public class ContainerServiceImpl implements ContainerService {
 		EntityManager em = Container.entityManager();
 		String queryString = "SELECT new com.labsynch.labseer.dto.WellContentDTO( ";
 		queryString += "well.codeName, ";
+		queryString += "wellName.labelText, ";
+		queryString += "well.rowIndex, well.columnIndex, ";
+		queryString += "well.recordedBy, well.recordedDate, ";
 		queryString += "amountValue.numericValue, amountValue.unitKind,  ";
 		queryString += " batchCodeValue.codeValue, batchCodeValue.concentration, batchCodeValue.concUnit,  ";
 		queryString += " solventCodeValue.codeValue,  ";
 		queryString += " physicalStateValue.codeValue  ";
 		queryString += " )  ";
 		queryString += " from Container as well ";
-		queryString += makeInnerJoinHql("well.lsStates", "statusContentState", "status", "content");
+		queryString += makeLeftJoinHql("well.lsStates", "statusContentState", "status", "content");
+		queryString += makeLeftJoinHql("well.lsLabels", "wellName", "name", "well name");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","amountValue", "numericValue","amount");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","batchCodeValue", "codeValue","batch code");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","solventCodeValue", "codeValue","solvent code");
@@ -1071,15 +1075,17 @@ public class ContainerServiceImpl implements ContainerService {
 		try{
 			Collection<Container> wells = createWellsFromDefinition(plate, definition);
 			//fill in recorded by for all wells to update
-			for (WellContentDTO wellDTO: plateRequest.getWells()){
-				if (wellDTO.getRecordedBy() == null) wellDTO.setRecordedBy(plate.getRecordedBy());
+			if (plateRequest.getWells() != null && !plateRequest.getWells().isEmpty()){
+				for (WellContentDTO wellDTO: plateRequest.getWells()){
+					if (wellDTO.getRecordedBy() == null) wellDTO.setRecordedBy(plate.getRecordedBy());
+				}
+				updateNewWellsByWellName(wells, plateRequest.getWells());
 			}
-			updateNewWellsByWellName(wells, plateRequest.getWells());
 			//TODO: do something with templates
-			Collection<WellStubDTO> wellStubs = WellStubDTO.convertToWellStubDTOs(wells);
 			PlateStubDTO result = new PlateStubDTO();
 			result.setBarcode(plateRequest.getBarcode());
 			result.setCodeName(plate.getCodeName());
+			Collection<WellStubDTO> wellStubs = WellStubDTO.convertToWellStubDTOs(wells);
 			result.setWells(wellStubs);
 			return result;
 		}catch (Exception e){

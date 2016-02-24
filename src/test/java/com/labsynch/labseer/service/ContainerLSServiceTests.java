@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import junit.framework.Assert;
@@ -813,6 +814,11 @@ public class ContainerLSServiceTests {
 		plateRequest.setBarcode("TESTBARCODE-123");
 		plateRequest.setRecordedBy("acas");
     	PlateStubDTO result = containerService.createPlate(plateRequest);
+    	try{
+    		Container dupeContainer = Container.findContainerByLabelText("container", "plate", "name", "barcode", plateRequest.getBarcode()).getSingleResult();
+    	}catch(NoResultException e){
+    		logger.error("no result",e);
+    	}
     	logger.info(result.toJson());
     	Assert.assertEquals(1536, result.getWells().size());
     	String[][] plateLayout = new String[32][48];
@@ -825,6 +831,7 @@ public class ContainerLSServiceTests {
 	
 	@Test
 	@Transactional
+	@Rollback(value=false)
 	public void createPartiallyFilledPlate() throws Exception{
 		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
 		query.setMaxResults(1);
@@ -906,8 +913,7 @@ public class ContainerLSServiceTests {
 		String batchConcUnits = "mM";
 		String physicalState = "liquid";
 		for(Container well : wells){
-			WellContentDTO wellDTO = new WellContentDTO(well.getCodeName(), amount, amountUnits, null, batchConcentration, batchConcUnits, null, physicalState);
-			wellDTO.setRecordedBy(recordedBy);
+			WellContentDTO wellDTO = new WellContentDTO(well.getCodeName(), null, null, null, recordedBy, null, amount, amountUnits, null, batchConcentration, batchConcUnits, null, physicalState);
 			wellDTOs.add(wellDTO);
 		}
 		logger.info(WellContentDTO.toJsonArray(wellDTOs));
@@ -932,6 +938,25 @@ public class ContainerLSServiceTests {
     		Assert.assertNotNull(checkResult.getBatchCode());
     	}
     	
+	}
+	
+	@Test
+	@Transactional
+	public void getWellContentByPlateBarcode(){
+		String plateBarcode = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText();
+		logger.info("querying with: "+plateBarcode);
+		Collection<WellContentDTO> results = containerService.getWellContentByPlateBarcode(plateBarcode);
+		logger.info(WellContentDTO.toJsonArray(results));
+		Assert.assertTrue(results.size() > 0);
+		for (WellContentDTO result : results){
+			Assert.assertNull(result.getLevel());
+			Assert.assertNotNull(result.getContainerCodeName());
+    		Assert.assertNotNull(result.getWellName());
+    		Assert.assertNotNull(result.getRowIndex());
+    		Assert.assertNotNull(result.getColumnIndex());
+    		Assert.assertNotNull(result.getRecordedBy());
+    		Assert.assertNotNull(result.getRecordedDate());
+		}
 	}
 	
 	

@@ -36,7 +36,12 @@ public class WellContentDTO {
 	public WellContentDTO(){
 	}
 	
-	public WellContentDTO(String containerCodeName, 
+	public WellContentDTO(String containerCodeName,
+			String wellName,
+			Integer rowIndex,
+			Integer columnIndex,
+			String recordedBy,
+			Date recordedDate,
 			BigDecimal amount,
 			String amountUnits,
 			String batchCode,
@@ -45,6 +50,11 @@ public class WellContentDTO {
 			String solventCode,
 			String physicalState){
 		this.containerCodeName = containerCodeName; 
+		this.wellName = wellName;
+		this.rowIndex = rowIndex;
+		this.columnIndex = columnIndex;
+		this.recordedBy = recordedBy;
+		this.recordedDate = recordedDate;
 		this.amount = amount;
 		this.amountUnits = amountUnits;
 		this.batchCode = batchCode;
