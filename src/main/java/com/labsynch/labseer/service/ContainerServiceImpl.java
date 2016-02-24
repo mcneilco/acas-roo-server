@@ -1063,8 +1063,8 @@ public class ContainerServiceImpl implements ContainerService {
 		ContainerLabel plateBarcode = new ContainerLabel();
 		plateBarcode.setRecordedBy(plate.getRecordedBy());
 		plateBarcode.setRecordedDate(plate.getRecordedDate());
-		plateBarcode.setLsType("name");
-		plateBarcode.setLsKind("well name");
+		plateBarcode.setLsType("barcode");
+		plateBarcode.setLsKind("barcode");
 		plateBarcode.setLabelText(plateRequest.getBarcode());
 		plateBarcode.setLsTransaction(plate.getLsTransaction());
 		plateBarcode.setContainer(plate);
