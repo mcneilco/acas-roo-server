@@ -480,7 +480,7 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
     	CreatePlateRequestDTO plateRequest = CreatePlateRequestDTO.fromJsonToCreatePlateRequestDTO(json);
         try{
-        	Container dupeContainer = Container.findContainerByLabelText("container", "plate", "name", "barcode", plateRequest.getBarcode()).getSingleResult();
+        	Container dupeContainer = Container.findContainerByLabelText("container", "plate", "barcode", "barcode", plateRequest.getBarcode()).getSingleResult();
         	if (dupeContainer != null){
         		return new ResponseEntity<String>("Barcode already exists", headers, HttpStatus.BAD_REQUEST);
         	}

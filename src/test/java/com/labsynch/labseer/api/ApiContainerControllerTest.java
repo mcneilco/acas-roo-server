@@ -665,6 +665,43 @@ public class ApiContainerControllerTest {
     	String responseJson = response.getContentAsString();
     	logger.info(responseJson);
     }
+	
+	@Test
+    @Transactional
+    public void createPlateAndRejectDupe() throws Exception{
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+		query.setMaxResults(1);
+		Container definition = query.getSingleResult();
+		CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
+		plateRequest.setDefinition(definition.getCodeName());
+		plateRequest.setBarcode("TESTBARCODE-123");
+		plateRequest.setRecordedBy("acas");
+		String json = plateRequest.toJson();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/createPlate")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+		logger.info(response.getContentAsString());
+		PlateStubDTO result = PlateStubDTO.fromJsonToPlateStubDTO(response.getContentAsString());
+    	logger.info(result.toJson());
+    	Assert.assertEquals(1536, result.getWells().size());
+    	
+		String dupeJson = plateRequest.toJson();
+		logger.info(dupeJson);
+		MockHttpServletResponse dupeResponse = this.mockMvc.perform(post("/api/v1/containers/createPlate")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isBadRequest())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+		logger.info(dupeResponse.getContentAsString());
+    }
     
 
 }
