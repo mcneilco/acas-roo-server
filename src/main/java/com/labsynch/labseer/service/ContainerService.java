@@ -71,6 +71,8 @@ public interface ContainerService {
 
 	Collection<ContainerErrorMessageDTO> updateWellStatus(
 			Collection<WellContentDTO> wellsToUpdate);
+
+	PlateStubDTO getPlateTypeByPlateBarcode(String plateBarcode);
 	
 	
 }

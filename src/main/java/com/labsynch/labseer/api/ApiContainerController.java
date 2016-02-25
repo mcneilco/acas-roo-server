@@ -518,6 +518,23 @@ public class ApiContainerController {
     }
     
     @Transactional
+    @RequestMapping(value = "/getPlateTypeByPlateBarcode/{plateBarcode}", method = RequestMethod.GET, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getPlateTypeByPlateBarcode(@PathVariable("plateBarcode") String plateBarcode) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	PlateStubDTO result = containerService.getPlateTypeByPlateBarcode(plateBarcode);
+        	if (result != null){
+        		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+        	}
+        	else return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
     @RequestMapping(value = "/updateWellStatus", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> updateWellStatus(@RequestBody String json) {

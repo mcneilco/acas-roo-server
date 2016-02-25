@@ -959,6 +959,18 @@ public class ContainerLSServiceTests {
 		}
 	}
 	
+	@Test
+	@Transactional
+	public void getPlateTypeByPlateBarcode(){
+		String plateBarcode = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText();
+		logger.info("querying with: "+plateBarcode);
+		PlateStubDTO result = containerService.getPlateTypeByPlateBarcode(plateBarcode);
+		logger.info(result.toJson());
+    	Assert.assertNotNull(result.getCodeName());
+    	Assert.assertNotNull(result.getBarcode());
+    	Assert.assertNotNull(result.getPlateType());
+	}
+	
 	
 	
 }

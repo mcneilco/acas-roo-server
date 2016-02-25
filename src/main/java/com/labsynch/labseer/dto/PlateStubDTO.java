@@ -15,10 +15,17 @@ public class PlateStubDTO {
 	
 	private String barcode;
 	private String codeName;
+	private String plateType;
 	
 	private Collection<WellStubDTO> wells;
 	
 	public PlateStubDTO(){
+	}
+	
+	public PlateStubDTO(String barcode, String codeName, String plateType){
+		this.barcode = barcode;
+		this.codeName = codeName;
+		this.plateType = plateType;
 	}
 	
 	public String toJson() {

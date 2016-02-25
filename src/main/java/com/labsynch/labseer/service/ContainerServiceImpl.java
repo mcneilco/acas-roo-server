@@ -1420,4 +1420,27 @@ public class ContainerServiceImpl implements ContainerService {
 		return results;
 	}
 
+	@Override
+	public PlateStubDTO getPlateTypeByPlateBarcode(String plateBarcode) {
+		EntityManager em = Container.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.PlateStubDTO( ";
+		queryString += "barcode.labelText, ";
+		queryString += "plate.codeName, ";
+		queryString += "plateType.codeValue  ";
+		queryString += " )  ";
+		queryString += " from Container as plate ";
+		queryString += makeInnerJoinHql("plate.lsLabels", "barcode", "barcode", "barcode");
+		queryString += makeLeftJoinHql("plate.lsStates", "metadataInformationState", "metadata", "information");
+		queryString += makeLeftJoinHql("metadataInformationState.lsValues","plateType", "codeValue","plate type");
+		queryString += "where barcode.labelText = :plateBarcode";
+		TypedQuery<PlateStubDTO> q = em.createQuery(queryString, PlateStubDTO.class);
+		q.setParameter("plateBarcode", plateBarcode);
+		try{
+			PlateStubDTO result = q.getSingleResult();
+			return result;
+		}catch(EmptyResultDataAccessException e){
+			return null;
+		}
+	}
+
 }
