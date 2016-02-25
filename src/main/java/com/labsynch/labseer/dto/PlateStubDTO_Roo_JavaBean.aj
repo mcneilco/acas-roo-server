@@ -25,6 +25,14 @@ privileged aspect PlateStubDTO_Roo_JavaBean {
         this.codeName = codeName;
     }
     
+    public String PlateStubDTO.getPlateType() {
+        return this.plateType;
+    }
+    
+    public void PlateStubDTO.setPlateType(String plateType) {
+        this.plateType = plateType;
+    }
+    
     public Collection<WellStubDTO> PlateStubDTO.getWells() {
         return this.wells;
     }

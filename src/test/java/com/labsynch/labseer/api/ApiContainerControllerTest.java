@@ -580,6 +580,41 @@ public class ApiContainerControllerTest {
     	
     	
 	}
+	
+	@Test
+    @Transactional
+    public void getPlateTypeByPlateBarcode() throws Exception{
+//    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+//    	query.setMaxResults(1);
+    	Container container = Container.findContainerByCodeNameEquals("CONT-5");
+    	String plateBarcode = container.getLsLabels().iterator().next().getLabelText();
+		logger.info(plateBarcode);
+    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/containers/getPlateTypeByPlateBarcode/"+plateBarcode)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	PlateStubDTO result = PlateStubDTO.fromJsonToPlateStubDTO(responseJson);
+    	Assert.assertNotNull(result.getCodeName());
+    	Assert.assertNotNull(result.getBarcode());
+    	Assert.assertNotNull(result.getPlateType());
+    }
+	
+	@Test
+    @Transactional
+    public void getPlateTypeByPlateBarcode_notFound() throws Exception{
+    	String plateBarcode = "Not-A-Valid-Barcode123";
+		logger.info(plateBarcode);
+    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/containers/getPlateTypeByPlateBarcode/"+plateBarcode)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isNotFound())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    }
     
 
 }
