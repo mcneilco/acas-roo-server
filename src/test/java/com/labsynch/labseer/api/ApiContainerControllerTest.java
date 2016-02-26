@@ -802,6 +802,39 @@ public class ApiContainerControllerTest {
     		
     	}
     }
+	
+	@Test
+    @Transactional
+    public void getDefinitionContainersByContainerCodeNames() throws Exception{
+    	List<String> codeNames = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(1);
+    	for (Container container : query.getResultList()){
+    		codeNames.add("\""+container.getCodeName()+"\"");	
+    	}
+		String json = codeNames.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getDefinitionContainersByContainerCodeNames")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerErrorMessageDTO> results = ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(responseJson);
+    	for (ContainerErrorMessageDTO result : results){
+    		Assert.assertNotNull(result);
+    		if (result.getLevel() == null){
+    			Assert.assertNotNull(result.getDefinition());
+    			Assert.assertFalse(result.getDefinition().getLsStates().isEmpty());
+    		}
+    		Assert.assertNull(result.getContainer());
+    		
+    	}
+    }
     
 
 }

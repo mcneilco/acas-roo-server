@@ -76,6 +76,9 @@ public interface ContainerService {
 	PlateStubDTO getPlateTypeByPlateBarcode(String plateBarcode);
 
 	Collection<ContainerErrorMessageDTO> getContainersByCodeNames(List<String> codeNames);
+
+	Collection<ContainerErrorMessageDTO> getDefinitionContainersByContainerCodeNames(
+			List<String> codeNames);
 	
 	
 }
