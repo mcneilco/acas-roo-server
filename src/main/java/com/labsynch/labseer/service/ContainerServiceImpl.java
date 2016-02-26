@@ -821,6 +821,11 @@ public class ContainerServiceImpl implements ContainerService {
 		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
 		return queryString;
 	}
+	
+	private String makeInnerJoinHql(String table, String alias, String lsType){
+		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".ignored <> true ";
+		return queryString;
+	}
 
 	@Override
 	public PreferredNameResultsDTO getCodeNameFromName(String containerType,
@@ -1476,7 +1481,7 @@ public class ContainerServiceImpl implements ContainerService {
     		numClause++;
     	}
     	queryString = queryString + " )";
-    	logger.debug(queryString);
+//    	logger.debug(queryString);
 		TypedQuery<ContainerErrorMessageDTO> q = em.createQuery(queryString, ContainerErrorMessageDTO.class);
 		for (String sqlClause : sqlCurveIdMap.keySet()){
         	String groupName = sqlClause.split(":")[1].replace(")","");
@@ -1503,6 +1508,74 @@ public class ContainerServiceImpl implements ContainerService {
 		}
 		
 		return results;
-	};
+	}
+
+	@Override
+	public Collection<ContainerErrorMessageDTO> getDefinitionContainersByContainerCodeNames(
+			List<String> codeNames) {
+		if (codeNames.isEmpty()) return new ArrayList<ContainerErrorMessageDTO>();
+		EntityManager em = Container.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.ContainerErrorMessageDTO( "
+				+ "container.codeName, "
+				+ "definition )"
+				+ " FROM Container container ";
+		queryString += makeInnerJoinHql("container.firstContainers", "itx", "defines", "definition container_container");
+		queryString += makeInnerJoinHql("itx.firstContainer", "definition", "definition container");
+		queryString += "where ( container.ignored <> true ) and ( ";
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(codeNames);
+    	int startIndex = 0;
+    	while (startIndex < codeNames.size()){
+    		int endIndex;
+    		if (startIndex+999 < codeNames.size()) endIndex = startIndex+999;
+    		else endIndex = codeNames.size();
+    		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
+    		String groupName = "codeNames"+startIndex;
+    		String sqlClause = " container.codeName IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCodes);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+//    	logger.debug(queryString);
+		TypedQuery<ContainerErrorMessageDTO> q = em.createQuery(queryString, ContainerErrorMessageDTO.class);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<ContainerErrorMessageDTO> results = q.getResultList();
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestCodeNames = new HashSet<String>();
+		requestCodeNames.addAll(codeNames);
+		HashSet<String> foundCodeNames = new HashSet<String>();
+		for (ContainerErrorMessageDTO result : results){
+			result.setDefinition(result.getContainer());
+			result.setContainer(null);
+			foundCodeNames.add(result.getContainerCodeName());
+		}
+		requestCodeNames.removeAll(foundCodeNames);
+		if (!requestCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestCodeNames){
+				ContainerErrorMessageDTO notFoundDTO = new ContainerErrorMessageDTO();
+				notFoundDTO.setContainerCodeName(notFoundCodeName);
+				notFoundDTO.setLevel("error");
+				notFoundDTO.setMessage("containerCodeName not found");
+				results.add(notFoundDTO);
+			}
+		}
+		
+		return results;
+	}
+
 
 }

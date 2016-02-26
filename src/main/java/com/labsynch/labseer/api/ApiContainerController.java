@@ -574,4 +574,24 @@ public class ApiContainerController {
         }
     }
     
+    @Transactional
+    @RequestMapping(value = "/getDefinitionContainersByContainerCodeNames", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getDefinitionContainersByContainerCodeNames(@RequestBody List<String> codeNames) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<ContainerErrorMessageDTO> searchResults = containerService.getDefinitionContainersByContainerCodeNames(codeNames);
+        	boolean success = true;
+        	for (ContainerErrorMessageDTO result: searchResults){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+        	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(searchResults), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+        	logger.error("Uncaught error in getContainersByCodeNames",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }
