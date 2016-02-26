@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.dto;
 
+import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 
 privileged aspect ContainerErrorMessageDTO_Roo_JavaBean {
@@ -29,6 +30,22 @@ privileged aspect ContainerErrorMessageDTO_Roo_JavaBean {
     
     public void ContainerErrorMessageDTO.setMessage(String message) {
         this.message = message;
+    }
+    
+    public Container ContainerErrorMessageDTO.getContainer() {
+        return this.container;
+    }
+    
+    public void ContainerErrorMessageDTO.setContainer(Container container) {
+        this.container = container;
+    }
+    
+    public Container ContainerErrorMessageDTO.getDefinition() {
+        return this.definition;
+    }
+    
+    public void ContainerErrorMessageDTO.setDefinition(Container definition) {
+        this.definition = definition;
     }
     
 }

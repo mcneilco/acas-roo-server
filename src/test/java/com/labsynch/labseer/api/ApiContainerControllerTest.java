@@ -702,6 +702,106 @@ public class ApiContainerControllerTest {
     			.andReturn().getResponse();
 		logger.info(dupeResponse.getContentAsString());
     }
+	
+	@Test
+    @Transactional
+    public void getContainersByCodeNames() throws Exception{
+    	List<String> codeNames = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(25);
+    	for (Container container : query.getResultList()){
+    		codeNames.add("\""+container.getCodeName()+"\"");	
+    	}
+		String json = codeNames.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainersByCodeNames")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerErrorMessageDTO> results = ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(responseJson);
+    	for (ContainerErrorMessageDTO result : results){
+    		Assert.assertNotNull(result);
+    		if (result.getLevel() == null){
+    			Assert.assertNotNull(result.getContainer());
+    			Assert.assertFalse(result.getContainer().getLsStates().isEmpty());
+    		}
+    		
+    	}
+    }
+	
+	@Test
+    @Transactional
+    public void getContainersByCodeNames_errors() throws Exception{
+    	List<String> codeNames = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(25);
+    	for (Container container : query.getResultList()){
+    		codeNames.add("\""+container.getCodeName()+"\"");	
+    	}
+    	codeNames.add("\"INVALID-CODENAME\"");
+		String json = codeNames.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainersByCodeNames")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isBadRequest())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerErrorMessageDTO> results = ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(responseJson);
+    	for (ContainerErrorMessageDTO result : results){
+    		Assert.assertNotNull(result);
+    		if (result.getLevel() == null){
+    			Assert.assertNotNull(result.getContainer());
+    			Assert.assertFalse(result.getContainer().getLsStates().isEmpty());
+    		}
+    		else{
+    			Assert.assertNull(result.getContainer());
+    		}
+    		
+    	}
+    }
+	
+	@Test
+    @Transactional
+    public void getContainersByCodeNames_thousands() throws Exception{
+    	List<String> codeNames = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(1020);
+    	for (Container container : query.getResultList()){
+    		codeNames.add("\""+container.getCodeName()+"\"");	
+    	}
+		String json = codeNames.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainersByCodeNames")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerErrorMessageDTO> results = ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(responseJson);
+    	for (ContainerErrorMessageDTO result : results){
+    		Assert.assertNotNull(result);
+    		if (result.getLevel() == null){
+    			Assert.assertNotNull(result.getContainer());
+    			Assert.assertFalse(result.getContainer().getLsStates().isEmpty());
+    		}
+    		
+    	}
+    }
     
 
 }

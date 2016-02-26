@@ -12,16 +12,8 @@ import java.util.List;
 
 privileged aspect ContainerErrorMessageDTO_Roo_Json {
     
-    public String ContainerErrorMessageDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
-    }
-    
     public static ContainerErrorMessageDTO ContainerErrorMessageDTO.fromJsonToContainerErrorMessageDTO(String json) {
         return new JSONDeserializer<ContainerErrorMessageDTO>().use(null, ContainerErrorMessageDTO.class).deserialize(json);
-    }
-    
-    public static String ContainerErrorMessageDTO.toJsonArray(Collection<ContainerErrorMessageDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
     }
     
     public static Collection<ContainerErrorMessageDTO> ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(String json) {
