@@ -28,6 +28,7 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -317,6 +318,40 @@ public class ApiContainerController {
                 logger.info("Found the container after delete");
                 return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
             }
+        }
+    }
+    
+    @ApiOperation(value = "Checks for dependent containers that would preclude deletion",
+    		notes="A container will fail the dependency check if: \n"
+    				+ "A) It has other containers stored in it (added to interaction) \n"
+    				+ "B) It has referenced Subjects (Subject-Container interactions) \n"
+    				+ "C) Any members (member interaction) have referenced Subjects")
+    @RequestMapping(value = "/checkDependencies/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
+    public ResponseEntity<String> checkDependencies(@PathVariable("idOrCodeName") String idOrCodeName) {
+  	  HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        Container container;
+        if(SimpleUtil.isNumeric(idOrCodeName)) {
+        	container = Container.findContainer(Long.valueOf(idOrCodeName));
+  		} else {		
+  			try {
+  				container = Container.findContainerByCodeNameEquals(idOrCodeName);
+  			} catch(Exception ex) {
+  				container = null;
+  				ErrorMessage error = new ErrorMessage();
+  	            error.setErrorLevel("error");
+  	            error.setMessage("parent:" + idOrCodeName +" not found");
+  	            errors.add(error);
+  	            errorsFound = true;
+  			}
+  		}
+        ContainerDependencyCheckDTO result = containerService.checkDependencies(container);
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
         }
     }
 

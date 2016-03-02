@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.web.ItxContainerContainerController;
 import org.springframework.ui.Model;
@@ -20,6 +21,30 @@ privileged aspect ItxContainerContainerController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
     public String ItxContainerContainerController.findItxContainerContainersByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
         uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(lsTransaction).getResultList());
+        return "itxcontainercontainers/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndFirstContainerEquals", "form" }, method = RequestMethod.GET)
+    public String ItxContainerContainerController.findItxContainerContainersByLsTypeEqualsAndFirstContainerEqualsForm(Model uiModel) {
+        uiModel.addAttribute("containers", Container.findAllContainers());
+        return "itxcontainercontainers/findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndFirstContainerEquals", method = RequestMethod.GET)
+    public String ItxContainerContainerController.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("firstContainer") Container firstContainer, Model uiModel) {
+        uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(lsType, firstContainer).getResultList());
+        return "itxcontainercontainers/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndSecondContainerEquals", "form" }, method = RequestMethod.GET)
+    public String ItxContainerContainerController.findItxContainerContainersByLsTypeEqualsAndSecondContainerEqualsForm(Model uiModel) {
+        uiModel.addAttribute("containers", Container.findAllContainers());
+        return "itxcontainercontainers/findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndSecondContainerEquals", method = RequestMethod.GET)
+    public String ItxContainerContainerController.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("secondContainer") Container secondContainer, Model uiModel) {
+        uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(lsType, secondContainer).getResultList());
         return "itxcontainercontainers/list";
     }
     

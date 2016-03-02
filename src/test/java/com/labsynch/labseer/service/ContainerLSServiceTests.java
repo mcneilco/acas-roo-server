@@ -35,12 +35,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.InteractionKind;
 import com.labsynch.labseer.domain.InteractionType;
+import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.LabelKind;
 import com.labsynch.labseer.domain.LabelType;
 import com.labsynch.labseer.domain.ItxContainerContainer;
@@ -51,7 +55,11 @@ import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -704,6 +712,196 @@ public class ContainerLSServiceTests {
 	
 	@Test
 	@Transactional
+	public void checkDependencies_pass(){
+    	String codeName = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getCodeName();
+    	Container container = Container.findContainerByCodeNameEquals(codeName);
+    	logger.info(container.toJson());
+		Long before = (new Date()).getTime();
+    	ContainerDependencyCheckDTO result = containerService.checkDependencies(container);
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+		logger.info(result.toJson());
+		Assert.assertFalse(result.isLinkedDataExists());
+	}
+	
+	@Test
+	@Transactional
+	public void checkDependencies_fail_on_added_to(){
+//		String codeName = Container.findContainersByLsTypeEqualsAndLsKindEquals("location","default").getResultList().get(0).getCodeName();
+		String codeName = "CONT-388802";
+    	Container container = Container.findContainerByCodeNameEquals(codeName);
+    	logger.info(container.toJson());
+		Long before = (new Date()).getTime();
+    	ContainerDependencyCheckDTO result = containerService.checkDependencies(container);
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+		logger.info(result.toJson());
+		Assert.assertTrue(result.isLinkedDataExists());
+		Assert.assertFalse(result.getDependentCorpNames().isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void checkDependencies_fail_on_subject_itx(){
+		Container plate = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0);
+		Container well = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default").getResultList().get(0);
+		Protocol testProtocol = new Protocol();
+		testProtocol.setCodeName("TEST-PRCL");
+		testProtocol.setRecordedBy("acas");
+		testProtocol.setRecordedDate(new Date());
+		testProtocol.setLsType("default");
+		testProtocol.setLsKind("default");
+		testProtocol.persist();
+		Experiment testExpt = new Experiment();
+		testExpt.setCodeName("TEST-EXPT");
+		testExpt.setRecordedBy("acas");
+		testExpt.setRecordedDate(new Date());
+		testExpt.setLsType("default");
+		testExpt.setLsKind("default");
+		ExperimentLabel testExptName = new ExperimentLabel();
+		testExptName.setLabelText("Test Experiment Name");
+		testExptName.setRecordedBy("acas");
+		testExptName.setRecordedDate(new Date());
+		testExptName.setLsType("name");
+		testExptName.setLsKind("experiment name");
+		testExptName.setPreferred(true);
+		testExptName.setExperiment(testExpt);
+		testExpt.getLsLabels().add(testExptName);
+		testExpt.setProtocol(testProtocol);
+		testExpt.persist();
+		AnalysisGroup testAG = new AnalysisGroup();
+		testAG.setCodeName("TEST-AG");
+		testAG.setRecordedBy("acas");
+		testAG.setRecordedDate(new Date());
+		testAG.setLsType("default");
+		testAG.setLsKind("default");
+		testAG.getExperiments().add(testExpt);
+		testAG.persist();
+		TreatmentGroup testTG = new TreatmentGroup();
+		testTG.setCodeName("TEST-TG");
+		testTG.setRecordedBy("acas");
+		testTG.setRecordedDate(new Date());
+		testTG.setLsType("default");
+		testTG.setLsKind("default");
+		testTG.getAnalysisGroups().add(testAG);
+		testTG.persist();
+		Subject testSubject = new Subject();
+		testSubject.setCodeName("TEST-SUBJ");
+		testSubject.setRecordedBy("acas");
+		testSubject.setRecordedDate(new Date());
+		testSubject.setLsType("default");
+		testSubject.setLsKind("default");
+		testSubject.getTreatmentGroups().add(testTG);
+		testSubject.persist();
+		testExpt.getAnalysisGroups().add(testAG);
+		testAG.getTreatmentGroups().add(testTG);
+		testTG.getSubjects().add(testSubject);
+		testExpt.merge();
+		testAG.merge();
+		testTG.merge();
+		
+		ItxSubjectContainer itx = new ItxSubjectContainer();
+		itx.setCodeName("TEST-ITX");
+		itx.setRecordedBy("acas");
+		itx.setRecordedDate(new Date());
+		itx.setLsType("default");
+		itx.setLsKind("default");
+		itx.setSubject(testSubject);
+		itx.setContainer(well);
+		itx.persist();
+		well.getSubjects().add(itx);
+		well.merge();
+		Long before = (new Date()).getTime();
+    	ContainerDependencyCheckDTO result = containerService.checkDependencies(well);
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+		logger.info(result.toJson());
+		Assert.assertTrue(result.isLinkedDataExists());
+		Assert.assertFalse(result.getLinkedExperiments().isEmpty());
+	}
+	
+	@Test
+	@Transactional
+	public void checkDependencies_fail_on_member_subject_itx(){
+		Container plate = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0);
+		Container well = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default").getResultList().get(0);
+		Protocol testProtocol = new Protocol();
+		testProtocol.setCodeName("TEST-PRCL");
+		testProtocol.setRecordedBy("acas");
+		testProtocol.setRecordedDate(new Date());
+		testProtocol.setLsType("default");
+		testProtocol.setLsKind("default");
+		testProtocol.persist();
+		Experiment testExpt = new Experiment();
+		testExpt.setCodeName("TEST-EXPT");
+		testExpt.setRecordedBy("acas");
+		testExpt.setRecordedDate(new Date());
+		testExpt.setLsType("default");
+		testExpt.setLsKind("default");
+		ExperimentLabel testExptName = new ExperimentLabel();
+		testExptName.setLabelText("Test Experiment Name");
+		testExptName.setRecordedBy("acas");
+		testExptName.setRecordedDate(new Date());
+		testExptName.setLsType("name");
+		testExptName.setLsKind("experiment name");
+		testExptName.setPreferred(true);
+		testExptName.setExperiment(testExpt);
+		testExpt.getLsLabels().add(testExptName);
+		testExpt.setProtocol(testProtocol);
+		testExpt.persist();
+		AnalysisGroup testAG = new AnalysisGroup();
+		testAG.setCodeName("TEST-AG");
+		testAG.setRecordedBy("acas");
+		testAG.setRecordedDate(new Date());
+		testAG.setLsType("default");
+		testAG.setLsKind("default");
+		testAG.getExperiments().add(testExpt);
+		testAG.persist();
+		TreatmentGroup testTG = new TreatmentGroup();
+		testTG.setCodeName("TEST-TG");
+		testTG.setRecordedBy("acas");
+		testTG.setRecordedDate(new Date());
+		testTG.setLsType("default");
+		testTG.setLsKind("default");
+		testTG.getAnalysisGroups().add(testAG);
+		testTG.persist();
+		Subject testSubject = new Subject();
+		testSubject.setCodeName("TEST-SUBJ");
+		testSubject.setRecordedBy("acas");
+		testSubject.setRecordedDate(new Date());
+		testSubject.setLsType("default");
+		testSubject.setLsKind("default");
+		testSubject.getTreatmentGroups().add(testTG);
+		testSubject.persist();
+		testExpt.getAnalysisGroups().add(testAG);
+		testAG.getTreatmentGroups().add(testTG);
+		testTG.getSubjects().add(testSubject);
+		testExpt.merge();
+		testAG.merge();
+		testTG.merge();
+		
+		ItxSubjectContainer itx = new ItxSubjectContainer();
+		itx.setCodeName("TEST-ITX");
+		itx.setRecordedBy("acas");
+		itx.setRecordedDate(new Date());
+		itx.setLsType("default");
+		itx.setLsKind("default");
+		itx.setSubject(testSubject);
+		itx.setContainer(well);
+		itx.persist();
+		well.getSubjects().add(itx);
+		well.merge();
+		Long before = (new Date()).getTime();
+    	ContainerDependencyCheckDTO result = containerService.checkDependencies(plate);
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+		logger.info(result.toJson());
+		Assert.assertTrue(result.isLinkedDataExists());
+		Assert.assertFalse(result.getLinkedExperiments().isEmpty());
+	}
+	
+	@Test
+	@Transactional
 	@Rollback(value=false)
 	public void updateContainer(){
 		String json = "{\"codeName\":\"CONT-3075\",\"deleted\":false,\"id\":6147,\"ignored\":false,\"lsKind\":\"CUSTOM_LOCATION\","
@@ -831,7 +1029,7 @@ public class ContainerLSServiceTests {
 	
 	@Test
 	@Transactional
-	@Rollback(value=false)
+	@Rollback(value=true)
 	public void createPartiallyFilledPlate() throws Exception{
 		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
 		query.setMaxResults(1);

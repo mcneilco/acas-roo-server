@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.domain;
 
+import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -14,6 +15,26 @@ privileged aspect ItxContainerContainer_Roo_Finder {
         EntityManager em = ItxContainerContainer.entityManager();
         TypedQuery<ItxContainerContainer> q = em.createQuery("SELECT o FROM ItxContainerContainer AS o WHERE o.lsTransaction = :lsTransaction", ItxContainerContainer.class);
         q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
+    public static TypedQuery<ItxContainerContainer> ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(String lsType, Container firstContainer) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (firstContainer == null) throw new IllegalArgumentException("The firstContainer argument is required");
+        EntityManager em = ItxContainerContainer.entityManager();
+        TypedQuery<ItxContainerContainer> q = em.createQuery("SELECT o FROM ItxContainerContainer AS o WHERE o.lsType = :lsType  AND o.firstContainer = :firstContainer", ItxContainerContainer.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("firstContainer", firstContainer);
+        return q;
+    }
+    
+    public static TypedQuery<ItxContainerContainer> ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(String lsType, Container secondContainer) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (secondContainer == null) throw new IllegalArgumentException("The secondContainer argument is required");
+        EntityManager em = ItxContainerContainer.entityManager();
+        TypedQuery<ItxContainerContainer> q = em.createQuery("SELECT o FROM ItxContainerContainer AS o WHERE o.lsType = :lsType  AND o.secondContainer = :secondContainer", ItxContainerContainer.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("secondContainer", secondContainer);
         return q;
     }
     

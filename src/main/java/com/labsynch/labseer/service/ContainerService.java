@@ -11,6 +11,7 @@ import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
@@ -49,6 +50,8 @@ public interface ContainerService {
 
 	Collection<CodeLabelDTO> getContainerCodesByLabels(
 			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind);
+
+	ContainerDependencyCheckDTO checkDependencies(Container container);
 
 	Collection<WellContentDTO> getWellContent(Collection<ContainerRequestDTO> wellCodes);
 

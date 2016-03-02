@@ -16,4 +16,10 @@
 <definition extends="default" name="itxcontainercontainers/findItxContainerContainersByLsTransactionEquals">
         <put-attribute name="body" value="/WEB-INF/views/itxcontainercontainers/findItxContainerContainersByLsTransactionEquals.jspx"/>
     </definition>
+<definition extends="default" name="itxcontainercontainers/findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxcontainercontainers/findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals.jspx"/>
+    </definition>
+<definition extends="default" name="itxcontainercontainers/findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxcontainercontainers/findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals.jspx"/>
+    </definition>
 </tiles-definitions>
