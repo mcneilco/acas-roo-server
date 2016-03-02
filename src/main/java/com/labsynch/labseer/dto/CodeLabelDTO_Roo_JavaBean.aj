@@ -4,23 +4,40 @@
 package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import java.util.List;
 
 privileged aspect CodeLabelDTO_Roo_JavaBean {
     
-    public String CodeLabelDTO.getCodeName() {
-        return this.codeName;
+    public List<String> CodeLabelDTO.getFoundCodeNames() {
+        return this.foundCodeNames;
     }
     
-    public void CodeLabelDTO.setCodeName(String codeName) {
-        this.codeName = codeName;
+    public void CodeLabelDTO.setFoundCodeNames(List<String> foundCodeNames) {
+        this.foundCodeNames = foundCodeNames;
     }
     
-    public String CodeLabelDTO.getLabel() {
-        return this.label;
+    public String CodeLabelDTO.getLevel() {
+        return this.level;
     }
     
-    public void CodeLabelDTO.setLabel(String label) {
-        this.label = label;
+    public void CodeLabelDTO.setLevel(String level) {
+        this.level = level;
+    }
+    
+    public String CodeLabelDTO.getMessage() {
+        return this.message;
+    }
+    
+    public void CodeLabelDTO.setMessage(String message) {
+        this.message = message;
+    }
+    
+    public String CodeLabelDTO.getRequestLabel() {
+        return this.requestLabel;
+    }
+    
+    public void CodeLabelDTO.setRequestLabel(String requestLabel) {
+        this.requestLabel = requestLabel;
     }
     
 }

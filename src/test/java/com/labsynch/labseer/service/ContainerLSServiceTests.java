@@ -667,13 +667,13 @@ public class ContainerLSServiceTests {
 	@Test
 	@Transactional
 	public void getWellContent(){
-		Collection<ContainerRequestDTO> wellCodes = new HashSet<ContainerRequestDTO>();
-		ContainerRequestDTO wellCode = new ContainerRequestDTO();
-		TypedQuery<Container> wellQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
-		wellQuery.setMaxResults(1);
-		wellCode.setContainerCodeName(wellQuery.getSingleResult().getCodeName());
-		wellCodes.add(wellCode);
-		logger.info("querying with: "+ContainerRequestDTO.toJsonArray(wellCodes));
+		List<String> wellCodes = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(25);
+    	for (Container container : query.getResultList()){
+    		wellCodes.add(container.getCodeName());	
+    	}
+		logger.info("querying with: "+wellCodes.toString());
 		Collection<WellContentDTO> result = containerService.getWellContent(wellCodes);
 		logger.info(WellContentDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
@@ -682,14 +682,12 @@ public class ContainerLSServiceTests {
 	@Test
 	@Transactional
 	public void getManyWellContent(){
-		Collection<ContainerRequestDTO> wellCodes = new HashSet<ContainerRequestDTO>();
-		TypedQuery<Container> wellQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
-		wellQuery.setMaxResults(2000);
-		for (Container well : wellQuery.getResultList()){
-			ContainerRequestDTO wellCode = new ContainerRequestDTO();
-			wellCode.setContainerCodeName(well.getCodeName());
-			wellCodes.add(wellCode);
-		}
+		List<String> wellCodes = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(2000);
+    	for (Container container : query.getResultList()){
+    		wellCodes.add(container.getCodeName());	
+    	}
 		logger.info("querying with: "+wellCodes.size() + " well codes");
 		Long before = (new Date()).getTime();
 		Collection<WellContentDTO> result = containerService.getWellContent(wellCodes);
@@ -1061,29 +1059,26 @@ public class ContainerLSServiceTests {
     	for (WellStubDTO well : result.getWells()){
     		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
     		if (well.getWellName().equals("A001")){
-    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
-    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
-    			checkWells.add(checkWell);
-    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			List<String> checkWellCodes = new ArrayList<String>();
+    			checkWellCodes.add(well.getCodeName());
+    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
     			Assert.assertEquals(new BigDecimal(1), checkResult.getAmount());
     			Assert.assertEquals("µL", checkResult.getAmountUnits());
     			logger.info("checked well A001");
     		}
     		if (well.getWellName().equals("B003")){
-    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
-    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
-    			checkWells.add(checkWell);
-    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			List<String> checkWellCodes = new ArrayList<String>();
+    			checkWellCodes.add(well.getCodeName());
+    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
     			Assert.assertEquals(new BigDecimal(2), checkResult.getAmount());
     			Assert.assertEquals("µL", checkResult.getAmountUnits());
     			logger.info("checked well B003");
 
     		}
     		if (well.getWellName().equals("AA007")){
-    			Collection<ContainerRequestDTO> checkWells = new ArrayList<ContainerRequestDTO>();
-    			ContainerRequestDTO checkWell = new ContainerRequestDTO(well.getCodeName(), null, null);
-    			checkWells.add(checkWell);
-    			WellContentDTO checkResult = containerService.getWellContent(checkWells).iterator().next();
+    			List<String> checkWellCodes = new ArrayList<String>();
+    			checkWellCodes.add(well.getCodeName());
+    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
     			Assert.assertEquals(new BigDecimal(3), checkResult.getAmount());
     			Assert.assertEquals("µL", checkResult.getAmountUnits());
     			logger.info("checked well AA007");
@@ -1119,12 +1114,11 @@ public class ContainerLSServiceTests {
 		Collection<ContainerErrorMessageDTO> results = containerService.updateWellStatus(wellDTOs);
 		Assert.assertEquals(100, results.size());
 		logger.info(ContainerErrorMessageDTO.toJsonArray(results));
-		Collection<ContainerRequestDTO> checkWellCodes = new ArrayList<ContainerRequestDTO>();
+		List<String> checkWellCodes = new ArrayList<String>();
     	for (ContainerErrorMessageDTO result : results){
     		Assert.assertNull(result.getLevel());
     		Assert.assertNotNull(result.getContainerCodeName());
-    		ContainerRequestDTO wellCode = new ContainerRequestDTO(result.getContainerCodeName(), null, null);
-    		checkWellCodes.add(wellCode);
+    		checkWellCodes.add(result.getContainerCodeName());
     	}
     	Collection<WellContentDTO> checkResults = containerService.getWellContent(checkWellCodes);
     	for (WellContentDTO checkResult : checkResults){

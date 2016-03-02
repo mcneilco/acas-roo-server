@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -693,7 +695,7 @@ public class ContainerServiceImpl implements ContainerService {
 			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind) {
 		EntityManager em = Container.entityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CodeLabelDTO> cq = cb.createQuery(CodeLabelDTO.class);
+		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
 		Root<Container> container = cq.from(Container.class);
 		Join<Container, ContainerLabel> label = container.join("lsLabels");
 		
@@ -728,20 +730,39 @@ public class ContainerServiceImpl implements ContainerService {
 		
 		predicates = predicateList.toArray(predicates);
 		cq.where(cb.and(predicates));
-		cq.multiselect(container.<String>get("codeName"), label.<String>get("labelText"));
-		TypedQuery<CodeLabelDTO> q = em.createQuery(cq);
+		cq.multiselect(container.<String>get("codeName").alias("foundCodeName"), label.<String>get("labelText").alias("requestLabel"));
+		Query q = em.createQuery(cq);
 //		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		Collection<CodeLabelDTO> results = q.getResultList();
+		List<Tuple> resultTuples = q.getResultList();
+		Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
+		for (Tuple tuple : resultTuples){
+			String requestLabel = (String) tuple.get("requestLabel");
+			String foundCodeName = (String) tuple.get("foundCodeName");
+			if (!resultMap.containsKey(requestLabel)){
+				List<String> foundCodeNames = new ArrayList<String>();
+				foundCodeNames.add(foundCodeName);
+				resultMap.put(requestLabel, foundCodeNames);
+			}else{
+				resultMap.get(requestLabel).add(foundCodeName);
+			}
+		}
+		Collection<CodeLabelDTO> results = new ArrayList<CodeLabelDTO>();
+		for (String requestLabel: labelTexts){
+			CodeLabelDTO result = new CodeLabelDTO();
+			result.setRequestLabel(requestLabel);
+			if (resultMap.containsKey(requestLabel)){
+				result.setFoundCodeNames(resultMap.get(requestLabel));
+			}else{
+				result.setFoundCodeNames(new ArrayList<String>());
+			}
+			results.add(result);
+		}
 		return results;
 	}
 
 	@Override
-	public Collection<WellContentDTO> getWellContent(Collection<ContainerRequestDTO> wellCodes) {
-		List<String> wellCodeStrings = new ArrayList<String>();
-		for (ContainerRequestDTO wellCode : wellCodes){
-			wellCodeStrings.add(wellCode.getContainerCodeName());
-		}
-		if (wellCodeStrings.isEmpty()) return new ArrayList<WellContentDTO>();
+	public Collection<WellContentDTO> getWellContent(List<String> wellCodes) {
+		if (wellCodes.isEmpty()) return new ArrayList<WellContentDTO>();
 		EntityManager em = Container.entityManager();
 		String queryString = "SELECT new com.labsynch.labseer.dto.WellContentDTO( ";
 		queryString += "well.codeName, ";
@@ -763,12 +784,12 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += "where ( well.ignored <> true ) and ";
 		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
     	List<String> allCodes = new ArrayList<String>();
-    	allCodes.addAll(wellCodeStrings);
+    	allCodes.addAll(wellCodes);
     	int startIndex = 0;
-    	while (startIndex < wellCodeStrings.size()){
+    	while (startIndex < wellCodes.size()){
     		int endIndex;
-    		if (startIndex+999 < wellCodeStrings.size()) endIndex = startIndex+999;
-    		else endIndex = wellCodeStrings.size();
+    		if (startIndex+999 < wellCodes.size()) endIndex = startIndex+999;
+    		else endIndex = wellCodes.size();
     		List<String> nextCurveIds = allCodes.subList(startIndex, endIndex);
     		String groupName = "curveIds"+startIndex;
     		String sqlClause = " well.codeName IN (:"+groupName+")";
@@ -793,13 +814,13 @@ public class ContainerServiceImpl implements ContainerService {
 //		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<WellContentDTO> results = q.getResultList();
 		//diff request with results to find codeNames that could not be found
+		Map<String, WellContentDTO> resultMap = new HashMap<String, WellContentDTO>();
 		HashSet<String> requestWellCodeNames = new HashSet<String>();
-		for (ContainerRequestDTO request : wellCodes){
-			requestWellCodeNames.add(request.getContainerCodeName());
-		}
+		requestWellCodeNames.addAll(wellCodes);
 		HashSet<String> foundWellCodeNames = new HashSet<String>();
 		for (WellContentDTO result : results){
 			foundWellCodeNames.add(result.getContainerCodeName());
+			resultMap.put(result.getContainerCodeName(), result);
 		}
 		requestWellCodeNames.removeAll(foundWellCodeNames);
 		if (!requestWellCodeNames.isEmpty()){
@@ -809,10 +830,16 @@ public class ContainerServiceImpl implements ContainerService {
 				notFoundDTO.setLevel("error");
 				notFoundDTO.setMessage("containerCodeName not found");
 				results.add(notFoundDTO);
+				resultMap.put(notFoundDTO.getContainerCodeName(), notFoundDTO);
 			}
 		}
 		
-		return results;
+		//sort results to match input wellCode order
+		Collection<WellContentDTO> sortedResults = new ArrayList<WellContentDTO>();
+		for (String wellCode : wellCodes){
+			sortedResults.add(resultMap.get(wellCode));
+		}
+		return sortedResults;
 	}
 	
 	private String makeLeftJoinHql(String table, String alias, String lsType, String lsKind){
@@ -1169,7 +1196,6 @@ public class ContainerServiceImpl implements ContainerService {
 		String wellFormat = getWellFormat(definition);
 		Integer numberOfWells = getDefinitionIntegerValue(definition, "wells");
 		Integer numberOfColumns = getDefinitionIntegerValue(definition, "columns");
-		BigDecimal maxWellVolume = getDefinitionNumericValue(definition, "max well volume");
 		if (wellFormat != null){
 			int n = 0;
 			List<AutoLabelDTO> wellCodeNames = autoLabelService.getAutoLabels("material_container", "id_codeName", numberOfWells.longValue()); 
@@ -1213,24 +1239,6 @@ public class ContainerServiceImpl implements ContainerService {
 				wellName.setLsTransaction(plate.getLsTransaction());
 				wellName.setContainer(well);
 				well.getLsLabels().add(wellName);
-				ContainerState constantsState = new ContainerState();
-				constantsState.setRecordedBy(plate.getRecordedBy());
-				constantsState.setRecordedDate(new Date());
-				constantsState.setLsType("constants");
-				constantsState.setLsKind("container");
-				constantsState.setLsTransaction(plate.getLsTransaction());
-				constantsState.setLsValues(new HashSet<ContainerValue>());
-				constantsState.setContainer(well);
-				ContainerValue maxVolume = new ContainerValue();
-				maxVolume.setRecordedBy(plate.getRecordedBy());
-				maxVolume.setRecordedDate(new Date());
-				maxVolume.setLsType("numericValue");
-				maxVolume.setLsKind("max volume");
-				maxVolume.setNumericValue(maxWellVolume);
-				maxVolume.setLsTransaction(plate.getLsTransaction());
-				maxVolume.setLsState(constantsState);
-				constantsState.getLsValues().add(maxVolume);
-				well.getLsStates().add(constantsState);
 				well.persist();
 				
 				//create ItxContainerContainer "has member" to link plate and well
@@ -1309,11 +1317,9 @@ public class ContainerServiceImpl implements ContainerService {
 		List<String> plateBarcodes = new ArrayList<String>();
 		plateBarcodes.add(plateBarcode);
 		Collection<PlateWellDTO> wellCodes = getWellCodesByPlateBarcodes(plateBarcodes);
-		Collection<ContainerRequestDTO> requestWellCodes = new HashSet<ContainerRequestDTO>();
+		List<String> requestWellCodes = new ArrayList<String>();
 		for (PlateWellDTO wellCode : wellCodes){
-			ContainerRequestDTO requestWellCode = new ContainerRequestDTO();
-			requestWellCode.setContainerCodeName(wellCode.getWellCodeName());
-			requestWellCodes.add(requestWellCode);
+			requestWellCodes.add(wellCode.getWellCodeName());
 		}
 		Collection<WellContentDTO> results = getWellContent(requestWellCodes);
 		return results;
