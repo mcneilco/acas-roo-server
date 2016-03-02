@@ -835,6 +835,21 @@ public class ApiContainerControllerTest {
     		
     	}
     }
+	
+	@Test
+    @Transactional
+    public void logicalDeleteContainer() throws Exception{
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(1);
+    	Container container = query.getSingleResult();
+    	MockHttpServletResponse response = this.mockMvc.perform(delete("/api/v1/containers/"+container.getId()))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse();
+    	
+    	MockHttpServletResponse response2 = this.mockMvc.perform(delete("/api/v1/containers/"+container.getId()))
+    			.andExpect(status().isNotFound())
+    			.andReturn().getResponse();
+    }
     
 
 }
