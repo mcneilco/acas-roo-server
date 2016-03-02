@@ -33,17 +33,26 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
+import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
@@ -850,6 +859,99 @@ public class ApiContainerControllerTest {
     		
     	}
     }
+	
+	@Test
+    @Transactional
+    public void containerDependencyCheck_Fail() throws Exception{
+		Container plate = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0);
+		Container well = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default").getResultList().get(0);
+		Protocol testProtocol = new Protocol();
+		testProtocol.setCodeName("TEST-PRCL");
+		testProtocol.setRecordedBy("acas");
+		testProtocol.setRecordedDate(new Date());
+		testProtocol.setLsType("default");
+		testProtocol.setLsKind("default");
+		testProtocol.persist();
+		Experiment testExpt = new Experiment();
+		testExpt.setCodeName("TEST-EXPT");
+		testExpt.setRecordedBy("acas");
+		testExpt.setRecordedDate(new Date());
+		testExpt.setLsType("default");
+		testExpt.setLsKind("default");
+		ExperimentLabel testExptName = new ExperimentLabel();
+		testExptName.setLabelText("Test Experiment Name");
+		testExptName.setRecordedBy("acas");
+		testExptName.setRecordedDate(new Date());
+		testExptName.setLsType("name");
+		testExptName.setLsKind("experiment name");
+		testExptName.setPreferred(true);
+		testExptName.setExperiment(testExpt);
+		testExpt.getLsLabels().add(testExptName);
+		testExpt.setProtocol(testProtocol);
+		testExpt.persist();
+		AnalysisGroup testAG = new AnalysisGroup();
+		testAG.setCodeName("TEST-AG");
+		testAG.setRecordedBy("acas");
+		testAG.setRecordedDate(new Date());
+		testAG.setLsType("default");
+		testAG.setLsKind("default");
+		testAG.getExperiments().add(testExpt);
+		testAG.persist();
+		TreatmentGroup testTG = new TreatmentGroup();
+		testTG.setCodeName("TEST-TG");
+		testTG.setRecordedBy("acas");
+		testTG.setRecordedDate(new Date());
+		testTG.setLsType("default");
+		testTG.setLsKind("default");
+		testTG.getAnalysisGroups().add(testAG);
+		testTG.persist();
+		Subject testSubject = new Subject();
+		testSubject.setCodeName("TEST-SUBJ");
+		testSubject.setRecordedBy("acas");
+		testSubject.setRecordedDate(new Date());
+		testSubject.setLsType("default");
+		testSubject.setLsKind("default");
+		testSubject.getTreatmentGroups().add(testTG);
+		testSubject.persist();
+		testExpt.getAnalysisGroups().add(testAG);
+		testAG.getTreatmentGroups().add(testTG);
+		testTG.getSubjects().add(testSubject);
+		testExpt.merge();
+		testAG.merge();
+		testTG.merge();
+		
+		ItxSubjectContainer itx = new ItxSubjectContainer();
+		itx.setCodeName("TEST-ITX");
+		itx.setRecordedBy("acas");
+		itx.setRecordedDate(new Date());
+		itx.setLsType("default");
+		itx.setLsKind("default");
+		itx.setSubject(testSubject);
+		itx.setContainer(well);
+		itx.persist();
+		well.getSubjects().add(itx);
+		well.merge();
+		Long before = (new Date()).getTime();
+    	ContainerDependencyCheckDTO result = containerService.checkDependencies(plate);
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+		logger.info(result.toJson());
+		Assert.assertTrue(result.isLinkedDataExists());
+		Assert.assertFalse(result.getLinkedExperiments().isEmpty());
+    	String codeName = plate.getCodeName();
+    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/containers/checkDependencies/"+codeName)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+//    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	DependencyCheckDTO results = DependencyCheckDTO.fromJsonToDependencyCheckDTO(responseJson);
+    	Assert.assertTrue(results.getLinkedDataExists());
+    	
+    }
+	
+	
     
 
 }

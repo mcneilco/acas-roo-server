@@ -5,7 +5,6 @@ package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

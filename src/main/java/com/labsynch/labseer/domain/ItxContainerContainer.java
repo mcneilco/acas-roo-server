@@ -32,7 +32,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(finders = { "findItxContainerContainersByLsTransactionEquals" })
+@RooJpaActiveRecord(finders = { "findItxContainerContainersByLsTransactionEquals", "findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals", "findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals" })
 public class ItxContainerContainer extends AbstractThing {
 
     @NotNull

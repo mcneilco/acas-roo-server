@@ -3,6 +3,7 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -35,7 +36,12 @@ public class CodeTableDTO {
 	public CodeTableDTO(Experiment experiment) {
 		this.setId(experiment.getId());
 		this.setCode(experiment.getCodeName());
-		this.setName(ExperimentLabel.findExperimentPreferredName(experiment.getId()).getSingleResult().getLabelText());
+		try{
+			ExperimentLabel experimentLabel = ExperimentLabel.findExperimentPreferredName(experiment.getId()).getSingleResult();
+			this.setName(experimentLabel.getLabelText());
+		}catch (IncorrectResultSizeDataAccessException e){
+			this.setName(experiment.getCodeName());
+		}
 		this.setIgnored(experiment.isIgnored());
 	}
 

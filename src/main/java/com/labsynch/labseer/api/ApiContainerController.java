@@ -28,6 +28,7 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -327,7 +328,7 @@ public class ApiContainerController {
         	container = Container.findContainer(Long.valueOf(idOrCodeName));
   		} else {		
   			try {
-  				container = Container.findContainersByCodeNameEquals(idOrCodeName).getSingleResult();
+  				container = Container.findContainerByCodeNameEquals(idOrCodeName);
   			} catch(Exception ex) {
   				container = null;
   				ErrorMessage error = new ErrorMessage();
