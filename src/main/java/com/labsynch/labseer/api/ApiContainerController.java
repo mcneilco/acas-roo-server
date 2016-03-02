@@ -299,16 +299,25 @@ public class ApiContainerController {
     }
 
     @Transactional
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
         Container container = Container.findContainer(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (container == null) {
+        if (container == null || (container.isIgnored() && container.isDeleted())) {
+            logger.info("Did not find the container before delete");
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        } else {
+            logger.info("deleting the container: " + id);
+            container.logicalDelete();
+            if (Container.findContainer(id) == null || Container.findContainer(id).isIgnored()) {
+                logger.info("Did not find the container after delete");
+                return new ResponseEntity<String>(headers, HttpStatus.OK);
+            } else {
+                logger.info("Found the container after delete");
+                return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
-        container.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
     @Transactional
