@@ -445,12 +445,11 @@ public class ApiContainerController {
     @Transactional
     @RequestMapping(value = "/getWellContent", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> getWellContent(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> getWellContent(@RequestBody List<String> wellCodes) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
-        	Collection<ContainerRequestDTO> queryWells = ContainerRequestDTO.fromJsonArrayToCoes(json);
-        	Collection<WellContentDTO> results = containerService.getWellContent(queryWells);
+        	Collection<WellContentDTO> results = containerService.getWellContent(wellCodes);
         	boolean success = true;
         	for (WellContentDTO result: results){
         		if (result.getLevel() != null) success = false;

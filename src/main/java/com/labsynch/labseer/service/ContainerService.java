@@ -53,7 +53,7 @@ public interface ContainerService {
 
 	ContainerDependencyCheckDTO checkDependencies(Container container);
 
-	Collection<WellContentDTO> getWellContent(Collection<ContainerRequestDTO> wellCodes);
+	Collection<WellContentDTO> getWellContent(List<String> wellCodes);
 
 	ArrayList<ErrorMessage> validateContainer(Container container);
 

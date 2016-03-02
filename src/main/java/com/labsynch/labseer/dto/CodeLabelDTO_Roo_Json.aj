@@ -5,23 +5,14 @@ package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 privileged aspect CodeLabelDTO_Roo_Json {
     
-    public String CodeLabelDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
-    }
-    
     public static CodeLabelDTO CodeLabelDTO.fromJsonToCodeLabelDTO(String json) {
         return new JSONDeserializer<CodeLabelDTO>().use(null, CodeLabelDTO.class).deserialize(json);
-    }
-    
-    public static String CodeLabelDTO.toJsonArray(Collection<CodeLabelDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
     }
     
     public static Collection<CodeLabelDTO> CodeLabelDTO.fromJsonArrayToCoes(String json) {
