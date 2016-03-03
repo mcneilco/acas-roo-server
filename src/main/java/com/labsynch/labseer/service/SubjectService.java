@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
 
@@ -27,6 +29,7 @@ public interface SubjectService {
 	Subject saveSubject(Subject subject);
 	
 	HashMap<String, TempThingDTO> createSubjectsFromCSV(String subjectFilePath, HashMap<String, TempThingDTO> treatmentGroupMap) throws IOException;
+	Collection<SubjectCodeNameDTO> getSubjectsByCodeNames(List<String> codeNames);
 
 	
 	
