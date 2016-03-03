@@ -32,7 +32,7 @@ import com.labsynch.labseer.utils.SimpleUtil;
 //@RooWebJson(jsonObject = Subject.class)
 public class ApiSubjectController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(ApiSubjectControllerTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApiSubjectController.class);
 	
 	@Autowired
 	private SubjectValueService subjectValueService;
