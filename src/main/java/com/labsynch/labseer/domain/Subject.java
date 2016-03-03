@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -17,6 +16,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,6 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.api.ApiExperimentController;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -210,4 +209,12 @@ public class Subject extends AbstractThing {
 		this.setLsKind(subjectDTO.getLsKind());
 		this.setLsType(subjectDTO.getLsType());
 	}
+	
+	public static Subject findSubjectByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Subject.entityManager();
+        TypedQuery<Subject> q = em.createQuery("SELECT o FROM Subject AS o WHERE o.codeName = :codeName", Subject.class);
+        q.setParameter("codeName", codeName);
+        return q.getSingleResult();
+    }
 }

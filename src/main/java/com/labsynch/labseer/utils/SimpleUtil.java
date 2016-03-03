@@ -5,9 +5,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 public class SimpleUtil {
 	public static boolean isNumeric(String str) {
@@ -52,5 +58,38 @@ public class SimpleUtil {
 			list.add(m.group(1).replace("\"",""));
 		}
 		return list;
+	}
+	
+	public static Query addHqlInClause(EntityManager em, String queryString, String attributeName, List<String> matchStrings){
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(matchStrings);
+    	int startIndex = 0;
+    	while (startIndex < matchStrings.size()){
+    		int endIndex;
+    		if (startIndex+999 < matchStrings.size()) endIndex = startIndex+999;
+    		else endIndex = matchStrings.size();
+    		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
+    		String groupName = "strings"+startIndex;
+    		String sqlClause = " "+attributeName+" IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCodes);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+    	Query q = em.createQuery(queryString);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+    	return q;
 	}
 }

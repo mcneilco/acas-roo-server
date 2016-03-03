@@ -4,11 +4,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.service.SubjectService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -30,6 +31,8 @@ import com.labsynch.labseer.utils.SimpleUtil;
 @Transactional
 //@RooWebJson(jsonObject = Subject.class)
 public class ApiSubjectController {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ApiSubjectControllerTest.class);
 	
 	@Autowired
 	private SubjectValueService subjectValueService;
@@ -126,11 +129,17 @@ public class ApiSubjectController {
 //    }
 	
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@Transactional
+    @RequestMapping(value = "/{idOrCodeName}", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
-        Subject subject = Subject.findSubject(id);
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> showJson(@PathVariable("idOrCodeName") String idOrCodeName) {
+    	Subject subject;
+    	if(SimpleUtil.isNumeric(idOrCodeName)) {
+    	    	subject = Subject.findSubject(Long.valueOf(idOrCodeName));
+ 		} else {
+ 			subject = Subject.findSubjectByCodeNameEquals(idOrCodeName);
+ 		}
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (subject == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -228,4 +237,20 @@ public class ApiSubjectController {
 //        headers.add("Content-Type", "application/json; charset=utf-8");
 //        return new ResponseEntity<String>(Subject.toJsonArray(Subject.findSubjectsByTreatmentGroups(treatmentGroup).getResultList()), headers, HttpStatus.OK);
 //    }
+	
+    @Transactional
+    @RequestMapping(value = "/getSubjectsByCodeNames", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getSubjectsByCodeNames(@RequestBody List<String> codeNames) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<SubjectCodeNameDTO> searchResults = subjectService.getSubjectsByCodeNames(codeNames);
+        	return new ResponseEntity<String>(SubjectCodeNameDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+        } catch (Exception e){
+        	logger.error("Uncaught error in getSubjectsByCodeNames",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
