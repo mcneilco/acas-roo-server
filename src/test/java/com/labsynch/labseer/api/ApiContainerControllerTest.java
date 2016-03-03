@@ -51,6 +51,7 @@ import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
+import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
@@ -1000,6 +1001,37 @@ public class ApiContainerControllerTest {
     	MockHttpServletResponse response2 = this.mockMvc.perform(delete("/api/v1/containers/"+container.getId()))
     			.andExpect(status().isNotFound())
     			.andReturn().getResponse();
+    }
+	
+	@Test
+    @Transactional
+    public void getWellCodesByContainerCodes() throws Exception{
+    	List<String> codeNames = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(25);
+    	for (Container container : query.getResultList()){
+    		codeNames.add("\""+container.getCodeName()+"\"");	
+    	}
+    	codeNames.add("\"INVALID-CODENAME\"");
+		String json = codeNames.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellCodesByContainerCodes")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerWellCodeDTO> results = ContainerWellCodeDTO.fromJsonArrayToContainerWellCoes(responseJson);
+    	for (ContainerWellCodeDTO result : results){
+    		Assert.assertNotNull(result);
+    		Assert.assertNotNull(result.getRequestCodeName());
+    		if (result.getRequestCodeName().equals("INVALID-CODENAME")) Assert.assertTrue(result.getWellCodeNames().isEmpty());
+    		else Assert.assertFalse(result.getWellCodeNames().isEmpty());
+    	}
     }
     
 

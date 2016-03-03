@@ -45,6 +45,7 @@ import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
+import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
@@ -1612,6 +1613,83 @@ public class ContainerServiceImpl implements ContainerService {
 		}
 		
 		return results;
+	}
+
+	@Override
+	public Collection<ContainerWellCodeDTO> getWellCodesByContainerCodes(
+			List<String> codeNames) {
+		if (codeNames.isEmpty()) return new ArrayList<ContainerWellCodeDTO>();
+		EntityManager em = Container.entityManager();
+		String queryString = "SELECT new map( "
+				+ "container.codeName as containerCodeName, "
+				+ "well.codeName as wellCodeName )"
+				+ " FROM Container container ";
+		queryString += makeInnerJoinHql("container.secondContainers", "itx", "has member");
+		queryString += makeInnerJoinHql("itx.secondContainer", "well", "well");
+		queryString += "where ( container.ignored <> true ) and ( well.ignored <> true) and ( ";
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(codeNames);
+    	int startIndex = 0;
+    	while (startIndex < codeNames.size()){
+    		int endIndex;
+    		if (startIndex+999 < codeNames.size()) endIndex = startIndex+999;
+    		else endIndex = codeNames.size();
+    		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
+    		String groupName = "codeNames"+startIndex;
+    		String sqlClause = " container.codeName IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCodes);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+//    	logger.debug(queryString);
+		Query q = em.createQuery(queryString);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		@SuppressWarnings("unchecked")
+		Collection<Map<String,String>> results = q.getResultList();
+		//aggregate results
+		Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
+		for (Map<String, String> result : results){
+			String containerCodeName = result.get("containerCodeName");
+			String wellCodeName = result.get("wellCodeName");
+			if (!resultMap.containsKey(containerCodeName)){
+				List<String> foundWellCodes = new ArrayList<String>();
+				foundWellCodes.add(wellCodeName);
+				resultMap.put(containerCodeName, foundWellCodes);
+			}else{
+				resultMap.get(containerCodeName).add(wellCodeName);
+			}
+		}
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestCodeNames = new HashSet<String>();
+		requestCodeNames.addAll(codeNames);
+		HashSet<String> foundCodeNames = new HashSet<String>();
+		foundCodeNames.addAll(resultMap.keySet());
+		requestCodeNames.removeAll(foundCodeNames);
+		if (!requestCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestCodeNames){
+				resultMap.put(notFoundCodeName, new ArrayList<String>());
+			}
+		}
+		Collection<ContainerWellCodeDTO> sortedResults = new ArrayList<ContainerWellCodeDTO>();
+		for (String requestCodeName : codeNames){
+			ContainerWellCodeDTO result = new ContainerWellCodeDTO(requestCodeName, resultMap.get(requestCodeName));
+			sortedResults.add(result);
+		}
+		return sortedResults;
 	}
 
 
