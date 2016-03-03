@@ -12,6 +12,7 @@ import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
+import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
@@ -81,6 +82,9 @@ public interface ContainerService {
 	Collection<ContainerErrorMessageDTO> getContainersByCodeNames(List<String> codeNames);
 
 	Collection<ContainerErrorMessageDTO> getDefinitionContainersByContainerCodeNames(
+			List<String> codeNames);
+
+	Collection<ContainerWellCodeDTO> getWellCodesByContainerCodes(
 			List<String> codeNames);
 	
 	
