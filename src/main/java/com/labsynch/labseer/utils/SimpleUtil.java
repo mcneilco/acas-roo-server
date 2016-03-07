@@ -14,8 +14,14 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
 
 public class SimpleUtil {
+	
+	private static int PARAMETER_LIMIT = 999;
+	
 	public static boolean isNumeric(String str) {
 		for (char c : str.toCharArray()) {
 			if (!Character.isDigit(c)) return false;
@@ -82,7 +88,7 @@ public class SimpleUtil {
     	int startIndex = 0;
     	while (startIndex < matchStrings.size()){
     		int endIndex;
-    		if (startIndex+999 < matchStrings.size()) endIndex = startIndex+999;
+    		if (startIndex+PARAMETER_LIMIT < matchStrings.size()) endIndex = startIndex+PARAMETER_LIMIT;
     		else endIndex = matchStrings.size();
     		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
     		String groupName = "strings"+startIndex;
@@ -107,4 +113,23 @@ public class SimpleUtil {
         }
     	return q;
 	}
+	
+	public static Predicate buildInPredicate(CriteriaBuilder cb, Expression<String> property, List<String> values) {
+		Predicate predicate = null;
+        int listSize = values.size();
+        for (int i = 0; i < listSize; i += PARAMETER_LIMIT) {
+            List<String> subList;
+            if (listSize > i + PARAMETER_LIMIT) {
+                subList = values.subList(i, (i + PARAMETER_LIMIT));
+            } else {
+                subList = values.subList(i, listSize);
+            }
+            if (predicate != null) {
+            	predicate = cb.or(predicate, property.in(subList));
+            } else {
+            	predicate = property.in(subList);
+            }
+        }
+        return predicate;
+    }
 }
