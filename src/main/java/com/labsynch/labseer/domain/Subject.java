@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,10 +83,16 @@ public class Subject extends AbstractThing {
 	}
 
 	public static Subject update(Subject subject) {
-		Subject updatedSubject = new JSONDeserializer<Subject>().
-									use(null, Subject.class).
-									use(BigDecimal.class, new CustomBigDecimalFactory()).
-									deserializeInto(subject.toJson(), Subject.findSubject(subject.getId()));
+		Subject updatedSubject = Subject.findSubject(subject.getId());
+		updatedSubject.setRecordedBy(subject.getRecordedBy());
+		updatedSubject.setRecordedDate(subject.getRecordedDate());
+		updatedSubject.setLsTransaction(subject.getLsTransaction());
+		updatedSubject.setModifiedBy(subject.getModifiedBy());
+		updatedSubject.setModifiedDate(new Date());
+		updatedSubject.setCodeName(subject.getCodeName());
+		updatedSubject.setLsKind(subject.getLsKind());
+		updatedSubject.setLsType(subject.getLsType());
+		updatedSubject.setLsTypeAndKind(subject.getLsTypeAndKind());
 		updatedSubject.merge();
 		return updatedSubject;
 	}

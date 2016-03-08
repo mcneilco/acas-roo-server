@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -181,7 +182,9 @@ public class ApiSubjectController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Subject subject = Subject.fromJsonToSubject(json);
-        if (subject.merge() == null) {
+        try{
+        	Subject foundSubject = Subject.findSubject(subject.getId());
+        }catch(EmptyResultDataAccessException e){
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         subject = subjectService.updateSubject(subject);
@@ -194,7 +197,9 @@ public class ApiSubjectController {
 		HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         for (Subject subject: Subject.fromJsonArrayToSubjects(json)) {
-            if (subject.merge() == null) {
+        	try{
+            	Subject foundSubject = Subject.findSubject(subject.getId());
+            }catch(EmptyResultDataAccessException e){
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
             updatedSubjects.add(subjectService.updateSubject(subject));
