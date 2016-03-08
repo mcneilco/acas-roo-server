@@ -131,7 +131,7 @@ public class ApiSubjectController {
 	
 
 	@Transactional
-    @RequestMapping(value = "/{idOrCodeName}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{idOrCodeName}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("idOrCodeName") String idOrCodeName) {
     	Subject subject;
@@ -177,7 +177,7 @@ public class ApiSubjectController {
         return new ResponseEntity<String>(Subject.toJsonArray(savedSubjects), headers, HttpStatus.CREATED);
     }
 
-	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value={"/","/{id}"}, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
