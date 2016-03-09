@@ -783,9 +783,11 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += makeLeftJoinHql("statusContentState.lsValues","solventCodeValue", "codeValue","solvent code");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","physicalStateValue", "codeValue","physical state");
 		queryString += "where ( well.ignored <> true ) and ";
-		Query q = SimpleUtil.addHqlInClause(em, queryString, "well.codeName", wellCodes);
-//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		Collection<WellContentDTO> results = q.getResultList();
+		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "well.codeName", wellCodes);
+		Collection<WellContentDTO> results = new HashSet<WellContentDTO>();
+		for (Query q : queries){
+			results.addAll(q.getResultList());
+		}
 		//diff request with results to find codeNames that could not be found
 		Map<String, WellContentDTO> resultMap = new HashMap<String, WellContentDTO>();
 		HashSet<String> requestWellCodeNames = new HashSet<String>();
@@ -1467,9 +1469,11 @@ public class ContainerServiceImpl implements ContainerService {
 				+ "container )"
 				+ " FROM Container container ";
 		queryString += "where ( container.ignored <> true ) and ( ";
-		Query q = SimpleUtil.addHqlInClause(em, queryString, "container.codeName", codeNames);
-//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		Collection<ContainerErrorMessageDTO> results = q.getResultList();
+		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
+		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
+		for (Query q : queries){
+			results.addAll(q.getResultList());
+		}
 		//diff request with results to find codeNames that could not be found
 		HashSet<String> requestCodeNames = new HashSet<String>();
 		requestCodeNames.addAll(codeNames);
@@ -1503,9 +1507,11 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += makeInnerJoinHql("container.firstContainers", "itx", "defines", "definition container_container");
 		queryString += makeInnerJoinHql("itx.firstContainer", "definition", "definition container");
 		queryString += "where ( container.ignored <> true ) and ( ";
-		Query q = SimpleUtil.addHqlInClause(em, queryString, "container.codeName", codeNames);
-//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		Collection<ContainerErrorMessageDTO> results = q.getResultList();
+		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
+		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
+		for (Query q : queries){
+			results.addAll(q.getResultList());
+		}
 		//diff request with results to find codeNames that could not be found
 		HashSet<String> requestCodeNames = new HashSet<String>();
 		requestCodeNames.addAll(codeNames);
@@ -1541,10 +1547,11 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += makeInnerJoinHql("container.secondContainers", "itx", "has member");
 		queryString += makeInnerJoinHql("itx.secondContainer", "well", "well");
 		queryString += "where ( container.ignored <> true ) and ( well.ignored <> true) and ( ";
-		Query q = SimpleUtil.addHqlInClause(em, queryString, "container.codeName", codeNames);
-//		if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		@SuppressWarnings("unchecked")
-		Collection<Map<String,String>> results = q.getResultList();
+		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
+		Collection<Map<String,String>> results = new HashSet<Map<String,String>>();
+		for (Query q : queries){
+			results.addAll(q.getResultList());
+		}
 		//aggregate results
 		Map<String, List<String>> resultMap = new HashMap<String, List<String>>();
 		for (Map<String, String> result : results){

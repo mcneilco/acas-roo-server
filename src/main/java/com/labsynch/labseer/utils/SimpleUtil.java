@@ -81,6 +81,32 @@ public class SimpleUtil {
 	    }
 	}
 	
+	public static Collection<Query> splitHqlInClause(EntityManager em, String queryString, String attributeName, List<String> matchStrings){
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(matchStrings);
+    	int startIndex = 0;
+    	Collection<Query> allQueries = new ArrayList<Query>();
+    	while (startIndex < matchStrings.size()){
+    		int endIndex;
+    		if (startIndex+PARAMETER_LIMIT < matchStrings.size()) endIndex = startIndex+PARAMETER_LIMIT;
+    		else endIndex = matchStrings.size();
+    		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
+    		String groupName = "strings"+startIndex;
+    		String sqlClause = " "+attributeName+" IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCodes);
+    		startIndex=endIndex;
+    	}
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+			String completeQueryString = queryString + sqlClause + " )";
+			Query q = em.createQuery(completeQueryString);
+			String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        	allQueries.add(q);
+    	}
+    	return allQueries;
+	}
+	
 	public static Query addHqlInClause(EntityManager em, String queryString, String attributeName, List<String> matchStrings){
 		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
     	List<String> allCodes = new ArrayList<String>();
