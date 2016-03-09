@@ -49,6 +49,7 @@ import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
@@ -1648,6 +1649,42 @@ public class ExperimentServiceImpl implements ExperimentService {
         	return false;
         }
         return true;
+	}
+
+
+	@Override
+	public Collection<ExperimentErrorMessageDTO> findExperimentsByCodeNames(List<String> codeNames) {
+		if (codeNames.isEmpty()) return new ArrayList<ExperimentErrorMessageDTO>();
+		EntityManager em = Experiment.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.ExperimentErrorMessageDTO( "
+				+ "experiment.codeName, "
+				+ "experiment )"
+				+ " FROM Experiment experiment ";
+		queryString += "where ( experiment.ignored <> true ) and ( ";
+		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "experiment.codeName", codeNames);
+		Collection<ExperimentErrorMessageDTO> results = new HashSet<ExperimentErrorMessageDTO>();
+		for (Query q : queries){
+			results.addAll(q.getResultList());
+		}
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestCodeNames = new HashSet<String>();
+		requestCodeNames.addAll(codeNames);
+		HashSet<String> foundCodeNames = new HashSet<String>();
+		for (ExperimentErrorMessageDTO result : results){
+			foundCodeNames.add(result.getExperimentCodeName());
+		}
+		requestCodeNames.removeAll(foundCodeNames);
+		if (!requestCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestCodeNames){
+				ExperimentErrorMessageDTO notFoundDTO = new ExperimentErrorMessageDTO();
+				notFoundDTO.setExperimentCodeName(notFoundCodeName);
+				notFoundDTO.setLevel("error");
+				notFoundDTO.setMessage("experimentCodeName not found");
+				results.add(notFoundDTO);
+			}
+		}
+		
+		return results;
 	}
 
 

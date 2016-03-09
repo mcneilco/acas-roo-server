@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
@@ -58,5 +59,7 @@ public interface ExperimentService {
 			Collection<String> codeValues);
 
 	public boolean deleteAnalysisGroupsByExperiment(Experiment experiment);
+
+	public Collection<ExperimentErrorMessageDTO> findExperimentsByCodeNames(List<String> codeNames);
 	
 }

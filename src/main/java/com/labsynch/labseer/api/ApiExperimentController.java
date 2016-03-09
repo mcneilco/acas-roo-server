@@ -48,6 +48,7 @@ import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.BatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
+import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
@@ -1307,6 +1308,41 @@ public class ApiExperimentController {
             }
         } else {
             return new ResponseEntity<String>(experiment.toJsonStub(), headers, HttpStatus.OK);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/codename/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> findExperimentsByCodeNames(@RequestBody List<String> codeNames, @RequestParam(value = "with", required = false) String with) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        Collection<ExperimentErrorMessageDTO> foundExperiments;
+        try{
+        	foundExperiments = experimentService.findExperimentsByCodeNames(codeNames);
+        } catch (EmptyResultDataAccessException e){
+        	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        if (with != null) {
+            if (with.equalsIgnoreCase("analysisgroups")) {
+                return new ResponseEntity<String>(ExperimentErrorMessageDTO.toJsonArrayStubWithAG(foundExperiments), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("analysisgroupstates")) {
+                return new ResponseEntity<String>(ExperimentErrorMessageDTO.toJsonArrayStubWithAGStates(foundExperiments), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("analysisgroupvalues")) {
+                return new ResponseEntity<String>(ExperimentErrorMessageDTO.toJsonArrayStubWithAGValues(foundExperiments), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("fullobject")) {
+                return new ResponseEntity<String>(ExperimentErrorMessageDTO.toJsonArray(foundExperiments), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("prettyjson")) {
+                return new ResponseEntity<String>(ExperimentErrorMessageDTO.toJsonArrayPretty(foundExperiments), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("prettyjsonstub")) {
+                return new ResponseEntity<String>(ExperimentErrorMessageDTO.toJsonArrayStubPretty(foundExperiments), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("stubwithprot")) {
+                return new ResponseEntity<String>(ExperimentErrorMessageDTO.toJsonArrayStubWithProt(foundExperiments), headers, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>("ERROR: with" + with + " route is not implemented. ", headers, HttpStatus.NOT_IMPLEMENTED);
+            }
+        } else {
+            return new ResponseEntity<String>(ExperimentErrorMessageDTO.toJsonArrayStub(foundExperiments), headers, HttpStatus.OK);
         }
     }
 

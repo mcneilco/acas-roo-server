@@ -5,7 +5,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -27,6 +29,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -157,6 +160,36 @@ public class ApiExperimentControllerTest {
     			.andReturn().getResponse().getContentAsString();
     	logger.info(responseJson.toString());
     	Assert.assertTrue(responseJson.contains("Too many"));
+    }
+    
+    @Test
+    public void getExperimentsByCodeName_StubWithProt() throws Exception {
+    	Collection<Experiment> experiments = Experiment.findAllExperiments();
+    	List<String> codeNames = new ArrayList<String>();
+    	for (Experiment experiment : experiments){
+    		codeNames.add("\""+experiment.getCodeName()+"\"");
+    	}
+    	String format = "stubWithProt";
+    	logger.info(codeNames.toString());
+    	String responseJson =  this.mockMvc.perform(post("/api/v1/experiments/codename/jsonArray?with="+format)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(codeNames.toString())
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<ExperimentErrorMessageDTO> responses = ExperimentErrorMessageDTO.fromJsonArrayToExperimentErroes(responseJson);
+    	for (ExperimentErrorMessageDTO response : responses){
+    		Assert.assertNotNull(response.getExperimentCodeName());
+        	Assert.assertNotNull(response.getExperiment());
+        	Assert.assertNotNull(response.getExperiment().getLsStates());
+        	Assert.assertTrue(!response.getExperiment().getLsStates().isEmpty());
+        	Assert.assertNotNull(response.getExperiment().getLsLabels());
+        	Assert.assertTrue(!response.getExperiment().getLsLabels().isEmpty());
+        	Assert.assertNotNull(response.getExperiment().getProtocol());
+        	Assert.assertNotNull(response.getExperiment().getProtocol().getLsLabels());
+        	Assert.assertTrue(!response.getExperiment().getProtocol().getLsLabels().isEmpty());
+    	}
     }
 
 }
