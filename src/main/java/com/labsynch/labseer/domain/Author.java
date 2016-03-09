@@ -59,17 +59,7 @@ public class Author extends AbstractThing {
     @NotNull
     @Size(max = 255)
     private String password;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "MM")
-    private Date recordedDate;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "MM")
-    private Date modifiedDate;
-
     
-
     /**
      */
     @Temporal(TemporalType.TIMESTAMP)

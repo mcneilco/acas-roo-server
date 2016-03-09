@@ -29,7 +29,7 @@ public class AuthorValue extends AbstractValue {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "analysis_state_id")
+    @JoinColumn(name = "author_state_id")
     private AuthorState lsState;
 
 	public Long getStateId() {

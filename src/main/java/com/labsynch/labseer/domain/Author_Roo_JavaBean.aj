@@ -52,22 +52,6 @@ privileged aspect Author_Roo_JavaBean {
         this.password = password;
     }
     
-    public Date Author.getRecordedDate() {
-        return this.recordedDate;
-    }
-    
-    public void Author.setRecordedDate(Date recordedDate) {
-        this.recordedDate = recordedDate;
-    }
-    
-    public Date Author.getModifiedDate() {
-        return this.modifiedDate;
-    }
-    
-    public void Author.setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-    
     public Date Author.getActivationDate() {
         return this.activationDate;
     }

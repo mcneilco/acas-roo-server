@@ -71,6 +71,7 @@ public class AuthorServiceImpl implements AuthorService {
 
 
 	@Override
+	@Transactional
 	public Author saveAuthor(Author author) {
 		if (logger.isDebugEnabled()) logger.debug("incoming meta author: " + author.toJson() + "\n");
 		Author newAuthor = new Author(author);

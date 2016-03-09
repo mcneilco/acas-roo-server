@@ -39,7 +39,7 @@ public class AuthorState extends AbstractState {
 
 	@NotNull
 	@ManyToOne
-	@JoinColumn(name = "analysis_group_id")
+	@JoinColumn(name = "author_id")
 	private Author author;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "lsState", fetch = FetchType.LAZY)

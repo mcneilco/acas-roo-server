@@ -1,5 +1,6 @@
 package com.labsynch.labseer.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -147,24 +148,6 @@ public class ApiAuthorController {
         return new ResponseEntity<String>(Author.toJsonArray(result), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Author author) {
-        author.persist();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-    }
-    
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<Author> authors) {
-        for (Author author : authors) {
-            author.persist();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-    }
-
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Author author) {
         HttpHeaders headers = new HttpHeaders();
@@ -228,11 +211,36 @@ public class ApiAuthorController {
     @Transactional
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
-    	Author author = Author.fromJsonToAuthor(json);
-        author = authorService.saveAuthor(author);
-        HttpHeaders headers = new HttpHeaders();
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
+    	try{
+    		Author author = Author.fromJsonToAuthor(json);
+    		author = authorService.saveAuthor(author);
+            return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
+    	}catch (Exception e){
+    		logger.error("Caught exception saving author",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+        
+    }
+    
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        try{
+        	Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
+            Collection<Author> savedAuthors = new ArrayList<Author>();
+        	for (Author author : authors) {
+                Author savedAuthor = author = authorService.saveAuthor(author);
+                savedAuthors.add(savedAuthor);
+            }
+            return new ResponseEntity<String>(Author.toJsonArray(savedAuthors), headers, HttpStatus.CREATED);
+        }catch (Exception e){
+    		logger.error("Caught exception saving author",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    	
     }
     
     @Transactional
