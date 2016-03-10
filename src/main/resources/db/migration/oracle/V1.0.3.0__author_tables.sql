@@ -11,6 +11,11 @@ ALTER TABLE author
   )
 ;
 UPDATE author SET code_name = 'AUTH-' || id;
+UPDATE author SET deleted = 0;
+UPDATE author SET ignored = 0;
+UPDATE author SET ls_kind = 'default';
+UPDATE author SET ls_type = 'default';
+UPDATE author SET recorded_by = 'acas';
 ALTER TABLE author ADD CONSTRAINT author_code_name_key UNIQUE (code_name);
 ALTER TABLE author MODIFY (deleted NOT NULL ENABLE);
 ALTER TABLE author MODIFY (ignored NOT NULL ENABLE);

@@ -10,6 +10,11 @@ ALTER TABLE author
   ADD recorded_by character varying(255) NOT NULL
 ;
 UPDATE author SET code_name = 'AUTH-' || id;
+UPDATE author SET deleted = false;
+UPDATE author SET ignored = false;
+UPDATE author SET ls_kind = 'default';
+UPDATE author SET ls_type = 'default';
+UPDATE author SET recorded_by = 'acas';
 ALTER TABLE author ADD CONSTRAINT author_code_name_key UNIQUE (code_name);
 
 CREATE TABLE author_label
