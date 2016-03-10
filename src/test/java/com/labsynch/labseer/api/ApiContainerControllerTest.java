@@ -35,6 +35,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
@@ -268,7 +269,7 @@ public class ApiContainerControllerTest {
     	for (CodeLabelDTO result : results){
     		Assert.assertNotNull(result.getRequestLabel());
     		Assert.assertFalse(result.getFoundCodeNames().isEmpty());
-    		Assert.assertEquals(plateBarcodes.get(i), result.getRequestLabel());
+    		Assert.assertEquals(plateBarcodes.get(i).replaceAll("\"", ""), result.getRequestLabel());
     		i++;
     	}
     }
@@ -1009,6 +1010,131 @@ public class ApiContainerControllerTest {
     	List<String> codeNames = new ArrayList<String>();
     	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
     	query.setMaxResults(25);
+    	for (Container container : query.getResultList()){
+    		codeNames.add("\""+container.getCodeName()+"\"");	
+    	}
+    	codeNames.add("\"INVALID-CODENAME\"");
+		String json = codeNames.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellCodesByContainerCodes")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerWellCodeDTO> results = ContainerWellCodeDTO.fromJsonArrayToContainerWellCoes(responseJson);
+    	for (ContainerWellCodeDTO result : results){
+    		Assert.assertNotNull(result);
+    		Assert.assertNotNull(result.getRequestCodeName());
+    		if (result.getRequestCodeName().equals("INVALID-CODENAME")) Assert.assertTrue(result.getWellCodeNames().isEmpty());
+    		else Assert.assertFalse(result.getWellCodeNames().isEmpty());
+    	}
+    }
+	
+	@Test
+    @Transactional
+    public void getContainerCodesByLabels_thousands() throws Exception{
+    	List<String> plateBarcodes = new ArrayList<String>();
+//    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	for (ContainerLabel containerLabel : ContainerLabel.findContainerLabelEntries(0, 4000)){
+    		plateBarcodes.add("\""+containerLabel.getLabelText()+"\"");	
+    	}
+		String json = plateBarcodes.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainerCodesByLabels")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<CodeLabelDTO> results = CodeLabelDTO.fromJsonArrayToCoes(responseJson);
+    	int i=0;
+    	for (CodeLabelDTO result : results){
+    		Assert.assertNotNull(result.getRequestLabel());
+    		Assert.assertFalse(result.getFoundCodeNames().isEmpty());
+    		Assert.assertEquals(plateBarcodes.get(i).replaceAll("\"", ""), result.getRequestLabel());
+    		i++;
+    	}
+    }
+	
+	@Test
+    @Transactional
+    public void getWellContent_thousands() throws Exception{
+    	List<String> wellCodes = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(3000);
+    	for (Container container : query.getResultList()){
+    		wellCodes.add("\""+container.getCodeName()+"\"");	
+    	}
+		String json = wellCodes.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
+    	int i = 0;
+    	for (WellContentDTO result : results){
+    		Assert.assertNotNull(result.getContainerCodeName());
+    		Assert.assertEquals(wellCodes.get(i).replaceAll("\"",""), result.getContainerCodeName());
+    		if (result.getLevel() != null) Assert.assertNotNull(result.getWellName());
+    		i++;
+    	}
+    }
+	
+	@Test
+    @Transactional
+    public void getDefinitionContainersByContainerCodeNames_thousands() throws Exception{
+    	List<String> codeNames = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(1100);
+    	for (Container container : query.getResultList()){
+    		codeNames.add("\""+container.getCodeName()+"\"");	
+    	}
+		String json = codeNames.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getDefinitionContainersByContainerCodeNames")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerErrorMessageDTO> results = ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(responseJson);
+    	for (ContainerErrorMessageDTO result : results){
+    		Assert.assertNotNull(result);
+    		if (result.getLevel() == null){
+    			Assert.assertNotNull(result.getDefinition());
+    			Assert.assertFalse(result.getDefinition().getLsStates().isEmpty());
+    		}
+    		Assert.assertNull(result.getContainer());
+    		
+    	}
+    }
+	
+	@Test
+    @Transactional
+    public void getWellCodesByContainerCodes_thousands() throws Exception{
+    	List<String> codeNames = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(1100);
     	for (Container container : query.getResultList()){
     		codeNames.add("\""+container.getCodeName()+"\"");	
     	}

@@ -13,6 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +34,13 @@ import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
+import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.SubjectLabelDTO;
 import com.labsynch.labseer.dto.SubjectStateDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -569,5 +574,40 @@ public class SubjectServiceImpl implements SubjectService {
 		}
 		return subject;
 	}
+
+	@Override
+	public Collection<SubjectCodeNameDTO> getSubjectsByCodeNames(
+			List<String> codeNames) {
+		if (codeNames.isEmpty()) return new ArrayList<SubjectCodeNameDTO>();
+		EntityManager em = Subject.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.SubjectCodeNameDTO( "
+				+ "subject.codeName, "
+				+ "subject )"
+				+ " FROM Subject subject ";
+		queryString += "where ( subject.ignored <> true ) and ( ";
+		Query q = SimpleUtil.addHqlInClause(em, queryString, "subject.codeName", codeNames);
+		
+//			if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		@SuppressWarnings("unchecked")
+		Collection<SubjectCodeNameDTO> results = q.getResultList();
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestCodeNames = new HashSet<String>();
+		requestCodeNames.addAll(codeNames);
+		HashSet<String> foundCodeNames = new HashSet<String>();
+		for (SubjectCodeNameDTO result : results){
+			foundCodeNames.add(result.getRequestCodeName());
+		}
+		requestCodeNames.removeAll(foundCodeNames);
+		if (!requestCodeNames.isEmpty()){
+			for (String requestCodeName : requestCodeNames){
+				SubjectCodeNameDTO emptyResult = new SubjectCodeNameDTO();
+				emptyResult.setRequestCodeName(requestCodeName);
+				results.add(emptyResult);
+			}		
+		}
+		return results;
+	}
+	
+	
 
 }
