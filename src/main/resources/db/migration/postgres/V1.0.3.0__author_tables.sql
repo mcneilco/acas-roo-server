@@ -1,13 +1,13 @@
 ALTER TABLE author
   ADD code_name character varying(255),
-  ADD deleted boolean NOT NULL,
-  ADD ignored boolean NOT NULL,
-  ADD ls_kind character varying(255) NOT NULL,
+  ADD deleted boolean,
+  ADD ignored boolean,
+  ADD ls_kind character varying(255),
   ADD ls_transaction bigint,
-  ADD ls_type character varying(255) NOT NULL,
+  ADD ls_type character varying(255),
   ADD ls_type_and_kind character varying(255),
   ADD modified_by character varying(255),
-  ADD recorded_by character varying(255) NOT NULL
+  ADD recorded_by character varying(255)
 ;
 UPDATE author SET code_name = 'AUTH-' || id;
 UPDATE author SET deleted = false;
@@ -16,6 +16,11 @@ UPDATE author SET ls_kind = 'default';
 UPDATE author SET ls_type = 'default';
 UPDATE author SET recorded_by = 'acas';
 ALTER TABLE author ADD CONSTRAINT author_code_name_key UNIQUE (code_name);
+ALTER TABLE author ALTER deleted SET NOT NULL;
+ALTER TABLE author ALTER ignored SET NOT NULL;
+ALTER TABLE author ALTER ls_kind SET NOT NULL;
+ALTER TABLE author ALTER ls_type SET NOT NULL;
+ALTER TABLE author ALTER recorded_by SET NOT NULL;
 
 CREATE TABLE author_label
 (
