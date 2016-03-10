@@ -12,15 +12,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
-import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -40,8 +35,8 @@ import flexjson.JSONSerializer;
 //@RooToString(excludeFields = { "password", "authorRoles"})
 
 
-@RooJpaActiveRecord(sequenceName = "AUTHOR_PKSEQ", finders = { "findAuthorsByUserName", "findAuthorsByEmailAddress", "findAuthorsByActivationKeyAndEmailAddress" })
-public class Author {
+@RooJpaActiveRecord(sequenceName = "AUTHOR_PKSEQ", finders = { "findAllAuthors", "findAuthorsByUserName", "findAuthorsByEmailAddress", "findAuthorsByActivationKeyAndEmailAddress" })
+public class Author extends AbstractThing {
 
     @NotNull
     @Size(max = 255)
@@ -64,17 +59,7 @@ public class Author {
     @NotNull
     @Size(max = 255)
     private String password;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "MM")
-    private Date recordedDate;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @DateTimeFormat(style = "MM")
-    private Date modifiedDate;
-
     
-
     /**
      */
     @Temporal(TemporalType.TIMESTAMP)
@@ -96,38 +81,64 @@ public class Author {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "userEntry", fetch =  FetchType.LAZY)
 	private Set<AuthorRole> authorRoles = new HashSet<AuthorRole>();
 
+	@OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    private Set<AuthorState> lsStates = new HashSet<AuthorState>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    private Set<AuthorLabel> lsLabels = new HashSet<AuthorLabel>();
 	
 	public String toString() {
-		 return new StringBuilder().append(this.id).append(' ').append(this.userName).toString();
+		 return new StringBuilder().append(this.getId()).append(' ').append(this.userName).toString();
 //        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("password", "authorRoles").toString();
     }
 
-	@Id
-    @SequenceGenerator(name = "authorGen", sequenceName = "AUTHOR_PKSEQ")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "authorGen")
-    @Column(name = "id")
-    private Long id;
+//	@Id
+//    @SequenceGenerator(name = "authorGen", sequenceName = "AUTHOR_PKSEQ")
+//    @GeneratedValue(strategy = GenerationType.AUTO, generator = "authorGen")
+//    @Column(name = "id")
+//    private Long id;
+//
+//	@Version
+//    @Column(name = "version")
+//    private Integer version;
 
-	@Version
-    @Column(name = "version")
-    private Integer version;
+//	public Long getId() {
+//        return this.id;
+//    }
+//
+//	public void setId(Long id) {
+//        this.id = id;
+//    }
+//
+//	public Integer getVersion() {
+//        return this.version;
+//    }
+//
+//	public void setVersion(Integer version) {
+//        this.version = version;
+//    }
 
-	public Long getId() {
-        return this.id;
-    }
-
-	public void setId(Long id) {
-        this.id = id;
-    }
-
-	public Integer getVersion() {
-        return this.version;
-    }
-
-	public void setVersion(Integer version) {
-        this.version = version;
-    }
-
+	public Author (Author author){
+		this.setRecordedBy(author.getRecordedBy());
+		this.setRecordedDate(author.getRecordedDate());
+		this.setLsTransaction(author.getLsTransaction());
+		this.setModifiedBy(author.getModifiedBy());
+		this.setModifiedDate(author.getModifiedDate());
+		this.setCodeName(author.getCodeName());
+		this.setLsKind(author.getLsKind());
+		this.setLsType(author.getLsType());
+		this.setLsTypeAndKind(author.getLsTypeAndKind());
+		this.setFirstName(author.getFirstName());
+		this.setLastName(author.getLastName());
+		this.setUserName(author.getUserName());
+		this.setEmailAddress(author.getEmailAddress());
+		this.setPassword(author.getPassword());
+		this.setActivationDate(author.getActivationDate());
+		this.setActivationKey(author.getActivationKey());
+		this.setEnabled(author.getEnabled());
+		this.setLocked(author.getLocked());
+	}
+	
 	public String toJson() {
         return new JSONSerializer().exclude("*.class", "password").include("authorRoles").serialize(this);
     }
@@ -172,5 +183,29 @@ public class Author {
         q.setParameter("userName", userName);
         return q;
     }
+
+	public static Author update(Author author) {
+		Author updatedAuthor = Author.findAuthor(author.getId());
+		updatedAuthor.setRecordedBy(author.getRecordedBy());
+		updatedAuthor.setRecordedDate(author.getRecordedDate());
+		updatedAuthor.setLsTransaction(author.getLsTransaction());
+		updatedAuthor.setModifiedBy(author.getModifiedBy());
+		updatedAuthor.setModifiedDate(author.getModifiedDate());
+		updatedAuthor.setCodeName(author.getCodeName());
+		updatedAuthor.setLsKind(author.getLsKind());
+		updatedAuthor.setLsType(author.getLsType());
+		updatedAuthor.setLsTypeAndKind(author.getLsTypeAndKind());
+		updatedAuthor.setFirstName(author.getFirstName());
+		updatedAuthor.setLastName(author.getLastName());
+		updatedAuthor.setUserName(author.getUserName());
+		updatedAuthor.setEmailAddress(author.getEmailAddress());
+		updatedAuthor.setPassword(author.getPassword());
+		updatedAuthor.setActivationDate(author.getActivationDate());
+		updatedAuthor.setActivationKey(author.getActivationKey());
+		updatedAuthor.setEnabled(author.getEnabled());
+		updatedAuthor.setLocked(author.getLocked());
+		updatedAuthor.merge();
+		return updatedAuthor;
+	}
 	
 }

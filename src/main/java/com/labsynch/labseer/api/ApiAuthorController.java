@@ -1,5 +1,6 @@
 package com.labsynch.labseer.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,12 +24,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.dto.AuthorNameDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.service.AuthorService;
 import com.labsynch.labseer.utils.PropertiesFileService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 import com.labsynch.labseer.web.AuthorController;
 
 @Controller
@@ -134,18 +138,6 @@ public class ApiAuthorController {
             return new ResponseEntity<String>(Author.toJsonArray(authors), headers, HttpStatus.OK);
         }
     }
-    
-//    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
-//    @ResponseBody
-//    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
-//        Author author = Author.findAuthor(id);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.add("Content-Type", "application/json; charset=utf-8");
-//        if (author == null) {
-//            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-//        }
-//        return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.OK);
-//    }
 
     @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
@@ -154,24 +146,6 @@ public class ApiAuthorController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<Author> result = Author.findAllAuthors();
         return new ResponseEntity<String>(Author.toJsonArray(result), headers, HttpStatus.OK);
-    }
-
-    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody Author author) {
-        author.persist();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-    }
-    
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<Author> authors) {
-        for (Author author : authors) {
-            author.persist();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -233,4 +207,63 @@ public class ApiAuthorController {
             return new ResponseEntity<String>(Author.toJsonArray(authors), headers, HttpStatus.OK);
         }
     }
+    
+    @Transactional
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+    	try{
+    		Author author = Author.fromJsonToAuthor(json);
+    		author = authorService.saveAuthor(author);
+            return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
+    	}catch (Exception e){
+    		logger.error("Caught exception saving author",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+        
+    }
+    
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        try{
+        	Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
+            Collection<Author> savedAuthors = new ArrayList<Author>();
+        	for (Author author : authors) {
+                Author savedAuthor = author = authorService.saveAuthor(author);
+                savedAuthors.add(savedAuthor);
+            }
+            return new ResponseEntity<String>(Author.toJsonArray(savedAuthors), headers, HttpStatus.CREATED);
+        }catch (Exception e){
+    		logger.error("Caught exception saving author",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    	
+    }
+    
+    @Transactional
+    @RequestMapping(value = { "/{id}", "/" }, method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
+        Author author = Author.fromJsonToAuthor(json);
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        author = authorService.updateAuthor(author);
+        if (author.getId() == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/getOrCreate", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getOrCreateFromJson(@RequestBody String json) {
+    	Author author = Author.fromJsonToAuthor(json);
+        author = authorService.getOrCreateAuthor(author);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
+    }
+    
 }

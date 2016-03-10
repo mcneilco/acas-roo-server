@@ -4,12 +4,13 @@
     <jsp:output omit-xml-declaration="yes"/>
     <page:list id="pl_com_labsynch_labseer_domain_Author" items="${authors}" z="K1IwmrSxJvtea7+DRiZDJKtwtco=">
         <table:table data="${authors}" id="l_com_labsynch_labseer_domain_Author" path="/authors" z="inDUknSGrR5cGC+IbUlGIsZqAiY=">
-            <table:column id="c_com_labsynch_labseer_domain_Author_firstName" property="firstName" z="TN6os+EAjUbSQep798XBdkHy+dY="/>
-            <table:column id="c_com_labsynch_labseer_domain_Author_lastName" property="lastName" z="QeEWlSd4MhdSCfA/eLOtsCuL9wE="/>
-            <table:column id="c_com_labsynch_labseer_domain_Author_userName" property="userName" z="F7Ttkzgk4k4isFiB64xRWUWQ5iM="/>
             <table:column date="true" dateTimePattern="${author_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_Author_recordedDate" property="recordedDate" z="HPZ+hViCfn1Lksb5MDsfFyHl+N4="/>
             <table:column id="c_com_labsynch_labseer_domain_Author_password" property="password" render="false" z="user-managed"/>
-            <table:column id="c_com_labsynch_labseer_domain_Author_emailAddress" property="emailAddress" z="Ui8MBZ/2r1kOhFbP6rv7m96rU40="/>
+            <table:column id="c_com_labsynch_labseer_domain_Author_lsType" property="lsType" z="lCjawcymBZ/JxUDVz9fSYmT91Q0="/>
+            <table:column id="c_com_labsynch_labseer_domain_Author_lsKind" property="lsKind" z="irscVv0E9EMOy39OO14eaZTcRCM="/>
+            <table:column id="c_com_labsynch_labseer_domain_Author_lsTypeAndKind" property="lsTypeAndKind" z="mKAoLXkwtyjvRaSLLi6au/rra9Y="/>
+            <table:column id="c_com_labsynch_labseer_domain_Author_codeName" property="codeName" z="vqV/PZud+ZWjeTD22i3tAGDtv5M="/>
+            <table:column id="c_com_labsynch_labseer_domain_Author_recordedBy" property="recordedBy" z="YTstwZiGsBlI1Vo7SOaktUK6DoA="/>
         </table:table>
     </page:list>
 </div>

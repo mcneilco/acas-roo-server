@@ -17,4 +17,10 @@ public interface AuthorService {
 
 	Collection<Author> findAuthorsByAuthorRoleName(String authorRoleName);
 
+	public Author saveAuthor(Author author);
+
+	public Author updateAuthor(Author author);
+
+	public Author getOrCreateAuthor(Author author);
+
 }

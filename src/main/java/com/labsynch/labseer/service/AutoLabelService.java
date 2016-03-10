@@ -41,6 +41,8 @@ public interface AutoLabelService {
 
 	String getContainerCodeName();
 
+	String getAuthorCodeName();
+
 	
 	
 	

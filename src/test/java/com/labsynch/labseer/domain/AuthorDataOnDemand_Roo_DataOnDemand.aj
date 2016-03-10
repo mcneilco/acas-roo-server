@@ -29,13 +29,22 @@ privileged aspect AuthorDataOnDemand_Roo_DataOnDemand {
         Author obj = new Author();
         setActivationDate(obj, index);
         setActivationKey(obj, index);
+        setCodeName(obj, index);
+        setDeleted(obj, index);
         setEmailAddress(obj, index);
         setEnabled(obj, index);
         setFirstName(obj, index);
+        setIgnored(obj, index);
         setLastName(obj, index);
         setLocked(obj, index);
+        setLsKind(obj, index);
+        setLsTransaction(obj, index);
+        setLsType(obj, index);
+        setLsTypeAndKind(obj, index);
+        setModifiedBy(obj, index);
         setModifiedDate(obj, index);
         setPassword(obj, index);
+        setRecordedBy(obj, index);
         setRecordedDate(obj, index);
         setUserName(obj, index);
         return obj;
@@ -49,6 +58,19 @@ privileged aspect AuthorDataOnDemand_Roo_DataOnDemand {
     public void AuthorDataOnDemand.setActivationKey(Author obj, int index) {
         String activationKey = "activationKey_" + index;
         obj.setActivationKey(activationKey);
+    }
+    
+    public void AuthorDataOnDemand.setCodeName(Author obj, int index) {
+        String codeName = "codeName_" + index;
+        if (codeName.length() > 255) {
+            codeName = new Random().nextInt(10) + codeName.substring(1, 255);
+        }
+        obj.setCodeName(codeName);
+    }
+    
+    public void AuthorDataOnDemand.setDeleted(Author obj, int index) {
+        Boolean deleted = true;
+        obj.setDeleted(deleted);
     }
     
     public void AuthorDataOnDemand.setEmailAddress(Author obj, int index) {
@@ -72,6 +94,11 @@ privileged aspect AuthorDataOnDemand_Roo_DataOnDemand {
         obj.setFirstName(firstName);
     }
     
+    public void AuthorDataOnDemand.setIgnored(Author obj, int index) {
+        Boolean ignored = true;
+        obj.setIgnored(ignored);
+    }
+    
     public void AuthorDataOnDemand.setLastName(Author obj, int index) {
         String lastName = "lastName_" + index;
         if (lastName.length() > 255) {
@@ -85,6 +112,43 @@ privileged aspect AuthorDataOnDemand_Roo_DataOnDemand {
         obj.setLocked(locked);
     }
     
+    public void AuthorDataOnDemand.setLsKind(Author obj, int index) {
+        String lsKind = "lsKind_" + index;
+        if (lsKind.length() > 255) {
+            lsKind = lsKind.substring(0, 255);
+        }
+        obj.setLsKind(lsKind);
+    }
+    
+    public void AuthorDataOnDemand.setLsTransaction(Author obj, int index) {
+        Long lsTransaction = new Integer(index).longValue();
+        obj.setLsTransaction(lsTransaction);
+    }
+    
+    public void AuthorDataOnDemand.setLsType(Author obj, int index) {
+        String lsType = "lsType_" + index;
+        if (lsType.length() > 255) {
+            lsType = lsType.substring(0, 255);
+        }
+        obj.setLsType(lsType);
+    }
+    
+    public void AuthorDataOnDemand.setLsTypeAndKind(Author obj, int index) {
+        String lsTypeAndKind = "lsTypeAndKind_" + index;
+        if (lsTypeAndKind.length() > 255) {
+            lsTypeAndKind = lsTypeAndKind.substring(0, 255);
+        }
+        obj.setLsTypeAndKind(lsTypeAndKind);
+    }
+    
+    public void AuthorDataOnDemand.setModifiedBy(Author obj, int index) {
+        String modifiedBy = "modifiedBy_" + index;
+        if (modifiedBy.length() > 255) {
+            modifiedBy = modifiedBy.substring(0, 255);
+        }
+        obj.setModifiedBy(modifiedBy);
+    }
+    
     public void AuthorDataOnDemand.setModifiedDate(Author obj, int index) {
         Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setModifiedDate(modifiedDate);
@@ -96,6 +160,14 @@ privileged aspect AuthorDataOnDemand_Roo_DataOnDemand {
             password = password.substring(0, 255);
         }
         obj.setPassword(password);
+    }
+    
+    public void AuthorDataOnDemand.setRecordedBy(Author obj, int index) {
+        String recordedBy = "recordedBy_" + index;
+        if (recordedBy.length() > 255) {
+            recordedBy = recordedBy.substring(0, 255);
+        }
+        obj.setRecordedBy(recordedBy);
     }
     
     public void AuthorDataOnDemand.setRecordedDate(Author obj, int index) {

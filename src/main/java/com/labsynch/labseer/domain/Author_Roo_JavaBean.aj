@@ -4,7 +4,9 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorLabel;
 import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.AuthorState;
 import java.util.Date;
 import java.util.Set;
 
@@ -50,22 +52,6 @@ privileged aspect Author_Roo_JavaBean {
         this.password = password;
     }
     
-    public Date Author.getRecordedDate() {
-        return this.recordedDate;
-    }
-    
-    public void Author.setRecordedDate(Date recordedDate) {
-        this.recordedDate = recordedDate;
-    }
-    
-    public Date Author.getModifiedDate() {
-        return this.modifiedDate;
-    }
-    
-    public void Author.setModifiedDate(Date modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
-    
     public Date Author.getActivationDate() {
         return this.activationDate;
     }
@@ -104,6 +90,22 @@ privileged aspect Author_Roo_JavaBean {
     
     public void Author.setAuthorRoles(Set<AuthorRole> authorRoles) {
         this.authorRoles = authorRoles;
+    }
+    
+    public Set<AuthorState> Author.getLsStates() {
+        return this.lsStates;
+    }
+    
+    public void Author.setLsStates(Set<AuthorState> lsStates) {
+        this.lsStates = lsStates;
+    }
+    
+    public Set<AuthorLabel> Author.getLsLabels() {
+        return this.lsLabels;
+    }
+    
+    public void Author.setLsLabels(Set<AuthorLabel> lsLabels) {
+        this.lsLabels = lsLabels;
     }
     
 }

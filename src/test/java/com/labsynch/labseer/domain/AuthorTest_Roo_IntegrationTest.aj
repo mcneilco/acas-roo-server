@@ -89,7 +89,7 @@ privileged aspect AuthorTest_Roo_IntegrationTest {
         obj = Author.findAuthor(id);
         boolean modified =  dod.modifyAuthor(obj);
         Integer currentVersion = obj.getVersion();
-        Author merged = obj.merge();
+        Author merged = (Author)obj.merge();
         obj.flush();
         Assert.assertEquals("Identifier of merged object not the same as identifier of original object", merged.getId(), id);
         Assert.assertTrue("Version for 'Author' failed to increment on merge and flush directive", (currentVersion != null && obj.getVersion() > currentVersion) || !modified);
