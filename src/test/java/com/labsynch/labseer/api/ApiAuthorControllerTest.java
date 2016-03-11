@@ -73,6 +73,7 @@ public class ApiAuthorControllerTest {
     }
     
     @Test
+    @Rollback(value=true)
     public void nestedSave() throws Exception{
     	Author author = new Author();
     	author.setRecordedBy("bob");
@@ -81,6 +82,9 @@ public class ApiAuthorControllerTest {
     	author.setEmailAddress("bob@mcneilco.com");
     	author.setFirstName("Bob");
     	author.setLastName("Roberts");
+    	author.setPassword("password");
+    	author.setLsType("default");
+    	author.setLsKind("default");
     	AuthorState authorState = new AuthorState();
     	authorState.setRecordedBy("bob");
     	authorState.setRecordedDate(new Date());
@@ -89,6 +93,8 @@ public class ApiAuthorControllerTest {
     	AuthorValue authorValue = new AuthorValue();
     	authorValue.setLsType("clobValue");
     	authorValue.setLsKind("example module preferences");
+    	authorValue.setRecordedBy("bob");
+    	author.setRecordedDate(new Date());
     	authorValue.setClobValue("{\"testJson\":\"Test\"}");
     	AuthorLabel authorLabel = new AuthorLabel();
     	authorLabel.setLsType("name");
@@ -108,6 +114,8 @@ public class ApiAuthorControllerTest {
     	author.setLsLabels(labels);
     	
     	String json = author.toJson();
+    	//add in password
+    	json = json.replaceFirst("[{]+", "{\"password\":\"secret\",");
     	logger.info(json);
     	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/authors")
     			.contentType(MediaType.APPLICATION_JSON)

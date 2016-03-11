@@ -25,6 +25,8 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.utils.ExcludeNulls;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
@@ -140,7 +142,7 @@ public class Author extends AbstractThing {
 	}
 	
 	public String toJson() {
-        return new JSONSerializer().exclude("*.class", "password").include("authorRoles").serialize(this);
+        return new JSONSerializer().exclude("*.class", "password").include("lsStates.lsValues","authorRoles","lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
 	public static Author fromJsonToAuthor(String json) {
@@ -148,7 +150,7 @@ public class Author extends AbstractThing {
     }
 
 	public static String toJsonArray(Collection<Author> collection) {
-        return new JSONSerializer().exclude("*.class", "password").include("authorRoles").serialize(collection);
+        return new JSONSerializer().exclude("*.class", "password").include("authorRoles","lsLabels","lsStates.lsValues").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
 	public static Collection<Author> fromJsonArrayToAuthors(String json) {

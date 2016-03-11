@@ -255,9 +255,6 @@
         <menu:category id="c_author" z="DETG4XqcVC9sb/BVL/ybUSG8lUM=">
             <menu:item id="i_author_new" messageCode="global_menu_new" url="/authors?form" z="e6WikSiFx46UnQunBmCd54pmrYE="/>
             <menu:item id="i_author_list" messageCode="global_menu_list" url="/authors?page=1&amp;size=${empty param.size ? 10 : param.size}" z="/71/+sYxLDw3jeyTZyEHzZ9CQQQ="/>
-            <menu:item id="fi_author_activationkeyandemailaddress" messageCode="global_menu_find" url="/authors?find=ByActivationKeyAndEmailAddress&amp;form" z="dgxuoGzO3W8UP8TfwWk8eIxUSO8="/>
-            <menu:item id="fi_author_emailaddress" messageCode="global_menu_find" url="/authors?find=ByEmailAddress&amp;form" z="IpLDZFbmjaRzpOMH/1TxEanN5bY="/>
-            <menu:item id="fi_author_username" messageCode="global_menu_find" url="/authors?find=ByUserName&amp;form" z="5HYW0rrXepMBuslnaPQKUc1sxDw="/>
         </menu:category>
         <menu:category id="c_thingpagearchive" z="Poh907U09OYMInXDxCLHjmgu4v8=">
             <menu:item id="i_thingpagearchive_new" messageCode="global_menu_new" url="/thingpagearchives?form" z="DSXfkjU0T0xjJ2VoGdbj00jaelg="/>

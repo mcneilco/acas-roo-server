@@ -90,6 +90,14 @@ public class AuthorState extends AbstractState {
 		return new JSONDeserializer<List<AuthorState>>().use(null, ArrayList.class).use("values", AuthorState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
 	}
 	
+	public String toJson() {
+        return new JSONSerializer().exclude("*.class").include("lsValues").serialize(this);
+    }
+    
+    public static String toJsonArray(Collection<AuthorState> collection) {
+        return new JSONSerializer().exclude("*.class").include("lsValues").serialize(collection);
+    }
+	
 	public static TypedQuery<AuthorState> findAuthorStatesByAuthorIDAndStateTypeKind(Long authorId, 
 			String stateType, 
 			String stateKind) {

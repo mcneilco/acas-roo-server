@@ -32,37 +32,37 @@ public class AuthorValue extends AbstractValue {
     @JoinColumn(name = "author_state_id")
     private AuthorState lsState;
 
-	public Long getStateId() {
-		return this.lsState.getId();
-	}
+//	public Long getStateId() {
+//		return this.lsState.getId();
+//	}
+//	
+//	public boolean getIgnored() {
+//		return this.isIgnored();
+//	}
+//	
+//	public boolean getDeleted() {
+//		return this.isDeleted();
+//	}
+//	
+//	public boolean getPublicData() {
+//		return this.isPublicData();
+//	}
+//	
+//	public String getStateType() {
+//		return this.lsState.getLsType();
+//	}
+//	
+//	public String getStateKind() {
+//		return this.lsState.getLsKind();
+//	}
+//	
+//	public Long getAuthorId() {
+//		return this.lsState.getAuthor().getId();
+//	}
 	
-	public boolean getIgnored() {
-		return this.isIgnored();
-	}
-	
-	public boolean getDeleted() {
-		return this.isDeleted();
-	}
-	
-	public boolean getPublicData() {
-		return this.isPublicData();
-	}
-	
-	public String getStateType() {
-		return this.lsState.getLsType();
-	}
-	
-	public String getStateKind() {
-		return this.lsState.getLsKind();
-	}
-	
-	public Long getAuthorId() {
-		return this.lsState.getAuthor().getId();
-	}
-	
-	public String getAuthorCode() {
-		return this.lsState.getAuthor().getCodeName();
-	}
+//	public String getAuthorCode() {
+//		return this.lsState.getAuthor().getCodeName();
+//	}
 	
 
     public static long countAuthorValues() {
