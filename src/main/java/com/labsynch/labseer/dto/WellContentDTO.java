@@ -41,6 +41,21 @@ public class WellContentDTO {
 			Integer rowIndex,
 			Integer columnIndex,
 			String recordedBy,
+			Date recordedDate
+			){
+		this.containerCodeName = containerCodeName; 
+		this.wellName = wellName;
+		this.rowIndex = rowIndex;
+		this.columnIndex = columnIndex;
+		this.recordedBy = recordedBy;
+		this.recordedDate = recordedDate;
+	}
+	
+	public WellContentDTO(String containerCodeName,
+			String wellName,
+			Integer rowIndex,
+			Integer columnIndex,
+			String recordedBy,
 			Date recordedDate,
 			BigDecimal amount,
 			String amountUnits,

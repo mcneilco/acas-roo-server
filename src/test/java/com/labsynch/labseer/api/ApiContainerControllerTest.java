@@ -1086,12 +1086,13 @@ public class ApiContainerControllerTest {
     public void getWellContent_thousands() throws Exception{
     	List<String> wellCodes = new ArrayList<String>();
     	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
-    	query.setMaxResults(3000);
+    	query.setMaxResults(10000);
     	for (Container container : query.getResultList()){
     		wellCodes.add("\""+container.getCodeName()+"\"");	
     	}
 		String json = wellCodes.toString();
 		logger.info(json);
+		Long before = (new Date()).getTime();
 		Assert.assertFalse(json.equals("{}"));
     	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
     			.contentType(MediaType.APPLICATION_JSON)
@@ -1101,6 +1102,8 @@ public class ApiContainerControllerTest {
     			.andExpect(content().contentType("application/json;charset=utf-8"))
     			.andReturn().getResponse();
     	String responseJson = response.getContentAsString();
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
     	logger.info(responseJson);
     	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
     	int i = 0;

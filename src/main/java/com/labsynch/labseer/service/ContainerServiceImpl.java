@@ -776,7 +776,7 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += " physicalStateValue.codeValue  ";
 		queryString += " )  ";
 		queryString += " from Container as well ";
-		queryString += makeLeftJoinHql("well.lsStates", "statusContentState", "status", "content");
+		queryString += makeInnerJoinHql("well.lsStates", "statusContentState", "status", "content");
 		queryString += makeLeftJoinHql("well.lsLabels", "wellName", "name", "well name");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","amountValue", "numericValue","amount");
 		queryString += makeLeftJoinHql("statusContentState.lsValues","batchCodeValue", "codeValue","batch code");
@@ -785,7 +785,9 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += "where ( well.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "well.codeName", wellCodes);
 		Collection<WellContentDTO> results = new HashSet<WellContentDTO>();
+		logger.debug("Querying for "+wellCodes.size()+" well codeNames");
 		for (Query q : queries){
+			if (logger.isDebugEnabled()) logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 			results.addAll(q.getResultList());
 		}
 		//diff request with results to find codeNames that could not be found
@@ -798,7 +800,31 @@ public class ContainerServiceImpl implements ContainerService {
 			resultMap.put(result.getContainerCodeName(), result);
 		}
 		requestWellCodeNames.removeAll(foundWellCodeNames);
+		logger.debug(requestWellCodeNames.size()+" not found with content");
 		if (!requestWellCodeNames.isEmpty()){
+			//smaller query to look for empty wells that still do exist
+			List<String> notFoundWellCodes = new ArrayList<String>();
+			notFoundWellCodes.addAll(requestWellCodeNames);
+			String emptyWellsQuery = "SELECT new com.labsynch.labseer.dto.WellContentDTO( ";
+			emptyWellsQuery += "well.codeName, ";
+			emptyWellsQuery += "wellName.labelText, ";
+			emptyWellsQuery += "well.rowIndex, well.columnIndex, ";
+			emptyWellsQuery += "well.recordedBy, well.recordedDate ";
+			emptyWellsQuery += " )  ";
+			emptyWellsQuery += " from Container as well ";
+			emptyWellsQuery += makeLeftJoinHql("well.lsLabels", "wellName", "name", "well name");
+			emptyWellsQuery += "where ( well.ignored <> true ) and ";
+			Collection<Query> emptyWellQueries = SimpleUtil.splitHqlInClause(em, emptyWellsQuery, "well.codeName", notFoundWellCodes);
+			Collection<WellContentDTO> emptyWellResults = new HashSet<WellContentDTO>();
+			for (Query q : emptyWellQueries){
+				emptyWellResults.addAll(q.getResultList());
+			}
+			for (WellContentDTO result : emptyWellResults){
+				foundWellCodeNames.add(result.getContainerCodeName());
+				resultMap.put(result.getContainerCodeName(), result);
+			}
+			requestWellCodeNames.removeAll(foundWellCodeNames);
+			logger.debug(emptyWellResults.size()+" found with no content, "+requestWellCodeNames.size()+" not found at all");
 			for (String notFoundCodeName : requestWellCodeNames){
 				WellContentDTO notFoundDTO = new WellContentDTO();
 				notFoundDTO.setContainerCodeName(notFoundCodeName);
