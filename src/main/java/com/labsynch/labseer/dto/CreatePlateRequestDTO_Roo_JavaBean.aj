@@ -33,12 +33,12 @@ privileged aspect CreatePlateRequestDTO_Roo_JavaBean {
         this.template = template;
     }
     
-    public String CreatePlateRequestDTO.getSupplier() {
-        return this.supplier;
+    public String CreatePlateRequestDTO.getDescription() {
+        return this.description;
     }
     
-    public void CreatePlateRequestDTO.setSupplier(String supplier) {
-        this.supplier = supplier;
+    public void CreatePlateRequestDTO.setDescription(String description) {
+        this.description = description;
     }
     
     public String CreatePlateRequestDTO.getRecordedBy() {

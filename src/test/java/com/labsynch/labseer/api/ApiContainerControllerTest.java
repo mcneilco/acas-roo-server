@@ -36,6 +36,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
+import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
@@ -544,6 +545,7 @@ public class ApiContainerControllerTest {
 		plateRequest.setDefinition(definition.getCodeName());
 		plateRequest.setBarcode("TESTBARCODE-123");
 		plateRequest.setRecordedBy("acas");
+		plateRequest.setDescription("test description");
 		String json = plateRequest.toJson();
 		logger.info(json);
 		Assert.assertFalse(json.equals("{}"));
@@ -564,6 +566,20 @@ public class ApiContainerControllerTest {
     		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
     	}
     	logger.info(Arrays.deepToString(plateLayout));
+    	Container newPlate = Container.findContainerByCodeNameEquals(result.getCodeName());
+    	Assert.assertFalse(newPlate.getLsStates().isEmpty());
+    	Assert.assertEquals(1, newPlate.getLsStates().size());
+    	for (ContainerState state : newPlate.getLsStates()){
+    		Assert.assertFalse(state.getLsValues().isEmpty());
+    		Assert.assertEquals("metadata", state.getLsType());
+    		Assert.assertEquals("information", state.getLsKind());
+    		Assert.assertEquals(1, state.getLsValues().size());
+    		for (ContainerValue value : state.getLsValues()){
+    			Assert.assertEquals("stringValue", value.getLsType());
+        		Assert.assertEquals("description", value.getLsKind());
+        		Assert.assertEquals(value.getStringValue(), "test description");
+    		}
+    	}
 	}
 	
 	@Test

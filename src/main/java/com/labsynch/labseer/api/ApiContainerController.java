@@ -538,6 +538,7 @@ public class ApiContainerController {
         	PlateStubDTO result = containerService.createPlate(plateRequest);
         	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
         } catch (Exception e){
+        	logger.error("Uncaught error in createPlate service", e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -20,7 +20,7 @@ public class CreatePlateRequestDTO {
 	
 	private String template;
 	
-	private String supplier;
+	private String description;
 	
 	private String recordedBy;
 	

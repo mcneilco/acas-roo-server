@@ -1107,6 +1107,28 @@ public class ContainerServiceImpl implements ContainerService {
 		plateBarcode.setLsTransaction(plate.getLsTransaction());
 		plateBarcode.setContainer(plate);
 		plate.getLsLabels().add(plateBarcode);
+		ContainerState metadataState = new ContainerState();
+		metadataState.setRecordedBy(plate.getRecordedBy());
+		metadataState.setRecordedDate(plate.getRecordedDate());
+		metadataState.setLsType("metadata");
+		metadataState.setLsKind("information");
+		metadataState.setLsTransaction(plate.getLsTransaction());
+		metadataState.setContainer(plate);
+		if(plateRequest.getDescription() != null){
+			ContainerValue description = new ContainerValue();
+			description.setRecordedBy(plate.getRecordedBy());
+			description.setRecordedDate(plate.getRecordedDate());
+			description.setLsType("stringValue");
+			description.setLsKind("description");
+			description.setStringValue(plateRequest.getDescription());
+			description.setLsTransaction(plate.getLsTransaction());
+			description.setLsState(metadataState);
+			Set<ContainerValue> values = new HashSet<ContainerValue>();
+			values.add(description);
+			metadataState.setLsValues(values);
+		}
+		plate.getLsStates().add(metadataState);
+		plate.getLsLabels().add(plateBarcode);
 		plate.persist();
 		ItxContainerContainer defines = makeItxContainerContainer("defines", definition, plate, plateRequest.getRecordedBy());
 		defines.persist();
