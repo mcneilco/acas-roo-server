@@ -266,12 +266,13 @@ public class AnalysisGroupValue extends AbstractValue {
 	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTO(Set<java.lang.String> batchCodeList) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
 				+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
-				+ "agv2.codeValue AS testedLot, tl.labelText as geneId  " 
-				+ " ) FROM AnalysisGroup ag, LsThing thing " 
+				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  " 
+				+ " ) FROM AnalysisGroup ag"
+//				+ ", LsThing thing " 
 				+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
 				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
 				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-				+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true " 
+//				+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true " 
 				+ "JOIN ag.experiments expt with expt.ignored = false " 
 				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 				+ "WHERE ag.ignored = false AND thing.codeName = agv2.codeValue AND agv2.codeValue IN (:batchCodeList) ";
@@ -290,13 +291,13 @@ public class AnalysisGroupValue extends AbstractValue {
 			Set<String> batchCodeList, boolean publicData) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
 				+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
-				+ "agv2.codeValue AS testedLot, tl.labelText as geneId  " 
+				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId  " 
 				+ " ) FROM AnalysisGroup ag " 
 				+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
 				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
 				+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-				+ "LEFT OUTER JOIN LsThing thing with thing.codeName = agv2.codeValue "
-				+ "LEFT OUTER JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true  " 
+//				+ "LEFT OUTER JOIN LsThing thing with thing.codeName = agv2.codeValue "
+//				+ "LEFT OUTER JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.ignored = false and tl.preferred = true  " 
 				+ "JOIN ag.experiments expt with expt.ignored = false " 
 				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 				+ "WHERE ag.ignored = false AND agv2.codeValue IN (:batchCodeList) AND agv.publicData = :publicData  ";
@@ -330,15 +331,13 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ ", agv3.numericValue as testedTime "
 				+ ", agv3.unitKind as testedTimeUnit "
 				+ " ) FROM AnalysisGroup ag "
-		+ "JOIN ag.lsStates ags with ags.ignored = false ags.lsType in ('data', 'metadata') " 
-				//ags.lsType = 'data' and 
+		+ "JOIN ag.lsStates ags with ags.ignored = false AND ags.lsType in ('data', 'metadata') " 
 		+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false "
 		+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
 		+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
 //		+ "LEFT OUTER JOIN LsThingLabel tl with agv2.codeValue = tl.labelText and tl.ignored = false and tl.preferred = true "
 //		+ "LEFT OUTER JOIN tl.lsThing thing " 
 		+ "JOIN ag.experiments expt with expt.ignored = false " 
-		+ "JOIN expt.protocol prot with prot.ignored = false "
 		+ "JOIN expt.protocol prot with prot.ignored = false "
         + "JOIN prot.lsLabels protLabel with protLabel.ignored = false "
 		+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
@@ -478,11 +477,12 @@ public class AnalysisGroupValue extends AbstractValue {
 	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOByExperiments(Set<java.lang.String> experimentCodeList) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
 	+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, " 
-				+ "agv2.codeValue AS testedLot, tl.labelText as geneId " + " ) FROM AnalysisGroup ag, LsThing thing " 
+				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId " + " ) FROM AnalysisGroup ag"
+//						+ ", LsThing thing " 
 	+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
 				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
 	+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-				+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.ignored = false and tl.preferred = true " 
+//				+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.ignored = false and tl.preferred = true " 
 				+ "JOIN ag.experiments expt with expt.ignored = false " 
 	+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 				+ "WHERE ag.ignored = false " 
@@ -498,11 +498,12 @@ public class AnalysisGroupValue extends AbstractValue {
 	public static TypedQuery<com.labsynch.labseer.dto.AnalysisGroupValueDTO> findAnalysisGroupValueDTOByExperiments(Set<java.lang.String> experimentCodeList, boolean publicData) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, el.labelText as prefName, " 
 	+ "agv.lsType as lsType, agv.lsKind as lsKind, " + "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.fileValue as fileValue, " 
-				+ "agv2.codeValue AS testedLot, tl.labelText as geneId " + " ) FROM AnalysisGroup ag, LsThing thing " 
+				+ "agv2.codeValue AS testedLot, agv2.codeValue as geneId " + " ) FROM AnalysisGroup ag"
+//						+ ", LsThing thing " 
 	+ "JOIN ag.lsStates ags with ags.lsType = 'data' and ags.ignored = false " 
 				+ "JOIN ags.lsValues agv with agv.lsKind != 'tested concentration' AND agv.lsKind != 'batch code' AND agv.lsKind != 'time' and agv.ignored = false " 
 	+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false " 
-				+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.lsKind = 'Entrez Gene ID' and tl.ignored = false and tl.preferred = true " 
+//				+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.lsKind = 'Entrez Gene ID' and tl.ignored = false and tl.preferred = true " 
 	+ "JOIN ag.experiments expt with expt.ignored = false " + "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 				+ "WHERE ag.ignored = false " + "AND thing.codeName = agv2.codeValue AND agv.publicData = :publicData " + "AND expt.codeName IN  (:experimentCodeList) ";
 		logger.debug("query sql: " + sqlQuery);
@@ -530,11 +531,13 @@ public class AnalysisGroupValue extends AbstractValue {
 
 	public static TypedQuery<com.labsynch.labseer.dto.ValueTypeKindDTO> findAnalysisGroupValueTypeKindDTO(String exptCode) {
 		String sqlQuery = "select new com.labsynch.labseer.dto.ValueTypeKindDTO(agv.lsType as lsType, agv.lsKind as lsKind) " 
-	+ "FROM AnalysisGroupValue agv " + "join agv.lsState ags " 
-				+ "join ags.analysisGroup ag " 
-	+ "join ag.experiments exp " + "where exp.codeName = :exptCode " 
-				+ "AND agv.lsType IN ('stringValue', 'numericValue') " 
-	+ "and ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false " 
+				+ "FROM AnalysisGroupValue agv " 
+				+ "JOIN agv.lsState ags " 
+				+ "JOIN ags.analysisGroup ag " 
+				+ "JOIN ag.experiments exp " 
+				+ "where exp.codeName = :exptCode " 
+				+ "AND agv.lsType IN ('stringValue', 'numericValue', 'dateValue', 'fileValue', 'urlValue') " 
+				+ "AND ags.lsType = 'data' and agv.ignored = false and ags.ignored = false and ag.ignored = false " 
 				+ "group by agv.lsType, agv.lsKind";
 		EntityManager em = entityManager();
 		TypedQuery<ValueTypeKindDTO> q = em.createQuery(sqlQuery, ValueTypeKindDTO.class);

@@ -74,11 +74,21 @@
         <property name="maxWait" value="10000"/>
         <property name="validationQuery" value="${server.service.persistence.jdbc.validation.query}"/>
     </bean>
-    <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
+    
+        
+    <!-- Flyway configuration -->
+	<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+		<property name="baselineOnMigrate" value="false" />
+		<property name="locations" value="${flyway.location}" />
+		<property name="schemas" value="${flyway.schema}" />
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager" depends-on="flyway">
         <property name="entityManagerFactory" ref="entityManagerFactory"/>
     </bean>
     <tx:annotation-driven mode="aspectj" transaction-manager="transactionManager"/>
-    <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">
+    <bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory" depends-on="flyway">
         <property name="persistenceUnitName" value="persistenceUnit"/>
         <property name="dataSource" ref="dataSource"/>
     </bean>

@@ -40,7 +40,6 @@ public class DDictKind {
     
     @Column(unique = true)
     @Size(max = 255)
-	@org.hibernate.annotations.Index(name="DD_KIND_TK_IDX")
 	private String lsTypeAndKind;
     
     @Size(max = 512)

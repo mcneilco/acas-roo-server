@@ -1,5 +1,7 @@
 package com.labsynch.labseer.dto;
 
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,6 +16,7 @@ import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import java.math.BigDecimal;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
@@ -109,7 +112,9 @@ public class AnalysisGroupValueDTO {
 			} else if (lsType.equals("fileValue")){
 				this.result=fileValue;
 			} else if (lsType.equals("dateValue")){
-				this.result=dateValue.toString();
+				Format formatter = new SimpleDateFormat("yyyy-MM-dd");
+				String dateString = formatter.format(dateValue);
+				this.result=dateString;
 			}
 		}
 

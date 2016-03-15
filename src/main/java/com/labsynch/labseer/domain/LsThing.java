@@ -617,5 +617,61 @@ public class LsThing extends AbstractThing {
         return q;
 	}
 
+	public LsThingLabel pickBestCorpName() {
+		Collection<LsThingLabel> labels = this.getLsLabels();
+		if (labels.isEmpty()) return null;
+		Collection<LsThingLabel> corpNames = new HashSet<LsThingLabel>();
+		for (LsThingLabel label : labels){
+			if (label.getLsType().equals("corpName")) corpNames.add(label);
+		}
+		Collection<LsThingLabel> preferredCorpNameLabels = new HashSet<LsThingLabel>();
+		for (LsThingLabel label : corpNames){
+			if (label.isPreferred()) preferredCorpNameLabels.add(label);
+		}
+		if (!preferredCorpNameLabels.isEmpty()){
+			LsThingLabel bestLabel = preferredCorpNameLabels.iterator().next();
+			for (LsThingLabel preferredLabel : preferredCorpNameLabels){
+				if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+			}
+			return bestLabel;
+		}else if (!corpNames.isEmpty()){
+			LsThingLabel bestLabel = corpNames.iterator().next();
+			for (LsThingLabel preferredLabel : corpNames){
+				if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+			}
+			return bestLabel;
+		}else{
+			return null;
+		}
+	}
+	
+	public LsThingLabel pickBestName() {
+		Collection<LsThingLabel> labels = this.getLsLabels();
+		if (labels.isEmpty()) return null;
+		Collection<LsThingLabel> names = new HashSet<LsThingLabel>();
+		for (LsThingLabel label : labels){
+			if (label.getLsType().equals("name")) names.add(label);
+		}
+		Collection<LsThingLabel> preferredNameLabels = new HashSet<LsThingLabel>();
+		for (LsThingLabel label : names){
+			if (label.isPreferred()) preferredNameLabels.add(label);
+		}
+		if (!preferredNameLabels.isEmpty()){
+			LsThingLabel bestLabel = preferredNameLabels.iterator().next();
+			for (LsThingLabel preferredLabel : preferredNameLabels){
+				if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+			}
+			return bestLabel;
+		}else if (!names.isEmpty()){
+			LsThingLabel bestLabel = names.iterator().next();
+			for (LsThingLabel preferredLabel : names){
+				if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+			}
+			return bestLabel;
+		}else{
+			return null;
+		}
+	}
+
 
 }

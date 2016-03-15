@@ -434,5 +434,62 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		List<AutoLabelDTO> labels = getAutoLabels(lsTypeAndKind, labelTypeAndKind, numberOfLabels );
 		return labels.get(0).getAutoLabel();
 	}
+	
+	@Override
+	public AutoLabelDTO getLastLabel(String thingTypeAndKind, String labelTypeAndKind) throws NonUniqueResultException {
+		List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
+		LabelSequence labelSequence;
+		if(labelSequences.size() == 0) {
+			logger.info("Label sequence does not exist! Create new Sequence if possible." + thingTypeAndKind + "  " + labelTypeAndKind);
+			labelSequence = createLabelSequence(thingTypeAndKind, labelTypeAndKind);
+			if (labelSequence == null){
+				throw new NoResultException();
+			}
+		} else if (labelSequences.size() > 1) {
+			logger.error("found duplicate sequences!!!");
+			throw new NonUniqueResultException();
+		} else {
+			labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	
+		}
+		
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+
+		long currentLastNumber = labelSequence.getLatestNumber();
+
+		String formatLabelNumber = "%";
+		formatLabelNumber = formatLabelNumber.concat("0").concat(labelSequence.getDigits().toString()).concat("d");
+		logger.debug("format corpNumber: " + formatLabelNumber);
+		String label = labelSequence.getLabelPrefix().concat(labelSequence.getLabelSeparator()).concat(String.format(formatLabelNumber, currentLastNumber));
+		logger.debug("last label: " + label);
+		AutoLabelDTO autoLabel = new AutoLabelDTO();
+		autoLabel.setAutoLabel(label);
+		
+		return autoLabel;		
+	}
+	
+	@Override
+	public void decrementLabelSequence(String thingTypeAndKind, String labelTypeAndKind) throws NonUniqueResultException {
+		List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList();
+		LabelSequence labelSequence;
+		if(labelSequences.size() == 0) {
+			logger.info("Label sequence does not exist! Create new Sequence if possible." + thingTypeAndKind + "  " + labelTypeAndKind);
+			labelSequence = createLabelSequence(thingTypeAndKind, labelTypeAndKind);
+			if (labelSequence == null){
+				throw new NoResultException();
+			}
+		} else if (labelSequences.size() > 1) {
+			logger.error("found duplicate sequences!!!");
+			throw new NonUniqueResultException();
+		} else {
+			labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	
+		}
+		
+		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
+
+		long currentLastNumber = labelSequence.getLatestNumber();
+		labelSequence.setLatestNumber(labelSequence.getLatestNumber() - 1);
+		labelSequence.setModifiedDate(new Date());
+		labelSequence.merge();
+	}
 
 }
