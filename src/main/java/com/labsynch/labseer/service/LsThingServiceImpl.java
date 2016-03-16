@@ -1007,7 +1007,7 @@ public class LsThingServiceImpl implements LsThingService {
 			predicateListByTerm.add(scientistPredicate);
 			
 			//lskind
-			Predicate lsKindPredicate = criteriaBuilder.equal(lsThingRoot.<String>get("lsKind"), term);
+			Predicate lsKindPredicate = criteriaBuilder.like(criteriaBuilder.lower(lsThingRoot.<String>get("lsKind")), "%"+term.toLowerCase()+"%");
 			predicateListByTerm.add(lsKindPredicate);
 			
 			//date
