@@ -73,11 +73,10 @@ public abstract class AbstractValue {
 	@DateTimeFormat(style = "MM")
 	private Date dateValue;
 
-    @Lob
+	@Column(columnDefinition="text")
     @Basic(fetch = FetchType.LAZY)
     private String clobValue;
     
-    @Lob
     @Basic(fetch = FetchType.LAZY)
     private byte[] blobValue;
     
