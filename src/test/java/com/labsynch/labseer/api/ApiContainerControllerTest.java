@@ -1,7 +1,10 @@
 package com.labsynch.labseer.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -41,22 +44,17 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.ItxSubjectContainer;
-import com.labsynch.labseer.domain.LabelSequence;
-import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.dto.CmpdRegBatchCodeDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
-import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
+import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
-import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
@@ -64,8 +62,8 @@ import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.dto.WellStubDTO;
-import com.labsynch.labseer.service.ContainerService;
 import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.service.ContainerService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -1176,6 +1174,110 @@ public class ApiContainerControllerTest {
     		Assert.assertNotNull(result.getRequestCodeName());
     		if (result.getRequestCodeName().equals("INVALID-CODENAME")) Assert.assertTrue(result.getWellCodeNames().isEmpty());
     		else Assert.assertFalse(result.getWellCodeNames().isEmpty());
+    	}
+    }
+	
+	@Test
+    @Transactional
+    @Rollback(value=true)
+    public void changeLocation_success() throws Exception{
+    	Collection<ContainerLocationDTO> requests = new HashSet<ContainerLocationDTO>();
+		TypedQuery<Container> containerQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+		containerQuery.setMaxResults(5);
+		List<Container> containers = containerQuery.getResultList();
+		Assert.assertEquals(5, containers.size());
+		TypedQuery<Container> locationQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("location","default");
+		locationQuery.setMaxResults(5);
+		List<Container> locations = locationQuery.getResultList();
+		Assert.assertEquals(5, locations.size());
+		int i = 0;
+		while (i<5){
+			ContainerLocationDTO request = new ContainerLocationDTO();
+			request.setContainerCodeName(containers.get(i).getCodeName());
+			request.setLocationCodeName(locations.get(i).getCodeName());
+			request.setModifiedBy("bob");
+			request.setModifiedDate(new Date());
+			requests.add(request);
+			i++;
+		}
+		String json = ContainerLocationDTO.toJsonArray(requests);
+		logger.info(json);
+		Assert.assertFalse(json.equals("[{}]"));
+    	ResultActions response = this.mockMvc.perform(post("/api/v1/containers/moveToLocation")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isNoContent());
+    	List<String> containerCodeNames = new ArrayList<String>();
+    	List<String> locationCodeNames = new ArrayList<String>();
+    	for (ContainerLocationDTO request : requests){
+    		locationCodeNames.add("\""+request.getLocationCodeName()+"\"");
+    		containerCodeNames.add("\""+request.getContainerCodeName()+"\"");
+    	}
+    	MockHttpServletResponse checkResponse = this.mockMvc.perform(post("/api/v1/containers/getContainersInLocation")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(locationCodeNames.toString()))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse();
+		String responseJson = checkResponse.getContentAsString();
+		logger.info(responseJson);
+    	Collection<ContainerLocationDTO> checkResults = ContainerLocationDTO.fromJsonArrayToContainerLocatioes(responseJson);
+    	for (ContainerLocationDTO checkResult : checkResults){
+    		if (containerCodeNames.contains("\""+checkResult.getContainerCodeName()+"\"")){
+    			Assert.assertEquals(locationCodeNames.get(containerCodeNames.indexOf("\""+checkResult.getContainerCodeName()+"\"")).replaceAll("\"", ""), checkResult.getLocationCodeName());
+    			logger.info("container: "+checkResult.getContainerCodeName()+" location: "+checkResult.getLocationCodeName());
+    		}
+    	}
+    }
+	
+	@Test
+    @Transactional
+    public void changeLocation_errors() throws Exception{
+    	Collection<ContainerLocationDTO> requests = new ArrayList<ContainerLocationDTO>();
+		TypedQuery<Container> containerQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+		containerQuery.setMaxResults(6);
+		List<Container> containers = containerQuery.getResultList();
+		Assert.assertEquals(6, containers.size());
+		TypedQuery<Container> locationQuery = Container.findContainersByLsTypeEqualsAndLsKindEquals("location","default");
+		locationQuery.setMaxResults(6);
+		List<Container> locations = locationQuery.getResultList();
+		Assert.assertEquals(6, locations.size());
+		int i = 0;
+		while (i<6){
+			ContainerLocationDTO request = new ContainerLocationDTO();
+			request.setContainerCodeName(containers.get(i).getCodeName());
+			request.setLocationCodeName(locations.get(i).getCodeName());
+			request.setModifiedBy("bob");
+			request.setModifiedDate(new Date());
+			//now we add in errors
+			if (i==0) request.setContainerCodeName("BAD-CODENAME");
+			if (i==1) request.setLocationCodeName("BAD-CODENAME");
+			if (i==2) request.setLocationCodeName(containers.get(i).getCodeName());
+			if (i==3) request.setModifiedBy(null);
+			if (i==4) request.setModifiedDate(null);
+			requests.add(request);
+			i++;
+		}
+		String json = ContainerLocationDTO.toJsonArray(requests);
+		logger.info(json);
+		Assert.assertFalse(json.equals("[{}]"));
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/moveToLocation")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isBadRequest())
+    			.andReturn().getResponse();
+		String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ContainerLocationDTO> results = ContainerLocationDTO.fromJsonArrayToContainerLocatioes(responseJson);
+    	Assert.assertEquals(6, results.size());
+    	i=0;
+    	for (ContainerLocationDTO result : results){
+    		if (i!=5) Assert.assertEquals("error", result.getLevel());
+    		logger.error(result.getMessage());
+    		if (i==5) Assert.assertNull(result.getLevel());
+    		i++;
     	}
     }
     

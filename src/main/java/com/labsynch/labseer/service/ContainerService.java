@@ -86,6 +86,9 @@ public interface ContainerService {
 
 	Collection<ContainerWellCodeDTO> getWellCodesByContainerCodes(
 			List<String> codeNames);
+
+	Collection<ContainerLocationDTO> moveToLocation(
+			Collection<ContainerLocationDTO> requests);
 	
 	
 }

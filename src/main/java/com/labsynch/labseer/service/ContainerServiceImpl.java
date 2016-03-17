@@ -42,12 +42,11 @@ import com.labsynch.labseer.domain.ItxContainerContainerValue;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
-import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
-import com.labsynch.labseer.dto.ContainerWellCodeDTO;
-import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
+import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
@@ -1630,6 +1629,63 @@ public class ContainerServiceImpl implements ContainerService {
 			sortedResults.add(result);
 		}
 		return sortedResults;
+	}
+
+	@Override
+	public Collection<ContainerLocationDTO> moveToLocation(
+			Collection<ContainerLocationDTO> requests) {
+		for (ContainerLocationDTO request : requests){
+			//verify modifiedBy and modifiedDate are provided
+			if (request.getModifiedBy() == null){
+				request.setLevel("error");
+				request.setMessage("modifiedBy must be provided");
+				continue;
+			}
+			if (request.getModifiedDate() == null){
+				request.setLevel("error");
+				request.setMessage("modifiedDate must be provided");
+				continue;
+			}
+			Container container;
+			try{
+				container = Container.findContainerByCodeNameEquals(request.getContainerCodeName());
+			}catch (EmptyResultDataAccessException e){
+				request.setLevel("error");
+				request.setMessage("containerCodeName not found");
+				continue;
+			}
+			Container location;
+			try{
+				location = Container.findContainerByCodeNameEquals(request.getLocationCodeName());
+			}catch (EmptyResultDataAccessException e){
+				request.setLevel("error");
+				request.setMessage("locationCodeName not found");
+				continue;
+			}
+			if (!location.getLsType().equals("location")){
+				request.setLevel("error");
+				request.setMessage("locationCodeName not a location");
+				continue;
+			}
+			//container and location found, and location verified to be "location" type. Changing interactions.
+			Collection<ItxContainerContainer> oldMovedToItxs = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals("moved to", container).getResultList();
+			for (ItxContainerContainer oldMovedToItx : oldMovedToItxs){
+				oldMovedToItx.setIgnored(true);
+				oldMovedToItx.setModifiedBy(request.getModifiedBy());
+				oldMovedToItx.setModifiedDate(request.getModifiedDate());
+				oldMovedToItx.merge();
+			}
+			//create new "moved to" interaction
+			ItxContainerContainer newMovedToItx = new ItxContainerContainer();
+			newMovedToItx.setLsType("moved to");
+			newMovedToItx.setLsKind(container.getLsType()+"_"+location.getLsType());
+			newMovedToItx.setRecordedBy(request.getModifiedBy());
+			newMovedToItx.setRecordedDate(request.getModifiedDate());
+			newMovedToItx.setFirstContainer(container);
+			newMovedToItx.setSecondContainer(location);
+			newMovedToItx.persist();
+		}
+		return requests;
 	}
 
 

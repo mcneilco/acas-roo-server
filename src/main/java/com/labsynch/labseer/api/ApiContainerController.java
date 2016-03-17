@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +23,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
-import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
-import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
@@ -650,6 +646,27 @@ public class ApiContainerController {
         	return new ResponseEntity<String>(ContainerWellCodeDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
         } catch (Exception e){
         	logger.error("Uncaught error in getWellCodesByContainerCodes",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/moveToLocation", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> moveToLocation(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<ContainerLocationDTO> requests = ContainerLocationDTO.fromJsonArrayToContainerLocatioes(json);
+        	Collection<ContainerLocationDTO> results = containerService.moveToLocation(requests);
+        	boolean success = true;
+        	for (ContainerLocationDTO result: results){
+        		if (result.getLevel() != null) success = false;
+        	}
+        	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
+        	else return new ResponseEntity<String>(ContainerLocationDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+        	logger.error("Uncaught error in moveToLocation",e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

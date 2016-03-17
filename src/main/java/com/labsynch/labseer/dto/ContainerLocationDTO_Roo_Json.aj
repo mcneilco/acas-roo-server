@@ -5,23 +5,14 @@ package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 privileged aspect ContainerLocationDTO_Roo_Json {
     
-    public String ContainerLocationDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
-    }
-    
     public static ContainerLocationDTO ContainerLocationDTO.fromJsonToContainerLocationDTO(String json) {
         return new JSONDeserializer<ContainerLocationDTO>().use(null, ContainerLocationDTO.class).deserialize(json);
-    }
-    
-    public static String ContainerLocationDTO.toJsonArray(Collection<ContainerLocationDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
     }
     
     public static Collection<ContainerLocationDTO> ContainerLocationDTO.fromJsonArrayToContainerLocatioes(String json) {
