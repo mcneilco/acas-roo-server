@@ -4,6 +4,7 @@
 package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import java.util.Date;
 
 privileged aspect ContainerLocationDTO_Roo_JavaBean {
     
@@ -29,6 +30,38 @@ privileged aspect ContainerLocationDTO_Roo_JavaBean {
     
     public void ContainerLocationDTO.setContainerBarcode(String containerBarcode) {
         this.containerBarcode = containerBarcode;
+    }
+    
+    public String ContainerLocationDTO.getLevel() {
+        return this.level;
+    }
+    
+    public void ContainerLocationDTO.setLevel(String level) {
+        this.level = level;
+    }
+    
+    public String ContainerLocationDTO.getMessage() {
+        return this.message;
+    }
+    
+    public void ContainerLocationDTO.setMessage(String message) {
+        this.message = message;
+    }
+    
+    public String ContainerLocationDTO.getModifiedBy() {
+        return this.modifiedBy;
+    }
+    
+    public void ContainerLocationDTO.setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+    
+    public Date ContainerLocationDTO.getModifiedDate() {
+        return this.modifiedDate;
+    }
+    
+    public void ContainerLocationDTO.setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
     
 }
