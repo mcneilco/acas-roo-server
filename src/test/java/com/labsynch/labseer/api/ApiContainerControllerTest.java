@@ -1280,6 +1280,45 @@ public class ApiContainerControllerTest {
     		i++;
     	}
     }
+	
+	@Test
+    @Transactional
+    public void updateWellContent_speedTest() throws Exception{
+    	List<String> wellCodes = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+    	query.setMaxResults(1200);
+    	for (Container container : query.getResultList()){
+    		wellCodes.add("\""+container.getCodeName()+"\"");	
+    	}
+		String json = wellCodes.toString();
+		logger.info(json);
+		Long before = (new Date()).getTime();
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+		Long after = (new Date()).getTime();
+		logger.info("ms elapsed: "+ String.valueOf(after-before));
+    	logger.info(responseJson);
+    	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
+    	for (WellContentDTO result : results){
+    		result.setRecordedBy("bob");
+    		result.setRecordedDate(new Date());
+    	}
+    	json = WellContentDTO.toJsonArray(results);
+    	MockHttpServletResponse response2 = this.mockMvc.perform(post("/api/v1/containers/updateWellContent")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    }
     
 
 }

@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -7,6 +8,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerLabel;
+import com.labsynch.labseer.domain.ContainerState;
+import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
@@ -74,8 +79,8 @@ public interface ContainerService {
 
 	Collection<WellContentDTO> getWellContentByPlateBarcode(String plateBarcode);
 
-	Collection<ContainerErrorMessageDTO> updateWellStatus(
-			Collection<WellContentDTO> wellsToUpdate);
+	Collection<ContainerErrorMessageDTO> updateWellContent(
+			Collection<WellContentDTO> wellsToUpdate) throws Exception;
 
 	PlateStubDTO getPlateTypeByPlateBarcode(String plateBarcode);
 
@@ -89,6 +94,24 @@ public interface ContainerService {
 
 	Collection<ContainerLocationDTO> moveToLocation(
 			Collection<ContainerLocationDTO> requests);
+
+	List<Long> insertContainerStates(List<ContainerState> states)
+			throws SQLException;
+
+	void ignoreContainerStates(List<ContainerState> states)
+			throws SQLException;
+
+	List<Long> insertContainerValues(List<ContainerValue> values)
+			throws SQLException;
+
+	List<Long> insertContainers(List<Container> containers) throws SQLException;
+
+	List<Long> insertContainerLabels(List<ContainerLabel> labels)
+			throws SQLException;
+
+	List<Long> insertItxContainerContainers(
+			List<ItxContainerContainer> itxContainerContainers)
+			throws SQLException;
 	
 	
 }

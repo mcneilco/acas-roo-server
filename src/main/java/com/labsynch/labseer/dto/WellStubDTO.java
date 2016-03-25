@@ -3,6 +3,7 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -42,6 +43,19 @@ public class WellStubDTO {
 			String wellName = ContainerLabel.pickBestLabel(well.getLsLabels()).getLabelText();
 			WellStubDTO wellStub = new WellStubDTO(wellName, well.getCodeName(), well.getRowIndex(), well.getColumnIndex());
 			wellStubs.add(wellStub);
+		}
+		return wellStubs;
+	}
+	
+	public static Collection<WellStubDTO> convertToWellStubDTOs(
+			List<Container> wells, List<ContainerLabel> wellNames) {
+		Collection<WellStubDTO> wellStubs = new ArrayList<WellStubDTO>();
+		int i = 0;
+		for (Container well : wells){
+			String wellName = wellNames.get(i).getLabelText();
+			WellStubDTO wellStub = new WellStubDTO(wellName, well.getCodeName(), well.getRowIndex(), well.getColumnIndex());
+			wellStubs.add(wellStub);
+			i++;
 		}
 		return wellStubs;
 	}
