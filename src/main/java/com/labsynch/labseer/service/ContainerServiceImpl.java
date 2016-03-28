@@ -4,6 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -24,11 +28,18 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.RowMapperResultSetExtractor;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,6 +85,14 @@ public class ContainerServiceImpl implements ContainerService {
 	
 	@Autowired
 	private AutoLabelService autoLabelService;
+	
+	private JdbcTemplate jdbcTemplate;
+	
+	private DataSource dataSource;
+	
+	public void setDataSource(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 	
 	@Override
 	public Collection<Container> saveLsContainersFile(String jsonFile){
@@ -1155,22 +1174,25 @@ public class ContainerServiceImpl implements ContainerService {
 		plate.getLsStates().add(metadataState);
 		plate.getLsLabels().add(plateBarcode);
 		plate.persist();
-		ItxContainerContainer defines = makeItxContainerContainer("defines", definition, plate, plateRequest.getRecordedBy());
+		ItxContainerContainer defines = makeItxContainerContainer("defines", definition, plate, plateRequest.getRecordedBy(), lsTransaction.getId());
 		defines.persist();
+		plate.flush();
 		try{
-			Collection<Container> wells = createWellsFromDefinition(plate, definition);
+			Map<String, List<?>> wellsAndNames = createWellsFromDefinition(plate, definition);
+			List<Container> wells = (List<Container>)wellsAndNames.get("wells");
+			List<ContainerLabel> wellNames = (List<ContainerLabel>) wellsAndNames.get("wells");
 			//fill in recorded by for all wells to update
 			if (plateRequest.getWells() != null && !plateRequest.getWells().isEmpty()){
 				for (WellContentDTO wellDTO: plateRequest.getWells()){
 					if (wellDTO.getRecordedBy() == null) wellDTO.setRecordedBy(plate.getRecordedBy());
 				}
-				updateNewWellsByWellName(wells, plateRequest.getWells());
+				updateNewWellsByWellName(wells, wellNames, plateRequest.getWells());
 			}
 			//TODO: do something with templates
 			PlateStubDTO result = new PlateStubDTO();
 			result.setBarcode(plateRequest.getBarcode());
 			result.setCodeName(plate.getCodeName());
-			Collection<WellStubDTO> wellStubs = WellStubDTO.convertToWellStubDTOs(wells);
+			Collection<WellStubDTO> wellStubs = WellStubDTO.convertToWellStubDTOs(wells, wellNames);
 			result.setWells(wellStubs);
 			return result;
 		}catch (Exception e){
@@ -1179,7 +1201,11 @@ public class ContainerServiceImpl implements ContainerService {
 		}
 	}
 
-	private void updateNewWellsByWellName(Collection<Container> wells, Collection<WellContentDTO> wellDTOs) {
+	private void updateNewWellsByWellName(List<Container> wells, List<ContainerLabel> wellNames, Collection<WellContentDTO> wellDTOs) {
+		List<String> wellNameList = new ArrayList<String>();
+		for (ContainerLabel wellName : wellNames){
+			wellNameList.add(wellName.getLabelText());
+		}
 		for (WellContentDTO wellDTO : wellDTOs){
 			String wellName = wellDTO.getWellName();
 			List<String> possibleWellNames = new ArrayList<String>();
@@ -1199,29 +1225,40 @@ public class ContainerServiceImpl implements ContainerService {
 				possibleWellNames.add(letterPart+String.format("%03d", numberPart));
 				}catch (Exception e){}
 			}
-			for (Container well : wells){
-				for (ContainerLabel wellLabel : well.getLsLabels()){
-					if (possibleWellNames.contains(wellLabel.getLabelText())){
-						wellDTO.setContainerCodeName(well.getCodeName());
-						break;
-					}
+			for (String possibleWellName : possibleWellNames){
+				if (wellNameList.indexOf(possibleWellName) != -1){
+					wellDTO.setContainerCodeName(wells.get(wellNameList.indexOf(possibleWellName)).getCodeName());
+					break;
 				}
 			}
+//			for (Container well : wells){
+//				for (ContainerLabel wellLabel : well.getLsLabels()){
+//					if (possibleWellNames.contains(wellLabel.getLabelText())){
+//						wellDTO.setContainerCodeName(well.getCodeName());
+//						break;
+//					}
+//				}
+//			}
 		}
-		updateWellStatus(wellDTOs);
+		try{
+			updateWellContent(wellDTOs);
+		}catch (Exception e){
+			//do nothing
+		}
 		
 	}
 
-	public Collection<Container> createWellsFromDefinition(Container plate,
+	public Map<String,List<?>> createWellsFromDefinition(Container plate,
 			Container definition) throws Exception {
-		Collection<Container> wells = new ArrayList<Container>();
+		List<Container> wells = new ArrayList<Container>();
+		List<ContainerLabel> wellNames = new ArrayList<ContainerLabel>();
+		List<ItxContainerContainer> itxContainerContainers = new ArrayList<ItxContainerContainer>();
 		String wellFormat = getWellFormat(definition);
 		Integer numberOfWells = getDefinitionIntegerValue(definition, "wells");
 		Integer numberOfColumns = getDefinitionIntegerValue(definition, "columns");
 		if (wellFormat != null){
 			int n = 0;
 			List<AutoLabelDTO> wellCodeNames = autoLabelService.getAutoLabels("material_container", "id_codeName", numberOfWells.longValue()); 
-			int batchSize = propertiesUtilService.getBatchSize();
 			logger.debug("wellFormat: "+wellFormat);
 			logger.debug("numberOfWells: "+numberOfWells.toString());
 			logger.debug("numberOfColumns: "+numberOfColumns.toString());
@@ -1252,6 +1289,7 @@ public class ContainerServiceImpl implements ContainerService {
 				well.setRowIndex(rowNum);
 				well.setColumnIndex(colNum);
 				well.setLsTransaction(plate.getLsTransaction());
+				wells.add(well);
 				ContainerLabel wellName = new ContainerLabel();
 				wellName.setRecordedBy(plate.getRecordedBy());
 				wellName.setRecordedDate(new Date());
@@ -1259,24 +1297,31 @@ public class ContainerServiceImpl implements ContainerService {
 				wellName.setLsKind("well name");
 				wellName.setLabelText(letter+number);
 				wellName.setLsTransaction(plate.getLsTransaction());
-				wellName.setContainer(well);
-				well.getLsLabels().add(wellName);
-				well.persist();
+				wellNames.add(wellName);
 				
 				//create ItxContainerContainer "has member" to link plate and well
-				ItxContainerContainer hasMemberItx = makeItxContainerContainer("has member", plate, well, plate.getRecordedBy());
-				hasMemberItx.persist();
-				if (n% batchSize == 0){
-					well.flush();
-				}
-				wells.add(well);
+				ItxContainerContainer hasMemberItx = makeItxContainerContainer("has member", plate, well, plate.getRecordedBy(), plate.getLsTransaction());
+				itxContainerContainers.add(hasMemberItx);
 				n++;
 			}
-			
+			List<Long> wellIds = insertContainers(wells);
+			int i=0;
+			for (Long wellId : wellIds){
+				Container fakeWell = new Container();
+				fakeWell.setId(wellId);
+				wellNames.get(i).setContainer(fakeWell);
+				itxContainerContainers.get(i).setSecondContainer(fakeWell);
+				i++;
+			}
+			insertContainerLabels(wellNames);
+			insertItxContainerContainers(itxContainerContainers);
 		} else{
 			throw new Exception("Well format could not be found for definition: "+definition.getCodeName());
 		}
-		return wells;
+		Map<String, List<?>> result = new HashMap<String, List<?>>();
+		result.put("wells", wells);
+		result.put("wellNames", wellNames);
+		return result;
 	}
 	
 	private String getWellFormat(Container definition){
@@ -1322,10 +1367,11 @@ public class ContainerServiceImpl implements ContainerService {
 		return null;
 	}
 	
-	private ItxContainerContainer makeItxContainerContainer(String lsType, Container firstContainer, Container secondContainer, String recordedBy){
+	private ItxContainerContainer makeItxContainerContainer(String lsType, Container firstContainer, Container secondContainer, String recordedBy, Long transactionId){
 		ItxContainerContainer itxContainerContainer = new ItxContainerContainer();
 		itxContainerContainer.setLsType(lsType);
 		itxContainerContainer.setLsKind(firstContainer.getLsType()+"_"+secondContainer.getLsType());
+		itxContainerContainer.setLsTransaction(transactionId);
 		itxContainerContainer.setFirstContainer(firstContainer);
 		itxContainerContainer.setSecondContainer(secondContainer);
 		itxContainerContainer.setRecordedBy(recordedBy);
@@ -1348,58 +1394,66 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 
 	@Override
-	public Collection<ContainerErrorMessageDTO> updateWellStatus(
-			Collection<WellContentDTO> wellsToUpdate) {
+	@Transactional
+	public Collection<ContainerErrorMessageDTO> updateWellContent(
+			Collection<WellContentDTO> wellsToUpdate) throws Exception {
+		Long start = (new Date()).getTime();
 		Collection<ContainerErrorMessageDTO> results = new ArrayList<ContainerErrorMessageDTO>();
 		LsTransaction lsTransaction = new LsTransaction();
 		lsTransaction.setRecordedDate(new Date());
 		lsTransaction.persist();
+		//get current well status in bulk, make into map
+		List<String> wellCodes = new ArrayList<String>();
+		for (WellContentDTO well : wellsToUpdate){
+			wellCodes.add(well.getContainerCodeName());
+		}
+		Collection<WellContentDTO> currentWellContents = getWellContent(wellCodes);
+		Map<String, WellContentDTO> currentWellContentsMap = new HashMap<String, WellContentDTO>();
+		for (WellContentDTO currentWellContent : currentWellContents){
+			currentWellContentsMap.put(currentWellContent.getContainerCodeName(), currentWellContent);
+		}
+		Long afterBuildMap = (new Date()).getTime();
+		logger.debug("time to get content and build map: "+String.valueOf(afterBuildMap - start));
+		logger.debug("time per well to get content and build map: "+String.valueOf((afterBuildMap - start)/currentWellContents.size()));
+		Map<String, Long[]> wellCodeToWellIdStateId = getWellAndStatusContentStateIdsByCodeNames(wellCodes);
+		Long afterGetIds = (new Date()).getTime();
+		logger.debug("time to get ids and build map: "+String.valueOf(afterGetIds - afterBuildMap));
+		logger.debug("time per well to get ids and build map: "+String.valueOf((afterGetIds - afterBuildMap)/wellCodeToWellIdStateId.size()));
+		List<ContainerState> oldContentStates = new ArrayList<ContainerState>();
+		List<ContainerState> newContentStates = new ArrayList<ContainerState>();
+		List<List<ContainerValue>> newContentValues = new ArrayList<List<ContainerValue>>();
+		Long beforeWells = (new Date()).getTime();
 		for (WellContentDTO wellToUpdate : wellsToUpdate){
 			ContainerErrorMessageDTO result = new ContainerErrorMessageDTO();
 			result.setContainerCodeName(wellToUpdate.getContainerCodeName());
-			Container well;
-			try{
-				well = Container.findContainerByCodeNameEquals(wellToUpdate.getContainerCodeName());
-			}catch (Exception e){
+			if (wellCodeToWellIdStateId.get(wellToUpdate.getContainerCodeName()) == null){
 				result.setLevel("error");
 				result.setMessage("containerCodeName not found");
+				results.add(result);
 				continue;
+			}else if (wellCodeToWellIdStateId.get(wellToUpdate.getContainerCodeName()).length == 2){
+				ContainerState oldStatusContentState = new ContainerState();
+				oldStatusContentState.setId(wellCodeToWellIdStateId.get(wellToUpdate.getContainerCodeName())[1]);
+				oldStatusContentState.setIgnored(true);
+				oldStatusContentState.setModifiedBy(wellToUpdate.getRecordedBy());
+				oldStatusContentState.setModifiedDate(new Date());
+				oldContentStates.add(oldStatusContentState);
 			}
-			ContainerState oldStatusContentState = null;
-			for (ContainerState state : well.getLsStates()){
-				if (!state.isIgnored() && state.getLsType().equals("status") && state.getLsKind().equals("content")){
-					oldStatusContentState = state;
-					oldStatusContentState.setIgnored(true);
-					oldStatusContentState.setModifiedBy(wellToUpdate.getRecordedBy());
-					oldStatusContentState.setModifiedDate(new Date());
-					oldStatusContentState.merge();
-					break;
-				}
-			}
-			BigDecimal oldAmount = null;
-			String oldAmountUnits = null;
-			String oldBatchCode = null;
-			Double oldBatchConcentration = null;
-			String oldBatchConcUnits = null;
-			String oldPhysicalState = null;
-			String oldSolventCode = null;
-			//extract old values from previous state if it existed
-			if (oldStatusContentState != null){
-				for (ContainerValue value : oldStatusContentState.getLsValues()){
-					if (!value.isIgnored() && value.getLsKind().equals("batch code")){
-						oldBatchCode = value.getCodeValue();
-						oldBatchConcentration = value.getConcentration();
-						oldBatchConcUnits = value.getConcUnit();
-					}else if (!value.isIgnored() && value.getLsKind().equals("amount")){
-						oldAmount = value.getNumericValue();
-						oldAmountUnits = value.getConcUnit();
-					}else if (!value.isIgnored() && value.getLsKind().equals("physical state")){
-						oldPhysicalState = value.getCodeValue();
-					}else if (!value.isIgnored() && value.getLsKind().equals("solvent code")){
-						oldSolventCode = value.getCodeValue();
-					}
-				}
-			}
+			Container fakeWell = new Container();
+			fakeWell.setCodeName(wellToUpdate.getContainerCodeName());
+			fakeWell.setId(wellCodeToWellIdStateId.get(wellToUpdate.getContainerCodeName())[0]);
+			
+			WellContentDTO oldContent = currentWellContentsMap.get(wellToUpdate.getContainerCodeName());
+			BigDecimal oldAmount = oldContent.getAmount();
+			String oldAmountUnits = oldContent.getAmountUnits();
+			String oldBatchCode = oldContent.getBatchCode();
+			Double oldBatchConcentration = oldContent.getBatchConcentration();
+			String oldBatchConcUnits = oldContent.getBatchConcUnits();
+			String oldPhysicalState = oldContent.getPhysicalState();
+			String oldSolventCode = oldContent.getSolventCode();
+			
+//			Long extractedOldValues = (new Date()).getTime();
+//			logger.debug("time to extract old values: "+String.valueOf(extractedOldValues - afterGetByCodeName));
 			//create a new state and new values
 			ContainerState newStatusContentState = new ContainerState();
 			newStatusContentState.setRecordedBy(wellToUpdate.getRecordedBy());
@@ -1407,9 +1461,8 @@ public class ContainerServiceImpl implements ContainerService {
 			newStatusContentState.setLsType("status");
 			newStatusContentState.setLsKind("content");
 			newStatusContentState.setLsTransaction(lsTransaction.getId());
-			newStatusContentState.setContainer(well);
-			newStatusContentState.setLsValues(new HashSet<ContainerValue>());
-			newStatusContentState.persist();
+			newStatusContentState.setContainer(fakeWell);
+			newContentStates.add(newStatusContentState);
 			//fill in new values from DTO. if they are null, use the old value
 			BigDecimal newAmount = wellToUpdate.getAmount();
 			String newAmountUnits = wellToUpdate.getAmountUnits();
@@ -1426,6 +1479,7 @@ public class ContainerServiceImpl implements ContainerService {
 			if (newPhysicalState == null) newPhysicalState = oldPhysicalState;
 			if (newSolventCode == null) newSolventCode = oldSolventCode;
 			//create new values for attributes that exist
+			List<ContainerValue> newValues = new ArrayList<ContainerValue>();
 			if (newAmount != null || newAmountUnits != null){
 				ContainerValue amount = new ContainerValue();
 				amount.setRecordedBy(wellToUpdate.getRecordedBy());
@@ -1435,9 +1489,7 @@ public class ContainerServiceImpl implements ContainerService {
 				amount.setNumericValue(newAmount);
 				amount.setUnitKind(newAmountUnits);
 				amount.setLsTransaction(lsTransaction.getId());
-				amount.setLsState(newStatusContentState);
-				newStatusContentState.getLsValues().add(amount);
-				amount.persist();
+				newValues.add(amount);
 			}
 			if (newBatchCode != null || newBatchConcentration != null || newBatchConcUnits != null){
 				ContainerValue batchCode = new ContainerValue();
@@ -1449,9 +1501,7 @@ public class ContainerServiceImpl implements ContainerService {
 				batchCode.setConcentration(newBatchConcentration);
 				batchCode.setConcUnit(newBatchConcUnits);
 				batchCode.setLsTransaction(lsTransaction.getId());
-				batchCode.setLsState(newStatusContentState);
-				newStatusContentState.getLsValues().add(batchCode);
-				batchCode.persist();
+				newValues.add(batchCode);
 			}
 			if (newPhysicalState != null){
 				ContainerValue physicalState = new ContainerValue();
@@ -1461,9 +1511,7 @@ public class ContainerServiceImpl implements ContainerService {
 				physicalState.setLsKind("physical state");
 				physicalState.setCodeValue(newPhysicalState);
 				physicalState.setLsTransaction(lsTransaction.getId());
-				physicalState.setLsState(newStatusContentState);
-				newStatusContentState.getLsValues().add(physicalState);
-				physicalState.persist();
+				newValues.add(physicalState);
 			}
 			if (newSolventCode != null){
 				ContainerValue solventCode = new ContainerValue();
@@ -1473,15 +1521,118 @@ public class ContainerServiceImpl implements ContainerService {
 				solventCode.setLsKind("solvent code");
 				solventCode.setCodeValue(newSolventCode);
 				solventCode.setLsTransaction(lsTransaction.getId());
-				solventCode.setLsState(newStatusContentState);
-				newStatusContentState.getLsValues().add(solventCode);
-				solventCode.persist();
+				newValues.add(solventCode);
 			}
-			well.getLsStates().add(newStatusContentState);
-			well.merge();
+			newContentValues.add(newValues);
 			results.add(result);
 		}
+		Long finishedWells = (new Date()).getTime();
+		logger.debug("total time for all wells: "+String.valueOf(finishedWells - beforeWells));
+		logger.debug("time per well to prepare for inserts: "+String.valueOf((finishedWells - beforeWells)/wellsToUpdate.size()));
+		//save everything in batches, being careful with ids
+		try{
+			Long beforeDbActions = (new Date()).getTime();
+			logger.debug("states to ignore:" +oldContentStates.size());
+			ignoreContainerStates(oldContentStates);
+			Long afterIgnore = (new Date()).getTime();
+			logger.debug("new states to create:" +newContentStates.size());
+			List<Long> newStateIds = insertContainerStates(newContentStates);
+			logger.debug("new state ids created:" +newStateIds.size());
+			Long afterInsertState = (new Date()).getTime();
+			int i = 0;
+			logger.debug("groups of values to create:" +newContentValues.size());
+			List<ContainerValue> flattenedNewValues = new ArrayList<ContainerValue>();
+			for (Long newStateId : newStateIds){
+				List<ContainerValue> values = newContentValues.get(i);
+				ContainerState fakeState = new ContainerState();
+				fakeState.setId(newStateId);
+				for (ContainerValue value: values){
+					value.setLsState(fakeState);
+				}
+				flattenedNewValues.addAll(values);
+				i++;
+			}
+			logger.debug("total number of values to create:" +newContentValues.size());
+			insertContainerValues(flattenedNewValues);
+			Long afterInsertValue = (new Date()).getTime();
+			logger.debug("time to ignore states: "+String.valueOf(afterIgnore - beforeDbActions));
+			logger.debug("time to insert states: "+String.valueOf(afterInsertState - afterIgnore));
+			logger.debug("time to insert values: "+String.valueOf(afterInsertValue - afterInsertState));
+
+		}catch (SQLException e){
+			logger.error("Caught error updating well content",e);
+			if (e.getNextException() != null){
+				e = e.getNextException();
+				logger.error("Caught SQL Exception", e);
+			}
+		}
+
+		Long finishedAll = (new Date()).getTime();
+		logger.debug("total time: "+String.valueOf(finishedAll - start));
 		return results;
+	}
+	
+	private Map<String, Long[]> getWellAndStatusContentStateIdsByCodeNames(List<String> wellCodes) throws Exception{
+		EntityManager em = ContainerValue.entityManager();
+		String queryString = "SELECT new map( well.codeName as wellCode, well.id as wellId, state.id as stateId) "
+				+ "from Container as well ";
+		queryString += makeInnerJoinHql("well.lsStates", "state", "status", "content");
+		queryString += "where ( well.ignored <> true ) and ";
+		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "well.codeName", wellCodes);
+		List<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
+		for (Query q : queries){
+			results.addAll(q.getResultList());
+		}
+		//aggregate results
+		Map<String, Long[]> resultMap = new HashMap<String, Long[]>();
+		for (Map<String, Object> result : results){
+			String containerCodeName = (String) result.get("wellCode");
+			Long wellId = (Long) result.get("wellId");
+			Long stateId = (Long) result.get("stateId");
+			if (!resultMap.containsKey(containerCodeName)){
+				Long[] wellIdStateId = new Long[2];
+				wellIdStateId[0] = wellId;
+				wellIdStateId[1] = stateId;
+				resultMap.put(containerCodeName, wellIdStateId);
+			}else{
+				throw new Exception("Found more than one status content state for well.");
+			}
+		}
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestCodeNames = new HashSet<String>();
+		requestCodeNames.addAll(wellCodes);
+		HashSet<String> foundCodeNames = new HashSet<String>();
+		foundCodeNames.addAll(resultMap.keySet());
+		requestCodeNames.removeAll(foundCodeNames);
+		logger.debug(requestCodeNames.size()+" not found with content");
+		if (!requestCodeNames.isEmpty()){
+			List<String> notFoundWellCodes = new ArrayList<String>();
+			notFoundWellCodes.addAll(requestCodeNames);
+			String emptyWellQueryString = "SELECT new map( well.codeName as wellCode, well.id as wellId) "
+					+ "from Container as well ";
+			emptyWellQueryString += "where ( well.ignored <> true ) and ";
+			Collection<Query> emptyWellQueries = SimpleUtil.splitHqlInClause(em, emptyWellQueryString, "well.codeName", notFoundWellCodes);
+			List<Map<String,Object>> emptyWellResults = new ArrayList<Map<String,Object>>();
+			for (Query q : emptyWellQueries){
+				emptyWellResults.addAll(q.getResultList());
+			}
+			for (Map<String, Object> result : emptyWellResults){
+				String containerCodeName = (String) result.get("wellCode");
+				Long wellId = (Long) result.get("wellId");
+				Long[] wellIdArray = new Long[1];
+				wellIdArray[0] = wellId;
+				foundCodeNames.add( containerCodeName);
+				resultMap.put(containerCodeName, wellIdArray);
+			}
+			requestCodeNames.removeAll(foundCodeNames);
+			logger.debug(emptyWellResults.size()+" found with no content, "+requestCodeNames.size()+" not found at all");
+		}
+		if (!requestCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestCodeNames){
+				resultMap.put(notFoundCodeName, null);
+			}
+		}
+		return resultMap;
 	}
 
 	@Override
@@ -1686,6 +1837,261 @@ public class ContainerServiceImpl implements ContainerService {
 			newMovedToItx.persist();
 		}
 		return requests;
+	}
+	
+	@Override
+	@Transactional
+	public List<Long> insertContainerStates(final List<ContainerState> states) throws SQLException{
+		jdbcTemplate = new JdbcTemplate(dataSource);		
+		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "state_pkseq", states.size());
+		String sql = "INSERT INTO CONTAINER_STATE"
+				+ "(id, comments, deleted, ignored, ls_kind, ls_transaction, ls_type, ls_type_and_kind, modified_by, modified_date, recorded_by, recorded_date, version, container_id) VALUES"
+				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ContainerState state = states.get(i);
+				ps.setLong(1, idList.get(i));
+				ps.setString(2, state.getComments());
+				ps.setBoolean(3, state.isDeleted());
+				ps.setBoolean(4, state.isIgnored());
+				ps.setString(5, state.getLsKind());
+				ps.setLong(6, state.getLsTransaction());
+				ps.setString(7, state.getLsType());
+				ps.setString(8, state.getLsType()+"_"+state.getLsKind());
+				ps.setString(9, state.getModifiedBy());
+				if (state.getModifiedDate() != null) ps.setTimestamp(10, new java.sql.Timestamp(state.getModifiedDate().getTime()));
+				else ps.setTimestamp(10, null);
+				ps.setString(11, state.getRecordedBy());
+				ps.setTimestamp(12, new java.sql.Timestamp(state.getRecordedDate().getTime()));
+				ps.setInt(13, 0);
+				ps.setLong(14, state.getContainer().getId());
+			}
+					
+			@Override
+			public int getBatchSize() {
+				return states.size();
+			}
+		  });
+		return idList;
+	}
+	
+	@Override
+	@Transactional
+	public List<Long> insertContainers(final List<Container> containers) throws SQLException{
+		jdbcTemplate = new JdbcTemplate(dataSource);		
+		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "lsseq_container_pkseq", containers.size());
+		String sql = "INSERT INTO CONTAINER"
+				+ "(id, code_name, deleted, ignored, ls_kind, ls_transaction, ls_type, ls_type_and_kind, modified_by, modified_date, recorded_by, recorded_date, version, column_index, location_id, row_index) VALUES"
+				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				Container container = containers.get(i);
+				ps.setLong(1, idList.get(i));
+				ps.setString(2, container.getCodeName());
+				ps.setBoolean(3, container.isDeleted());
+				ps.setBoolean(4, container.isIgnored());
+				ps.setString(5, container.getLsKind());
+				ps.setLong(6, container.getLsTransaction());
+				ps.setString(7, container.getLsType());
+				ps.setString(8, container.getLsType()+"_"+container.getLsKind());
+				ps.setString(9, container.getModifiedBy());
+				if (container.getModifiedDate() != null) ps.setTimestamp(10, new java.sql.Timestamp(container.getModifiedDate().getTime()));
+				else ps.setTimestamp(10, null);
+				ps.setString(11, container.getRecordedBy());
+				ps.setTimestamp(12, new java.sql.Timestamp(container.getRecordedDate().getTime()));
+				ps.setInt(13, 0);
+				if (container.getColumnIndex() != null) ps.setInt(14,container.getColumnIndex());
+				else ps.setNull(14, java.sql.Types.INTEGER);
+				if (container.getLocationId() != null) ps.setLong(15,container.getLocationId());
+				else ps.setNull(15, java.sql.Types.BIGINT);
+				if (container.getRowIndex() != null) ps.setInt(16,container.getRowIndex());
+				else ps.setNull(16, java.sql.Types.INTEGER);
+			}
+					
+			@Override
+			public int getBatchSize() {
+				return containers.size();
+			}
+		  });
+		return idList;
+	}
+	
+	@Override
+	@Transactional
+	public List<Long> insertContainerLabels(final List<ContainerLabel> labels) throws SQLException{
+		jdbcTemplate = new JdbcTemplate(dataSource);		
+		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "label_pkseq", labels.size());
+		String sql = "INSERT INTO CONTAINER_LABEL"
+				+ "(id, deleted, ignored, image_file, label_text, ls_kind, ls_transaction, ls_type, ls_type_and_kind, modified_date, physically_labled, preferred, recorded_by, recorded_date, version, container_id) VALUES"
+				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ContainerLabel label = labels.get(i);
+				ps.setLong(1, idList.get(i));
+				ps.setBoolean(2, label.isDeleted());
+				ps.setBoolean(3, label.isIgnored());
+				ps.setString(4, label.getImageFile());
+				ps.setString(5, label.getLabelText());
+				ps.setString(6, label.getLsKind());
+				ps.setLong(7, label.getLsTransaction());
+				ps.setString(8, label.getLsType());
+				ps.setString(9, label.getLsType()+"_"+label.getLsKind());
+				if (label.getModifiedDate() != null) ps.setTimestamp(10, new java.sql.Timestamp(label.getModifiedDate().getTime()));
+				else ps.setTimestamp(10, null);
+				ps.setBoolean(11, label.isPhysicallyLabled());
+				ps.setBoolean(12, label.isPreferred());
+				ps.setString(13, label.getRecordedBy());
+				ps.setTimestamp(14, new java.sql.Timestamp(label.getRecordedDate().getTime()));
+				ps.setInt(15, 0);
+				ps.setLong(16, label.getContainer().getId());
+			}
+					
+			@Override
+			public int getBatchSize() {
+				return labels.size();
+			}
+		  });
+		return idList;
+	}
+	
+	@Override
+	@Transactional
+	public List<Long> insertItxContainerContainers(final List<ItxContainerContainer> itxContainerContainers) throws SQLException{
+		jdbcTemplate = new JdbcTemplate(dataSource);		
+		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "lsseq_itxcntrcntr_pkseq", itxContainerContainers.size());
+		String sql = "INSERT INTO ITX_CONTAINER_CONTAINER"
+				+ "(id, code_name, deleted, ignored, ls_kind, ls_transaction, ls_type, ls_type_and_kind, modified_by, modified_date, recorded_by, recorded_date, version, first_container_id, second_container_id) VALUES"
+				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ItxContainerContainer itxContainerContainer = itxContainerContainers.get(i);
+				ps.setLong(1, idList.get(i));
+				ps.setString(2, itxContainerContainer.getCodeName());
+				ps.setBoolean(3, itxContainerContainer.isDeleted());
+				ps.setBoolean(4, itxContainerContainer.isIgnored());
+				ps.setString(5, itxContainerContainer.getLsKind());
+				ps.setLong(6, itxContainerContainer.getLsTransaction());
+				ps.setString(7, itxContainerContainer.getLsType());
+				ps.setString(8, itxContainerContainer.getLsType()+"_"+itxContainerContainer.getLsKind());
+				ps.setString(9, itxContainerContainer.getModifiedBy());
+				if (itxContainerContainer.getModifiedDate() != null) ps.setTimestamp(10, new java.sql.Timestamp(itxContainerContainer.getModifiedDate().getTime()));
+				else ps.setTimestamp(10, null);
+				ps.setString(11, itxContainerContainer.getRecordedBy());
+				ps.setTimestamp(12, new java.sql.Timestamp(itxContainerContainer.getRecordedDate().getTime()));
+				ps.setInt(13, 0);
+				ps.setLong(14, itxContainerContainer.getFirstContainer().getId());
+				ps.setLong(15, itxContainerContainer.getSecondContainer().getId());
+			}
+					
+			@Override
+			public int getBatchSize() {
+				return itxContainerContainers.size();
+			}
+		  });
+		return idList;
+	}
+	
+	@Override
+	@Transactional
+	public void ignoreContainerStates(final List<ContainerState> states) throws SQLException{
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		String sql = "UPDATE CONTAINER_STATE "
+				+ "set ignored = ?, modified_by = ?, modified_date = ?, version = version + 1 WHERE id = ?";
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ContainerState state = states.get(i);
+				ps.setBoolean(1, true);
+				ps.setString(2, state.getModifiedBy());
+				if (state.getModifiedDate() != null) ps.setTimestamp(3, new java.sql.Timestamp(state.getModifiedDate().getTime()));
+				else ps.setTimestamp(3, null);
+				ps.setLong(4, state.getId());
+			}
+					
+			@Override
+			public int getBatchSize() {
+				return states.size();
+			}
+		  });
+	}
+	
+	@Override
+	@Transactional
+	public List<Long> insertContainerValues(final List<ContainerValue> values) throws SQLException{
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "value_pkseq", values.size());
+		String sql = "INSERT INTO CONTAINER_VALUE "
+				+ "(id, blob_value, clob_value, code_kind, code_origin, code_type, code_type_and_kind, code_value, comments, conc_unit, concentration, "
+				+ " date_value, deleted, file_value, ignored, ls_kind, ls_transaction, ls_type, ls_type_and_kind, modified_by, modified_date, "
+				+ "number_of_replicates, numeric_value, operator_kind, operator_type, operator_type_and_kind, public_data, recorded_by, recorded_date, "
+				+ "sig_figs, string_value, uncertainty, uncertainty_type, unit_kind, unit_type, url_value, version, container_state_id) VALUES "
+				+ "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+				+ " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+				+ "?, ?, ?, ?, ?, ?, ?, ?, "
+				+ "?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ContainerValue value = values.get(i);
+				ps.setLong(1,idList.get(i));
+//				ps.setBytes(2,value.getBlobValue());
+//				ps.setString(3,value.getClobValue());
+				ps.setNull(2,  java.sql.Types.BLOB);
+				ps.setNull(3,  java.sql.Types.CLOB);
+				//TODO: fix blobs and clobs
+				ps.setString(4,value.getCodeKind());
+				ps.setString(5,value.getCodeOrigin());
+				ps.setString(6,value.getCodeType());
+				ps.setString(7,value.getCodeTypeAndKind());
+				ps.setString(8,value.getCodeValue());
+				ps.setString(9,value.getComments());
+				ps.setString(10,value.getConcUnit());
+				if (value.getConcentration() != null) ps.setDouble(11,value.getConcentration());
+				else ps.setNull(11, java.sql.Types.DOUBLE);
+				if (value.getDateValue() != null) ps.setTimestamp(12,new java.sql.Timestamp(value.getDateValue().getTime()));
+				else ps.setTimestamp(12, null);
+				ps.setBoolean(13,value.getDeleted());
+				ps.setString(14,value.getFileValue());
+				ps.setBoolean(15,value.getIgnored());
+				ps.setString(16,value.getLsKind());
+				ps.setLong(17,value.getLsTransaction());
+				ps.setString(18,value.getLsType());
+				ps.setString(19,value.getLsTypeAndKind());
+				ps.setString(20,value.getModifiedBy());
+				if (value.getModifiedDate() != null) ps.setTimestamp(21,new java.sql.Timestamp(value.getModifiedDate().getTime()));
+				else ps.setTimestamp(21, null);
+				if (value.getNumberOfReplicates() != null) ps.setInt(22,value.getNumberOfReplicates());
+				else ps.setNull(22, java.sql.Types.INTEGER);
+				ps.setBigDecimal(23,value.getNumericValue());
+				ps.setString(24,value.getOperatorKind());
+				ps.setString(25,value.getOperatorType());
+				ps.setString(26,value.getOperatorTypeAndKind());
+				ps.setBoolean(27,value.getPublicData());
+				ps.setString(28,value.getRecordedBy());
+				if (value.getRecordedDate() != null) ps.setTimestamp(29,new java.sql.Timestamp(value.getRecordedDate().getTime()));
+				else ps.setTimestamp(29, null);
+				if (value.getSigFigs() != null) ps.setInt(30,value.getSigFigs());
+				else ps.setNull(30, java.sql.Types.INTEGER);
+				ps.setString(31,value.getStringValue());
+				ps.setBigDecimal(32,value.getUncertainty());
+				ps.setString(33,value.getUncertaintyType());
+				ps.setString(34,value.getUnitKind());
+				ps.setString(35,value.getUnitType());
+				ps.setString(36,value.getUrlValue());
+				ps.setInt(37, 0);
+				ps.setLong(38,value.getLsState().getId());
+			}
+					
+			@Override
+			public int getBatchSize() {
+				return values.size();
+			}
+		  });
+		return idList;
 	}
 
 

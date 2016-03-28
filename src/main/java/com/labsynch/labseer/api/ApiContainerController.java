@@ -576,14 +576,14 @@ public class ApiContainerController {
     }
     
     @Transactional
-    @RequestMapping(value = "/updateWellStatus", method = RequestMethod.POST, headers = "Accept=application/json")
+    @RequestMapping(value = "/updateWellContent", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> updateWellStatus(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> updateWellContent(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
         	Collection<WellContentDTO> wellsToUpdate = WellContentDTO.fromJsonArrayToWellCoes(json);
-        	Collection<ContainerErrorMessageDTO> results = containerService.updateWellStatus(wellsToUpdate);
+        	Collection<ContainerErrorMessageDTO> results = containerService.updateWellContent(wellsToUpdate);
         	boolean success = true;
         	for (ContainerErrorMessageDTO result: results){
         		if (result.getLevel() != null) success = false;

@@ -75,6 +75,14 @@
         <property name="validationQuery" value="${server.service.persistence.jdbc.validation.query}"/>
     </bean>
     
+    
+	<bean class="org.springframework.jdbc.core.JdbcTemplate" id="basicJdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <bean class="com.labsynch.labseer.service.ContainerServiceImpl"
+        id="containerServiceImpl">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
         
     <!-- Flyway configuration -->
 	<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
