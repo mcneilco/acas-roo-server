@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -181,7 +182,7 @@ public class RawCurveDataDTO {
 	
 	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds){
 		EntityManager em = SubjectValue.entityManager();
-		TypedQuery<Map> q = em.createQuery("SELECT NEW MAP( rsv.id as responseSubjectValueId, "
+		String queryString = "SELECT NEW MAP( rsv.id as responseSubjectValueId, "
 				+ "rsv.recordedBy as recordedBy, "
 				+ "rsv.lsTransaction as lsTransaction, "
         		+ "rsv.numericValue as response, "
@@ -242,8 +243,37 @@ public class RawCurveDataDTO {
         		+ "AND ag.ignored = false "
         		+ "AND treat.ignored = false "
         		+ "AND subj.ignored = false "
-        		+ "AND agv.stringValue IN :curveIds", Map.class);
-        q.setParameter("curveIds", curveIds);
+        		+ "AND (";
+        Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCurveIds = new ArrayList<String>();
+    	allCurveIds.addAll(curveIds);
+    	int startIndex = 0;
+    	while (startIndex < curveIds.size()){
+    		int endIndex;
+    		if (startIndex+999 < curveIds.size()) endIndex = startIndex+999;
+    		else endIndex = curveIds.size();
+    		List<String> nextCurveIds = allCurveIds.subList(startIndex, endIndex);
+    		String groupName = "curveIds"+startIndex;
+    		String sqlClause = " agv.stringValue IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCurveIds);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+		TypedQuery<Map> q = em.createQuery(queryString, Map.class);
+        for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+        logger.debug("Querying with string: \n"+queryString);
         q.setParameter("responseKind", "efficacy");
         List<Map> queryResults = q.getResultList();
         List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
