@@ -1,13 +1,14 @@
 package com.labsynch.labseer.api;
 
-import com.labsynch.labseer.domain.ItxProtocolProtocol;
+import java.util.Collection;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,9 +17,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.labsynch.labseer.domain.ItxProtocolProtocol;
+import com.labsynch.labseer.service.ItxProtocolProtocolService;
+
 @RequestMapping("/api/v1/itxprotocolprotocols")
 @Controller
 public class ApiItxProtocolProtocolController {
+	
+    private static final Logger logger = LoggerFactory.getLogger(ApiItxProtocolProtocolController.class);
+	
+	@Autowired
+    private ItxProtocolProtocolService itxProtocolProtocolService;
 
     @RequestMapping(value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
@@ -42,21 +51,28 @@ public class ApiItxProtocolProtocolController {
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody ItxProtocolProtocol itxProtocolProtocol) {
-        itxProtocolProtocol.persist();
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try{
+        	ItxProtocolProtocol itxProtocolProtocol = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(json);
+            itxProtocolProtocol = itxProtocolProtocolService.saveLsItxProtocol(itxProtocolProtocol);
+            return new ResponseEntity<String>(itxProtocolProtocol.toJson(), headers, HttpStatus.CREATED);
+        }catch (Exception e){
+        	logger.error("Uncaught exception in createFromJson",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+        
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<ItxProtocolProtocol> itxProtocolProtocols) {
-        for (ItxProtocolProtocol itxProtocolProtocol : itxProtocolProtocols) {
-            itxProtocolProtocol.persist();
-        }
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    	Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(json);
+        Collection<ItxProtocolProtocol> savedItxProtocolProtocols = itxProtocolProtocolService.saveLsItxProtocols(itxProtocolProtocols);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(savedItxProtocolProtocols), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
