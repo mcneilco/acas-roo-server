@@ -1006,17 +1006,17 @@ public class ContainerServiceImpl implements ContainerService {
 				result.setMessage("Error creating new interaction to trash");
 				continue;
 			}
-			//ignore container since it is now in the trash
-			try{
-				container.setIgnored(true);
-				container.setModifiedBy(dto.getModifiedBy());
-				container.setModifiedDate(dto.getModifiedDate());		
-				container.merge();
-			}catch (Exception e){
-				result.setLevel("error");
-				result.setMessage("Error ignoring container");
-				continue;
-			}
+			//ignore container since it is now in the trash -- decided NOT to ignore the container as of 04-05-2016. Still a valid container, just in the trash
+//			try{
+//				container.setIgnored(true);
+//				container.setModifiedBy(dto.getModifiedBy());
+//				container.setModifiedDate(dto.getModifiedDate());		
+//				container.merge();
+//			}catch (Exception e){
+//				result.setLevel("error");
+//				result.setMessage("Error ignoring container");
+//				continue;
+//			}
 		}
 		return results;
 	}
@@ -1077,7 +1077,7 @@ public class ContainerServiceImpl implements ContainerService {
 			trash.getLsStates().add(trashState);
 			
 			Container newTrash = saveLsContainer(trash);
-			
+			newTrash.flush();
 			return newTrash;
 		}
 	}
