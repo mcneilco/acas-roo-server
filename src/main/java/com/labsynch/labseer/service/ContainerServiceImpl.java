@@ -1142,6 +1142,11 @@ public class ContainerServiceImpl implements ContainerService {
 		plate.setLsType("container");
 		plate.setLsKind("plate");
 		plate.setLsTransaction(lsTransaction.getId());
+		List<Container> plateList = new ArrayList<Container>();
+		plateList.add(plate);
+		plate.setId(insertContainers(plateList).get(0));
+
+		
 		ContainerLabel plateBarcode = new ContainerLabel();
 		plateBarcode.setRecordedBy(plate.getRecordedBy());
 		plateBarcode.setRecordedDate(plate.getRecordedDate());
@@ -1151,6 +1156,10 @@ public class ContainerServiceImpl implements ContainerService {
 		plateBarcode.setLsTransaction(plate.getLsTransaction());
 		plateBarcode.setContainer(plate);
 		plate.getLsLabels().add(plateBarcode);
+		List<ContainerLabel> plateBarcodeList = new ArrayList<ContainerLabel>();
+		plateBarcodeList.add(plateBarcode);
+		plateBarcode.setId(insertContainerLabels(plateBarcodeList).get(0));
+		
 		ContainerState metadataState = new ContainerState();
 		metadataState.setRecordedBy(plate.getRecordedBy());
 		metadataState.setRecordedDate(plate.getRecordedDate());
@@ -1158,6 +1167,10 @@ public class ContainerServiceImpl implements ContainerService {
 		metadataState.setLsKind("information");
 		metadataState.setLsTransaction(plate.getLsTransaction());
 		metadataState.setContainer(plate);
+		List<ContainerState> plateStateList = new ArrayList<ContainerState>();
+		plateStateList.add(metadataState);
+		metadataState.setId(insertContainerStates(plateStateList).get(0));
+
 		if(plateRequest.getDescription() != null){
 			ContainerValue description = new ContainerValue();
 			description.setRecordedBy(plate.getRecordedBy());
@@ -1170,17 +1183,20 @@ public class ContainerServiceImpl implements ContainerService {
 			Set<ContainerValue> values = new HashSet<ContainerValue>();
 			values.add(description);
 			metadataState.setLsValues(values);
+			List<ContainerValue> plateValueList = new ArrayList<ContainerValue>();
+			plateValueList.add(description);
+			description.setId(insertContainerValues(plateValueList).get(0));
 		}
 		plate.getLsStates().add(metadataState);
 		plate.getLsLabels().add(plateBarcode);
-		plate.persist();
 		ItxContainerContainer defines = makeItxContainerContainer("defines", definition, plate, plateRequest.getRecordedBy(), lsTransaction.getId());
-		defines.persist();
-		plate.flush();
+		List<ItxContainerContainer> definesList = new ArrayList<ItxContainerContainer>();
+		definesList.add(defines);
+		insertItxContainerContainers(definesList);
 		try{
 			Map<String, List<?>> wellsAndNames = createWellsFromDefinition(plate, definition);
 			List<Container> wells = (List<Container>)wellsAndNames.get("wells");
-			List<ContainerLabel> wellNames = (List<ContainerLabel>) wellsAndNames.get("wells");
+			List<ContainerLabel> wellNames = (List<ContainerLabel>) wellsAndNames.get("wellNames");
 			//fill in recorded by for all wells to update
 			if (plateRequest.getWells() != null && !plateRequest.getWells().isEmpty()){
 				for (WellContentDTO wellDTO: plateRequest.getWells()){
