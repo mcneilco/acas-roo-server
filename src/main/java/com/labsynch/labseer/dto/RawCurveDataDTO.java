@@ -180,7 +180,7 @@ public class RawCurveDataDTO {
 		return processors;
 	}
 	
-	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds){
+	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds, String responseName){
 		EntityManager em = SubjectValue.entityManager();
 		String queryString = "SELECT NEW MAP( rsv.id as responseSubjectValueId, "
 				+ "rsv.recordedBy as recordedBy, "
@@ -274,7 +274,12 @@ public class RawCurveDataDTO {
         	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
         }
         logger.debug("Querying with string: \n"+queryString);
-        q.setParameter("responseKind", "efficacy");
+        if (responseName != null && responseName.length()>0){
+            q.setParameter("responseKind", responseName);
+        }
+        else{
+        	q.setParameter("responseKind", "efficacy");
+        }
         List<Map> queryResults = q.getResultList();
         List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
 		for (Map result : queryResults) {
@@ -284,7 +289,7 @@ public class RawCurveDataDTO {
 		return rawCurveDataList;
 	}
 	
-	public static List<RawCurveDataDTO> getRawCurveDataAgonist(Collection<String> curveIds){
+	public static List<RawCurveDataDTO> getRawCurveDataAgonist(Collection<String> curveIds, String responseName){
 		EntityManager em = SubjectValue.entityManager();
 		String queryString = "SELECT NEW MAP( rsv.id as responseSubjectValueId, "
 				+ "rsv.recordedBy as recordedBy, "
@@ -378,7 +383,12 @@ public class RawCurveDataDTO {
         	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
         }
         logger.debug("Querying with string: \n"+queryString);
-        q.setParameter("responseKind", "normalized activity");
+        if (responseName != null && responseName.length()>0){
+            q.setParameter("responseKind", responseName);
+        }
+        else{
+        	q.setParameter("responseKind", "normalized activity");
+        }
         List<Map> queryResults = q.getResultList();
         List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
 		for (Map result : queryResults) {
@@ -418,28 +428,28 @@ public class RawCurveDataDTO {
         return outFile.toString();
 	}
 	
-	public static Collection<RawCurveDataDTO> getRawCurveDataByExperiment(String experimentIdOrCodeName){
+	public static Collection<RawCurveDataDTO> getRawCurveDataByExperiment(String experimentIdOrCodeName, String responseName){
 		long startTime = System.currentTimeMillis();
 		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		logger.debug("time to get curve id list and rendering hint = " + totalTime + " miliseconds.");
 		long startTime2 = System.currentTimeMillis();
-		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveData(curveIds);
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveData(curveIds, responseName);
 		long endTime2 = System.currentTimeMillis();
 		long totalTime2 = endTime2 - startTime2;
 		logger.debug("time to fill in raw curve data = " + totalTime2 + " miliseconds.");
 		return rawCurveDataDTOs;
 	}
 	
-	public static Collection<RawCurveDataDTO> getRawAgonistCurveDataByExperiment(String experimentIdOrCodeName){
+	public static Collection<RawCurveDataDTO> getRawAgonistCurveDataByExperiment(String experimentIdOrCodeName, String responseName){
 		long startTime = System.currentTimeMillis();
 		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		logger.debug("time to get curve id list and rendering hint = " + totalTime + " miliseconds.");
 		long startTime2 = System.currentTimeMillis();
-		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveDataAgonist(curveIds);
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveDataAgonist(curveIds, responseName);
 		long endTime2 = System.currentTimeMillis();
 		long totalTime2 = endTime2 - startTime2;
 		logger.debug("time to fill in raw curve data = " + totalTime2 + " miliseconds.");
