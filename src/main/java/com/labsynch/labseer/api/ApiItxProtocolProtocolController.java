@@ -69,10 +69,17 @@ public class ApiItxProtocolProtocolController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
     	Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(json);
-        Collection<ItxProtocolProtocol> savedItxProtocolProtocols = itxProtocolProtocolService.saveLsItxProtocols(itxProtocolProtocols);
-        HttpHeaders headers = new HttpHeaders();
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(savedItxProtocolProtocols), headers, HttpStatus.CREATED);
+        try{
+        	Collection<ItxProtocolProtocol> savedItxProtocolProtocols = itxProtocolProtocolService.saveLsItxProtocols(itxProtocolProtocols);
+            return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(savedItxProtocolProtocols), headers, HttpStatus.CREATED);
+        }catch (Exception e){
+        	logger.error("Uncaught exception in createFromJsonArray",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+        
     }
 
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")

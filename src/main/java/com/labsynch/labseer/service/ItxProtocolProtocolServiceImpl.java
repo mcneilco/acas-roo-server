@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.ItxProtocolProtocolState;
 import com.labsynch.labseer.domain.ItxProtocolProtocolValue;
+import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -27,8 +28,14 @@ public class ItxProtocolProtocolServiceImpl implements ItxProtocolProtocolServic
 	
 	@Override
 	@Transactional
-	public ItxProtocolProtocol saveLsItxProtocol(ItxProtocolProtocol itxProtocol){
+	public ItxProtocolProtocol saveLsItxProtocol(ItxProtocolProtocol itxProtocol) throws Exception{
 		logger.debug("incoming meta itxProtocolProtocol: " + itxProtocol.toJson() + "\n");
+		try{
+			itxProtocol.setFirstProtocol(Protocol.findProtocol(itxProtocol.getFirstProtocol().getId()));
+			itxProtocol.setSecondProtocol(Protocol.findProtocol(itxProtocol.getSecondProtocol().getId()));
+		}catch (Exception e){
+			throw new Exception("One or both of the provided protocol do not exist");
+		}
 		int i = 0;
 		int j = 0;
 		int batchSize = propertiesUtilService.getBatchSize();
@@ -106,7 +113,7 @@ public class ItxProtocolProtocolServiceImpl implements ItxProtocolProtocolServic
 
 	@Override
 	public Collection<ItxProtocolProtocol> saveLsItxProtocols(
-			Collection<ItxProtocolProtocol> itxProtocolProtocols) {
+			Collection<ItxProtocolProtocol> itxProtocolProtocols) throws Exception {
 		Collection<ItxProtocolProtocol> savedItxProtocolProtocols = new ArrayList<ItxProtocolProtocol>();
 		for (ItxProtocolProtocol itxProtocolProtocol : itxProtocolProtocols){
 			savedItxProtocolProtocols.add(saveLsItxProtocol(itxProtocolProtocol));

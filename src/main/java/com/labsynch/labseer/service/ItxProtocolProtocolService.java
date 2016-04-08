@@ -9,11 +9,11 @@ import com.labsynch.labseer.domain.ItxProtocolProtocol;
 @Service
 public interface ItxProtocolProtocolService {
 
-	ItxProtocolProtocol saveLsItxProtocol(ItxProtocolProtocol itxProtocol);
+	ItxProtocolProtocol saveLsItxProtocol(ItxProtocolProtocol itxProtocol) throws Exception;
 
 	Collection<ItxProtocolProtocol> saveLsItxProtocols(String json);
 	
-	Collection<ItxProtocolProtocol> saveLsItxProtocols(Collection<ItxProtocolProtocol> itxProtocolProtocols);
+	Collection<ItxProtocolProtocol> saveLsItxProtocols(Collection<ItxProtocolProtocol> itxProtocolProtocols) throws Exception;
 	
 	
 	
