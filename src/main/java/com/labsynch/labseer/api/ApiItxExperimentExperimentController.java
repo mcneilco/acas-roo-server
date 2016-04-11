@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ItxExperimentExperiment;
-import com.labsynch.labseer.service.ItxContainerContainerService;
+import com.labsynch.labseer.service.ItxExperimentExperimentService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
@@ -30,7 +30,7 @@ public class ApiItxExperimentExperimentController {
     private static final Logger logger = LoggerFactory.getLogger(ApiItxExperimentExperimentController.class);
 
     @Autowired
-    private ItxContainerContainerService itxContainerContainerService;
+    private ItxExperimentExperimentService itxExperimentExperimentService;
 
     @Autowired
     private PropertiesUtilService propertiesUtilService;
@@ -58,24 +58,35 @@ public class ApiItxExperimentExperimentController {
     }
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJson(@RequestBody String json) {
-        ItxExperimentExperiment itxExperimentExperiment = ItxExperimentExperiment.fromJsonToItxExperimentExperiment(json);
-        itxExperimentExperiment.persist();
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(itxExperimentExperiment.toJson(), headers, HttpStatus.CREATED);
-    }
-    
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
-        Collection<ItxExperimentExperiment> savedItxExperimentExperiments = new HashSet<ItxExperimentExperiment>();
-    	for (ItxExperimentExperiment itxExperimentExperiment: ItxExperimentExperiment.fromJsonArrayToItxExperimentExperiments(json)) {
-            itxExperimentExperiment.persist();
-            savedItxExperimentExperiments.add(itxExperimentExperiment);
+        try{
+        	ItxExperimentExperiment itxExperimentExperiment = ItxExperimentExperiment.fromJsonToItxExperimentExperiment(json);
+            itxExperimentExperiment = itxExperimentExperimentService.saveLsItxExperiment(itxExperimentExperiment);
+            return new ResponseEntity<String>(itxExperimentExperiment.toJson(), headers, HttpStatus.CREATED);
+        }catch (Exception e){
+        	logger.error("Uncaught exception in createFromJson",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+
         }
-        HttpHeaders headers = new HttpHeaders();
+        
+    }
+
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    	Collection<ItxExperimentExperiment> itxExperimentExperiments = ItxExperimentExperiment.fromJsonArrayToItxExperimentExperiments(json);
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(savedItxExperimentExperiments), headers, HttpStatus.CREATED);
+        try{
+        	Collection<ItxExperimentExperiment> savedItxExperimentExperiments = itxExperimentExperimentService.saveLsItxExperiments(itxExperimentExperiments);
+            return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(savedItxExperimentExperiments), headers, HttpStatus.CREATED);
+        }catch (Exception e){
+        	logger.error("Uncaught exception in createFromJsonArray",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+        
     }
     
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")

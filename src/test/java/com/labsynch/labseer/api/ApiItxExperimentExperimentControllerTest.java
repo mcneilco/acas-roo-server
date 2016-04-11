@@ -5,8 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.Assert;
 
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -30,7 +33,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ItxExperimentExperiment;
+import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.Protocol;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -123,6 +128,45 @@ public class ApiItxExperimentExperimentControllerTest {
     	logger.info(responseJson);
     	Collection<ItxExperimentExperiment> foundItxs = ItxExperimentExperiment.fromJsonArrayToItxExperimentExperiments(responseJson);
     	logger.info(ItxExperimentExperiment.toJsonArray(foundItxs));
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(value=true)
+    public void createFromJsonArray() throws Exception {
+    	List<Experiment> experiments = Experiment.findExperimentEntries(0, 3);
+    	Experiment firstExperiment = experiments.get(0);
+    	Experiment secondExperiment = experiments.get(1);
+    	Experiment thirdExperiment = experiments.get(2);
+    	ItxExperimentExperiment newItx = new ItxExperimentExperiment();
+    	newItx.setFirstExperiment(firstExperiment);
+    	newItx.setSecondExperiment(secondExperiment);
+    	newItx.setLsType("has member");
+    	newItx.setLsKind("parent_child");
+    	newItx.setRecordedBy("test");
+    	newItx.setRecordedDate(new Date());
+    	ItxExperimentExperiment newItx2 = new ItxExperimentExperiment();
+    	newItx2.setFirstExperiment(firstExperiment);
+    	newItx2.setSecondExperiment(thirdExperiment);
+    	newItx2.setLsType("has member");
+    	newItx2.setLsKind("parent_child");
+    	newItx2.setRecordedBy("test");
+    	newItx2.setRecordedDate(new Date());
+    	Collection<ItxExperimentExperiment> itxExperimentExperiments = new ArrayList<ItxExperimentExperiment>();
+    	itxExperimentExperiments.add(newItx);
+    	itxExperimentExperiments.add(newItx2);
+    	String json = ItxExperimentExperiment.toJsonArray(itxExperimentExperiments);
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/itxexperimentexperiments/jsonArray")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isCreated())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ItxExperimentExperiment> results = ItxExperimentExperiment.fromJsonArrayToItxExperimentExperiments(responseJson);
+    	logger.info(ItxExperimentExperiment.toJsonArray(results));
     }
     
 }
