@@ -201,7 +201,7 @@ public class Author extends AbstractThing {
 		updatedAuthor.setLastName(author.getLastName());
 		updatedAuthor.setUserName(author.getUserName());
 		updatedAuthor.setEmailAddress(author.getEmailAddress());
-		updatedAuthor.setPassword(author.getPassword());
+		if (author.getPassword() != null) updatedAuthor.setPassword(author.getPassword());
 		updatedAuthor.setActivationDate(author.getActivationDate());
 		updatedAuthor.setActivationKey(author.getActivationKey());
 		updatedAuthor.setEnabled(author.getEnabled());
