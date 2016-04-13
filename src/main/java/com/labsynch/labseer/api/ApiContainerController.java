@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -91,7 +92,8 @@ public class ApiContainerController {
     @RequestMapping(method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> listJson(@RequestParam(value = "lsType", required = false) String lsType,
-    		@RequestParam(value = "lsKind", required = false) String lsKind) {
+    		@RequestParam(value = "lsKind", required = false) String lsKind,
+    		@RequestParam(value = "format", required = false) String format) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<Container> containers = new ArrayList<Container>();
@@ -103,6 +105,10 @@ public class ApiContainerController {
         	containers = Container.findContainersByLsKindEquals(lsKind).getResultList();
         }else{
         	containers = Container.findAllContainers();
+        }
+        if (format != null && format.equalsIgnoreCase("codeTable")){
+        	List<CodeTableDTO> codeTableContainers = containerService.convertToCodeTables(containers);
+        	return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTableContainers), headers, HttpStatus.OK);
         }
         return new ResponseEntity<String>(Container.toJsonArray(containers), headers, HttpStatus.OK);
     }

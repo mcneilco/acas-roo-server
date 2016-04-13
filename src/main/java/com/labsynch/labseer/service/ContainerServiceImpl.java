@@ -50,9 +50,11 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -2108,6 +2110,20 @@ public class ContainerServiceImpl implements ContainerService {
 			}
 		  });
 		return idList;
+	}
+	
+	@Override
+	@Transactional
+	public List<CodeTableDTO> convertToCodeTables(List<Container> containers){
+		List<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+		for (Container container: containers){
+			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setCode(container.getCodeName());
+			codeTable.setName(pickBestLabel(container));
+			codeTable.setIgnored(container.isIgnored());
+			codeTables.add(codeTable);
+		}
+		return codeTables;
 	}
 
 

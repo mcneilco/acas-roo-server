@@ -1,6 +1,7 @@
 package com.labsynch.labseer.dto;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -11,6 +12,9 @@ import org.springframework.roo.addon.tostring.RooToString;
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -132,6 +136,14 @@ public class CodeTableDTO {
 	private int compareByName(CodeTableDTO that) {
 		return this.name.compareTo(that.name);
 	}
+	
+	public String toJson() {
+        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+    }
+	
+	public static String toJsonArray(Collection<CodeTableDTO> collection) {
+        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
 }
 
 

@@ -13,6 +13,7 @@ import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.dto.CodeLabelDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -112,6 +113,8 @@ public interface ContainerService {
 	List<Long> insertItxContainerContainers(
 			List<ItxContainerContainer> itxContainerContainers)
 			throws SQLException;
+
+	List<CodeTableDTO> convertToCodeTables(List<Container> containers);
 	
 	
 }
