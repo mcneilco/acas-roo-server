@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,10 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +44,6 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxContainerContainerValue;
-import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
@@ -59,6 +52,7 @@ import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
+import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
@@ -2124,6 +2118,116 @@ public class ContainerServiceImpl implements ContainerService {
 			codeTables.add(codeTable);
 		}
 		return codeTables;
+	}
+
+	@Override
+	@Transactional
+	public Collection<Container> searchContainers(
+			ContainerSearchRequestDTO searchRequest) {
+		List<Container> containerList = new ArrayList<Container>();
+		EntityManager em = Container.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Container> criteria = cb.createQuery(Container.class);
+		Root<Container> containerRoot = criteria.from(Container.class);
+		
+		criteria.select(containerRoot);
+		criteria.distinct(true);
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		
+		//barcode
+		if (searchRequest.getBarcode()!= null){
+			String barcode = searchRequest.getBarcode().replaceAll("\\*", "%");
+			Join<Container, ContainerLabel> containerLabel = containerRoot.join("lsLabels");
+			Predicate barcodeType = cb.equal(containerLabel.<String>get("lsType"), "barcode");
+			Predicate barcodeKind = cb.equal(containerLabel.<String>get("lsKind"), "barcode");
+			Predicate barcodeLabelPredicate = cb.like(containerLabel.<String>get("labelText"), '%'+barcode+'%');
+			Predicate containerLabelNotIgnored = cb.not(containerLabel.<Boolean>get("ignored"));
+			Predicate barcodePredicate = cb.and(barcodeType,
+					barcodeKind,
+					barcodeLabelPredicate, 
+					containerLabelNotIgnored 
+					);
+			predicateList.add(barcodePredicate);
+		}
+		//description
+		if (searchRequest.getDescription() != null || searchRequest.getCreatedUser() != null || searchRequest.getStatus()!= null || searchRequest.getType() != null){
+			Join<Container, ContainerState> containerState = containerRoot.join("lsStates");
+			Predicate stateType = cb.equal(containerState.<String>get("lsType"), "metadata");
+			Predicate stateKind = cb.equal(containerState.<String>get("lsKind"), "information");
+			Predicate stateNotIgnored = cb.not(containerState.<Boolean>get("ignored"));
+			Predicate statePredicate = cb.and(stateType, stateKind, stateNotIgnored);
+			predicateList.add(statePredicate);
+			if (searchRequest.getDescription() != null){
+				String description  = searchRequest.getDescription().replaceAll("\\*", "%");;
+				Join<ContainerState, ContainerValue> descriptionValue = containerState.join("lsValues");
+				Predicate descriptionStringValue = cb.like(descriptionValue.<String>get("stringValue"), '%'+description+'%');
+				Predicate descriptionType = cb.equal(descriptionValue.<String>get("lsType"), "stringValue");
+				Predicate descriptionKind = cb.equal(descriptionValue.<String>get("lsKind"), "description");
+				Predicate descriptionNotIgnored = cb.not(descriptionValue.<Boolean>get("ignored"));
+				Predicate descriptionPredicate = cb.and(descriptionStringValue,descriptionType, descriptionKind, descriptionNotIgnored);
+				predicateList.add(descriptionPredicate);
+			}
+			if (searchRequest.getCreatedUser() != null){
+				String createdUser  = searchRequest.getCreatedUser().replaceAll("\\*", "%");;
+				Join<ContainerState, ContainerValue> createdUserValue = containerState.join("lsValues");
+				Predicate createdUserStringValue = cb.like(createdUserValue.<String>get("codeValue"), '%'+createdUser+'%');
+				Predicate createdUserType = cb.equal(createdUserValue.<String>get("lsType"), "codeValue");
+				Predicate createdUserKind = cb.equal(createdUserValue.<String>get("lsKind"), "createdUser");
+				Predicate createdUserNotIgnored = cb.not(createdUserValue.<Boolean>get("ignored"));
+				Predicate createdUserPredicate = cb.and(createdUserStringValue,createdUserType, createdUserKind, createdUserNotIgnored);
+				predicateList.add(createdUserPredicate);
+			}
+			if (searchRequest.getStatus() != null){
+				String status  = searchRequest.getStatus().replaceAll("\\*", "%");;
+				Join<ContainerState, ContainerValue> statusValue = containerState.join("lsValues");
+				Predicate statusStringValue = cb.like(statusValue.<String>get("codeValue"), '%'+status+'%');
+				Predicate statusType = cb.equal(statusValue.<String>get("lsType"), "codeValue");
+				Predicate statusKind = cb.equal(statusValue.<String>get("lsKind"), "status");
+				Predicate statusNotIgnored = cb.not(statusValue.<Boolean>get("ignored"));
+				Predicate statusPredicate = cb.and(statusStringValue,statusType, statusKind, statusNotIgnored);
+				predicateList.add(statusPredicate);
+			}
+			if (searchRequest.getType() != null){
+				String type  = searchRequest.getType().replaceAll("\\*", "%");;
+				Join<ContainerState, ContainerValue> typeValue = containerState.join("lsValues");
+				Predicate typeStringValue = cb.like(typeValue.<String>get("codeValue"), '%'+type+'%');
+				Predicate typeType = cb.equal(typeValue.<String>get("lsType"), "codeValue");
+				Predicate typeKind = cb.equal(typeValue.<String>get("lsKind"), "type");
+				Predicate typeNotIgnored = cb.not(typeValue.<Boolean>get("ignored"));
+				Predicate typePredicate = cb.and(typeStringValue,typeType, typeKind, typeNotIgnored);
+				predicateList.add(typePredicate);
+			}
+		}
+		//definition
+		if (searchRequest.getDefinition() != null){
+			Join<Container, ItxContainerContainer> definesItx = containerRoot.join("firstContainers");
+			Join<ItxContainerContainer, Container> definitionContainer = definesItx.join("firstContainer");
+			Predicate definesType = cb.equal(definesItx.<String>get("lsType"), "defines");
+			Predicate definesKind = cb.equal(definesItx.<String>get("lsKind"), "definition container_container");
+			Predicate definitionCode = cb.equal(definitionContainer.<String>get("codeName"), searchRequest.getDefinition());
+			Predicate definitionPredicate = cb.and(definesType, definesKind, definitionCode);
+			predicateList.add(definitionPredicate);
+		}
+		//lsType
+		if (searchRequest.getLsType() != null){
+			Predicate containerType = cb.equal(containerRoot.<String>get("lsType"),searchRequest.getLsType());
+			predicateList.add(containerType);
+		}
+		//lsKind
+		if (searchRequest.getLsKind() != null){
+			Predicate containerKind = cb.equal(containerRoot.<String>get("lsKind"),searchRequest.getLsKind());
+			predicateList.add(containerKind);
+		}
+		////requestId
+		//container not ignored
+		Predicate containerNotIgnored = cb.not(containerRoot.<Boolean>get("ignored"));
+		predicateList.add(containerNotIgnored);
+		predicates = predicateList.toArray(predicates);
+		criteria.where(cb.and(predicates));
+		TypedQuery<Container> q = em.createQuery(criteria);
+		containerList = q.getResultList();
+		return containerList;
 	}
 
 

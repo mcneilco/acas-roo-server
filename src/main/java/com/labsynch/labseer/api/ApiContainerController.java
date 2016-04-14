@@ -29,6 +29,8 @@ import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
+import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
+import com.labsynch.labseer.dto.ContainerSearchResultDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
@@ -673,6 +675,23 @@ public class ApiContainerController {
         	else return new ResponseEntity<String>(ContainerLocationDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
         } catch (Exception e){
         	logger.error("Uncaught error in moveToLocation",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/searchContainers", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> searchContainers(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+    	ContainerSearchRequestDTO searchRequest = ContainerSearchRequestDTO.fromJsonToContainerSearchRequestDTO(json);
+        try{
+        	Collection<Container> results = containerService.searchContainers(searchRequest);
+        	logger.debug(Container.toJsonArray(results));
+        	return new ResponseEntity<String>(Container.toJsonArray(results), headers, HttpStatus.OK);
+        } catch (Exception e){
+        	logger.error("Uncaught error in searchContainers service", e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

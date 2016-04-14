@@ -54,6 +54,7 @@ import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
+import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
@@ -1329,54 +1330,36 @@ public class ApiContainerControllerTest {
     			.andReturn().getResponse();
     }
 	
-//	@Test
-//    @Transactional
-//    public void searchContainers() throws Exception{
-//    	MockHttpServletResponse response;
-//    	String responseJson;
-//    	Collection<Container> foundContainers;
-//    	ContainerSearchRequestDTO searchRequest = new ContainerSearchRequestDTO();
-//    	//only type
-//    	response = this.mockMvc.perform(get("/api/v1/containers/codeTable?lsType=definition container")
-//    			.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isOk())
-//    			.andExpect(content().contentType("application/json;charset=utf-8"))
-//    			.andReturn().getResponse();
-//    	responseJson = response.getContentAsString();
-//    	logger.info(responseJson);
-//    	foundContainers = CodeTableDTO.fromJsonArrayToCoes(responseJson);
-//    	Assert.assertFalse(foundContainers.isEmpty());
-//    	//only kind
-//    	response = this.mockMvc.perform(get("/api/v1/containers/codeTable?lsKind=plate")
-//    			.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isOk())
-//    			.andExpect(content().contentType("application/json;charset=utf-8"))
-//    			.andReturn().getResponse();
-//    	responseJson = response.getContentAsString();
-//    	logger.info(responseJson);
-//    	foundContainers = CodeTableDTO.fromJsonArrayToCoes(responseJson);
-//    	Assert.assertFalse(foundContainers.isEmpty());
-//    	//type and kind
-//    	response = this.mockMvc.perform(get("/api/v1/containers/codeTable?lsType=definition container&lsKind=plate")
-//    			.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isOk())
-//    			.andExpect(content().contentType("application/json;charset=utf-8"))
-//    			.andReturn().getResponse();
-//    	responseJson = response.getContentAsString();
-//    	logger.info(responseJson);
-//    	foundContainers = CodeTableDTO.fromJsonArrayToCoes(responseJson);
-//    	Assert.assertFalse(foundContainers.isEmpty());
-//    	//find no results
-//    	response = this.mockMvc.perform(get("/api/v1/containers/codeTable?lsType=nope&lsKind=")
-//    			.accept(MediaType.APPLICATION_JSON))
-//    			.andExpect(status().isOk())
-//    			.andExpect(content().contentType("application/json;charset=utf-8"))
-//    			.andReturn().getResponse();
-//    	responseJson = response.getContentAsString();
-//    	logger.info(responseJson);
-//    	foundContainers = CodeTableDTO.fromJsonArrayToCoes(responseJson);
-//    	Assert.assertTrue(foundContainers.isEmpty());
-//    }
+	@Test
+    @Transactional
+    public void searchContainers() throws Exception{
+    	MockHttpServletResponse response;
+    	String responseJson;
+    	Collection<Container> foundContainers;
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+		query.setMaxResults(1);
+		Container definition = query.getSingleResult();
+    	ContainerSearchRequestDTO searchRequest = new ContainerSearchRequestDTO();
+    	searchRequest.setBarcode("TESTBARCODE");
+    	searchRequest.setDescription("test");
+    	searchRequest.setDefinition(definition.getCodeName());
+    	String json = searchRequest.toJson();
+    	logger.info(json);
+    	response = this.mockMvc.perform(post("/api/v1/containers/searchContainers")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	foundContainers = Container.fromJsonArrayToContainers(responseJson);
+    	Assert.assertFalse(foundContainers.isEmpty());
+    	for (Container result : foundContainers){
+    		Assert.assertNotNull(result);
+    	}
+    }
 	
 	    @Test
 	    @Transactional
