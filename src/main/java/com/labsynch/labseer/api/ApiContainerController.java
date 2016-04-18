@@ -30,7 +30,6 @@ import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
-import com.labsynch.labseer.dto.ContainerSearchResultDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
