@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -32,6 +34,8 @@ import flexjson.JSONSerializer;
 @RooJson
 @RooJpaActiveRecord(finders = { "findItxProtocolProtocolsByLsTransactionEquals", "findItxProtocolProtocolsByFirstProtocol" , "findItxProtocolProtocolsBySecondProtocol"})
 public class ItxProtocolProtocol extends AbstractThing {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ItxProtocolProtocol.class);
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -100,5 +104,28 @@ public class ItxProtocolProtocol extends AbstractThing {
         		.use("values", ItxProtocolProtocol.class)
         		.use(BigDecimal.class, new CustomBigDecimalFactory())
         		.deserialize(json);
+    }
+    
+    public static ItxProtocolProtocol updateNoStates(ItxProtocolProtocol itxProtocolProtocol) {
+    	ItxProtocolProtocol updatedItxProtocolProtocol = ItxProtocolProtocol.findItxProtocolProtocol(itxProtocolProtocol.getId());
+    	updatedItxProtocolProtocol.setRecordedBy(itxProtocolProtocol.getRecordedBy());
+    	updatedItxProtocolProtocol.setRecordedDate(itxProtocolProtocol.getRecordedDate());
+    	updatedItxProtocolProtocol.setIgnored(itxProtocolProtocol.isIgnored());
+    	updatedItxProtocolProtocol.setDeleted(itxProtocolProtocol.isDeleted());
+    	updatedItxProtocolProtocol.setLsTransaction(itxProtocolProtocol.getLsTransaction());
+    	updatedItxProtocolProtocol.setModifiedBy(itxProtocolProtocol.getModifiedBy());
+    	updatedItxProtocolProtocol.setCodeName(itxProtocolProtocol.getCodeName());
+    	updatedItxProtocolProtocol.setLsType(itxProtocolProtocol.getLsType());
+    	updatedItxProtocolProtocol.setLsKind(itxProtocolProtocol.getLsKind());
+    	updatedItxProtocolProtocol.setLsTypeAndKind(itxProtocolProtocol.getLsTypeAndKind());
+    	updatedItxProtocolProtocol.firstProtocol = Protocol.findProtocol(itxProtocolProtocol.getFirstProtocol().getId());
+    	updatedItxProtocolProtocol.secondProtocol = Protocol.findProtocol(itxProtocolProtocol.getSecondProtocol().getId());    	
+    	updatedItxProtocolProtocol.setModifiedDate(new Date());
+    	updatedItxProtocolProtocol.merge();
+    	
+    	logger.debug("------------ Just updated the itxProtocolProtocol: ");
+    	if(logger.isDebugEnabled()) logger.debug(updatedItxProtocolProtocol.toJson());
+    	
+        return updatedItxProtocolProtocol;
     }
 }

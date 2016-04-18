@@ -17,6 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -34,6 +36,8 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(finders = { "findItxExperimentExperimentsByLsTransactionEquals", "findItxExperimentExperimentsByFirstExperiment" , "findItxExperimentExperimentsBySecondExperiment"})
 @Table(name="ITX_EXPT_EXPT")
 public class ItxExperimentExperiment extends AbstractThing {
+
+	private static final Logger logger = LoggerFactory.getLogger(ItxExperimentExperiment.class);
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
@@ -105,5 +109,28 @@ public class ItxExperimentExperiment extends AbstractThing {
         		.use("values", ItxExperimentExperiment.class)
         		.use(BigDecimal.class, new CustomBigDecimalFactory())
         		.deserialize(json);
+    }
+    
+    public static ItxExperimentExperiment updateNoStates(ItxExperimentExperiment itxExperimentExperiment) {
+    	ItxExperimentExperiment updatedItxExperimentExperiment = ItxExperimentExperiment.findItxExperimentExperiment(itxExperimentExperiment.getId());
+    	updatedItxExperimentExperiment.setRecordedBy(itxExperimentExperiment.getRecordedBy());
+    	updatedItxExperimentExperiment.setRecordedDate(itxExperimentExperiment.getRecordedDate());
+    	updatedItxExperimentExperiment.setIgnored(itxExperimentExperiment.isIgnored());
+    	updatedItxExperimentExperiment.setDeleted(itxExperimentExperiment.isDeleted());
+    	updatedItxExperimentExperiment.setLsTransaction(itxExperimentExperiment.getLsTransaction());
+    	updatedItxExperimentExperiment.setModifiedBy(itxExperimentExperiment.getModifiedBy());
+    	updatedItxExperimentExperiment.setCodeName(itxExperimentExperiment.getCodeName());
+    	updatedItxExperimentExperiment.setLsType(itxExperimentExperiment.getLsType());
+    	updatedItxExperimentExperiment.setLsKind(itxExperimentExperiment.getLsKind());
+    	updatedItxExperimentExperiment.setLsTypeAndKind(itxExperimentExperiment.getLsTypeAndKind());
+    	updatedItxExperimentExperiment.firstExperiment = Experiment.findExperiment(itxExperimentExperiment.getFirstExperiment().getId());
+    	updatedItxExperimentExperiment.secondExperiment = Experiment.findExperiment(itxExperimentExperiment.getSecondExperiment().getId());    	
+    	updatedItxExperimentExperiment.setModifiedDate(new Date());
+    	updatedItxExperimentExperiment.merge();
+    	
+    	logger.debug("------------ Just updated the itxExperimentExperiment: ");
+    	if(logger.isDebugEnabled()) logger.debug(updatedItxExperimentExperiment.toJson());
+    	
+        return updatedItxExperimentExperiment;
     }
 }

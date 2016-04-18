@@ -83,4 +83,9 @@ public class ItxProtocolProtocolValue extends AbstractValue {
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
+	
+	public static ItxProtocolProtocolValue create(ItxProtocolProtocolValue lsThingValue) {
+        ItxProtocolProtocolValue newItxProtocolProtocolValue = new JSONDeserializer<ItxProtocolProtocolValue>().use(null, ItxProtocolProtocolValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new ItxProtocolProtocolValue());
+        return newItxProtocolProtocolValue;
+    }
 }

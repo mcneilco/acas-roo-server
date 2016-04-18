@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -32,6 +34,8 @@ import flexjson.JSONSerializer;
 @RooJson
 @RooJpaActiveRecord(finders = { "findItxContainerContainersByLsTransactionEquals" })
 public class ItxContainerContainer extends AbstractThing {
+
+	private static final Logger logger = LoggerFactory.getLogger(ItxContainerContainer.class);
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -100,5 +104,28 @@ public class ItxContainerContainer extends AbstractThing {
         		.use("values", ItxContainerContainer.class)
         		.use(BigDecimal.class, new CustomBigDecimalFactory())
         		.deserialize(json);
+    }
+    
+    public static ItxContainerContainer updateNoStates(ItxContainerContainer itxContainerContainer) {
+    	ItxContainerContainer updatedItxContainerContainer = ItxContainerContainer.findItxContainerContainer(itxContainerContainer.getId());
+    	updatedItxContainerContainer.setRecordedBy(itxContainerContainer.getRecordedBy());
+    	updatedItxContainerContainer.setRecordedDate(itxContainerContainer.getRecordedDate());
+    	updatedItxContainerContainer.setIgnored(itxContainerContainer.isIgnored());
+    	updatedItxContainerContainer.setDeleted(itxContainerContainer.isDeleted());
+    	updatedItxContainerContainer.setLsTransaction(itxContainerContainer.getLsTransaction());
+    	updatedItxContainerContainer.setModifiedBy(itxContainerContainer.getModifiedBy());
+    	updatedItxContainerContainer.setCodeName(itxContainerContainer.getCodeName());
+    	updatedItxContainerContainer.setLsType(itxContainerContainer.getLsType());
+    	updatedItxContainerContainer.setLsKind(itxContainerContainer.getLsKind());
+    	updatedItxContainerContainer.setLsTypeAndKind(itxContainerContainer.getLsTypeAndKind());
+    	updatedItxContainerContainer.firstContainer = Container.findContainer(itxContainerContainer.getFirstContainer().getId());
+    	updatedItxContainerContainer.secondContainer = Container.findContainer(itxContainerContainer.getSecondContainer().getId());    	
+    	updatedItxContainerContainer.setModifiedDate(new Date());
+    	updatedItxContainerContainer.merge();
+    	
+    	logger.debug("------------ Just updated the itxContainerContainer: ");
+    	if(logger.isDebugEnabled()) logger.debug(updatedItxContainerContainer.toJson());
+    	
+        return updatedItxContainerContainer;
     }
 }

@@ -14,6 +14,9 @@ public interface ItxProtocolProtocolService {
 	Collection<ItxProtocolProtocol> saveLsItxProtocols(String json);
 	
 	Collection<ItxProtocolProtocol> saveLsItxProtocols(Collection<ItxProtocolProtocol> itxProtocolProtocols) throws Exception;
+
+	ItxProtocolProtocol updateItxProtocolProtocol(
+			ItxProtocolProtocol jsonItxProtocolProtocol);
 	
 	
 	

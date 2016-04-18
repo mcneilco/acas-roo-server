@@ -120,4 +120,55 @@ public class ItxProtocolProtocolServiceImpl implements ItxProtocolProtocolServic
 		}
 		return savedItxProtocolProtocols;
 	}
+	
+	@Override
+	@Transactional
+	public ItxProtocolProtocol updateItxProtocolProtocol(ItxProtocolProtocol jsonItxProtocolProtocol){
+		
+		ItxProtocolProtocol updatedItxProtocolProtocol = ItxProtocolProtocol.updateNoStates(jsonItxProtocolProtocol);
+		updatedItxProtocolProtocol.merge();
+		logger.debug("here is the updated itx: " + updatedItxProtocolProtocol.toJson());
+		logger.debug("----------------- here is the itx id " + updatedItxProtocolProtocol.getId() + "   -----------");
+		
+		if(jsonItxProtocolProtocol.getLsStates() != null){
+			for(ItxProtocolProtocolState itxProtocolProtocolState : jsonItxProtocolProtocol.getLsStates()){
+				logger.debug("-------- current itxProtocolProtocolState ID: " + itxProtocolProtocolState.getId());
+				ItxProtocolProtocolState updatedItxProtocolProtocolState;
+				if (itxProtocolProtocolState.getId() == null){
+					updatedItxProtocolProtocolState = new ItxProtocolProtocolState(itxProtocolProtocolState);
+					updatedItxProtocolProtocolState.setItxProtocolProtocol(ItxProtocolProtocol.findItxProtocolProtocol(updatedItxProtocolProtocol.getId()));
+					updatedItxProtocolProtocolState.persist();
+					updatedItxProtocolProtocol.getLsStates().add(updatedItxProtocolProtocolState);
+				} else {
+
+					if (itxProtocolProtocolState.getItxProtocolProtocol() == null) itxProtocolProtocolState.setItxProtocolProtocol(updatedItxProtocolProtocol);
+					updatedItxProtocolProtocolState = ItxProtocolProtocolState.update(itxProtocolProtocolState);			
+					updatedItxProtocolProtocol.getLsStates().add(updatedItxProtocolProtocolState);
+					logger.debug("updated itxProtocolProtocol state " + updatedItxProtocolProtocolState.getId());
+
+				}
+				if (itxProtocolProtocolState.getLsValues() != null){
+					for(ItxProtocolProtocolValue itxProtocolProtocolValue : itxProtocolProtocolState.getLsValues()){
+						ItxProtocolProtocolValue updatedItxProtocolProtocolValue;
+						if (itxProtocolProtocolValue.getId() == null){
+							updatedItxProtocolProtocolValue = ItxProtocolProtocolValue.create(itxProtocolProtocolValue);
+							updatedItxProtocolProtocolValue.setLsState(updatedItxProtocolProtocolState);
+							updatedItxProtocolProtocolValue.persist();
+							updatedItxProtocolProtocolState.getLsValues().add(updatedItxProtocolProtocolValue);
+
+						} else {
+							//itxProtocolProtocolValue.setLsState(updatedItxProtocolProtocolState);
+							itxProtocolProtocolValue.setLsState(updatedItxProtocolProtocolState);
+							updatedItxProtocolProtocolValue = ItxProtocolProtocolValue.update(itxProtocolProtocolValue);
+							updatedItxProtocolProtocolState.getLsValues().add(updatedItxProtocolProtocolValue);
+						}
+					}	
+				} else {
+					logger.debug("No itxProtocolProtocol values to update");
+				}
+			}
+		}
+		
+		return updatedItxProtocolProtocol;
+	}
 }

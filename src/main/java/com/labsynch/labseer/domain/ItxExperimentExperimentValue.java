@@ -85,4 +85,9 @@ public class ItxExperimentExperimentValue extends AbstractValue {
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
+	
+	public static ItxExperimentExperimentValue create(ItxExperimentExperimentValue lsThingValue) {
+        ItxExperimentExperimentValue newItxExperimentExperimentValue = new JSONDeserializer<ItxExperimentExperimentValue>().use(null, ItxExperimentExperimentValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new ItxExperimentExperimentValue());
+        return newItxExperimentExperimentValue;
+    }
 }

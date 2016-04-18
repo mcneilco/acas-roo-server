@@ -1,6 +1,7 @@
 package com.labsynch.labseer.api;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -83,25 +84,35 @@ public class ApiItxProtocolProtocolController {
     }
 
     @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody ItxProtocolProtocol itxProtocolProtocol) {
+    public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (itxProtocolProtocol.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        ItxProtocolProtocol itxProtocolProtocol = ItxProtocolProtocol.fromJsonToItxProtocolProtocol(json);
+        ItxProtocolProtocol updatedItxProtocolProtocol = null;
+        try{
+			updatedItxProtocolProtocol = itxProtocolProtocolService.updateItxProtocolProtocol(itxProtocolProtocol);
+	        return new ResponseEntity<String>(updatedItxProtocolProtocol.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+			logger.error("Caught error updating ItxProtocolProtocol from JSON",e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-
+    
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<ItxProtocolProtocol> itxProtocolProtocols) {
+    public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        for (ItxProtocolProtocol itxProtocolProtocol : itxProtocolProtocols) {
-            if (itxProtocolProtocol.merge() == null) {
-                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        Collection<ItxProtocolProtocol> updatedItxProtocolProtocols = new HashSet<ItxProtocolProtocol>();
+        try{
+            for (ItxProtocolProtocol itxProtocolProtocol: ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(json)) {
+            	ItxProtocolProtocol updatedItxProtocolProtocol = itxProtocolProtocolService.updateItxProtocolProtocol(itxProtocolProtocol);
+            	updatedItxProtocolProtocols.add(updatedItxProtocolProtocol);
             }
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
+	        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(updatedItxProtocolProtocols), headers, HttpStatus.OK);
+        } catch (Exception e) {
+        	logger.error("Caught error updating ItxProtocolProtocols from JSON",e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")

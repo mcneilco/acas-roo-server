@@ -14,6 +14,9 @@ public interface ItxContainerContainerService {
 	Collection<ItxContainerContainer> saveLsItxContainers(String json);
 	
 	Collection<ItxContainerContainer> saveLsItxContainers(Collection<ItxContainerContainer> itxContainerContainers);
+
+	ItxContainerContainer updateItxContainerContainer(
+			ItxContainerContainer jsonItxContainerContainer);
 	
 	
 	

@@ -113,4 +113,55 @@ public class ItxContainerContainerServiceImpl implements ItxContainerContainerSe
 		}
 		return savedItxContainerContainers;
 	}
+	
+	@Override
+	@Transactional
+	public ItxContainerContainer updateItxContainerContainer(ItxContainerContainer jsonItxContainerContainer){
+		
+		ItxContainerContainer updatedItxContainerContainer = ItxContainerContainer.updateNoStates(jsonItxContainerContainer);
+		updatedItxContainerContainer.merge();
+		logger.debug("here is the updated itx: " + updatedItxContainerContainer.toJson());
+		logger.debug("----------------- here is the itx id " + updatedItxContainerContainer.getId() + "   -----------");
+		
+		if(jsonItxContainerContainer.getLsStates() != null){
+			for(ItxContainerContainerState itxContainerContainerState : jsonItxContainerContainer.getLsStates()){
+				logger.debug("-------- current itxContainerContainerState ID: " + itxContainerContainerState.getId());
+				ItxContainerContainerState updatedItxContainerContainerState;
+				if (itxContainerContainerState.getId() == null){
+					updatedItxContainerContainerState = new ItxContainerContainerState(itxContainerContainerState);
+					updatedItxContainerContainerState.setItxContainerContainer(ItxContainerContainer.findItxContainerContainer(updatedItxContainerContainer.getId()));
+					updatedItxContainerContainerState.persist();
+					updatedItxContainerContainer.getLsStates().add(updatedItxContainerContainerState);
+				} else {
+
+					if (itxContainerContainerState.getItxContainerContainer() == null) itxContainerContainerState.setItxContainerContainer(updatedItxContainerContainer);
+					updatedItxContainerContainerState = ItxContainerContainerState.update(itxContainerContainerState);			
+					updatedItxContainerContainer.getLsStates().add(updatedItxContainerContainerState);
+					logger.debug("updated itxContainerContainer state " + updatedItxContainerContainerState.getId());
+
+				}
+				if (itxContainerContainerState.getLsValues() != null){
+					for(ItxContainerContainerValue itxContainerContainerValue : itxContainerContainerState.getLsValues()){
+						ItxContainerContainerValue updatedItxContainerContainerValue;
+						if (itxContainerContainerValue.getId() == null){
+							updatedItxContainerContainerValue = ItxContainerContainerValue.create(itxContainerContainerValue);
+							updatedItxContainerContainerValue.setLsState(updatedItxContainerContainerState);
+							updatedItxContainerContainerValue.persist();
+							updatedItxContainerContainerState.getLsValues().add(updatedItxContainerContainerValue);
+
+						} else {
+							//itxContainerContainerValue.setLsState(updatedItxContainerContainerState);
+							itxContainerContainerValue.setLsState(updatedItxContainerContainerState);
+							updatedItxContainerContainerValue = ItxContainerContainerValue.update(itxContainerContainerValue);
+							updatedItxContainerContainerState.getLsValues().add(updatedItxContainerContainerValue);
+						}
+					}	
+				} else {
+					logger.debug("No itxContainerContainer values to update");
+				}
+			}
+		}
+		
+		return updatedItxContainerContainer;
+	}
 }

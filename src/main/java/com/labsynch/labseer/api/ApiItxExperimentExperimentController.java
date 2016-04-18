@@ -94,10 +94,14 @@ public class ApiItxExperimentExperimentController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         ItxExperimentExperiment itxExperimentExperiment = ItxExperimentExperiment.fromJsonToItxExperimentExperiment(json);
-        if (itxExperimentExperiment.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        ItxExperimentExperiment updatedItxExperimentExperiment = null;
+        try{
+			updatedItxExperimentExperiment = itxExperimentExperimentService.updateItxExperimentExperiment(itxExperimentExperiment);
+	        return new ResponseEntity<String>(updatedItxExperimentExperiment.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+			logger.error("Caught error updating ItxExperimentExperiment from JSON",e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(itxExperimentExperiment.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -105,13 +109,16 @@ public class ApiItxExperimentExperimentController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<ItxExperimentExperiment> updatedItxExperimentExperiments = new HashSet<ItxExperimentExperiment>();
-        for (ItxExperimentExperiment itxExperimentExperiment: ItxExperimentExperiment.fromJsonArrayToItxExperimentExperiments(json)) {
-            if (itxExperimentExperiment.merge() == null) {
-                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try{
+            for (ItxExperimentExperiment itxExperimentExperiment: ItxExperimentExperiment.fromJsonArrayToItxExperimentExperiments(json)) {
+            	ItxExperimentExperiment updatedItxExperimentExperiment = itxExperimentExperimentService.updateItxExperimentExperiment(itxExperimentExperiment);
+            	updatedItxExperimentExperiments.add(updatedItxExperimentExperiment);
             }
-            updatedItxExperimentExperiments.add(itxExperimentExperiment);
-        }
-        return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(updatedItxExperimentExperiments), headers, HttpStatus.OK);
+	        return new ResponseEntity<String>(ItxExperimentExperiment.toJsonArray(updatedItxExperimentExperiments), headers, HttpStatus.OK);
+        } catch (Exception e) {
+        	logger.error("Caught error updating ItxExperimentExperiments from JSON",e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
     }
     
     @Transactional
