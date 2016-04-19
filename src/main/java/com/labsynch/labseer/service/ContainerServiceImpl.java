@@ -1298,8 +1298,8 @@ public class ContainerServiceImpl implements ContainerService {
 				well.setRecordedDate(new Date());
 				well.setLsType("well");
 				well.setLsKind("default");
-				well.setRowIndex(rowNum);
-				well.setColumnIndex(colNum);
+				well.setRowIndex(rowNum+1);
+				well.setColumnIndex(colNum+1);
 				well.setLsTransaction(plate.getLsTransaction());
 				wells.add(well);
 				ContainerLabel wellName = new ContainerLabel();

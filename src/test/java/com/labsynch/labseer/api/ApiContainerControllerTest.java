@@ -571,7 +571,7 @@ public class ApiContainerControllerTest {
     	String[][] plateLayout = new String[32][48];
     	for (WellStubDTO well : result.getWells()){
     		logger.debug(well.getRowIndex().toString() + ", "+well.getColumnIndex().toString());
-    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
+    		plateLayout[well.getRowIndex()-1][well.getColumnIndex()-1] = well.getWellName();
     	}
     	logger.info(Arrays.deepToString(plateLayout));
     	Container newPlate = Container.findContainerByCodeNameEquals(result.getCodeName());
