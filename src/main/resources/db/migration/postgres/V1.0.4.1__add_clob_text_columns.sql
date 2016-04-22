@@ -1,0 +1,17 @@
+ALTER TABLE cron_job ADD COLUMN last_resultjson_temp text;
+ALTER TABLE cron_job ADD COLUMN scriptjsondata_temp text;
+ALTER TABLE analysis_group_value ADD COLUMN clob_value_temp text;
+--ALTER TABLE author_value ADD COLUMN clob_value_temp text;
+ALTER TABLE container_value ADD COLUMN clob_value_temp text;
+ALTER TABLE experiment_value ADD COLUMN clob_value_temp text;
+ALTER TABLE itx_container_container_value ADD COLUMN clob_value_temp text;
+ALTER TABLE itx_expt_expt_value ADD COLUMN clob_value_temp text;
+ALTER TABLE itx_ls_thing_ls_thing_value ADD COLUMN clob_value_temp text;
+ALTER TABLE itx_protocol_protocol_value ADD COLUMN clob_value_temp text;
+ALTER TABLE itx_subject_container_value ADD COLUMN clob_value_temp text;
+ALTER TABLE ls_thing_value ADD COLUMN clob_value_temp text;
+ALTER TABLE protocol_value ADD COLUMN clob_value_temp text;
+ALTER TABLE subject_value ADD COLUMN clob_value_temp text;
+ALTER TABLE thing_page ADD COLUMN page_content_temp text;
+ALTER TABLE thing_page_archive ADD COLUMN page_content_temp text;
+ALTER TABLE treatment_group_value ADD COLUMN clob_value_temp text;
