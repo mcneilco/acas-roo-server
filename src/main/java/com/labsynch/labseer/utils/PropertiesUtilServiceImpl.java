@@ -166,5 +166,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	    return this.acasLicenseFile;
 	}
 	
+	String syncLdapAuthRoles;
+	
+	@Value("${server.security.syncLdapAuthRoles}")
+	public void setSyncLdapAuthRoles(String syncLdapAuthRoles) {
+	    this.syncLdapAuthRoles = syncLdapAuthRoles;
+	}
+	
+	@Override
+	public boolean getSyncLdapAuthRoles() {
+		return Boolean.parseBoolean(this.syncLdapAuthRoles);
+	}
 
 }

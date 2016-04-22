@@ -30,6 +30,8 @@ public interface PropertiesUtilService {
 	boolean getEnableSwagger();
 
 	String getAcaslicenseFile();
+	
+	boolean getSyncLdapAuthRoles();
 
 	
 }

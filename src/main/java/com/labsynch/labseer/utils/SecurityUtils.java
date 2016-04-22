@@ -1,20 +1,35 @@
 package com.labsynch.labseer.utils;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.service.AuthorRoleService;
 
+@Service
 public class SecurityUtils {
 
 	static Logger logger = LoggerFactory.getLogger(SecurityUtils.class);
+	
+	@Autowired
+    private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+    private AuthorRoleService authorRoleService;
 
-	public static void updateAuthorInfo(Authentication authentication) {
+	@Transactional
+	public void updateAuthorInfo(Authentication authentication) {
 
 		String userName = authentication.getName();
 
@@ -27,6 +42,15 @@ public class SecurityUtils {
 			author = authors.get(0);
 		} else {
 			author = createAuthor(authentication);
+		}
+		
+		if (propertiesUtilService.getSyncLdapAuthRoles()){
+			Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
+			Collection<String> grantedAuths = new HashSet<String>();
+			for (GrantedAuthority auth : auths){
+				grantedAuths.add(auth.getAuthority());
+			}
+			author = authorRoleService.syncRoles(author, grantedAuths);
 		}
 
 	}
