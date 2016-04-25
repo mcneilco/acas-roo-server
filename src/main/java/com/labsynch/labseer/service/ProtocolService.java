@@ -1,12 +1,14 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
@@ -26,5 +28,8 @@ public interface ProtocolService {
 
 	Set<Protocol> findProtocolsByRequestMetadata(
 			Map<String, String> requestParams);
+
+	Collection<ProtocolErrorMessageDTO> findProtocolsByCodeNames(
+			List<String> codeNames);
 	
 }

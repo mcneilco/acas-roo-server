@@ -44,7 +44,9 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ProtocolDTO;
+import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.service.ProtocolService;
@@ -464,5 +466,30 @@ public class ApiProtocolController {
         String result = new JSONSerializer().serialize(numberOfExperiments);
 		return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 	}
+	
+	@Transactional
+    @RequestMapping(value = "/codename/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> findProtocolsByCodeNames(@RequestBody List<String> codeNames, @RequestParam(value = "with", required = false) String with) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        Collection<ProtocolErrorMessageDTO> foundProtocols;
+        try{
+        	foundProtocols = protocolService.findProtocolsByCodeNames(codeNames);
+        } catch (EmptyResultDataAccessException e){
+        	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        if (with != null) {
+            if (with.equalsIgnoreCase("fullobject")) {
+                return new ResponseEntity<String>(ProtocolErrorMessageDTO.toJsonArray(foundProtocols), headers, HttpStatus.OK);
+            } else if (with.equalsIgnoreCase("stub")) {
+                return new ResponseEntity<String>(ProtocolErrorMessageDTO.toJsonArrayStub(foundProtocols), headers, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<String>("ERROR: with" + with + " format option not recognized. ", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<String>(ProtocolErrorMessageDTO.toJsonArrayStub(foundProtocols), headers, HttpStatus.OK);
+        }
+    }
 	
 }

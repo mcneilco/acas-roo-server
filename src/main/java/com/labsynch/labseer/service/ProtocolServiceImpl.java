@@ -1,9 +1,10 @@
 package com.labsynch.labseer.service;
 
-import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +12,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import oracle.sql.DATE;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,16 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.DDictValue;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentLabel;
-import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AutoLabelDTO;
-import com.labsynch.labseer.dto.StringCollectionDTO;
+import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -504,5 +503,40 @@ public class ProtocolServiceImpl implements ProtocolService {
         if (requestParams.containsKey("codeName")) result.retainAll(resultByCodeName);
         
         return result;
+	}
+	
+	@Override
+	public Collection<ProtocolErrorMessageDTO> findProtocolsByCodeNames(List<String> codeNames) {
+		if (codeNames.isEmpty()) return new ArrayList<ProtocolErrorMessageDTO>();
+		EntityManager em = Protocol.entityManager();
+		String queryString = "SELECT new com.labsynch.labseer.dto.ProtocolErrorMessageDTO( "
+				+ "protocol.codeName, "
+				+ "protocol )"
+				+ " FROM Protocol protocol ";
+		queryString += "where ( protocol.ignored <> true ) and ( ";
+		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "protocol.codeName", codeNames);
+		Collection<ProtocolErrorMessageDTO> results = new HashSet<ProtocolErrorMessageDTO>();
+		for (Query q : queries){
+			results.addAll(q.getResultList());
+		}
+		//diff request with results to find codeNames that could not be found
+		HashSet<String> requestCodeNames = new HashSet<String>();
+		requestCodeNames.addAll(codeNames);
+		HashSet<String> foundCodeNames = new HashSet<String>();
+		for (ProtocolErrorMessageDTO result : results){
+			foundCodeNames.add(result.getProtocolCodeName());
+		}
+		requestCodeNames.removeAll(foundCodeNames);
+		if (!requestCodeNames.isEmpty()){
+			for (String notFoundCodeName : requestCodeNames){
+				ProtocolErrorMessageDTO notFoundDTO = new ProtocolErrorMessageDTO();
+				notFoundDTO.setProtocolCodeName(notFoundCodeName);
+				notFoundDTO.setLevel("error");
+				notFoundDTO.setMessage("protocolCodeName not found");
+				results.add(notFoundDTO);
+			}
+		}
+		
+		return results;
 	}
 }

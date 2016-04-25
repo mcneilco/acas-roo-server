@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
+import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.service.ItxProtocolProtocolService;
 
 @RequestMapping("/api/v1/itxprotocolprotocols")
@@ -133,5 +135,41 @@ public class ApiItxProtocolProtocolController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/findByFirstProtocol/{id}", method = RequestMethod.GET)
+    public ResponseEntity<String> findItxProtocolProtocolsByFirstProtocol(@PathVariable("id") Long firstProtocolId) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Protocol firstProtocol;
+    	try{
+    		firstProtocol = Protocol.findProtocol(firstProtocolId);
+    	} catch(Exception e){
+    		logger.error("Error in findItxProtocolProtocolsByFirstProtocol: firstProtocol "+ firstProtocolId.toString()+" not found");
+    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+    	}
+        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsByFirstProtocol(firstProtocol).getResultList();
+        for (ItxProtocolProtocol itx : itxProtocolProtocols){
+        	logger.debug(itx.getCodeName() + " " + itx.getId().toString());
+        	logger.debug(itx.toJson());
+        }
+        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/findBySecondProtocol/{id}", method = RequestMethod.GET)
+    public ResponseEntity<String> findItxProtocolProtocolsBySecondProtocol(@PathVariable("id") Long secondProtocolId) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Protocol secondProtocol;
+        try{
+    		secondProtocol = Protocol.findProtocol(secondProtocolId);
+    	} catch(Exception e){
+    		logger.error("Error in findItxProtocolProtocolsBySecondProtocol: secondProtocol "+ secondProtocolId.toString()+" not found");
+    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+    	}
+        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol).getResultList();
+        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers, HttpStatus.OK);
     }
 }
