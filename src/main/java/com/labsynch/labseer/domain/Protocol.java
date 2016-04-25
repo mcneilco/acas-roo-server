@@ -233,6 +233,7 @@ public class Protocol extends AbstractThing {
                 CodeTableDTO codeTable = new CodeTableDTO();
                 codeTable.setName(protocolLabel.getLabelText());
                 codeTable.setCode(protocol.getCodeName());
+                codeTable.setId(protocol.getId());
                 codeTable.setIgnored(protocol.isIgnored());
                 codeTableList.add(codeTable);
             }
@@ -247,6 +248,7 @@ public class Protocol extends AbstractThing {
                 CodeTableDTO codeTable = new CodeTableDTO();
                 codeTable.setName(protocolLabel.getLabelText());
                 codeTable.setCode(protocolLabel.getProtocol().getCodeName());
+                codeTable.setId(protocolLabel.getProtocol().getId());
                 codeTable.setIgnored(protocolLabel.isIgnored());
                 codeTableList.add(codeTable);
             }
@@ -261,6 +263,7 @@ public class Protocol extends AbstractThing {
                 CodeTableDTO codeTable = new CodeTableDTO();
                 codeTable.setName(protocol.findPreferredName());
                 codeTable.setCode(protocol.getCodeName());
+                codeTable.setId(protocol.getId());
                 codeTable.setIgnored(protocol.isIgnored());
                 codeTableList.add(codeTable);
             }

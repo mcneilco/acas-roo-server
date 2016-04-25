@@ -26,6 +26,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolLabel;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -126,6 +128,53 @@ public class ApiProtocolControllerTest {
         	Assert.assertTrue(!response.getProtocol().getLsStates().isEmpty());
         	Assert.assertNotNull(response.getProtocol().getLsLabels());
         	Assert.assertTrue(!response.getProtocol().getLsLabels().isEmpty());
+    	}
+    }
+    
+    @Test
+    public void getProtocolCodeTables() throws Exception {
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/protocols/codetable")
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<CodeTableDTO> responses = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	for (CodeTableDTO response : responses){
+    		Assert.assertNotNull(response.getCode());
+        	Assert.assertNotNull(response.getName());
+        	Assert.assertNotNull(response.getId());
+    	}
+    }
+    
+    @Test
+    public void getProtocolCodeTablesByLsKind() throws Exception {
+    	Protocol protocol = Protocol.findProtocolEntries(0, 1).get(0);
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/protocols/codetable?lsKind="+protocol.getLsKind())
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<CodeTableDTO> responses = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	for (CodeTableDTO response : responses){
+    		Assert.assertNotNull(response.getCode());
+        	Assert.assertNotNull(response.getName());
+        	Assert.assertNotNull(response.getId());
+    	}
+    }
+    
+    @Test
+    public void getProtocolCodeTablesByName() throws Exception {
+    	ProtocolLabel label = ProtocolLabel.findProtocolLabelEntries(0, 1).get(0);
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/protocols/codetable?protocolName="+label.getLabelText())
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<CodeTableDTO> responses = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	for (CodeTableDTO response : responses){
+    		Assert.assertNotNull(response.getCode());
+        	Assert.assertNotNull(response.getName());
+        	Assert.assertNotNull(response.getId());
     	}
     }
     
