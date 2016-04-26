@@ -25,6 +25,8 @@ import com.labsynch.labseer.domain.OperatorKind;
 import com.labsynch.labseer.domain.OperatorType;
 import com.labsynch.labseer.domain.ProtocolKind;
 import com.labsynch.labseer.domain.ProtocolType;
+import com.labsynch.labseer.domain.RoleKind;
+import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.domain.StateKind;
 import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ThingKind;
@@ -330,6 +332,31 @@ public class TypeKindDTO {
 			dDictKinds.add(dDictKind);
 		}
 		return dDictKinds;
+	}
+	
+	public static Collection<RoleKind> getOrCreateRoleKinds(
+			List<TypeKindDTO> typeKinds) {
+		HashSet<RoleKind> roleKinds = new HashSet<RoleKind>();
+		for (TypeKindDTO typeKind : typeKinds){
+			RoleType roleType;
+			try{
+				roleType = RoleType.findRoleTypesByTypeNameEquals(typeKind.typeName).getSingleResult();
+			} catch (Exception e){
+				logger.error("RoleType " + typeKind.typeName + " has not been created.");
+				return null;
+			}
+			RoleKind roleKind;
+			try{
+				roleKind = RoleKind.findRoleKindsByKindNameEqualsAndLsType(typeKind.kindName, roleType).getSingleResult();
+			} catch(EmptyResultDataAccessException e){
+				roleKind = new RoleKind();
+				roleKind.setLsType(roleType);
+				roleKind.setKindName(typeKind.kindName);
+				roleKind.persist();
+			}
+			roleKinds.add(roleKind);
+		}
+		return roleKinds;
 	}
 	
 	

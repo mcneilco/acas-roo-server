@@ -31,6 +31,8 @@ import com.labsynch.labseer.domain.OperatorKind;
 import com.labsynch.labseer.domain.OperatorType;
 import com.labsynch.labseer.domain.ProtocolKind;
 import com.labsynch.labseer.domain.ProtocolType;
+import com.labsynch.labseer.domain.RoleKind;
+import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.domain.StateKind;
 import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ThingKind;
@@ -254,6 +256,24 @@ public class ApiSetupController {
 		headers.add("Content-Type", "application/json");
 		Collection<DDictKind> results = TypeKindDTO.getOrCreateDDictKinds(typeKinds);
 		return new ResponseEntity<String>(DDictKind.toJsonArray(results), headers, HttpStatus.CREATED);
+	}
+	
+	@Transactional
+    @RequestMapping(value = "/roletypes", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> getOrCreateRoleTypes(@RequestBody List<TypeDTO> types) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		Collection<RoleType> results = TypeDTO.getOrCreateRoleTypes(types);
+		return new ResponseEntity<String>(RoleType.toJsonArray(results), headers, HttpStatus.CREATED);
+	}
+	
+	@Transactional
+    @RequestMapping(value = "/rolekinds", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> getOrCreateRoleKinds(@RequestBody List<TypeKindDTO> typeKinds) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		Collection<RoleKind> results = TypeKindDTO.getOrCreateRoleKinds(typeKinds);
+		return new ResponseEntity<String>(RoleKind.toJsonArray(results), headers, HttpStatus.CREATED);
 	}
 	
 	@Transactional
