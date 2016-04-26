@@ -80,7 +80,7 @@ public class AuthorServiceImpl implements AuthorService {
 		Set<AuthorRole> roles = author.getAuthorRoles();
 		for (AuthorRole role : roles){
 			LsRole entry = role.getRoleEntry();
-			if (entry.getLsType().equalsIgnoreCase("Project")){
+			if (entry.getLsType()!= null && entry.getLsType().equalsIgnoreCase("Project")){
 				projectThings.addAll(LsThing.findLsThingsByCodeNameEquals(entry.getLsKind()).getResultList());
 			}
 		}

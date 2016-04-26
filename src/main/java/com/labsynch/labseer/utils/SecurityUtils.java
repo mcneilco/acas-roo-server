@@ -43,7 +43,7 @@ public class SecurityUtils {
 		} else {
 			author = createAuthor(authentication);
 		}
-		
+		logger.debug("Updated author: "+author.getUserName());
 		if (propertiesUtilService.getSyncLdapAuthRoles()){
 			Collection<? extends GrantedAuthority> auths = authentication.getAuthorities();
 			Collection<String> grantedAuths = new HashSet<String>();
@@ -51,7 +51,9 @@ public class SecurityUtils {
 				grantedAuths.add(auth.getAuthority());
 			}
 			author = authorRoleService.syncRoles(author, grantedAuths);
+			logger.debug("Finished syncing roles for "+author.getUserName());
 		}
+		
 
 	}
 

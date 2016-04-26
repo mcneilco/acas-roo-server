@@ -29,9 +29,12 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 	@Transactional
 	public Author syncRoles(Author author, Collection<String> grantedRoles) {
 		Collection<AuthorRole> cachedRoles = author.getAuthorRoles();
+		logger.debug(AuthorRole.toJsonArray(cachedRoles));
 		HashSet<String> cachedRoleNames = new HashSet<String>();
 		for (AuthorRole cachedRole : cachedRoles){
-			cachedRoleNames.add(cachedRole.getRoleEntry().getRoleName());
+			if (cachedRole.getRoleEntry().getLsType().equalsIgnoreCase("LDAP")){
+				cachedRoleNames.add(cachedRole.getRoleEntry().getRoleName());
+			}
 		}
 		//diff the two sets - cached and new/granted
 		HashSet<String> roleNamesToDelete = new HashSet<String>();
@@ -41,6 +44,8 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 		roleNamesToAdd.addAll(grantedRoles);
 		roleNamesToAdd.removeAll(cachedRoleNames);
 		Set<AuthorRole> newAuthorRoles = new HashSet<AuthorRole>();
+		logger.debug(roleNamesToDelete.toString());
+		logger.debug(roleNamesToAdd.toString());
 		//add new roles, autocreating LsRole if necessary
 		for (String roleName : roleNamesToAdd){
 			LsRole role;
@@ -49,6 +54,8 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 			}catch (EmptyResultDataAccessException e){
 				role = new LsRole();
 				role.setRoleName(roleName);
+				role.setLsType("LDAP");
+				role.setLsKind("Auto");
 				role.setRoleDescription("autocreated by ACAS from LDAP role");
 				role.persist();
 			}
