@@ -1,6 +1,7 @@
 package com.labsynch.labseer.api;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
+import com.labsynch.labseer.dto.SubjectCsvDataDTO;
 import com.labsynch.labseer.service.SubjectService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -257,5 +259,28 @@ public class ApiSubjectController {
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @Transactional	
+	@RequestMapping(value = "/savefromtsv", method = RequestMethod.POST, headers = "Accept=application/json")
+	public @ResponseBody ResponseEntity<String> saveAnalysisGroupDataFromCsv(@RequestBody SubjectCsvDataDTO subjectCsvDataDTO) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+
+		logger.info("loading data from tsv files: " + subjectCsvDataDTO.toJson());
+		
+		String subjectFilePath = subjectCsvDataDTO.getSubjectCsvFilePath();
+
+		long startTime = new Date().getTime();
+		boolean dataLoaded = subjectService.createOnlySubjectsFromCSV(subjectFilePath, subjectCsvDataDTO.getTreatmentGroupIds());
+		long endTime = new Date().getTime();
+		long totalTime = endTime - startTime;
+		logger.info("dataLoaded: " + dataLoaded + "   total elapsed time: " + totalTime);
+		
+		if (dataLoaded){
+			return new ResponseEntity<String>(headers, HttpStatus.OK) ;
+		} else {
+			return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 }
