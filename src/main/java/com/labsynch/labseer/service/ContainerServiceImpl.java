@@ -1892,7 +1892,7 @@ public class ContainerServiceImpl implements ContainerService {
 	@Transactional
 	public List<Long> insertContainers(final List<Container> containers) throws SQLException{
 		jdbcTemplate = new JdbcTemplate(dataSource);		
-		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "lsseq_container_pkseq", containers.size());
+		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "thing_pkseq", containers.size());
 		String sql = "INSERT INTO CONTAINER"
 				+ "(id, code_name, deleted, ignored, ls_kind, ls_transaction, ls_type, ls_type_and_kind, modified_by, modified_date, recorded_by, recorded_date, version, column_index, location_id, row_index) VALUES"
 				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -1973,7 +1973,7 @@ public class ContainerServiceImpl implements ContainerService {
 	@Transactional
 	public List<Long> insertItxContainerContainers(final List<ItxContainerContainer> itxContainerContainers) throws SQLException{
 		jdbcTemplate = new JdbcTemplate(dataSource);		
-		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "lsseq_itxcntrcntr_pkseq", itxContainerContainers.size());
+		final List<Long> idList = SimpleUtil.getIdsFromSequence(jdbcTemplate, "thing_pkseq", itxContainerContainers.size());
 		String sql = "INSERT INTO ITX_CONTAINER_CONTAINER"
 				+ "(id, code_name, deleted, ignored, ls_kind, ls_transaction, ls_type, ls_type_and_kind, modified_by, modified_date, recorded_by, recorded_date, version, first_container_id, second_container_id) VALUES"
 				+ "(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
