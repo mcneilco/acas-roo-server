@@ -27,6 +27,7 @@ import com.labsynch.labseer.domain.InteractionType;
 import com.labsynch.labseer.domain.LabelKind;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LabelType;
+import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.OperatorKind;
 import com.labsynch.labseer.domain.OperatorType;
 import com.labsynch.labseer.domain.ProtocolKind;
@@ -293,6 +294,15 @@ public class ApiSetupController {
 	    headers.add("Content-Type", "application/json");
 	    Collection<LabelSequence> savedLabelSequences = labelSequenceService.saveLabelSequenceArray(labelSequences);
 	    return new ResponseEntity<String>(LabelSequence.toJsonArray(savedLabelSequences), headers, HttpStatus.CREATED);
+	}
+	
+	@Transactional
+    @RequestMapping(value = "/lsroles", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> getOrCreateLsRoles(@RequestBody List<LsRole> lsRoles) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		Collection<LsRole> results = LsRole.getOrCreateRoles(lsRoles);
+		return new ResponseEntity<String>(LsRole.toJsonArray(results), headers, HttpStatus.CREATED);
 	}
 	
 	

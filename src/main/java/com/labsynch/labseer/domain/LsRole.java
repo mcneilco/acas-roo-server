@@ -1,8 +1,11 @@
 package com.labsynch.labseer.domain;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +20,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -77,6 +81,31 @@ public class LsRole {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+    public static Collection<LsRole> getOrCreateRoles(Collection<LsRole> queryRoles){
+    	Collection<LsRole> resultRoles = new ArrayList<LsRole>();
+    	for (LsRole queryRole : queryRoles){
+    		LsRole resultRole = LsRole.getOrCreateRole(queryRole);
+    		resultRoles.add(resultRole);
+    	}
+    	return resultRoles;
+    }
+    public static LsRole getOrCreateRole(LsRole queryRole) {
+    	String lsType = queryRole.getLsType();
+    	String lsKind = queryRole.getLsKind();
+    	String roleName = queryRole.getRoleName();
+        List<LsRole> lsRoles = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(lsType, lsKind, roleName).getResultList();
+        if (lsRoles.size() == 0) {
+            LsRole newRole = new LsRole();
+            newRole.setLsType(lsType);
+            newRole.setLsKind(lsKind);
+            newRole.setRoleName(roleName);
+            newRole.setRoleDescription(roleName+" autocreated by ACAS");
+            newRole.persist();
+            return newRole;
+        } else {
+            return lsRoles.get(0);
+        }
     }
 
     public static com.labsynch.labseer.domain.LsRole getOrCreateRole(String roleName) {
