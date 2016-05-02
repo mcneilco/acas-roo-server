@@ -67,6 +67,9 @@ public class LsThingServiceImpl implements LsThingService {
 	
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+	private AuthorService authorService;
 
 	@Override
 	public String getProjectCodes(){
@@ -940,6 +943,26 @@ public class LsThingServiceImpl implements LsThingService {
 	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
 			String searchQuery) {
 		return findLsThingsByGenericMetaDataSearch(searchQuery, null);
+	}
+	
+
+
+	@Override
+	public Collection<LsThing> findLsThingProjectsByGenericMetaDataSearch(
+			String searchQuery, String userName) {
+		Collection<LsThing> rawResults = findLsThingsByGenericMetaDataSearch(searchQuery, "project");
+		Collection<LsThing> projects = authorService.getUserProjects(userName);
+		List<String> allowedProjectCodeNames = new ArrayList<String>();
+		for (LsThing project : projects){
+			allowedProjectCodeNames.add(project.getCodeName());
+		}
+		Collection<LsThing> results = new HashSet<LsThing>();
+		for (LsThing rawResult : rawResults){
+			if (allowedProjectCodeNames.contains(rawResult.getCodeName())){
+				results.add(rawResult);
+			}
+		}
+		return null;
 	}
 
 	@Override

@@ -66,6 +66,20 @@ public class ApiLsThingController {
 		}
 	}
     
+    @RequestMapping(value = "/searchProjects", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<String> projectSearch(@RequestParam(value="userName", required = true) String userName, @RequestParam("q") String searchQuery) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		try {
+			Collection<LsThing> results = lsThingService.findLsThingProjectsByGenericMetaDataSearch(searchQuery, userName);
+			return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
+		} catch(Exception e){
+			logger.error("Caught an error searching for projects.",e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+    
     @RequestMapping(value = "/getGeneCodeNameFromNameRequest", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getGeneCodeNameFromName(@RequestBody String json) {
     	PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);

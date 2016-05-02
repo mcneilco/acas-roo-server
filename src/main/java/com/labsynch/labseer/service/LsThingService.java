@@ -86,6 +86,9 @@ public interface LsThingService {
 	boolean deleteParent(LsThing parent);
 
 	int getBatchNumber(LsThing parent);
+
+	Collection<LsThing> findLsThingProjectsByGenericMetaDataSearch(
+			String searchQuery, String userName);
 	
 	
 }
