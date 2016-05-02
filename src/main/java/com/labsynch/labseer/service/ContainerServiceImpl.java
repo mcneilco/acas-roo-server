@@ -1189,6 +1189,16 @@ public class ContainerServiceImpl implements ContainerService {
 		List<ItxContainerContainer> definesList = new ArrayList<ItxContainerContainer>();
 		definesList.add(defines);
 		insertItxContainerContainers(definesList);
+		//getOrCreate location
+		Container location = getOrCreateBench(plateRequest.getRecordedBy(), lsTransaction);
+		//move plate to location
+		ContainerLocationDTO moveRequest = new ContainerLocationDTO(location.getCodeName(), plate.getCodeName(), plateRequest.getBarcode());
+		moveRequest.setModifiedBy(plateRequest.getRecordedBy());
+		moveRequest.setModifiedDate(new Date());
+		Collection<ContainerLocationDTO> moveRequests = new ArrayList<ContainerLocationDTO>();
+		moveRequests.add(moveRequest);
+		moveToLocation(moveRequests);
+		//create and populate wells
 		try{
 			Map<String, List<?>> wellsAndNames = createWellsFromDefinition(plate, definition);
 			List<Container> wells = (List<Container>)wellsAndNames.get("wells");
@@ -1211,6 +1221,104 @@ public class ContainerServiceImpl implements ContainerService {
 			logger.error("Error creating wells from definition",e);
 			throw new Exception("Error creating wells from definition",e);
 		}
+	}
+
+	private Container getOrCreateBench(String recordedBy, LsTransaction lsTransaction) throws SQLException {
+		PreferredNameDTO request = new PreferredNameDTO(recordedBy, null, null);
+		Collection<PreferredNameDTO> requests = new ArrayList<PreferredNameDTO>();
+		requests.add(request);
+		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
+		requestDTO.setRequests(requests);
+		PreferredNameResultsDTO resultsDTO = getCodeNameFromName("location", "default", "name", "common", requestDTO);
+		String locationCodeName = resultsDTO.getResults().iterator().next().getReferenceName();
+		if (locationCodeName != null && locationCodeName.length() > 0){
+			Container location = Container.findContainerByCodeNameEquals(locationCodeName);
+			return location;
+		}else{
+			logger.warn("bench location not found for "+recordedBy+". Creating new location.");
+			Container bench = new Container();
+			bench.setCodeName(autoLabelService.getContainerCodeName());
+			bench.setRecordedBy(recordedBy);
+			bench.setRecordedDate(new Date());
+			bench.setLsType("location");
+			bench.setLsKind("default");
+			bench.setLsTransaction(lsTransaction.getId());
+			List<Container> benchList = new ArrayList<Container>();
+			benchList.add(bench);
+			bench.setId(insertContainers(benchList).get(0));
+
+			
+			ContainerLabel benchName = new ContainerLabel();
+			benchName.setRecordedBy(bench.getRecordedBy());
+			benchName.setRecordedDate(bench.getRecordedDate());
+			benchName.setLsType("name");
+			benchName.setLsKind("common");
+			benchName.setLabelText(recordedBy);
+			benchName.setLsTransaction(bench.getLsTransaction());
+			benchName.setContainer(bench);
+			bench.getLsLabels().add(benchName);
+			List<ContainerLabel> benchNameList = new ArrayList<ContainerLabel>();
+			benchNameList.add(benchName);
+			benchName.setId(insertContainerLabels(benchNameList).get(0));
+			
+			ContainerState metadataState = new ContainerState();
+			metadataState.setRecordedBy(bench.getRecordedBy());
+			metadataState.setRecordedDate(bench.getRecordedDate());
+			metadataState.setLsType("metadata");
+			metadataState.setLsKind("information");
+			metadataState.setLsTransaction(bench.getLsTransaction());
+			metadataState.setContainer(bench);
+			List<ContainerState> benchStateList = new ArrayList<ContainerState>();
+			benchStateList.add(metadataState);
+			metadataState.setId(insertContainerStates(benchStateList).get(0));
+			
+			Set<ContainerValue> values = new HashSet<ContainerValue>();
+			List<ContainerValue> benchValueList = new ArrayList<ContainerValue>();
+			
+			ContainerValue description = new ContainerValue();
+			description.setRecordedBy(bench.getRecordedBy());
+			description.setRecordedDate(bench.getRecordedDate());
+			description.setLsType("stringValue");
+			description.setLsKind("description");
+			description.setStringValue(recordedBy+"'s bench");
+			description.setLsTransaction(bench.getLsTransaction());
+			description.setLsState(metadataState);
+			values.add(description);
+			benchValueList.add(description);
+			
+			ContainerValue createdUser = new ContainerValue();
+			createdUser.setRecordedBy(bench.getRecordedBy());
+			createdUser.setRecordedDate(bench.getRecordedDate());
+			createdUser.setLsType("codeValue");
+			createdUser.setLsKind("created user");
+			createdUser.setCodeValue(recordedBy);
+			createdUser.setLsTransaction(bench.getLsTransaction());
+			createdUser.setLsState(metadataState);
+			values.add(createdUser);
+			benchValueList.add(createdUser);
+			
+			ContainerValue createdDate = new ContainerValue();
+			createdDate.setRecordedBy(bench.getRecordedBy());
+			createdDate.setRecordedDate(bench.getRecordedDate());
+			createdDate.setLsType("dateValue");
+			createdDate.setLsKind("created date");
+			createdDate.setDateValue(new Date());
+			createdDate.setLsTransaction(bench.getLsTransaction());
+			createdDate.setLsState(metadataState);
+			values.add(createdDate);
+			benchValueList.add(createdDate);
+			
+			metadataState.setLsValues(values);
+			List<Long> valueIds = insertContainerValues(benchValueList);
+			description.setId(valueIds.get(0));
+			createdUser.setId(valueIds.get(1));
+			createdDate.setId(valueIds.get(2));
+			
+			bench.getLsStates().add(metadataState);
+			bench.getLsLabels().add(benchName);
+			return bench;
+		}
+		
 	}
 
 	private void updateNewWellsByWellName(List<Container> wells, List<ContainerLabel> wellNames, Collection<WellContentDTO> wellDTOs) {
