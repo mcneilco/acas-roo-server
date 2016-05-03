@@ -352,7 +352,7 @@ public class SubjectServiceImpl implements SubjectService {
 	}
 	
 	@Override
-	public boolean createOnlySubjectsFromCSV(String subjectFilePath, List<Long> treatmentGroupIds){
+	public HashMap<String, TempThingDTO> createOnlySubjectsFromCSV(String subjectFilePath, List<Long> treatmentGroupIds) throws Exception{
 		HashMap<String, TempThingDTO> treatmentGroupMap = new HashMap<String, TempThingDTO>();
 		for (Long treatmentGroupId : treatmentGroupIds){
 			TempThingDTO treatmentGroupThing = new TempThingDTO();
@@ -360,11 +360,11 @@ public class SubjectServiceImpl implements SubjectService {
 			treatmentGroupMap.put(treatmentGroupId.toString(), treatmentGroupThing);
 		}
 		try{
-			createSubjectsFromCSV(subjectFilePath, treatmentGroupMap);
-			return true;
+			HashMap<String, TempThingDTO> resultMap = createSubjectsFromCSV(subjectFilePath, treatmentGroupMap);
+			return resultMap;
 		}catch (Exception e){
 			logger.error("Caught exception loading subjects from tsv", e);
-			return false;
+			throw e;
 		}
 	}
 
