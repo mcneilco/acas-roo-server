@@ -32,6 +32,22 @@ privileged aspect AuthProjectGroupsDTO_Roo_JavaBean {
         this.alias = alias;
     }
     
+    public boolean AuthProjectGroupsDTO.isActive() {
+        return this.active;
+    }
+    
+    public void AuthProjectGroupsDTO.setActive(boolean active) {
+        this.active = active;
+    }
+    
+    public boolean AuthProjectGroupsDTO.isIsRestricted() {
+        return this.isRestricted;
+    }
+    
+    public void AuthProjectGroupsDTO.setIsRestricted(boolean isRestricted) {
+        this.isRestricted = isRestricted;
+    }
+    
     public Long AuthProjectGroupsDTO.getId() {
         return this.id;
     }

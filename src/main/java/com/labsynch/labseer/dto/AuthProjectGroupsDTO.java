@@ -22,6 +22,10 @@ public class AuthProjectGroupsDTO {
 	private String code;
 	
 	private String alias;
+	
+	private boolean active;
+	
+	private boolean isRestricted;
 
 	private Long id;
 	

@@ -24,6 +24,8 @@ import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.LsThingState;
+import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
 import com.labsynch.labseer.dto.AuthGroupsDTO;
 import com.labsynch.labseer.dto.AuthProjectGroupsDTO;
@@ -117,6 +119,8 @@ public class AuthorServiceImpl implements AuthorService {
 		Set<LsThingLabel> projectLabels;
 		String projectName = null;
 		String projectAlias = null;
+		boolean active = true;
+		boolean isRestricted = true;
 
 		for (LsThing project : projectCollection){
 			if (!project.isIgnored()){
@@ -138,12 +142,25 @@ public class AuthorServiceImpl implements AuthorService {
 						}
 					}
 				}
+				for (LsThingState projectState : project.getLsStates()){
+					for (LsThingValue projectValue : projectState.getLsValues()){
+						if (projectValue.getLsKind().equalsIgnoreCase("project status")){
+							if (projectValue.getCodeValue().equalsIgnoreCase("Active")) active = true;
+							else if (projectValue.getCodeValue().equalsIgnoreCase("Inactive")) active = false;
+						}else if (projectValue.getLsKind().equalsIgnoreCase("is restricted")){
+							if (projectValue.getCodeValue().equalsIgnoreCase("true")) isRestricted = true;
+							else if (projectValue.getCodeValue().equalsIgnoreCase("false")) isRestricted = false;
+						}
+					}
+				}
 				
 				authProjectGroup = new AuthProjectGroupsDTO();
 				authProjectGroup.setId(project.getId());				
 				authProjectGroup.setCode(project.getCodeName());
 				authProjectGroup.setName(projectName);
 				authProjectGroup.setAlias(projectAlias);
+				authProjectGroup.setActive(active);
+				authProjectGroup.setIsRestricted(isRestricted);
 				authProjectGroup.setGroups(groups);
 				authProjectsGroups.add(authProjectGroup);
 			}
