@@ -962,7 +962,7 @@ public class LsThingServiceImpl implements LsThingService {
 				results.add(rawResult);
 			}
 		}
-		return null;
+		return results;
 	}
 
 	@Override
