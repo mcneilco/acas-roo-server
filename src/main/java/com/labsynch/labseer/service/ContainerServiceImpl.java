@@ -2334,6 +2334,7 @@ public class ContainerServiceImpl implements ContainerService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(cb.and(predicates));
 		TypedQuery<Container> q = em.createQuery(criteria);
+		q.setMaxResults(propertiesUtilService.getContainerInventorySearchMaxResult());
 		containerList = q.getResultList();
 		return containerList;
 	}

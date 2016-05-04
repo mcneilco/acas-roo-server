@@ -33,6 +33,18 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public String getHostPath() {
 	    return this.hostPath;
 	}
+	
+	int containerInventorySearchMaxResult;
+	
+	@Value("${client.containerInventory.search.maxResult}")
+	public void setContainerInventorySearchMaxResult(int containerInventorySearchMaxResult) {
+	    this.containerInventorySearchMaxResult = containerInventorySearchMaxResult;
+	}
+
+	@Override
+	public int getContainerInventorySearchMaxResult() {
+	    return this.containerInventorySearchMaxResult;
+	}
 
 	String authStrategy;
 

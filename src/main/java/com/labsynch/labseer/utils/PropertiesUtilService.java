@@ -31,5 +31,7 @@ public interface PropertiesUtilService {
 
 	String getAcaslicenseFile();
 
+	int getContainerInventorySearchMaxResult();
+
 	
 }
