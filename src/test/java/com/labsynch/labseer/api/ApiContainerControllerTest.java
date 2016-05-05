@@ -581,12 +581,7 @@ public class ApiContainerControllerTest {
     		Assert.assertFalse(state.getLsValues().isEmpty());
     		Assert.assertEquals("metadata", state.getLsType());
     		Assert.assertEquals("information", state.getLsKind());
-    		Assert.assertEquals(1, state.getLsValues().size());
-    		for (ContainerValue value : state.getLsValues()){
-    			Assert.assertEquals("stringValue", value.getLsType());
-        		Assert.assertEquals("description", value.getLsKind());
-        		Assert.assertEquals(value.getStringValue(), "test description");
-    		}
+    		Assert.assertEquals(3, state.getLsValues().size());
     	}
 	}
 	
@@ -1417,6 +1412,79 @@ public class ApiContainerControllerTest {
 	    	logger.info(responseJson);
 	    	foundContainers = CodeTableDTO.fromJsonArrayToCoes(responseJson);
 	    	Assert.assertTrue(foundContainers.isEmpty());
+	    }
+	    
+	    @Test
+	    @Transactional
+	    @Rollback(value=false)
+	    public void saveAndSearchContainers() throws Exception{
+	    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+			query.setMaxResults(1);
+			try{
+				Container definition = query.getSingleResult();
+			}catch (EmptyResultDataAccessException e){
+				Container definition = Container.fromJsonToContainer("{\"codeName\":\"special-definition-code\",\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"plate\",\"lsLabels\":[{\"deleted\":false,\"id\":null,\"ignored\":false,\"labelText\":\"1536\",\"lsKind\":\"common\",\"lsType\":\"name\",\"lsTypeAndKind\":\"name_common\",\"physicallyLabled\":true,\"preferred\":true,\"recordedBy\":\"acas\",\"recordedDate\":1456208484968,\"version\":null}],\"lsStates\":[{\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"format\",\"lsType\":\"constants\",\"lsTypeAndKind\":\"constants_format\",\"lsValues\":[{\"codeTypeAndKind\":\"null_null\",\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"columns\",\"lsType\":\"numericValue\",\"lsTypeAndKind\":\"numericValue_columns\",\"numericValue\":48,\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"acas\",\"recordedDate\":1456208484968,\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"rows\",\"lsType\":\"numericValue\",\"lsTypeAndKind\":\"numericValue_rows\",\"numericValue\":32,\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"acas\",\"recordedDate\":1456208484968,\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"wells\",\"lsType\":\"numericValue\",\"lsTypeAndKind\":\"numericValue_wells\",\"numericValue\":1536,\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"acas\",\"recordedDate\":1456208484968,\"unitTypeAndKind\":\"null_null\",\"version\":null},{\"codeTypeAndKind\":\"null_null\",\"codeValue\":\"A001\",\"deleted\":false,\"id\":null,\"ignored\":false,\"lsKind\":\"subcontainer naming convention\",\"lsType\":\"codeValue\",\"lsTypeAndKind\":\"codeValue_subcontainer naming convention\",\"operatorTypeAndKind\":\"null_null\",\"publicData\":true,\"recordedBy\":\"acas\",\"recordedDate\":1456208484968,\"unitTypeAndKind\":\"null_null\",\"version\":null}],\"recordedBy\":\"acas\",\"recordedDate\":1456208484968,\"version\":null}],\"lsType\":\"definition container\",\"lsTypeAndKind\":\"definition container_plate\",\"recordedBy\":\"acas\",\"recordedDate\":1456208484968,\"version\":null}");
+				containerService.saveLsContainer(definition);
+			}
+			Container definition = query.getSingleResult();
+			String barcode = "TESTBARCODE-124";
+			String createdUser = "acas";
+			CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
+			plateRequest.setDefinition(definition.getCodeName());
+			plateRequest.setBarcode(barcode);
+			plateRequest.setRecordedBy(createdUser);
+			plateRequest.setDescription("test description");
+			String json = plateRequest.toJson();
+			logger.info(json);
+			Assert.assertFalse(json.equals("{}"));
+	    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/createPlate")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(json))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();;
+			logger.info(response.getContentAsString());
+			PlateStubDTO result = PlateStubDTO.fromJsonToPlateStubDTO(response.getContentAsString());
+	    	logger.info(result.toJson());
+	    	Assert.assertEquals(1536, result.getWells().size());
+	    	String[][] plateLayout = new String[32][48];
+	    	for (WellStubDTO well : result.getWells()){
+	    		logger.debug(well.getRowIndex().toString() + ", "+well.getColumnIndex().toString());
+	    		plateLayout[well.getRowIndex()-1][well.getColumnIndex()-1] = well.getWellName();
+	    	}
+	    	logger.info(Arrays.deepToString(plateLayout));
+	    	Container newPlate = Container.findContainerByCodeNameEquals(result.getCodeName());
+	    	Assert.assertFalse(newPlate.getLsStates().isEmpty());
+	    	Assert.assertEquals(1, newPlate.getLsStates().size());
+	    	for (ContainerState state : newPlate.getLsStates()){
+	    		Assert.assertFalse(state.getLsValues().isEmpty());
+	    		Assert.assertEquals("metadata", state.getLsType());
+	    		Assert.assertEquals("information", state.getLsKind());
+	    		Assert.assertEquals(3, state.getLsValues().size());
+	    	}
+	    	
+	    	ContainerSearchRequestDTO searchRequest = new ContainerSearchRequestDTO();
+//	    	searchRequest.setBarcode("TESTBARCODE");
+//	    	searchRequest.setDescription("test");
+//	    	searchRequest.setDefinition(definition.getCodeName());
+	    	searchRequest.setCreatedUser(createdUser);
+	    	json = searchRequest.toJson();
+	    	logger.info(json);
+	    	response = this.mockMvc.perform(post("/api/v1/containers/searchContainers")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(json))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();
+	    	String responseJson = response.getContentAsString();
+	    	logger.info(responseJson);
+	    	Collection<Container> foundContainers = Container.fromJsonArrayToContainers(responseJson);
+	    	Assert.assertFalse(foundContainers.isEmpty());
+	    	for (Container foundContainer : foundContainers){
+	    		Assert.assertNotNull(foundContainer);
+	    	}
 	    }
     
 

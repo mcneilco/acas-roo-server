@@ -1166,23 +1166,52 @@ public class ContainerServiceImpl implements ContainerService {
 		List<ContainerState> plateStateList = new ArrayList<ContainerState>();
 		plateStateList.add(metadataState);
 		metadataState.setId(insertContainerStates(plateStateList).get(0));
+		
+		Set<ContainerValue> values = new HashSet<ContainerValue>();
+		List<ContainerValue> plateValueList = new ArrayList<ContainerValue>();
 
-		if(plateRequest.getDescription() != null){
-			ContainerValue description = new ContainerValue();
-			description.setRecordedBy(plate.getRecordedBy());
-			description.setRecordedDate(plate.getRecordedDate());
-			description.setLsType("stringValue");
-			description.setLsKind("description");
-			description.setStringValue(plateRequest.getDescription());
-			description.setLsTransaction(plate.getLsTransaction());
-			description.setLsState(metadataState);
-			Set<ContainerValue> values = new HashSet<ContainerValue>();
+		ContainerValue createdUser = new ContainerValue();
+		createdUser.setRecordedBy(plate.getRecordedBy());
+		createdUser.setRecordedDate(plate.getRecordedDate());
+		createdUser.setLsType("codeValue");
+		createdUser.setLsKind("created user");
+		createdUser.setCodeValue(plate.getRecordedBy());
+		createdUser.setLsTransaction(plate.getLsTransaction());
+		createdUser.setLsState(metadataState);
+		values.add(createdUser);
+		plateValueList.add(createdUser);
+		
+		ContainerValue createdDate = new ContainerValue();
+		createdDate.setRecordedBy(plate.getRecordedBy());
+		createdDate.setRecordedDate(plate.getRecordedDate());
+		createdDate.setLsType("dateValue");
+		createdDate.setLsKind("created date");
+		createdDate.setDateValue(new Date());
+		createdDate.setLsTransaction(plate.getLsTransaction());
+		createdDate.setLsState(metadataState);
+		values.add(createdDate);
+		plateValueList.add(createdDate);
+		
+		ContainerValue description = new ContainerValue();
+		description.setRecordedBy(plate.getRecordedBy());
+		description.setRecordedDate(plate.getRecordedDate());
+		description.setLsType("stringValue");
+		description.setLsKind("description");
+		description.setStringValue(plateRequest.getDescription());
+		description.setLsTransaction(plate.getLsTransaction());
+		description.setLsState(metadataState);
+		
+		if(plateRequest.getDescription() != null) {
 			values.add(description);
-			metadataState.setLsValues(values);
-			List<ContainerValue> plateValueList = new ArrayList<ContainerValue>();
 			plateValueList.add(description);
-			description.setId(insertContainerValues(plateValueList).get(0));
 		}
+		metadataState.setLsValues(values);
+
+		List<Long> valueIds = insertContainerValues(plateValueList);
+		createdUser.setId(valueIds.get(0));
+		createdDate.setId(valueIds.get(1));
+		if(plateRequest.getDescription() != null) description.setId(valueIds.get(2));
+		
 		plate.getLsStates().add(metadataState);
 		plate.getLsLabels().add(plateBarcode);
 		ItxContainerContainer defines = makeItxContainerContainer("defines", definition, plate, plateRequest.getRecordedBy(), lsTransaction.getId());
@@ -2281,7 +2310,7 @@ public class ContainerServiceImpl implements ContainerService {
 				Join<ContainerState, ContainerValue> createdUserValue = containerState.join("lsValues");
 				Predicate createdUserStringValue = cb.like(createdUserValue.<String>get("codeValue"), '%'+createdUser+'%');
 				Predicate createdUserType = cb.equal(createdUserValue.<String>get("lsType"), "codeValue");
-				Predicate createdUserKind = cb.equal(createdUserValue.<String>get("lsKind"), "createdUser");
+				Predicate createdUserKind = cb.equal(createdUserValue.<String>get("lsKind"), "created user");
 				Predicate createdUserNotIgnored = cb.not(createdUserValue.<Boolean>get("ignored"));
 				Predicate createdUserPredicate = cb.and(createdUserStringValue,createdUserType, createdUserKind, createdUserNotIgnored);
 				predicateList.add(createdUserPredicate);
