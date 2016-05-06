@@ -17,6 +17,9 @@ public interface ItxProtocolProtocolService {
 
 	ItxProtocolProtocol updateItxProtocolProtocol(
 			ItxProtocolProtocol jsonItxProtocolProtocol);
+
+	Collection<ItxProtocolProtocol> findItxProtocolProtocolsByFirstProtocol(
+			Long firstProtocolId) throws Exception;
 	
 	
 	

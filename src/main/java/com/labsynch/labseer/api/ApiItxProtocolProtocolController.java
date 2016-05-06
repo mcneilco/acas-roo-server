@@ -134,7 +134,7 @@ public class ApiItxProtocolProtocolController {
     public ResponseEntity<java.lang.String> jsonFindItxProtocolProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction)), headers, HttpStatus.OK);
     }
     
     @Transactional
@@ -142,19 +142,13 @@ public class ApiItxProtocolProtocolController {
     public ResponseEntity<String> findItxProtocolProtocolsByFirstProtocol(@PathVariable("id") Long firstProtocolId) {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        Protocol firstProtocol;
-    	try{
-    		firstProtocol = Protocol.findProtocol(firstProtocolId);
-    	} catch(Exception e){
-    		logger.error("Error in findItxProtocolProtocolsByFirstProtocol: firstProtocol "+ firstProtocolId.toString()+" not found");
-    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-    	}
-        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsByFirstProtocol(firstProtocol).getResultList();
-        for (ItxProtocolProtocol itx : itxProtocolProtocols){
-        	logger.debug(itx.getCodeName() + " " + itx.getId().toString());
-        	logger.debug(itx.toJson());
+        try{
+        	Collection<ItxProtocolProtocol> itxProtocolProtocols = itxProtocolProtocolService.findItxProtocolProtocolsByFirstProtocol( firstProtocolId);
+            return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers, HttpStatus.OK);
+        }catch (Exception e){
+        	logger.error("Caught exception in findByFirstProtocol",e);
+        	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers, HttpStatus.OK);
     }
     
     @Transactional
@@ -169,7 +163,7 @@ public class ApiItxProtocolProtocolController {
     		logger.error("Error in findItxProtocolProtocolsBySecondProtocol: secondProtocol "+ secondProtocolId.toString()+" not found");
     		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
     	}
-        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol).getResultList();
+        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol);
         return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers, HttpStatus.OK);
     }
 }

@@ -38,12 +38,12 @@ public class ItxContainerContainer extends AbstractThing {
 	private static final Logger logger = LoggerFactory.getLogger(ItxContainerContainer.class);
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "first_container_id")
     private Container firstContainer;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "second_container_id")
     private Container secondContainer;
 

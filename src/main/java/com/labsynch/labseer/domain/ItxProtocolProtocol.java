@@ -10,10 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -38,12 +41,12 @@ public class ItxProtocolProtocol extends AbstractThing {
 	private static final Logger logger = LoggerFactory.getLogger(ItxProtocolProtocol.class);
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "first_protocol_id")
     private Protocol firstProtocol;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "second_protocol_id")
     private Protocol secondProtocol;
 
@@ -73,8 +76,10 @@ public class ItxProtocolProtocol extends AbstractThing {
         return updatedObject;
     }
     
+    @Transactional
     public String toJson() {
         return new JSONSerializer().exclude("*.class")
+        		.include("firstProtocol","secondProtocol","lsStates.lsValues")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(this);
     }
@@ -88,6 +93,7 @@ public class ItxProtocolProtocol extends AbstractThing {
     
     public static String toJsonArray(Collection<ItxProtocolProtocol> collection) {
         return new JSONSerializer().exclude("*.class")
+        		.include("firstProtocol","secondProtocol","lsStates.lsValues")
             	.transform(new ExcludeNulls(), void.class)
         		.serialize(collection);
     }
@@ -127,5 +133,32 @@ public class ItxProtocolProtocol extends AbstractThing {
     	if(logger.isDebugEnabled()) logger.debug(updatedItxProtocolProtocol.toJson());
     	
         return updatedItxProtocolProtocol;
+    }
+    
+    @Transactional
+    public static List<ItxProtocolProtocol> findItxProtocolProtocolsByFirstProtocol(Protocol firstProtocol) {
+        if (firstProtocol == null) throw new IllegalArgumentException("The firstProtocol argument is required");
+        EntityManager em = ItxProtocolProtocol.entityManager();
+        TypedQuery<ItxProtocolProtocol> q = em.createQuery("SELECT o FROM ItxProtocolProtocol AS o WHERE o.firstProtocol = :firstProtocol", ItxProtocolProtocol.class);
+        q.setParameter("firstProtocol", firstProtocol);
+        return q.getResultList();
+    }
+    
+    @Transactional
+    public static List<ItxProtocolProtocol> findItxProtocolProtocolsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ItxProtocolProtocol.entityManager();
+        TypedQuery<ItxProtocolProtocol> q = em.createQuery("SELECT o FROM ItxProtocolProtocol AS o WHERE o.lsTransaction = :lsTransaction", ItxProtocolProtocol.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q.getResultList();
+    }
+    
+    @Transactional
+    public static List<ItxProtocolProtocol> findItxProtocolProtocolsBySecondProtocol(Protocol secondProtocol) {
+        if (secondProtocol == null) throw new IllegalArgumentException("The secondProtocol argument is required");
+        EntityManager em = ItxProtocolProtocol.entityManager();
+        TypedQuery<ItxProtocolProtocol> q = em.createQuery("SELECT o FROM ItxProtocolProtocol AS o WHERE o.secondProtocol = :secondProtocol", ItxProtocolProtocol.class);
+        q.setParameter("secondProtocol", secondProtocol);
+        return q.getResultList();
     }
 }

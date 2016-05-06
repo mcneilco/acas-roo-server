@@ -8,6 +8,8 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -170,5 +172,24 @@ public class ItxProtocolProtocolServiceImpl implements ItxProtocolProtocolServic
 		}
 		
 		return updatedItxProtocolProtocol;
+	}
+
+	@Override
+	@Transactional
+	public Collection<ItxProtocolProtocol> findItxProtocolProtocolsByFirstProtocol(
+			Long firstProtocolId) throws Exception {
+		Protocol firstProtocol;
+    	try{
+    		firstProtocol = Protocol.findProtocol(firstProtocolId);
+    	} catch(Exception e){
+    		logger.error("Error in findItxProtocolProtocolsByFirstProtocol: firstProtocol "+ firstProtocolId.toString()+" not found");
+    		throw new Exception("First Protocol "+firstProtocolId+" not found");
+    	}
+        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsByFirstProtocol(firstProtocol);
+        for (ItxProtocolProtocol itx : itxProtocolProtocols){
+        	logger.debug(itx.getCodeName() + " " + itx.getId().toString());
+        	logger.debug(itx.toJson());
+        }
+        return itxProtocolProtocols;
 	}
 }

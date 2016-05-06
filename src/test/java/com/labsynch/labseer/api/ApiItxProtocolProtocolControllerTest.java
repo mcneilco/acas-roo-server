@@ -1,5 +1,6 @@
 package com.labsynch.labseer.api;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -114,6 +115,24 @@ public class ApiItxProtocolProtocolControllerTest {
     	logger.info(responseJson);
     	Collection<ItxProtocolProtocol> results = ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(responseJson);
     	logger.info(ItxProtocolProtocol.toJsonArray(results));
+    }
+    
+    @Test
+    @Transactional
+    @Rollback(value=true)
+    public void getByFirstProtocol() throws Exception {
+    	ItxProtocolProtocol itx = (ItxProtocolProtocol) ItxProtocolProtocol.findAbstractThingEntries(0, 1).get(0);
+    	Long firstProtocolId = itx.getFirstProtocol().getId();
+    	MockHttpServletResponse response = this.mockMvc.perform(get("/api/v1/itxprotocolprotocols/findByFirstProtocol/"+firstProtocolId)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+//    			.andExpect(status().isCreated())
+//    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	Collection<ItxProtocolProtocol> foundItxs = ItxProtocolProtocol.fromJsonArrayToItxProtocolProtocols(responseJson);
+    	logger.info(ItxProtocolProtocol.toJsonArray(foundItxs));
     }
     
 }
