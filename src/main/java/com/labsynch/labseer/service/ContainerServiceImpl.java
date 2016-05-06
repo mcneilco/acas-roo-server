@@ -1175,7 +1175,8 @@ public class ContainerServiceImpl implements ContainerService {
 		createdUser.setRecordedDate(plate.getRecordedDate());
 		createdUser.setLsType("codeValue");
 		createdUser.setLsKind("created user");
-		createdUser.setCodeValue(plate.getRecordedBy());
+		if (plateRequest.getCreatedUser() != null) createdUser.setCodeValue(plateRequest.getCreatedUser());
+		else createdUser.setCodeValue(plate.getRecordedBy());
 		createdUser.setLsTransaction(plate.getLsTransaction());
 		createdUser.setLsState(metadataState);
 		values.add(createdUser);
@@ -1186,7 +1187,8 @@ public class ContainerServiceImpl implements ContainerService {
 		createdDate.setRecordedDate(plate.getRecordedDate());
 		createdDate.setLsType("dateValue");
 		createdDate.setLsKind("created date");
-		createdDate.setDateValue(new Date());
+		if (plateRequest.getCreatedDate() != null) createdDate.setDateValue(plateRequest.getCreatedDate());
+		else createdDate.setDateValue(new Date());
 		createdDate.setLsTransaction(plate.getLsTransaction());
 		createdDate.setLsState(metadataState);
 		values.add(createdDate);

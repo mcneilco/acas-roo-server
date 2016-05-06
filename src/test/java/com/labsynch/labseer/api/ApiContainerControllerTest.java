@@ -1427,13 +1427,16 @@ public class ApiContainerControllerTest {
 				containerService.saveLsContainer(definition);
 			}
 			Container definition = query.getSingleResult();
-			String barcode = "TESTBARCODE-124";
-			String createdUser = "acas";
+			String barcode = "TESTBARCODE-130";
+			String createdUser = "bob";
+			String recordedBy = "acas";
 			CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
 			plateRequest.setDefinition(definition.getCodeName());
 			plateRequest.setBarcode(barcode);
-			plateRequest.setRecordedBy(createdUser);
+			plateRequest.setRecordedBy(recordedBy);
 			plateRequest.setDescription("test description");
+//			plateRequest.setCreatedDate(new Date(713232000000L));
+//			plateRequest.setCreatedUser(createdUser);
 			String json = plateRequest.toJson();
 			logger.info(json);
 			Assert.assertFalse(json.equals("{}"));
@@ -1465,10 +1468,10 @@ public class ApiContainerControllerTest {
 	    	}
 	    	
 	    	ContainerSearchRequestDTO searchRequest = new ContainerSearchRequestDTO();
-//	    	searchRequest.setBarcode("TESTBARCODE");
+	    	searchRequest.setBarcode(barcode);
 //	    	searchRequest.setDescription("test");
 //	    	searchRequest.setDefinition(definition.getCodeName());
-	    	searchRequest.setCreatedUser(createdUser);
+//	    	searchRequest.setCreatedUser(createdUser);
 	    	json = searchRequest.toJson();
 	    	logger.info(json);
 	    	response = this.mockMvc.perform(post("/api/v1/containers/searchContainers")
@@ -1484,6 +1487,11 @@ public class ApiContainerControllerTest {
 	    	Assert.assertFalse(foundContainers.isEmpty());
 	    	for (Container foundContainer : foundContainers){
 	    		Assert.assertNotNull(foundContainer);
+	    		for (ContainerState containerState : foundContainer.getLsStates()){
+	    			for (ContainerValue containerValue : containerState.getLsValues()){
+	    				if (containerValue.getLsKind().equals("created date")) logger.info(containerValue.getDateValue().toGMTString());
+	    			}
+	    		}
 	    	}
 	    }
     

@@ -2,6 +2,7 @@ package com.labsynch.labseer.dto;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
@@ -23,6 +24,10 @@ public class CreatePlateRequestDTO {
 	private String description;
 	
 	private String recordedBy;
+	
+	private String createdUser;
+	
+	private Date createdDate;
 	
 	private Collection<WellContentDTO> wells = new ArrayList<WellContentDTO>();
 	

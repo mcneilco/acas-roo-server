@@ -6,6 +6,7 @@ package com.labsynch.labseer.dto;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import java.util.Collection;
+import java.util.Date;
 
 privileged aspect CreatePlateRequestDTO_Roo_JavaBean {
     
@@ -47,6 +48,22 @@ privileged aspect CreatePlateRequestDTO_Roo_JavaBean {
     
     public void CreatePlateRequestDTO.setRecordedBy(String recordedBy) {
         this.recordedBy = recordedBy;
+    }
+    
+    public String CreatePlateRequestDTO.getCreatedUser() {
+        return this.createdUser;
+    }
+    
+    public void CreatePlateRequestDTO.setCreatedUser(String createdUser) {
+        this.createdUser = createdUser;
+    }
+    
+    public Date CreatePlateRequestDTO.getCreatedDate() {
+        return this.createdDate;
+    }
+    
+    public void CreatePlateRequestDTO.setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
     
     public Collection<WellContentDTO> CreatePlateRequestDTO.getWells() {
