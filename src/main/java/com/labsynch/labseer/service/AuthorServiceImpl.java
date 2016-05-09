@@ -193,4 +193,19 @@ public class AuthorServiceImpl implements AuthorService {
 		}
 		return codeTableList;	
 	}
+
+
+	@Override
+	public Collection<Author> findAuthorsByRoleTypeAndRoleKindAndRoleName(
+			String roleType, String roleKind, String roleName) {
+		List<LsRole> roleEntries = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(roleType, roleKind, roleName).getResultList();
+		Collection<Author> authors = new HashSet<Author>();
+		for (LsRole roleEntry : roleEntries){
+			Collection<AuthorRole> authorRoles = AuthorRole.findAuthorRolesByRoleEntry(roleEntry).getResultList();
+			for (AuthorRole authorRole : authorRoles){
+				authors.add(authorRole.getUserEntry());
+			}	
+		}
+		return authors;
+	}
 }

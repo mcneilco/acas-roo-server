@@ -28,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.dto.CodeTableDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -77,6 +78,45 @@ public class ApiAuthorControllerTest {
     	Collection<Author> authors = Author.fromJsonArrayToAuthors(responseJson);
     	logger.info(Author.toJsonArray(authors));
 
+    }
+    
+    @Test
+    public void getAuthorsByRoleTypeAndKindAndName() throws Exception {
+    	String roleType = "System";
+    	String roleKind = "ACAS";
+    	String roleName = "ROLE_ACAS-USERS";
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/authors/findByRoleTypeKindAndName?roleType="+roleType+"&roleKind="+roleKind+"&roleName="+roleName)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<Author> foundAuthors = Author.fromJsonArrayToAuthors(responseJson);
+    	Assert.assertEquals(1, foundAuthors.size());
+    	Author bob = foundAuthors.iterator().next();
+    	Assert.assertEquals("bob", bob.getUserName());
+    }
+    
+    @Test
+    public void getAuthorsByRoleTypeAndKindAndNameAsCodeTables() throws Exception {
+    	String roleType = "System";
+    	String roleKind = "ACAS";
+    	String roleName = "ROLE_ACAS-USERS";
+    	String format = "codetable";
+    	String url = "/api/v1/authors/findByRoleTypeKindAndName?"
+    			+ "format="+format+"&roleType="+roleType+"&roleKind="+roleKind+"&roleName="+roleName;
+    	logger.info(url);
+    	String responseJson =  this.mockMvc.perform(get(url)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<CodeTableDTO> foundAuthors = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	Assert.assertEquals(1, foundAuthors.size());
+    	logger.info(CodeTableDTO.toJsonArray(foundAuthors));
     }
     
 

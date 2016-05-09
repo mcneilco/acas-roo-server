@@ -27,4 +27,7 @@ public interface AuthorService {
 
 	List<CodeTableDTO> convertProjectsToCodeTables(Collection<LsThing> projects);
 
+	public Collection<Author> findAuthorsByRoleTypeAndRoleKindAndRoleName(
+			String roleType, String roleKind, String roleName);
+
 }
