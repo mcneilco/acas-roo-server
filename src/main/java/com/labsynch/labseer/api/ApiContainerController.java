@@ -585,12 +585,14 @@ public class ApiContainerController {
     @Transactional
     @RequestMapping(value = "/updateWellContent", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> updateWellContent(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> updateWellContent(@RequestParam(value="copyPreviousValues", required=false) Boolean copyPreviousValues,
+    		@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
         	Collection<WellContentDTO> wellsToUpdate = WellContentDTO.fromJsonArrayToWellCoes(json);
-        	Collection<ContainerErrorMessageDTO> results = containerService.updateWellContent(wellsToUpdate);
+        	if (copyPreviousValues==null) copyPreviousValues=true;
+        	Collection<ContainerErrorMessageDTO> results = containerService.updateWellContent(wellsToUpdate, copyPreviousValues);
         	boolean success = true;
         	for (ContainerErrorMessageDTO result: results){
         		if (result.getLevel() != null) success = false;
@@ -598,7 +600,8 @@ public class ApiContainerController {
         	if (success) return new ResponseEntity<String>(HttpStatus.NO_CONTENT);
         	else return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(results), headers, HttpStatus.BAD_REQUEST);
         } catch (Exception e){
-            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        	logger.error("Caught error in updateWellContent",e);
+            return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     

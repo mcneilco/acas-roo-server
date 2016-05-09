@@ -1314,6 +1314,7 @@ public class ApiContainerControllerTest {
     	for (WellContentDTO result : results){
     		result.setRecordedBy("bob");
     		result.setRecordedDate(new Date());
+    		result.setAmount(new BigDecimal(10));
     	}
     	json = WellContentDTO.toJsonArray(results);
     	MockHttpServletResponse response2 = this.mockMvc.perform(post("/api/v1/containers/updateWellContent")
@@ -1492,6 +1493,89 @@ public class ApiContainerControllerTest {
 	    				if (containerValue.getLsKind().equals("created date")) logger.info(containerValue.getDateValue().toGMTString());
 	    			}
 	    		}
+	    	}
+	    }
+	    
+	    @Test
+	    @Transactional
+	    public void updateWellContent_doNotCopyPreviousValuesTest() throws Exception{
+	    	List<String> wellCodes = new ArrayList<String>();
+	    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well","default");
+	    	query.setMaxResults(1200);
+	    	for (Container container : query.getResultList()){
+	    		wellCodes.add("\""+container.getCodeName()+"\"");	
+	    	}
+			String json = wellCodes.toString();
+			logger.info(json);
+			Long before = (new Date()).getTime();
+			Assert.assertFalse(json.equals("{}"));
+	    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(json))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();
+	    	String responseJson = response.getContentAsString();
+			Long after = (new Date()).getTime();
+			logger.info("ms elapsed: "+ String.valueOf(after-before));
+	    	logger.info(responseJson);
+	    	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
+	    	for (WellContentDTO result : results){
+	    		result.setRecordedBy("bob");
+	    		result.setRecordedDate(new Date());
+	    		result.setAmount(new BigDecimal(10));
+	    		result.setAmountUnits("mg");
+	    	}
+	    	json = WellContentDTO.toJsonArray(results);
+	    	MockHttpServletResponse response1 = this.mockMvc.perform(post("/api/v1/containers/updateWellContent")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(json))
+	    			.andExpect(status().isNoContent())
+	    			.andReturn().getResponse();
+	    	response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(wellCodes.toString()))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();
+	    	String checkJson1 = response.getContentAsString();
+	    	logger.info(checkJson1);
+	    	Collection<WellContentDTO> checkResults1 = WellContentDTO.fromJsonArrayToWellCoes(checkJson1);
+	    	for (WellContentDTO checkResult : checkResults1){
+	    		Assert.assertNotNull(checkResult.getAmount());
+	    		Assert.assertNotNull(checkResult.getAmountUnits());
+	    	}
+	    	Collection<WellContentDTO> emptyWells = new ArrayList<WellContentDTO>();
+	    	emptyWells.addAll(results);
+	    	for (WellContentDTO emptyWell : emptyWells){
+	    		emptyWell.setRecordedBy("bob");
+	    		emptyWell.setRecordedDate(new Date());
+	    		emptyWell.setAmount(null);
+	    		emptyWell.setAmountUnits(null);
+	    	}
+	    	String emptyWellsJson = WellContentDTO.toJsonArray(emptyWells);
+	    	MockHttpServletResponse response2 = this.mockMvc.perform(post("/api/v1/containers/updateWellContent?copyPreviousValues=false")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(emptyWellsJson))
+	    			.andExpect(status().isNoContent())
+	    			.andReturn().getResponse();
+	    	response = this.mockMvc.perform(post("/api/v1/containers/getWellContent")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(wellCodes.toString()))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();
+	    	String checkJson = response.getContentAsString();
+	    	logger.info(checkJson);
+	    	Collection<WellContentDTO> checkResults = WellContentDTO.fromJsonArrayToWellCoes(checkJson);
+	    	for (WellContentDTO checkResult : checkResults){
+	    		Assert.assertNull(checkResult.getAmount());
+	    		Assert.assertNull(checkResult.getAmountUnits());
 	    	}
 	    }
     

@@ -1392,7 +1392,7 @@ public class ContainerServiceImpl implements ContainerService {
 //			}
 		}
 		try{
-			updateWellContent(wellDTOs);
+			updateWellContent(wellDTOs, true);
 		}catch (Exception e){
 			//do nothing
 		}
@@ -1547,7 +1547,7 @@ public class ContainerServiceImpl implements ContainerService {
 	@Override
 	@Transactional
 	public Collection<ContainerErrorMessageDTO> updateWellContent(
-			Collection<WellContentDTO> wellsToUpdate) throws Exception {
+			Collection<WellContentDTO> wellsToUpdate, boolean copyPreviousValues) throws Exception {
 		Long start = (new Date()).getTime();
 		Collection<ContainerErrorMessageDTO> results = new ArrayList<ContainerErrorMessageDTO>();
 		LsTransaction lsTransaction = new LsTransaction();
@@ -1622,13 +1622,15 @@ public class ContainerServiceImpl implements ContainerService {
 			String newBatchConcUnits = wellToUpdate.getBatchConcUnits();
 			String newPhysicalState = wellToUpdate.getPhysicalState();
 			String newSolventCode = wellToUpdate.getSolventCode();
-			if (newAmount == null) newAmount = oldAmount;
-			if (newAmountUnits == null) newAmountUnits = oldAmountUnits;
-			if (newBatchCode == null) newBatchCode = oldBatchCode;
-			if (newBatchConcentration == null) newBatchConcentration = oldBatchConcentration;
-			if (newBatchConcUnits == null) newBatchConcUnits = oldBatchConcUnits;
-			if (newPhysicalState == null) newPhysicalState = oldPhysicalState;
-			if (newSolventCode == null) newSolventCode = oldSolventCode;
+			if (copyPreviousValues){
+				if (newAmount == null) newAmount = oldAmount;
+				if (newAmountUnits == null) newAmountUnits = oldAmountUnits;
+				if (newBatchCode == null) newBatchCode = oldBatchCode;
+				if (newBatchConcentration == null) newBatchConcentration = oldBatchConcentration;
+				if (newBatchConcUnits == null) newBatchConcUnits = oldBatchConcUnits;
+				if (newPhysicalState == null) newPhysicalState = oldPhysicalState;
+				if (newSolventCode == null) newSolventCode = oldSolventCode;
+			}
 			//create new values for attributes that exist
 			List<ContainerValue> newValues = new ArrayList<ContainerValue>();
 			if (newAmount != null || newAmountUnits != null){

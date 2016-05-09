@@ -1116,7 +1116,7 @@ public class ContainerLSServiceTests {
 		}
 		logger.info(WellContentDTO.toJsonArray(wellDTOs));
 		Assert.assertEquals(1536, wellDTOs.size());
-		Collection<ContainerErrorMessageDTO> results = containerService.updateWellContent(wellDTOs);
+		Collection<ContainerErrorMessageDTO> results = containerService.updateWellContent(wellDTOs, false);
 		Assert.assertEquals(1536, results.size());
 		logger.info(ContainerErrorMessageDTO.toJsonArray(results));
 		List<String> checkWellCodes = new ArrayList<String>();

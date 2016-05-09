@@ -81,7 +81,7 @@ public interface ContainerService {
 	Collection<WellContentDTO> getWellContentByPlateBarcode(String plateBarcode);
 
 	Collection<ContainerErrorMessageDTO> updateWellContent(
-			Collection<WellContentDTO> wellsToUpdate) throws Exception;
+			Collection<WellContentDTO> wellsToUpdate, boolean copyPreviousValues) throws Exception;
 
 	PlateStubDTO getPlateTypeByPlateBarcode(String plateBarcode);
 
