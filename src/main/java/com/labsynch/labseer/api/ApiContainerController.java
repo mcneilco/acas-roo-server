@@ -536,6 +536,9 @@ public class ApiContainerController {
         	//barcode is unique, proceed to plate creation
         }catch (IncorrectResultSizeDataAccessException e){
     		return new ResponseEntity<String>("More than one of this barcode already exists!!", headers, HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+        	logger.error("Uncaught error in createPlate service", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         try{
         	PlateStubDTO result = containerService.createPlate(plateRequest);

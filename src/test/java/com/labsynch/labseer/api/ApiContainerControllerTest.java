@@ -1578,6 +1578,54 @@ public class ApiContainerControllerTest {
 	    		Assert.assertNull(checkResult.getAmountUnits());
 	    	}
 	    }
+	    
+	    @Test
+	    @Transactional
+	    public void createPlateWithDefaultsAndGetContent() throws Exception{
+			TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+			query.setMaxResults(1);
+			Container definition = query.getSingleResult();
+			CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
+			plateRequest.setDefinition(definition.getCodeName());
+			plateRequest.setBarcode("TESTBARCODE-135");
+			plateRequest.setRecordedBy("acas");
+			plateRequest.setBatchConcentrationUnits("mM");
+			plateRequest.setPhysicalState("liquid");
+			String json = plateRequest.toJson();
+			logger.info(json);
+			Assert.assertFalse(json.equals("{}"));
+	    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/createPlate")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(json))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();;
+			logger.info(response.getContentAsString());
+			PlateStubDTO result = PlateStubDTO.fromJsonToPlateStubDTO(response.getContentAsString());
+	    	logger.info(result.toJson());
+	    	Assert.assertEquals(1536, result.getWells().size());
+	    	String plateBarcode = result.getBarcode();
+			logger.info(plateBarcode);
+	    	MockHttpServletResponse response2 = this.mockMvc.perform(get("/api/v1/containers/getWellContentByPlateBarcode/"+plateBarcode)
+	    			.accept(MediaType.APPLICATION_JSON))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();
+	    	String responseJson = response2.getContentAsString();
+	    	logger.info(responseJson);
+	    	Collection<WellContentDTO> results = WellContentDTO.fromJsonArrayToWellCoes(responseJson);
+	    	for (WellContentDTO resultWell : results){
+	    		Assert.assertNotNull(resultWell.getContainerCodeName());
+	    		Assert.assertNotNull(resultWell.getWellName());
+	    		Assert.assertNotNull(resultWell.getRowIndex());
+	    		Assert.assertNotNull(resultWell.getColumnIndex());
+	    		Assert.assertNotNull(resultWell.getRecordedBy());
+	    		Assert.assertNotNull(resultWell.getRecordedDate());
+	    		Assert.assertEquals("liquid", resultWell.getPhysicalState());
+	    		Assert.assertEquals("mM", resultWell.getBatchConcUnits());
+	    	}
+	    }
     
 
 }

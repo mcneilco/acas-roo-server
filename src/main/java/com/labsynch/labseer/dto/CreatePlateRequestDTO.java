@@ -29,6 +29,10 @@ public class CreatePlateRequestDTO {
 	
 	private Date createdDate;
 	
+	private String physicalState;
+	
+	private String batchConcentrationUnits;
+	
 	private Collection<WellContentDTO> wells = new ArrayList<WellContentDTO>();
 	
 	public String toJson() {

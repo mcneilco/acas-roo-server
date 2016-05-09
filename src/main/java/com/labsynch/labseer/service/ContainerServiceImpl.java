@@ -1235,11 +1235,44 @@ public class ContainerServiceImpl implements ContainerService {
 			List<Container> wells = (List<Container>)wellsAndNames.get("wells");
 			List<ContainerLabel> wellNames = (List<ContainerLabel>) wellsAndNames.get("wellNames");
 			//fill in recorded by for all wells to update
+			Collection<WellContentDTO> wellDTOs = new ArrayList<WellContentDTO>();
 			if (plateRequest.getWells() != null && !plateRequest.getWells().isEmpty()){
 				for (WellContentDTO wellDTO: plateRequest.getWells()){
 					if (wellDTO.getRecordedBy() == null) wellDTO.setRecordedBy(plate.getRecordedBy());
 				}
-				updateNewWellsByWellName(wells, wellNames, plateRequest.getWells());
+				wellDTOs = lookUpWellCodesByWellNames(wells, wellNames, plateRequest.getWells());
+			}
+			if (plateRequest.getPhysicalState() != null || plateRequest.getBatchConcentrationUnits() != null){
+				//fill in empty wellContentDTOs for new wells not passed in via plateRequest.getWells()
+				Set<String> suppliedWellCodes = new HashSet<String>();
+				if (!wellDTOs.isEmpty()){
+					for (WellContentDTO suppliedWellDTO : wellDTOs){
+						suppliedWellCodes.add(suppliedWellDTO.getContainerCodeName());
+					}
+				}
+				Set<String> allWellCodes = new HashSet<String>();
+				for (Container well : wells){
+					allWellCodes.add(well.getCodeName());
+				}
+				allWellCodes.removeAll(suppliedWellCodes);
+				for (String wellCode : allWellCodes){
+					//populate wellContentDTO for unsupplied codes to pass in default physical state and/or batch concentration units
+					WellContentDTO notSuppliedWell = new WellContentDTO();
+					notSuppliedWell.setContainerCodeName(wellCode);
+					notSuppliedWell.setPhysicalState(plateRequest.getPhysicalState());
+					notSuppliedWell.setBatchConcUnits(plateRequest.getBatchConcentrationUnits());
+					notSuppliedWell.setRecordedBy(plate.getRecordedBy());
+					wellDTOs.add(notSuppliedWell);
+				}
+			}
+			logger.debug("Size of wellDTOs is: "+wellDTOs.size());
+			if (!wellDTOs.isEmpty()){
+				try{
+					logger.debug("Updating well content"+wellDTOs.size());
+					updateWellContent(wellDTOs, true);
+				}catch (Exception e){
+					logger.error("Caught exception updating well content",e);
+				}
 			}
 			//TODO: do something with templates
 			PlateStubDTO result = new PlateStubDTO();
@@ -1352,7 +1385,7 @@ public class ContainerServiceImpl implements ContainerService {
 		
 	}
 
-	private void updateNewWellsByWellName(List<Container> wells, List<ContainerLabel> wellNames, Collection<WellContentDTO> wellDTOs) {
+	private Collection<WellContentDTO> lookUpWellCodesByWellNames(List<Container> wells, List<ContainerLabel> wellNames, Collection<WellContentDTO> wellDTOs) {
 		List<String> wellNameList = new ArrayList<String>();
 		for (ContainerLabel wellName : wellNames){
 			wellNameList.add(wellName.getLabelText());
@@ -1391,12 +1424,7 @@ public class ContainerServiceImpl implements ContainerService {
 //				}
 //			}
 		}
-		try{
-			updateWellContent(wellDTOs, true);
-		}catch (Exception e){
-			//do nothing
-		}
-		
+		return wellDTOs;
 	}
 
 	public Map<String,List<?>> createWellsFromDefinition(Container plate,

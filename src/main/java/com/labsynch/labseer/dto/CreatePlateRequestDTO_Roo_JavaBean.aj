@@ -66,6 +66,22 @@ privileged aspect CreatePlateRequestDTO_Roo_JavaBean {
         this.createdDate = createdDate;
     }
     
+    public String CreatePlateRequestDTO.getPhysicalState() {
+        return this.physicalState;
+    }
+    
+    public void CreatePlateRequestDTO.setPhysicalState(String physicalState) {
+        this.physicalState = physicalState;
+    }
+    
+    public String CreatePlateRequestDTO.getBatchConcentrationUnits() {
+        return this.batchConcentrationUnits;
+    }
+    
+    public void CreatePlateRequestDTO.setBatchConcentrationUnits(String batchConcentrationUnits) {
+        this.batchConcentrationUnits = batchConcentrationUnits;
+    }
+    
     public Collection<WellContentDTO> CreatePlateRequestDTO.getWells() {
         return this.wells;
     }
