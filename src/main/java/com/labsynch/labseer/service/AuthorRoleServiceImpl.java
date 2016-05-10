@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LsRole;
+import com.labsynch.labseer.dto.AuthorRoleDTO;
 
 @Service
 @Transactional
@@ -77,6 +78,33 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 		author.getAuthorRoles().addAll(newAuthorRoles);
 		author.merge();
 		return author;
+	}
+
+
+	@Override
+	public void saveAuthorRoleDTOs(Collection<AuthorRoleDTO> authorRoleDTOs) {
+		for (AuthorRoleDTO authorRoleDTO : authorRoleDTOs){
+			Author author = Author.findAuthorsByUserName(authorRoleDTO.getUserName()).getSingleResult();
+			LsRole role = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(authorRoleDTO.getRoleType(), authorRoleDTO.getRoleKind(), authorRoleDTO.getRoleName()).getSingleResult();
+			Collection<AuthorRole> foundAuthorRoles = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(role, author).getResultList();
+			if (foundAuthorRoles.isEmpty()){
+				AuthorRole authorRole = new AuthorRole();
+				authorRole.setUserEntry(author);
+				authorRole.setRoleEntry(role);
+				authorRole.persist();
+			}
+		}
+	}
+
+
+	@Override
+	public void deleteAuthorRoleDTOs(Collection<AuthorRoleDTO> authorRoleDTOs) {
+		for (AuthorRoleDTO authorRoleDTO : authorRoleDTOs){
+			Author author = Author.findAuthorsByUserName(authorRoleDTO.getUserName()).getSingleResult();
+			LsRole role = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(authorRoleDTO.getRoleType(), authorRoleDTO.getRoleKind(), authorRoleDTO.getRoleName()).getSingleResult();
+			AuthorRole foundAuthorRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(role, author).getSingleResult();
+			foundAuthorRole.remove();
+		}
 	}
 
 	
