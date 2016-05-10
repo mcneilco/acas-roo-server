@@ -8,6 +8,7 @@
             <table:column id="c_com_labsynch_labseer_domain_LsRole_roleDescription" property="roleDescription" z="s1Cv9+B32EFTUVIFI901VvOHk1s="/>
             <table:column id="c_com_labsynch_labseer_domain_LsRole_lsType" property="lsType" z="VzlkpffJ1fOmxDVc/1CgZC38cQY="/>
             <table:column id="c_com_labsynch_labseer_domain_LsRole_lsKind" property="lsKind" z="sAzrh8Wd3tBbTo4wM4KxKtFNFqI="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsRole_lsTypeAndKind" property="lsTypeAndKind" z="9NVOKBKo9fN/6uahBI4XJWqAaTo="/>
         </table:table>
     </page:list>
 </div>

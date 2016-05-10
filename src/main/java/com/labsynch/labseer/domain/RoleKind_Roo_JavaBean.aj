@@ -24,4 +24,12 @@ privileged aspect RoleKind_Roo_JavaBean {
         this.kindName = kindName;
     }
     
+    public String RoleKind.getLsTypeAndKind() {
+        return this.lsTypeAndKind;
+    }
+    
+    public void RoleKind.setLsTypeAndKind(String lsTypeAndKind) {
+        this.lsTypeAndKind = lsTypeAndKind;
+    }
+    
 }

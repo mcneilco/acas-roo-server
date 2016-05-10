@@ -7,5 +7,6 @@
         <field:display field="roleDescription" id="s_com_labsynch_labseer_domain_LsRole_roleDescription" object="${lsrole}" z="AnKuIYuaLnJna/2fsGP3XABBm7U="/>
         <field:display field="lsType" id="s_com_labsynch_labseer_domain_LsRole_lsType" object="${lsrole}" z="Gx2HA0yQRUR7UAGvJmT9vUD1bSM="/>
         <field:display field="lsKind" id="s_com_labsynch_labseer_domain_LsRole_lsKind" object="${lsrole}" z="qOhPcpVMA9KpuGshNe0bhe+irO8="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_LsRole_lsTypeAndKind" object="${lsrole}" z="6iBOndIWTuhQUCXCZEVcR7ZdrJY="/>
     </page:show>
 </div>

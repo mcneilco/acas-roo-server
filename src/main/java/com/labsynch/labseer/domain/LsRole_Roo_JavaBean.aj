@@ -41,6 +41,14 @@ privileged aspect LsRole_Roo_JavaBean {
         this.roleDescription = roleDescription;
     }
     
+    public String LsRole.getLsTypeAndKind() {
+        return this.lsTypeAndKind;
+    }
+    
+    public void LsRole.setLsTypeAndKind(String lsTypeAndKind) {
+        this.lsTypeAndKind = lsTypeAndKind;
+    }
+    
     public Set<AuthorRole> LsRole.getAuthorRoles() {
         return this.authorRoles;
     }

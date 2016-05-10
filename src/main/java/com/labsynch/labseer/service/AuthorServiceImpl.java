@@ -47,6 +47,7 @@ public class AuthorServiceImpl implements AuthorService {
 		CodeTableDTO codeTable = new CodeTableDTO();
 		codeTable.setName(author.getFirstName() + " " + author.getLastName());
 		codeTable.setCode(author.getUserName());
+		codeTable.setId(author.getId());
 		codeTable.setIgnored(false);
 		return codeTable;
 	}

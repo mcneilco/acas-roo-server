@@ -38,12 +38,6 @@ privileged aspect RoleKind_Roo_Jpa_ActiveRecord {
     }
     
     @Transactional
-    public void RoleKind.persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.persist(this);
-    }
-    
-    @Transactional
     public void RoleKind.remove() {
         if (this.entityManager == null) this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {

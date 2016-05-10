@@ -1,5 +1,6 @@
 package com.labsynch.labseer.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @RooJavaBean
@@ -25,5 +27,16 @@ public class RoleKind {
     @NotNull
     @Size(max = 255)
     private String kindName;
+    
+    @Column(unique = true)
+    @Size(max = 255)
+    private String lsTypeAndKind;
+    
+    @Transactional
+	public void persist() {
+		if (this.entityManager == null) this.entityManager = entityManager();
+		this.setLsTypeAndKind(new StringBuilder().append(this.lsType.getTypeName()).append("_").append(this.kindName).toString());
+		this.entityManager.persist(this);
+	}
  
 }

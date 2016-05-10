@@ -14,8 +14,8 @@
         <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_fileValue" z="lqGV+lxyZbgeGY5RAMVCJfhsVTg="/>
         <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_urlValue" z="ERJrR6GEyAJUT4+txaXc0ys+3/0="/>
         <field:datetime dateTimePattern="${itxProtocolProtocolValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_dateValue" z="Y/USjKslSzVgbwBSBotOaTw48DI="/>
-        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_clobValue" z="zQddkdYAT6wMCihZLm5yzNRcprU="/>
-        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_blobValue" z="DYuXD4UdeufDGLD4ZHI6eL7hYpg="/>
+        <field:input field="clobValue" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_clobValue" z="IbEDghhLOLGc7Zy/Wg1yfPiXZJQ="/>
+        <field:input field="blobValue" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_blobValue" z="hKMNdZpMfYAUgsUfdNJHZ2t2dg4="/>
         <field:input field="operatorType" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_operatorType" max="25" z="8ZeFZrnKCM/kKtG9jdDkpQAVcpk="/>
         <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_operatorKind" max="10" z="/trl/Zx5+FGZ3rtuMZxC764EFiU="/>
         <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_ItxProtocolProtocolValue_operatorTypeAndKind" z="0nvj2q2OrGJxprVBalcK7o439Fw="/>

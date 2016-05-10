@@ -18,8 +18,8 @@
         <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_fileValue" z="Ndf/UZeHwfRIaGoRbdpG536Scnk="/>
         <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_urlValue" z="fcANIAyLGtwMIOe8rp2JO6A1RoU="/>
         <field:datetime dateTimePattern="${itxLsThingLsThingValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_dateValue" z="pB8M1glw6TPhHWNDYugbdddTH30="/>
-        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_clobValue" z="UdOPI9Em5ag9CCsA9z6KbB8po+k="/>
-        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_blobValue" z="9KNt/nlmTrKvp+otIVPbzf59TG8="/>
+        <field:input field="clobValue" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_clobValue" z="T9xLE8ISHuSeIpI7NXcre58sSFE="/>
+        <field:input field="blobValue" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_blobValue" z="R6UiMT+6GkG3jd+0NWcN9xNk03A="/>
         <field:input field="operatorType" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_operatorType" max="25" z="Dl6Fd2ZY5KKsvEbDdDc7eSJgiuM="/>
         <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_operatorKind" max="10" z="RHnbZtm/U79EG+6qNKqiVxhgjjk="/>
         <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingValue_operatorTypeAndKind" z="nc+pgtlNFzvhQ3ifOXGoWhG4P1s="/>

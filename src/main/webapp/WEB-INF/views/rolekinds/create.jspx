@@ -5,6 +5,7 @@
     <form:create id="fc_com_labsynch_labseer_domain_RoleKind" modelAttribute="roleKind" path="/rolekinds" render="${empty dependencies}" z="1QXVRa67IzxcIWctZeQSlNIKPtY=">
         <field:textarea field="kindName" id="c_com_labsynch_labseer_domain_RoleKind_kindName" required="true" z="TVaSQasEHlgwS0PVRC0HU5QjkSY="/>
         <field:select field="lsType" id="c_com_labsynch_labseer_domain_RoleKind_lsType" itemValue="id" items="${roletypes}" path="/roletypes" required="true" z="8SattWQV0cVgXAbOypS77l6Vksk="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_RoleKind_lsTypeAndKind" z="Gy+1FiOGTXugPAx49IAOVecoedo="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_RoleKind" render="${not empty dependencies}" z="C6MdwfOcF0Ue/HUQufMeAcZuKr4="/>
 </div>

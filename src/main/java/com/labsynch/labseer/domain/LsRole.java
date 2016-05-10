@@ -2,6 +2,7 @@ package com.labsynch.labseer.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ import javax.validation.constraints.Size;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @RooJson
@@ -49,6 +51,10 @@ public class LsRole {
 
     @Size(max = 200)
     private String roleDescription;
+    
+    @Column(unique = true)
+    @Size(max = 255)
+    private String lsTypeAndKind;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "roleEntry", fetch = FetchType.LAZY)
     private Set<AuthorRole> authorRoles = new HashSet<AuthorRole>();
@@ -128,4 +134,11 @@ public class LsRole {
         q.setParameter("roleName", roleName);
         return q;
     }
+    
+    @Transactional
+	public void persist() {
+		if (this.entityManager == null) this.entityManager = entityManager();
+		this.setLsTypeAndKind(new StringBuilder().append(this.lsType).append("_").append(this.lsKind).toString());
+		this.entityManager.persist(this);
+	}
 }

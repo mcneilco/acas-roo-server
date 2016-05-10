@@ -7,8 +7,8 @@
         <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_fileValue" z="tWG+uq8BGxRrSJYOzYoMUZK0M2o="/>
         <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_urlValue" z="4wWcgpZF6zLppX3JO3e0VjKhR3w="/>
         <field:datetime dateTimePattern="${itxSubjectContainerValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_dateValue" z="5MuAnSC+CJvbx/SBes5irxvh5lw="/>
-        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_clobValue" z="saZhcAJ3buk4atY6DPaPB1TZya8="/>
-        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_blobValue" z="tTTejftw2J0gbABFUvBeTblyX1U="/>
+        <field:input field="clobValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_clobValue" z="UcFlRaW76t/4RGz4XSWDyMN9M7Y="/>
+        <field:input field="blobValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_blobValue" z="aKTDK2MP8sNEiFqQuksFKL1BzGg="/>
         <field:input field="numericValue" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_numericValue" validationMessageCode="field_invalid_number" z="qJdmHe4ZqFctQLClXv5NJaqp1c0="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_sigFigs" validationMessageCode="field_invalid_integer" z="JFWnqOXyV3oacPpqVgk6tmXik78="/>
         <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_ItxSubjectContainerValue_uncertainty" validationMessageCode="field_invalid_number" z="ZvpzpOQAFQ5Cx68DEg88Z3n13k4="/>
