@@ -145,12 +145,14 @@ public class AuthorServiceImpl implements AuthorService {
 				}
 				for (LsThingState projectState : project.getLsStates()){
 					for (LsThingValue projectValue : projectState.getLsValues()){
-						if (projectValue.getLsKind().equalsIgnoreCase("project status")){
-							if (projectValue.getCodeValue().equalsIgnoreCase("Active")) active = true;
-							else if (projectValue.getCodeValue().equalsIgnoreCase("Inactive")) active = false;
-						}else if (projectValue.getLsKind().equalsIgnoreCase("is restricted")){
-							if (projectValue.getCodeValue().equalsIgnoreCase("true")) isRestricted = true;
-							else if (projectValue.getCodeValue().equalsIgnoreCase("false")) isRestricted = false;
+						if (!projectValue.isIgnored()){
+							if (projectValue.getLsKind().equalsIgnoreCase("project status")){
+								if (projectValue.getCodeValue().equalsIgnoreCase("Active")) active = true;
+								else if (projectValue.getCodeValue().equalsIgnoreCase("Inactive")) active = false;
+							}else if (projectValue.getLsKind().equalsIgnoreCase("is restricted")){
+								if (projectValue.getCodeValue().equalsIgnoreCase("true")) isRestricted = true;
+								else if (projectValue.getCodeValue().equalsIgnoreCase("false")) isRestricted = false;
+							}
 						}
 					}
 				}
