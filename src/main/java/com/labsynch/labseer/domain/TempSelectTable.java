@@ -31,17 +31,14 @@ public class TempSelectTable {
 	private static final Logger logger = LoggerFactory.getLogger(TempSelectTable.class);
 
 	
-	@org.hibernate.annotations.Index(name="TEMP_SELECT_NUMBER_IDX")
     private Long numberVar;
 
 	
 	
-	@org.hibernate.annotations.Index(name="TEMP_SELECT_STRING_IDX")
     @Size(max = 255)
     private String stringVar;
     
 	
-	@org.hibernate.annotations.Index(name="TEMP_SELECT_TRXN_IDX")
 	private Long lsTransaction;
 
 	@NotNull

@@ -52,30 +52,24 @@ public abstract class AbstractLabel {
 
 	@NotNull
 	@Size(max = 64)
-	@org.hibernate.annotations.Index(name="_TYPE_IDX")
 	private String lsType;
 
 	@NotNull
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name="_KIND_IDX")
 	private String lsKind;
 
 	@Size(max = 255)
-	@org.hibernate.annotations.Index(name="_TK_IDX")
 	private String lsTypeAndKind;
 
 	@NotNull
-	@org.hibernate.annotations.Index(name="_PREF_IDX")
 	private boolean preferred;
 
 	@NotNull
-	@org.hibernate.annotations.Index(name="_IGN_IDX")
 	private boolean ignored;
 	
 	@NotNull
 	private boolean deleted;
 
-	@org.hibernate.annotations.Index(name="_TRXN_IDX")
 	private Long lsTransaction;
 
 	@Id

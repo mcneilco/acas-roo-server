@@ -34,7 +34,7 @@ public class RawCurveDataDTOTest {
 		String curveId = "15_AG-00348398";
 		List<String> curveIdList = new ArrayList<String>();
 		curveIdList.add(curveId);
-		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(curveIdList);
+		List<RawCurveDataDTO> resultList = RawCurveDataDTO.getRawCurveData(curveIdList, null);
 		logger.debug(resultList.toString());
 		for (RawCurveDataDTO result : resultList) {
 			logger.debug(result.toJson());
@@ -53,7 +53,7 @@ public class RawCurveDataDTOTest {
 	public void getAllRawCurveDataDataByExperimentTest() {
 		String experimentCodeName = "EXPT-00000909";
 		long startTime = System.currentTimeMillis();
-		Collection<RawCurveDataDTO> results = RawCurveDataDTO.getRawCurveDataByExperiment(experimentCodeName);
+		Collection<RawCurveDataDTO> results = RawCurveDataDTO.getRawCurveDataByExperiment(experimentCodeName, null);
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		logger.debug("total elapsed time = " + totalTime + " miliseconds.");
