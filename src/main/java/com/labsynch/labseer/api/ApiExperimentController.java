@@ -880,16 +880,19 @@ public class ApiExperimentController {
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
 		Collection<Experiment> experiments = Experiment.fromJsonArrayToExperiments(json);
-        for (Experiment experiment : experiments) {
-            try {
-                experiment = experimentService.saveLsExperiment(experiment);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        HttpHeaders headers = new HttpHeaders();
+		HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(Experiment.toJsonArrayStub(experiments), headers, HttpStatus.CREATED);
+        try{
+        	Collection<Experiment> savedExperiments = experimentService.saveLsExperiments(experiments);
+            return new ResponseEntity<String>(Experiment.toJsonArrayStub(savedExperiments), headers, HttpStatus.CREATED);
+        }catch (UniqueNameException uniqueNameException){
+        	logger.error("Found existing experiment with that name", uniqueNameException);
+        	return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+        }catch (Exception e){
+        	logger.error("Caught exception in createFromJsonArray",e);
+        	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
     }
 	
 	@Transactional

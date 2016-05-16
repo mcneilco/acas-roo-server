@@ -180,6 +180,18 @@ public class ExperimentServiceImpl implements ExperimentService {
 		return updatedExperiment;
 
 	}
+	
+	@Override
+	@Transactional
+	public Collection<Experiment> saveLsExperiments(
+			Collection<Experiment> experiments) throws UniqueNameException, NotFoundException{
+		Collection<Experiment> savedExperiments = new ArrayList<Experiment>();
+		for (Experiment experiment : experiments){
+			Experiment savedExperiment = saveLsExperiment(experiment);
+			savedExperiments.add(savedExperiment);
+		}
+		return savedExperiments;
+	}
 
 	@Override
 	@Transactional

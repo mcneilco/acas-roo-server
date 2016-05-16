@@ -61,5 +61,8 @@ public interface ExperimentService {
 	public boolean deleteAnalysisGroupsByExperiment(Experiment experiment);
 
 	public Collection<ExperimentErrorMessageDTO> findExperimentsByCodeNames(List<String> codeNames);
+
+	public Collection<Experiment> saveLsExperiments(
+			Collection<Experiment> experiments) throws UniqueNameException, NotFoundException;
 	
 }
