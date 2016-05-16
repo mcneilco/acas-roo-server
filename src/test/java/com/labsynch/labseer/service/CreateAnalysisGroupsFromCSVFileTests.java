@@ -15,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
@@ -74,8 +75,8 @@ public class CreateAnalysisGroupsFromCSVFileTests {
 		
 		
 		long startTime = new Date().getTime();
-		boolean loadValue = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
-		logger.info("loadValue: " + loadValue);
+		TsvLoaderResponseDTO result = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
+		logger.info("loadValue: " + (result.getAnalysisGroups() != null));
 		long endTime = new Date().getTime();
 		long totalTime = endTime - startTime;
 		logger.info("total elapsed time: " + totalTime);

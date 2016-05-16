@@ -38,6 +38,7 @@ import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -61,20 +62,22 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 
 	@Override
 	@Transactional
-	public boolean saveLsAnalysisGroupFromCsv(String analysisGroupFilePath, String treatmentGroupFilePath, String subjectFilePath){
-
-		boolean successfulLoad = true;
+	public TsvLoaderResponseDTO saveLsAnalysisGroupFromCsv(String analysisGroupFilePath, String treatmentGroupFilePath, String subjectFilePath) throws IOException{
+		TsvLoaderResponseDTO results = new TsvLoaderResponseDTO();
 		HashMap<String, TempThingDTO> output2 = null;
 		try {
 			long time1 = new Date().getTime();
 			HashMap<String, TempThingDTO> output = createAnalysisGroupsFromCSV(analysisGroupFilePath );
+			results.setAnalysisGroups(output.values());
 			long time2 = new Date().getTime();
 			if (treatmentGroupFilePath != null && !treatmentGroupFilePath.equalsIgnoreCase("")) {
 				output2 = treatmentGroupService.createTreatmentGroupsFromCSV(treatmentGroupFilePath, output);
+				results.setTreatmentGroups(output2.values());
 			}
 			long time3 = new Date().getTime();
 			if (output2 != null && subjectFilePath != null && !subjectFilePath.equalsIgnoreCase("")){
 				HashMap<String, TempThingDTO> output3 = subjectService.createSubjectsFromCSV(subjectFilePath, output2);
+				results.setSubjects(output3.values());
 			}
 			long time4 = new Date().getTime();
 			logger.info("Speed Report");
@@ -88,9 +91,9 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 			logger.info("   total load time: " + tdiff41 + " ms");
 		} catch (IOException e) {
 			logger.error("Unable to open file " + e);
-			successfulLoad = false;
+			throw e;
 		}
-		return successfulLoad;
+		return results;
 
 	}
 
