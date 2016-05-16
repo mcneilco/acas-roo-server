@@ -177,5 +177,29 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public boolean getSyncLdapAuthRoles() {
 		return Boolean.parseBoolean(this.syncLdapAuthRoles);
 	}
+	
+	String acasUserRole;
+	
+	@Value("${client.roles.acas.userRole}")
+	public void setAcasUserRole(String acasUserRole) {
+		this.acasUserRole = acasUserRole;
+	}
+	
+	@Override
+	public String getAcasUserRole() {
+	    return this.acasUserRole;
+	}
+	
+	String acasAdminRole;
+	
+	@Value("${client.roles.acas.adminRole}")
+	public void setAcasAdminRole(String acasAdminRole) {
+		this.acasAdminRole = acasAdminRole;
+	}
+	
+	@Override
+	public String getAcasAdminRole() {
+	    return this.acasAdminRole;
+	}
 
 }

@@ -33,5 +33,9 @@ public interface PropertiesUtilService {
 	
 	boolean getSyncLdapAuthRoles();
 
+	String getAcasAdminRole();
+
+	String getAcasUserRole();
+
 	
 }

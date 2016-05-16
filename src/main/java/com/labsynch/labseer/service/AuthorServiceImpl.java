@@ -31,6 +31,7 @@ import com.labsynch.labseer.dto.AuthGroupsDTO;
 import com.labsynch.labseer.dto.AuthProjectGroupsDTO;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
 @Transactional
@@ -38,6 +39,9 @@ public class AuthorServiceImpl implements AuthorService {
 
 	@Autowired
 	private AutoLabelService autoLabelService;
+	
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthorServiceImpl.class);
 	
@@ -85,6 +89,9 @@ public class AuthorServiceImpl implements AuthorService {
 			LsRole entry = role.getRoleEntry();
 			if (entry.getLsType()!= null && entry.getLsType().equalsIgnoreCase("Project")){
 				projectThings.addAll(LsThing.findLsThingsByCodeNameEquals(entry.getLsKind()).getResultList());
+			}else if (entry.getRoleName().equals(propertiesUtilService.getAcasAdminRole())){
+				Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
+				projectThings.addAll(allProjects);
 			}
 		}
 		
@@ -130,7 +137,11 @@ public class AuthorServiceImpl implements AuthorService {
 				for (LsRole projectRole : projectRoles){
 					groups.add(new StringBuilder().append(projectRole.getLsType()).append("_").append(projectRole.getLsKind()).append("_").append(projectRole.getRoleName()).toString());
 				}
-
+				List<LsRole> acasAdminRoles = LsRole.findLsRolesByRoleNameEquals(propertiesUtilService.getAcasAdminRole()).getResultList();
+				for (LsRole acasAdminRole : acasAdminRoles){
+					groups.add(new StringBuilder().append(acasAdminRole.getLsType()).append("_").append(acasAdminRole.getLsKind()).append("_").append(acasAdminRole.getRoleName()).toString());
+				}
+				
 				projectLabels = project.getLsLabels();
 				for (LsThingLabel projectLabel : projectLabels){
 					if (!projectLabel.isIgnored()){
