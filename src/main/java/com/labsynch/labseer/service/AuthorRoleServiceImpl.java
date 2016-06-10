@@ -71,10 +71,11 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 		for (String roleName : roleNamesToDelete){
 			LsRole role = LsRole.findLsRolesByRoleNameEquals(roleName).getSingleResult();
 			AuthorRole authorRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(role, author).getSingleResult();
+			author.getAuthorRoles().remove(authorRole);
 			authorRole.remove();
 			removedAuthorRoles.add(authorRole);
 		}
-		author.getAuthorRoles().removeAll(removedAuthorRoles);
+//		author.getAuthorRoles().removeAll(removedAuthorRoles);
 		author.getAuthorRoles().addAll(newAuthorRoles);
 		author.merge();
 		return author;

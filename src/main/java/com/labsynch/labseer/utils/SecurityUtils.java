@@ -50,7 +50,11 @@ public class SecurityUtils {
 			for (GrantedAuthority auth : auths){
 				grantedAuths.add(auth.getAuthority());
 			}
-			author = authorRoleService.syncRoles(author, grantedAuths);
+			try{
+				author = authorRoleService.syncRoles(author, grantedAuths);
+			}catch (Exception e){
+				logger.error("Caught error trying to update author roles.",e);
+			}
 			logger.debug("Finished syncing roles for "+author.getUserName());
 		}
 		
