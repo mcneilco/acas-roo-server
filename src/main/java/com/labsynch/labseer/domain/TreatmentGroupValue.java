@@ -55,6 +55,7 @@ public class TreatmentGroupValue extends AbstractValue {
     	this.setLsType(inputDTO.getValueType());
     	this.setLsKind(inputDTO.getValueKind());
     	this.setStringValue(inputDTO.getStringValue());
+    	this.setClobValue(inputDTO.getClobValue());
     	this.setFileValue(inputDTO.getFileValue());
     	this.setUrlValue(inputDTO.getUrlValue());
     	this.setDateValue(inputDTO.getDateValue());

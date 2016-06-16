@@ -1,0 +1,13 @@
+ALTER TABLE analysis_group_value ADD COLUMN blob_value_temp bytea;
+--ALTER TABLE author_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE container_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE experiment_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE itx_container_container_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE itx_expt_expt_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE itx_ls_thing_ls_thing_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE itx_protocol_protocol_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE itx_subject_container_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE ls_thing_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE protocol_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE subject_value ADD COLUMN blob_value_temp bytea;
+ALTER TABLE treatment_group_value ADD COLUMN blob_value_temp bytea;
