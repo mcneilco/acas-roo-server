@@ -51,7 +51,7 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 		for (String roleName : roleNamesToAdd){
 			LsRole role;
 			try{
-				role = LsRole.findLsRolesByRoleNameEquals(roleName).getSingleResult();
+				role = LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals("LDAP",roleName).getSingleResult();
 			}catch (EmptyResultDataAccessException e){
 				role = new LsRole();
 				role.setRoleName(roleName);
