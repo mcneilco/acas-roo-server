@@ -1431,11 +1431,11 @@ public class ApiExperimentController {
     @Transactional
     @RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<String> experimentBrowserSearch(@RequestParam("q") String searchQuery) {
+	public ResponseEntity<String> experimentBrowserSearch(@RequestParam(value="userName", required = true) String userName, @RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			String result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery));
+			String result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, userName));
 			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 		} catch(Exception e){
 			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
