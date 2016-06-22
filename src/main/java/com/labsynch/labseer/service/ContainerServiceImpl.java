@@ -315,7 +315,7 @@ public class ContainerServiceImpl implements ContainerService {
 	@Override
 	@Transactional
 	public Container updateContainer(Container container){
-		logger.info("incoming meta container: " + container.toJson() + "\n");
+		if (logger.isDebugEnabled()) logger.debug("incoming meta container: " + container.toJson() + "\n");
 		Container updatedContainer = Container.update(container);
 		if (container.getLsLabels() != null){
 			for(ContainerLabel containerLabel : container.getLsLabels()){
