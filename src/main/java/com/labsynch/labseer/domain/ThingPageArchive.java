@@ -5,7 +5,6 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.Lob;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -35,7 +34,7 @@ public class ThingPageArchive {
     @DateTimeFormat(style = "MM")
     private Date recordedDate;
 
-    @Lob
+    @Column(columnDefinition="text")
     @Basic(fetch = FetchType.LAZY)
     private String pageContent;
 

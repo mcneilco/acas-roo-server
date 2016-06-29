@@ -180,7 +180,7 @@ public class RawCurveDataDTO {
 		return processors;
 	}
 	
-	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds){
+	public static List<RawCurveDataDTO> getRawCurveData(Collection<String> curveIds, String responseName){
 		EntityManager em = SubjectValue.entityManager();
 		String queryString = "SELECT NEW MAP( rsv.id as responseSubjectValueId, "
 				+ "rsv.recordedBy as recordedBy, "
@@ -274,7 +274,12 @@ public class RawCurveDataDTO {
         	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
         }
         logger.debug("Querying with string: \n"+queryString);
-        q.setParameter("responseKind", "efficacy");
+        if (responseName != null && responseName.length()>0){
+            q.setParameter("responseKind", responseName);
+        }
+        else{
+        	q.setParameter("responseKind", "efficacy");
+        }
         List<Map> queryResults = q.getResultList();
         List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
 		for (Map result : queryResults) {
@@ -283,6 +288,116 @@ public class RawCurveDataDTO {
 		}
 		return rawCurveDataList;
 	}
+	
+	public static List<RawCurveDataDTO> getRawCurveDataAgonist(Collection<String> curveIds, String responseName){
+		EntityManager em = SubjectValue.entityManager();
+		String queryString = "SELECT NEW MAP( rsv.id as responseSubjectValueId, "
+				+ "rsv.recordedBy as recordedBy, "
+				+ "rsv.lsTransaction as lsTransaction, "
+        		+ "rsv.numericValue as response, "
+        		+ "rsv.unitKind as responseUnits, "
+        		+ "rsv.lsKind as responseKind, "
+        		+ "bcsv.concentration as dose, "
+        		+ "bcsv.concUnit as doseUnits, "
+        		+ "afsv.codeValue as algorithmFlagStatus, "
+        		+ "afov.codeValue as algorithmFlagObservation, "
+        		+ "afcv.codeValue as algorithmFlagCause, "
+        		+ "afcomv.stringValue as algorithmFlagComment, "
+        		+ "pfsv.codeValue as preprocessFlagStatus, "
+        		+ "pfov.codeValue as preprocessFlagObservation, "
+        		+ "pfcv.codeValue as preprocessFlagCause, "
+        		+ "afs.lsKind as algorithmFlagLsKind, "
+        		+ "pfs.lsKind as preprocessFlagLsKind, "
+        		+ "ufs.lsKind as userFlagLsKind, "
+        		+ "pfcomv.stringValue as preprocessFlagComment, "
+        		+ "ufsv.codeValue as userFlagStatus, "
+        		+ "ufov.codeValue as userFlagObservation, "
+        		+ "ufcv.codeValue as userFlagCause, "
+        		+ "ufcomv.stringValue as userFlagComment,"
+        		+ "agv.stringValue as curveId "
+        		+ " ) " 
+        		+ "FROM AnalysisGroupValue agv "
+        		+ "JOIN agv.lsState as ags "
+        		+ "JOIN ags.analysisGroup as ag "
+        		+ "JOIN ags.analysisGroup.treatmentGroups as treat "
+        		+ "JOIN treat.subjects as subj "
+        		+ "JOIN subj.lsStates as rss "
+        		+ "JOIN rss.lsValues as rsv "
+        		+ "JOIN rss.lsValues as bcsv "
+        		+ "LEFT JOIN subj.lsStates as afs WITH afs.lsKind = 'auto flag' AND afs.ignored = false "
+        		+ "LEFT JOIN afs.lsValues as afsv WITH afsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN afs.lsValues as afov WITH afov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN afs.lsValues as afcv WITH afcv.lsKind = 'flag cause' "
+        		+ "LEFT JOIN afs.lsValues as afcomv WITH afcomv.lsKind = 'comment' "
+        		+ "LEFT JOIN subj.lsStates as pfs WITH pfs.lsKind = 'preprocess flag' AND pfs.ignored = false "
+        		+ "LEFT JOIN pfs.lsValues as pfsv WITH pfsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN pfs.lsValues as pfov WITH pfov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN pfs.lsValues as pfcv WITH pfcv.lsKind = 'flag cause' "
+        		+ "LEFT JOIN pfs.lsValues as pfcomv WITH pfcomv.lsKind = 'comment' "
+        		+ "LEFT JOIN subj.lsStates as ufs WITH ufs.lsKind = 'user flag' AND ufs.ignored = false "
+        		+ "LEFT JOIN ufs.lsValues as ufsv WITH ufsv.lsKind = 'flag status' "
+        		+ "LEFT JOIN ufs.lsValues as ufov WITH ufov.lsKind = 'flag observation' "
+        		+ "LEFT JOIN ufs.lsValues as ufcv WITH ufcv.lsKind = 'flag cause' "
+        		+ "LEFT JOIN ufs.lsValues as ufcomv WITH ufcomv.lsKind = 'comment' "
+        		+ "WHERE rss.lsType = 'data' "
+        		+ "AND rss.lsKind = 'results' "
+        		+ "AND rsv.lsType = 'numericValue' "
+        		+ "AND rsv.lsKind = :responseKind "
+        		+ "AND bcsv.lsType = 'codeValue' "
+        		+ "AND bcsv.lsKind = 'agonist batch code' "
+        		+ "AND ags.ignored = false "
+        		+ "AND agv.lsType = 'stringValue' "
+        		+ "AND agv.lsKind = 'curve id' "
+        		+ "AND agv.ignored = false "
+        		+ "AND ag.ignored = false "
+        		+ "AND treat.ignored = false "
+        		+ "AND subj.ignored = false "
+        		+ "AND (";
+        Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCurveIds = new ArrayList<String>();
+    	allCurveIds.addAll(curveIds);
+    	int startIndex = 0;
+    	while (startIndex < curveIds.size()){
+    		int endIndex;
+    		if (startIndex+999 < curveIds.size()) endIndex = startIndex+999;
+    		else endIndex = curveIds.size();
+    		List<String> nextCurveIds = allCurveIds.subList(startIndex, endIndex);
+    		String groupName = "curveIds"+startIndex;
+    		String sqlClause = " agv.stringValue IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCurveIds);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+		TypedQuery<Map> q = em.createQuery(queryString, Map.class);
+        for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+        logger.debug("Querying with string: \n"+queryString);
+        if (responseName != null && responseName.length()>0){
+            q.setParameter("responseKind", responseName);
+        }
+        else{
+        	q.setParameter("responseKind", "normalized activity");
+        }
+        List<Map> queryResults = q.getResultList();
+        List<RawCurveDataDTO> rawCurveDataList = new ArrayList<RawCurveDataDTO>();
+		for (Map result : queryResults) {
+			RawCurveDataDTO rawCurveDataDTO = new RawCurveDataDTO(result);
+			rawCurveDataList.add(rawCurveDataDTO);
+		}
+		return rawCurveDataList;
+	}
+
 	
 	public static String getCsvList(Collection<RawCurveDataDTO> rawCurveDataDTOs, String format) {
 		//format is ALWAYS tsv or csv (not case sensitive)
@@ -313,17 +428,32 @@ public class RawCurveDataDTO {
         return outFile.toString();
 	}
 	
-	public static Collection<RawCurveDataDTO> getRawCurveDataByExperiment(String experimentIdOrCodeName){
+	public static Collection<RawCurveDataDTO> getRawCurveDataByExperiment(String experimentIdOrCodeName, String responseName){
 		long startTime = System.currentTimeMillis();
 		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
 		long endTime = System.currentTimeMillis();
 		long totalTime = endTime - startTime;
 		logger.debug("time to get curve id list and rendering hint = " + totalTime + " miliseconds.");
 		long startTime2 = System.currentTimeMillis();
-		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveData(curveIds);
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveData(curveIds, responseName);
 		long endTime2 = System.currentTimeMillis();
 		long totalTime2 = endTime2 - startTime2;
 		logger.debug("time to fill in raw curve data = " + totalTime2 + " miliseconds.");
 		return rawCurveDataDTOs;
 	}
+	
+	public static Collection<RawCurveDataDTO> getRawAgonistCurveDataByExperiment(String experimentIdOrCodeName, String responseName){
+		long startTime = System.currentTimeMillis();
+		Collection<String> curveIds = CurveFitDTO.findAllCurveIdsByExperiment(experimentIdOrCodeName);
+		long endTime = System.currentTimeMillis();
+		long totalTime = endTime - startTime;
+		logger.debug("time to get curve id list and rendering hint = " + totalTime + " miliseconds.");
+		long startTime2 = System.currentTimeMillis();
+		Collection<RawCurveDataDTO> rawCurveDataDTOs = getRawCurveDataAgonist(curveIds, responseName);
+		long endTime2 = System.currentTimeMillis();
+		long totalTime2 = endTime2 - startTime2;
+		logger.debug("time to fill in raw curve data = " + totalTime2 + " miliseconds.");
+		return rawCurveDataDTOs;
+	}
+
 }

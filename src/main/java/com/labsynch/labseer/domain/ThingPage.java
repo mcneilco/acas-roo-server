@@ -3,9 +3,9 @@ package com.labsynch.labseer.domain;
 import java.util.Date;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -36,7 +36,7 @@ public class ThingPage {
     @DateTimeFormat(style = "MM")
     private Date recordedDate;
 
-    @Lob
+    @Column(columnDefinition="text")
     @Basic(fetch = FetchType.LAZY)
     private String pageContent;
 
