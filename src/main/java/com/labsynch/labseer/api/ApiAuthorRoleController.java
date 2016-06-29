@@ -1,6 +1,7 @@
 package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -22,8 +23,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.dto.AuthorNameDTO;
+import com.labsynch.labseer.dto.AuthorRoleDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.service.AuthorRoleService;
 import com.labsynch.labseer.service.AuthorService;
+import com.labsynch.labseer.service.ContainerService;
 import com.labsynch.labseer.utils.PropertiesFileService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.web.AuthorController;
@@ -32,6 +36,9 @@ import com.labsynch.labseer.web.AuthorRoleController;
 @Controller
 @RequestMapping("api/v1/authorroles")
 public class ApiAuthorRoleController {
+	
+	@Autowired
+    private AuthorRoleService authorRoleService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthorRoleController.class);
 
@@ -54,6 +61,15 @@ public class ApiAuthorRoleController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<AuthorRole> result = AuthorRole.findAllAuthorRoles();
         return new ResponseEntity<String>(AuthorRole.toJsonArray(result), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/saveRoles", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromDTOs(@RequestBody String json) {
+        Collection<AuthorRoleDTO> authorRoleDTOs = AuthorRoleDTO.fromJsonArrayToAuthorRoes(json);
+        authorRoleService.saveAuthorRoleDTOs(authorRoleDTOs);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
@@ -93,6 +109,15 @@ public class ApiAuthorRoleController {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
         }
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/deleteRoles", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> deleteFromDTOs(@RequestBody String json) {
+        Collection<AuthorRoleDTO> authorRoleDTOs = AuthorRoleDTO.fromJsonArrayToAuthorRoes(json);
+        authorRoleService.deleteAuthorRoleDTOs(authorRoleDTOs);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 

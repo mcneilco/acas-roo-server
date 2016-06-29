@@ -67,6 +67,9 @@ public class LsThingServiceImpl implements LsThingService {
 	
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+	private AuthorService authorService;
 
 	@Override
 	public String getProjectCodes(){
@@ -941,6 +944,26 @@ public class LsThingServiceImpl implements LsThingService {
 			String searchQuery) {
 		return findLsThingsByGenericMetaDataSearch(searchQuery, null);
 	}
+	
+
+
+	@Override
+	public Collection<LsThing> findLsThingProjectsByGenericMetaDataSearch(
+			String searchQuery, String userName) {
+		Collection<LsThing> rawResults = findLsThingsByGenericMetaDataSearch(searchQuery, "project");
+		Collection<LsThing> projects = authorService.getUserProjects(userName);
+		List<String> allowedProjectCodeNames = new ArrayList<String>();
+		for (LsThing project : projects){
+			allowedProjectCodeNames.add(project.getCodeName());
+		}
+		Collection<LsThing> results = new HashSet<LsThing>();
+		for (LsThing rawResult : rawResults){
+			if (allowedProjectCodeNames.contains(rawResult.getCodeName())){
+				results.add(rawResult);
+			}
+		}
+		return results;
+	}
 
 	@Override
 	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
@@ -958,6 +981,7 @@ public class LsThingServiceImpl implements LsThingService {
 		Join<LsThing, ItxLsThingLsThing> lsThingSecondItx = lsThingRoot.join("secondLsThings", JoinType.LEFT);
 		Join<ItxLsThingLsThing, LsThing> lsThingSecondLsThing = lsThingRoot.join("secondLsThings", JoinType.LEFT).join("secondLsThing", JoinType.LEFT);
 		Join<LsThing, LsThingLabel> lsThingSecondLsThingLabel = lsThingRoot.join("secondLsThings", JoinType.LEFT).join("secondLsThing", JoinType.LEFT).join("lsLabels", JoinType.LEFT);
+		Join<LsThing, LsThingLabel> lsThingLabel = lsThingRoot.join("lsLabels", JoinType.LEFT);
 		Join<LsThing, LsThingState> lsThingState = lsThingRoot.join("lsStates", JoinType.LEFT);
 		Join<LsThingState, LsThingValue> lsThingValue = lsThingRoot.join("lsStates", JoinType.LEFT).join("lsValues", JoinType.LEFT);
 		
@@ -1060,6 +1084,13 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate studyCodePredicate2 = criteriaBuilder.equal(lsThingValue.<String>get("lsKind"), "study code");
 			Predicate studyCodePredicate = criteriaBuilder.and(studyCodePredicate1, studyCodePredicate2, lsThingValueNotIgnored, lsThingStateNotIgnored);
 			predicateListByTerm.add(studyCodePredicate);
+			
+			//name
+			Predicate nameLabelPredicate = criteriaBuilder.like(criteriaBuilder.lower(lsThingLabel.<String>get("labelText")), "%"+term.toLowerCase()+"%");
+			Predicate lsThingLabelTypeName = criteriaBuilder.equal(lsThingLabel.<String>get("lsType"), "name");
+			Predicate lsThingLabelNotIgnored = criteriaBuilder.not(lsThingLabel.<Boolean>get("ignored"));
+			Predicate namePredicate = criteriaBuilder.and(nameLabelPredicate, lsThingLabelTypeName, lsThingLabelNotIgnored);
+			predicateListByTerm.add(namePredicate);
 			
 			//join all the predicatesByTerm with OR
 			predicatesByTerm = predicateListByTerm.toArray(predicatesByTerm);

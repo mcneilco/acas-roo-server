@@ -12,6 +12,50 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 privileged aspect LsRoleController_Roo_Controller_Finder {
     
+    @RequestMapping(params = { "find=ByLsTypeEquals", "form" }, method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsTypeEqualsForm(Model uiModel) {
+        return "lsroles/findLsRolesByLsTypeEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsTypeEquals(@RequestParam("lsType") String lsType, Model uiModel) {
+        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEquals(lsType).getResultList());
+        return "lsroles/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndLsKindEquals", "form" }, method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndLsKindEqualsForm(Model uiModel) {
+        return "lsroles/findLsRolesByLsTypeEqualsAndLsKindEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+        return "lsroles/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals", "form" }, method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEqualsForm(Model uiModel) {
+        return "lsroles/findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals", method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("roleName") String roleName, Model uiModel) {
+        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(lsType, lsKind, roleName).getResultList());
+        return "lsroles/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndRoleNameEquals", "form" }, method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndRoleNameEqualsForm(Model uiModel) {
+        return "lsroles/findLsRolesByLsTypeEqualsAndRoleNameEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndRoleNameEquals", method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndRoleNameEquals(@RequestParam("lsType") String lsType, @RequestParam("roleName") String roleName, Model uiModel) {
+        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals(lsType, roleName).getResultList());
+        return "lsroles/list";
+    }
+    
     @RequestMapping(params = { "find=ByRoleNameEquals", "form" }, method = RequestMethod.GET)
     public String LsRoleController.findLsRolesByRoleNameEqualsForm(Model uiModel) {
         return "lsroles/findLsRolesByRoleNameEquals";

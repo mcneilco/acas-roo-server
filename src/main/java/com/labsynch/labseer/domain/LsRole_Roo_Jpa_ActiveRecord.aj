@@ -38,12 +38,6 @@ privileged aspect LsRole_Roo_Jpa_ActiveRecord {
     }
     
     @Transactional
-    public void LsRole.persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.persist(this);
-    }
-    
-    @Transactional
     public void LsRole.remove() {
         if (this.entityManager == null) this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {

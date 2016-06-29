@@ -6,7 +6,7 @@
         <field:textarea field="pageName" id="c_com_labsynch_labseer_domain_ThingPageArchive_pageName" z="zASQn7FXDfs2dJI4D0VUUUxgSb0="/>
         <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_ThingPageArchive_recordedBy" required="true" z="0bljF5l+ea0+LwTxVGBWcQFUmc4="/>
         <field:datetime dateTimePattern="${thingPageArchive_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_ThingPageArchive_recordedDate" required="true" z="zewuymxawn9XWSsV9UB/14nBFUw="/>
-        <field:textarea field="pageContent" id="c_com_labsynch_labseer_domain_ThingPageArchive_pageContent" z="iPEAwpVsgcn63odbhOn9OdX8wbM="/>
+        <field:input field="pageContent" id="c_com_labsynch_labseer_domain_ThingPageArchive_pageContent" z="W/mrX8BnWigF4Jusde9kWkTZGg4="/>
         <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_ThingPageArchive_modifiedBy" required="true" z="2qMI96bkU06nRydIp/Lwx9qnUeE="/>
         <field:datetime dateTimePattern="${thingPageArchive_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_ThingPageArchive_modifiedDate" required="true" z="7117EJ8EGEeiB8u8ljGg8spISaM="/>
         <field:textarea field="currentEditor" id="c_com_labsynch_labseer_domain_ThingPageArchive_currentEditor" z="OFMPGXDV3tBl76exMfgXw6pcf0E="/>

@@ -27,10 +27,13 @@ import com.labsynch.labseer.domain.InteractionType;
 import com.labsynch.labseer.domain.LabelKind;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LabelType;
+import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.OperatorKind;
 import com.labsynch.labseer.domain.OperatorType;
 import com.labsynch.labseer.domain.ProtocolKind;
 import com.labsynch.labseer.domain.ProtocolType;
+import com.labsynch.labseer.domain.RoleKind;
+import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.domain.StateKind;
 import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ThingKind;
@@ -257,6 +260,24 @@ public class ApiSetupController {
 	}
 	
 	@Transactional
+    @RequestMapping(value = "/roletypes", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> getOrCreateRoleTypes(@RequestBody List<TypeDTO> types) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		Collection<RoleType> results = TypeDTO.getOrCreateRoleTypes(types);
+		return new ResponseEntity<String>(RoleType.toJsonArray(results), headers, HttpStatus.CREATED);
+	}
+	
+	@Transactional
+    @RequestMapping(value = "/rolekinds", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> getOrCreateRoleKinds(@RequestBody List<TypeKindDTO> typeKinds) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		Collection<RoleKind> results = TypeKindDTO.getOrCreateRoleKinds(typeKinds);
+		return new ResponseEntity<String>(RoleKind.toJsonArray(results), headers, HttpStatus.CREATED);
+	}
+	
+	@Transactional
 	@RequestMapping(value = "/codetables", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> getOrCreateCodeTables(@RequestBody List<CodeTableDTO> codeTableDTOs) {
 		HttpHeaders headers = new HttpHeaders();
@@ -273,6 +294,15 @@ public class ApiSetupController {
 	    headers.add("Content-Type", "application/json");
 	    Collection<LabelSequence> savedLabelSequences = labelSequenceService.saveLabelSequenceArray(labelSequences);
 	    return new ResponseEntity<String>(LabelSequence.toJsonArray(savedLabelSequences), headers, HttpStatus.CREATED);
+	}
+	
+	@Transactional
+    @RequestMapping(value = "/lsroles", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> getOrCreateLsRoles(@RequestBody List<LsRole> lsRoles) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		Collection<LsRole> results = LsRole.getOrCreateRoles(lsRoles);
+		return new ResponseEntity<String>(LsRole.toJsonArray(results), headers, HttpStatus.CREATED);
 	}
 	
 	

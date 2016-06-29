@@ -17,8 +17,8 @@ import com.labsynch.labseer.domain.ExperimentType;
 import com.labsynch.labseer.domain.InteractionType;
 import com.labsynch.labseer.domain.LabelType;
 import com.labsynch.labseer.domain.OperatorType;
-import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolType;
+import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ThingType;
 import com.labsynch.labseer.domain.UnitType;
@@ -232,6 +232,22 @@ public class TypeDTO {
 		return dDictTypes;
 	}
 	
+	public static Collection<RoleType> getOrCreateRoleTypes(
+			List<TypeDTO> types) {
+		HashSet<RoleType> roleTypes = new HashSet<RoleType>();
+		for (TypeDTO type : types){
+			RoleType roleType;
+			try{
+				roleType = RoleType.findRoleTypesByTypeNameEquals(type.typeName).getSingleResult();
+			} catch(EmptyResultDataAccessException e){
+				roleType = new RoleType();
+				roleType.setTypeName(type.typeName);
+				roleType.persist();
+			}
+			roleTypes.add(roleType);
+		}
+		return roleTypes;
+	}
 }
 
 

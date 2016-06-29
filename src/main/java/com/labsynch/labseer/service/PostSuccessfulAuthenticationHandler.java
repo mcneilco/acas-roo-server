@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -29,7 +30,9 @@ public class PostSuccessfulAuthenticationHandler extends  SimpleUrlAuthenticatio
 
 	private RequestCache requestCache = new HttpSessionRequestCache();
 
-
+	@Autowired
+	private SecurityUtils securityUtils;
+	
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws ServletException, IOException {
 		/*
@@ -38,7 +41,7 @@ public class PostSuccessfulAuthenticationHandler extends  SimpleUrlAuthenticatio
 		logger.info("principal info: " + authentication.getPrincipal());
 		super.onAuthenticationSuccess(request, response, authentication);
 		
-		SecurityUtils.updateAuthorInfo(authentication);
+		securityUtils.updateAuthorInfo(authentication);
 		
 		SecurityContext context = SecurityContextHolder.getContext();
 		logger.info("context is " + context);
