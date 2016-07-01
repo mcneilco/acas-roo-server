@@ -378,6 +378,7 @@
             <menu:item id="fi_lsthing_recordedbylike" messageCode="global_menu_find" url="/lsthings?find=ByRecordedByLike&amp;form" z="h9+nSaROI5FHM+mfAaZeNALGtPU="/>
             <menu:item id="fi_lsthing_recordeddategreaterthan" messageCode="global_menu_find" url="/lsthings?find=ByRecordedDateGreaterThan&amp;form" z="CKWEGR0JeEBK21sR5CTn73aKQFg="/>
             <menu:item id="fi_lsthing_recordeddatelessthan" messageCode="global_menu_find" url="/lsthings?find=ByRecordedDateLessThan&amp;form" z="FDiykZmU9VrdXfigG4RU5LPiLfk="/>
+            <menu:item id="fi_lsthing_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="FyvmFJjVz1nij8cqyy8BpHw1ydA="/>
         </menu:category>
         <menu:category id="c_lsthingstate" z="kDZpS4CZuCX4P3hck2rU9pGQEHs=">
             <menu:item id="i_lsthingstate_new" messageCode="global_menu_new" url="/lsthingstates?form" z="pX/Lr4UYIRxuIGH06d1XLuCTDKI="/>
@@ -426,7 +427,11 @@
         <menu:category id="c_lsrole" z="eIIF+3Nwhg0gA4BZWz9IqeIfBr0=">
             <menu:item id="i_lsrole_new" messageCode="global_menu_new" url="/lsroles?form" z="sQQU8eIYjr52rryeIj1mbQvh070="/>
             <menu:item id="i_lsrole_list" messageCode="global_menu_list" url="/lsroles?page=1&amp;size=${empty param.size ? 10 : param.size}" z="zSPyhLyoG501CR+jtEld7yKrcKg="/>
-            <menu:item id="fi_lsrole_rolenameequals" messageCode="global_menu_find" url="/roles?find=ByRoleNameEquals&amp;form" z="g4tKmMKgc5y7Al2PlFSVNBHvXVo="/>
+            <menu:item id="fi_lsrole_lstypeequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEquals&amp;form" z="W4JpQHrCvTbvdaMZnx/5xpX+ICs="/>
+            <menu:item id="fi_lsrole_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="gyxh+EFMUzy1xWG/2BhwPbOFt9A="/>
+            <menu:item id="fi_lsrole_lstypeequalsandlskindequalsandrolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals&amp;form" z="txmF06uRmk7J4WZcz8kEQZStSvc="/>
+            <menu:item id="fi_lsrole_lstypeequalsandrolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndRoleNameEquals&amp;form" z="X+9yFHiswNC4tLC9Wr1NAQCY5rY="/>
+            <menu:item id="fi_lsrole_rolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByRoleNameEquals&amp;form" z="cO0ad/jaBLJZl79Xpta3al6Z7mM="/>
         </menu:category>
         <menu:category id="c_authorrole" z="5H5j5FexDI0Q/OjfqVeghRk3SBQ=">
             <menu:item id="i_authorrole_new" messageCode="global_menu_new" url="/authorroles?form" z="R8JUiR8CbsbtSUAeFyXKb8jet5k="/>
@@ -504,6 +509,17 @@
         <menu:category id="c_itxlsthinglsthingstate" z="dacFM2W4nNstoyJUE8ZhmtUcl+o=">
             <menu:item id="i_itxlsthinglsthingstate_new" messageCode="global_menu_new" url="/itxlsthinglsthingstates?form" z="URYzXejwc0AbOnmQGDN6sxGn1lA="/>
             <menu:item id="i_itxlsthinglsthingstate_list" messageCode="global_menu_list" url="/itxlsthinglsthingstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iJT8vqWzUsI32g9p3HD98Dus48A="/>
+        </menu:category>
+        <menu:category id="c_rolekind" z="KVQVdwzOfGV720M7rpWWHWu1/ZM=">
+            <menu:item id="i_rolekind_new" messageCode="global_menu_new" url="/rolekinds?form" z="pg+83KKlLmJSjIPVompKUXMYHV8="/>
+            <menu:item id="i_rolekind_list" messageCode="global_menu_list" url="/rolekinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="ovIkKR/Umvr6j9+j7iArQWnO5o4="/>
+            <menu:item id="fi_rolekind_kindnameequalsandlstype" messageCode="global_menu_find" url="/rolekinds?find=ByKindNameEqualsAndLsType&amp;form" z="g5QKG2L9DTfjeElG7SWPTsFGBog="/>
+            <menu:item id="fi_rolekind_lstype" messageCode="global_menu_find" url="/rolekinds?find=ByLsType&amp;form" z="jDtAzYm+58YY6wOry4PwLlZ+oew="/>
+        </menu:category>
+        <menu:category id="c_roletype" z="4j93y9HnrS9b1iYCpRnc2GT4nVQ=">
+            <menu:item id="i_roletype_new" messageCode="global_menu_new" url="/roletypes?form" z="SCsoXt9FKGH0QpEfNXFbsigT8AE="/>
+            <menu:item id="i_roletype_list" messageCode="global_menu_list" url="/roletypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="pXs+olwjk4QH+ztDyWQ6jt195ng="/>
+            <menu:item id="fi_roletype_typenameequals" messageCode="global_menu_find" url="/roletypes?find=ByTypeNameEquals&amp;form" z="LSRdfHt3MP1A4Yd0obo33AAV5QY="/>
         </menu:category>
     </menu:menu>
 </div>

@@ -76,6 +76,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Autowired
 	private ExperimentValueService experimentValueService;
+	
+	@Autowired
+	private AuthorService authorService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ExperimentServiceImpl.class);
 
@@ -1061,6 +1064,32 @@ public class ExperimentServiceImpl implements ExperimentService {
 		q.setParameter("experimentCodes", experimentCodes);
 		Collection<String> results = q.getResultList();
 		logger.debug("results are"+results.toString());
+		return results;
+	}
+	
+	@Override
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, String userName) throws TooManyResultsException {
+		Collection<Experiment> rawResults = findExperimentsByGenericMetaDataSearch(queryString);
+		Collection<LsThing> projects = authorService.getUserProjects(userName);
+		List<String> allowedProjectCodeNames = new ArrayList<String>();
+		for (LsThing project : projects){
+			allowedProjectCodeNames.add(project.getCodeName());
+		}
+		Collection<Experiment> results = new HashSet<Experiment>();
+		for (Experiment rawResult : rawResults){
+			String experimentProject = null;
+			for (ExperimentState state : rawResult.getLsStates()){
+				for (ExperimentValue value : state.getLsValues()){
+					if (value.getLsKind().equals("project")){
+						experimentProject = value.getCodeValue();
+						break;
+					}
+				}
+			}
+			if (allowedProjectCodeNames.contains(experimentProject)){
+				results.add(rawResult);
+			}
+		}
 		return results;
 	}
 

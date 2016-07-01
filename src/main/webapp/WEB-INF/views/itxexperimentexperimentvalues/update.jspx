@@ -14,8 +14,8 @@
         <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_fileValue" z="Pggu7ihc3SordK9cYlGRCeN+HN0="/>
         <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_urlValue" z="aZp+gDRenuTJcgAdS4NqpsRZBDM="/>
         <field:datetime dateTimePattern="${itxExperimentExperimentValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_dateValue" z="MxRse18fRkHxFDh3wO/Sp/sJrK8="/>
-        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_clobValue" z="EayDaJhCGuyZ9qsfaggKp17FDMw="/>
-        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_blobValue" z="2mlZ5A3VBTdDevZKbImI0Ux2ifY="/>
+        <field:input field="clobValue" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_clobValue" z="iNvGaVd+x9Ckqsn684xQo1JRNEg="/>
+        <field:input field="blobValue" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_blobValue" z="KD0pGZKFSaDqmNHYDW9QcrJGdUE="/>
         <field:input field="operatorType" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_operatorType" max="25" z="V8dBiy1snq0PvE23i/1Sta4gnt4="/>
         <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_operatorKind" max="10" z="Opsv3s7O6MeAmcSViuEaoD2jGds="/>
         <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_ItxExperimentExperimentValue_operatorTypeAndKind" z="IRHSDMNwkRbqdf/NGVUsLIKwICs="/>

@@ -9,10 +9,42 @@ import javax.persistence.TypedQuery;
 
 privileged aspect LsRole_Roo_Finder {
     
-    public static TypedQuery<LsRole> LsRole.findLsRolesByRoleNameEquals(String roleName) {
+    public static TypedQuery<LsRole> LsRole.findLsRolesByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = LsRole.entityManager();
+        TypedQuery<LsRole> q = em.createQuery("SELECT o FROM LsRole AS o WHERE o.lsType = :lsType", LsRole.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
+    public static TypedQuery<LsRole> LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = LsRole.entityManager();
+        TypedQuery<LsRole> q = em.createQuery("SELECT o FROM LsRole AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", LsRole.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
+    public static TypedQuery<LsRole> LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(String lsType, String lsKind, String roleName) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         if (roleName == null || roleName.length() == 0) throw new IllegalArgumentException("The roleName argument is required");
         EntityManager em = LsRole.entityManager();
-        TypedQuery<LsRole> q = em.createQuery("SELECT o FROM LsRole AS o WHERE o.roleName = :roleName", LsRole.class);
+        TypedQuery<LsRole> q = em.createQuery("SELECT o FROM LsRole AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.roleName = :roleName", LsRole.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("roleName", roleName);
+        return q;
+    }
+    
+    public static TypedQuery<LsRole> LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals(String lsType, String roleName) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (roleName == null || roleName.length() == 0) throw new IllegalArgumentException("The roleName argument is required");
+        EntityManager em = LsRole.entityManager();
+        TypedQuery<LsRole> q = em.createQuery("SELECT o FROM LsRole AS o WHERE o.lsType = :lsType  AND o.roleName = :roleName", LsRole.class);
+        q.setParameter("lsType", lsType);
         q.setParameter("roleName", roleName);
         return q;
     }

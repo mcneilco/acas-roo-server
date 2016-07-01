@@ -16,4 +16,16 @@
 <definition extends="default" name="lsroles/findLsRolesByRoleNameEquals">
         <put-attribute name="body" value="/WEB-INF/views/lsroles/findLsRolesByRoleNameEquals.jspx"/>
     </definition>
+<definition extends="default" name="lsroles/findLsRolesByLsTypeEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsroles/findLsRolesByLsTypeEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsroles/findLsRolesByLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsroles/findLsRolesByLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsroles/findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsroles/findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lsroles/findLsRolesByLsTypeEqualsAndRoleNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsroles/findLsRolesByLsTypeEqualsAndRoleNameEquals.jspx"/>
+    </definition>
 </tiles-definitions>

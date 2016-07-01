@@ -7,8 +7,8 @@
         <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_SubjectValue_fileValue" z="9QdbKVG/Cj3pCo81DMl+slig0LA="/>
         <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_SubjectValue_urlValue" z="FS4VaiZUQxOMQdzHxmcGu8qWTMM="/>
         <field:datetime dateTimePattern="${subjectValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_SubjectValue_dateValue" z="2k0X9xFkI/keyEh7+0H2TqC/iP4="/>
-        <field:textarea field="clobValue" id="c_com_labsynch_labseer_domain_SubjectValue_clobValue" z="Eek/ygEZFQ2AB6Tp6aRz9Dtt1Rs="/>
-        <field:textarea field="blobValue" id="c_com_labsynch_labseer_domain_SubjectValue_blobValue" z="AiS1Z0dNzqHbJdJVnz9IGO3p2QQ="/>
+        <field:input field="clobValue" id="c_com_labsynch_labseer_domain_SubjectValue_clobValue" z="Mk3M8quEIecaBQb2QFT06vdNTuE="/>
+        <field:input field="blobValue" id="c_com_labsynch_labseer_domain_SubjectValue_blobValue" z="Sz75VvGgI26QDsxMTmBwuX5UZJw="/>
         <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_SubjectValue_sigFigs" validationMessageCode="field_invalid_integer" z="b6ePySNwg6FZ202A7G9Ge//L0Mw="/>
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_SubjectValue_comments" z="cNahh9/lNLUc2U5Q4IxvEoBZdsw="/>
         <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_SubjectValue_ignored" z="NFKp+QowWrJAezXtnAJ/Y8vewHU="/>

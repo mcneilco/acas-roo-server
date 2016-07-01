@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:find finderName="ByLsTypeEqualsAndRoleNameEquals" id="ff_com_labsynch_labseer_domain_LsRole" path="/lsroles" z="NPNpdjAJfZWnu20XzP56T5qppcs=">
+        <field:input disableFormBinding="true" field="lsType" id="f_com_labsynch_labseer_domain_LsRole_lsType" max="255" required="true" z="LmcMKcjsySyK3ITQKCVQthVgFnY="/>
+        <field:input disableFormBinding="true" field="roleName" id="f_com_labsynch_labseer_domain_LsRole_roleName" min="1" required="true" z="zTQToBRFGWO6B3H8nkA0SAHLf+Q="/>
+    </form:find>
+</div>
