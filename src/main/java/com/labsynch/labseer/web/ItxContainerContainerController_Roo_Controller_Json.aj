@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.web;
 
+import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.web.ItxContainerContainerController;
 import java.util.List;
@@ -99,6 +100,22 @@ privileged aspect ItxContainerContainerController_Roo_Controller_Json {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndFirstContainerEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ItxContainerContainerController.jsonFindItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("firstContainer") Container firstContainer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(lsType, firstContainer).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndSecondContainerEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ItxContainerContainerController.jsonFindItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("secondContainer") Container secondContainer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(lsType, secondContainer).getResultList()), headers, HttpStatus.OK);
     }
     
 }

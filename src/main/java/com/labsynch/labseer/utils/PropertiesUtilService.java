@@ -37,5 +37,7 @@ public interface PropertiesUtilService {
 
 	String getAcasUserRole();
 
+	int getContainerInventorySearchMaxResult();
+
 	
 }

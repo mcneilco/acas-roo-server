@@ -492,4 +492,22 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		labelSequence.merge();
 	}
 
+	@Override
+	public String getContainerCodeName() {
+		String thingTypeAndKind = "material_container";
+		String labelTypeAndKind = "id_codeName";
+		Long numberOfLabels = 1L;
+		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
+		return labels.get(0).getAutoLabel();
+	}
+
+	@Override
+	public String getAuthorCodeName() {
+		String thingTypeAndKind = "author_author";
+		String labelTypeAndKind = "id_codeName";
+		Long numberOfLabels = 1L;
+		List<AutoLabelDTO> labels = getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
+		return labels.get(0).getAutoLabel();
+	}
+
 }

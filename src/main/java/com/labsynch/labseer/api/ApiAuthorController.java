@@ -3,6 +3,7 @@ package com.labsynch.labseer.api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,12 +23,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.AuthorNameDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.service.AuthorService;
 import com.labsynch.labseer.utils.PropertiesFileService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 import com.labsynch.labseer.web.AuthorController;
 
 @Controller
@@ -267,5 +273,17 @@ public class ApiAuthorController {
 
 		return new ResponseEntity<String>(LsThing.toJsonArrayStub(projects), headers, HttpStatus.OK);
 	}
+	
+	@Transactional
+    @RequestMapping(value = "/getOrCreate", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getOrCreateFromJson(@RequestBody String json) {
+    	Author author = Author.fromJsonToAuthor(json);
+        author = authorService.getOrCreateAuthor(author);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
+    }
+    
+
 
 }

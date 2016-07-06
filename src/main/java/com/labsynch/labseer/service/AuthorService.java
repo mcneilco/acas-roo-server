@@ -30,4 +30,10 @@ public interface AuthorService {
 	public Collection<Author> findAuthorsByRoleTypeAndRoleKindAndRoleName(
 			String roleType, String roleKind, String roleName);
 
+	public Author saveAuthor(Author author);
+
+	public Author updateAuthor(Author author);
+
+	public Author getOrCreateAuthor(Author author);
+
 }

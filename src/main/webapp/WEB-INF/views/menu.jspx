@@ -181,6 +181,8 @@
             <menu:item id="i_itxcontainercontainer_new" messageCode="global_menu_new" url="/itxcontainercontainers?form" z="NhlUqtl4JMadHsSUmeKluQxkWLU="/>
             <menu:item id="i_itxcontainercontainer_list" messageCode="global_menu_list" url="/itxcontainercontainers?page=1&amp;size=${empty param.size ? 10 : param.size}" z="rG6fKtmy1KgXBRW0mqiuB7OIYZk="/>
             <menu:item id="fi_itxcontainercontainer_lstransactionequals" messageCode="global_menu_find" url="/itxcontainercontainers?find=ByLsTransactionEquals&amp;form" z="e7B1gJiBLUunxApr7GqgKPh/PHk="/>
+            <menu:item id="fi_itxcontainercontainer_lstypeequalsandfirstcontainerequals" messageCode="global_menu_find" url="/itxcontainercontainers?find=ByLsTypeEqualsAndFirstContainerEquals&amp;form" z="xEVAS6KfHr5TyImyhVej8VJswrc="/>
+            <menu:item id="fi_itxcontainercontainer_lstypeequalsandsecondcontainerequals" messageCode="global_menu_find" url="/itxcontainercontainers?find=ByLsTypeEqualsAndSecondContainerEquals&amp;form" z="hR8v17TTie6c2nEWj160R9kgvRI="/>
         </menu:category>
         <menu:category id="c_valuetype" z="78cGurSeDwDaXDfkbYxrbSOGH/s=">
             <menu:item id="i_valuetype_new" messageCode="global_menu_new" url="/valuetypes?form" z="YAMKYD/WdE5WvE7Dz85UYELd8G4="/>
@@ -306,6 +308,7 @@
             <menu:item id="fi_containerlabel_containerandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByContainerAndIgnoredNot&amp;form" z="C3QRAvcrFKojvrsCALvkkEek1WE="/>
             <menu:item id="fi_containerlabel_labeltextequalsandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByLabelTextEqualsAndIgnoredNot&amp;form" z="AQQAt+RSW5CAUJ8cgK8WU2g+5gg="/>
             <menu:item id="fi_containerlabel_lstransactionequals" messageCode="global_menu_find" url="/containerlabels?find=ByLsTransactionEquals&amp;form" z="hEHslYtx3QnVYc63TxO+tNTsVE0="/>
+            <menu:item id="fi_containerlabel_lstypeequalsandlabeltextequalsandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot&amp;form" z="EPn/ky8CBvowtPJEhqWTck1L1nM="/>
         </menu:category>
         <menu:category id="c_treatmentgrouplabel" z="M25GmMAOZgXnpUGLXGdWZzjBKwM=">
             <menu:item id="i_treatmentgrouplabel_new" messageCode="global_menu_new" url="/treatmentgrouplabels?form" z="sM2bs+bTfWIwnBAsnUNR62U9B90="/>

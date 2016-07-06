@@ -47,4 +47,15 @@ privileged aspect ContainerLabelController_Roo_Controller_Finder {
         return "containerlabels/list";
     }
     
+    @RequestMapping(params = { "find=ByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot", "form" }, method = RequestMethod.GET)
+    public String ContainerLabelController.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNotForm(Model uiModel) {
+        return "containerlabels/findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot", method = RequestMethod.GET)
+    public String ContainerLabelController.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(@RequestParam("lsType") String lsType, @RequestParam("labelText") String labelText, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
+        uiModel.addAttribute("containerlabels", ContainerLabel.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(lsType, labelText, ignored).getResultList());
+        return "containerlabels/list";
+    }
+    
 }

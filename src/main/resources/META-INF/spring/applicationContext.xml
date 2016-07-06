@@ -5,8 +5,9 @@
 		The located property files are parsed and their values can then be used within 
 		application context files in the form of ${propertyKey}. -->
 
-    <context:property-placeholder ignore-unresolvable="true" location="classpath*:META-INF/spring/*.properties" order="1"/>
-
+    <context:property-placeholder ignore-resource-not-found="true"  location="file://${ACAS_HOME}/conf/compiled/conf.properties" order="1" ignore-unresolvable="true" />
+    <context:property-placeholder ignore-resource-not-found="true"  location="file:///mnt/environments/acas/acas.env" order="2" ignore-unresolvable="true" />
+    <context:property-placeholder ignore-unresolvable="true" location="classpath*:META-INF/spring/*.properties" order="3"/>
 
 <!--
     <context:property-placeholder location="file:///opt/acas-dataexplorer/acas/conf/compiled/conf.properties" order="2" ignore-unresolvable="true" />
@@ -75,6 +76,14 @@
         <property name="validationQuery" value="${server.service.persistence.jdbc.validation.query}"/>
     </bean>
     
+    
+	<bean class="org.springframework.jdbc.core.JdbcTemplate" id="basicJdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <bean class="com.labsynch.labseer.service.ContainerServiceImpl"
+        id="containerServiceImpl">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
         
     <!-- Flyway configuration -->
 	<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">

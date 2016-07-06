@@ -37,6 +37,7 @@ import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.LsTag;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;

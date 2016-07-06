@@ -4,6 +4,10 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,7 +22,16 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.JdbcUtils;
+import org.springframework.jdbc.support.MetaDataAccessException;
+
 public class SimpleUtil {
+	
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 	
 	private static int PARAMETER_LIMIT = 999;
 	
@@ -158,4 +171,29 @@ public class SimpleUtil {
         }
         return predicate;
     }
+	
+	public static final List<Long> getIdsFromSequence(JdbcTemplate jdbcTemplate, String sequenceName, int numberOfIds){
+		String databaseType = null;
+		try{
+			databaseType = (String) JdbcUtils.extractDatabaseMetaData(jdbcTemplate.getDataSource(), "getDatabaseProductName");
+		}catch (MetaDataAccessException e){}
+		List<Long> idList = new ArrayList<Long>();
+		if (databaseType.equalsIgnoreCase("Oracle")){
+			String getIdsSql = "SELECT "+sequenceName+".nextval as id from dual connect by level <"+(numberOfIds+1);
+			idList = jdbcTemplate.query(getIdsSql, new RowMapper<Long>(){
+				public Long mapRow(ResultSet rs, int rowNum) throws SQLException{
+					return rs.getLong(1);
+				}
+			});
+		}
+		else{ 
+			String getIdsSql = "SELECT nextval('"+sequenceName+"') as id from generate_series(1,"+numberOfIds+")";
+			idList = jdbcTemplate.query(getIdsSql, new RowMapper<Long>(){
+				public Long mapRow(ResultSet rs, int rowNum) throws SQLException{
+					return rs.getLong(1);
+				}
+			});
+		}
+		return idList;
+	}
 }

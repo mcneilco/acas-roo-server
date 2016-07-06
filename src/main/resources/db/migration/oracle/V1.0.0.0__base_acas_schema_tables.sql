@@ -2,7 +2,7 @@
 --  DDL for Table ANALYSISGROUP_TREATMENTGROUP
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ANALYSISGROUP_TREATMENTGROUP" 
+  CREATE TABLE "ANALYSISGROUP_TREATMENTGROUP" 
    (	"TREATMENT_GROUP_ID" NUMBER(19,0), 
 	"ANALYSIS_GROUP_ID" NUMBER(19,0)
    );
@@ -10,7 +10,7 @@
 --  DDL for Table ANALYSIS_GROUP
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ANALYSIS_GROUP" 
+  CREATE TABLE "ANALYSIS_GROUP" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -29,7 +29,7 @@
 --  DDL for Table ANALYSIS_GROUP_LABEL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ANALYSIS_GROUP_LABEL" 
+  CREATE TABLE "ANALYSIS_GROUP_LABEL" 
    (	"ID" NUMBER(19,0), 
 	"DELETED" NUMBER(1,0), 
 	"IGNORED" NUMBER(1,0), 
@@ -51,7 +51,7 @@
 --  DDL for Table ANALYSIS_GROUP_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ANALYSIS_GROUP_STATE" 
+  CREATE TABLE "ANALYSIS_GROUP_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -71,7 +71,7 @@
 --  DDL for Table ANALYSIS_GROUP_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ANALYSIS_GROUP_VALUE" 
+  CREATE TABLE "ANALYSIS_GROUP_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -116,7 +116,7 @@
 --  DDL for Table APPLICATION_SETTING
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."APPLICATION_SETTING" 
+  CREATE TABLE "APPLICATION_SETTING" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"IGNORED" NUMBER(1,0), 
@@ -129,7 +129,7 @@
 --  DDL for Table AUTHOR
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."AUTHOR" 
+  CREATE TABLE "AUTHOR" 
    (	"ID" NUMBER(19,0), 
 	"ACTIVATION_DATE" TIMESTAMP (6), 
 	"ACTIVATION_KEY" VARCHAR2(255 CHAR), 
@@ -148,7 +148,7 @@
 --  DDL for Table AUTHOR_ROLE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."AUTHOR_ROLE" 
+  CREATE TABLE "AUTHOR_ROLE" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0), 
 	"LSROLE_ID" NUMBER(19,0), 
@@ -158,7 +158,7 @@
 --  DDL for Table CODE_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CODE_KIND" 
+  CREATE TABLE "CODE_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(255 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -169,7 +169,7 @@
 --  DDL for Table CODE_ORIGIN
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CODE_ORIGIN" 
+  CREATE TABLE "CODE_ORIGIN" 
    (	"ID" NUMBER(19,0), 
 	"NAME" VARCHAR2(256 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -178,7 +178,7 @@
 --  DDL for Table CODE_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CODE_TYPE" 
+  CREATE TABLE "CODE_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(128 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -187,7 +187,7 @@
 --  DDL for Table CONTAINER
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CONTAINER" 
+  CREATE TABLE "CONTAINER" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -207,7 +207,7 @@
 --  DDL for Table CONTAINER_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CONTAINER_KIND" 
+  CREATE TABLE "CONTAINER_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(255 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -218,7 +218,7 @@
 --  DDL for Table CONTAINER_LABEL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CONTAINER_LABEL" 
+  CREATE TABLE "CONTAINER_LABEL" 
    (	"ID" NUMBER(19,0), 
 	"DELETED" NUMBER(1,0), 
 	"IGNORED" NUMBER(1,0), 
@@ -240,7 +240,7 @@
 --  DDL for Table CONTAINER_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CONTAINER_STATE" 
+  CREATE TABLE "CONTAINER_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -260,7 +260,7 @@
 --  DDL for Table CONTAINER_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CONTAINER_TYPE" 
+  CREATE TABLE "CONTAINER_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(128 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -269,7 +269,7 @@
 --  DDL for Table CONTAINER_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."CONTAINER_VALUE" 
+  CREATE TABLE "CONTAINER_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -314,7 +314,7 @@
 --  DDL for Table DDICT_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."DDICT_KIND" 
+  CREATE TABLE "DDICT_KIND" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DESCRIPTION" VARCHAR2(512 CHAR), 
@@ -329,7 +329,7 @@
 --  DDL for Table DDICT_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."DDICT_TYPE" 
+  CREATE TABLE "DDICT_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DESCRIPTION" VARCHAR2(512 CHAR), 
@@ -342,7 +342,7 @@
 --  DDL for Table DDICT_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."DDICT_VALUE" 
+  CREATE TABLE "DDICT_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
@@ -360,7 +360,7 @@
 --  DDL for Table EXPERIMENT
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."EXPERIMENT" 
+  CREATE TABLE "EXPERIMENT" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -381,7 +381,7 @@
 --  DDL for Table EXPERIMENT_ANALYSISGROUP
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."EXPERIMENT_ANALYSISGROUP" 
+  CREATE TABLE "EXPERIMENT_ANALYSISGROUP" 
    (	"ANALYSIS_GROUP_ID" NUMBER(19,0), 
 	"EXPERIMENT_ID" NUMBER(19,0)
    );
@@ -389,7 +389,7 @@
 --  DDL for Table EXPERIMENT_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."EXPERIMENT_KIND" 
+  CREATE TABLE "EXPERIMENT_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(255 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -400,7 +400,7 @@
 --  DDL for Table EXPERIMENT_LABEL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."EXPERIMENT_LABEL" 
+  CREATE TABLE "EXPERIMENT_LABEL" 
    (	"ID" NUMBER(19,0), 
 	"DELETED" NUMBER(1,0), 
 	"IGNORED" NUMBER(1,0), 
@@ -422,7 +422,7 @@
 --  DDL for Table EXPERIMENT_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."EXPERIMENT_STATE" 
+  CREATE TABLE "EXPERIMENT_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -442,7 +442,7 @@
 --  DDL for Table EXPERIMENT_TAG
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."EXPERIMENT_TAG" 
+  CREATE TABLE "EXPERIMENT_TAG" 
    (	"EXPERIMENT_ID" NUMBER(19,0), 
 	"TAG_ID" NUMBER(19,0)
    );
@@ -450,7 +450,7 @@
 --  DDL for Table EXPERIMENT_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."EXPERIMENT_TYPE" 
+  CREATE TABLE "EXPERIMENT_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(128 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -459,7 +459,7 @@
 --  DDL for Table EXPERIMENT_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."EXPERIMENT_VALUE" 
+  CREATE TABLE "EXPERIMENT_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -504,7 +504,7 @@
 --  DDL for Table FILE_THING
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."FILE_THING" 
+  CREATE TABLE "FILE_THING" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -530,7 +530,7 @@
 --  DDL for Table INTERACTION_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."INTERACTION_KIND" 
+  CREATE TABLE "INTERACTION_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(255 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -541,7 +541,7 @@
 --  DDL for Table INTERACTION_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."INTERACTION_TYPE" 
+  CREATE TABLE "INTERACTION_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(128 CHAR), 
 	"TYPE_VERB" VARCHAR2(128 CHAR), 
@@ -551,7 +551,7 @@
 --  DDL for Table ITX_CONTAINER_CONTAINER
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_CONTAINER_CONTAINER" 
+  CREATE TABLE "ITX_CONTAINER_CONTAINER" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -572,7 +572,7 @@
 --  DDL for Table ITX_CONTAINER_CONTAINER_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_CONTAINER_CONTAINER_STATE" 
+  CREATE TABLE "ITX_CONTAINER_CONTAINER_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -592,7 +592,7 @@
 --  DDL for Table ITX_CONTAINER_CONTAINER_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_CONTAINER_CONTAINER_VALUE" 
+  CREATE TABLE "ITX_CONTAINER_CONTAINER_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -637,7 +637,7 @@
 --  DDL for Table ITX_EXPT_EXPT
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_EXPT_EXPT" 
+  CREATE TABLE "ITX_EXPT_EXPT" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -658,7 +658,7 @@
 --  DDL for Table ITX_EXPT_EXPT_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_EXPT_EXPT_STATE" 
+  CREATE TABLE "ITX_EXPT_EXPT_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -678,7 +678,7 @@
 --  DDL for Table ITX_EXPT_EXPT_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_EXPT_EXPT_VALUE" 
+  CREATE TABLE "ITX_EXPT_EXPT_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -723,7 +723,7 @@
 --  DDL for Table ITX_LS_THING_LS_THING
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_LS_THING_LS_THING" 
+  CREATE TABLE "ITX_LS_THING_LS_THING" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -744,7 +744,7 @@
 --  DDL for Table ITX_LS_THING_LS_THING_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_LS_THING_LS_THING_STATE" 
+  CREATE TABLE "ITX_LS_THING_LS_THING_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -764,7 +764,7 @@
 --  DDL for Table ITX_LS_THING_LS_THING_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_LS_THING_LS_THING_VALUE" 
+  CREATE TABLE "ITX_LS_THING_LS_THING_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -809,7 +809,7 @@
 --  DDL for Table ITX_PROTOCOL_PROTOCOL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_PROTOCOL_PROTOCOL" 
+  CREATE TABLE "ITX_PROTOCOL_PROTOCOL" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -830,7 +830,7 @@
 --  DDL for Table ITX_PROTOCOL_PROTOCOL_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_PROTOCOL_PROTOCOL_STATE" 
+  CREATE TABLE "ITX_PROTOCOL_PROTOCOL_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -850,7 +850,7 @@
 --  DDL for Table ITX_PROTOCOL_PROTOCOL_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_PROTOCOL_PROTOCOL_VALUE" 
+  CREATE TABLE "ITX_PROTOCOL_PROTOCOL_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -895,7 +895,7 @@
 --  DDL for Table ITX_SUBJECT_CONTAINER
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_SUBJECT_CONTAINER" 
+  CREATE TABLE "ITX_SUBJECT_CONTAINER" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -916,7 +916,7 @@
 --  DDL for Table ITX_SUBJECT_CONTAINER_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_SUBJECT_CONTAINER_STATE" 
+  CREATE TABLE "ITX_SUBJECT_CONTAINER_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -936,7 +936,7 @@
 --  DDL for Table ITX_SUBJECT_CONTAINER_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."ITX_SUBJECT_CONTAINER_VALUE" 
+  CREATE TABLE "ITX_SUBJECT_CONTAINER_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -981,7 +981,7 @@
 --  DDL for Table LABEL_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LABEL_KIND" 
+  CREATE TABLE "LABEL_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(255 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -992,7 +992,7 @@
 --  DDL for Table LABEL_SEQUENCE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LABEL_SEQUENCE" 
+  CREATE TABLE "LABEL_SEQUENCE" 
    (	"ID" NUMBER(19,0), 
 	"DIGITS" NUMBER(10,0), 
 	"GROUP_DIGITS" NUMBER(1,0), 
@@ -1009,7 +1009,7 @@
 --  DDL for Table LABEL_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LABEL_TYPE" 
+  CREATE TABLE "LABEL_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(255 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -1018,7 +1018,7 @@
 --  DDL for Table LSTHING_TAG
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LSTHING_TAG" 
+  CREATE TABLE "LSTHING_TAG" 
    (	"LSTHING_ID" NUMBER(19,0), 
 	"TAG_ID" NUMBER(19,0)
    );
@@ -1026,7 +1026,7 @@
 --  DDL for Table LS_INTERACTION
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_INTERACTION" 
+  CREATE TABLE "LS_INTERACTION" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1047,7 +1047,7 @@
 --  DDL for Table LS_ROLE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_ROLE" 
+  CREATE TABLE "LS_ROLE" 
    (	"ID" NUMBER(19,0), 
 	"ROLE_DESCRIPTION" VARCHAR2(200 CHAR), 
 	"ROLE_NAME" VARCHAR2(255 CHAR), 
@@ -1057,7 +1057,7 @@
 --  DDL for Table LS_SEQ_ANL_GRP
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_ANL_GRP" 
+  CREATE TABLE "LS_SEQ_ANL_GRP" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1065,7 +1065,7 @@
 --  DDL for Table LS_SEQ_CONTAINER
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_CONTAINER" 
+  CREATE TABLE "LS_SEQ_CONTAINER" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1073,7 +1073,7 @@
 --  DDL for Table LS_SEQ_EXPT
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_EXPT" 
+  CREATE TABLE "LS_SEQ_EXPT" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1081,7 +1081,7 @@
 --  DDL for Table LS_SEQ_ITX_CNTR_CNTR
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_ITX_CNTR_CNTR" 
+  CREATE TABLE "LS_SEQ_ITX_CNTR_CNTR" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1089,7 +1089,7 @@
 --  DDL for Table LS_SEQ_ITX_PROTOCOL_PROTOCOL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_ITX_PROTOCOL_PROTOCOL" 
+  CREATE TABLE "LS_SEQ_ITX_PROTOCOL_PROTOCOL" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1097,7 +1097,7 @@
 --  DDL for Table LS_SEQ_ITX_SUBJ_CNTR
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_ITX_SUBJ_CNTR" 
+  CREATE TABLE "LS_SEQ_ITX_SUBJ_CNTR" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1105,7 +1105,7 @@
 --  DDL for Table LS_SEQ_PROTOCOL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_PROTOCOL" 
+  CREATE TABLE "LS_SEQ_PROTOCOL" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1113,7 +1113,7 @@
 --  DDL for Table LS_SEQ_SUBJECT
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_SUBJECT" 
+  CREATE TABLE "LS_SEQ_SUBJECT" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1121,7 +1121,7 @@
 --  DDL for Table LS_SEQ_TRT_GRP
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_SEQ_TRT_GRP" 
+  CREATE TABLE "LS_SEQ_TRT_GRP" 
    (	"ID" NUMBER(19,0), 
 	"VERSION" NUMBER(10,0)
    );
@@ -1129,7 +1129,7 @@
 --  DDL for Table LS_TAG
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_TAG" 
+  CREATE TABLE "LS_TAG" 
    (	"ID" NUMBER(19,0), 
 	"RECORDED_DATE" TIMESTAMP (6), 
 	"TAG_TEXT" VARCHAR2(255 CHAR), 
@@ -1139,7 +1139,7 @@
 --  DDL for Table LS_THING
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_THING" 
+  CREATE TABLE "LS_THING" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1158,7 +1158,7 @@
 --  DDL for Table LS_THING_LABEL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_THING_LABEL" 
+  CREATE TABLE "LS_THING_LABEL" 
    (	"ID" NUMBER(19,0), 
 	"DELETED" NUMBER(1,0), 
 	"IGNORED" NUMBER(1,0), 
@@ -1181,7 +1181,7 @@
 --  DDL for Table LS_THING_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_THING_STATE" 
+  CREATE TABLE "LS_THING_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1201,7 +1201,7 @@
 --  DDL for Table LS_THING_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_THING_VALUE" 
+  CREATE TABLE "LS_THING_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -1246,7 +1246,7 @@
 --  DDL for Table LS_TRANSACTION
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."LS_TRANSACTION" 
+  CREATE TABLE "LS_TRANSACTION" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(255 CHAR), 
 	"RECORDED_DATE" TIMESTAMP (6), 
@@ -1256,7 +1256,7 @@
 --  DDL for Table OPERATOR_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."OPERATOR_KIND" 
+  CREATE TABLE "OPERATOR_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(64 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -1267,7 +1267,7 @@
 --  DDL for Table OPERATOR_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."OPERATOR_TYPE" 
+  CREATE TABLE "OPERATOR_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(25 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -1276,7 +1276,7 @@
 --  DDL for Table PROTOCOL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."PROTOCOL" 
+  CREATE TABLE "PROTOCOL" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1296,7 +1296,7 @@
 --  DDL for Table PROTOCOL_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."PROTOCOL_KIND" 
+  CREATE TABLE "PROTOCOL_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(255 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -1307,7 +1307,7 @@
 --  DDL for Table PROTOCOL_LABEL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."PROTOCOL_LABEL" 
+  CREATE TABLE "PROTOCOL_LABEL" 
    (	"ID" NUMBER(19,0), 
 	"DELETED" NUMBER(1,0), 
 	"IGNORED" NUMBER(1,0), 
@@ -1329,7 +1329,7 @@
 --  DDL for Table PROTOCOL_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."PROTOCOL_STATE" 
+  CREATE TABLE "PROTOCOL_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1349,7 +1349,7 @@
 --  DDL for Table PROTOCOL_TAG
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."PROTOCOL_TAG" 
+  CREATE TABLE "PROTOCOL_TAG" 
    (	"PROTOCOL_ID" NUMBER(19,0), 
 	"TAG_ID" NUMBER(19,0)
    );
@@ -1357,7 +1357,7 @@
 --  DDL for Table PROTOCOL_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."PROTOCOL_TYPE" 
+  CREATE TABLE "PROTOCOL_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(128 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -1366,7 +1366,7 @@
 --  DDL for Table PROTOCOL_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."PROTOCOL_VALUE" 
+  CREATE TABLE "PROTOCOL_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -1411,7 +1411,7 @@
 --  DDL for Table STATE_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."STATE_KIND" 
+  CREATE TABLE "STATE_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(64 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -1422,7 +1422,7 @@
 --  DDL for Table STATE_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."STATE_TYPE" 
+  CREATE TABLE "STATE_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(64 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -1431,7 +1431,7 @@
 --  DDL for Table SUBJECT
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."SUBJECT" 
+  CREATE TABLE "SUBJECT" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1450,7 +1450,7 @@
 --  DDL for Table SUBJECT_LABEL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."SUBJECT_LABEL" 
+  CREATE TABLE "SUBJECT_LABEL" 
    (	"ID" NUMBER(19,0), 
 	"DELETED" NUMBER(1,0), 
 	"IGNORED" NUMBER(1,0), 
@@ -1472,7 +1472,7 @@
 --  DDL for Table SUBJECT_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."SUBJECT_STATE" 
+  CREATE TABLE "SUBJECT_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1492,7 +1492,7 @@
 --  DDL for Table SUBJECT_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."SUBJECT_VALUE" 
+  CREATE TABLE "SUBJECT_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -1537,7 +1537,7 @@
 --  DDL for Table THING_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."THING_KIND" 
+  CREATE TABLE "THING_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(255 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -1548,7 +1548,7 @@
 --  DDL for Table THING_PAGE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."THING_PAGE" 
+  CREATE TABLE "THING_PAGE" 
    (	"ID" NUMBER(19,0), 
 	"ARCHIVED" NUMBER(1,0), 
 	"CURRENT_EDITOR" VARCHAR2(255 CHAR), 
@@ -1567,7 +1567,7 @@
 --  DDL for Table THING_PAGE_ARCHIVE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."THING_PAGE_ARCHIVE" 
+  CREATE TABLE "THING_PAGE_ARCHIVE" 
    (	"ID" NUMBER(19,0), 
 	"ARCHIVED" NUMBER(1,0), 
 	"CURRENT_EDITOR" VARCHAR2(255 CHAR), 
@@ -1587,7 +1587,7 @@
 --  DDL for Table THING_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."THING_TYPE" 
+  CREATE TABLE "THING_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(128 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -1596,7 +1596,7 @@
 --  DDL for Table TREATMENTGROUP_SUBJECT
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."TREATMENTGROUP_SUBJECT" 
+  CREATE TABLE "TREATMENTGROUP_SUBJECT" 
    (	"SUBJECT_ID" NUMBER(19,0), 
 	"TREATMENT_GROUP_ID" NUMBER(19,0)
    );
@@ -1604,7 +1604,7 @@
 --  DDL for Table TREATMENT_GROUP
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."TREATMENT_GROUP" 
+  CREATE TABLE "TREATMENT_GROUP" 
    (	"ID" NUMBER(19,0), 
 	"CODE_NAME" VARCHAR2(255 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1623,7 +1623,7 @@
 --  DDL for Table TREATMENT_GROUP_LABEL
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."TREATMENT_GROUP_LABEL" 
+  CREATE TABLE "TREATMENT_GROUP_LABEL" 
    (	"ID" NUMBER(19,0), 
 	"DELETED" NUMBER(1,0), 
 	"IGNORED" NUMBER(1,0), 
@@ -1645,7 +1645,7 @@
 --  DDL for Table TREATMENT_GROUP_STATE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."TREATMENT_GROUP_STATE" 
+  CREATE TABLE "TREATMENT_GROUP_STATE" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"DELETED" NUMBER(1,0), 
@@ -1665,7 +1665,7 @@
 --  DDL for Table TREATMENT_GROUP_VALUE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."TREATMENT_GROUP_VALUE" 
+  CREATE TABLE "TREATMENT_GROUP_VALUE" 
    (	"ID" NUMBER(19,0), 
 	"BLOB_VALUE" BLOB, 
 	"CLOB_VALUE" CLOB, 
@@ -1710,7 +1710,7 @@
 --  DDL for Table UNCERTAINTY_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."UNCERTAINTY_KIND" 
+  CREATE TABLE "UNCERTAINTY_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(255 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -1719,7 +1719,7 @@
 --  DDL for Table UNIT_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."UNIT_KIND" 
+  CREATE TABLE "UNIT_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(64 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -1730,7 +1730,7 @@
 --  DDL for Table UNIT_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."UNIT_TYPE" 
+  CREATE TABLE "UNIT_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(64 CHAR), 
 	"VERSION" NUMBER(10,0)
@@ -1739,7 +1739,7 @@
 --  DDL for Table UPDATE_LOG
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."UPDATE_LOG" 
+  CREATE TABLE "UPDATE_LOG" 
    (	"ID" NUMBER(19,0), 
 	"COMMENTS" VARCHAR2(512 CHAR), 
 	"LS_TRANSACTION" NUMBER(19,0), 
@@ -1753,7 +1753,7 @@
 --  DDL for Table VALUE_KIND
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."VALUE_KIND" 
+  CREATE TABLE "VALUE_KIND" 
    (	"ID" NUMBER(19,0), 
 	"KIND_NAME" VARCHAR2(64 CHAR), 
 	"LS_TYPE_AND_KIND" VARCHAR2(255 CHAR), 
@@ -1764,7 +1764,7 @@
 --  DDL for Table VALUE_TYPE
 --------------------------------------------------------
 
-  CREATE TABLE "ACAS"."VALUE_TYPE" 
+  CREATE TABLE "VALUE_TYPE" 
    (	"ID" NUMBER(19,0), 
 	"TYPE_NAME" VARCHAR2(64 CHAR), 
 	"VERSION" NUMBER(10,0)

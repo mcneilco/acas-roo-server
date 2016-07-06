@@ -4,7 +4,10 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorLabel;
 import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.AuthorState;
+import com.labsynch.labseer.domain.ThingPage;
 import com.labsynch.labseer.web.AuthorController;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
@@ -98,7 +101,10 @@ privileged aspect AuthorController_Roo_Controller {
     void AuthorController.populateEditForm(Model uiModel, Author author) {
         uiModel.addAttribute("author", author);
         addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("authorlabels", AuthorLabel.findAllAuthorLabels());
         uiModel.addAttribute("authorroles", AuthorRole.findAllAuthorRoles());
+        uiModel.addAttribute("authorstates", AuthorState.findAllAuthorStates());
+        uiModel.addAttribute("thingpages", ThingPage.findAllThingPages());
     }
     
     String AuthorController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
