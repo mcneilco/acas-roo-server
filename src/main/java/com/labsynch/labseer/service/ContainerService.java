@@ -19,6 +19,7 @@ import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
+import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
@@ -76,6 +77,10 @@ public interface ContainerService {
 	Collection<ContainerErrorMessageDTO> updateAmountInWell(
 			Collection<ContainerRequestDTO> wellsToUpdate);
 
+	PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest, String containerKind) throws Exception;
+	
+	PlateStubDTO createTube(CreatePlateRequestDTO plateRequest) throws Exception;
+	
 	PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest) throws Exception;
 
 	Collection<WellContentDTO> getWellContentByPlateBarcode(String plateBarcode);
@@ -118,5 +123,8 @@ public interface ContainerService {
 
 	Collection<Container> searchContainers(
 			ContainerSearchRequestDTO searchRequest);
+
+	Collection<String> getContainersByContainerValue(
+			ContainerValueRequestDTO requestDTO) throws Exception;
 	
 }

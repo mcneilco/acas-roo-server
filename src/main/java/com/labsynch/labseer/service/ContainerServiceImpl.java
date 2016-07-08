@@ -53,6 +53,7 @@ import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
+import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
@@ -1119,9 +1120,19 @@ public class ContainerServiceImpl implements ContainerService {
 		}
 		return results;
 	}
-
+	
 	@Override
 	public PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest) throws Exception {
+		return createPlate(plateRequest, "plate");
+	}
+	
+	@Override
+	public PlateStubDTO createTube(CreatePlateRequestDTO plateRequest) throws Exception {
+		return createPlate(plateRequest, "tube");
+	}
+
+	@Override
+	public PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest, String containerKind) throws Exception {
 		Container definition;
 		try{
 			definition = Container.findContainerByCodeNameEquals(plateRequest.getDefinition());
@@ -1136,7 +1147,7 @@ public class ContainerServiceImpl implements ContainerService {
 		plate.setRecordedBy(plateRequest.getRecordedBy());
 		plate.setRecordedDate(new Date());
 		plate.setLsType("container");
-		plate.setLsKind("plate");
+		plate.setLsKind(containerKind);
 		plate.setLsTransaction(lsTransaction.getId());
 		List<Container> plateList = new ArrayList<Container>();
 		plateList.add(plate);
@@ -2398,6 +2409,61 @@ public class ContainerServiceImpl implements ContainerService {
 		q.setMaxResults(propertiesUtilService.getContainerInventorySearchMaxResult());
 		containerList = q.getResultList();
 		return containerList;
+	}
+
+	@Override
+	public Collection<String> getContainersByContainerValue(
+			ContainerValueRequestDTO requestDTO) throws Exception {
+		//validate request
+		if (requestDTO.getContainerType() == null) throw new Exception("Container type must be specified");
+		if (requestDTO.getContainerKind() == null) throw new Exception("Container kind must be specified");
+		if (requestDTO.getStateType() == null) throw new Exception("State type must be specified");
+		if (requestDTO.getStateKind() == null) throw new Exception("State kind must be specified");
+		if (requestDTO.getValueType() == null) throw new Exception("Value type must be specified");
+		if (requestDTO.getValueKind() == null) throw new Exception("Value kind must be specified");
+		else if (!requestDTO.getValueType().equals("stringValue") && !requestDTO.getValueType().equals("codeValue")) throw new Exception("Only value types of stringValue or codeValue are accepted"); 
+		if (requestDTO.getValue() == null) throw new Exception("Value must be specified");
+		
+		EntityManager em = Container.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> criteria = cb.createQuery(String.class);
+		Root<Container> containerRoot = criteria.from(Container.class);
+		criteria.select(containerRoot.<String>get("codeName"));
+		criteria.distinct(true);
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		
+		Predicate containerType = cb.equal(containerRoot.<String>get("lsType"), requestDTO.getContainerType());
+		Predicate containerKind = cb.equal(containerRoot.<String>get("lsKind"), requestDTO.getContainerKind());
+		Predicate containerNotIgnored = cb.not(containerRoot.<Boolean>get("ignored"));
+		Predicate containerPredicate = cb.and(containerType, containerKind, containerNotIgnored);
+		predicateList.add(containerPredicate);
+		
+		Join<Container, ContainerState> containerState = containerRoot.join("lsStates");
+		Predicate stateType = cb.equal(containerState.<String>get("lsType"), requestDTO.getStateType());
+		Predicate stateKind = cb.equal(containerState.<String>get("lsKind"), requestDTO.getStateKind());
+		Predicate stateNotIgnored = cb.not(containerState.<Boolean>get("ignored"));
+		Predicate statePredicate = cb.and(stateType, stateKind, stateNotIgnored);
+		predicateList.add(statePredicate);
+		
+		Join<ContainerState, ContainerValue> containerValue = containerState.join("lsValues");
+		Predicate valueType = cb.equal(containerValue.<String>get("lsType"), requestDTO.getValueType());
+		Predicate valueKind = cb.equal(containerValue.<String>get("lsKind"), requestDTO.getValueKind());
+		Predicate valueNotIgnored = cb.not(containerValue.<Boolean>get("ignored"));
+		if (requestDTO.getValueType().equals("stringValue")){
+			Predicate stringValue = cb.equal(containerValue.<String>get("stringValue"), requestDTO.getValue());
+			Predicate valuePredicate = cb.and(valueType,valueKind, valueNotIgnored, stringValue);
+			predicateList.add(valuePredicate);
+		}else if(requestDTO.getValueType().equals("codeValue")){
+			Predicate codeValue = cb.equal(containerValue.<String>get("codeValue"), requestDTO.getValue());
+			Predicate valuePredicate = cb.and(valueType,valueKind, valueNotIgnored, codeValue);
+			predicateList.add(valuePredicate);
+		}
+		predicates = predicateList.toArray(predicates);
+		criteria.where(cb.and(predicates));
+		TypedQuery<String> q = em.createQuery(criteria);
+		
+		return q.getResultList();
 	}
 
 

@@ -70,6 +70,7 @@ import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
+import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
@@ -1168,6 +1169,22 @@ public class ContainerLSServiceTests {
     	Assert.assertNotNull(result.getPlateType());
 	}
 	
+	@Test
+    @Transactional
+    public void searchContainerCodesByContainerValue() throws Exception{
+    	ContainerValueRequestDTO requestDTO = new ContainerValueRequestDTO();
+    	requestDTO.setContainerType("container");
+    	requestDTO.setContainerKind("plate");;
+    	requestDTO.setStateType("metadata");
+    	requestDTO.setStateKind("information");
+    	requestDTO.setValueType("codeValue");
+    	requestDTO.setValueKind("created user");
+    	requestDTO.setValue("bob");
+    	String json = requestDTO.toJson();
+    	Collection<String> results = containerService.getContainersByContainerValue(requestDTO);
+    	logger.info(results.toString());
+    	Assert.assertTrue(results.size() > 0);
+	}
 	
 	
 	
