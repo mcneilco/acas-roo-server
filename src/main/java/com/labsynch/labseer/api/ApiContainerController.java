@@ -41,9 +41,12 @@ import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.ContainerService;
+import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
+
+import flexjson.JSONSerializer;
 
 @Controller
 @RequestMapping("api/v1/containers")
@@ -741,7 +744,7 @@ public class ApiContainerController {
         try{
         	ContainerValueRequestDTO requestDTO = ContainerValueRequestDTO.fromJsonToContainerValueRequestDTO(json);
         	Collection<String> searchResults = containerService.getContainersByContainerValue(requestDTO);
-        	return new ResponseEntity<String>(searchResults.toString(), headers, HttpStatus.OK);
+        	return new ResponseEntity<String>(new JSONSerializer().serialize(searchResults), headers, HttpStatus.OK);
         } catch (Exception e){
         	logger.error("Uncaught error in getContainersByCodeNames",e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
