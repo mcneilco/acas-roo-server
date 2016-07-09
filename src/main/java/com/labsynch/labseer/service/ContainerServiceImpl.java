@@ -2230,10 +2230,10 @@ public class ContainerServiceImpl implements ContainerService {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
 				ContainerValue value = values.get(i);
 				ps.setLong(1,idList.get(i));
-//				ps.setBytes(2,value.getBlobValue());
-//				ps.setString(3,value.getClobValue());
-				ps.setNull(2,  java.sql.Types.BLOB);
-				ps.setNull(3,  java.sql.Types.CLOB);
+				ps.setBytes(2,value.getBlobValue());
+				ps.setString(3,value.getClobValue());
+//				ps.setNull(2,  java.sql.Types.BLOB);
+//				ps.setNull(3,  java.sql.Types.CLOB);
 				//TODO: fix blobs and clobs
 				ps.setString(4,value.getCodeKind());
 				ps.setString(5,value.getCodeOrigin());
