@@ -1,14 +1,10 @@
 package com.labsynch.labseer.service;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.persistence.NoResultException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,22 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorLabel;
 import com.labsynch.labseer.domain.AuthorRole;
-import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.AuthorState;
 import com.labsynch.labseer.domain.AuthorValue;
-import com.labsynch.labseer.domain.Container;
-import com.labsynch.labseer.domain.ContainerLabel;
-import com.labsynch.labseer.domain.ContainerState;
-import com.labsynch.labseer.domain.ContainerValue;
-import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
@@ -40,7 +26,6 @@ import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
 import com.labsynch.labseer.dto.AuthGroupsDTO;
 import com.labsynch.labseer.dto.AuthProjectGroupsDTO;
-import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 

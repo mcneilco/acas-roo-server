@@ -1476,6 +1476,7 @@ public class ApiExperimentController {
 			String result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, userName));
 			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 		} catch(Exception e){
+			logger.error("Caught error in experiment search",e);
 			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
