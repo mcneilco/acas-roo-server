@@ -1071,27 +1071,32 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@Override
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, String userName) throws TooManyResultsException {
 		Collection<Experiment> rawResults = findExperimentsByGenericMetaDataSearch(queryString);
-		Collection<LsThing> projects = authorService.getUserProjects(userName);
-		List<String> allowedProjectCodeNames = new ArrayList<String>();
-		for (LsThing project : projects){
-			allowedProjectCodeNames.add(project.getCodeName());
-		}
-		Collection<Experiment> results = new HashSet<Experiment>();
-		for (Experiment rawResult : rawResults){
-			String experimentProject = null;
-			for (ExperimentState state : rawResult.getLsStates()){
-				for (ExperimentValue value : state.getLsValues()){
-					if (value.getLsKind().equals("project")){
-						experimentProject = value.getCodeValue();
-						break;
+		if (propertiesUtilService.getRestrictExperiments()){
+			Collection<LsThing> projects = authorService.getUserProjects(userName);
+			List<String> allowedProjectCodeNames = new ArrayList<String>();
+			for (LsThing project : projects){
+				allowedProjectCodeNames.add(project.getCodeName());
+			}
+			Collection<Experiment> results = new HashSet<Experiment>();
+			for (Experiment rawResult : rawResults){
+				String experimentProject = null;
+				for (ExperimentState state : rawResult.getLsStates()){
+					for (ExperimentValue value : state.getLsValues()){
+						if (value.getLsKind().equals("project")){
+							experimentProject = value.getCodeValue();
+							break;
+						}
 					}
 				}
+				if (allowedProjectCodeNames.contains(experimentProject)){
+					results.add(rawResult);
+				}
 			}
-			if (allowedProjectCodeNames.contains(experimentProject)){
-				results.add(rawResult);
-			}
+			return results;
+		}else{
+			return rawResults;
 		}
-		return results;
+		
 	}
 
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString) throws TooManyResultsException {

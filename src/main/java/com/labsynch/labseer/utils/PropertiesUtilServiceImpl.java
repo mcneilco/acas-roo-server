@@ -190,6 +190,18 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 		return Boolean.parseBoolean(this.syncLdapAuthRoles);
 	}
 	
+	String restrictExperiments;
+	
+	@Value("${server.service.projects.restrictExperiments}")
+	public void setRestrictExperiments(String restrictExperiments) {
+	    this.restrictExperiments = restrictExperiments;
+	}
+	
+	@Override
+	public boolean getRestrictExperiments() {
+		return Boolean.parseBoolean(this.restrictExperiments);
+	}
+	
 	String acasUserRole;
 	
 	@Value("${client.roles.acas.userRole}")

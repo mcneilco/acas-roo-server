@@ -39,5 +39,7 @@ public interface PropertiesUtilService {
 
 	int getContainerInventorySearchMaxResult();
 
+	boolean getRestrictExperiments();
+
 	
 }
