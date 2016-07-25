@@ -1122,6 +1122,28 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 	
 	@Override
+	public Collection<PlateStubDTO> createPlates(
+			Collection<CreatePlateRequestDTO> plateRequests) throws Exception{
+		Collection<PlateStubDTO> results = new ArrayList<PlateStubDTO>();
+		for (CreatePlateRequestDTO plateRequest : plateRequests){
+			PlateStubDTO result = createPlate(plateRequest);
+			results.add(result);
+		}
+		return results;
+	}
+	
+	@Override
+	public Collection<PlateStubDTO> createTubes(
+			Collection<CreatePlateRequestDTO> plateRequests) throws Exception{
+		Collection<PlateStubDTO> results = new ArrayList<PlateStubDTO>();
+		for (CreatePlateRequestDTO plateRequest : plateRequests){
+			PlateStubDTO result = createTube(plateRequest);
+			results.add(result);
+		}
+		return results;
+	}
+	
+	@Override
 	public PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest) throws Exception {
 		return createPlate(plateRequest, "plate");
 	}

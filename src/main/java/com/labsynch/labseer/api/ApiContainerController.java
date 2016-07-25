@@ -554,6 +554,37 @@ public class ApiContainerController {
     }
     
     @Transactional
+    @RequestMapping(value = "/createPlates", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> createPlates(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+    	Collection<CreatePlateRequestDTO> plateRequests = CreatePlateRequestDTO.fromJsonArrayToCreatePlateRequestDTO(json);
+       for (CreatePlateRequestDTO plateRequest : plateRequests){
+    	   try{
+    		   Container dupeContainer = Container.findContainerByLabelText("container", "plate", "barcode", "barcode", plateRequest.getBarcode()).getSingleResult();
+           	if (dupeContainer != null){
+           		return new ResponseEntity<String>("Barcode already exists: "+plateRequest.getBarcode(), headers, HttpStatus.BAD_REQUEST);
+           	}
+    	   }catch (EmptyResultDataAccessException e){
+           	//barcode is unique, proceed to plate creation
+           }catch (IncorrectResultSizeDataAccessException e){
+       		return new ResponseEntity<String>("More than one of this barcode already exists!!: "+plateRequest.getBarcode(), headers, HttpStatus.BAD_REQUEST);
+           }catch (Exception e){
+           	logger.error("Uncaught error in createPlates service", e);
+               return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+           }
+	   }
+        try{
+        	Collection<PlateStubDTO> results = containerService.createPlates(plateRequests);
+        	return new ResponseEntity<String>(PlateStubDTO.toJsonArray(results), headers, HttpStatus.OK);
+        } catch (Exception e){
+        	logger.error("Uncaught error in createPlates service", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
     @RequestMapping(value = "/createTube", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> createTube(@RequestBody String json) {
@@ -579,6 +610,37 @@ public class ApiContainerController {
         	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
         } catch (Exception e){
         	logger.error("Uncaught error in createTube service", e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/createTubes", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> createTubes(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+    	Collection<CreatePlateRequestDTO> plateRequests = CreatePlateRequestDTO.fromJsonArrayToCreatePlateRequestDTO(json);
+       for (CreatePlateRequestDTO plateRequest : plateRequests){
+    	   try{
+    		   Container dupeContainer = Container.findContainerByLabelText("container", "tube", "barcode", "barcode", plateRequest.getBarcode()).getSingleResult();
+           	if (dupeContainer != null){
+           		return new ResponseEntity<String>("Barcode already exists: "+plateRequest.getBarcode(), headers, HttpStatus.BAD_REQUEST);
+           	}
+    	   }catch (EmptyResultDataAccessException e){
+           	//barcode is unique, proceed to plate creation
+           }catch (IncorrectResultSizeDataAccessException e){
+       		return new ResponseEntity<String>("More than one of this barcode already exists!! "+plateRequest.getBarcode(), headers, HttpStatus.BAD_REQUEST);
+           }catch (Exception e){
+           	logger.error("Uncaught error in createTubes service", e);
+               return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+           }
+	   }
+        try{
+        	Collection<PlateStubDTO> results = containerService.createTubes(plateRequests);
+        	return new ResponseEntity<String>(PlateStubDTO.toJsonArray(results), headers, HttpStatus.OK);
+        } catch (Exception e){
+        	logger.error("Uncaught error in createTubes service", e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

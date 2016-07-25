@@ -81,7 +81,11 @@ public interface ContainerService {
 	
 	PlateStubDTO createTube(CreatePlateRequestDTO plateRequest) throws Exception;
 	
+	Collection<PlateStubDTO> createTubes(Collection<CreatePlateRequestDTO> plateRequests) throws Exception;
+	
 	PlateStubDTO createPlate(CreatePlateRequestDTO plateRequest) throws Exception;
+
+	Collection<PlateStubDTO> createPlates(Collection<CreatePlateRequestDTO> plateRequests) throws Exception;
 
 	Collection<WellContentDTO> getWellContentByPlateBarcode(String plateBarcode);
 

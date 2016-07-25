@@ -1098,6 +1098,80 @@ public class ContainerLSServiceTests {
 	
 	@Test
 	@Transactional
+	@Rollback(value=true)
+	public void createPartiallyFilledPlates() throws Exception{
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "plate");
+		query.setMaxResults(1);
+		Container definition = query.getSingleResult();
+		CreatePlateRequestDTO plateRequest = new CreatePlateRequestDTO();
+		plateRequest.setDefinition(definition.getCodeName());
+		plateRequest.setBarcode("TESTBARCODE-123");
+		plateRequest.setRecordedBy("acas");
+		Collection<WellContentDTO> wellsToPopulate = new ArrayList<WellContentDTO>();
+		WellContentDTO wellA1 = new WellContentDTO();
+		wellA1.setWellName("A1");
+		wellA1.setAmount(new BigDecimal(1));
+		wellA1.setAmountUnits("µL");
+		wellsToPopulate.add(wellA1);
+		WellContentDTO wellB3 = new WellContentDTO();
+		wellB3.setWellName("B03");
+		wellB3.setAmount(new BigDecimal(2));
+		wellB3.setAmountUnits("µL");
+		wellsToPopulate.add(wellB3);
+		WellContentDTO wellC7 = new WellContentDTO();
+		wellC7.setWellName("AA007");
+		wellC7.setAmount(new BigDecimal(3));
+		wellC7.setAmountUnits("µL");
+		wellsToPopulate.add(wellC7);
+		plateRequest.setWells(wellsToPopulate);
+		CreatePlateRequestDTO plateRequest2 = new CreatePlateRequestDTO();
+		plateRequest2.setDefinition(definition.getCodeName());
+		plateRequest2.setBarcode("TESTBARCODE-123");
+		plateRequest2.setRecordedBy("acas");
+		plateRequest2.setWells(wellsToPopulate);
+		Collection<CreatePlateRequestDTO> plateRequests = new ArrayList<CreatePlateRequestDTO>();
+		plateRequests.add(plateRequest);
+		plateRequests.add(plateRequest2);
+    	Collection<PlateStubDTO> results = containerService.createPlates(plateRequests);
+    	for (PlateStubDTO result : results){
+    		Assert.assertEquals(1536, result.getWells().size());
+        	String[][] plateLayout = new String[32][48];
+        	for (WellStubDTO well : result.getWells()){
+        		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
+        		if (well.getWellName().equals("A001")){
+        			List<String> checkWellCodes = new ArrayList<String>();
+        			checkWellCodes.add(well.getCodeName());
+        			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
+        			Assert.assertEquals(new BigDecimal(1), checkResult.getAmount());
+        			Assert.assertEquals("µL", checkResult.getAmountUnits());
+        			logger.info("checked well A001");
+        		}
+        		if (well.getWellName().equals("B003")){
+        			List<String> checkWellCodes = new ArrayList<String>();
+        			checkWellCodes.add(well.getCodeName());
+        			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
+        			Assert.assertEquals(new BigDecimal(2), checkResult.getAmount());
+        			Assert.assertEquals("µL", checkResult.getAmountUnits());
+        			logger.info("checked well B003");
+
+        		}
+        		if (well.getWellName().equals("AA007")){
+        			List<String> checkWellCodes = new ArrayList<String>();
+        			checkWellCodes.add(well.getCodeName());
+        			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
+        			Assert.assertEquals(new BigDecimal(3), checkResult.getAmount());
+        			Assert.assertEquals("µL", checkResult.getAmountUnits());
+        			logger.info("checked well AA007");
+
+        		}
+        	}
+        	logger.info(Arrays.deepToString(plateLayout));
+    	}
+    	
+	}
+	
+	@Test
+	@Transactional
 	public void updateWellContent() throws Exception{
 		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("well", "default");
 		query.setMaxResults(1536);
