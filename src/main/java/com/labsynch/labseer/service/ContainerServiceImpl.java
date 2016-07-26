@@ -1182,6 +1182,7 @@ public class ContainerServiceImpl implements ContainerService {
 		plateBarcode.setLsType("barcode");
 		plateBarcode.setLsKind("barcode");
 		plateBarcode.setLabelText(plateRequest.getBarcode());
+		plateBarcode.setPreferred(true);
 		plateBarcode.setLsTransaction(plate.getLsTransaction());
 		plateBarcode.setContainer(plate);
 		plate.getLsLabels().add(plateBarcode);
