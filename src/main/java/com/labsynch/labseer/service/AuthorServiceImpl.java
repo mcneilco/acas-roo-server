@@ -35,12 +35,12 @@ public class AuthorServiceImpl implements AuthorService {
 
 	@Autowired
 	private AutoLabelService autoLabelService;
-	
+
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthorServiceImpl.class);
-	
+
 
 	@Override
 	public CodeTableDTO getAuthorCodeTable(Author author) {
@@ -62,7 +62,7 @@ public class AuthorServiceImpl implements AuthorService {
 		}
 		return codeTableList;	
 	}
-	
+
 	@Override
 	public Collection<Author> findAuthorsByAuthorRoleName(String authorRoleName){
 		List<LsRole> roleEntries = LsRole.findLsRolesByRoleNameEquals(authorRoleName).getResultList();
@@ -75,26 +75,39 @@ public class AuthorServiceImpl implements AuthorService {
 		}
 		return authors;
 	}
-	
+
 	@Override
 	public Collection<LsThing> getUserProjects(String userName	){
 		Collection<LsThing> projectThings = new HashSet<LsThing>();
-		Author author = Author.findAuthorsByUserName(userName).getSingleResult();
-		Set<AuthorRole> roles = author.getAuthorRoles();
-		for (AuthorRole role : roles){
-			LsRole entry = role.getRoleEntry();
-			if (entry.getLsType()!= null && entry.getLsType().equalsIgnoreCase("Project")){
-				projectThings.addAll(LsThing.findLsThingsByCodeNameEquals(entry.getLsKind()).getResultList());
-			}else if (entry.getRoleName().equals(propertiesUtilService.getAcasAdminRole())){
-				Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
-				projectThings.addAll(allProjects);
-			}
+		List<Author> authors = Author.findAuthorsByUserName(userName).getResultList();
+		Author author = null;
+		if (authors.size() == 0){
+			logger.error("No author found by name: " + userName);
+		} else if (authors.size() > 1) {
+			logger.error("Found multiple authors by name: " + userName);
+			author = authors.get(0);
+		} else {
+			author = authors.get(0);
 		}
-		
+
+		if (author != null){
+			Set<AuthorRole> roles = author.getAuthorRoles();
+			for (AuthorRole role : roles){
+				LsRole entry = role.getRoleEntry();
+				if (entry.getLsType()!= null && entry.getLsType().equalsIgnoreCase("Project")){
+					projectThings.addAll(LsThing.findLsThingsByCodeNameEquals(entry.getLsKind()).getResultList());
+				}else if (entry.getRoleName().equals(propertiesUtilService.getAcasAdminRole())){
+					Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
+					projectThings.addAll(allProjects);
+				}
+			}
+
+		}
+
 		return projectThings;
-		
+
 	}
-	
+
 	@Override
 	public AuthGroupsAndProjectsDTO getAuthGroupsAndProjects(){
 		AuthGroupsAndProjectsDTO agp = new AuthGroupsAndProjectsDTO();
@@ -103,7 +116,7 @@ public class AuthorServiceImpl implements AuthorService {
 		List<LsRole> allRoles = LsRole.findAllLsRoles();
 		AuthGroupsDTO ag;
 		Collection<String> members;
-		
+
 		for (LsRole lsRole : allRoles){
 			ag = new AuthGroupsDTO();
 			members = new HashSet<String>();
@@ -113,10 +126,15 @@ public class AuthorServiceImpl implements AuthorService {
 				members.add(authorRole.getUserEntry().getUserName());
 			}
 			ag.setMembers(members);
+			logger.info(ag.toJson());
 			authGroups.add(ag);			
 		}
+
+		//Collection<LsThing> 
+//		Collection<LsThing> projectCollection = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
+		List<LsThing> projectList = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
 		
-		Collection<LsThing> projectCollection = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
+		Collection<LsThing> projectCollection = new ArrayList<LsThing>(projectList);		
 		AuthProjectGroupsDTO authProjectGroup;
 		Collection<String> groups;
 		List<LsRole> projectRoles;
@@ -137,7 +155,7 @@ public class AuthorServiceImpl implements AuthorService {
 				for (LsRole acasAdminRole : acasAdminRoles){
 					groups.add(new StringBuilder().append(acasAdminRole.getLsType()).append("_").append(acasAdminRole.getLsKind()).append("_").append(acasAdminRole.getRoleName()).toString());
 				}
-				
+
 				projectLabels = project.getLsLabels();
 				for (LsThingLabel projectLabel : projectLabels){
 					if (!projectLabel.isIgnored()){
@@ -163,7 +181,7 @@ public class AuthorServiceImpl implements AuthorService {
 						}
 					}
 				}
-				
+
 				authProjectGroup = new AuthProjectGroupsDTO();
 				authProjectGroup.setId(project.getId());				
 				authProjectGroup.setCode(project.getCodeName());
@@ -175,15 +193,15 @@ public class AuthorServiceImpl implements AuthorService {
 				authProjectsGroups.add(authProjectGroup);
 			}
 		}
-		
+
 		logger.debug(AuthProjectGroupsDTO.toJsonArray(authProjectsGroups));
 		agp.setGroups(authGroups);
 		agp.setProjects(authProjectsGroups);
-		
+
 		return agp;
 
 	}
-	
+
 	@Override
 	public CodeTableDTO getProjectCodeTable(LsThing project) {
 		CodeTableDTO codeTable = new CodeTableDTO();
@@ -218,7 +236,7 @@ public class AuthorServiceImpl implements AuthorService {
 		}
 		return authors;
 	}
-	
+
 	@Override
 	@Transactional
 	public Author saveAuthor(Author author) {
@@ -269,7 +287,7 @@ public class AuthorServiceImpl implements AuthorService {
 			}
 			newAuthor.setLsStates(lsStates);
 		}
-		
+
 		return Author.findAuthor(newAuthor.getId());
 	}
 
@@ -349,5 +367,5 @@ public class AuthorServiceImpl implements AuthorService {
 			return saveAuthor(author);
 		}
 	}
-	
+
 }

@@ -3,11 +3,11 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
 import javax.persistence.Entity;
 
-privileged aspect Author_Roo_Jpa_Entity {
+privileged aspect AuthorRole_Roo_Jpa_Entity {
     
-    declare @type: Author: @Entity;
+    declare @type: AuthorRole: @Entity;
     
 }

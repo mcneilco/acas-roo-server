@@ -56,6 +56,7 @@ public class AuthorServiceTests {
 	@Test
 	@Transactional
 	public void getAuthorizeGroupsAndProjectTest() {
+		logger.info("------- Results from getAuthorizeGroupsAndProjectTest ----------");
 		AuthGroupsAndProjectsDTO results = authorService.getAuthGroupsAndProjects();
 		logger.info("------- Results from getAuthorizeGroupsAndProjectTest ----------");
 		logger.info(results.toJson());

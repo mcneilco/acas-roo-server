@@ -4,12 +4,9 @@ package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.persistence.TypedQuery;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
@@ -51,7 +48,7 @@ public class ExperimentServiceTests2 {
 
 		Protocol protocol = Protocol.findProtocol(46684L);
 		logger.debug(protocol.toJson());
-		if (ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(protocol).size() > 0){
+		if (ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(protocol).getResultList().size() > 0){
 			List<String> protocolNodeList = new ArrayList<String>();
 			List<String> nodeList = lookupProtocolTree(protocol, protocolNodeList);
 			for (String node : nodeList){
@@ -64,7 +61,7 @@ public class ExperimentServiceTests2 {
 
 	//a recursive function to walk up the protocol tree
 	private List<String> lookupProtocolTree(Protocol protocol, List<String> protocolNodeList) {
-		List<ItxProtocolProtocol> ipps = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(protocol);
+		List<ItxProtocolProtocol> ipps = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(protocol).getResultList();
 		if (ipps.size() > 1){
 			logger.error("ERROR: there is more than a single protocol interacation. " + ipps.size());
 		}

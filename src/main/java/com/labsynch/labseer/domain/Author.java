@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -30,16 +29,15 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@Entity
 @RooJson
 @RooJavaBean
 //@RooToString(excludeFields = { "password", "modifiedDate", "activationKey", "activationDate", "emailAddress", "recordedDate", "modifiedDate", "enabled", "locked" })
 //@RooToString(excludeFields = { "password", "authorRoles"})
 
-
 @RooJpaActiveRecord(sequenceName = "AUTHOR_PKSEQ", finders = { "findAllAuthors", "findAuthorsByUserName", "findAuthorsByEmailAddress", "findAuthorsByActivationKeyAndEmailAddress" })
 public class Author extends AbstractThing {
 
+	
     @NotNull
     @Size(max = 255)
     private String firstName;
@@ -210,4 +208,7 @@ public class Author extends AbstractThing {
 		return updatedAuthor;
 	}
 	
+
+	public Author() {
+    }
 }

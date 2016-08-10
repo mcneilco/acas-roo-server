@@ -42,6 +42,7 @@ import flexjson.JSONSerializer;
 
 public class LsThing extends AbstractThing {
 
+	
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsThing")
     private Set<LsThingState> lsStates = new HashSet<LsThingState>();
 

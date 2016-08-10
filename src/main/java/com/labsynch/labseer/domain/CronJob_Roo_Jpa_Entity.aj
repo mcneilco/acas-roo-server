@@ -4,39 +4,10 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.CronJob;
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Version;
+import javax.persistence.Entity;
 
 privileged aspect CronJob_Roo_Jpa_Entity {
     
-    @Id
-    @SequenceGenerator(name = "cronJobGen", sequenceName = "CRON_JOB_PKSEQ")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "cronJobGen")
-    @Column(name = "id")
-    private Long CronJob.id;
-    
-    @Version
-    @Column(name = "version")
-    private Integer CronJob.version;
-    
-    public Long CronJob.getId() {
-        return this.id;
-    }
-    
-    public void CronJob.setId(Long id) {
-        this.id = id;
-    }
-    
-    public Integer CronJob.getVersion() {
-        return this.version;
-    }
-    
-    public void CronJob.setVersion(Integer version) {
-        this.version = version;
-    }
+    declare @type: CronJob: @Entity;
     
 }

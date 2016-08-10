@@ -134,7 +134,7 @@ public class ApiItxProtocolProtocolController {
     public ResponseEntity<java.lang.String> jsonFindItxProtocolProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction)), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
     
     @Transactional
@@ -163,7 +163,7 @@ public class ApiItxProtocolProtocolController {
     		logger.error("Error in findItxProtocolProtocolsBySecondProtocol: secondProtocol "+ secondProtocolId.toString()+" not found");
     		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
     	}
-        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol);
+        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol).getResultList();
         return new ResponseEntity<String>(ItxProtocolProtocol.toJsonArray(itxProtocolProtocols), headers, HttpStatus.OK);
     }
 }

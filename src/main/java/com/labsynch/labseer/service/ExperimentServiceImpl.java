@@ -823,7 +823,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 				protocolLabel = protocolNames.get(0).getLabelText();
 			}
 
-			if (ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(prot).size() > 0){
+			if (ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(prot).getResultList().size() > 0){
 				List<String> protocolNodeList = new ArrayList<String>();
 				List<String> nodeNameList = lookupProtocolTree(prot, protocolNodeList);
 				int nodeIndex = 0;
@@ -883,7 +883,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	//a recursive function to walk up the protocol tree
 	private List<String> lookupProtocolTree(Protocol protocol, List<String> protocolNodeList) {
-		List<ItxProtocolProtocol> ipps = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(protocol);
+		List<ItxProtocolProtocol> ipps = ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(protocol).getResultList();
 		if (ipps.size() > 1){
 			logger.error("ERROR: there is more than a single protocol interacation. " + ipps.size());
 		}

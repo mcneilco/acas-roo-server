@@ -1,13 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
-import com.labsynch.labseer.dto.FlatThingCsvDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.ExcludeNulls;
-
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
-
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,12 +12,10 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
-import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
@@ -35,6 +25,14 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.labsynch.labseer.dto.AnalysisGroupCsvDTO;
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString

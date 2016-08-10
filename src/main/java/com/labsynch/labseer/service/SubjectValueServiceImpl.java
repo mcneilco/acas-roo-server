@@ -19,19 +19,10 @@ import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
-import com.labsynch.labseer.api.ApiValueController;
-import com.labsynch.labseer.domain.AbstractValue;
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.SubjectValueDTO;
-import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 

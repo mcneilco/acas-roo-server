@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -24,14 +23,12 @@ import org.springframework.roo.addon.tostring.RooToString;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@Entity
 @RooJson
 @RooJavaBean
 @RooToString(excludeFields = { "userEntry", "roleEntry", "version" })
 @Table(name = "author_role", uniqueConstraints = { @javax.persistence.UniqueConstraint(columnNames = { "author_id", "lsrole_id" }) })
 @RooJpaActiveRecord(sequenceName = "AUTH_ROLE_PKSEQ", finders = { "findAuthorRolesByUserEntry", "findAuthorRolesByRoleEntry", "findAuthorRolesByRoleEntryAndUserEntry" })
 public class AuthorRole {
-
 	
     @NotNull
     @ManyToOne

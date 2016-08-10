@@ -1,9 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-
-import flexjson.JSONDeserializer;
-
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,6 +17,10 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+
+import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+
+import flexjson.JSONDeserializer;
 
 @RooJavaBean
 @RooToString

@@ -185,7 +185,7 @@ public class ItxProtocolProtocolServiceImpl implements ItxProtocolProtocolServic
     		logger.error("Error in findItxProtocolProtocolsByFirstProtocol: firstProtocol "+ firstProtocolId.toString()+" not found");
     		throw new Exception("First Protocol "+firstProtocolId+" not found");
     	}
-        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsByFirstProtocol(firstProtocol);
+        Collection<ItxProtocolProtocol> itxProtocolProtocols = ItxProtocolProtocol.findItxProtocolProtocolsByFirstProtocol(firstProtocol).getResultList();
         for (ItxProtocolProtocol itx : itxProtocolProtocols){
         	logger.debug(itx.getCodeName() + " " + itx.getId().toString());
         	logger.debug(itx.toJson());

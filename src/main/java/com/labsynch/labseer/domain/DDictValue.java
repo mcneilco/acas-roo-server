@@ -1,10 +1,5 @@
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.dto.CodeTableDTO;
-
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -16,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.TypedQuery;
 import javax.persistence.Version;
@@ -32,6 +26,11 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
+
+import com.labsynch.labseer.dto.CodeTableDTO;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Entity
 @RooJavaBean

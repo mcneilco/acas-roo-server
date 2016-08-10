@@ -16,5 +16,3 @@ public class ExcludeNulls extends AbstractTransformer {
       return;
   }
 }
-
-// usage: new JSONSerializer().transform(new ExcludeNullsFromJSONTransformer(), void.class).serialize(yourObject)

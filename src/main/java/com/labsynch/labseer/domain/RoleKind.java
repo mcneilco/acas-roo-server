@@ -1,7 +1,6 @@
 package com.labsynch.labseer.domain;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -12,7 +11,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
-@Entity
+
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord(sequenceName = "ROLE_KIND_PKSEQ", finders={"findRoleKindsByLsType", 

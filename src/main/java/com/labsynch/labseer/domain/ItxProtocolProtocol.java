@@ -135,30 +135,31 @@ public class ItxProtocolProtocol extends AbstractThing {
         return updatedItxProtocolProtocol;
     }
     
+    
     @Transactional
-    public static List<ItxProtocolProtocol> findItxProtocolProtocolsByFirstProtocol(Protocol firstProtocol) {
+    public static TypedQuery<ItxProtocolProtocol> findItxProtocolProtocolsByFirstProtocol(Protocol firstProtocol) {
         if (firstProtocol == null) throw new IllegalArgumentException("The firstProtocol argument is required");
         EntityManager em = ItxProtocolProtocol.entityManager();
         TypedQuery<ItxProtocolProtocol> q = em.createQuery("SELECT o FROM ItxProtocolProtocol AS o WHERE o.firstProtocol = :firstProtocol", ItxProtocolProtocol.class);
         q.setParameter("firstProtocol", firstProtocol);
-        return q.getResultList();
+        return q;
     }
     
     @Transactional
-    public static List<ItxProtocolProtocol> findItxProtocolProtocolsByLsTransactionEquals(Long lsTransaction) {
+    public static TypedQuery<ItxProtocolProtocol> findItxProtocolProtocolsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = ItxProtocolProtocol.entityManager();
         TypedQuery<ItxProtocolProtocol> q = em.createQuery("SELECT o FROM ItxProtocolProtocol AS o WHERE o.lsTransaction = :lsTransaction", ItxProtocolProtocol.class);
         q.setParameter("lsTransaction", lsTransaction);
-        return q.getResultList();
+        return q;
     }
     
     @Transactional
-    public static List<ItxProtocolProtocol> findItxProtocolProtocolsBySecondProtocol(Protocol secondProtocol) {
+    public static TypedQuery<ItxProtocolProtocol> findItxProtocolProtocolsBySecondProtocol(Protocol secondProtocol) {
         if (secondProtocol == null) throw new IllegalArgumentException("The secondProtocol argument is required");
         EntityManager em = ItxProtocolProtocol.entityManager();
         TypedQuery<ItxProtocolProtocol> q = em.createQuery("SELECT o FROM ItxProtocolProtocol AS o WHERE o.secondProtocol = :secondProtocol", ItxProtocolProtocol.class);
         q.setParameter("secondProtocol", secondProtocol);
-        return q.getResultList();
+        return q;
     }
 }

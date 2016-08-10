@@ -5,6 +5,7 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.RoleKind;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +13,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 
 privileged aspect RoleKind_Roo_Jpa_Entity {
+    
+    declare @type: RoleKind: @Entity;
     
     @Id
     @SequenceGenerator(name = "roleKindGen", sequenceName = "ROLE_KIND_PKSEQ")
