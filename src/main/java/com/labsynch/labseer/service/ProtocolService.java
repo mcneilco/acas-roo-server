@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
@@ -26,5 +27,8 @@ public interface ProtocolService {
 
 	Set<Protocol> findProtocolsByRequestMetadata(
 			Map<String, String> requestParams);
+
+	Collection<Protocol> findProtocolsByGenericMetaDataSearch(
+			String queryString, String userName);
 	
 }

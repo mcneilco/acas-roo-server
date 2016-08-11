@@ -3,6 +3,7 @@ package com.labsynch.labseer.service;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,14 +22,17 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.LsTag;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
+import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -44,6 +48,8 @@ public class ProtocolServiceImpl implements ProtocolService {
 	@Autowired
 	private AutoLabelService autoLabelService;
 
+	@Autowired
+	private AuthorService authorService;
 
 	//    @PostConstruct
 	//    public void init(){
@@ -265,6 +271,32 @@ public class ProtocolServiceImpl implements ProtocolService {
 //		
 //		return protocolList;
 //	}
+	
+	@Override
+	public Collection<Protocol> findProtocolsByGenericMetaDataSearch(String queryString, String userName) {
+		Collection<Protocol> rawResults = findProtocolsByGenericMetaDataSearch(queryString);
+		Collection<LsThing> projects = authorService.getUserProjects(userName);
+		List<String> allowedProjectCodeNames = new ArrayList<String>();
+		for (LsThing project : projects){
+			allowedProjectCodeNames.add(project.getCodeName());
+		}
+		Collection<Protocol> results = new HashSet<Protocol>();
+		for (Protocol rawResult : rawResults){
+			String protocolProject = null;
+			for (ProtocolState state : rawResult.getLsStates()){
+				for (ProtocolValue value : state.getLsValues()){
+					if (value.getLsKind().equals("project")){
+						protocolProject = value.getCodeValue();
+						break;
+					}
+				}
+			}
+			if (allowedProjectCodeNames.contains(protocolProject)){
+				results.add(rawResult);
+			}
+		}
+		return results;
+	}
 	
 	public Collection<Protocol> findProtocolsByGenericMetaDataSearch(String queryString) {
 		//make our HashSets: protocolIdList will be filled/cleared/refilled for each term

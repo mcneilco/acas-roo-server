@@ -23,9 +23,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -74,6 +77,41 @@ public class ApiProtocolControllerTest {
     	logger.info(responseJson.toString());
     	Collection<Protocol> results = Protocol.fromJsonArrayToProtocols(responseJson);
     	Assert.assertFalse(results.isEmpty());
+    }
+    
+    @Test
+    public void genericSearchWithProjectRoles() throws Exception {
+    	//see instructions on ProtocolServiceTest for setup to search by project roles
+    	//this test verifies the ApiProtocolController search route is using project roles
+    	String projectCode = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("project", "*").getResultList().get(0).getCodeValue();
+		logger.info(projectCode);
+		String userName = AuthorRole.findAuthorRolesByRoleEntry(LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals("Project", projectCode).getResultList().get(0)).getResultList().get(0).getUserEntry().getUserName();
+		String code = "PROT-00000006E";
+		String query = code;
+		logger.info("Searching with the query: "+ query + " with userName: "+userName);
+		
+		String responseJson =  this.mockMvc.perform(get("/api/v1/protocols/search?userName="+userName+"&q="+query)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	Collection<Protocol> results = Protocol.fromJsonArrayToProtocols(responseJson);
+    	Assert.assertFalse(results.isEmpty());
+		
+		userName = "bsplit";
+		logger.info("Searching with the query: "+ query + " with userName: "+userName);
+		
+		responseJson =  this.mockMvc.perform(get("/api/v1/protocols/search?userName="+userName+"&q="+query)
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+    	results = Protocol.fromJsonArrayToProtocols(responseJson);
+    	Assert.assertTrue(results.isEmpty());
     }
     
 
