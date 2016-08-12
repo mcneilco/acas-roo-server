@@ -185,48 +185,70 @@ public class ApiAuthorController {
 		return new ResponseEntity<String>(Author.toJsonArray(result), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
-		Author author = Author.fromJsonToAuthor(json);
-		author.persist();
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-	}
+	@Transactional
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+    	try{
+    		Author author = Author.fromJsonToAuthor(json);
+    		author = authorService.saveAuthor(author);
+            return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
+    	}catch (Exception e){
+    		logger.error("Caught exception saving author",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+        
+    }
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
-		Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
-		for (Author author : authors) {
-			author.persist();
-		}
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-		return new ResponseEntity<String>(headers, HttpStatus.CREATED);
-	}
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        try{
+        	Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
+            Collection<Author> savedAuthors = new ArrayList<Author>();
+        	for (Author author : authors) {
+                Author savedAuthor = authorService.saveAuthor(author);
+                savedAuthors.add(savedAuthor);
+            }
+            return new ResponseEntity<String>(Author.toJsonArray(savedAuthors), headers, HttpStatus.CREATED);
+        }catch (Exception e){
+    		logger.error("Caught exception saving author",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    	
+    }
 
-	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
-		Author author = Author.fromJsonToAuthor(json);
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
-		if (author.merge() == null) {
-			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
+	@Transactional
+    @RequestMapping(value = { "/{id}", "/" }, method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
+        Author author = Author.fromJsonToAuthor(json);
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        author = authorService.updateAuthor(author);
+        if (author.getId() == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.OK);
+    }
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
-		Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
-		for (Author author : authors) {
-			if (author.merge() == null) {
-				return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		try{
+			Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
+			Collection<Author> updatedAuthors = new ArrayList<Author>();
+			for (Author author : authors) {
+				Author updatedAuthor = authorService.saveAuthor(author);
+				updatedAuthors.add(updatedAuthor);
 			}
-		}
-		return new ResponseEntity<String>(headers, HttpStatus.OK);
+            return new ResponseEntity<String>(Author.toJsonArray(updatedAuthors), headers, HttpStatus.OK);
+        }catch (Exception e){
+    		logger.error("Caught exception updating authors",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
 	}
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
