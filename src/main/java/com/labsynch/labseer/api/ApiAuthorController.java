@@ -186,7 +186,8 @@ public class ApiAuthorController {
 	}
 
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<java.lang.String> createFromJson(@RequestBody Author author) {
+	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
+		Author author = Author.fromJsonToAuthor(json);
 		author.persist();
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
@@ -194,7 +195,8 @@ public class ApiAuthorController {
 	}
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<Author> authors) {
+	public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+		Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
 		for (Author author : authors) {
 			author.persist();
 		}
@@ -204,7 +206,8 @@ public class ApiAuthorController {
 	}
 
 	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Author author) {
+	public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
+		Author author = Author.fromJsonToAuthor(json);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		if (author.merge() == null) {
@@ -214,7 +217,8 @@ public class ApiAuthorController {
 	}
 
 	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<Author> authors) {
+	public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
+		Collection<Author> authors = Author.fromJsonArrayToAuthors(json);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		for (Author author : authors) {
