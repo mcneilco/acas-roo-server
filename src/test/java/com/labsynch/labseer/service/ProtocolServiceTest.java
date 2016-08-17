@@ -237,7 +237,7 @@ public class ProtocolServiceTest {
 	@Transactional
 	@Test
 	public void protocolBrowserSearchByDate() {
-		String date = "2015-12-01";
+		String date = "2016-08-15";
 		String query = date;
 		logger.info("Searching with the query: "+ query);
 		Collection<Protocol> resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query);

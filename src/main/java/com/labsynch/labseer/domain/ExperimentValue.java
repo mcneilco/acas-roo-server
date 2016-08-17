@@ -3,6 +3,7 @@ package com.labsynch.labseer.domain;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -170,9 +171,17 @@ public class ExperimentValue extends AbstractValue {
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
         EntityManager em = ExperimentValue.entityManager();
-        TypedQuery<ExperimentValue> q = em.createQuery("SELECT o FROM ExperimentValue AS o WHERE o.lsKind = :lsKind AND o.ignored =false AND CAST(o.dateValue, date) LIKE CAST(:dateValue, date) ", ExperimentValue.class);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dateValue);
+        cal.add(Calendar.DATE, -1);
+        Date beforeDate = cal.getTime();
+        cal.setTime(dateValue);
+        cal.add(Calendar.DATE, 1);
+        Date afterDate = cal.getTime();
+        TypedQuery<ExperimentValue> q = em.createQuery("SELECT o FROM ExperimentValue AS o WHERE o.lsKind = :lsKind AND o.ignored =false AND o.dateValue > :beforeDate AND o.dateValue < :afterDate", ExperimentValue.class);
         q.setParameter("lsKind", lsKind);
-        q.setParameter("dateValue", dateValue);
+        q.setParameter("beforeDate", beforeDate);
+        q.setParameter("afterDate", afterDate);
         return q;
     }
 

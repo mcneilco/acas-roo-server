@@ -756,4 +756,15 @@ public class ExperimentServiceTests {
 		Assert.assertTrue(resultExperiments2.size() > 0);
 		Assert.assertEquals(resultExperiments.iterator().next().getCodeName(),resultExperiments2.iterator().next().getCodeName());
 	}
+	
+	@Transactional
+	@Test
+	public void experimentBrowser_dateSearch() throws Exception{
+		String query = "2015-05-08";
+		logger.info("Searching with the query: "+ query);
+		Collection<Experiment> resultExperiments = experimentService.findExperimentsByGenericMetaDataSearch(query);
+		logger.info("Found: "+ resultExperiments.toString());
+		Assert.assertTrue(resultExperiments.size() > 0);
+		
+	}
 }
