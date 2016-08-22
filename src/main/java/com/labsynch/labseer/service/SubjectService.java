@@ -30,6 +30,8 @@ public interface SubjectService {
 	
 	HashMap<String, TempThingDTO> createSubjectsFromCSV(String subjectFilePath, HashMap<String, TempThingDTO> treatmentGroupMap) throws IOException;
 	Collection<SubjectCodeNameDTO> getSubjectsByCodeNames(List<String> codeNames);
+	HashMap<String, TempThingDTO> createOnlySubjectsFromCSV(String subjectFilePath,
+			List<Long> treatmentGroupIds) throws Exception;
 
 	
 	

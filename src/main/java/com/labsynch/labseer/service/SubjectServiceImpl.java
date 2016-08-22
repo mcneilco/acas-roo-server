@@ -26,8 +26,6 @@ import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
-import com.labsynch.labseer.domain.AbstractThing;
-import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
@@ -293,7 +291,7 @@ public class SubjectServiceImpl implements SubjectService {
 	public Subject updateSubject(Subject subject){
 
 		// logger.debug("incoming meta subject to update: " + subject.toJson());
-		subject = Subject.update(subject);
+		Subject updatedSubject = Subject.update(subject);
 
 		if (subject.getLsLabels() != null) {
 			for(SubjectLabel subjectLabel : subject.getLsLabels()){
@@ -302,36 +300,72 @@ public class SubjectServiceImpl implements SubjectService {
 					newSubjectLabel.setSubject(Subject.findSubject(subject.getId()));
 					newSubjectLabel.persist();						
 				} else {
-					subjectLabel = SubjectLabel.update(subjectLabel);
+					SubjectLabel updatedLabel = SubjectLabel.update(subjectLabel);
+					updatedSubject.getLsLabels().add(updatedLabel);
 				}
 			}		
 		}
-		if (subject.getLsStates() != null){
-			for(SubjectState subjectState : subject.getLsStates()){
+		updateLsStates(subject, updatedSubject);
+
+		return Subject.findSubject(subject.getId());
+	}
+	
+	public void updateLsStates(Subject jsonSubject, Subject updatedSubject){
+		if(jsonSubject.getLsStates() != null){
+			for(SubjectState subjectState : jsonSubject.getLsStates()){
+				SubjectState updatedSubjectState;
 				if (subjectState.getId() == null){
-					SubjectState newSubjectState = new SubjectState(subjectState);
-					newSubjectState.setSubject(Subject.findSubject(subject.getId()));
-					newSubjectState.persist();	
-					subjectState.setId(newSubjectState.getId());
+					updatedSubjectState = new SubjectState(subjectState);
+					updatedSubjectState.setSubject(updatedSubject);
+					updatedSubjectState.persist();
+					updatedSubject.getLsStates().add(updatedSubjectState);
+					if (logger.isDebugEnabled()) logger.debug("persisted new subject state " + updatedSubjectState.getId());
+
 				} else {
-					subjectState = SubjectState.update(subjectState);
+					updatedSubjectState = SubjectState.update(subjectState);
+					updatedSubject.getLsStates().add(updatedSubjectState);
+
+					if (logger.isDebugEnabled()) logger.debug("updated subject state " + updatedSubjectState.getId());
 
 				}
 				if (subjectState.getLsValues() != null){
-					for (SubjectValue subjectValue : subjectState.getLsValues()){
+					for(SubjectValue subjectValue : subjectState.getLsValues()){
+						if (subjectValue.getLsState() == null) subjectValue.setLsState(updatedSubjectState);
+						SubjectValue updatedSubjectValue;
 						if (subjectValue.getId() == null){
-							subjectValue.setLsState(SubjectState.findSubjectState(subjectState.getId()));
-							subjectValue.persist();
+							updatedSubjectValue = SubjectValue.create(subjectValue);
+							updatedSubjectValue.setLsState(SubjectState.findSubjectState(updatedSubjectState.getId()));
+							updatedSubjectValue.persist();
+							updatedSubjectState.getLsValues().add(updatedSubjectValue);
 						} else {
-							subjectValue = SubjectValue.update(subjectValue);
+							updatedSubjectValue = SubjectValue.update(subjectValue);
+							if (logger.isDebugEnabled()) logger.debug("updated subject value " + updatedSubjectValue.getId());
 						}
+						if (logger.isDebugEnabled()) logger.debug("checking subjectValue " + updatedSubjectValue.toJson());
 
-					}								
+					}	
+				} else {
+					if (logger.isDebugEnabled()) logger.debug("No subject values to update");
 				}
 			}
 		}
-
-		return Subject.findSubject(subject.getId());
+	}
+	
+	@Override
+	public HashMap<String, TempThingDTO> createOnlySubjectsFromCSV(String subjectFilePath, List<Long> treatmentGroupIds) throws Exception{
+		HashMap<String, TempThingDTO> treatmentGroupMap = new HashMap<String, TempThingDTO>();
+		for (Long treatmentGroupId : treatmentGroupIds){
+			TempThingDTO treatmentGroupThing = new TempThingDTO();
+			treatmentGroupThing.setId(treatmentGroupId);
+			treatmentGroupMap.put(treatmentGroupId.toString(), treatmentGroupThing);
+		}
+		try{
+			HashMap<String, TempThingDTO> resultMap = createSubjectsFromCSV(subjectFilePath, treatmentGroupMap);
+			return resultMap;
+		}catch (Exception e){
+			logger.error("Caught exception loading subjects from tsv", e);
+			throw e;
+		}
 	}
 
 	@Override

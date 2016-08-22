@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.dto.IdCollectionDTO;
+import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -193,25 +194,28 @@ public class AnalysisGroupServiceTests {
 	
 	@Test
 //	@Transactional
-	public void CreateAnalysisGroupFromCSVTest() {
+	public void CreateAnalysisGroupFromCSVTest() throws Exception{
 //		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroupDateValueTest.csv";
 
-		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup100curves.csv";
-		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup100curves.csv";
-		String subjectFilePath = "src/test/resources/csvUploadSubject100curves.csv";
-//		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup.csv";
-//		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup.csv";
-//		String subjectFilePath = "src/test/resources/csvUploadSubject.csv";
+//		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup100curves.csv";
+//		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup100curves.csv";
+//		String subjectFilePath = "src/test/resources/csvUploadSubject100curves.csv";
+		String analysisGroupFilePath = "src/test/resources/csvUploadAnalysisGroup.csv";
+		String treatmentGroupFilePath = "src/test/resources/csvUploadTreatmentGroup.csv";
+		String subjectFilePath = "src/test/resources/csvUploadSubject.csv";
 		
 //		String treatmentGroupFilePath = null;
 //		String subjectFilePath = null;
 		
 		long startTime = new Date().getTime();
-		boolean dataLoaded = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
+		TsvLoaderResponseDTO result = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
 		long endTime = new Date().getTime();
 		long totalTime = endTime - startTime;
-		logger.info("dataLoaded: " + dataLoaded + "   total elapsed time: " + totalTime + " ms");
-		Assert.assertTrue(dataLoaded);
+		logger.info("dataLoaded: " + "true" + "   total elapsed time: " + totalTime + " ms");
+		logger.info(result.toJson());
+		Assert.assertNotNull(result.getAnalysisGroups());
+		Assert.assertNotNull(result.getTreatmentGroups());
+		Assert.assertNotNull(result.getSubjects());
 		
 		//timing notes: running locally
 		//AG - 0.9 s

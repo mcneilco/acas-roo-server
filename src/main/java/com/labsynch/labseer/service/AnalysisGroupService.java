@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
 
 @Service
@@ -18,6 +19,6 @@ public interface AnalysisGroupService {
 
 	HashMap<String, TempThingDTO> createAnalysisGroupsFromCSV(String absoluteFilePath) throws IOException;
 
-	boolean saveLsAnalysisGroupFromCsv(String analysisGroupFilePath,
-			String treatmentGroupFilePath, String subjectFilePath);
+	TsvLoaderResponseDTO saveLsAnalysisGroupFromCsv(String analysisGroupFilePath,
+			String treatmentGroupFilePath, String subjectFilePath) throws IOException;
 }

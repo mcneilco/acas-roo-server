@@ -1,12 +1,15 @@
 package com.labsynch.labseer.api;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
+import com.labsynch.labseer.dto.SubjectCsvDataDTO;
+import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.service.SubjectService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -130,7 +135,7 @@ public class ApiSubjectController {
 	
 
 	@Transactional
-    @RequestMapping(value = "/{idOrCodeName}", headers = "Accept=application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "/{idOrCodeName}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("idOrCodeName") String idOrCodeName) {
     	Subject subject;
@@ -176,12 +181,14 @@ public class ApiSubjectController {
         return new ResponseEntity<String>(Subject.toJsonArray(savedSubjects), headers, HttpStatus.CREATED);
     }
 
-	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+	@RequestMapping(value={"/","/{id}"}, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Subject subject = Subject.fromJsonToSubject(json);
-        if (subject.merge() == null) {
+        try{
+        	Subject foundSubject = Subject.findSubject(subject.getId());
+        }catch(EmptyResultDataAccessException e){
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         subject = subjectService.updateSubject(subject);
@@ -194,7 +201,9 @@ public class ApiSubjectController {
 		HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         for (Subject subject: Subject.fromJsonArrayToSubjects(json)) {
-            if (subject.merge() == null) {
+        	try{
+            	Subject foundSubject = Subject.findSubject(subject.getId());
+            }catch(EmptyResultDataAccessException e){
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
             updatedSubjects.add(subjectService.updateSubject(subject));
@@ -252,5 +261,28 @@ public class ApiSubjectController {
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @Transactional	
+	@RequestMapping(value = "/savefromtsv", method = RequestMethod.POST, headers = "Accept=application/json")
+	public @ResponseBody ResponseEntity<String> saveSubjectsFromCsv(@RequestBody SubjectCsvDataDTO subjectCsvDataDTO) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+
+		logger.info("loading data from tsv files: " + subjectCsvDataDTO.toJson());
+		
+		String subjectFilePath = subjectCsvDataDTO.getSubjectCsvFilePath();
+		try{
+			long startTime = new Date().getTime();
+			HashMap<String, TempThingDTO> resultMap = subjectService.createOnlySubjectsFromCSV(subjectFilePath, subjectCsvDataDTO.getTreatmentGroupIds());
+			long endTime = new Date().getTime();
+			long totalTime = endTime - startTime;
+			logger.info("dataLoaded: " + "true" + "   total elapsed time: " + totalTime);
+			Collection<TempThingDTO> resultArray = resultMap.values();
+			return new ResponseEntity<String>(TempThingDTO.toJsonArray(resultArray), headers, HttpStatus.OK) ;
+		}catch (Exception e){
+			logger.error("Error in api/v1/subjects/savefromtsv",e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }

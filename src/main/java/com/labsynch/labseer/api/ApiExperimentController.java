@@ -56,6 +56,7 @@ import com.labsynch.labseer.dto.JSTreeNodeDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.SubjectStateValueDTO;
+import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -114,15 +115,14 @@ public class ApiExperimentController {
 		String treatmentGroupFilePath = experimentCsvDataDTO.getTreatmentGroupCsvFilePath();
 		String subjectFilePath = experimentCsvDataDTO.getSubjectCsvFilePath();
 
-		long startTime = new Date().getTime();
-		boolean dataLoaded = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
-		long endTime = new Date().getTime();
-		long totalTime = endTime - startTime;
-		logger.info("dataLoaded: " + dataLoaded + "   total elapsed time: " + totalTime);
-		
-		if (dataLoaded){
-			return new ResponseEntity<String>(headers, HttpStatus.OK) ;
-		} else {
+		try{
+			long startTime = new Date().getTime();
+			TsvLoaderResponseDTO responseDTO = analysisGroupService.saveLsAnalysisGroupFromCsv(analysisGroupFilePath, treatmentGroupFilePath, subjectFilePath);
+			long endTime = new Date().getTime();
+			long totalTime = endTime - startTime;
+			logger.info("dataLoaded: " + "true" + "   total elapsed time: " + totalTime);
+			return new ResponseEntity<String>(responseDTO.toJson(), headers, HttpStatus.OK) ;
+		}catch (Exception e){
 			return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
 		}
 	}
