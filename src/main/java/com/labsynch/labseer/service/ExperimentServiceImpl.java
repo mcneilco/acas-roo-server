@@ -159,7 +159,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 						ExperimentValue updatedExperimentValue;
 						if (experimentValue.getId() == null){
 							updatedExperimentValue = ExperimentValue.create(experimentValue);
-							updatedExperimentValue.setLsState(ExperimentState.findExperimentState(experimentState.getId()));
+							updatedExperimentValue.setLsState(updatedExperimentState);
 							updatedExperimentValue.persist();
 							updatedExperimentState.getLsValues().add(updatedExperimentValue);
 						} else {

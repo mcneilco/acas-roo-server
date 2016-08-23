@@ -767,4 +767,14 @@ public class ExperimentServiceTests {
 		Assert.assertTrue(resultExperiments.size() > 0);
 		
 	}
+	
+	@Transactional
+	@Rollback(value=false)
+	@Test
+	public void updateExperiment() throws UniqueNameException{
+		String json = "{\"id\":1035,\"codeName\":\"EXPT-00000061\",\"lsType\":\"default\",\"lsKind\":\"study\",\"protocol\":{\"codeName\":\"PROT-00000020\",\"deleted\":false,\"id\":1034,\"ignored\":false,\"lsKind\":\"study\",\"lsTransaction\":306,\"lsType\":\"default\",\"lsTypeAndKind\":\"default_study\",\"modifiedDate\":1471906899841,\"recordedBy\":\"bob\",\"recordedDate\":1471906899636,\"shortDescription\":\" \",\"version\":1},\"recordedDate\":1471909718042,\"recordedBy\":\"bob\",\"lsStates\":[{\"ignored\":false,\"lsKind\":\"study steps\",\"lsType\":\"study tracking\",\"lsValues\":[{\"ignored\":false,\"lsKind\":\"step order\",\"lsType\":\"numericValue\",\"numericValue\":0,\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"lsTransaction\":323},{\"ignored\":false,\"lsKind\":\"step category order\",\"lsType\":\"numericValue\",\"numericValue\":2,\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"lsTransaction\":323},{\"ignored\":false,\"lsKind\":\"step category\",\"lsType\":\"stringValue\",\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"stringValue\":\"Uncategorized\",\"lsTransaction\":323},{\"ignored\":false,\"lsKind\":\"step name\",\"lsType\":\"stringValue\",\"stringValue\":\"EXPT-00000068\",\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"lsTransaction\":323}],\"recordedBy\":\"bob\",\"recordedDate\":1471911582836,\"lsTransaction\":323}],\"lsTransaction\":323}";
+		Experiment exptToUpdate = Experiment.fromJsonToExperiment(json);
+		Experiment updatedExperiment = experimentService.updateExperiment(exptToUpdate);
+		logger.info(updatedExperiment.toJson());
+	}
 }
