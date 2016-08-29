@@ -1471,17 +1471,25 @@ public class ApiExperimentController {
     @Transactional
     @RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<String> experimentBrowserSearch(@RequestParam(value="userName", required = true) String userName, @RequestParam("q") String searchQuery) {
+	public ResponseEntity<String> experimentBrowserSearch(@RequestParam(value="userName", required = false) String userName, @RequestParam(value="q", required = true) String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			String result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, userName));
-			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
+			String result;
+			if (userName == null){
+				logger.info("--------- accesing experiment search without userName ---------------");
+				result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery));
+				return new ResponseEntity<String>(result, headers, HttpStatus.OK);				
+			} else {
+				result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, userName));
+				return new ResponseEntity<String>(result, headers, HttpStatus.OK);
+			}
 		} catch(Exception e){
 			logger.error("Caught error in experiment search",e);
 			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
     
     @RequestMapping(params = "find=ByMetadata", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
@@ -1495,6 +1503,6 @@ public class ApiExperimentController {
         
         result = experimentService.findExperimentsByRequestMetadata(requestParams);
         
-        return new ResponseEntity<String>(Experiment.toJsonArrayStub(result), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Experiment.toJsonArrayStubWithProt(result), headers, HttpStatus.OK);
     }
 }
