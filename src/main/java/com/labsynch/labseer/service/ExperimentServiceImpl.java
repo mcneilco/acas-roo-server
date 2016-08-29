@@ -1425,13 +1425,14 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 
 	@Override
+	@Transactional
 	public Set<Experiment> findExperimentsByRequestMetadata(
 			Map<String, String> requestParams) {
 
 		Set<Experiment> result = new HashSet<Experiment>();
-
 		if (requestParams.isEmpty()) {
-			result.addAll(Experiment.findAllExperiments());
+			List<Experiment> experiments = Experiment.findAllExperiments();
+			result.addAll(experiments);
 			return result;
 		}
 
