@@ -55,6 +55,7 @@ import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
+import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
@@ -1625,6 +1626,28 @@ public class ApiContainerControllerTest {
 	    		Assert.assertEquals("liquid", resultWell.getPhysicalState());
 	    		Assert.assertEquals("mM", resultWell.getBatchConcUnits());
 	    	}
+	    }
+	    
+	    @Test
+	    @Transactional
+	    public void searchContainerCodesByContainerValue() throws Exception{
+	    	ContainerValueRequestDTO requestDTO = new ContainerValueRequestDTO();
+	    	requestDTO.setContainerType("container");
+	    	requestDTO.setContainerKind("plate");;
+	    	requestDTO.setStateType("metadata");
+	    	requestDTO.setStateKind("information");
+	    	requestDTO.setValueType("codeValue");
+	    	requestDTO.setValueKind("created user");
+	    	requestDTO.setValue("bob");
+	    	String json = requestDTO.toJson();
+	    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainerCodeNamesByContainerValue")
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(json))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();
+			logger.info(response.getContentAsString());
 	    }
     
 

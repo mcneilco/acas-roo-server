@@ -897,8 +897,9 @@ public class ApiExperimentController {
 	
 	@Transactional
     @RequestMapping(value = { "/{id}", "/" }, method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody Experiment experiment) {
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
+		Experiment experiment = Experiment.fromJsonToExperiment(json);
+		HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
         boolean errorsFound = false;
@@ -924,8 +925,9 @@ public class ApiExperimentController {
 	
 	@Transactional
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody List<Experiment> experiments) {
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
+		Collection<Experiment> experiments = Experiment.fromJsonArrayToExperiments(json);
+		HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         Collection<Experiment> updatedExperiments = new ArrayList<Experiment>();
         ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();

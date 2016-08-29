@@ -277,5 +277,27 @@ public class Container extends AbstractThing {
         
         return q;
 	}
+	
+	public static TypedQuery<Container> findContainerByLabelTextAndLabelTypeKind(String labelType, String labelKind, String labelText) {
+        if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+        if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = Container.entityManager();
+		String query = "SELECT DISTINCT o FROM Container o " +
+				"JOIN o.lsLabels ll " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+        
+        TypedQuery<Container> q = em.createQuery(query, Container.class);
+        q.setParameter("labelType", labelType);        
+        q.setParameter("labelKind", labelKind);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
 
 }
