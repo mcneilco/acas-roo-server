@@ -7,13 +7,13 @@ CREATE TABLE role_type
   CONSTRAINT role_type_type_name_key UNIQUE (type_name)
 );
 
-CREATE SEQUENCE acas.role_type_pkseq
+CREATE SEQUENCE role_type_pkseq
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
   START 3
   CACHE 1;
-ALTER TABLE acas.role_type_pkseq
+ALTER TABLE role_type_pkseq
   OWNER TO acas;
 
 CREATE TABLE role_kind
@@ -30,11 +30,11 @@ CREATE TABLE role_kind
   CONSTRAINT role_kind_tk_uniq UNIQUE (ls_type_and_kind)
 );
 
-CREATE SEQUENCE acas.role_kind_pkseq
+CREATE SEQUENCE role_kind_pkseq
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
   START 5
   CACHE 1;
-ALTER TABLE acas.role_kind_pkseq
+ALTER TABLE role_kind_pkseq
   OWNER TO acas;
