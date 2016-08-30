@@ -1222,7 +1222,7 @@ public class ApiExperimentController {
         
         result = experimentService.findExperimentsByRequestMetadata(requestParams);
         
-        return new ResponseEntity<String>(Experiment.toJsonArrayStub(result), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(Experiment.toJsonArrayStubWithProt(result), headers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/protocolKind/{protocolKind}", method = RequestMethod.GET, headers = "Accept=application/json")
