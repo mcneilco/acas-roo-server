@@ -291,7 +291,11 @@ public class ProtocolServiceImpl implements ProtocolService {
 					}
 				}
 			}
-			if (allowedProjectCodeNames.contains(protocolProject)){
+			if (protocolProject == null){
+				//no project associated with protocol, pass it through
+				results.add(rawResult);
+			}
+			else if (allowedProjectCodeNames.contains(protocolProject)){
 				results.add(rawResult);
 			}
 		}
