@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_TreatmentGroupState" object="${treatmentgroupstate}" path="/treatmentgroupstates" z="iofrU3pkY664bD2G//U/IRBjVcw=">
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_TreatmentGroupState_recordedBy" object="${treatmentgroupstate}" z="1PEAVBV32Bg8CfmgLUVEwM3WwwI="/>
+        <field:display date="true" dateTimePattern="${treatmentGroupState_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_TreatmentGroupState_recordedDate" object="${treatmentgroupstate}" z="etMNyk+B7TbZqFQJuJGU+yfRM4c="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_TreatmentGroupState_modifiedBy" object="${treatmentgroupstate}" z="vBaYqJkYyHgxdSucIiPwQQgnTtA="/>
+        <field:display date="true" dateTimePattern="${treatmentGroupState_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_TreatmentGroupState_modifiedDate" object="${treatmentgroupstate}" z="ozY3v12IkduNprUcUBa/WIPsbnM="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_TreatmentGroupState_comments" object="${treatmentgroupstate}" z="4omrmbrnyB2T2C1EKjB4Q5XA0G4="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_TreatmentGroupState_ignored" object="${treatmentgroupstate}" z="zTmGMtQYDN+MS7cAEow3AVJqbTA="/>
+        <field:display field="treatmentGroup" id="s_com_labsynch_labseer_domain_TreatmentGroupState_treatmentGroup" object="${treatmentgroupstate}" z="V8P4PiAQ1RitQTJxcMPad1mrXaA="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_TreatmentGroupState_lsTransaction" object="${treatmentgroupstate}" z="xbeuLLqlpRnWlxwxJMwy4mcd+2s="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_TreatmentGroupState_lsType" object="${treatmentgroupstate}" z="A/NJzSYHGj7dV7Ci5XD3IlpG3iE="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_TreatmentGroupState_lsKind" object="${treatmentgroupstate}" z="ojSQug2YkP09idZOE3fes9l+Pkk="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_TreatmentGroupState_lsTypeAndKind" object="${treatmentgroupstate}" z="CSc1luEDlMLJOwX3kJBXgo31jTg="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_TreatmentGroupState_deleted" object="${treatmentgroupstate}" z="pQlxJo5t0jhGmo94SDlB+QrPWgA="/>
+    </page:show>
+</div>

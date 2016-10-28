@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_SubjectState" object="${subjectstate}" path="/subjectstates" z="AoaU1CIxrgzEEnQXBP7tHbPUIbw=">
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_SubjectState_recordedBy" object="${subjectstate}" z="yQuIg3ncOFyINB05vo1jBOyM6e4="/>
+        <field:display date="true" dateTimePattern="${subjectState_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_SubjectState_recordedDate" object="${subjectstate}" z="NRQ+lE8HVpUsi4QjHjSZYcFkMQ0="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_SubjectState_modifiedBy" object="${subjectstate}" z="C2d1XWJkbgj2Cax93dx8lQk0t38="/>
+        <field:display date="true" dateTimePattern="${subjectState_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_SubjectState_modifiedDate" object="${subjectstate}" z="lC4+flK+SDy1XH9H4/42hI9CCDw="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_SubjectState_comments" object="${subjectstate}" z="xzEQps5c8NUNS02LawL7INK1bhQ="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_SubjectState_ignored" object="${subjectstate}" z="j0A/DeUIfTexaYBIqvDy7/DFF9I="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_SubjectState_lsTransaction" object="${subjectstate}" z="+IUS4qN4vE/ZkZSk1L/gS/ooUKc="/>
+        <field:display field="subject" id="s_com_labsynch_labseer_domain_SubjectState_subject" object="${subjectstate}" z="ldeiLNL1ND6B6LkEpfk8VCsMZoU="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_SubjectState_lsType" object="${subjectstate}" z="iJ4kBU0CWYzmMcfqa+L1mlT3hGI="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_SubjectState_lsKind" object="${subjectstate}" z="bLEGJLnEbv3MK9tuCqTZCQnoIjk="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_SubjectState_lsTypeAndKind" object="${subjectstate}" z="zBgymdr9Jc6sjXZ8aeMvRdf6tEM="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_SubjectState_deleted" object="${subjectstate}" z="6nylQ6m/ksnouYxz6YMDl8gmwG4="/>
+    </page:show>
+</div>

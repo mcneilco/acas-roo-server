@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_Container" object="${container}" path="/containers" z="qpkzbT0ru8cJUy/AFooy2KmUJzY=">
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_Container_recordedBy" object="${container}" z="p5tU3tcCPYQwbOz5jOU9bkwQIsw="/>
+        <field:display date="true" dateTimePattern="${container_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_Container_recordedDate" object="${container}" z="0mNbTHydbhqselIf84GHmPKbnhw="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_Container_modifiedBy" object="${container}" z="/lDtWXhfaQeIFonkof71vxETSs0="/>
+        <field:display date="true" dateTimePattern="${container_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_Container_modifiedDate" object="${container}" z="9JWmEByiwzIR0i7nD3i7pCypNWo="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_Container_ignored" object="${container}" z="9TDfOmuywDyzVEQHCSGu/f3DKok="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_Container_lsTransaction" object="${container}" z="NizVo98S5YFLMcu/dy63MwgHBVE="/>
+        <field:display field="codeName" id="s_com_labsynch_labseer_domain_Container_codeName" object="${container}" z="MgVZ79tyeEdb/13Glu1Q1iGGo/g="/>
+        <field:display field="locationId" id="s_com_labsynch_labseer_domain_Container_locationId" object="${container}" z="6WQV/L2YopMnzBlDJG+SLp0sx9k="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_Container_lsType" object="${container}" z="mGvzP9GX44Uu3FomheRUNzGnNOg="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_Container_lsKind" object="${container}" z="vqIl/qsV9rr+MyUy3fdu4Q0nJzA="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_Container_lsTypeAndKind" object="${container}" z="LUYZ4fbo+fT9fnINnAcXH9Qd1WQ="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_Container_deleted" object="${container}" z="XQIXupMmxITtE6b2iVQcpXy+TGg="/>
+        <field:display field="rowIndex" id="s_com_labsynch_labseer_domain_Container_rowIndex" object="${container}" z="fNyG0W7Nn65MNVQ/I9cMCOo1W/0="/>
+        <field:display field="columnIndex" id="s_com_labsynch_labseer_domain_Container_columnIndex" object="${container}" z="b1c847AU3KpGwCyR3XQ+DDu8ypo="/>
+    </page:show>
+</div>

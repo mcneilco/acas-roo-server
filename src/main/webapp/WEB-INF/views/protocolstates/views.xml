@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="protocolstates/list">
+        <put-attribute name="body" value="/WEB-INF/views/protocolstates/list.jspx"/>
+    </definition>
+<definition extends="default" name="protocolstates/show">
+        <put-attribute name="body" value="/WEB-INF/views/protocolstates/show.jspx"/>
+    </definition>
+<definition extends="default" name="protocolstates/create">
+        <put-attribute name="body" value="/WEB-INF/views/protocolstates/create.jspx"/>
+    </definition>
+<definition extends="default" name="protocolstates/update">
+        <put-attribute name="body" value="/WEB-INF/views/protocolstates/update.jspx"/>
+    </definition>
+<definition extends="default" name="protocolstates/findProtocolStatesByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocolstates/findProtocolStatesByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="protocolstates/findProtocolStatesByProtocol">
+        <put-attribute name="body" value="/WEB-INF/views/protocolstates/findProtocolStatesByProtocol.jspx"/>
+    </definition>
+</tiles-definitions>

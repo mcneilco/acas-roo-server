@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ContainerState" object="${containerstate}" path="/containerstates" z="2SpdIda3pjjuMovje70ozlZdHd8=">
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_ContainerState_recordedBy" object="${containerstate}" z="MpzsbqfSUsxHjY9NgEclyeqznio="/>
+        <field:display date="true" dateTimePattern="${containerState_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_ContainerState_recordedDate" object="${containerstate}" z="zgMGJ9DVJMH1yFUal5ZPTnbpCTA="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_ContainerState_modifiedBy" object="${containerstate}" z="/VlLB7C7SBiufCNeiJLv50y3X0c="/>
+        <field:display date="true" dateTimePattern="${containerState_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_ContainerState_modifiedDate" object="${containerstate}" z="+th2clsAFuP1nlrXjofUmRU4A4Y="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_ContainerState_comments" object="${containerstate}" z="Va/d0Y3qNM0VcjC61FJBfDahaBs="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ContainerState_ignored" object="${containerstate}" z="ieHUyUCWXpMkFVbHfo0d/DiwsQM="/>
+        <field:display field="container" id="s_com_labsynch_labseer_domain_ContainerState_container" object="${containerstate}" z="wMm99VD/YpT2GIPMFbabPBMDJFA="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ContainerState_lsTransaction" object="${containerstate}" z="mzL04gM8IKcWWu+eSjx8nFFz4uU="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_ContainerState_lsType" object="${containerstate}" z="vAH9X0jnoFknnyr7zTxqIrqwhKA="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ContainerState_lsKind" object="${containerstate}" z="RTihzKk6gJn5rgLIdVfygMRK5t0="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_ContainerState_lsTypeAndKind" object="${containerstate}" z="8PbCo0pz1z/liLv3EwSmT7yjT1c="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ContainerState_deleted" object="${containerstate}" z="OdSlksS7DmOQz6ksXBDJPw72Ozc="/>
+    </page:show>
+</div>

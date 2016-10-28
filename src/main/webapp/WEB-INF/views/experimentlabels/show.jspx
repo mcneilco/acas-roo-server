@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ExperimentLabel" object="${experimentlabel}" path="/experimentlabels" z="6GbCqGpM5omtBwO8e+2v3OMlYtc=">
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_ExperimentLabel_recordedBy" object="${experimentlabel}" z="l/jNXBxiAEGn7RnVQvobeMxvhnM="/>
+        <field:display date="true" dateTimePattern="${experimentLabel_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_ExperimentLabel_recordedDate" object="${experimentlabel}" z="GJV66bOYfkzwhel9J5aSfkoCgZ8="/>
+        <field:display date="true" dateTimePattern="${experimentLabel_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_ExperimentLabel_modifiedDate" object="${experimentlabel}" z="CJZkT3C/7GOP8bmRblbtECRCbOY="/>
+        <field:display field="physicallyLabled" id="s_com_labsynch_labseer_domain_ExperimentLabel_physicallyLabled" object="${experimentlabel}" z="aj4B0ca3YbsSyQlNRqOCf8ahVE0="/>
+        <field:display field="preferred" id="s_com_labsynch_labseer_domain_ExperimentLabel_preferred" object="${experimentlabel}" z="jWoVqtxtUfS6NO3bmX5pm0++cpA="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ExperimentLabel_ignored" object="${experimentlabel}" z="sHLOx0oxG0+abP2CE4prZZOwQIY="/>
+        <field:display field="experiment" id="s_com_labsynch_labseer_domain_ExperimentLabel_experiment" object="${experimentlabel}" z="TZkMbcG599CzuhPobn6QvgO+1SM="/>
+        <field:display field="labelText" id="s_com_labsynch_labseer_domain_ExperimentLabel_labelText" object="${experimentlabel}" z="pSJVH8Sta4L5IWJO7Fjeg5CFHoo="/>
+        <field:display field="imageFile" id="s_com_labsynch_labseer_domain_ExperimentLabel_imageFile" object="${experimentlabel}" z="QLZKPARXQKVYcJdIE+MR+2DmpDA="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ExperimentLabel_lsTransaction" object="${experimentlabel}" z="7AP+iSvExQT7TysPTFj0t1zMw7U="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_ExperimentLabel_lsType" object="${experimentlabel}" z="Ii8XIUMSo45SHFgZbancdurq/00="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ExperimentLabel_lsKind" object="${experimentlabel}" z="H4SFBqUy0tWbiSYIHgx4efmiWW4="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_ExperimentLabel_lsTypeAndKind" object="${experimentlabel}" z="i2ENJ6NoTLXPpDxD2pOK1Q3bOXk="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ExperimentLabel_deleted" object="${experimentlabel}" z="yuuC5n/g7ZbYwOsgmCrBJzyv1IU="/>
+    </page:show>
+</div>

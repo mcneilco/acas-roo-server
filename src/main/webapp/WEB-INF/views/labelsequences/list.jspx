@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_LabelSequence" items="${labelsequences}" z="0AOtVYpVIC65B9VOrDH21Q3F4Rw=">
+        <table:table data="${labelsequences}" id="l_com_labsynch_labseer_domain_LabelSequence" path="/labelsequences" z="hsG6M1LRFBV3qCFCXGzrQnWZbdc=">
+            <table:column id="c_com_labsynch_labseer_domain_LabelSequence_labelPrefix" property="labelPrefix" z="lzCJrbk+SFgEG6gh6WUssxxlbEg="/>
+            <table:column id="c_com_labsynch_labseer_domain_LabelSequence_labelSeparator" property="labelSeparator" z="8EDSsGAs//zuAk0V1mHor3S4bVc="/>
+            <table:column id="c_com_labsynch_labseer_domain_LabelSequence_groupDigits" property="groupDigits" z="D8l1AwDQQiEUP2wLjcdoDdutgiE="/>
+            <table:column id="c_com_labsynch_labseer_domain_LabelSequence_digits" property="digits" z="TqGLa8G5xfeNbD4BTb63wwx/Iy4="/>
+            <table:column id="c_com_labsynch_labseer_domain_LabelSequence_thingTypeAndKind" property="thingTypeAndKind" z="0fEnT9dbBxPfVxFSciv8DU7eWiY="/>
+            <table:column id="c_com_labsynch_labseer_domain_LabelSequence_labelTypeAndKind" property="labelTypeAndKind" z="q2M3L4WvoS83ze+T4Wd8F+AED7M="/>
+        </table:table>
+    </page:list>
+</div>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="labelkinds/list">
+        <put-attribute name="body" value="/WEB-INF/views/labelkinds/list.jspx"/>
+    </definition>
+<definition extends="default" name="labelkinds/show">
+        <put-attribute name="body" value="/WEB-INF/views/labelkinds/show.jspx"/>
+    </definition>
+<definition extends="default" name="labelkinds/create">
+        <put-attribute name="body" value="/WEB-INF/views/labelkinds/create.jspx"/>
+    </definition>
+<definition extends="default" name="labelkinds/update">
+        <put-attribute name="body" value="/WEB-INF/views/labelkinds/update.jspx"/>
+    </definition>
+<definition extends="default" name="labelkinds/findLabelKindsByKindNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/labelkinds/findLabelKindsByKindNameEquals.jspx"/>
+    </definition>
+<definition extends="default" name="labelkinds/findLabelKindsByKindNameEqualsAndLsType">
+        <put-attribute name="body" value="/WEB-INF/views/labelkinds/findLabelKindsByKindNameEqualsAndLsType.jspx"/>
+    </definition>
+<definition extends="default" name="labelkinds/findLabelKindsByLsType">
+        <put-attribute name="body" value="/WEB-INF/views/labelkinds/findLabelKindsByLsType.jspx"/>
+    </definition>
+</tiles-definitions>

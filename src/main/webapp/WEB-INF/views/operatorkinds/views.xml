@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="operatorkinds/list">
+        <put-attribute name="body" value="/WEB-INF/views/operatorkinds/list.jspx"/>
+    </definition>
+<definition extends="default" name="operatorkinds/show">
+        <put-attribute name="body" value="/WEB-INF/views/operatorkinds/show.jspx"/>
+    </definition>
+<definition extends="default" name="operatorkinds/create">
+        <put-attribute name="body" value="/WEB-INF/views/operatorkinds/create.jspx"/>
+    </definition>
+<definition extends="default" name="operatorkinds/update">
+        <put-attribute name="body" value="/WEB-INF/views/operatorkinds/update.jspx"/>
+    </definition>
+</tiles-definitions>

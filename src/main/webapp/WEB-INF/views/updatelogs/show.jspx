@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_UpdateLog" object="${updatelog}" path="/updatelogs" z="mwDvXjJM6IBXtpXCmQPn5Rzo2HI=">
+        <field:display field="thing" id="s_com_labsynch_labseer_domain_UpdateLog_thing" object="${updatelog}" z="GXUAtgxOX/pyrMrX3KJssmotXE0="/>
+        <field:display field="updateAction" id="s_com_labsynch_labseer_domain_UpdateLog_updateAction" object="${updatelog}" z="+RyepvxEBwbz8cTaNRNbUUcZxxk="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_UpdateLog_comments" object="${updatelog}" z="TKwxK/S+6BcMimfpowk3fkcIe1c="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_UpdateLog_lsTransaction" object="${updatelog}" z="rwSFXTiGCre9WLi1IqVSNgeqofg="/>
+        <field:display date="true" dateTimePattern="${updateLog_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_UpdateLog_recordedDate" object="${updatelog}" z="JnqScxUIDFUi1SwNjK4C285zDQ4="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_UpdateLog_recordedBy" object="${updatelog}" z="7rKjVqFN3MLJvc1xBbQCCdMTiPI="/>
+    </page:show>
+</div>

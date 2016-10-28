@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:find finderName="ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot" id="ff_com_labsynch_labseer_domain_ExperimentLabel" path="/experimentlabels" z="zowmPkOVkC+9xx6cIm0gluNBONs=">
+        <field:input disableFormBinding="true" field="labelText" id="f_com_labsynch_labseer_domain_ExperimentLabel_labelText" max="255" required="true" z="5s6ro/ekChPzkZp/0ou72BA+CF4="/>
+        <field:input disableFormBinding="true" field="lsTypeAndKind" id="f_com_labsynch_labseer_domain_ExperimentLabel_lsTypeAndKind" max="255" required="true" z="wIrn5n9E/2y4nx6JB0V45+tvdkE="/>
+        <field:checkbox disableFormBinding="true" field="preferred" id="f_com_labsynch_labseer_domain_ExperimentLabel_preferred" z="QFi0R9JNfi2IjQdGS5XlmhhswSk="/>
+        <field:checkbox disableFormBinding="true" field="ignored" id="f_com_labsynch_labseer_domain_ExperimentLabel_ignored" z="9Ci7hbFFlcIuWfLX3ODO5JB2KGA="/>
+    </form:find>
+</div>

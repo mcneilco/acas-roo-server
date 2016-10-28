@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_ItxLsThingLsThingState" modelAttribute="itxLsThingLsThingState" path="/itxlsthinglsthingstates" versionField="Version" z="I2JfXAROlUHNMNlJhzKJYyBi4Jk=">
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_recordedBy" required="true" z="bvykM8bKAipWDwxNp+RwzbNimEw="/>
+        <field:datetime dateTimePattern="${itxLsThingLsThingState_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_recordedDate" required="true" z="ODRvvT2Q6iH0N9BmhV2tZGxyAag="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_modifiedBy" z="we9kCSTesC1RaYxSFhgRj2AwXHE="/>
+        <field:datetime dateTimePattern="${itxLsThingLsThingState_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_modifiedDate" z="IVkQl5dLbQHi8jcCgsXUtl9Irww="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_lsType" required="true" z="N0Nw4THyRFqjKAh4gPhqThT9F4Y="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_lsKind" required="true" z="xR3M9wsN1BG2Pdw2i/WJDrAGpS4="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_lsTypeAndKind" z="kBJpfO6QR2xswCxMGIMdR8Xusfc="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_comments" z="JLXy9eShNKAX7nuvY97Sy+zgMEo="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_ignored" z="KwUjVciaSTdiJfWXyPWJCx3AJsg="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_deleted" z="INM1fEFOo/JkIyAcDrdreBluHSg="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_lsTransaction" validationMessageCode="field_invalid_integer" z="3qUGNzD3znGN7EeF0rtO544ygs0="/>
+        <field:select field="itxLsThingLsThing" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_itxLsThingLsThing" itemValue="id" items="${itxlsthinglsthings}" path="/itxlsthinglsthings" z="py2ii3y3q8E4VK0owG1E4FvBf/4="/>
+        <field:simple field="lsValues" id="c_com_labsynch_labseer_domain_ItxLsThingLsThingState_lsValues" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Ls Thing Ls Thing Value" z="GhgenqQ69nrlzQZteXQLJgfF9P0="/>
+    </form:update>
+</div>

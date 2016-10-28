@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ThingPageArchive" object="${thingpagearchive}" path="/thingpagearchives" z="OC4aA15C9gjY+iheVmryxp0nmZQ=">
+        <field:display field="pageName" id="s_com_labsynch_labseer_domain_ThingPageArchive_pageName" object="${thingpagearchive}" z="Lxz9DXWWffe/2aItkgWws6HB2EU="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_ThingPageArchive_recordedBy" object="${thingpagearchive}" z="bZN6R/7wyvV52KnKntbLZafCtLk="/>
+        <field:display date="true" dateTimePattern="${thingPageArchive_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_ThingPageArchive_recordedDate" object="${thingpagearchive}" z="E4xQRx2xEwpx3CwWW0x13vAOeWc="/>
+        <field:display field="pageContent" id="s_com_labsynch_labseer_domain_ThingPageArchive_pageContent" object="${thingpagearchive}" z="JA8+DIT4kKBqt358fsOGCCM7zH0="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_ThingPageArchive_modifiedBy" object="${thingpagearchive}" z="ot0WAe/LX9y7n4XasOLsfZ6Ob6A="/>
+        <field:display date="true" dateTimePattern="${thingPageArchive_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_ThingPageArchive_modifiedDate" object="${thingpagearchive}" z="aedbIVCuj3s7bWKDoBHb6vF3emw="/>
+        <field:display field="currentEditor" id="s_com_labsynch_labseer_domain_ThingPageArchive_currentEditor" object="${thingpagearchive}" z="xv4mmJpGe9vv4nURRAYo0rEKzDE="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ThingPageArchive_ignored" object="${thingpagearchive}" z="4a5qGjxZ3wMlanKYXSkN+Belei8="/>
+        <field:display field="archived" id="s_com_labsynch_labseer_domain_ThingPageArchive_archived" object="${thingpagearchive}" z="GGSaaOKcUS/eXD/W1Qz17QP+C6s="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ThingPageArchive_lsTransaction" object="${thingpagearchive}" z="/Kdsw6cWq6z2N8nVfmamffb+K1E="/>
+        <field:display field="thing" id="s_com_labsynch_labseer_domain_ThingPageArchive_thing" object="${thingpagearchive}" z="f3M1JdwtVQu7GmiyQxtGVE3ah1U="/>
+        <field:display field="pageVersion" id="s_com_labsynch_labseer_domain_ThingPageArchive_pageVersion" object="${thingpagearchive}" z="rO6YFoPhpmLrGUJnqrVyHmcPNnA="/>
+    </page:show>
+</div>

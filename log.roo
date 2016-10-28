@@ -1,0 +1,776 @@
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-26 11:31:18
+project --topLevelPackage com.labsynch.labseer --projectName labseer
+jpa setup --provider HIBERNATE --database ORACLE --hostName ora.labsynch.com --databaseName osl --userName labseer2 --password labseer2_password
+entity jpa --class ~.domain.lsTransaction --activeRecord true --testAutomatically --sequenceName LS_TRANSACTION_PKSEQ
+field string --fieldName comments --sizeMax 255
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+entity jpa --class ~.domain.Author --activeRecord true --testAutomatically --sequenceName AUTHOR_PKSEQ
+field string --fieldName firstName --sizeMax 255
+field string --fieldName middleName --sizeMax 255
+field string --fieldName lastName --sizeMax 255
+field string --fieldName userName --sizeMax 255 --notNull --unique
+field string --fieldName email --sizeMax 255
+field string --fieldName password --sizeMax 255
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+entity jpa --class ~.domain.ThingType --activeRecord true --testAutomatically --sequenceName THING_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 128 --notNull --unique
+entity jpa --class ~.domain.ThingKind --activeRecord true --testAutomatically --sequenceName THING_KIND_PKSEQ
+field reference --fieldName thingType --type ~.domain.ThingType --notNull
+field string --fieldName kindName --sizeMax 255 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+entity jpa --class ~.domain.AbstractThing --activeRecord true --abstract --sequenceName THING_PKSEQ --inheritanceType TABLE_PER_CLASS
+field string --fieldName codeName --sizeMax 255 
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --timeFormat MEDIUM
+field string --fieldName modifiedBy --sizeMax 255 
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+field boolean --fieldName ignored --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+entity jpa --class ~.domain.InteractionType --activeRecord true --testAutomatically --sequenceName INTERACTION_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 128 --notNull --unique
+field string --fieldName typeVerb --sizeMax 128 --notNull
+entity jpa --class ~.domain.InteractionKind --activeRecord true --testAutomatically --sequenceName INTERACTION_KIND_PKSEQ
+field reference --fieldName interactionType --type ~.domain.InteractionType --notNull
+field string --fieldName kindName --sizeMax 255 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+entity jpa --class ~.domain.LsInteraction --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName interactionType --sizeMax 64 --notNull
+field string --fieldName interactionKind --sizeMax 255 --notNull
+field string --fieldName interactionTypeAndKind --sizeMax 255
+field number --fieldName firstThing --type java.lang.Long --column first_thing_id --notNull
+field number --fieldName secondThing --type java.lang.Long --column second_thing_id --notNull
+entity jpa --class ~.domain.StateType --activeRecord true --testAutomatically --sequenceName STATE_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 64 --notNull --unique
+entity jpa --class ~.domain.StateKind --activeRecord true --testAutomatically --sequenceName STATE_KIND_PKSEQ
+field reference --fieldName stateType --type ~.domain.StateType --notNull
+field string --fieldName kindName --sizeMax 64 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+entity jpa --class ~.domain.AbstractState --activeRecord true --abstract --sequenceName STATE_PKSEQ --inheritanceType TABLE_PER_CLASS
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName modifiedBy --sizeMax 255 
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+field string --fieldName stateType --sizeMax 64 --notNull
+field string --fieldName stateKind --sizeMax 255 --notNull
+field string --fieldName stateTypeAndKind --sizeMax 255
+field string --fieldName comments --sizeMax 512
+field boolean --fieldName ignored --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+entity jpa --class ~.domain.ValueType --activeRecord true --testAutomatically --sequenceName VALUE_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 64 --notNull --unique
+entity jpa --class ~.domain.ValueKind --activeRecord true --testAutomatically --sequenceName VALUE_KIND_PKSEQ
+field reference --fieldName valueType --type ~.domain.ValueType --notNull
+field string --fieldName kindName --sizeMax 64 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+entity jpa --class ~.domain.UnitType --activeRecord true --testAutomatically --sequenceName UNITS_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 64 --notNull --unique
+entity jpa --class ~.domain.UnitKind --activeRecord true --testAutomatically --sequenceName UNITS_KIND_PKSEQ
+field reference --fieldName unitType --type ~.domain.UnitType --notNull
+field string --fieldName kindName --sizeMax 64 --notNull
+field string --fieldName typeAndKind --sizeMax 255 
+entity jpa --class ~.domain.OperatorType --activeRecord true --testAutomatically --sequenceName OPERATOR_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 5 --notNull --unique
+entity jpa --class ~.domain.AbstractValue --activeRecord true --abstract --sequenceName VALUE_PKSEQ --inheritanceType TABLE_PER_CLASS
+field string --fieldName valueType --sizeMax 64 --notNull
+field string --fieldName valueKind --sizeMax 255 --notNull
+field string --fieldName valueTypeAndKind --sizeMax 255 
+field string --fieldName batchCode --sizeMax 255 
+field string --fieldName stringValue --sizeMax 255
+field string --fieldName fileValue --sizeMax 512
+field string --fieldName urlValue --sizeMax 2000
+field date --fieldName dateValue --type java.util.Date --timeFormat MEDIUM
+field string --fieldName clobValue
+field string --fieldName blobValue
+field string --fieldName valueOperator --sizeMax 5
+field number --fieldName numericValue --type java.lang.Float
+field number --fieldName sigFigs --type java.lang.Integer
+field number --fieldName uncertainty --type java.lang.Float
+field string --fieldName valueUnit --sizeMax 25
+field number --fieldName concValue --type java.lang.Float
+field string --fieldName concUnit --sizeMax 25
+field string --fieldName comments --sizeMax 512
+field boolean --fieldName ignored --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+field boolean --fieldName publicData --primitive --notNull
+entity jpa --class ~.domain.LabelType --activeRecord true --testAutomatically --sequenceName LABEL_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 255 --notNull --unique
+entity jpa --class ~.domain.LabelKind --activeRecord true --testAutomatically --sequenceName LABEL_KIND_PKSEQ
+field reference --fieldName labelType --type ~.domain.LabelType
+field string --fieldName kindName --sizeMax 255 --notNull
+field string --fieldName typeAndKind --sizeMax 255 
+entity jpa --class ~.domain.AbstractLabel --activeRecord true --abstract --sequenceName LABEL_PKSEQ --inheritanceType TABLE_PER_CLASS
+field string --fieldName labelValue --sizeMax 255 --notNull
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+field boolean --fieldName physicallyLabled --primitive
+field string --fieldName imgageFile --sizeMax 255
+field string --fieldName labelType --sizeMax 64 --notNull
+field string --fieldName labelKind --sizeMax 255 --notNull
+field string --fieldName labelTypeAndKind --sizeMax 255 
+field boolean --fieldName preferred --primitive --notNull
+field boolean --fieldName ignored --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+entity jpa --class ~.domain.ThingPage --activeRecord true --testAutomatically --sequenceName THING_PAGE_PKSEQ
+field string --fieldName pageName --sizeMax 255
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName pageContent
+field string --fieldName modifiedBy --sizeMax 255 --notNull
+field date --fieldName modifiedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName currentEditor --sizeMax 255 --notNull
+field boolean --fieldName ignored --primitive --notNull
+field boolean --fieldName archived --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+field reference --fieldName thing --type ~.domain.AbstractThing --cardinality MANY_TO_ONE --joinColumnName thing_id --notNull
+field set --class ~.domain.AbstractThing --fieldName thingPage --type ~.domain.ThingPage --mappedBy thing --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.LabelSequence --activeRecord true --testAutomatically --sequenceName LABEL_SEQUENCE_PKSEQ
+field string --fieldName thingTypeAndKind --sizeMax 255 --notNull
+field string --fieldName labelTypeAndKind --sizeMax 255 --notNull
+field string --fieldName labelPrefix --sizeMax 50 --notNull
+field string --fieldName labelSeparator --sizeMax 10
+field boolean --fieldName groupDigits --primitive
+field number --fieldName digits --type java.lang.Integer
+field number --fieldName latestNumber --type java.lang.Long
+field string --fieldName dbSequence --sizeMax 255
+field boolean --fieldName ignored --primitive --notNull
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+entity jpa --class ~.domain.ThingPageArchive --activeRecord true --testAutomatically --sequenceName THING_PAGE_ARCHIVE_PKSEQ
+field string --fieldName pageName --sizeMax 255
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName pageContent
+field string --fieldName modifiedBy --sizeMax 255 --notNull
+field date --fieldName modifiedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName currentEditor --sizeMax 255
+field boolean --fieldName ignored --primitive --notNull
+field boolean --fieldName archived --primitive
+field number --fieldName lsTransaction --type java.lang.Long
+field number --fieldName thing --type java.lang.Long --column thing_id
+field number --fieldName pageVersion --type java.lang.Integer
+entity jpa --class ~.domain.ProtocolState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.ExperimentState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.AnalysisGroupState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.TreatmentGroupState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.SubjectState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.ProtocolValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.ExperimentValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.AnalysisGroupValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.TreatmentGroupValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.SubjectValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.ContainerValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.Protocol --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName shortDescription --sizeMax 255 --notNull
+entity jpa --class ~.domain.ProtocolLabel --extends ~.domain.AbstractLabel --testAutomatically 
+field reference --class ~.domain.ProtocolLabel --fieldName protocol --type ~.domain.Protocol --cardinality MANY_TO_ONE
+field reference --class ~.domain.ProtocolState --fieldName protocol --type ~.domain.Protocol --cardinality MANY_TO_ONE --joinColumnName protocol_id --notNull
+field set --class ~.domain.Protocol --fieldName protocolStates --type ~.domain.ProtocolState --mappedBy protocol --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.ProtocolValue --fieldName protocolState --type ~.domain.ProtocolState --cardinality MANY_TO_ONE --joinColumnName protocol_state_id --notNull
+field set --class ~.domain.ProtocolState --fieldName protocolValues --type ~.domain.ProtocolValue --mappedBy protocolState --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.Experiment --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName shortDescription --sizeMax 255 --notNull
+entity jpa --class ~.domain.ExperimentLabel --extends ~.domain.AbstractLabel --testAutomatically 
+field reference --class ~.domain.ExperimentLabel --fieldName experiment --type ~.domain.Experiment --cardinality MANY_TO_ONE
+field reference --fieldName protocol --type ~.domain.Protocol --cardinality MANY_TO_ONE --joinColumnName protocol_id --notNull
+field set --class ~.domain.Protocol --fieldName experiments --type ~.domain.Experiment --mappedBy protocol --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.ExperimentState --fieldName experiment --type ~.domain.Experiment --cardinality MANY_TO_ONE --joinColumnName experiment_id --notNull
+field set --class ~.domain.Experiment --fieldName experimentStates --type ~.domain.ExperimentState --mappedBy experiment --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.ExperimentValue --fieldName experimentState --type ~.domain.ExperimentState --cardinality MANY_TO_ONE --joinColumnName experiment_state_id --notNull
+field set --class ~.domain.ExperimentState --fieldName experimentValues --type ~.domain.ExperimentValue --mappedBy experimentState --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.AnalysisGroup --extends ~.domain.AbstractThing --testAutomatically 
+entity jpa --class ~.domain.AnalysisGroupLabel --extends ~.domain.AbstractLabel --testAutomatically 
+field reference --class ~.domain.AnalysisGroupLabel --fieldName analysisGroup --type ~.domain.AnalysisGroup --cardinality MANY_TO_ONE
+field reference --fieldName experiment --type ~.domain.Experiment --cardinality MANY_TO_ONE --joinColumnName experiment_id --notNull
+field set --class ~.domain.Experiment --fieldName analysisGroups --type ~.domain.AnalysisGroup --mappedBy experiment --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.AnalysisGroupState --fieldName analysisGroup --type ~.domain.AnalysisGroup --cardinality MANY_TO_ONE --joinColumnName experiment_group_id --notNull
+field set --class ~.domain.AnalysisGroup --fieldName analysisGroupStates --type ~.domain.AnalysisGroupState --mappedBy analysisGroup --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.AnalysisGroupValue --fieldName analysisGroupState --type ~.domain.AnalysisGroupState --cardinality MANY_TO_ONE --joinColumnName experiment_state_id --notNull
+field set --class ~.domain.AnalysisGroupState --fieldName analysisGroupValues --type ~.domain.AnalysisGroupValue --mappedBy analysisGroupState --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.TreatmentGroup --extends ~.domain.AbstractThing --testAutomatically 
+field reference --fieldName analysisGroup --type ~.domain.AnalysisGroup --cardinality MANY_TO_ONE --joinColumnName experiment_group_id --notNull
+field set --class ~.domain.AnalysisGroup --fieldName treatmentGroups --type ~.domain.TreatmentGroup --mappedBy analysisGroup --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.TreatmentGroupState --fieldName treatmentGroup --type ~.domain.TreatmentGroup --cardinality MANY_TO_ONE --joinColumnName treatment_group_id --notNull
+field set --class ~.domain.TreatmentGroup --fieldName treatmentGroupStates --type ~.domain.TreatmentGroupState --mappedBy treatmentGroup --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.TreatmentGroupValue --fieldName treatmentGroupState --type ~.domain.TreatmentGroupState --cardinality MANY_TO_ONE --joinColumnName treatment_state_id --notNull
+field set --class ~.domain.TreatmentGroupState --fieldName treatmentGroupValues --type ~.domain.TreatmentGroupValue --mappedBy treatmentGroupState --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.Subject --extends ~.domain.AbstractThing --testAutomatically 
+field reference --fieldName treatmentGroup --type ~.domain.TreatmentGroup --cardinality MANY_TO_ONE --joinColumnName treatment_group_id --notNull
+field set --class ~.domain.TreatmentGroup --fieldName subjects --type ~.domain.Subject --mappedBy treatmentGroup --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.SubjectState --fieldName subject --type ~.domain.Subject --cardinality MANY_TO_ONE --joinColumnName subject_id --notNull
+field set --class ~.domain.Subject --fieldName subjectStates --type ~.domain.SubjectState --mappedBy subject --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.SubjectValue --fieldName subjectState --type ~.domain.SubjectState --cardinality MANY_TO_ONE --joinColumnName subject_state_id --notNull
+field set --class ~.domain.SubjectState --fieldName subjectValues --type ~.domain.SubjectValue --mappedBy subjectState --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ContainerType --activeRecord true --testAutomatically --sequenceName CONTAINER_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 128 --notNull --unique
+entity jpa --class ~.domain.ContainerKind --activeRecord true --testAutomatically --sequenceName CONTAINER_KIND_PKSEQ
+field reference --fieldName containerType --type ~.domain.ContainerType --notNull
+field string --fieldName kindName --sizeMax 255 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+entity jpa --class ~.domain.Container --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName containterType --sizeMax 255 --notNull
+field string --fieldName containerKind --sizeMax 255 --notNull
+field string --fieldName containerTypeAndKind --sizeMax 255 
+field string --fieldName name --sizeMax 255 --notNull
+field string --fieldName description --sizeMax 255 --notNull
+entity jpa --class ~.domain.ContainerLabel --extends ~.domain.AbstractLabel --testAutomatically 
+field reference --class ~.domain.ContainerLabel --fieldName container --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName container_id --notNull
+field set --class ~.domain.Container --fieldName containerLabels --type ~.domain.ContainerLabel --mappedBy container --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ContainerState --extends ~.domain.AbstractState --testAutomatically 
+field reference --class ~.domain.ContainerState --fieldName container --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName container_id --notNull
+field set --class ~.domain.Container --fieldName containerStates --type ~.domain.ContainerState --mappedBy container --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ContainerValue --extends ~.domain.AbstractValue --testAutomatically 
+field reference --class ~.domain.ContainerValue --fieldName containerState --type ~.domain.ContainerState --cardinality MANY_TO_ONE --joinColumnName container_state_id --notNull
+field set --class ~.domain.ContainerState --fieldName containerValues --type ~.domain.ContainerValue --mappedBy containerState --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxContainerContainer --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName interactionType --sizeMax 64 --notNull
+field string --fieldName interactionKind --sizeMax 255 --notNull
+field string --fieldName interactionTypeAndKind --sizeMax 255 
+field reference --fieldName firstContainer --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName first_container_id --notNull
+field reference --fieldName secondContainer --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName second_container_id --notNull
+field set --class ~.domain.Container --fieldName firstContainers --type ~.domain.ItxContainerContainer --mappedBy secondContainer --notNull false --cardinality ONE_TO_MANY
+field set --class ~.domain.Container --fieldName secondContainers --type ~.domain.ItxContainerContainer --mappedBy firstContainer --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxContainerContainerState --extends ~.domain.AbstractState --testAutomatically 
+field reference --class ~.domain.ItxContainerContainerState --fieldName itxContainerContainer --type ~.domain.ItxContainerContainer --cardinality MANY_TO_ONE 
+field set --class ~.domain.ItxContainerContainer --fieldName itxContainerContainerStates --type ~.domain.ItxContainerContainerState --mappedBy itxContainerContainer --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxContainerContainerValue --extends ~.domain.AbstractValue --testAutomatically 
+field reference --class ~.domain.ItxContainerContainerValue --fieldName itxContainerContainerState --type ~.domain.ItxContainerContainerState --cardinality MANY_TO_ONE
+field set --class ~.domain.ItxContainerContainerState --fieldName itxContainerContainerValues --type ~.domain.ItxContainerContainerValue --mappedBy itxContainerContainerState --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxSubjectContainer --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName interactionType --sizeMax 64 --notNull
+field string --fieldName interactionKind --sizeMax 255 --notNull
+field string --fieldName interactionTypeAndKind --sizeMax 255
+field reference --fieldName subject --type ~.domain.Subject --cardinality MANY_TO_ONE --joinColumnName subject_id --notNull
+field reference --fieldName container --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName container_id --notNull
+field set --class ~.domain.Subject --fieldName containers --type ~.domain.ItxSubjectContainer --mappedBy subject --notNull false --cardinality ONE_TO_MANY
+field set --class ~.domain.Container --fieldName subjects --type ~.domain.ItxSubjectContainer --mappedBy container --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxSubjectContainerState --extends ~.domain.AbstractState --testAutomatically 
+field reference --class ~.domain.ItxSubjectContainerState --fieldName itxSubjectContainer --type ~.domain.ItxSubjectContainer --cardinality MANY_TO_ONE 
+field set --class ~.domain.ItxSubjectContainer --fieldName itxSubjectContainerStates --type ~.domain.ItxSubjectContainerState --mappedBy itxSubjectContainer --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxSubjectContainerValue --extends ~.domain.AbstractValue --testAutomatically 
+field reference --class ~.domain.ItxSubjectContainerValue --fieldName itxSubjectContainerState --type ~.domain.ItxSubjectContainerState --cardinality MANY_TO_ONE
+field set --class ~.domain.ItxSubjectContainerState --fieldName itxSubjectContainerValues --type ~.domain.ItxSubjectContainerValue --mappedBy itxSubjectContainerState --notNull false --cardinality ONE_TO_MANY
+json all
+web mvc json setup
+web mvc json all --package ~.web
+web mvc setup
+web mvc all --package ~.web
+web mvc finder all
+logging setup --level DEBUG
+// script --file labsynch_v2.13.roo
+quit
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-26 11:32:48
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-26 11:58:52
+quit
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-26 11:59:09
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-26 12:01:16
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-26 12:44:11
+focus --class ~.domain.Protocol
+finder list
+finder add findProtocolsByCodeNameEquals
+focus --class ~.domain.Experiment
+finder list
+finder add findExperimentsByCodeNameEquals
+quit
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-26 14:19:13
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-26 14:19:23
+field set --class ~.domain.Protocol --fieldName protocolLabels --type ~.domain.ProtocolLabel --mappedBy protocol --notNull false --cardinality ONE_TO_MANY
+field set --class ~.domain.Experiment --fieldName experimentLabels --type ~.domain.ExperimentLabel --mappedBy experiment --notNull false --cardinality ONE_TO_MANY
+focus --class ~.domain.LabelSequence
+finder list
+finder add findLabelSequencesByThingTypeEqualsAndThingKindEqualsAndLabelTypeEqualsAndLabelKindEquals
+focus --class ~.domain.ProtocolLabel
+finder list
+finder add findProtocolLabelsByLabelTypeEqualsAndLabelKindEqualsAndPreferred
+finder add findProtocolLabelsByLabelTypeEqualsAndLabelKindEqualsAndPreferredAndIgnoredNot
+quit
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-26 15:34:10
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-26 15:34:17
+quit
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-26 15:42:06
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-26 17:03:18
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-26 22:00:41
+quit
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-11-26 22:03:14
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-11-27 09:45:33
+web mvc finder all
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-12-03 13:44:11
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-12-03 15:04:55
+focus --class ~.domain.ExperimentLabel
+finder list
+finder add findExperimentLabelsByLabelTextLikeAndLabelTypeAndKindEqualsAndPreferredNotAndIgnoredNot
+web mvc finder all
+jpa setup --provider HIBERNATE --database POSTGRES --hostName host3.labsynch.com --databaseName compound --userName labseer --password labseer
+quit
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-12-03 17:16:45
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log closed at 2012-12-03 21:27:40
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-12-10 17:40:20
+// Spring Roo 1.2.2.RELEASE [rev 7d75659] log opened at 2012-12-10 17:44:32
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-05-29 14:49:42
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-05-29 19:50:03
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-11 14:23:58
+entity jpa --class ~.domain.ProtocolType --activeRecord true --testAutomatically --sequenceName PROTOCOL_TYPE_PKSEQ
+
+field string --fieldName typeName --sizeMax 128 --notNull --unique
+
+field string --fieldName typeVerb --sizeMax 128 --notNull
+
+entity jpa --class ~.domain.ProtocolKind --activeRecord true --testAutomatically --sequenceName PROTOCOL_KIND_PKSEQ
+
+field reference --fieldName ProtocolType --type ~.domain.ProtocolType --notNull
+
+field string --fieldName kindName --sizeMax 255 --notNull
+
+field string --fieldName typeAndKind --sizeMax 255
+
+entity jpa --class ~.domain.ExperimentType --activeRecord true --testAutomatically --sequenceName EXPERIMENT_TYPE_PKSEQ
+
+field string --fieldName typeName --sizeMax 128 --notNull --unique
+
+field string --fieldName typeVerb --sizeMax 128 --notNull
+
+entity jpa --class ~.domain.ProtocolKind --activeRecord true --testAutomatically --sequenceName EXPERIMENT_KIND_PKSEQ
+
+field reference --fieldName ExperimentType --type ~.domain.ExperimentType --notNull
+
+field string --fieldName kindName --sizeMax 255 --notNull
+
+field string --fieldName typeAndKind --sizeMax 255
+
+entity jpa --class ~.domain.ExperimentKind --activeRecord true --testAutomatically --sequenceName EXPERIMENT_KIND_PKSEQ
+
+field reference --fieldName ExperimentType --type ~.domain.ExperimentType --notNull
+
+field string --fieldName kindName --sizeMax 255 --notNull
+
+field string --fieldName typeAndKind --sizeMax 255
+
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-11 17:29:16
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-12 18:24:42
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-12 22:21:40
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-13 10:56:25
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-13 11:14:01
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-13 11:14:13
+focus --class ~.domain.SubjectValue
+finder list
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-13 22:16:58
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-13 22:17:48
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-14 11:11:52
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-15 18:33:56
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-15 18:37:10
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-15 18:39:16
+focus --class ~.domain.Subject
+finder list
+focus --class ~.domain.SubjectState
+finder list
+finder add findSubjectStatesBySubject
+focus --class ~.domain.ProtocolState
+finder list
+finder add findProtocolStatesByProtocol
+finder add findProtocolStatesByLsTransactionEquals
+focus --class ~.domain.ProtocolValue
+finder list
+finder add findProtocolValuesByLsState
+focus --class ~.domain.AnalysisGroupLabel
+finder list
+finder add findAnalysisGroupLabelsByLsTransactionEquals
+focus --class ~.domain.TreatmentGroupLabel
+finder list
+finder add findTreatmentGroupLabelsByTreatmentGroup
+finder add findTreatmentGroupLabelsByLsTransactionEquals
+focus --class ~.domain.TreatmentGroupState
+finder list
+finder add findTreatmentGroupStatesByTreatmentGroup
+finder add findTreatmentGroupStatesByLsTransactionEquals
+focus --class ~.domain.TreatmentGroupValue
+finder list
+finder add findTreatmentGroupValuesByLsState
+finder add findTreatmentGroupValuesByLsTransactionEquals
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-18 15:26:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-19 10:37:31
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-19 13:54:47
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-19 13:59:05
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-19 17:44:01
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-19 18:09:49
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-19 18:33:45
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-19 18:33:56
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-19 18:41:44
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-19 18:42:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-19 21:02:42
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-19 21:03:22
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-19 21:15:07
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-19 21:16:08
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-19 21:29:48
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-06-19 21:37:46
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-06-19 21:50:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-10-25 09:37:58
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-10-25 20:40:01
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-10-26 13:41:42
+// [failed] focus --class ~.ThingType
+focus --class ~.domain.ThingType
+focus --class ~.domain.AbstractState
+focus --class ~.domain.ThingType
+finder list
+finder add findThingTypesByTypeNameEquals
+focus --class ~.domain.ContainerValue
+finder list
+finder add findContainerValuesByIgnoredNot
+focus --class ~.domain.ContainerState
+finder list
+finder add findContainerStatesByIgnoredNot
+focus --class ~.domain.ContainerValue
+finder list
+focus --class ~.domain.ContainerState
+finder list
+focus --class ~.domain.ContainerValue
+finder list
+finder add findContainerValuesByLsState
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-10-27 11:08:00
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-10-27 12:07:12
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-10-27 13:22:32
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-10-27 13:22:44
+web mvc finder all
+entity jpa --class ~.domain.UpdateLog --activeRecord true --testAutomatically --sequenceName UPDATE_LOG_PKSEQ
+
+field number --fieldName thing --type java.lang.Long
+
+// [failed] field string --fieldName action --sizeMax 255
+
+field string --fieldName updateAction --sizeMax 255
+
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-10-29 18:52:51
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-10-29 19:02:06
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-10-30 02:46:36
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-10-30 02:46:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-10-30 20:46:49
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-01 17:30:30
+focus --class ~.domain.ItxContainerContainer
+focus --class ~.domain.ItxContainerContainer
+finder list
+finder add findItxContainerContainersByLsTransactionEquals
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-01 19:54:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-01 21:04:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-02 11:54:46
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-02 14:05:54
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-02 15:22:36
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-02 15:24:06
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-02 17:48:58
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-02 17:49:10
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-02 17:51:53
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-02 17:52:04
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-02 18:27:49
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-02 21:13:48
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-04 18:22:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-06 16:10:58
+focus --class ~.domain.ExperimentValue
+finder list
+finder add findExperimentValuesByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals
+
+focus --class ~.domain.Protocol
+finder list
+finder add findProtocolsByIgnoredNot
+focus --class ~.domain.ProtocolLabel
+finder list
+finder add findProtocolLabelsByLabelTextLike
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-08 16:48:42
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-08 18:25:09
+focus --class ~.domain.ContainerState
+finder list
+finder add findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-08 23:39:36
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-09 11:15:14
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-10 09:23:01
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-10 14:47:23
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-12 22:58:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-13 09:50:28
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-14 22:20:23
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-11-14 22:20:35
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-11-16 19:52:44
+// Spring Roo 1.2.4.RELEASE [rev 75337cf] log opened at 2013-12-09 15:33:22
+// Spring Roo 1.2.4.RELEASE [rev 75337cf] log closed at 2013-12-09 17:45:33
+// Spring Roo 1.2.4.RELEASE [rev 75337cf] log opened at 2013-12-09 18:18:43
+// Spring Roo 1.2.4.RELEASE [rev 75337cf] log closed at 2013-12-09 21:10:01
+// Spring Roo 1.2.4.RELEASE [rev 75337cf] log opened at 2013-12-20 14:06:59
+// Spring Roo 1.2.4.RELEASE [rev 75337cf] log closed at 2013-12-20 14:08:29
+// Spring Roo 1.2.4.RELEASE [rev 75337cf] log opened at 2013-12-26 14:53:52
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-28 16:04:55
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-28 16:52:33
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-28 16:53:35
+web mvc all --package ~.web
+web mvc finder all
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-28 21:57:08
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-28 21:58:16
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-28 23:11:03
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-28 23:11:08
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-29 07:20:52
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-29 07:20:58
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-29 07:52:15
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-29 07:52:19
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-29 09:59:22
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-29 09:59:27
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-29 10:08:14
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-29 10:08:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-30 07:53:36
+hint
+focus --class ~.domain.LsTag
+finder list
+finder add findLsTagsByTagTextEquals
+finder add findLsTagsByTagTextLike
+hint mvc
+web mvc finder all
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-30 21:24:56
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-30 21:36:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-30 22:12:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-30 22:17:13
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-30 22:24:11
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-31 10:49:37
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2013-12-31 21:40:33
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2013-12-31 21:40:45
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-01 12:41:55
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-02 22:07:14
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-03 11:08:11
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-06 11:34:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-07 19:26:14
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-07 19:28:03
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-07 21:16:44
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-08 13:25:03
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-10 12:19:53
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-12 22:27:42
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-12 22:42:34
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-12 23:24:23
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-12 23:27:01
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-14 18:04:01
+logging setup --level DEBUG 
+logging setup --level DEBUG 
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-16 09:55:18
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-16 10:40:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-16 10:45:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-16 11:03:38
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-16 12:09:49
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-16 12:10:56
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-17 15:53:07
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-17 16:20:37
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-20 08:37:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-20 09:17:47
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-22 13:42:58
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-27 16:06:30
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-27 17:14:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-01-27 17:14:44
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-01-28 11:05:02
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-05 21:43:47
+focus --class ~.domain.ThingKind
+finder list
+finder add findThingKindsByLsTypeAndKindEquals
+finder add findThingKindsByLsTypeAndKindEquals
+finder add findThingKindsByLsTypeAndKindNameNotEquals
+finder add findThingKindsByLsTypeAndKindNameEquals
+finder add findThingKindsByLsType
+finder add findThingKindsByLsTypeAndKindNameEquals
+finder list
+finder list --depth 2
+finder add findThingKindsByKindNameEqualsAndLsType
+focus --class ~.domain.LabelKind
+finder list
+finder add findLabelKindsByLsType
+finder add findLabelKindsByKindNameEquals
+finder add findLabelKindsByKindNameEqualsAndLsType
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-06 15:29:34
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-06 15:50:33
+focus --class ~.domain.StateKind
+finder list
+finder add findStateKindsByLsType
+finder add findStateKindsByKindNameEquals
+finder add findStateKindsByKindNameEqualsAndLsType
+focus --class ~.domain.StateType
+finder list
+finder add findStateTypesByTypeNameEquals
+focus --class ~.domain.ValueKind
+finder list
+finder add findValueKindsByLsTyp
+finder add findValueKindsByLsType
+finder add findValueKindsByKindNameEqualsAndLsType
+web mvc json all --package ~.web
+web mvc all --package ~.web
+web mvc finder all
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-09 16:49:15
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-09 16:49:28
+focus --class ~.domain.CodeType
+finder list
+focus --class ~.domain.CodeType
+focus --class ~.domain.AnalysisGroup
+finder list
+focus --class ~.domain.AnalysisGroupValue
+finder list
+finder add findAnalysisGroupValuesByCodeValueEquals
+finder add findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-10 18:21:22
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-10 19:01:50
+focus --class ~.domain.ExperimentLabel
+finder list
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-11 18:20:12
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-13 13:08:41
+focus --class ~.domain.LsThing
+finder list
+finder add findLsThingsByCodeNameEquals
+finder add findLsThingsByLsTransactionEquals
+finder add findLsThingsByLsTypeAndKindEquals
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-16 16:17:05
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-16 16:19:20
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-16 21:36:28
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-16 21:37:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-16 23:12:40
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-19 17:48:23
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-19 17:50:58
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-19 17:52:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-19 23:30:02
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-19 23:31:56
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-19 23:33:42
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-19 23:34:42
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-22 15:38:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-22 21:49:21
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-22 22:34:09
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-22 22:46:35
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-23 21:28:46
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-24 08:28:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-24 21:10:10
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-24 21:10:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-26 16:46:26
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-02-27 14:08:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-02-27 16:51:05
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-03-03 23:26:25
+focus --class ~.domain.Author
+finder list
+finder add findAuthorsByUserNameEquals
+finder add findAuthorsByEmailEquals
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-03-05 08:52:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-02 21:07:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-02 21:15:09
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-03 08:39:53
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-03 14:58:51
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-04 12:11:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-04 14:42:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-04 18:01:38
+web mvc all --package ~.web
+web mvc finder all
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 11:50:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 15:02:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 15:05:21
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 15:05:34
+focus --class ~.domain.AnalysisGroupValue
+finder list
+finder add findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 15:10:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 15:11:28
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 15:13:02
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 15:32:22
+focus --class ~.domain.SubjectValue
+finder list
+finder add findSubjectValuesByLsTypeEqualsAndLsKindEquals
+focus --class AnalysisGroupState
+finder list
+finder add findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 16:13:48
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 16:13:52
+focus --class ~.domain.SubjectValue
+finder list
+finder add finderSubjectValuesBySubject
+finder add findSubjectValuesBySubject
+finder add findSubjectValueByLsStateAndLsTypeEqualAndLsKindEquals
+finder add findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals
+focus --class ~.domain.SubjectState
+// [failed] finder list
+// [failed] finder list
+finder list
+finder add findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-05 16:47:19
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-05 20:52:38
+web mvc finder all
+web mvc all --package ~.web
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 12:15:10
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-06 12:15:29
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 12:18:30
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-06 12:20:30
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-06 12:22:50
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 12:26:10
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-06 13:41:23
+focus --class ~.domain.DDictValue
+finder list
+// [failed] finder add findDDictValuesByLsTypeEqualsAndLsKindEquals
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-06-06 14:12:18
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-06-20 13:05:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-03 23:42:06
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-07 09:56:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-19 18:20:18
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-19 22:41:26
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-20 11:45:59
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-21 20:26:06
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-22 19:27:12
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-07-23 07:19:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-07-27 21:18:22
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-08-12 11:47:46
+web mvc all --package ~.web
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-08-12 16:36:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-08-14 14:43:33
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-08-14 15:50:12
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2014-08-14 15:50:43
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-08-14 15:52:52
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2014-08-14 21:49:54
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-09 09:45:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-09 09:54:21
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-09 12:00:49
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-09 12:03:42
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-09 12:58:59
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-09 13:23:08
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-09 13:26:14
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-09 13:32:13
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-09 13:35:21
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-09 13:49:53
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-09 13:54:17
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-09 13:55:26
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-09 13:55:39
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-22 17:42:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-22 17:44:23
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-23 09:17:15
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-23 09:21:15
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-23 09:32:20
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-23 09:42:39
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-23 09:49:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-23 09:54:41
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-23 10:02:22
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-23 10:06:33
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-28 06:29:40
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-28 06:36:28
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-28 07:52:24
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-28 07:54:31
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2015-07-28 08:10:14
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2015-07-28 08:19:43
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2016-08-09 22:39:33
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2016-08-09 23:02:50
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2016-08-09 23:02:58
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2016-08-10 10:05:41
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2016-08-10 10:06:25
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2016-08-10 10:09:16
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2016-08-10 11:49:35
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2016-08-10 14:19:28
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2016-08-10 14:32:57
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2016-08-10 14:39:36
+quit
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2016-08-10 14:46:27
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2016-08-10 14:56:23

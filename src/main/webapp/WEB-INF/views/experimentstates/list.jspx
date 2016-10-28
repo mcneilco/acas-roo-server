@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ExperimentState" items="${experimentstates}" z="+7QmTzgaGLDcqUe5ffWIUzA8V+o=">
+        <table:table data="${experimentstates}" id="l_com_labsynch_labseer_domain_ExperimentState" path="/experimentstates" z="yl3kjfOzces5i7FJLLXQIx4atgs=">
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentState_recordedBy" property="recordedBy" z="oVxMyowO+d86zT4HzprAfj/ax3k="/>
+            <table:column date="true" dateTimePattern="${experimentState_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_ExperimentState_recordedDate" property="recordedDate" z="FopSZbN8rYx5GiNRvMqnaHc4D4w="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentState_modifiedBy" property="modifiedBy" z="cRizwrwrlu0Ssl9hvIMbnSOMjrk="/>
+            <table:column date="true" dateTimePattern="${experimentState_modifieddate_date_format}" id="c_com_labsynch_labseer_domain_ExperimentState_modifiedDate" property="modifiedDate" z="E/v2dBmD/trA7TeS2WFe6vNND04="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentState_lsType" property="lsType" z="tZznlkj96VVyqHsxSfRYNjclEq0="/>
+            <table:column id="c_com_labsynch_labseer_domain_ExperimentState_lsKind" property="lsKind" z="S2ciTYr2fLma2UA88NUFXzQa3ng="/>
+        </table:table>
+    </page:list>
+</div>

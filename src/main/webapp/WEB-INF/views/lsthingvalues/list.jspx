@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_LsThingValue" items="${lsthingvalues}" z="L9PEZ1MCx3gpLrZUnqTd80EwejY=">
+        <table:table data="${lsthingvalues}" id="l_com_labsynch_labseer_domain_LsThingValue" path="/lsthingvalues" z="SSMI3B1i5Zd/2OO5iFdUauKL51Q=">
+            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_lsType" property="lsType" z="wklR1Dspd1egHEhMAT+yx/ApQ/A="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_lsKind" property="lsKind" z="wERTeHRZ6TFyo2DYip5kbzz1JQw="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_lsTypeAndKind" property="lsTypeAndKind" z="v3fjpr9HVBAsCtPTdVIOc+xH4Uw="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_ignored" property="ignored" z="4EoI9A8xqgrmaVEP1LYpnOE1Gj0="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_publicData" property="publicData" z="JZ2+zQ2d069Su0/96cg9G4LZaYM="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingValue_deleted" property="deleted" z="GZi0Cs4c0QmpSA8lNGyikx2KRu0="/>
+        </table:table>
+    </page:list>
+</div>

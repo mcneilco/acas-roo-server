@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:menu="urn:jsptagdir:/WEB-INF/tags/menu" id="menu" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <menu:menu id="_menu" z="nZaf43BjUg1iM0v70HJVEsXDopc=">
+        <menu:category id="c_analysisgroup" z="iopiwKdmsxTqwIsacT4c426gzBk=">
+            <menu:item id="i_analysisgroup_new" messageCode="global_menu_new" url="/analysisgroups?form" z="X9jRijQ+XKj10kDbLotTpYYe/ys="/>
+            <menu:item id="i_analysisgroup_list" messageCode="global_menu_list" url="/analysisgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dMhUOKH445lv1mKn1yfZmyxOZ98="/>
+            <menu:item id="fi_analysisgroup_experiments" messageCode="global_menu_find" url="/analysisgroups?find=ByExperiments&amp;form" z="Y40E6UBp3Tu3sgYLiSLPaBoSXws="/>
+            <menu:item id="fi_analysisgroup_experimentsandignorednot" messageCode="global_menu_find" url="/analysisgroups?find=ByExperimentsAndIgnoredNot&amp;form" z="i4QrmoJWOsZN6d6Vj6nZeEeTSok="/>
+            <menu:item id="fi_analysisgroup_lstransactionequals" messageCode="global_menu_find" url="/analysisgroups?find=ByLsTransactionEquals&amp;form" z="ZM5JaF4c4zMnbS0GOOUFidz8F0o="/>
+        </menu:category>
+        <menu:category id="c_subjectvalue" z="6SMWPdUodXL01WGzx30fZs5ZIOk=">
+            <menu:item id="i_subjectvalue_new" messageCode="global_menu_new" url="/subjectvalues?form" z="o8mLIzFTS9fohC7vjRXLXdeL8UE="/>
+            <menu:item id="i_subjectvalue_list" messageCode="global_menu_list" url="/subjectvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="NwpiAooesA+SEm9UNL5Ow7AYVw4="/>
+            <menu:item id="fi_subjectvalue_codevalueequals" messageCode="global_menu_find" url="/subjectvalues?find=ByCodeValueEquals&amp;form" z="TpWX8msqy3emIF2r650tZJHJY6k="/>
+            <menu:item id="fi_subjectvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/subjectvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="bnUyulwMsBH/zqMrGnupxosiaVU="/>
+            <menu:item id="fi_subjectvalue_lsstate" messageCode="global_menu_find" url="/subjectvalues?find=ByLsState&amp;form" z="BJmnpo+wwNSfXPFeJKim6rKslHc="/>
+            <menu:item id="fi_subjectvalue_lsstateandlstypeequalsandlskindequals" messageCode="global_menu_find" url="/subjectvalues?find=ByLsStateAndLsTypeEqualsAndLsKindEquals&amp;form" z="PeJIDXh3beV/5+TJGQuVm1xX/Gw="/>
+            <menu:item id="fi_subjectvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/subjectvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="5LZbpyZOLdzBr/CmYasxHhPq/l8="/>
+        </menu:category>
+        <menu:category id="c_containervalue" z="61ft2oqlcmXT8pmGGZYwQQQ0VPo=">
+            <menu:item id="i_containervalue_new" messageCode="global_menu_new" url="/containervalues?form" z="8boDwXK/aCoPpkpkvLS5e3iqgM0="/>
+            <menu:item id="i_containervalue_list" messageCode="global_menu_list" url="/containervalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="yYge5J883fDKMfAJRFUSt44XEYk="/>
+            <menu:item id="fi_containervalue_ignorednot" messageCode="global_menu_find" url="/containervalues?find=ByIgnoredNot&amp;form" z="EmNlQsMGAjDiZ4KtpJ3T9T7CfOU="/>
+            <menu:item id="fi_containervalue_lsstate" messageCode="global_menu_find" url="/containervalues?find=ByLsState&amp;form" z="lSJUg71D4LAcVXdlzymSzl1vNSc="/>
+        </menu:category>
+        <menu:category id="c_subjectstate" z="0tgh9BM9hpSSmL0bvyQlmfMqw2U=">
+            <menu:item id="i_subjectstate_new" messageCode="global_menu_new" url="/subjectstates?form" z="4krRYbTerlNMe5b8ay8adW6ASaQ="/>
+            <menu:item id="i_subjectstate_list" messageCode="global_menu_list" url="/subjectstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="klh8NBo8hZN330MTV2AqH5GauUk="/>
+            <menu:item id="fi_subjectstate_lstypeequalsandlskindequalsandsubject" messageCode="global_menu_find" url="/subjectstates?find=ByLsTypeEqualsAndLsKindEqualsAndSubject&amp;form" z="3jOpqQoUkT/T00ahzkKfGRw5uEc="/>
+            <menu:item id="fi_subjectstate_subject" messageCode="global_menu_find" url="/subjectstates?find=BySubject&amp;form" z="Ui74O9iuaQbkfKs+C8b7Rrog9/w="/>
+        </menu:category>
+        <menu:category id="c_operatortype" z="A+8dbY+wVhuFDbqgFE9E7JHF128=">
+            <menu:item id="i_operatortype_new" messageCode="global_menu_new" url="/operatortypes?form" z="HWe4/SpLzMoGY8ptdgBj2uTPJ9I="/>
+            <menu:item id="i_operatortype_list" messageCode="global_menu_list" url="/operatortypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="fbXDWvYnQsoEa3YjGapmFbm7JKs="/>
+            <menu:item id="fi_operatortype_typenameequals" messageCode="global_menu_find" url="/operatortypes?find=ByTypeNameEquals&amp;form" z="CsliRZJwOci7wha1oxl/VAdXD5A="/>
+        </menu:category>
+        <menu:category id="c_thingpage" z="eed7C8Q+FTeVMowmGZd27GbE3l0=">
+            <menu:item id="i_thingpage_new" messageCode="global_menu_new" url="/thingpages?form" z="AXcir9LqRdik2Eth3OeZJhmBCFQ="/>
+            <menu:item id="i_thingpage_list" messageCode="global_menu_list" url="/thingpages?page=1&amp;size=${empty param.size ? 10 : param.size}" z="UoXlSqZvyLI5Y/n+BTpracdv1Nw="/>
+        </menu:category>
+        <menu:category id="c_container" z="XqOOWT7xIClZeUyG2iJ0J+M+1XY=">
+            <menu:item id="i_container_new" messageCode="global_menu_new" url="/containers?form" z="zPZaX1xZEYIMmXfNbwIYJu9D4Fw="/>
+            <menu:item id="i_container_list" messageCode="global_menu_list" url="/containers?page=1&amp;size=${empty param.size ? 10 : param.size}" z="gmRelJFlRPedSwfpBPdExDouyu0="/>
+        </menu:category>
+        <menu:category id="c_protocollabel" z="AntdInfd0A614Cu4gbB3AbV0QTY=">
+            <menu:item id="i_protocollabel_new" messageCode="global_menu_new" url="/protocollabels?form" z="E0dKFpwAYLlpAN8QOblz0zWuUYM="/>
+            <menu:item id="i_protocollabel_list" messageCode="global_menu_list" url="/protocollabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="r2NAvSYe1XIHoaOfSAh9wQ/duP0="/>
+            <menu:item id="fi_protocollabel_labeltextequalsandignorednot" messageCode="global_menu_find" url="/protocollabels?find=ByLabelTextEqualsAndIgnoredNot&amp;form" z="2ph6ctVw99uJZviRKF9+WauBgXw="/>
+            <menu:item id="fi_protocollabel_labeltextlike" messageCode="global_menu_find" url="/protocollabels?find=ByLabelTextLike&amp;form" z="HhJrzOZhLgUk3zy9TSsUIjpo2dw="/>
+            <menu:item id="fi_protocollabel_lstransactionequals" messageCode="global_menu_find" url="/protocollabels?find=ByLsTransactionEquals&amp;form" z="sJcmPcAXunfiY8GF+wgvz0Cvvhc="/>
+            <menu:item id="fi_protocollabel_protocol" messageCode="global_menu_find" url="/protocollabels?find=ByProtocol&amp;form" z="5z3ht92toJX/Mcxiw62GHbkpU00="/>
+        </menu:category>
+        <menu:category id="c_itxcontainercontainervalue" z="Le3HhFbbIDVkj7cSxS7EZFgSAYQ=">
+            <menu:item id="i_itxcontainercontainervalue_new" messageCode="global_menu_new" url="/itxcontainercontainervalues?form" z="4b6NS0bM8YA7GZ/aQpX6LweqQyM="/>
+            <menu:item id="i_itxcontainercontainervalue_list" messageCode="global_menu_list" url="/itxcontainercontainervalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="URWUXuwprPQ0gX7+Gk5y8mH9Njs="/>
+        </menu:category>
+        <menu:category id="c_experimentstate" z="CAM8rxPanB1GbvNfTSVqv0rHcAs=">
+            <menu:item id="i_experimentstate_new" messageCode="global_menu_new" url="/experimentstates?form" z="ZvFKfPK6qXFVXaxpx2LYviWtH2g="/>
+            <menu:item id="i_experimentstate_list" messageCode="global_menu_list" url="/experimentstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="7uoQbYWyv+4f8IK6w8HwCLmojYE="/>
+            <menu:item id="fi_experimentstate_experiment" messageCode="global_menu_find" url="/experimentstates?find=ByExperiment&amp;form" z="sMgSOjwlKAdYUngYS4rlZ9hRu5E="/>
+        </menu:category>
+        <menu:category id="c_interactionkind" z="Lukv+RaTaunp0b1iZpWJA3c3WEc=">
+            <menu:item id="i_interactionkind_new" messageCode="global_menu_new" url="/interactionkinds?form" z="8lXF1VyJXAKPIuYTNm/wMdO1BZ0="/>
+            <menu:item id="i_interactionkind_list" messageCode="global_menu_list" url="/interactionkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="CtxphtQyzAets/UTsubpFvTxVss="/>
+        </menu:category>
+        <menu:category id="c_protocol" z="2nZ2u7ykKLEK9Fl9YzNUx5ln7Ak=">
+            <menu:item id="i_protocol_new" messageCode="global_menu_new" url="/protocols?form" z="TzxrlZZ307Z3cC++3uIFeI3CiLY="/>
+            <menu:item id="i_protocol_list" messageCode="global_menu_list" url="/protocols?page=1&amp;size=${empty param.size ? 10 : param.size}" z="7X6XWzyVMFP6TIul/iNyUMcSib4="/>
+            <menu:item id="fi_protocol_codenameequals" messageCode="global_menu_find" url="/protocols?find=ByCodeNameEquals&amp;form" z="eZk8W07xyYACaoYnLwsGBQgaf5o="/>
+            <menu:item id="fi_protocol_codenameequalsandignorednot" messageCode="global_menu_find" url="/protocols?find=ByCodeNameEqualsAndIgnoredNot&amp;form" z="MkDoSVBdZOIz8dwQTYDGr9UFm34="/>
+            <menu:item id="fi_protocol_codenamelike" messageCode="global_menu_find" url="/protocols?find=ByCodeNameLike&amp;form" z="K9WRKs27vIuJ3F5p88cZEgQBvc8="/>
+            <menu:item id="fi_protocol_ignorednot" messageCode="global_menu_find" url="/protocols?find=ByIgnoredNot&amp;form" z="n8WbkgpMIWKtOIHBMuOvRAG/hAc="/>
+            <menu:item id="fi_protocol_lskindequals" messageCode="global_menu_find" url="/protocols?find=ByLsKindEquals&amp;form" z="DCXxhtLWkzj1dgYgbeOD5TNUwCQ="/>
+            <menu:item id="fi_protocol_lskindlike" messageCode="global_menu_find" url="/protocols?find=ByLsKindLike&amp;form" z="B1Z0yNyElCY6mg4fu0OGkWuvrhs="/>
+            <menu:item id="fi_protocol_lstransactionequals" messageCode="global_menu_find" url="/protocols?find=ByLsTransactionEquals&amp;form" z="scoxt39forcp9cJMcStj7YrjwQE="/>
+            <menu:item id="fi_protocol_lstypeandkindequals" messageCode="global_menu_find" url="/protocols?find=ByLsTypeAndKindEquals&amp;form" z="gWxQh+RIMVpIzly7panC6mcnT7A="/>
+            <menu:item id="fi_protocol_lstypeequals" messageCode="global_menu_find" url="/protocols?find=ByLsTypeEquals&amp;form" z="9Tj3k1LHgXRZziz2D4Ou7gqlXTc="/>
+            <menu:item id="fi_protocol_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/protocols?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="oC0Aj0Jmz8KtqfN9n2rxPkxcCZk="/>
+            <menu:item id="fi_protocol_lstypelike" messageCode="global_menu_find" url="/protocols?find=ByLsTypeLike&amp;form" z="GyPkp8uC+5PJddU6EKFesGz1G7U="/>
+            <menu:item id="fi_protocol_recordedbylike" messageCode="global_menu_find" url="/protocols?find=ByRecordedByLike&amp;form" z="3spa/6ibTv5gNZ2g5TpkwyM79ok="/>
+        </menu:category>
+        <menu:category id="c_labeltype" z="N8HQyjbykD6W9LoCKQZIeZH669c=">
+            <menu:item id="i_labeltype_new" messageCode="global_menu_new" url="/labeltypes?form" z="NA0WmB9TJCcpOjZtG3BmHvySe3I="/>
+            <menu:item id="i_labeltype_list" messageCode="global_menu_list" url="/labeltypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="uT3NbeaM8YOAE8IO0yJvLef3Src="/>
+            <menu:item id="fi_labeltype_typenameequals" messageCode="global_menu_find" url="/labeltypes?find=ByTypeNameEquals&amp;form" z="JuxbyC/YSE7X+oWK4zqjOBHSerg="/>
+        </menu:category>
+        <menu:category id="c_itxsubjectcontainer" z="BaQsrD+kjFMrZewAHUS3zuOAi5Y=">
+            <menu:item id="i_itxsubjectcontainer_new" messageCode="global_menu_new" url="/itxsubjectcontainers?form" z="lH54X2DXqxeIYCECkvj7jkGYWgM="/>
+            <menu:item id="i_itxsubjectcontainer_list" messageCode="global_menu_list" url="/itxsubjectcontainers?page=1&amp;size=${empty param.size ? 10 : param.size}" z="hs/gBn4fWFBCf+lQ7YTqD/hu86U="/>
+            <menu:item id="fi_itxsubjectcontainer_codenameequals" messageCode="global_menu_find" url="/itxsubjectcontainers?find=ByCodeNameEquals&amp;form" z="bgc4VfCtFxUt5kuAMLihph9hXrs="/>
+            <menu:item id="fi_itxsubjectcontainer_container" messageCode="global_menu_find" url="/itxsubjectcontainers?find=ByContainer&amp;form" z="4yPvT0q2fX0QYN92uE7fytas6ak="/>
+            <menu:item id="fi_itxsubjectcontainer_lstransactionequals" messageCode="global_menu_find" url="/itxsubjectcontainers?find=ByLsTransactionEquals&amp;form" z="7ze/Xar7ynwzxj1uCYjRrwAIJzY="/>
+            <menu:item id="fi_itxsubjectcontainer_subject" messageCode="global_menu_find" url="/itxsubjectcontainers?find=BySubject&amp;form" z="ByjeKFAgWuqMsmgOmvKjd3uGWt4="/>
+        </menu:category>
+        <menu:category id="c_labelkind" z="nxWuIyqJmw5YKN1+lHjrDoZTnE4=">
+            <menu:item id="i_labelkind_new" messageCode="global_menu_new" url="/labelkinds?form" z="8uvydylrs1B4Eq5jykzu57V+ewg="/>
+            <menu:item id="i_labelkind_list" messageCode="global_menu_list" url="/labelkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="w5seApgTjql0/NmLpY0D6xoquAk="/>
+            <menu:item id="fi_labelkind_kindnameequals" messageCode="global_menu_find" url="/labelkinds?find=ByKindNameEquals&amp;form" z="ZuRSM3gcAylbPrs6+j5TsAYpY7c="/>
+            <menu:item id="fi_labelkind_kindnameequalsandlstype" messageCode="global_menu_find" url="/labelkinds?find=ByKindNameEqualsAndLsType&amp;form" z="2kZsd2aAEtVGEWG3tcQ/HN4SZZ0="/>
+            <menu:item id="fi_labelkind_lstype" messageCode="global_menu_find" url="/labelkinds?find=ByLsType&amp;form" z="cmYGSXnzzegZnDRMKRNsH73keBk="/>
+        </menu:category>
+        <menu:category id="c_lsinteraction" z="g7NSeNQ6wo9tt/yta0QNpoYGGMo=">
+            <menu:item id="i_lsinteraction_new" messageCode="global_menu_new" url="/lsinteractions?form" z="4KEWKsvUsAOMrD1WrtfX7ZdpM4w="/>
+            <menu:item id="i_lsinteraction_list" messageCode="global_menu_list" url="/lsinteractions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="V16Q7aunm54x1DENYIbscjzQmzs="/>
+        </menu:category>
+        <menu:category id="c_unittype" z="SiS1/w1xN9eZNO5OnUStYk3xOxc=">
+            <menu:item id="i_unittype_new" messageCode="global_menu_new" url="/unittypes?form" z="XlKt6NnE9oR8SfwfCceek79prF4="/>
+            <menu:item id="i_unittype_list" messageCode="global_menu_list" url="/unittypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="BuKQtIYHOrSo8DjM3HFIfFOp55A="/>
+            <menu:item id="fi_unittype_typenameequals" messageCode="global_menu_find" url="/unittypes?find=ByTypeNameEquals&amp;form" z="lJPAkqvIEkCkKNL4mJUClYNwX5g="/>
+        </menu:category>
+        <menu:category id="c_treatmentgroup" z="ktUYfUrpZ7HfqyFfY/J0m/tpOoo=">
+            <menu:item id="i_treatmentgroup_new" messageCode="global_menu_new" url="/treatmentgroups?form" z="v3FU/ZE1lF1a2skcKvCNuIjLj/U="/>
+            <menu:item id="i_treatmentgroup_list" messageCode="global_menu_list" url="/treatmentgroups?page=1&amp;size=${empty param.size ? 10 : param.size}" z="hd7pnyrJiPjfIeF0QjdyN+25FT4="/>
+            <menu:item id="fi_treatmentgroup_analysisgroups" messageCode="global_menu_find" url="/treatmentgroups?find=ByAnalysisGroups&amp;form" z="aCmP4gDqzmxAuh8QpMemXrqV7l8="/>
+            <menu:item id="fi_treatmentgroup_codenameequals" messageCode="global_menu_find" url="/treatmentgroups?find=ByCodeNameEquals&amp;form" z="Eh4WFxl3lGeTWWVfmn+kXSAROvc="/>
+            <menu:item id="fi_treatmentgroup_lstransactionequals" messageCode="global_menu_find" url="/treatmentgroups?find=ByLsTransactionEquals&amp;form" z="2s/GJeWUCASFrWp34UPFUUqiD34="/>
+        </menu:category>
+        <menu:category id="c_experimentlabel" z="/OtfTArcZoLVbM+za1A3M+tikNU=">
+            <menu:item id="i_experimentlabel_new" messageCode="global_menu_new" url="/experimentlabels?form" z="AUJwaIFjrQj6C0qw/IP+IOeWGQU="/>
+            <menu:item id="i_experimentlabel_list" messageCode="global_menu_list" url="/experimentlabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="oO1z+PebW0K/PEf8XDbfx1/E1I4="/>
+            <menu:item id="fi_experimentlabel_experiment" messageCode="global_menu_find" url="/experimentlabels?find=ByExperiment&amp;form" z="2U3TP8VIBSMAEtbdpkQlN1gfnCw="/>
+            <menu:item id="fi_experimentlabel_experimentandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByExperimentAndIgnoredNot&amp;form" z="mcIgBlrdh24WXE8RUOwQYUMTTZM="/>
+            <menu:item id="fi_experimentlabel_labeltextlike" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLike&amp;form" z="PYv94k7Dol6QPVhe3R86cGR/bbg="/>
+            <menu:item id="fi_experimentlabel_labeltextlikeandlstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="FECyIQ2Y8ja5GASA260VwxPRI2s="/>
+            <menu:item id="fi_experimentlabel_lstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="n6BVW2/nOYW6PDMTJXM0WCF5ImM="/>
+        </menu:category>
+        <menu:category id="c_unitkind" z="7YWBluDqoyAGJ4xzyVHzZLg6m7c=">
+            <menu:item id="i_unitkind_new" messageCode="global_menu_new" url="/unitkinds?form" z="GkwkeWRp6oEmEiokiC+TnTXLX6o="/>
+            <menu:item id="i_unitkind_list" messageCode="global_menu_list" url="/unitkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="oraDJubVBV0e+O2voOs1obT2qB8="/>
+        </menu:category>
+        <menu:category id="c_protocolstate" z="nLEDhZIOQVG6OUhuigDx8vLJ6vg=">
+            <menu:item id="i_protocolstate_new" messageCode="global_menu_new" url="/protocolstates?form" z="KvfLrb/mSOWnvvQSWivXIoqtjZQ="/>
+            <menu:item id="i_protocolstate_list" messageCode="global_menu_list" url="/protocolstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="fSDj1dyhxj6hWiq5RKEtOSlUIaU="/>
+            <menu:item id="fi_protocolstate_lstransactionequals" messageCode="global_menu_find" url="/protocolstates?find=ByLsTransactionEquals&amp;form" z="GPgwTr8IsGkd05dDn+WCx9wjIzs="/>
+            <menu:item id="fi_protocolstate_protocol" messageCode="global_menu_find" url="/protocolstates?find=ByProtocol&amp;form" z="/PvSZnW27wm79oeqCxqycGQK1Ws="/>
+        </menu:category>
+        <menu:category id="c_experimentvalue" z="XM7L0ROH0TNnJAv5TW3VnNsV1fQ=">
+            <menu:item id="i_experimentvalue_new" messageCode="global_menu_new" url="/experimentvalues?form" z="dv8tE4L0crSnTYkUjPl7c6HwixI="/>
+            <menu:item id="i_experimentvalue_list" messageCode="global_menu_list" url="/experimentvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="Qui9XKTtYE1Dsym9RpQJEF66oek="/>
+            <menu:item id="fi_experimentvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="TkQpcyXT3kCx8QtfIhMU1s1sVJQ="/>
+            <menu:item id="fi_experimentvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="6Qb9CBQGfKxEpfaKiiWPzblfnN8="/>
+            <menu:item id="fi_experimentvalue_lsstate" messageCode="global_menu_find" url="/experimentvalues?find=ByLsState&amp;form" z="9GTDsaIh52NGmUSF7Nmpi7Y11+o="/>
+            <menu:item id="fi_experimentvalue_lsstateandignorednotandlskindequalsandlstypeequalsandstringvalueequals" messageCode="global_menu_find" url="/experimentvalues?find=ByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals&amp;form" z="7er6Ts6GhGJENszpULj1IVCpeR8="/>
+        </menu:category>
+        <menu:category id="c_itxsubjectcontainerstate" z="mlbpXhpw+dPookWsn6xL3DWl+Eg=">
+            <menu:item id="i_itxsubjectcontainerstate_new" messageCode="global_menu_new" url="/itxsubjectcontainerstates?form" z="Wo/7xJ/02ah0rzPycINQdhlSUuU="/>
+            <menu:item id="i_itxsubjectcontainerstate_list" messageCode="global_menu_list" url="/itxsubjectcontainerstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="migFjw2t7btf4lMeHo3wP3v4m+E="/>
+        </menu:category>
+        <menu:category id="c_containerkind" z="R0IbW9UM3ju0KF+SZjlHY4SydqI=">
+            <menu:item id="i_containerkind_new" messageCode="global_menu_new" url="/containerkinds?form" z="1yQxKmhMIhtT9OkzCmBK/h6UeNc="/>
+            <menu:item id="i_containerkind_list" messageCode="global_menu_list" url="/containerkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dEwp6G94yRxBc2iHyjXrYRgTehc="/>
+        </menu:category>
+        <menu:category id="c_subject" z="7o1gOZ254r8rrLkTPEMR4T4CYTs=">
+            <menu:item id="i_subject_new" messageCode="global_menu_new" url="/subjects?form" z="K/cpx4U1MG0/LtXu68wamJ7ttg0="/>
+            <menu:item id="i_subject_list" messageCode="global_menu_list" url="/subjects?page=1&amp;size=${empty param.size ? 10 : param.size}" z="EQd4RQgsWkj2hqqLFZF+zKoYy0I="/>
+            <menu:item id="fi_subject_codenameequals" messageCode="global_menu_find" url="/subjects?find=ByCodeNameEquals&amp;form" z="zovGgLy8KbWDsVN34u8z9Yr8AjM="/>
+            <menu:item id="fi_subject_lstransactionequals" messageCode="global_menu_find" url="/subjects?find=ByLsTransactionEquals&amp;form" z="dTm5hB6bXbJCNWpPupcDtlGTyT4="/>
+            <menu:item id="fi_subject_treatmentgroups" messageCode="global_menu_find" url="/subjects?find=ByTreatmentGroups&amp;form" z="xB6TKpOaOtaF+vc30Nlu2lDwPek="/>
+        </menu:category>
+        <menu:category id="c_valuekind" z="9viZJ2aDVXUdiNwMWfcWAHDyag8=">
+            <menu:item id="i_valuekind_new" messageCode="global_menu_new" url="/valuekinds?form" z="2E2vA03Cv0nAAWiQXa0SyezClro="/>
+            <menu:item id="i_valuekind_list" messageCode="global_menu_list" url="/valuekinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="O28zOAw4SD/AOHia1EDIdoUuYR4="/>
+            <menu:item id="fi_valuekind_kindnameequalsandlstype" messageCode="global_menu_find" url="/valuekinds?find=ByKindNameEqualsAndLsType&amp;form" z="MUGeOsTBHKBbJGF1LTK48MKenCw="/>
+            <menu:item id="fi_valuekind_lstype" messageCode="global_menu_find" url="/valuekinds?find=ByLsType&amp;form" z="0rJX1avbMtM2XjW1Xd6tDYU/2Hg="/>
+        </menu:category>
+        <menu:category id="c_statekind" z="G5vnt/jiVbCzx5h50u4WfRZEHQU=">
+            <menu:item id="i_statekind_new" messageCode="global_menu_new" url="/statekinds?form" z="Tn9piDjIPxXyc4putmZJuDPqxJM="/>
+            <menu:item id="i_statekind_list" messageCode="global_menu_list" url="/statekinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="pIafwxCSjdoNo5okiFbjJ0j887Y="/>
+            <menu:item id="fi_statekind_kindnameequals" messageCode="global_menu_find" url="/statekinds?find=ByKindNameEquals&amp;form" z="xXXr+jZeYF5UlxZ3golA3pcj3ZI="/>
+            <menu:item id="fi_statekind_kindnameequalsandlstype" messageCode="global_menu_find" url="/statekinds?find=ByKindNameEqualsAndLsType&amp;form" z="nnFZBqAV0KjkuHuhYYFNcvfmrdw="/>
+            <menu:item id="fi_statekind_lstype" messageCode="global_menu_find" url="/statekinds?find=ByLsType&amp;form" z="QARsQWm3HzWS/gjEiI4uMJpK1ts="/>
+        </menu:category>
+        <menu:category id="c_thingtype" z="zEjqYpuraOKTEmlqv+AQvM9g7Vg=">
+            <menu:item id="i_thingtype_new" messageCode="global_menu_new" url="/thingtypes?form" z="m4JJsOt/IlKzb2zeB0BLdnv2sqU="/>
+            <menu:item id="i_thingtype_list" messageCode="global_menu_list" url="/thingtypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="fayJaw3cu2ZrlOhre/JNWDwWstc="/>
+            <menu:item id="fi_thingtype_typenameequals" messageCode="global_menu_find" url="/thingtypes?find=ByTypeNameEquals&amp;form" z="al2+1FKrOXF2vMyXpqQCKGiXrl8="/>
+        </menu:category>
+        <menu:category id="c_itxcontainercontainer" z="hraTt2yXC1I5T46kW2CxB2Rvids=">
+            <menu:item id="i_itxcontainercontainer_new" messageCode="global_menu_new" url="/itxcontainercontainers?form" z="NhlUqtl4JMadHsSUmeKluQxkWLU="/>
+            <menu:item id="i_itxcontainercontainer_list" messageCode="global_menu_list" url="/itxcontainercontainers?page=1&amp;size=${empty param.size ? 10 : param.size}" z="rG6fKtmy1KgXBRW0mqiuB7OIYZk="/>
+            <menu:item id="fi_itxcontainercontainer_lstransactionequals" messageCode="global_menu_find" url="/itxcontainercontainers?find=ByLsTransactionEquals&amp;form" z="e7B1gJiBLUunxApr7GqgKPh/PHk="/>
+            <menu:item id="fi_itxcontainercontainer_lstypeequalsandfirstcontainerequals" messageCode="global_menu_find" url="/itxcontainercontainers?find=ByLsTypeEqualsAndFirstContainerEquals&amp;form" z="xEVAS6KfHr5TyImyhVej8VJswrc="/>
+            <menu:item id="fi_itxcontainercontainer_lstypeequalsandsecondcontainerequals" messageCode="global_menu_find" url="/itxcontainercontainers?find=ByLsTypeEqualsAndSecondContainerEquals&amp;form" z="hR8v17TTie6c2nEWj160R9kgvRI="/>
+        </menu:category>
+        <menu:category id="c_valuetype" z="78cGurSeDwDaXDfkbYxrbSOGH/s=">
+            <menu:item id="i_valuetype_new" messageCode="global_menu_new" url="/valuetypes?form" z="YAMKYD/WdE5WvE7Dz85UYELd8G4="/>
+            <menu:item id="i_valuetype_list" messageCode="global_menu_list" url="/valuetypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="F5Bw06AVT+K7meSIXte3dRdPWmA="/>
+            <menu:item id="fi_valuetype_typenameequals" messageCode="global_menu_find" url="/valuetypes?find=ByTypeNameEquals&amp;form" z="9JlNwRvajQaomD4lEUjme/DJ8mo="/>
+        </menu:category>
+        <menu:category id="c_protocolvalue" z="pzMqoBPcD0Jd0GZWPo1gpxt29zk=">
+            <menu:item id="i_protocolvalue_new" messageCode="global_menu_new" url="/protocolvalues?form" z="NeuraCstRhyZtMj+o86SkuN9oGQ="/>
+            <menu:item id="i_protocolvalue_list" messageCode="global_menu_list" url="/protocolvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="FRB+41kwl8e6u9QTlycPPNaiMM8="/>
+            <menu:item id="fi_protocolvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="MMmLU1imye2s/Ru3VFyUIJZSVvI="/>
+            <menu:item id="fi_protocolvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/protocolvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="mchkxsc/6HRGLW4mZyX+nlSMCcM="/>
+            <menu:item id="fi_protocolvalue_lsstate" messageCode="global_menu_find" url="/protocolvalues?find=ByLsState&amp;form" z="iC+uW+zryi1hkuwjmqaql0Z+5Vo="/>
+            <menu:item id="fi_protocolvalue_lstransactionequals" messageCode="global_menu_find" url="/protocolvalues?find=ByLsTransactionEquals&amp;form" z="LKaa2qhqdvo5/47t358DbHVR/+4="/>
+        </menu:category>
+        <menu:category id="c_itxcontainercontainerstate" z="pVrwYbMfrIyTLw8/EDoEJlCImAM=">
+            <menu:item id="i_itxcontainercontainerstate_new" messageCode="global_menu_new" url="/itxcontainercontainerstates?form" z="x0m5N12+E9xJh0q4ERVNJP9Gs7U="/>
+            <menu:item id="i_itxcontainercontainerstate_list" messageCode="global_menu_list" url="/itxcontainercontainerstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="vYO+mzXoZCHMFx0BoMT4BVX83sk="/>
+        </menu:category>
+        <menu:category id="c_interactiontype" z="q89Mq3tu7eGrb7XAKuNgtQEzPQs=">
+            <menu:item id="i_interactiontype_new" messageCode="global_menu_new" url="/interactiontypes?form" z="ONZQh0X/1hx+PnUklEua9dm9jBk="/>
+            <menu:item id="i_interactiontype_list" messageCode="global_menu_list" url="/interactiontypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="Wsr+nJVew+5nEyiqSiOmvTy8Zgg="/>
+        </menu:category>
+        <menu:category id="c_labelsequence" z="ejKZ7guZhfyvW84AnNefYohcs8I=">
+            <menu:item id="i_labelsequence_new" messageCode="global_menu_new" url="/labelsequences?form" z="nTXPvw/wtoW0pbK6xHA8Cuk68XM="/>
+            <menu:item id="i_labelsequence_list" messageCode="global_menu_list" url="/labelsequences?page=1&amp;size=${empty param.size ? 10 : param.size}" z="UgjjbATdvO/1WdtpamU/zsHd5FA="/>
+            <menu:item id="fi_labelsequence_thingtypeandkindequalsandlabeltypeandkindequals" messageCode="global_menu_find" url="/labelsequences?find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEquals&amp;form" z="BlzgTAU5dOfOzjFld/+z7Zbq0N4="/>
+        </menu:category>
+        <menu:category id="c_containertype" z="lIn8JrrOqLZEoWuvjF5bv9D0gBs=">
+            <menu:item id="i_containertype_new" messageCode="global_menu_new" url="/containertypes?form" z="tdEzAD1RNQP3GYsw2jecLOntccA="/>
+            <menu:item id="i_containertype_list" messageCode="global_menu_list" url="/containertypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="6gKJRv1jsnvFi6gMbKFfSxErc6w="/>
+            <menu:item id="fi_containertype_typenameequals" messageCode="global_menu_find" url="/containertypes?find=ByTypeNameEquals&amp;form" z="IQg7spq0RmZYvi4JM1Oce8VrEZ8="/>
+        </menu:category>
+        <menu:category id="c_experiment" z="W5OakP5QbaEqEHbKqCeTcck19zg=">
+            <menu:item id="i_experiment_new" messageCode="global_menu_new" url="/experiments?form" z="EVZT/gaNGpJpHt/Gjzy7RqeROmw="/>
+            <menu:item id="i_experiment_list" messageCode="global_menu_list" url="/experiments?page=1&amp;size=${empty param.size ? 10 : param.size}" z="x3HHZQOwFIYuEEtmv/C3xfJRZo8="/>
+            <menu:item id="fi_experiment_codenameequals" messageCode="global_menu_find" url="/experiments?find=ByCodeNameEquals&amp;form" z="Ywq9sw9wKzMLv7cGL6eUcKGVVfk="/>
+            <menu:item id="fi_experiment_codenamelike" messageCode="global_menu_find" url="/experiments?find=ByCodeNameLike&amp;form" z="7c3fTOCDLJUG0K+5e6dR4cu4SCM="/>
+            <menu:item id="fi_experiment_lskindlike" messageCode="global_menu_find" url="/experiments?find=ByLsKindLike&amp;form" z="8u1bsbx8wEbG9+g4M1vftB07MVo="/>
+            <menu:item id="fi_experiment_lstransaction" messageCode="global_menu_find" url="/experiments?find=ByLsTransaction&amp;form" z="pzO1es0ls0TpI6XCT8VgpFQ+fgw="/>
+            <menu:item id="fi_experiment_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/experiments?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="ZPdIKu3y4iGFu48vz+317ZMFXqo="/>
+            <menu:item id="fi_experiment_lstypelike" messageCode="global_menu_find" url="/experiments?find=ByLsTypeLike&amp;form" z="1JlKmuvQXXfwG65yQ4aXM+9QUcI="/>
+            <menu:item id="fi_experiment_protocol" messageCode="global_menu_find" url="/experiments?find=ByProtocol&amp;form" z="1PJ4oFTXiolPLQMloNTsiixAQ28="/>
+            <menu:item id="fi_experiment_recordedbylike" messageCode="global_menu_find" url="/experiments?find=ByRecordedByLike&amp;form" z="vRNhIsfjsu0Jc4iVhvLKKqgi1Rw="/>
+        </menu:category>
+        <menu:category id="c_statetype" z="Mx6S70LGMuIptspjTVNIP+xCAPo=">
+            <menu:item id="i_statetype_new" messageCode="global_menu_new" url="/statetypes?form" z="H7TE9bRUmZaT1KPashC+AB2JkEA="/>
+            <menu:item id="i_statetype_list" messageCode="global_menu_list" url="/statetypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="BWSiCbx+OeibgQQSSU7efhOZ74w="/>
+            <menu:item id="fi_statetype_typenameequals" messageCode="global_menu_find" url="/statetypes?find=ByTypeNameEquals&amp;form" z="AE5EjzjCKJU6K4XqgGfxhrTR/1A="/>
+        </menu:category>
+        <menu:category id="c_analysisgroupstate" z="iWZrNbLjCdJwFSJLyn/FNGjMpeQ=">
+            <menu:item id="i_analysisgroupstate_new" messageCode="global_menu_new" url="/analysisgroupstates?form" z="TZjDw5kV1aMgHZc7aH+dV+wGFNY="/>
+            <menu:item id="i_analysisgroupstate_list" messageCode="global_menu_list" url="/analysisgroupstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="+c6SxQdchuqmmpTuPtgYFpUl2NI="/>
+            <menu:item id="fi_analysisgroupstate_analysisgroup" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroup&amp;form" z="2+M5p4bKObib0x+zWt6V9//EhSU="/>
+            <menu:item id="fi_analysisgroupstate_analysisgroupandlstypeequalsandlskindequalsandignorednot" messageCode="global_menu_find" url="/analysisgroupstates?find=ByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot&amp;form" z="4Oh740mFWIyjcwBiwN5lw9aVp3A="/>
+            <menu:item id="fi_analysisgroupstate_lstransactionequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTransactionEquals&amp;form" z="vGHNTtmEd9lwxe3fSyQxzne+vyY="/>
+            <menu:item id="fi_analysisgroupstate_lstypeandkindequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTypeAndKindEquals&amp;form" z="heUs1Kgk6b7vaf9Xgj7fPtEps0U="/>
+            <menu:item id="fi_analysisgroupstate_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/analysisgroupstates?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="8yJM+iV1XzrrXDwRfpPtPGM3aQ8="/>
+        </menu:category>
+        <menu:category id="c_itxsubjectcontainervalue" z="p7hvR3xhX4SPAM9hlDwQBFuAa7M=">
+            <menu:item id="i_itxsubjectcontainervalue_new" messageCode="global_menu_new" url="/itxsubjectcontainervalues?form" z="LIS5Tx5kNDL+DroDTf1heIb29xQ="/>
+            <menu:item id="i_itxsubjectcontainervalue_list" messageCode="global_menu_list" url="/itxsubjectcontainervalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="cl6ZpsDYWIeOYeQEnBK0+4Sl+3k="/>
+        </menu:category>
+        <menu:category id="c_treatmentgroupstate" z="iKwmclsd7RJgWkfh/qnV5xRrEE8=">
+            <menu:item id="i_treatmentgroupstate_new" messageCode="global_menu_new" url="/treatmentgroupstates?form" z="/7irJSTBd7nNvpASy6BQuAp0z70="/>
+            <menu:item id="i_treatmentgroupstate_list" messageCode="global_menu_list" url="/treatmentgroupstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="8nWJGqJRM3wIEkxGDkDpCND5+GY="/>
+            <menu:item id="fi_treatmentgroupstate_lstransactionequals" messageCode="global_menu_find" url="/treatmentgroupstates?find=ByLsTransactionEquals&amp;form" z="YfDJKtDuOxmwVFZjqQLQqF+9/1o="/>
+            <menu:item id="fi_treatmentgroupstate_lstypeandkindequals" messageCode="global_menu_find" url="/treatmentgroupstates?find=ByLsTypeAndKindEquals&amp;form" z="rR9qQVVG7IkcGdsxKM0qyTVfP6Q="/>
+            <menu:item id="fi_treatmentgroupstate_treatmentgroup" messageCode="global_menu_find" url="/treatmentgroupstates?find=ByTreatmentGroup&amp;form" z="XNiPJCsjTvgoIooUrRm8Nxx3SzY="/>
+        </menu:category>
+        <menu:category id="c_author" z="DETG4XqcVC9sb/BVL/ybUSG8lUM=">
+            <menu:item id="i_author_new" messageCode="global_menu_new" url="/authors?form" z="e6WikSiFx46UnQunBmCd54pmrYE="/>
+            <menu:item id="i_author_list" messageCode="global_menu_list" url="/authors?page=1&amp;size=${empty param.size ? 10 : param.size}" z="/71/+sYxLDw3jeyTZyEHzZ9CQQQ="/>
+            <menu:item id="fi_author_activationkeyandemailaddress" messageCode="global_menu_find" url="/authors?find=ByActivationKeyAndEmailAddress&amp;form" z="dgxuoGzO3W8UP8TfwWk8eIxUSO8="/>
+            <menu:item id="fi_author_emailaddress" messageCode="global_menu_find" url="/authors?find=ByEmailAddress&amp;form" z="IpLDZFbmjaRzpOMH/1TxEanN5bY="/>
+            <menu:item id="fi_author_username" messageCode="global_menu_find" url="/authors?find=ByUserName&amp;form" z="5HYW0rrXepMBuslnaPQKUc1sxDw="/>
+        </menu:category>
+        <menu:category id="c_thingpagearchive" z="Poh907U09OYMInXDxCLHjmgu4v8=">
+            <menu:item id="i_thingpagearchive_new" messageCode="global_menu_new" url="/thingpagearchives?form" z="DSXfkjU0T0xjJ2VoGdbj00jaelg="/>
+            <menu:item id="i_thingpagearchive_list" messageCode="global_menu_list" url="/thingpagearchives?page=1&amp;size=${empty param.size ? 10 : param.size}" z="5ukPUmuD+k46SKvTb/qayMIfiFk="/>
+        </menu:category>
+        <menu:category id="c_analysisgrouplabel" z="CR7Phq3TQv78PVuDP7Y/2WuZHKQ=">
+            <menu:item id="i_analysisgrouplabel_new" messageCode="global_menu_new" url="/analysisgrouplabels?form" z="WRYpKhGrRn15PHadj0ljcsF4sy4="/>
+            <menu:item id="i_analysisgrouplabel_list" messageCode="global_menu_list" url="/analysisgrouplabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="OUHJBGoWscu22Z5s3dAJKDWIlCk="/>
+            <menu:item id="fi_analysisgrouplabel_analysisgroup" messageCode="global_menu_find" url="/analysisgrouplabels?find=ByAnalysisGroup&amp;form" z="JT9E4NiP/HDxYbLKkTR7f8ve7o4="/>
+            <menu:item id="fi_analysisgrouplabel_lstransactionequals" messageCode="global_menu_find" url="/analysisgrouplabels?find=ByLsTransactionEquals&amp;form" z="iVFTMM4qbXSrmDTENq2uRdtFaAY="/>
+        </menu:category>
+        <menu:category id="c_thingkind" z="EB+SoA7uuAMGzqc+zI0luHoMr98=">
+            <menu:item id="i_thingkind_new" messageCode="global_menu_new" url="/thingkinds?form" z="cmQ/xFK3fn/AXjx8AjHRfx1cJd4="/>
+            <menu:item id="i_thingkind_list" messageCode="global_menu_list" url="/thingkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="5cKa5fTXKZhJtJ8XrphjKi+wKN8="/>
+            <menu:item id="fi_thingkind_kindnameequalsandlstype" messageCode="global_menu_find" url="/thingkinds?find=ByKindNameEqualsAndLsType&amp;form" z="7ne+T1vA5SbayJoPpkG8QMN6pNI="/>
+            <menu:item id="fi_thingkind_lstype" messageCode="global_menu_find" url="/thingkinds?find=ByLsType&amp;form" z="1iIJUNSdamnPHPsEOi+Lnyjdbeg="/>
+            <menu:item id="fi_thingkind_lstypeandkindequals" messageCode="global_menu_find" url="/thingkinds?find=ByLsTypeAndKindEquals&amp;form" z="OBfTNA31z5XYEiKSpgEA1QbUp4w="/>
+        </menu:category>
+        <menu:category id="c_analysisgroupvalue" z="TALjWgJQGdT/a00QjGfLnbKvuKM=">
+            <menu:item id="i_analysisgroupvalue_new" messageCode="global_menu_new" url="/analysisgroupvalues?form" z="9K8ZUQutSoY0r/xG5JjETerXsrA="/>
+            <menu:item id="i_analysisgroupvalue_list" messageCode="global_menu_list" url="/analysisgroupvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="2mdguxpGcs2U9FRwNW9zlDXVKDY="/>
+            <menu:item id="fi_analysisgroupvalue_codevalueequals" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByCodeValueEquals&amp;form" z="Ws0tvWVglEMSBrhgL04ihPs6lw8="/>
+            <menu:item id="fi_analysisgroupvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="CU68x9ymqioluFHCw8V3JjJZQKo="/>
+            <menu:item id="fi_analysisgroupvalue_lsstate" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByLsState&amp;form" z="bwLbER+dIxX1Ulz0rkXQO7CUHZI="/>
+            <menu:item id="fi_analysisgroupvalue_lstransactionequals" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByLsTransactionEquals&amp;form" z="gQRw7Ct7FyQs8b7F4TbA3YNpTR4="/>
+            <menu:item id="fi_analysisgroupvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="pmQU3t/4+TPfu59T7ShIJ/ZXOWY="/>
+            <menu:item id="fi_analysisgroupvalue_lstypeequalsandlskindequalsandstringvaluelikeandignorednot" messageCode="global_menu_find" url="/analysisgroupvalues?find=ByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot&amp;form" z="6CfHcep0DAa8YcHRbDZMfzDhPUk="/>
+        </menu:category>
+        <menu:category id="c_lstransaction" z="U0NaXo+9gg292dbIsM3ERr7ucbM=">
+            <menu:item id="i_lstransaction_new" messageCode="global_menu_new" url="/lstransactions?form" z="kAHkjx8THLjMG4bFs1J3s3QPjL8="/>
+            <menu:item id="i_lstransaction_list" messageCode="global_menu_list" url="/lstransactions?page=1&amp;size=${empty param.size ? 10 : param.size}" z="09jXBA/DFmg58fysyYaRNDBwbXI="/>
+        </menu:category>
+        <menu:category id="c_containerstate" z="4C866eNJqZSkq/mjeOeAblklyD8=">
+            <menu:item id="i_containerstate_new" messageCode="global_menu_new" url="/containerstates?form" z="hQPVX4bz14KxIr/2C+QhEzcoPZI="/>
+            <menu:item id="i_containerstate_list" messageCode="global_menu_list" url="/containerstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="6RcIjnnxZNGCJaU0dja7qieJrSY="/>
+            <menu:item id="fi_containerstate_container" messageCode="global_menu_find" url="/containerstates?find=ByContainer&amp;form" z="/FzVY3b64Kyzy3m5kwSK96MmjF4="/>
+            <menu:item id="fi_containerstate_containerandlskindequalsandignorednot" messageCode="global_menu_find" url="/containerstates?find=ByContainerAndLsKindEqualsAndIgnoredNot&amp;form" z="EzKhuNBM79Eebw5kutQe22KTIJE="/>
+            <menu:item id="fi_containerstate_ignorednot" messageCode="global_menu_find" url="/containerstates?find=ByIgnoredNot&amp;form" z="CgZGeoKIRzUWvgmcCqzElm1MO34="/>
+        </menu:category>
+        <menu:category id="c_treatmentgroupvalue" z="r87+4zBMTUc9g5SHBTuhuuB1B5E=">
+            <menu:item id="i_treatmentgroupvalue_new" messageCode="global_menu_new" url="/treatmentgroupvalues?form" z="VX3BA/xTdKXOn/qs0i596AWg/kU="/>
+            <menu:item id="i_treatmentgroupvalue_list" messageCode="global_menu_list" url="/treatmentgroupvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="abCxLz2+8fifTLMVS2G8aIquTEQ="/>
+            <menu:item id="fi_treatmentgroupvalue_codevalueequals" messageCode="global_menu_find" url="/treatmentgroupvalues?find=ByCodeValueEquals&amp;form" z="YStuJm76Bxa4Qr46pKflTvmR7lY="/>
+            <menu:item id="fi_treatmentgroupvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/treatmentgroupvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="AImtVNwEBiKPXBDWkbAcLIG1/Vo="/>
+            <menu:item id="fi_treatmentgroupvalue_lsstate" messageCode="global_menu_find" url="/treatmentgroupvalues?find=ByLsState&amp;form" z="HVrRt2oBYtYZ9oA/a3PoUOkrXe8="/>
+            <menu:item id="fi_treatmentgroupvalue_lstransactionequals" messageCode="global_menu_find" url="/treatmentgroupvalues?find=ByLsTransactionEquals&amp;form" z="savyogAvP2JBFAVWEwHvwdmv+Bw="/>
+        </menu:category>
+        <menu:category id="c_containerlabel" z="zFf2aZfRTCDXPLL7QFhJk2gdfTg=">
+            <menu:item id="i_containerlabel_new" messageCode="global_menu_new" url="/containerlabels?form" z="oM3EkEpN0g8wiRYBFWx4sZGwps4="/>
+            <menu:item id="i_containerlabel_list" messageCode="global_menu_list" url="/containerlabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="S/nVuvdie9mdWAwQCBXtfFSLdPM="/>
+            <menu:item id="fi_containerlabel_containerandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByContainerAndIgnoredNot&amp;form" z="C3QRAvcrFKojvrsCALvkkEek1WE="/>
+            <menu:item id="fi_containerlabel_labeltextequalsandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByLabelTextEqualsAndIgnoredNot&amp;form" z="AQQAt+RSW5CAUJ8cgK8WU2g+5gg="/>
+            <menu:item id="fi_containerlabel_lstransactionequals" messageCode="global_menu_find" url="/containerlabels?find=ByLsTransactionEquals&amp;form" z="hEHslYtx3QnVYc63TxO+tNTsVE0="/>
+            <menu:item id="fi_containerlabel_lstypeequalsandlabeltextequalsandignorednot" messageCode="global_menu_find" url="/containerlabels?find=ByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot&amp;form" z="EPn/ky8CBvowtPJEhqWTck1L1nM="/>
+        </menu:category>
+        <menu:category id="c_treatmentgrouplabel" z="M25GmMAOZgXnpUGLXGdWZzjBKwM=">
+            <menu:item id="i_treatmentgrouplabel_new" messageCode="global_menu_new" url="/treatmentgrouplabels?form" z="sM2bs+bTfWIwnBAsnUNR62U9B90="/>
+            <menu:item id="i_treatmentgrouplabel_list" messageCode="global_menu_list" url="/treatmentgrouplabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="LBpKaImU+i7/pKrGdVLeP3zmBI0="/>
+            <menu:item id="fi_treatmentgrouplabel_lstransactionequals" messageCode="global_menu_find" url="/treatmentgrouplabels?find=ByLsTransactionEquals&amp;form" z="DEwA07/gjN5IShana/lDhdhYRBU="/>
+            <menu:item id="fi_treatmentgrouplabel_treatmentgroup" messageCode="global_menu_find" url="/treatmentgrouplabels?find=ByTreatmentGroup&amp;form" z="LDZJKWEXTzhXFkQoGAyHkAj+cY0="/>
+        </menu:category>
+        <menu:category id="c_applicationsetting" z="vQJTyUmf2U1KIbdu+Lo1OqSrfqQ=">
+            <menu:item id="i_applicationsetting_new" messageCode="global_menu_new" url="/applicationsettings?form" z="yTJFZ7lEGNwZU3modFJjEe4rvgg="/>
+            <menu:item id="i_applicationsetting_list" messageCode="global_menu_list" url="/applicationsettings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="F1vEFUelWCe13ZKBrBCRMaMpCAE="/>
+            <menu:item id="fi_applicationsetting_propnameequals" messageCode="global_menu_find" url="/applicationsettings?find=ByPropNameEquals&amp;form" z="Vz2n1Q0WA6cARu/A60kak9L4miw="/>
+            <menu:item id="fi_applicationsetting_propnameequalsandignorednot" messageCode="global_menu_find" url="/applicationsettings?find=ByPropNameEqualsAndIgnoredNot&amp;form" z="l+4KQHieIe74Uc302qFEnVHE+rg="/>
+        </menu:category>
+        <menu:category id="c_filething" z="ChVJ9ZRlHjPU0Rff6qUGn9D8XfA=">
+            <menu:item id="i_filething_new" messageCode="global_menu_new" url="/filethings?form" z="VXB9tYqrFi2VahQvG+RL04p0K+E="/>
+            <menu:item id="i_filething_list" messageCode="global_menu_list" url="/filethings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="AK5UnxkKyE87/gEHwh+mRrN5dwk="/>
+        </menu:category>
+        <menu:category id="c_subjectlabel" z="BncahBaSEdsCx0Rj9v+laWk/mmM=">
+            <menu:item id="i_subjectlabel_new" messageCode="global_menu_new" url="/subjectlabels?form" z="O12NqGQx2ex8wheKq0UWYVxK4e4="/>
+            <menu:item id="i_subjectlabel_list" messageCode="global_menu_list" url="/subjectlabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="pfyJDTBwU3rKDBdC/NMGL+83Lig="/>
+            <menu:item id="fi_subjectlabel_subject" messageCode="global_menu_find" url="/subjectlabels?find=BySubject&amp;form" z="RxepqNR+GjtcGcGONlne38s8h0w="/>
+        </menu:category>
+        <menu:category id="c_experimenttype" z="tw+gCRRYx0HuxAeTRe3Bk755l1Y=">
+            <menu:item id="i_experimenttype_new" messageCode="global_menu_new" url="/experimenttypes?form" z="5Rf2y1IWLG1W3WzQYG8+lOA2+70="/>
+            <menu:item id="i_experimenttype_list" messageCode="global_menu_list" url="/experimenttypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="Tc8W7Y1YMvKM7FOse1RSS6GwryA="/>
+            <menu:item id="fi_experimenttype_typenameequals" messageCode="global_menu_find" url="/experimenttypes?find=ByTypeNameEquals&amp;form" z="s+ouBEwS632hxkl5ehh3y9qyJxU="/>
+        </menu:category>
+        <menu:category id="c_experimentkind" z="nF3L2UteuFYCPl3sTrS1vc5Niro=">
+            <menu:item id="i_experimentkind_new" messageCode="global_menu_new" url="/experimentkinds?form" z="WMnJWdqI8grfVPwh+OfLVeMfvxc="/>
+            <menu:item id="i_experimentkind_list" messageCode="global_menu_list" url="/experimentkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="SeDnKvtAjZbP6lpXFfLtGB36uUs="/>
+        </menu:category>
+        <menu:category id="c_protocoltype" z="2CxVzLs9Tof8BxBl9ETGXtyMvsI=">
+            <menu:item id="i_protocoltype_new" messageCode="global_menu_new" url="/protocoltypes?form" z="7Z0Uyn35xcd4r6ul8eyd8hduLnY="/>
+            <menu:item id="i_protocoltype_list" messageCode="global_menu_list" url="/protocoltypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="F/bReZPXcStAo3Z0vR3lvVd/xns="/>
+            <menu:item id="fi_protocoltype_typenameequals" messageCode="global_menu_find" url="/protocoltypes?find=ByTypeNameEquals&amp;form" z="/Z5XB0XPMPehQWR4nG2AgH/MiJA="/>
+        </menu:category>
+        <menu:category id="c_protocolkind" z="lA6Nz7hyvn4goCuqyyZ5UrMIMkY=">
+            <menu:item id="i_protocolkind_new" messageCode="global_menu_new" url="/protocolkinds?form" z="CUHqWfdjOjrx1F0QiGQ4jf7eRjA="/>
+            <menu:item id="i_protocolkind_list" messageCode="global_menu_list" url="/protocolkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="M2RGDSlkfqunIWK0PDJNkAhbKxs="/>
+            <menu:item id="fi_protocolkind_lstypeequalsandkindnameequals" messageCode="global_menu_find" url="/protocolkinds?find=ByLsTypeEqualsAndKindNameEquals&amp;form" z="IaCk6RHL0QooMdXBjDmK9A4N0IA="/>
+        </menu:category>
+        <menu:category id="c_operatorkind" z="i4yOFpwX974Iwi11pyS5plkha5o=">
+            <menu:item id="i_operatorkind_new" messageCode="global_menu_new" url="/operatorkinds?form" z="TjvqRjIyCLgpRqnESWHQ2sgyi9E="/>
+            <menu:item id="i_operatorkind_list" messageCode="global_menu_list" url="/operatorkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="xnWGrcrmZcIEyRUOww8CNXRNLxg="/>
+        </menu:category>
+        <menu:category id="c_uncertaintykind" z="uY7480Dyon89MiHEa7Yr6eeNyho=">
+            <menu:item id="i_uncertaintykind_new" messageCode="global_menu_new" url="/uncertaintykinds?form" z="user-managed"/>
+            <menu:item id="i_uncertaintykind_list" messageCode="global_menu_list" url="/uncertaintykinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="user-managed"/>
+        </menu:category>
+        <menu:category id="c_lstag" z="HUNDPGqka4d9BqVNzWN0BY4aRDo=">
+            <menu:item id="i_lstag_new" messageCode="global_menu_new" url="/lstags?form" z="P3yISa1eDoZNY56pqspaz8gZbVM="/>
+            <menu:item id="i_lstag_list" messageCode="global_menu_list" url="/lstags?page=1&amp;size=${empty param.size ? 10 : param.size}" z="A8hYyfp/VWJjr/u/at59oeksjCc="/>
+            <menu:item id="fi_lstag_tagtextequals" messageCode="global_menu_find" url="/lstags?find=ByTagTextEquals&amp;form" z="31q1WMOFGmu+VDKwAF12egYGkQ8="/>
+            <menu:item id="fi_lstag_tagtextlike" messageCode="global_menu_find" url="/lstags?find=ByTagTextLike&amp;form" z="uBfYCzi1DfPwU2EfVuxTUJBYrT8="/>
+        </menu:category>
+        <menu:category id="c_updatelog" z="LGPuarvdCgXzA4AR3+c9hG3/TTw=">
+            <menu:item id="i_updatelog_new" messageCode="global_menu_new" url="/updatelogs?form" z="NRngG10Pl/Ytklu5ie7mFDHUKn8="/>
+            <menu:item id="i_updatelog_list" messageCode="global_menu_list" url="/updatelogs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="cNjYhPM+N4aVFwW1e8W7aakv4nc="/>
+        </menu:category>
+        <menu:category id="c_lsthing" z="1LY0tNInbjYQS0XBd+TI5c/Suyw=">
+            <menu:item id="i_lsthing_new" messageCode="global_menu_new" url="/lsthings?form" z="FkvjAHMnih2v+Eaijc3pAIivtmw="/>
+            <menu:item id="i_lsthing_list" messageCode="global_menu_list" url="/lsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KdnkBXuo2MoJ5nhgfl2rt3i2KCQ="/>
+            <menu:item id="fi_lsthing_codenameequals" messageCode="global_menu_find" url="/lsthings?find=ByCodeNameEquals&amp;form" z="k9kkRKddWM2bGHmLfsOoz3tA5+E="/>
+            <menu:item id="fi_lsthing_codenamelike" messageCode="global_menu_find" url="/lsthings?find=ByCodeNameLike&amp;form" z="irkgn326gCwbL/fD67flKwdT5s0="/>
+            <menu:item id="fi_lsthing_lskindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsKindEquals&amp;form" z="Tkm9zDUFZoZYbCuWMi/nNyErXcM="/>
+            <menu:item id="fi_lsthing_lskindlike" messageCode="global_menu_find" url="/lsthings?find=ByLsKindLike&amp;form" z="Jy9T+1sJZwHFty3E4zgV4H9MAj0="/>
+            <menu:item id="fi_lsthing_lstransactionequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTransactionEquals&amp;form" z="20eTek0wKMABLzD+DeD98giqJt0="/>
+            <menu:item id="fi_lsthing_lstypeandkindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeAndKindEquals&amp;form" z="dmBfpocGcW2wsusk0jXLxUC3tmU="/>
+            <menu:item id="fi_lsthing_lstypeequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeEquals&amp;form" z="viV3cUJ4J0UoXCLq+u6Qps6/xN8="/>
+            <menu:item id="fi_lsthing_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/lsthings?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="FyvmFJjVz1nij8cqyy8BpHw1ydA="/>
+            <menu:item id="fi_lsthing_recordedbylike" messageCode="global_menu_find" url="/lsthings?find=ByRecordedByLike&amp;form" z="h9+nSaROI5FHM+mfAaZeNALGtPU="/>
+            <menu:item id="fi_lsthing_recordeddategreaterthan" messageCode="global_menu_find" url="/lsthings?find=ByRecordedDateGreaterThan&amp;form" z="CKWEGR0JeEBK21sR5CTn73aKQFg="/>
+            <menu:item id="fi_lsthing_recordeddatelessthan" messageCode="global_menu_find" url="/lsthings?find=ByRecordedDateLessThan&amp;form" z="FDiykZmU9VrdXfigG4RU5LPiLfk="/>
+        </menu:category>
+        <menu:category id="c_lsthingstate" z="kDZpS4CZuCX4P3hck2rU9pGQEHs=">
+            <menu:item id="i_lsthingstate_new" messageCode="global_menu_new" url="/lsthingstates?form" z="pX/Lr4UYIRxuIGH06d1XLuCTDKI="/>
+            <menu:item id="i_lsthingstate_list" messageCode="global_menu_list" url="/lsthingstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="d98Xo60loeXGrUHJ0nLk3GFeYR4="/>
+            <menu:item id="fi_lsthingstate_lsthing" messageCode="global_menu_find" url="/lsthingstates?find=ByLsThing&amp;form" z="Gi3//KhdVfSTamFXjdHGTHb7HWg="/>
+            <menu:item id="fi_lsthingstate_lstransactionequals" messageCode="global_menu_find" url="/lsthingstates?find=ByLsTransactionEquals&amp;form" z="c8H1CGsw8cpHeH1K3XEV4ifmoRg="/>
+        </menu:category>
+        <menu:category id="c_lsthinglabel" z="JHZMQ32KDw5hqhoWzluVD2csEyQ=">
+            <menu:item id="i_lsthinglabel_new" messageCode="global_menu_new" url="/lsthinglabels?form" z="s9/dlX8815GwnpSEIUZ5gUADHGU="/>
+            <menu:item id="i_lsthinglabel_list" messageCode="global_menu_list" url="/lsthinglabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="NhXpevRj/Lhdwvu/OBKZwR/CA+k="/>
+            <menu:item id="fi_lsthinglabel_labeltextequals" messageCode="global_menu_find" url="/lsthinglabels?find=ByLabelTextEquals&amp;form" z="0j2ATlePWFoOEnGuERzFhwP+q3w="/>
+            <menu:item id="fi_lsthinglabel_labeltextequalsandignorednot" messageCode="global_menu_find" url="/lsthinglabels?find=ByLabelTextEqualsAndIgnoredNot&amp;form" z="W5KzWddtqHl4hFplxjkoi3nqVVk="/>
+            <menu:item id="fi_lsthinglabel_labeltextlike" messageCode="global_menu_find" url="/lsthinglabels?find=ByLabelTextLike&amp;form" z="tjKraQpmQh45A9XufLkKU17TB/0="/>
+            <menu:item id="fi_lsthinglabel_lsthing" messageCode="global_menu_find" url="/lsthinglabels?find=ByLsThing&amp;form" z="A8It+DWRKSJbrtr4rGpJ7FuntP0="/>
+            <menu:item id="fi_lsthinglabel_lstransactionequals" messageCode="global_menu_find" url="/lsthinglabels?find=ByLsTransactionEquals&amp;form" z="GSJ/BcgAdONB3PDt2kCC1UHERz0="/>
+        </menu:category>
+        <menu:category id="c_lsthingvalue" z="XQNB1Y4XpCaXF1GUHOnoFM/mcB4=">
+            <menu:item id="i_lsthingvalue_new" messageCode="global_menu_new" url="/lsthingvalues?form" z="8aiCS/gGFUuEnKYD1Cs0cW1ictk="/>
+            <menu:item id="i_lsthingvalue_list" messageCode="global_menu_list" url="/lsthingvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="QfdH6nwpOdF11WpDAtiAEMVn0yI="/>
+            <menu:item id="fi_lsthingvalue_codevalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByCodeValueEquals&amp;form" z="jg96nP+uHTWmMkROeTXD5Nc0Rio="/>
+            <menu:item id="fi_lsthingvalue_ignorednotandcodevalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByIgnoredNotAndCodeValueEquals&amp;form" z="+IVT41w4/TqHTKH3veCd39DiQZk="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="AuOdss3oEqeDKH/PD1yLnMCODuI="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsanddatevaluegreaterthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndDateValueGreaterThanEquals&amp;form" z="YmMi+Gwv4XGb4MNhJ5lZdVJyotk="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsanddatevaluelessthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndDateValueLessThanEquals&amp;form" z="T6IVa4yGqw35rNKEiNcqpFvQQAQ="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsanddatevaluelike" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndDateValueLike&amp;form" z="g8WiM5YM8gAnYtD3rhzrgL3A+YE="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandnumericvalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueEquals&amp;form" z="QC9IiYKfRrQeFHpWglx0orbOvUY="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandnumericvaluegreaterthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueGreaterThanEquals&amp;form" z="KgWRwRcPu2U0NuZLfH6ZzRKPZFY="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandnumericvaluelessthanequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndNumericValueLessThanEquals&amp;form" z="LzDWS6atGPcpHjOuC4rarllBelk="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandstringvalueequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndStringValueEquals&amp;form" z="87X7rX51P28FDve2JAApilyp7uo="/>
+            <menu:item id="fi_lsthingvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="gdD732nq+S08YPAF+25/386b6dA="/>
+            <menu:item id="fi_lsthingvalue_lsstate" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsState&amp;form" z="2LyWlqa1YNYldDLQ5u0XhjzLmnU="/>
+            <menu:item id="fi_lsthingvalue_lstransactionequals" messageCode="global_menu_find" url="/lsthingvalues?find=ByLsTransactionEquals&amp;form" z="7Bny+xW4b8yhnsbcOas/S479ufI="/>
+        </menu:category>
+        <menu:category id="c_codekind" z="NYRcfkld7mu20sxgSj7+wOq9gtE=">
+            <menu:item id="i_codekind_new" messageCode="global_menu_new" url="/codekinds?form" z="PxHXDeTFNJ98VlOzu/ti0RZ1R1A="/>
+            <menu:item id="i_codekind_list" messageCode="global_menu_list" url="/codekinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="Bcm44APTBPFjR9NI/5T+mW/jQxc="/>
+            <menu:item id="fi_codekind_kindnameequalsandlstype" messageCode="global_menu_find" url="/codekinds?find=ByKindNameEqualsAndLsType&amp;form" z="bQpAcm/1BBYXUWwyeoJsJlVEoW0="/>
+            <menu:item id="fi_codekind_lstype" messageCode="global_menu_find" url="/codekinds?find=ByLsType&amp;form" z="rX8zqlSfztEZioYuiT5SEqtv39A="/>
+            <menu:item id="fi_codekind_lstypeandkindequals" messageCode="global_menu_find" url="/codekinds?find=ByLsTypeAndKindEquals&amp;form" z="GSCqczR7YkA+1JHLRB9rko04ybw="/>
+        </menu:category>
+        <menu:category id="c_codetype" z="JjS8QbsLEL+EkYUpI2/tdsLk7/I=">
+            <menu:item id="i_codetype_new" messageCode="global_menu_new" url="/codetypes?form" z="py101QqLgRodN2GKQE6Shlifc5o="/>
+            <menu:item id="i_codetype_list" messageCode="global_menu_list" url="/codetypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="eMyxDac/UFBzZNkqxw50aAkz22k="/>
+            <menu:item id="fi_codetype_typenameequals" messageCode="global_menu_find" url="/codetypes?find=ByTypeNameEquals&amp;form" z="t6Qqnq/xFij7W+P1R56UMo3sFsA="/>
+        </menu:category>
+        <menu:category id="c_lsrole" z="eIIF+3Nwhg0gA4BZWz9IqeIfBr0=">
+            <menu:item id="i_lsrole_new" messageCode="global_menu_new" url="/lsroles?form" z="sQQU8eIYjr52rryeIj1mbQvh070="/>
+            <menu:item id="i_lsrole_list" messageCode="global_menu_list" url="/lsroles?page=1&amp;size=${empty param.size ? 10 : param.size}" z="zSPyhLyoG501CR+jtEld7yKrcKg="/>
+            <menu:item id="fi_lsrole_lstypeequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEquals&amp;form" z="W4JpQHrCvTbvdaMZnx/5xpX+ICs="/>
+            <menu:item id="fi_lsrole_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="gyxh+EFMUzy1xWG/2BhwPbOFt9A="/>
+            <menu:item id="fi_lsrole_lstypeequalsandlskindequalsandrolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals&amp;form" z="txmF06uRmk7J4WZcz8kEQZStSvc="/>
+            <menu:item id="fi_lsrole_lstypeequalsandrolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndRoleNameEquals&amp;form" z="X+9yFHiswNC4tLC9Wr1NAQCY5rY="/>
+            <menu:item id="fi_lsrole_rolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByRoleNameEquals&amp;form" z="cO0ad/jaBLJZl79Xpta3al6Z7mM="/>
+        </menu:category>
+        <menu:category id="c_authorrole" z="5H5j5FexDI0Q/OjfqVeghRk3SBQ=">
+            <menu:item id="i_authorrole_new" messageCode="global_menu_new" url="/authorroles?form" z="R8JUiR8CbsbtSUAeFyXKb8jet5k="/>
+            <menu:item id="i_authorrole_list" messageCode="global_menu_list" url="/authorroles?page=1&amp;size=${empty param.size ? 10 : param.size}" z="1zL5TDUgIXsx+MH1ITAIzBMlzTA="/>
+            <menu:item id="fi_authorrole_roleentry" messageCode="global_menu_find" url="/authorroles?find=ByRoleEntry&amp;form" z="vxeB45go0RxjtIiP4pQdqEQ0Rw8="/>
+            <menu:item id="fi_authorrole_roleentryanduserentry" messageCode="global_menu_find" url="/authorroles?find=ByRoleEntryAndUserEntry&amp;form" z="v/1iLOdeTLIRVqzitr0hYT/hjLw="/>
+            <menu:item id="fi_authorrole_userentry" messageCode="global_menu_find" url="/authorroles?find=ByUserEntry&amp;form" z="4Hf+avrdj4URrI3onm/S0x9apKs="/>
+        </menu:category>
+        <menu:category id="c_itxprotocolprotocol" z="lmgYw5QqKJwU04tbGuaKaMJoxlc=">
+            <menu:item id="i_itxprotocolprotocol_new" messageCode="global_menu_new" url="/itxprotocolprotocols?form" z="dMXVapq9fuBlhNUnKCw6jF2F8ug="/>
+            <menu:item id="i_itxprotocolprotocol_list" messageCode="global_menu_list" url="/itxprotocolprotocols?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iq6qexLG4PaxGfjcA03XJ0+5AaQ="/>
+            <menu:item id="fi_itxprotocolprotocol_firstprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByFirstProtocol&amp;form" z="UJuHinNHGy4nCOcXPxemLzxtACw="/>
+            <menu:item id="fi_itxprotocolprotocol_lstransactionequals" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByLsTransactionEquals&amp;form" z="t2qEPlGnBoKuT2h+SyEOZ446WTs="/>
+            <menu:item id="fi_itxprotocolprotocol_secondprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=BySecondProtocol&amp;form" z="AyzEdhOcH4pkRXswaVImyoHU6zc="/>
+        </menu:category>
+        <menu:category id="c_itxprotocolprotocolstate" z="5crXh8kZ9negy5Cyo9mf6r7Zwo8=">
+            <menu:item id="i_itxprotocolprotocolstate_new" messageCode="global_menu_new" url="/itxprotocolprotocolstates?form" z="m085rBwmeyS6/phK6Wv6DPfHCQ8="/>
+            <menu:item id="i_itxprotocolprotocolstate_list" messageCode="global_menu_list" url="/itxprotocolprotocolstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="awzpB8rhwPNlv8QJPdWdovGb6gU="/>
+        </menu:category>
+        <menu:category id="c_itxprotocolprotocolvalue" z="555vgfOT3Y115uZEQ8D2IetG+Do=">
+            <menu:item id="i_itxprotocolprotocolvalue_new" messageCode="global_menu_new" url="/itxprotocolprotocolvalues?form" z="c32BDszvdEtLScQVzWKW3qj7bSw="/>
+            <menu:item id="i_itxprotocolprotocolvalue_list" messageCode="global_menu_list" url="/itxprotocolprotocolvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="HcSiFh69ErMhaCuhPWVvN3uKwOA="/>
+        </menu:category>
+        <menu:category id="c_ddictvalue" z="//tNoHqIxdxTRG7zgPcUetLYu8k=">
+            <menu:item id="i_ddictvalue_new" messageCode="global_menu_new" url="/ddictvalues?form" z="tC4RJQp+VQAUTyApAsKkHNYcuWw="/>
+            <menu:item id="i_ddictvalue_list" messageCode="global_menu_list" url="/ddictvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="xmGlnyJ/6c5Fuax8ETox1f+dGzM="/>
+            <menu:item id="fi_ddictvalue_codenameequals" messageCode="global_menu_find" url="/ddictvalues?find=ByCodeNameEquals&amp;form" z="zdrMtruwFsFlTU8ExAO3HVdqNjE="/>
+            <menu:item id="fi_ddictvalue_ignorednot" messageCode="global_menu_find" url="/ddictvalues?find=ByIgnoredNot&amp;form" z="s/eTBpRm5jJR+UYNSjHKb+3iS9Y="/>
+            <menu:item id="fi_ddictvalue_labeltextlike" messageCode="global_menu_find" url="/ddictvalues?find=ByLabelTextLike&amp;form" z="6mBSFWcmndyhEqA4h1LRvC+jUCA="/>
+            <menu:item id="fi_ddictvalue_lskindequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsKindEquals&amp;form" z="uj2KVoztgITKChOyu5a/e6QbxDo="/>
+            <menu:item id="fi_ddictvalue_lstypeequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEquals&amp;form" z="RElPZg2kR/YHutT5s+iE9ijh9/Y="/>
+            <menu:item id="fi_ddictvalue_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="q7iZ5coIZEBVrxCOcYulJugpQ2c="/>
+            <menu:item id="fi_ddictvalue_lstypeequalsandlskindequalsandshortnameequals" messageCode="global_menu_find" url="/ddictvalues?find=ByLsTypeEqualsAndLsKindEqualsAndShortNameEquals&amp;form" z="Bw4FSawH3QKSVmkaMTcZXErTL5I="/>
+        </menu:category>
+        <menu:category id="c_ddictkind" z="yHaefGubr62nUhD/k83b8i8XzOA=">
+            <menu:item id="i_ddictkind_new" messageCode="global_menu_new" url="/ddictkinds?form" z="NTVKxBr80f+SE5zGFfgCiEdZuRw="/>
+            <menu:item id="i_ddictkind_list" messageCode="global_menu_list" url="/ddictkinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="CLuGcUYZD9G1SH8niBCy6EfNmts="/>
+            <menu:item id="fi_ddictkind_lstypeequalsandnameequals" messageCode="global_menu_find" url="/ddictkinds?find=ByLsTypeEqualsAndNameEquals&amp;form" z="u05qh4eplPYfcV8xhDaBGguttJI="/>
+        </menu:category>
+        <menu:category id="c_ddicttype" z="chrlf5slxhLU69oRtw0p3eAUcO8=">
+            <menu:item id="i_ddicttype_new" messageCode="global_menu_new" url="/ddicttypes?form" z="rNkCTFSaQ+VZ5Iw6eE8XjLb6O/Q="/>
+            <menu:item id="i_ddicttype_list" messageCode="global_menu_list" url="/ddicttypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="KgBIOkyA9YuvjIhRyd+WcD6nejM="/>
+            <menu:item id="fi_ddicttype_nameequals" messageCode="global_menu_find" url="/ddicttypes?find=ByNameEquals&amp;form" z="3VirysB1OVsvoMFwA9Rt0QpGwhM="/>
+        </menu:category>
+        <menu:category id="c_itxexperimentexperiment" z="Sdn4GgIls6zJg8Di/AxrnTiSXk8=">
+            <menu:item id="i_itxexperimentexperiment_new" messageCode="global_menu_new" url="/itxexperimentexperiments?form" z="AMWVqwXle8FO2ihlo6mF17HFRnA="/>
+            <menu:item id="i_itxexperimentexperiment_list" messageCode="global_menu_list" url="/itxexperimentexperiments?page=1&amp;size=${empty param.size ? 10 : param.size}" z="vb5ZE7C5evruWlqzVReMq9prrUM="/>
+            <menu:item id="fi_itxexperimentexperiment_firstexperiment" messageCode="global_menu_find" url="/itxexperimentexperiments?find=ByFirstExperiment&amp;form" z="awRaEl7NGdb4Ey/IvOpPNkDdQ4I="/>
+            <menu:item id="fi_itxexperimentexperiment_lstransactionequals" messageCode="global_menu_find" url="/itxexperimentexperiments?find=ByLsTransactionEquals&amp;form" z="LmSbmf+33EdJEfrTYpcucBotDnY="/>
+            <menu:item id="fi_itxexperimentexperiment_secondexperiment" messageCode="global_menu_find" url="/itxexperimentexperiments?find=BySecondExperiment&amp;form" z="O+6fUbXunsl/3bimwRnMRda8ZO0="/>
+        </menu:category>
+        <menu:category id="c_itxexperimentexperimentvalue" z="Aeo0RR7U+fLNyS6TzQCRpXi9ulY=">
+            <menu:item id="i_itxexperimentexperimentvalue_new" messageCode="global_menu_new" url="/itxexperimentexperimentvalues?form" z="jM/hi+0hzXfIqUBD/jOxw4lh26M="/>
+            <menu:item id="i_itxexperimentexperimentvalue_list" messageCode="global_menu_list" url="/itxexperimentexperimentvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="fq39w6t2JIM3o1taR06tBd3omG4="/>
+        </menu:category>
+        <menu:category id="c_itxexperimentexperimentstate" z="w15kS3YrfxKIudnbAwP1ajFMQag=">
+            <menu:item id="i_itxexperimentexperimentstate_new" messageCode="global_menu_new" url="/itxexperimentexperimentstates?form" z="LnR4C38cHoHF+LFlVamM1HyEego="/>
+            <menu:item id="i_itxexperimentexperimentstate_list" messageCode="global_menu_list" url="/itxexperimentexperimentstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="BN7SOiV9ZrlJ1lwIIaTuF7r2Kpo="/>
+        </menu:category>
+        <menu:category id="c_codeorigin" z="YIlul8nVnnFkXmJTSwjIrUaiCbk=">
+            <menu:item id="i_codeorigin_new" messageCode="global_menu_new" url="/codeorigins?form" z="4YkihonA/OS0RucT6PxNTrBF264="/>
+            <menu:item id="i_codeorigin_list" messageCode="global_menu_list" url="/codeorigins?page=1&amp;size=${empty param.size ? 10 : param.size}" z="mXDEu129EL4jbhn0szLC72IYL8k="/>
+        </menu:category>
+        <menu:category id="c_itxlsthinglsthing" z="8Gc/rkZ1RT71J+B3ubM/dh2H9VE=">
+            <menu:item id="i_itxlsthinglsthing_new" messageCode="global_menu_new" url="/itxlsthinglsthings?form" z="Sv7z8vH12pw4uXJL4KvD5bntOUk="/>
+            <menu:item id="i_itxlsthinglsthing_list" messageCode="global_menu_list" url="/itxlsthinglsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dTBbXYSN3UodAC+gzSIDn7jQ2LQ="/>
+            <menu:item id="fi_itxlsthinglsthing_codenameequals" messageCode="global_menu_find" url="/itxlsthinglsthings?find=ByCodeNameEquals&amp;form" z="BEKIehLO6xE9H85uNGTFPB4mVJ4="/>
+            <menu:item id="fi_itxlsthinglsthing_firstlsthing" messageCode="global_menu_find" url="/itxlsthinglsthings?find=ByFirstLsThing&amp;form" z="ZZJRfrNA3gWAokYxcfofVeMdEQ0="/>
+            <menu:item id="fi_itxlsthinglsthing_secondlsthing" messageCode="global_menu_find" url="/itxlsthinglsthings?find=BySecondLsThing&amp;form" z="HSzcUMc8kzGBOsMmcZLWbdLAz/c="/>
+        </menu:category>
+        <menu:category id="c_itxlsthinglsthingvalue" z="16NynK8hvte1Jz5OlnZk7yx2Cws=">
+            <menu:item id="i_itxlsthinglsthingvalue_new" messageCode="global_menu_new" url="/itxlsthinglsthingvalues?form" z="lSlbM5i6/TIvqxkWP3izDKm7cSg="/>
+            <menu:item id="i_itxlsthinglsthingvalue_list" messageCode="global_menu_list" url="/itxlsthinglsthingvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="QV3L2KdCFiwrC4kWB3x3GthgZks="/>
+        </menu:category>
+        <menu:category id="c_itxlsthinglsthingstate" z="dacFM2W4nNstoyJUE8ZhmtUcl+o=">
+            <menu:item id="i_itxlsthinglsthingstate_new" messageCode="global_menu_new" url="/itxlsthinglsthingstates?form" z="URYzXejwc0AbOnmQGDN6sxGn1lA="/>
+            <menu:item id="i_itxlsthinglsthingstate_list" messageCode="global_menu_list" url="/itxlsthinglsthingstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iJT8vqWzUsI32g9p3HD98Dus48A="/>
+        </menu:category>
+        <menu:category id="c_rolekind" z="KVQVdwzOfGV720M7rpWWHWu1/ZM=">
+            <menu:item id="i_rolekind_new" messageCode="global_menu_new" url="/rolekinds?form" z="pg+83KKlLmJSjIPVompKUXMYHV8="/>
+            <menu:item id="i_rolekind_list" messageCode="global_menu_list" url="/rolekinds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="ovIkKR/Umvr6j9+j7iArQWnO5o4="/>
+            <menu:item id="fi_rolekind_kindnameequalsandlstype" messageCode="global_menu_find" url="/rolekinds?find=ByKindNameEqualsAndLsType&amp;form" z="g5QKG2L9DTfjeElG7SWPTsFGBog="/>
+            <menu:item id="fi_rolekind_lstype" messageCode="global_menu_find" url="/rolekinds?find=ByLsType&amp;form" z="jDtAzYm+58YY6wOry4PwLlZ+oew="/>
+        </menu:category>
+        <menu:category id="c_roletype" z="4j93y9HnrS9b1iYCpRnc2GT4nVQ=">
+            <menu:item id="i_roletype_new" messageCode="global_menu_new" url="/roletypes?form" z="SCsoXt9FKGH0QpEfNXFbsigT8AE="/>
+            <menu:item id="i_roletype_list" messageCode="global_menu_list" url="/roletypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="pXs+olwjk4QH+ztDyWQ6jt195ng="/>
+            <menu:item id="fi_roletype_typenameequals" messageCode="global_menu_find" url="/roletypes?find=ByTypeNameEquals&amp;form" z="LSRdfHt3MP1A4Yd0obo33AAV5QY="/>
+        </menu:category>
+    </menu:menu>
+</div>

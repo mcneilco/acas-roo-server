@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ThingPage" object="${thingpage}" path="/thingpages" z="W6wTtQf/jyh0CdmqM78Dyqg8ykM=">
+        <field:display field="pageName" id="s_com_labsynch_labseer_domain_ThingPage_pageName" object="${thingpage}" z="kTp9joTHU8QsKjySluWo02jGOWc="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_ThingPage_recordedBy" object="${thingpage}" z="gO062otHPnfp2r4Cx0ERLOAkbUk="/>
+        <field:display date="true" dateTimePattern="${thingPage_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_ThingPage_recordedDate" object="${thingpage}" z="1Jv0NA9nagEap22/6z26ki2ysMQ="/>
+        <field:display field="pageContent" id="s_com_labsynch_labseer_domain_ThingPage_pageContent" object="${thingpage}" z="61IgRMElJX/gbCuY/qu0yMcisro="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_ThingPage_modifiedBy" object="${thingpage}" z="DttPV+pJrCIsWrCPgNBL7ePZ0mM="/>
+        <field:display date="true" dateTimePattern="${thingPage_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_ThingPage_modifiedDate" object="${thingpage}" z="snagiEBzFohdvUDvX9pxqKpdkm0="/>
+        <field:display field="currentEditor" id="s_com_labsynch_labseer_domain_ThingPage_currentEditor" object="${thingpage}" z="xEJye5ilkRu0H32cMoQ4EFehoo4="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ThingPage_ignored" object="${thingpage}" z="2tr4DuzHW/tiUDuWyTQw+wEzpA8="/>
+        <field:display field="archived" id="s_com_labsynch_labseer_domain_ThingPage_archived" object="${thingpage}" z="WAPw+Oxsg2SQocrV1C6S/qNVreU="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ThingPage_lsTransaction" object="${thingpage}" z="0w4tzxTI+ClqoyTjgijBxx0AIwk="/>
+        <field:display field="thing" id="s_com_labsynch_labseer_domain_ThingPage_thing" object="${thingpage}" z="R3WUDuEByy1paO8aewHzhCTX46c="/>
+    </page:show>
+</div>

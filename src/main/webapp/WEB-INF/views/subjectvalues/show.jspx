@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_SubjectValue" object="${subjectvalue}" path="/subjectvalues" z="qx8RFaJz3GuyY9fHGRGtVPWYrdA=">
+        <field:display field="stringValue" id="s_com_labsynch_labseer_domain_SubjectValue_stringValue" object="${subjectvalue}" z="s23owTTACduaZtUTIofkP7S2EyA="/>
+        <field:display field="fileValue" id="s_com_labsynch_labseer_domain_SubjectValue_fileValue" object="${subjectvalue}" z="fcjxHjPiN3CZV2/u6O6aKgtrlx4="/>
+        <field:display field="urlValue" id="s_com_labsynch_labseer_domain_SubjectValue_urlValue" object="${subjectvalue}" z="BQphfdobXNy51a27JclBM0+PL+w="/>
+        <field:display date="true" dateTimePattern="${subjectValue_datevalue_date_format}" field="dateValue" id="s_com_labsynch_labseer_domain_SubjectValue_dateValue" object="${subjectvalue}" z="8Mi9+Vf2/DkyIO88bIP3Y5f+ntA="/>
+        <field:display field="clobValue" id="s_com_labsynch_labseer_domain_SubjectValue_clobValue" object="${subjectvalue}" z="4+uVGzC0NgFzttX+T2q1zOA8TvU="/>
+        <field:display field="blobValue" id="s_com_labsynch_labseer_domain_SubjectValue_blobValue" object="${subjectvalue}" z="ZdZcll01iRHf2M0dy688lepWTZ0="/>
+        <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_SubjectValue_sigFigs" object="${subjectvalue}" z="hv2aiGCluwXB8d+YEctAKatLhwk="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_SubjectValue_comments" object="${subjectvalue}" z="+VjRjNomf8E2C+Z0hksOqkoVeYc="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_SubjectValue_ignored" object="${subjectvalue}" z="N88qG0k3TfcQhmFhm16wq96/TVw="/>
+        <field:display date="true" dateTimePattern="${subjectValue_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_SubjectValue_recordedDate" object="${subjectvalue}" z="emD49yVG5TN0I9FOPG2FclLXQzk="/>
+        <field:display date="true" dateTimePattern="${subjectValue_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_SubjectValue_modifiedDate" object="${subjectvalue}" z="1i6Ne0W9enlTrlBqWT7X87d5LfE="/>
+        <field:display field="publicData" id="s_com_labsynch_labseer_domain_SubjectValue_publicData" object="${subjectvalue}" z="jc5E24gc/7akwilw1mWo0mndj+Q="/>
+        <field:display field="codeValue" id="s_com_labsynch_labseer_domain_SubjectValue_codeValue" object="${subjectvalue}" z="rib3Q0Mmh+ascy6MCrJGlhxZpRg="/>
+        <field:display field="numberOfReplicates" id="s_com_labsynch_labseer_domain_SubjectValue_numberOfReplicates" object="${subjectvalue}" z="YN2ncI2VBlgJ6VoFAt4c4mEiLLI="/>
+        <field:display field="uncertaintyType" id="s_com_labsynch_labseer_domain_SubjectValue_uncertaintyType" object="${subjectvalue}" z="S27QEwbeBKBKRpgAHTJXDnr8iTs="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_SubjectValue_lsTransaction" object="${subjectvalue}" z="8wZk4U7K6Xh99LUnMuC1IcRhjZ4="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_SubjectValue_lsType" object="${subjectvalue}" z="pKkQf06PiGKbl6C0K0pUR1EC1B4="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_SubjectValue_lsKind" object="${subjectvalue}" z="ib4oPIQLJLdV8cXCAf6pQ21qYHM="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_SubjectValue_lsTypeAndKind" object="${subjectvalue}" z="HK/inqa2wqOYoNkCs1hNssfrvDU="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_SubjectValue_recordedBy" object="${subjectvalue}" z="iWKV2uC67VOB2NiyYNga/BPo35w="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_SubjectValue_modifiedBy" object="${subjectvalue}" z="xv6dmNME84fTI+Mkuc6DMBQWo9g="/>
+        <field:display field="lsState" id="s_com_labsynch_labseer_domain_SubjectValue_lsState" object="${subjectvalue}" z="W5/d2BdJpTXx+Xp4P2RKG0Y2HNg="/>
+        <field:display field="operatorType" id="s_com_labsynch_labseer_domain_SubjectValue_operatorType" object="${subjectvalue}" z="1BnV6c/BaX+hq3jV7sZ00XyXk+Y="/>
+        <field:display field="operatorKind" id="s_com_labsynch_labseer_domain_SubjectValue_operatorKind" object="${subjectvalue}" z="q7pj8dok3eZw+l4RgIM73zS8iz8="/>
+        <field:display field="operatorTypeAndKind" id="s_com_labsynch_labseer_domain_SubjectValue_operatorTypeAndKind" object="${subjectvalue}" z="nfkBLE648z3vxR3QWYNV++Y1GIM="/>
+        <field:display field="unitType" id="s_com_labsynch_labseer_domain_SubjectValue_unitType" object="${subjectvalue}" z="3lvl82MIG2w19fxlHm5m8SHlF70="/>
+        <field:display field="unitKind" id="s_com_labsynch_labseer_domain_SubjectValue_unitKind" object="${subjectvalue}" z="T1+APWnE4y4xGO3e9Bn0UgXF6Is="/>
+        <field:display field="unitTypeAndKind" id="s_com_labsynch_labseer_domain_SubjectValue_unitTypeAndKind" object="${subjectvalue}" z="TKTksI5PX+n7XrKxgs1lTy+la3I="/>
+        <field:display field="numericValue" id="s_com_labsynch_labseer_domain_SubjectValue_numericValue" object="${subjectvalue}" z="Zl0p8ICcQyJqKwnE8eMuQmGEZkg="/>
+        <field:display field="codeType" id="s_com_labsynch_labseer_domain_SubjectValue_codeType" object="${subjectvalue}" z="gopMzVzjcPyiAYOLIuRoSgymCs0="/>
+        <field:display field="codeKind" id="s_com_labsynch_labseer_domain_SubjectValue_codeKind" object="${subjectvalue}" z="7K0cn+fsnIt5SvCttaKh4XU7cPc="/>
+        <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_SubjectValue_codeTypeAndKind" object="${subjectvalue}" z="50QI9LYVed6ClIvutBmi/QqqjVg="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_SubjectValue_uncertainty" object="${subjectvalue}" z="oKxNCd2+i7ObtUXAcEe7qduX85Y="/>
+        <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_SubjectValue_codeOrigin" object="${subjectvalue}" z="/RlBcSRnPdqPGs0s2xsd8FHENus="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_SubjectValue_deleted" object="${subjectvalue}" z="wOxfRfQjjTAxHohoN8sTItlxalg="/>
+        <field:display field="concentration" id="s_com_labsynch_labseer_domain_SubjectValue_concentration" object="${subjectvalue}" z="ZdxOGB4wbscFLy1j1Hx2ztGH/AE="/>
+        <field:display field="concUnit" id="s_com_labsynch_labseer_domain_SubjectValue_concUnit" object="${subjectvalue}" z="g4zE4K1T24L8eHycP5NrbqgOwvI="/>
+    </page:show>
+</div>

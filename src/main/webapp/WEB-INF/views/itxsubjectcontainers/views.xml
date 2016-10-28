@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="itxsubjectcontainers/list">
+        <put-attribute name="body" value="/WEB-INF/views/itxsubjectcontainers/list.jspx"/>
+    </definition>
+<definition extends="default" name="itxsubjectcontainers/show">
+        <put-attribute name="body" value="/WEB-INF/views/itxsubjectcontainers/show.jspx"/>
+    </definition>
+<definition extends="default" name="itxsubjectcontainers/create">
+        <put-attribute name="body" value="/WEB-INF/views/itxsubjectcontainers/create.jspx"/>
+    </definition>
+<definition extends="default" name="itxsubjectcontainers/update">
+        <put-attribute name="body" value="/WEB-INF/views/itxsubjectcontainers/update.jspx"/>
+    </definition>
+<definition extends="default" name="itxsubjectcontainers/findItxSubjectContainersByCodeNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxsubjectcontainers/findItxSubjectContainersByCodeNameEquals.jspx"/>
+    </definition>
+<definition extends="default" name="itxsubjectcontainers/findItxSubjectContainersByContainer">
+        <put-attribute name="body" value="/WEB-INF/views/itxsubjectcontainers/findItxSubjectContainersByContainer.jspx"/>
+    </definition>
+<definition extends="default" name="itxsubjectcontainers/findItxSubjectContainersByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxsubjectcontainers/findItxSubjectContainersByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="itxsubjectcontainers/findItxSubjectContainersBySubject">
+        <put-attribute name="body" value="/WEB-INF/views/itxsubjectcontainers/findItxSubjectContainersBySubject.jspx"/>
+    </definition>
+</tiles-definitions>

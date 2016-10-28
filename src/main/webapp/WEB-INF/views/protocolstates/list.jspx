@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ProtocolState" items="${protocolstates}" z="MD6rASKqiBhgjXCkwM05hlXta44=">
+        <table:table data="${protocolstates}" id="l_com_labsynch_labseer_domain_ProtocolState" path="/protocolstates" z="GT1qFXJLbtkHvzXgBmB66UFHIAI=">
+            <table:column id="c_com_labsynch_labseer_domain_ProtocolState_recordedBy" property="recordedBy" z="L5Oj+emrA0miAuAyaTCc1EtkpmU="/>
+            <table:column date="true" dateTimePattern="${protocolState_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_ProtocolState_recordedDate" property="recordedDate" z="u2zg4NIZ5xnXRwO16TgCwJEx88U="/>
+            <table:column id="c_com_labsynch_labseer_domain_ProtocolState_modifiedBy" property="modifiedBy" z="jAZ+GWJLXOGeyDeXt4XklYcLaj4="/>
+            <table:column date="true" dateTimePattern="${protocolState_modifieddate_date_format}" id="c_com_labsynch_labseer_domain_ProtocolState_modifiedDate" property="modifiedDate" z="cqu93Ab2iN1RBQ70Q1Nakym+4Uk="/>
+            <table:column id="c_com_labsynch_labseer_domain_ProtocolState_lsType" property="lsType" z="maT7/I8GnVTx9gyta/lt/8YO6SM="/>
+            <table:column id="c_com_labsynch_labseer_domain_ProtocolState_lsKind" property="lsKind" z="HhPu8VWV4zTik1f2/Jh+0yXGtVM="/>
+        </table:table>
+    </page:list>
+</div>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="itxprotocolprotocols/list">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/list.jspx"/>
+    </definition>
+<definition extends="default" name="itxprotocolprotocols/show">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/show.jspx"/>
+    </definition>
+<definition extends="default" name="itxprotocolprotocols/create">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/create.jspx"/>
+    </definition>
+<definition extends="default" name="itxprotocolprotocols/update">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/update.jspx"/>
+    </definition>
+<definition extends="default" name="itxprotocolprotocols/findItxProtocolProtocolsByFirstProtocol">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/findItxProtocolProtocolsByFirstProtocol.jspx"/>
+    </definition>
+<definition extends="default" name="itxprotocolprotocols/findItxProtocolProtocolsByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/findItxProtocolProtocolsByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="itxprotocolprotocols/findItxProtocolProtocolsBySecondProtocol">
+        <put-attribute name="body" value="/WEB-INF/views/itxprotocolprotocols/findItxProtocolProtocolsBySecondProtocol.jspx"/>
+    </definition>
+</tiles-definitions>

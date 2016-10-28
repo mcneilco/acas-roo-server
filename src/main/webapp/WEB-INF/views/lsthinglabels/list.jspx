@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_LsThingLabel" items="${lsthinglabels}" z="ciSyHBBqSpzqEGtI8BAuF5oTyOc=">
+        <table:table data="${lsthinglabels}" id="l_com_labsynch_labseer_domain_LsThingLabel" path="/lsthinglabels" z="lHnh7qkWSlvpUnYCI/Tk8BO2amU=">
+            <table:column id="c_com_labsynch_labseer_domain_LsThingLabel_labelText" property="labelText" z="5UYxm3hh4flExNSp/A0RA8Y5imU="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingLabel_recordedBy" property="recordedBy" z="z78WOqVFZPA3Hn0cAC2UBrCfkOw="/>
+            <table:column date="true" dateTimePattern="${lsThingLabel_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_LsThingLabel_recordedDate" property="recordedDate" z="1tFH20H/BZrh+OlfivLUdF+xRXE="/>
+            <table:column date="true" dateTimePattern="${lsThingLabel_modifieddate_date_format}" id="c_com_labsynch_labseer_domain_LsThingLabel_modifiedDate" property="modifiedDate" z="wHdqz3cdeduaXBNYe8il7moFY7s="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingLabel_physicallyLabled" property="physicallyLabled" z="R4CrFyBhbEvTeU+UFxrjAwUIU1o="/>
+            <table:column id="c_com_labsynch_labseer_domain_LsThingLabel_imageFile" property="imageFile" z="9o5NHSUXQeEoS94ECYAflrBaLpk="/>
+        </table:table>
+    </page:list>
+</div>

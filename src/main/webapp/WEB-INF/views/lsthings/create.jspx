@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_LsThing" modelAttribute="lsThing" path="/lsthings" render="${empty dependencies}" z="pWNH8ebe5HXIg+mGv3lGdwAMkg8=">
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_LsThing_lsType" required="true" z="YNSdSfmqcm6Szq03kl+nUb42OBc="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_LsThing_lsKind" required="true" z="dCPvPtIfimiE4xxSew280U4uLcg="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_LsThing_lsTypeAndKind" z="Js1Q3lFQAjm4IMvr6oLKZ7XYUOU="/>
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_LsThing_codeName" z="Ijf8s2XwXku+hUSSAE+w/s0rauw="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_LsThing_recordedBy" required="true" z="CHYswJSaGYqYGBFtWTuqCS6jwJU="/>
+        <field:datetime dateTimePattern="${lsThing_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_LsThing_recordedDate" required="true" z="0ZwZdiBUiY0ZXfudgwcTNcswUgs="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_LsThing_modifiedBy" z="f8YavGkF5JDVA7jbndndsO82Om8="/>
+        <field:datetime dateTimePattern="${lsThing_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_LsThing_modifiedDate" z="9D2HYqLp3m3z3Y7i16twRGgbLFI="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_LsThing_ignored" z="NgUD7XF8BvTQaK3Ukf05TQn9SXE="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_LsThing_lsTransaction" validationMessageCode="field_invalid_integer" z="DH8Oe/DikCl++DXjk5RCWBZqDBs="/>
+        <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_LsThing_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="Wi4/9lI7UQpqqxEyJuzst06V/MI="/>
+        <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_LsThing_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Ls Thing State" z="ehURGh+FqXqRYzykLz+8deDOqRc="/>
+        <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_LsThing_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Ls Thing Label" z="12n5xnQh5N/ofjPDgywS8liGMVA="/>
+        <field:select field="lsTags" id="c_com_labsynch_labseer_domain_LsThing_lsTags" itemValue="id" items="${lstags}" multiple="true" path="/lstags" z="eztFr5sG4edc+Mim6wGOz68bpxo="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_LsThing_deleted" z="4sKan8d5186dc0o3uLFmCptKhbY="/>
+        <field:simple field="firstLsThings" id="c_com_labsynch_labseer_domain_LsThing_firstLsThings" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Ls Thing Ls Thing" z="Mr1ShR75eeGppaFIvHAdy1r7bi8="/>
+        <field:simple field="secondLsThings" id="c_com_labsynch_labseer_domain_LsThing_secondLsThings" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Ls Thing Ls Thing" z="6dATK+tAVf9wQq2OKwDioFPHWDs="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_LsThing" render="${not empty dependencies}" z="emouCZdnltGsWrcbHnVLP8bvdbo="/>
+</div>

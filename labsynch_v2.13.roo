@@ -1,0 +1,331 @@
+// new flattened models - 2012-11-11
+
+project --topLevelPackage com.labsynch.labseer --projectName labseer
+
+//jpa setup --database MYSQL --provider HIBERNATE --password root --userName root --hostName 127.0.0.1:8889 --databaseName labsynch4
+//jpa setup --provider ECLIPSELINK --database HYPERSONIC_IN_MEMORY
+//jpa setup --provider HIBERNATE --database HYPERSONIC_IN_MEMORY
+jpa setup --provider HIBERNATE --database ORACLE --hostName ora.labsynch.com --databaseName osl --userName labseer2 --password labseer2_password
+
+
+// Create domain entities
+
+entity jpa --class ~.domain.lsTransaction --activeRecord true --testAutomatically --sequenceName LS_TRANSACTION_PKSEQ
+field string --fieldName comments --sizeMax 255
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+
+
+entity jpa --class ~.domain.Author --activeRecord true --testAutomatically --sequenceName AUTHOR_PKSEQ
+field string --fieldName firstName --sizeMax 255
+field string --fieldName middleName --sizeMax 255
+field string --fieldName lastName --sizeMax 255
+field string --fieldName userName --sizeMax 255 --notNull --unique
+field string --fieldName email --sizeMax 255
+field string --fieldName password --sizeMax 255
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+
+entity jpa --class ~.domain.ThingType --activeRecord true --testAutomatically --sequenceName THING_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 128 --notNull --unique
+
+entity jpa --class ~.domain.ThingKind --activeRecord true --testAutomatically --sequenceName THING_KIND_PKSEQ
+field reference --fieldName thingType --type ~.domain.ThingType --notNull
+field string --fieldName kindName --sizeMax 255 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+
+//this is the abstract Thing and Interaction class that will be subclassed --additional fields added later
+// not sure if this should be abstract or concrete -- either way meant to be abstract in nature
+entity jpa --class ~.domain.AbstractThing --activeRecord true --abstract --sequenceName THING_PKSEQ --inheritanceType TABLE_PER_CLASS
+field string --fieldName kind --sizeMax 255 
+field string --fieldName codeName --sizeMax 255 
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --timeFormat MEDIUM
+field string --fieldName modifiedBy --sizeMax 255 
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+field boolean --fieldName ignored --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+
+entity jpa --class ~.domain.InteractionType --activeRecord true --testAutomatically --sequenceName INTERACTION_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 128 --notNull --unique
+field string --fieldName typeVerb --sizeMax 128 --notNull
+
+entity jpa --class ~.domain.InteractionKind --activeRecord true --testAutomatically --sequenceName INTERACTION_KIND_PKSEQ
+field reference --fieldName interactionType --type ~.domain.InteractionType --notNull
+field string --fieldName kindName --sizeMax 255 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+
+
+// interaction is a subclass of thing
+entity jpa --class ~.domain.LsInteraction --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName interactionType --sizeMax 64 --notNull
+field string --fieldName interactionKind --sizeMax 255 --notNull
+field string --fieldName interactionTypeAndKind --sizeMax 255
+field number --fieldName firstThing --type java.lang.Long --column first_thing_id --notNull
+field number --fieldName secondThing --type java.lang.Long --column second_thing_id --notNull
+
+entity jpa --class ~.domain.StateType --activeRecord true --testAutomatically --sequenceName STATE_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 64 --notNull --unique
+
+entity jpa --class ~.domain.StateKind --activeRecord true --testAutomatically --sequenceName STATE_KIND_PKSEQ
+field reference --fieldName stateType --type ~.domain.StateType --notNull
+field string --fieldName kindName --sizeMax 64 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+
+entity jpa --class ~.domain.AbstractState --activeRecord true --abstract --sequenceName STATE_PKSEQ --inheritanceType TABLE_PER_CLASS
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName modifiedBy --sizeMax 255 
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+field string --fieldName stateType --sizeMax 64 --notNull
+field string --fieldName stateKind --sizeMax 255 --notNull
+field string --fieldName stateTypeAndKind --sizeMax 255
+field string --fieldName comments --sizeMax 512
+field boolean --fieldName ignored --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+
+entity jpa --class ~.domain.ValueType --activeRecord true --testAutomatically --sequenceName VALUE_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 64 --notNull --unique
+
+entity jpa --class ~.domain.ValueKind --activeRecord true --testAutomatically --sequenceName VALUE_KIND_PKSEQ
+field reference --fieldName valueType --type ~.domain.ValueType --notNull
+field string --fieldName kindName --sizeMax 64 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+
+//add annotated units 
+
+entity jpa --class ~.domain.UnitType --activeRecord true --testAutomatically --sequenceName UNITS_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 64 --notNull --unique
+
+entity jpa --class ~.domain.UnitKind --activeRecord true --testAutomatically --sequenceName UNITS_KIND_PKSEQ
+field reference --fieldName unitType --type ~.domain.UnitType --notNull
+field string --fieldName kindName --sizeMax 64 --notNull
+field string --fieldName typeAndKind --sizeMax 255 
+
+entity jpa --class ~.domain.OperatorType --activeRecord true --testAutomatically --sequenceName OPERATOR_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 5 --notNull --unique
+
+entity jpa --class ~.domain.AbstractValue --activeRecord true --abstract --sequenceName VALUE_PKSEQ --inheritanceType TABLE_PER_CLASS
+field string --fieldName valueType --sizeMax 64 --notNull
+field string --fieldName valueKind --sizeMax 255 --notNull
+field string --fieldName valueTypeAndKind --sizeMax 255 
+field string --fieldName batchCode --sizeMax 255 
+field string --fieldName stringValue --sizeMax 255
+field string --fieldName fileValue --sizeMax 512
+field string --fieldName urlValue --sizeMax 2000
+field date --fieldName dateValue --type java.util.Date --timeFormat MEDIUM
+field string --fieldName clobValue
+field string --fieldName blobValue
+field string --fieldName valueOperator --sizeMax 5
+field number --fieldName numericValue --type java.lang.Float
+field number --fieldName sigFigs --type java.lang.Integer
+field number --fieldName uncertainty --type java.lang.Float
+field string --fieldName valueUnit --sizeMax 25
+field string --fieldName comments --sizeMax 512
+field boolean --fieldName ignored --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+field boolean --fieldName publicData --primitive --notNull
+
+entity jpa --class ~.domain.LabelType --activeRecord true --testAutomatically --sequenceName LABEL_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 255 --notNull --unique
+
+entity jpa --class ~.domain.LabelKind --activeRecord true --testAutomatically --sequenceName LABEL_KIND_PKSEQ
+field reference --fieldName labelType --type ~.domain.LabelType
+field string --fieldName kindName --sizeMax 255 --notNull
+field string --fieldName typeAndKind --sizeMax 255 
+
+entity jpa --class ~.domain.AbstractLabel --activeRecord true --abstract --sequenceName LABEL_PKSEQ --inheritanceType TABLE_PER_CLASS
+field string --fieldName labelValue --sizeMax 255 --notNull
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+field boolean --fieldName physicallyLabled --primitive
+field string --fieldName imgageFile --sizeMax 255
+field string --fieldName labelType --sizeMax 64 --notNull
+field string --fieldName labelKind --sizeMax 255 --notNull
+field string --fieldName labelTypeAndKind --sizeMax 255 
+field boolean --fieldName preferred --primitive --notNull
+field boolean --fieldName ignored --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+
+entity jpa --class ~.domain.ThingPage --activeRecord true --testAutomatically --sequenceName THING_PAGE_PKSEQ
+field string --fieldName pageName --sizeMax 255
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName pageContent
+field string --fieldName modifiedBy --sizeMax 255 --notNull
+field date --fieldName modifiedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName currentEditor --sizeMax 255 --notNull
+field boolean --fieldName ignored --primitive --notNull
+field boolean --fieldName archived --primitive --notNull
+field reference --fieldName lsTransaction --type ~.domain.lsTransaction
+field reference --fieldName thing --type ~.domain.AbstractThing --cardinality MANY_TO_ONE --joinColumnName thing_id --notNull
+field set --class ~.domain.AbstractThing --fieldName thingPage --type ~.domain.ThingPage --mappedBy thing --notNull false --cardinality ONE_TO_MANY
+
+
+entity jpa --class ~.domain.LabelSequence --activeRecord true --testAutomatically --sequenceName LABEL_SEQUENCE_PKSEQ
+field string --fieldName thingTypeAndKind --sizeMax 255 --notNull
+field string --fieldName labelTypeAndKind --sizeMax 255 --notNull
+field string --fieldName labelPrefix --sizeMax 50 --notNull
+field string --fieldName labelSeparator --sizeMax 10
+field boolean --fieldName groupDigits --primitive
+field number --fieldName digits --type java.lang.Integer
+field number --fieldName latestNumber --type java.lang.Long
+field boolean --fieldName ignored --primitive --notNull
+field date --fieldName modifiedDate --type java.util.Date --timeFormat MEDIUM
+
+
+entity jpa --class ~.domain.ThingPageArchive --activeRecord true --testAutomatically --sequenceName THING_PAGE_ARCHIVE_PKSEQ
+field string --fieldName pageName --sizeMax 255
+field string --fieldName recordedBy --sizeMax 255 --notNull
+field date --fieldName recordedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName pageContent
+field string --fieldName modifiedBy --sizeMax 255 --notNull
+field date --fieldName modifiedDate --type java.util.Date --notNull --timeFormat MEDIUM
+field string --fieldName currentEditor --sizeMax 255
+field boolean --fieldName ignored --primitive --notNull
+field boolean --fieldName archived --primitive
+field number --fieldName lsTransaction --type java.lang.Long
+field number --fieldName thing --type java.lang.Long --column thing_id
+field number --fieldName pageVersion --type java.lang.Integer
+
+// create the State subclasses
+entity jpa --class ~.domain.ProtocolState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.ExperimentState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.AnalysisGroupState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.TreatmentGroupState --extends ~.domain.AbstractState --testAutomatically 
+entity jpa --class ~.domain.SubjectState --extends ~.domain.AbstractState --testAutomatically 
+
+// create the other state values subclasses
+entity jpa --class ~.domain.ProtocolValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.ExperimentValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.AnalysisGroupValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.TreatmentGroupValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.SubjectValue --extends ~.domain.AbstractValue --testAutomatically 
+entity jpa --class ~.domain.ContainerValue --extends ~.domain.AbstractValue --testAutomatically 
+
+
+// create the thing subclasses
+entity jpa --class ~.domain.Protocol --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName shortDescription --sizeMax 255 --notNull
+entity jpa --class ~.domain.ProtocolLabel --extends ~.domain.AbstractLabel --testAutomatically 
+field reference --class ~.domain.ProtocolLabel --fieldName protocol --type ~.domain.Protocol --cardinality MANY_TO_ONE
+
+field reference --class ~.domain.ProtocolState --fieldName protocol --type ~.domain.Protocol --cardinality MANY_TO_ONE --joinColumnName protocol_id --notNull
+field set --class ~.domain.Protocol --fieldName protocolStates --type ~.domain.ProtocolState --mappedBy protocol --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.ProtocolValue --fieldName protocolState --type ~.domain.ProtocolState --cardinality MANY_TO_ONE --joinColumnName protocol_state_id --notNull
+field set --class ~.domain.ProtocolState --fieldName protocolValues --type ~.domain.ProtocolValue --mappedBy protocolState --notNull false --cardinality ONE_TO_MANY
+
+
+entity jpa --class ~.domain.Experiment --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName shortDescription --sizeMax 255 --notNull
+entity jpa --class ~.domain.ExperimentLabel --extends ~.domain.AbstractLabel --testAutomatically 
+field reference --class ~.domain.ExperimentLabel --fieldName experiment --type ~.domain.Experiment --cardinality MANY_TO_ONE
+field reference --fieldName protocol --type ~.domain.Protocol --cardinality MANY_TO_ONE --joinColumnName protocol_id --notNull
+field set --class ~.domain.Protocol --fieldName experiments --type ~.domain.Experiment --mappedBy protocol --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.ExperimentState --fieldName experiment --type ~.domain.Experiment --cardinality MANY_TO_ONE --joinColumnName experiment_id --notNull
+field set --class ~.domain.Experiment --fieldName experimentStates --type ~.domain.ExperimentState --mappedBy experiment --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.ExperimentValue --fieldName experimentState --type ~.domain.ExperimentState --cardinality MANY_TO_ONE --joinColumnName experiment_state_id --notNull
+field set --class ~.domain.ExperimentState --fieldName experimentValues --type ~.domain.ExperimentValue --mappedBy experimentState --notNull false --cardinality ONE_TO_MANY
+
+
+entity jpa --class ~.domain.AnalysisGroup --extends ~.domain.AbstractThing --testAutomatically 
+entity jpa --class ~.domain.AnalysisGroupLabel --extends ~.domain.AbstractLabel --testAutomatically 
+field reference --class ~.domain.AnalysisGroupLabel --fieldName analysisGroup --type ~.domain.AnalysisGroup --cardinality MANY_TO_ONE
+field reference --fieldName experiment --type ~.domain.Experiment --cardinality MANY_TO_ONE --joinColumnName experiment_id --notNull
+field set --class ~.domain.Experiment --fieldName analysisGroups --type ~.domain.AnalysisGroup --mappedBy experiment --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.AnalysisGroupState --fieldName analysisGroup --type ~.domain.AnalysisGroup --cardinality MANY_TO_ONE --joinColumnName experiment_group_id --notNull
+field set --class ~.domain.AnalysisGroup --fieldName analysisGroupStates --type ~.domain.AnalysisGroupState --mappedBy analysisGroup --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.AnalysisGroupValue --fieldName analysisGroupState --type ~.domain.AnalysisGroupState --cardinality MANY_TO_ONE --joinColumnName experiment_state_id --notNull
+field set --class ~.domain.AnalysisGroupState --fieldName analysisGroupValues --type ~.domain.AnalysisGroupValue --mappedBy analysisGroupState --notNull false --cardinality ONE_TO_MANY
+
+
+
+entity jpa --class ~.domain.TreatmentGroup --extends ~.domain.AbstractThing --testAutomatically 
+field reference --fieldName analysisGroup --type ~.domain.AnalysisGroup --cardinality MANY_TO_ONE --joinColumnName experiment_group_id --notNull
+field set --class ~.domain.AnalysisGroup --fieldName treatmentGroups --type ~.domain.TreatmentGroup --mappedBy analysisGroup --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.TreatmentGroupState --fieldName treatmentGroup --type ~.domain.TreatmentGroup --cardinality MANY_TO_ONE --joinColumnName treatment_group_id --notNull
+field set --class ~.domain.TreatmentGroup --fieldName treatmentGroupStates --type ~.domain.TreatmentGroupState --mappedBy treatmentGroup --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.TreatmentGroupValue --fieldName treatmentGroupState --type ~.domain.TreatmentGroupState --cardinality MANY_TO_ONE --joinColumnName treatment_state_id --notNull
+field set --class ~.domain.TreatmentGroupState --fieldName treatmentGroupValues --type ~.domain.TreatmentGroupValue --mappedBy treatmentGroupState --notNull false --cardinality ONE_TO_MANY
+
+
+entity jpa --class ~.domain.Subject --extends ~.domain.AbstractThing --testAutomatically 
+field reference --fieldName treatmentGroup --type ~.domain.TreatmentGroup --cardinality MANY_TO_ONE --joinColumnName treatment_group_id --notNull
+field set --class ~.domain.TreatmentGroup --fieldName subjects --type ~.domain.Subject --mappedBy treatmentGroup --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.SubjectState --fieldName subject --type ~.domain.Subject --cardinality MANY_TO_ONE --joinColumnName subject_id --notNull
+field set --class ~.domain.Subject --fieldName subjectStates --type ~.domain.SubjectState --mappedBy subject --notNull false --cardinality ONE_TO_MANY
+field reference --class ~.domain.SubjectValue --fieldName subjectState --type ~.domain.SubjectState --cardinality MANY_TO_ONE --joinColumnName subject_state_id --notNull
+field set --class ~.domain.SubjectState --fieldName subjectValues --type ~.domain.SubjectValue --mappedBy subjectState --notNull false --cardinality ONE_TO_MANY
+
+
+entity jpa --class ~.domain.ContainerType --activeRecord true --testAutomatically --sequenceName CONTAINER_TYPE_PKSEQ
+field string --fieldName typeName --sizeMax 128 --notNull --unique
+
+entity jpa --class ~.domain.ContainerKind --activeRecord true --testAutomatically --sequenceName CONTAINER_KIND_PKSEQ
+field reference --fieldName containerType --type ~.domain.ContainerType --notNull
+field string --fieldName kindName --sizeMax 255 --notNull
+field string --fieldName typeAndKind --sizeMax 255
+
+/////////
+
+entity jpa --class ~.domain.Container --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName containterType --sizeMax 255 --notNull
+field string --fieldName containerKind --sizeMax 255 --notNull
+field string --fieldName containerTypeAndKind --sizeMax 255 
+field string --fieldName name --sizeMax 255 --notNull
+field string --fieldName description --sizeMax 255 --notNull
+entity jpa --class ~.domain.ContainerLabel --extends ~.domain.AbstractLabel --testAutomatically 
+field reference --class ~.domain.ContainerLabel --fieldName container --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName container_id --notNull
+field set --class ~.domain.Container --fieldName containerLabels --type ~.domain.ContainerLabel --mappedBy container --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ContainerState --extends ~.domain.AbstractState --testAutomatically 
+field reference --class ~.domain.ContainerState --fieldName container --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName container_id --notNull
+field set --class ~.domain.Container --fieldName containerStates --type ~.domain.ContainerState --mappedBy container --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ContainerValue --extends ~.domain.AbstractValue --testAutomatically 
+field reference --class ~.domain.ContainerValue --fieldName containerState --type ~.domain.ContainerState --cardinality MANY_TO_ONE --joinColumnName container_state_id --notNull
+field set --class ~.domain.ContainerState --fieldName containerValues --type ~.domain.ContainerValue --mappedBy containerState --notNull false --cardinality ONE_TO_MANY
+
+
+entity jpa --class ~.domain.ItxContainerContainer --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName interactionType --sizeMax 64 --notNull
+field string --fieldName interactionKind --sizeMax 255 --notNull
+field string --fieldName interactionTypeAndKind --sizeMax 255 
+field reference --fieldName firstContainer --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName first_container_id --notNull
+field reference --fieldName secondContainer --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName second_container_id --notNull
+field set --class ~.domain.Container --fieldName firstContainers --type ~.domain.ItxContainerContainer --mappedBy secondContainer --notNull false --cardinality ONE_TO_MANY
+field set --class ~.domain.Container --fieldName secondContainers --type ~.domain.ItxContainerContainer --mappedBy firstContainer --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxContainerContainerState --extends ~.domain.AbstractState --testAutomatically 
+field reference --class ~.domain.ItxContainerContainerState --fieldName itxContainerContainer --type ~.domain.ItxContainerContainer --cardinality MANY_TO_ONE 
+field set --class ~.domain.ItxContainerContainer --fieldName itxContainerContainerStates --type ~.domain.ItxContainerContainerState --mappedBy itxContainerContainer --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxContainerContainerValue --extends ~.domain.AbstractValue --testAutomatically 
+field reference --class ~.domain.ItxContainerContainerValue --fieldName itxContainerContainerState --type ~.domain.ItxContainerContainerState --cardinality MANY_TO_ONE
+field set --class ~.domain.ItxContainerContainerState --fieldName itxContainerContainerValues --type ~.domain.ItxContainerContainerValue --mappedBy itxContainerContainerState --notNull false --cardinality ONE_TO_MANY
+
+
+entity jpa --class ~.domain.ItxSubjectContainer --extends ~.domain.AbstractThing --testAutomatically 
+field string --fieldName interactionType --sizeMax 64 --notNull
+field string --fieldName interactionKind --sizeMax 255 --notNull
+field string --fieldName interactionTypeAndKind --sizeMax 255
+field reference --fieldName subject --type ~.domain.Subject --cardinality MANY_TO_ONE --joinColumnName subject_id --notNull
+field reference --fieldName container --type ~.domain.Container --cardinality MANY_TO_ONE --joinColumnName container_id --notNull
+field set --class ~.domain.Subject --fieldName containers --type ~.domain.ItxSubjectContainer --mappedBy subject --notNull false --cardinality ONE_TO_MANY
+field set --class ~.domain.Container --fieldName subjects --type ~.domain.ItxSubjectContainer --mappedBy container --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxSubjectContainerState --extends ~.domain.AbstractState --testAutomatically 
+field reference --class ~.domain.ItxSubjectContainerState --fieldName itxSubjectContainer --type ~.domain.ItxSubjectContainer --cardinality MANY_TO_ONE 
+field set --class ~.domain.ItxSubjectContainer --fieldName itxSubjectContainerStates --type ~.domain.ItxSubjectContainerState --mappedBy itxSubjectContainer --notNull false --cardinality ONE_TO_MANY
+entity jpa --class ~.domain.ItxSubjectContainerValue --extends ~.domain.AbstractValue --testAutomatically 
+field reference --class ~.domain.ItxSubjectContainerValue --fieldName itxSubjectContainerState --type ~.domain.ItxSubjectContainerState --cardinality MANY_TO_ONE
+field set --class ~.domain.ItxSubjectContainerState --fieldName itxSubjectContainerValues --type ~.domain.ItxSubjectContainerValue --mappedBy itxSubjectContainerState --notNull false --cardinality ONE_TO_MANY
+
+finder -add findBy
+
+// Offer JSON remoting for all domain types through Spring MVC
+//json all --deepSerialize
+json all
+web mvc json setup
+web mvc json all --package ~.web
+web mvc setup
+web mvc all --package ~.web
+web mvc finder all
+logging setup --level DEBUG
+

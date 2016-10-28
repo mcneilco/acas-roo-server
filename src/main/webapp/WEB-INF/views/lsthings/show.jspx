@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_LsThing" object="${lsthing}" path="/lsthings" z="fOOo73GPl6AtwWvVFteeEjO/I04=">
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_LsThing_lsType" object="${lsthing}" z="IgRmyO2utEb4wtk/H/D9+cyO+3o="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_LsThing_lsKind" object="${lsthing}" z="V5xexGCF4flslKJW52q3I3aml+M="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_LsThing_lsTypeAndKind" object="${lsthing}" z="nRxwNOBTLj4JEGdi7QlI8h1wMmU="/>
+        <field:display field="codeName" id="s_com_labsynch_labseer_domain_LsThing_codeName" object="${lsthing}" z="K1ClFtZ7QSfYz06dE7jEZ2509fg="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_LsThing_recordedBy" object="${lsthing}" z="njSFF8oGf3CQYqesgjrpiBngRhc="/>
+        <field:display date="true" dateTimePattern="${lsThing_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_LsThing_recordedDate" object="${lsthing}" z="ZO3x27FoSxMl+vgS3xV18wNeQ1Q="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_LsThing_modifiedBy" object="${lsthing}" z="bQAeC86SI8tjS2khtZFwvxt++tA="/>
+        <field:display date="true" dateTimePattern="${lsThing_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_LsThing_modifiedDate" object="${lsthing}" z="PaTLyktPYCj464Cvs2ZLUj9wPe0="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_LsThing_ignored" object="${lsthing}" z="urFNF2tGmw/0j99uxETtlZJuYJo="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_LsThing_lsTransaction" object="${lsthing}" z="NlQL9XnCSzcJYMMC3r9JnerQswo="/>
+        <field:display field="lsTags" id="s_com_labsynch_labseer_domain_LsThing_lsTags" object="${lsthing}" z="nVOJfjwMzcHl7uj7Obtyjw7mtpU="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_LsThing_deleted" object="${lsthing}" z="5UAGPOMMNEVGkouWXstNus91Nxk="/>
+    </page:show>
+</div>

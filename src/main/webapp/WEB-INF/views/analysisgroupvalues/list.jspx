@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_AnalysisGroupValue" items="${analysisgroupvalues}" z="3+uAL3ysQ+4dVgu+RvJHag+E65w=">
+        <table:table data="${analysisgroupvalues}" id="l_com_labsynch_labseer_domain_AnalysisGroupValue" path="/analysisgroupvalues" z="B4S5XcT0OPFgyZE5VKxbwIfqQys=">
+            <table:column id="c_com_labsynch_labseer_domain_AnalysisGroupValue_lsType" property="lsType" z="dLiu23RtzPNIoGTGais0Pw8JIZU="/>
+            <table:column id="c_com_labsynch_labseer_domain_AnalysisGroupValue_lsKind" property="lsKind" z="HwCAzOhnuCEo1toap8hpPDs1b64="/>
+            <table:column id="c_com_labsynch_labseer_domain_AnalysisGroupValue_lsTypeAndKind" property="lsTypeAndKind" z="vTQEiEgt7C//u3k9eNjyHmLY+ds="/>
+            <table:column id="c_com_labsynch_labseer_domain_AnalysisGroupValue_ignored" property="ignored" z="8g6+W7HEOeBlkQp1xUXKZoYuYw0="/>
+            <table:column id="c_com_labsynch_labseer_domain_AnalysisGroupValue_publicData" property="publicData" z="srtHgGNEoakzpP4vSLY2ArmSeII="/>
+            <table:column id="c_com_labsynch_labseer_domain_AnalysisGroupValue_deleted" property="deleted" z="s/epX1BospH8T/+2KU+gu7dBNlA="/>
+        </table:table>
+    </page:list>
+</div>

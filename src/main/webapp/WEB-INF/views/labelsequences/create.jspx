@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_LabelSequence" modelAttribute="labelSequence" path="/labelsequences" render="${empty dependencies}" z="4fKMQgRCI1WKmUc6KNSRUGQ2rg4=">
+        <field:textarea field="labelPrefix" id="c_com_labsynch_labseer_domain_LabelSequence_labelPrefix" required="true" z="TmreX6TcnlIGBfvvPFR5UJFrMes="/>
+        <field:input field="labelSeparator" id="c_com_labsynch_labseer_domain_LabelSequence_labelSeparator" max="10" z="Lp403JlrZDjlKU/iTzIuHtGAquM="/>
+        <field:checkbox field="groupDigits" id="c_com_labsynch_labseer_domain_LabelSequence_groupDigits" z="96F2mfaMeqM4oEh6g48PKUTKMsc="/>
+        <field:input field="digits" id="c_com_labsynch_labseer_domain_LabelSequence_digits" validationMessageCode="field_invalid_integer" z="Yz1rm659ksOPpq1ddG3sLu659Rs="/>
+        <field:input field="latestNumber" id="c_com_labsynch_labseer_domain_LabelSequence_latestNumber" required="true" validationMessageCode="field_invalid_integer" z="rkiRtMAb41tdu9+UQHXXhv0PYsw="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_LabelSequence_ignored" z="xaS2k9WqBVipQT6+hYtju7nE/fY="/>
+        <field:datetime dateTimePattern="${labelSequence_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_LabelSequence_modifiedDate" z="Q53n+HbfaSSw3WZSp3t4lJPVwI8="/>
+        <field:textarea field="thingTypeAndKind" id="c_com_labsynch_labseer_domain_LabelSequence_thingTypeAndKind" required="true" z="dwWiDrt2I3tzeELKCTUQG5ke8yc="/>
+        <field:textarea field="labelTypeAndKind" id="c_com_labsynch_labseer_domain_LabelSequence_labelTypeAndKind" required="true" z="NR9F/oL7qaHzIIpRbuTe25F5Z9I="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_LabelSequence" render="${not empty dependencies}" z="/LrSJfkT9qIcG0KvZgkOnhTTnq0="/>
+</div>

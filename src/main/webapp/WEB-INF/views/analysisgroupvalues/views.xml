@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="analysisgroupvalues/list">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/list.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/show">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/show.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/create">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/create.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/update">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/update.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/findAnalysisGroupValuesByLsState">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/findAnalysisGroupValuesByLsState.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/findAnalysisGroupValuesByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/findAnalysisGroupValuesByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/findAnalysisGroupValuesByCodeValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/findAnalysisGroupValuesByCodeValueEquals.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgroupvalues/findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot.jspx"/>
+    </definition>
+</tiles-definitions>

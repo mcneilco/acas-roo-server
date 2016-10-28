@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_User" modelAttribute="user" path="/users" render="${empty dependencies}" z="EIbh3JAkhJcc/OF4JIyFQyAfyw4=">
+        <field:textarea field="firstName" id="c_com_labsynch_labseer_domain_User_firstName" required="true" z="oqelF66z5UriSpH/LeB202uEFKU="/>
+        <field:textarea field="lastName" id="c_com_labsynch_labseer_domain_User_lastName" required="true" z="YFaVQquwO5LeBR6xpCkc+5G5xxU="/>
+        <field:input field="emailAddress" id="c_com_labsynch_labseer_domain_User_emailAddress" min="1" required="true" validationMessageCode="field_invalid_email" z="giZNP6uYWpk2Zy0vnKIylKDRrpg="/>
+        <field:textarea field="password" id="c_com_labsynch_labseer_domain_User_password" required="true" z="s9th6YxQEuXirVmYw4afGavQQAM="/>
+        <field:datetime dateTimePattern="${user_activationdate_date_format}" field="activationDate" id="c_com_labsynch_labseer_domain_User_activationDate" z="zmGEZzVFEnqIo3AbY/fMREnNMq4="/>
+        <field:input field="activationKey" id="c_com_labsynch_labseer_domain_User_activationKey" z="FO9vmGmvNNKNaYufyBLMUDQisKk="/>
+        <field:checkbox field="enabled" id="c_com_labsynch_labseer_domain_User_enabled" z="1Lqhm/P+WyWC1jqgYac3qo2DayQ="/>
+        <field:checkbox field="locked" id="c_com_labsynch_labseer_domain_User_locked" z="OpbLhYCHSIt3eUfmCDe359aQ9Xc="/>
+        <field:textarea field="userName" id="c_com_labsynch_labseer_domain_User_userName" required="true" z="SY0tyk1YbTyEfu3mVD2D+ZafBJ4="/>
+        <field:textarea field="email" id="c_com_labsynch_labseer_domain_User_email" required="true" validationMessageCode="field_invalid_email" z="Lwm1vXSO/T7yszctvFcHEKEOD2k="/>
+        <field:datetime dateTimePattern="${user_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_User_recordedDate" required="true" z="z67nFW1h/DTH/SKjviqC98STZP0="/>
+        <field:datetime dateTimePattern="${user_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_User_modifiedDate" z="J+yWmVpofJLrtoDMxLFr0q5ZrVk="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_User" render="${not empty dependencies}" z="IjXHIAunrc4aXwKBwOSoFckJqxc="/>
+</div>

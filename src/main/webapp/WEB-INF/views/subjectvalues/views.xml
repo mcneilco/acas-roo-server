@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="subjectvalues/list">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/list.jspx"/>
+    </definition>
+<definition extends="default" name="subjectvalues/show">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/show.jspx"/>
+    </definition>
+<definition extends="default" name="subjectvalues/create">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/create.jspx"/>
+    </definition>
+<definition extends="default" name="subjectvalues/update">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/update.jspx"/>
+    </definition>
+<definition extends="default" name="subjectvalues/findSubjectValuesByLsState">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/findSubjectValuesByLsState.jspx"/>
+    </definition>
+<definition extends="default" name="subjectvalues/findSubjectValuesByCodeValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/findSubjectValuesByCodeValueEquals.jspx"/>
+    </definition>
+<definition extends="default" name="subjectvalues/findSubjectValuesByIgnoredNotAndCodeValueEquals">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/findSubjectValuesByIgnoredNotAndCodeValueEquals.jspx"/>
+    </definition>
+<definition extends="default" name="subjectvalues/findSubjectValuesByLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/findSubjectValuesByLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="subjectvalues/findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/subjectvalues/findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+</tiles-definitions>

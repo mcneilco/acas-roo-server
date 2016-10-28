@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_Author" modelAttribute="author" path="/authors" versionField="Version" z="74SATn4hjSB9Z+IbmAN1ILKXZT0=">
+        <field:textarea field="firstName" id="c_com_labsynch_labseer_domain_Author_firstName" required="true" z="+CweY3nOz9RsK9se5yCsbdaFsa4="/>
+        <field:textarea field="lastName" id="c_com_labsynch_labseer_domain_Author_lastName" required="true" z="LN9JI6g+rvU3ip6ug3rG5N6PtW0="/>
+        <field:textarea field="userName" id="c_com_labsynch_labseer_domain_Author_userName" required="true" z="NGyLkXmGZf6sexoin1eSzcne7S0="/>
+        <field:textarea field="password" id="c_com_labsynch_labseer_domain_Author_password" required="true" z="gCq40rVJ58SRCe1R592vFrcQbMA="/>
+        <field:datetime dateTimePattern="${author_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_Author_recordedDate" required="true" z="w2ud4TcqYghbHGu11BcyNEW4zBQ="/>
+        <field:datetime dateTimePattern="${author_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_Author_modifiedDate" z="jGtFRtJnX81sCSAwqLrY8AaDzZ4="/>
+        <field:datetime dateTimePattern="${author_activationdate_date_format}" field="activationDate" id="c_com_labsynch_labseer_domain_Author_activationDate" z="mabBBC1VTUilgd/wmGXPtZzIqnY="/>
+        <field:input field="activationKey" id="c_com_labsynch_labseer_domain_Author_activationKey" z="uJ0/CjefPXN2tn1QJlNm+0JAp6o="/>
+        <field:checkbox field="enabled" id="c_com_labsynch_labseer_domain_Author_enabled" z="9XoGY/bER5TmgKOE7gZ6PR/OeUc="/>
+        <field:checkbox field="locked" id="c_com_labsynch_labseer_domain_Author_locked" z="8M0Ii2lZeU9ruuceiDa7ltfCnf4="/>
+        <field:simple field="authorRoles" id="c_com_labsynch_labseer_domain_Author_authorRoles" messageCode="entity_reference_not_managed" messageCodeAttribute="Author Role" z="zKF3psWZovIyMG/OUzFKOo+DroE="/>
+        <field:textarea field="emailAddress" id="c_com_labsynch_labseer_domain_Author_emailAddress" required="true" validationMessageCode="field_invalid_email" z="4vf7NdUlhFgYUCJdCnwAmc1tr2c="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_Author_lsType" required="true" z="G73YIpg5SYNvr4p16aTJ5KxDLzc="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_Author_lsKind" required="true" z="RjFHi52naLc0tnhOKtVLZDteSpY="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_Author_lsTypeAndKind" z="QoUzRGCfCLz+L+qE5bupunFN1ag="/>
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_Author_codeName" z="p6lKn1DiZtq9OPgLnVNuEOLW73g="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_Author_recordedBy" required="true" z="cHiGaCdzR1VIJiL7rwSe/CKAflw="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_Author_modifiedBy" z="PGov3CnwxuYfQUpO2aea5AcoavQ="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_Author_ignored" z="g0UrRbrTiXYOuPOu5GonQaB7NiI="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_Author_deleted" z="4p4nr9sv+Tiad6hqEbi84KcVGw4="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_Author_lsTransaction" validationMessageCode="field_invalid_integer" z="rFJw8hnMH62K5846nuolmglUUbk="/>
+        <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_Author_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="X1Xh6o5jO6I3rpNn+v01DYQbnjU="/>
+        <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_Author_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Author State" z="Oo/9YCDp2ZqgPR6urCnwtEqr6+Y="/>
+        <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_Author_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Author Label" z="JFe5EmVXw1We53osmQ6FfJgrJso="/>
+    </form:update>
+</div>

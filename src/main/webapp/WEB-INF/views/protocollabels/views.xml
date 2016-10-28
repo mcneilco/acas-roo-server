@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="protocollabels/list">
+        <put-attribute name="body" value="/WEB-INF/views/protocollabels/list.jspx"/>
+    </definition>
+<definition extends="default" name="protocollabels/show">
+        <put-attribute name="body" value="/WEB-INF/views/protocollabels/show.jspx"/>
+    </definition>
+<definition extends="default" name="protocollabels/create">
+        <put-attribute name="body" value="/WEB-INF/views/protocollabels/create.jspx"/>
+    </definition>
+<definition extends="default" name="protocollabels/update">
+        <put-attribute name="body" value="/WEB-INF/views/protocollabels/update.jspx"/>
+    </definition>
+<definition extends="default" name="protocollabels/findProtocolLabelsByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/protocollabels/findProtocolLabelsByLsTransactionEquals.jspx"/>
+    </definition>
+<definition extends="default" name="protocollabels/findProtocolLabelsByProtocol">
+        <put-attribute name="body" value="/WEB-INF/views/protocollabels/findProtocolLabelsByProtocol.jspx"/>
+    </definition>
+<definition extends="default" name="protocollabels/findProtocolLabelsByLabelTextEqualsAndIgnoredNot">
+        <put-attribute name="body" value="/WEB-INF/views/protocollabels/findProtocolLabelsByLabelTextEqualsAndIgnoredNot.jspx"/>
+    </definition>
+<definition extends="default" name="protocollabels/findProtocolLabelsByLabelTextLike">
+        <put-attribute name="body" value="/WEB-INF/views/protocollabels/findProtocolLabelsByLabelTextLike.jspx"/>
+    </definition>
+</tiles-definitions>

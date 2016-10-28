@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_ThingKind" modelAttribute="thingKind" path="/thingkinds" versionField="Version" z="HwPca5FFG6di+1vXZBLQx1OLZow=">
+        <field:textarea field="kindName" id="c_com_labsynch_labseer_domain_ThingKind_kindName" required="true" z="KvjrCNOpqb33kW7quSusdMA3bug="/>
+        <field:select field="lsType" id="c_com_labsynch_labseer_domain_ThingKind_lsType" itemValue="id" items="${thingtypes}" path="/thingtypes" required="true" z="TZs6ko/8VogGZX76vCQ3b8EZCEY="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ThingKind_lsTypeAndKind" z="mnau6V9TENFYA/PUX1+KbgLzOUE="/>
+    </form:update>
+</div>

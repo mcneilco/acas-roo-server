@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_AnalysisGroup" modelAttribute="analysisGroup" path="/analysisgroups" versionField="Version" z="d58uIrSkjjzhuoWsZFMNLs1Nk6Y=">
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_AnalysisGroup_recordedBy" required="true" z="m91ZJK+ACRZenaBMMHPPkKhJ7To="/>
+        <field:datetime dateTimePattern="${analysisGroup_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_AnalysisGroup_recordedDate" required="true" z="iVQaHem1fjw1WIQefj3FoQiAiX0="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_AnalysisGroup_modifiedBy" z="B4SOMuJ67cz0LZkbtO5vtf1lCYg="/>
+        <field:datetime dateTimePattern="${analysisGroup_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_AnalysisGroup_modifiedDate" z="KU3sm+ZnayA6idrGNoS5Xk0mzwA="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_AnalysisGroup_ignored" z="VUdbUDxP8WNfHfSGYQoCCZMHRvo="/>
+        <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_AnalysisGroup_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="3VtCBUbDpcw8Io+zh2BCVjov7lk="/>
+        <field:select field="treatmentGroups" id="c_com_labsynch_labseer_domain_AnalysisGroup_treatmentGroups" itemValue="id" items="${treatmentgroups}" multiple="true" path="/treatmentgroups" z="46EOqaVUM6Y2GIm7V0pjbpj4zsk="/>
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_AnalysisGroup_codeName" z="NU7XVuMUu/5RhUGPDOUJjN27Ws4="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_AnalysisGroup_lsType" required="true" z="ahMbfkQ6/2CZLD/qwygLqYq4CYE="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_AnalysisGroup_lsKind" required="true" z="k/VjFlxH1EU5eqoTZruWYqhj/u4="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_AnalysisGroup_lsTypeAndKind" z="DUaAfJuj3wsDJ/kcL+gLQkWc6kA="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_AnalysisGroup_lsTransaction" validationMessageCode="field_invalid_integer" z="BIRWeOS9FMkxaBe6HMRedFXWJWQ="/>
+        <field:simple field="lsLabels" id="c_com_labsynch_labseer_domain_AnalysisGroup_lsLabels" messageCode="entity_reference_not_managed" messageCodeAttribute="Analysis Group Label" z="a8+acJib/Xn7ZfL0Hmx+Pl56+sc="/>
+        <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_AnalysisGroup_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Analysis Group State" z="9YhCzAVknbXzGB7J7bbEsqizuvk="/>
+        <field:select field="experiments" id="c_com_labsynch_labseer_domain_AnalysisGroup_experiments" itemValue="id" items="${experiments}" multiple="true" path="/experiments" z="XpN9vbeApCeaPGPPUYCRrXGtTds="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_AnalysisGroup_deleted" z="nuGzypv5y4z6wWgwoZ5c5xyUvUQ="/>
+    </form:update>
+</div>

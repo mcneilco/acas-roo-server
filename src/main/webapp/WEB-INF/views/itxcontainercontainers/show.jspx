@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ItxContainerContainer" object="${itxcontainercontainer}" path="/itxcontainercontainers" z="g7kZfMJq9ICYsA+58mRU5pMbDec=">
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_ItxContainerContainer_recordedBy" object="${itxcontainercontainer}" z="UIsyp1Yt/Vl7n74pjXDSXAi1Aa8="/>
+        <field:display date="true" dateTimePattern="${itxContainerContainer_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_ItxContainerContainer_recordedDate" object="${itxcontainercontainer}" z="RIUKmFHY9+HvhAUhkaW2o8XJMjg="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_ItxContainerContainer_modifiedBy" object="${itxcontainercontainer}" z="LYYeY6kJHCYdFuOyR2pe2YDrh0c="/>
+        <field:display date="true" dateTimePattern="${itxContainerContainer_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_ItxContainerContainer_modifiedDate" object="${itxcontainercontainer}" z="6yOFVgcBo183RzfrUEK/yu/KgbU="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ItxContainerContainer_ignored" object="${itxcontainercontainer}" z="h9xbC3WRzEjN5fR0I1rr+W1cGHs="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_ItxContainerContainer_lsTransaction" object="${itxcontainercontainer}" z="oqeFw+dBFEQ9Tf5QMH2FfeXMMUA="/>
+        <field:display field="firstContainer" id="s_com_labsynch_labseer_domain_ItxContainerContainer_firstContainer" object="${itxcontainercontainer}" z="jTx5QmAkCDz3e/U3//Pz52dlluU="/>
+        <field:display field="secondContainer" id="s_com_labsynch_labseer_domain_ItxContainerContainer_secondContainer" object="${itxcontainercontainer}" z="asQG9Qhmx4bPpbg9OZOLYw6FcDE="/>
+        <field:display field="codeName" id="s_com_labsynch_labseer_domain_ItxContainerContainer_codeName" object="${itxcontainercontainer}" z="IjHxpgjGk5ZHw/rSdnSW1ImfXq4="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_ItxContainerContainer_lsType" object="${itxcontainercontainer}" z="phgOTgZhbgiKyDxrF2r70Obaasc="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ItxContainerContainer_lsKind" object="${itxcontainercontainer}" z="x/zHJaFf5N11Kh5Tnse3eBO3+Z8="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_ItxContainerContainer_lsTypeAndKind" object="${itxcontainercontainer}" z="2N2/CKKopNMlrJ9pUGvswCB3OLY="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ItxContainerContainer_deleted" object="${itxcontainercontainer}" z="0JL3fuvIQ7xcf5ZJ90GUUhN5vC8="/>
+    </page:show>
+</div>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_ItxSubjectContainer" modelAttribute="itxSubjectContainer" path="/itxsubjectcontainers" render="${empty dependencies}" z="zxCrUcbpz0FNhidIWeZE4ar9+co=">
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_recordedBy" required="true" z="sot7UHNpY+CbUOODfDWo/iPi7Zc="/>
+        <field:datetime dateTimePattern="${itxSubjectContainer_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_recordedDate" required="true" z="/e3jvmJvzZO+sFDi7RBI1V2+/Zg="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_modifiedBy" z="gFBVm8EV1Eo6cG22K1yNQKwZys0="/>
+        <field:datetime dateTimePattern="${itxSubjectContainer_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_modifiedDate" z="SdAHWdKoE8YSvCRx9k0a3hI6Vsw="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_ignored" z="05fRQrETLHfNG7pm3ag0ixmWUA8="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_lsTransaction" validationMessageCode="field_invalid_integer" z="NwcS4EteDUWWmF6IEd9rt803XA0="/>
+        <field:simple field="thingPage" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_thingPage" messageCode="entity_reference_not_managed" messageCodeAttribute="Thing Page" z="aEhMPL/Vy5GaT70rOeLgqwKcBNM="/>
+        <field:select field="subject" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_subject" itemValue="id" items="${subjects}" path="/subjects" required="true" z="/Ng9SUpU4O3BOJASXk8ZOSJE/gg="/>
+        <field:select field="container" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_container" itemValue="id" items="${containers}" path="/containers" required="true" z="B2hP9oRtxm49/a00YzosFqMX1U8="/>
+        <field:textarea field="codeName" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_codeName" z="FQmt7xHJJEW0NtDFeu4YPiEIQ9k="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_lsType" required="true" z="1EDUb7chOfWkDgMKNBU+UUC7/AI="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_lsKind" required="true" z="gkCYoBpjzoajK/tVoiMtEdiF7rI="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_lsTypeAndKind" z="ok0NHPvMgzlg2ukKH8/Bk+s8TaA="/>
+        <field:simple field="lsStates" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_lsStates" messageCode="entity_reference_not_managed" messageCodeAttribute="Itx Subject Container State" z="1pzwm0tUohhW0psdDUJbXPGCXlk="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_ItxSubjectContainer_deleted" z="XGquMMW6jQKopgRcJxFL2BQAQoU="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_ItxSubjectContainer" render="${not empty dependencies}" z="308W862JPLq+kRLIg+EZo+tpPlo="/>
+</div>

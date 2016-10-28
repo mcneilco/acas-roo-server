@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="codekinds/list">
+        <put-attribute name="body" value="/WEB-INF/views/codekinds/list.jspx"/>
+    </definition>
+<definition extends="default" name="codekinds/show">
+        <put-attribute name="body" value="/WEB-INF/views/codekinds/show.jspx"/>
+    </definition>
+<definition extends="default" name="codekinds/create">
+        <put-attribute name="body" value="/WEB-INF/views/codekinds/create.jspx"/>
+    </definition>
+<definition extends="default" name="codekinds/update">
+        <put-attribute name="body" value="/WEB-INF/views/codekinds/update.jspx"/>
+    </definition>
+<definition extends="default" name="codekinds/findCodeKindsByKindNameEqualsAndLsType">
+        <put-attribute name="body" value="/WEB-INF/views/codekinds/findCodeKindsByKindNameEqualsAndLsType.jspx"/>
+    </definition>
+<definition extends="default" name="codekinds/findCodeKindsByLsType">
+        <put-attribute name="body" value="/WEB-INF/views/codekinds/findCodeKindsByLsType.jspx"/>
+    </definition>
+<definition extends="default" name="codekinds/findCodeKindsByLsTypeAndKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/codekinds/findCodeKindsByLsTypeAndKindEquals.jspx"/>
+    </definition>
+</tiles-definitions>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_SubjectLabel" modelAttribute="subjectLabel" path="/subjectlabels" render="${empty dependencies}" z="QKB93WDe1cdRbmpQ9J4c/2Q47oI=">
+        <field:textarea field="labelText" id="c_com_labsynch_labseer_domain_SubjectLabel_labelText" required="true" z="loMF/07bowkWYiGO0qMY/t8Meno="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_SubjectLabel_recordedBy" required="true" z="gYW+xkRHOpn/DQnTgXpGjlNT0Bs="/>
+        <field:datetime dateTimePattern="${subjectLabel_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_SubjectLabel_recordedDate" required="true" z="HWZ+eSiLhHhaj90U503E+Vo/Iq8="/>
+        <field:datetime dateTimePattern="${subjectLabel_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_SubjectLabel_modifiedDate" z="6Z2cFrBzvWTU5qiDBbijwPLfpos="/>
+        <field:checkbox field="physicallyLabled" id="c_com_labsynch_labseer_domain_SubjectLabel_physicallyLabled" z="f/IcZ8tM2ZPTb8ke5NZYSto7gjA="/>
+        <field:textarea field="imageFile" id="c_com_labsynch_labseer_domain_SubjectLabel_imageFile" z="Tj/95sFS2jHaJqRTREflSKqd31s="/>
+        <field:checkbox field="preferred" id="c_com_labsynch_labseer_domain_SubjectLabel_preferred" z="jlTZaNsZ+Hg3afQUrHZT/w1cVO0="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_SubjectLabel_ignored" z="rD2ctT/+g299Rrx6SDidWCcO3BA="/>
+        <field:select field="subject" id="c_com_labsynch_labseer_domain_SubjectLabel_subject" itemValue="id" items="${subjects}" path="/subjects" required="true" z="mh5puXh2P3pLlPty3IqSq75hUfY="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_SubjectLabel_lsTransaction" validationMessageCode="field_invalid_integer" z="5T6N6cH9QztgAEy/m36ufpBfyok="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_SubjectLabel_lsType" required="true" z="LbJ3ykOyc89Ak0xiBcIAQLcGAn4="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_SubjectLabel_lsKind" required="true" z="tO+QQQdNrlGfuAk/uOQRsYHxLyU="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_SubjectLabel_lsTypeAndKind" z="pPTupc3rY81iqlFoDNAPle2HU8U="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_SubjectLabel_deleted" z="2Ll5qoZ5uCnIz8Ej0XzmF17wtl4="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_SubjectLabel" render="${not empty dependencies}" z="1IpRNiIYt5SAR0KWBgQFcb4PGG8="/>
+</div>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:find finderName="ByExperiment" id="ff_com_labsynch_labseer_domain_AnalysisGroup" path="/analysisgroups" z="ue2IpUflBSK9wH5JkFD7As948lY=">
+        <field:select disableFormBinding="true" field="experiment" id="f_com_labsynch_labseer_domain_AnalysisGroup_experiment" itemValue="id" items="${experiments}" path="/experiments" required="true" z="iXm2N4W03rBPOyQb3+MRHga4Ruk="/>
+    </form:find>
+</div>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_LsThingLabel" modelAttribute="lsThingLabel" path="/lsthinglabels" versionField="Version" z="vdbZrGYBPbizoG39LOooBHvGuXg=">
+        <field:textarea field="labelText" id="c_com_labsynch_labseer_domain_LsThingLabel_labelText" required="true" z="sCNy2Oxvrn/t98wZYZzXpafoKxo="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_LsThingLabel_recordedBy" required="true" z="jbYFgGOMUTLaaZE/itsLnm2qDhE="/>
+        <field:datetime dateTimePattern="${lsThingLabel_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_LsThingLabel_recordedDate" required="true" z="SxwvETX9xcR1Ej4IIguNymULDkI="/>
+        <field:datetime dateTimePattern="${lsThingLabel_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_LsThingLabel_modifiedDate" z="kCAbzLWPlC2V4Skr4W1AHHJ6/vc="/>
+        <field:checkbox field="physicallyLabled" id="c_com_labsynch_labseer_domain_LsThingLabel_physicallyLabled" z="1Voz/3/Pt2FMIhjv9RuPxTMRosc="/>
+        <field:textarea field="imageFile" id="c_com_labsynch_labseer_domain_LsThingLabel_imageFile" z="WIaCPiniaFGnpQ/BS+6h6leWFO0="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_LsThingLabel_lsType" required="true" z="xtadEGgUTN0mjcdHDSc2hs6p8wU="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_LsThingLabel_lsKind" required="true" z="6u0rYh5xBoZ72NFjTstzvxdg2Uc="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingLabel_lsTypeAndKind" z="H1pr3VmN6MzovR1d66CMrb5Es9g="/>
+        <field:checkbox field="preferred" id="c_com_labsynch_labseer_domain_LsThingLabel_preferred" z="ZOzH5it+L1vnuqkVq82dsxk9DvQ="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_LsThingLabel_ignored" z="3+n8s89OHFpoU6BZ/iG5yvTp4Cg="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_LsThingLabel_lsTransaction" validationMessageCode="field_invalid_integer" z="urYqPF7SOktgZSh6GmrAPj2oP3U="/>
+        <field:select field="lsThing" id="c_com_labsynch_labseer_domain_LsThingLabel_lsThing" itemValue="id" items="${lsthings}" path="/lsthings" required="true" z="Dxf9PsLVhsMeWT2eE6lJG7p7Iuc="/>
+        <field:input field="lsThingTypeAndKind" id="c_com_labsynch_labseer_domain_LsThingLabel_lsThingTypeAndKind" z="sux6eKdSGI4jlKjI0WzrKjslCTI="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_LsThingLabel_deleted" z="75GZwRi/sAj6OmuusBNj5pwGYEI="/>
+    </form:update>
+</div>

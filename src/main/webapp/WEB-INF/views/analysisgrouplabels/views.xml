@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="analysisgrouplabels/list">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgrouplabels/list.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgrouplabels/show">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgrouplabels/show.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgrouplabels/create">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgrouplabels/create.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgrouplabels/update">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgrouplabels/update.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgrouplabels/findAnalysisGroupLabelsByAnalysisGroup">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgrouplabels/findAnalysisGroupLabelsByAnalysisGroup.jspx"/>
+    </definition>
+<definition extends="default" name="analysisgrouplabels/findAnalysisGroupLabelsByLsTransactionEquals">
+        <put-attribute name="body" value="/WEB-INF/views/analysisgrouplabels/findAnalysisGroupLabelsByLsTransactionEquals.jspx"/>
+    </definition>
+</tiles-definitions>

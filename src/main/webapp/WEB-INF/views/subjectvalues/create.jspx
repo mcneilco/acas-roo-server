@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_SubjectValue" modelAttribute="subjectValue" path="/subjectvalues" render="${empty dependencies}" z="3il+MUq6sQ+CjWVXfuGqogC60zY=">
+        <field:textarea field="stringValue" id="c_com_labsynch_labseer_domain_SubjectValue_stringValue" z="mvL2QGpI1pu3UJ6S1Qk9St/lt20="/>
+        <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_SubjectValue_fileValue" z="9QdbKVG/Cj3pCo81DMl+slig0LA="/>
+        <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_SubjectValue_urlValue" z="FS4VaiZUQxOMQdzHxmcGu8qWTMM="/>
+        <field:datetime dateTimePattern="${subjectValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_SubjectValue_dateValue" z="2k0X9xFkI/keyEh7+0H2TqC/iP4="/>
+        <field:input field="clobValue" id="c_com_labsynch_labseer_domain_SubjectValue_clobValue" z="Mk3M8quEIecaBQb2QFT06vdNTuE="/>
+        <field:input field="blobValue" id="c_com_labsynch_labseer_domain_SubjectValue_blobValue" z="Sz75VvGgI26QDsxMTmBwuX5UZJw="/>
+        <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_SubjectValue_sigFigs" validationMessageCode="field_invalid_integer" z="b6ePySNwg6FZ202A7G9Ge//L0Mw="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_SubjectValue_comments" z="cNahh9/lNLUc2U5Q4IxvEoBZdsw="/>
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_SubjectValue_ignored" z="NFKp+QowWrJAezXtnAJ/Y8vewHU="/>
+        <field:datetime dateTimePattern="${subjectValue_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_SubjectValue_recordedDate" required="true" z="ehgMI9MvDR0mZProRbYoH4GPyoQ="/>
+        <field:datetime dateTimePattern="${subjectValue_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_SubjectValue_modifiedDate" z="lfqyjjD0ZCQ0l1+TZ0zD/gC0Bus="/>
+        <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_SubjectValue_publicData" z="V8nNT6MJW3P7ZrXmfokKyHB9DaQ="/>
+        <field:textarea field="codeValue" id="c_com_labsynch_labseer_domain_SubjectValue_codeValue" z="e43jX040mkHtN448hPUz0y22I1w="/>
+        <field:input field="numberOfReplicates" id="c_com_labsynch_labseer_domain_SubjectValue_numberOfReplicates" validationMessageCode="field_invalid_integer" z="eHpBSPDQ4bcqfe/Ib2BZZm9asGI="/>
+        <field:textarea field="uncertaintyType" id="c_com_labsynch_labseer_domain_SubjectValue_uncertaintyType" z="Rs83MLafnbhAGgwvqC4VrnR9VXs="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_SubjectValue_lsTransaction" validationMessageCode="field_invalid_integer" z="Wvwx4owofnFH+sjBdUpXeHtfrhQ="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_SubjectValue_lsType" required="true" z="O4Fkm3gyBbsPKsDsVscwU3nYWYg="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_SubjectValue_lsKind" required="true" z="vRKcVKxCO54k3EATxozcvtNCZgc="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_SubjectValue_lsTypeAndKind" z="FE4muSlobrBXWBN3zxiokWQB/cs="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_SubjectValue_recordedBy" required="true" z="Uj0KIIYVs5KxO3ZB3bxXszqo0eg="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_SubjectValue_modifiedBy" z="Wnp7h0ARdtFSS3cSm7iyTaP7nO8="/>
+        <field:select field="lsState" id="c_com_labsynch_labseer_domain_SubjectValue_lsState" itemValue="id" items="${subjectstates}" path="/subjectstates" required="true" z="Nl/uCG1RP+3hjqYM37hL3aWj4pg="/>
+        <field:input field="operatorType" id="c_com_labsynch_labseer_domain_SubjectValue_operatorType" max="25" z="RGBwBu+posuYY3gVvwpkhnL1aNo="/>
+        <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_SubjectValue_operatorKind" max="10" z="tFwOBBgqZFBHjBND/7IYWNxAR4U="/>
+        <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_SubjectValue_operatorTypeAndKind" z="6aToHeXIRZ26alGH9K5Q2G7Qdzw="/>
+        <field:input field="unitType" id="c_com_labsynch_labseer_domain_SubjectValue_unitType" max="25" z="50v7QMEUxzFpyT8osxK9xjDZCSA="/>
+        <field:input field="unitKind" id="c_com_labsynch_labseer_domain_SubjectValue_unitKind" max="25" z="fbbkTJ/mS+udLtsO50CQPkrPDCY="/>
+        <field:textarea field="unitTypeAndKind" id="c_com_labsynch_labseer_domain_SubjectValue_unitTypeAndKind" z="nFtiOmgaZq06czVJahPUkZnToLE="/>
+        <field:input field="numericValue" id="c_com_labsynch_labseer_domain_SubjectValue_numericValue" validationMessageCode="field_invalid_number" z="+DRqWWr+0I61R2LYUSNBSUOK7jU="/>
+        <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_SubjectValue_codeType" z="sUENtjnfYzYKXNQK2v4wvb4++ec="/>
+        <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_SubjectValue_codeKind" z="7c1dq7L6BUGGxXS7im0d1jAElOM="/>
+        <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_SubjectValue_codeTypeAndKind" z="mW9ExrSN+ZYTv6rWO2BvrSh5DiI="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_SubjectValue_uncertainty" validationMessageCode="field_invalid_number" z="JWsVQgIh8qFKjZ5MKsMjA2agEKY="/>
+        <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_SubjectValue_codeOrigin" z="wd0Iylnz4Ie111nvO7DODumT1tg="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_SubjectValue_deleted" z="TNxeZAq89Gc51C6z4FhnvdC1fVU="/>
+        <field:input field="concentration" id="c_com_labsynch_labseer_domain_SubjectValue_concentration" validationMessageCode="field_invalid_number" z="bv8D4/mRMWLSWpRtM3e01/Urgq4="/>
+        <field:input field="concUnit" id="c_com_labsynch_labseer_domain_SubjectValue_concUnit" max="25" z="PhcHT4nSunKbqmrzJnJsv/3D/Q0="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_SubjectValue" render="${not empty dependencies}" z="R/tiBwbRMNV4pwGZAtn0AgrJ6CE="/>
+</div>

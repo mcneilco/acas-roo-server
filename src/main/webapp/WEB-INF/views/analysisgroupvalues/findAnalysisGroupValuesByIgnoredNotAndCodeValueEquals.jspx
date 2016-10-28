@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:find finderName="ByIgnoredNotAndCodeValueEquals" id="ff_com_labsynch_labseer_domain_AnalysisGroupValue" path="/analysisgroupvalues" z="hH9dHgurbMoEJMnBH+vnDcnoeZo=">
+        <field:checkbox disableFormBinding="true" field="ignored" id="f_com_labsynch_labseer_domain_AnalysisGroupValue_ignored" z="8PKwF5VCYiHBjCMjbhZBGmMoIjA="/>
+        <field:input disableFormBinding="true" field="codeValue" id="f_com_labsynch_labseer_domain_AnalysisGroupValue_codeValue" max="255" required="true" z="6VDbuGqryfiZgm3mzFJeLTSHST0="/>
+    </form:find>
+</div>

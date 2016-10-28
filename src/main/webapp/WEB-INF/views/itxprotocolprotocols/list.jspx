@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_ItxProtocolProtocol" items="${itxprotocolprotocols}" z="DLoTSbkH9gY1iUtl3M7toNHhVmY=">
+        <table:table data="${itxprotocolprotocols}" id="l_com_labsynch_labseer_domain_ItxProtocolProtocol" path="/itxprotocolprotocols" z="rVKDStHP4zNWCgBD2FVL/AjGLKA=">
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_lsType" property="lsType" z="ZdqRAzhzHTVR72hWX6b9Z3+d/GE="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_lsKind" property="lsKind" z="Jr58+48nguZ6PJFrO2Bj6oFFhE0="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_lsTypeAndKind" property="lsTypeAndKind" z="swvXxhxzB1eCFJr+p9McaNBuGOo="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_codeName" property="codeName" z="JTQWrqn2ypu+h32nVtSXMnoIPSE="/>
+            <table:column id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_recordedBy" property="recordedBy" z="oF1Gv/CwRXeDydf3aems1kT8Z9g="/>
+            <table:column date="true" dateTimePattern="${itxProtocolProtocol_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_ItxProtocolProtocol_recordedDate" property="recordedDate" z="wxGjvT9QfuxW7m2q4smVPjeGwVw="/>
+        </table:table>
+    </page:list>
+</div>
