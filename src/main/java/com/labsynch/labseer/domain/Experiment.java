@@ -517,4 +517,54 @@ public class Experiment extends AbstractThing {
 //			{"clobValue":null,"codeKind":null,"codeOrigin":null,"codeType":null,"codeTypeAndKind":"null_null","codeValue":null,"comments":null,"dateValue":null,"fileValue":null,"id":15066,"ignored":false,"lsKind":"status","lsState":{"comments":null,"experiment":{"codeName":"EXPT-00000015","id":2165,"ignored":false,"lsKind":"default","lsTransaction":20,"lsType":"default","lsTypeAndKind":"default_default","modifiedBy":null,"modifiedDate":null,"protocol":{"codeName":"PROT-00000010","id":1599,"ignored":false,"lsKind":"default","lsTransaction":15,"lsType":"default","lsTypeAndKind":"default_default","modifiedBy":null,"modifiedDate":null,"recordedBy":"nouser","recordedDate":1396423362000,"shortDescription":"protocol created by generic data parser","version":1},"recordedBy":"nouser","recordedDate":1396590049000,"shortDescription":"experiment created by generic data parser","version":1},"id":2987,"ignored":false,"lsKind":"experiment metadata","lsTransaction":20,"lsType":"metadata","lsTypeAndKind":"metadata_experiment metadata","modifiedBy":null,"modifiedDate":null,"recordedBy":"nouser","recordedDate":1396590049000,"version":1},"lsTransaction":20,"lsType":"stringValue","lsTypeAndKind":"stringValue_status","modifiedBy":null,"modifiedDate":null,"numberOfReplicates":null,"numericValue":null,"operatorKind":null,"operatorType":null,"operatorTypeAndKind":"null_null","publicData":true,"recordedBy":"nouser","recordedDate":1396590049000,"sigFigs":null,"stringValue":"Approved","uncertainty":null,"uncertaintyType":null,"unitKind":null,"unitType":null,"unitTypeAndKind":"null_null","urlValue":null,"version":0}
 //		}
 //	}
+    
+    public static TypedQuery<Experiment> findExperimentByLabelText(String experimentType, String experimentKind, String labelText) {
+        if (experimentType == null || experimentType.length() == 0) throw new IllegalArgumentException("The experimentType argument is required");
+        if (experimentKind == null || experimentKind.length() == 0) throw new IllegalArgumentException("The experimentKind argument is required");
+		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        
+        boolean ignored = true;
+        EntityManager em = Experiment.entityManager();
+		String query = "SELECT DISTINCT o FROM Experiment o " +
+				"JOIN o.lsLabels ll with ll.ignored IS NOT :ignored AND ll.labelText = :labelText " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :experimentType " +
+				"AND o.lsKind = :experimentKind ";
+        
+        TypedQuery<Experiment> q = em.createQuery(query, Experiment.class);
+        q.setParameter("experimentType", experimentType);
+        q.setParameter("experimentKind", experimentKind);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
+	
+	public static TypedQuery<Experiment> findExperimentByLabelText(String experimentType, String experimentKind, String labelType, String labelKind, String labelText) {
+        if (experimentType == null || experimentType.length() == 0) throw new IllegalArgumentException("The experimentType argument is required");
+        if (experimentKind == null || experimentKind.length() == 0) throw new IllegalArgumentException("The experimentKind argument is required");
+        if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+        if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        
+        boolean ignored = true;
+        
+        EntityManager em = Experiment.entityManager();
+		String query = "SELECT DISTINCT o FROM Experiment o " +
+				"JOIN o.lsLabels ll " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :experimentType " +
+				"AND o.lsKind = :experimentKind " +
+				"AND ll.ignored IS NOT :ignored AND ll.lsType = :labelType AND ll.lsKind = :labelKind AND ll.labelText = :labelText";
+        
+        TypedQuery<Experiment> q = em.createQuery(query, Experiment.class);
+        q.setParameter("experimentType", experimentType);
+        q.setParameter("experimentKind", experimentKind);
+        q.setParameter("labelType", labelType);        
+        q.setParameter("labelKind", labelKind);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        
+        return q;
+	}
 }

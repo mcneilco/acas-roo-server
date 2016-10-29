@@ -440,11 +440,11 @@ public class ApiProtocolController {
 	
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<String> protocolBrowserSearch(@RequestParam("q") String searchQuery) {
+	public ResponseEntity<String> protocolBrowserSearch(@RequestParam(value="userName", required = true) String userName, @RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-		Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery));
+		Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery, userName));
 		return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);
 		}catch(Exception e){
 			String error = e.getMessage() + e.getStackTrace();

@@ -797,15 +797,8 @@ public class CurveFitDTO {
 	private static AnalysisGroupValue findCurveIdValue(String curveId){
 		//		AnalysisGroupValue curveIdValue = AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot("stringValue", "curve id", curveFitDTO.getCurveId(), true).getSingleResult();
         if (curveId == null || curveId.length() == 0) throw new IllegalArgumentException("The curveId argument is required");
-        curveId = curveId.replace('*', '%');
-        if (curveId.charAt(0) != '%') {
-            curveId = "%" + curveId;
-        }
-        if (curveId.charAt(curveId.length() - 1) != '%') {
-            curveId = curveId + "%";
-        }
         EntityManager em = AnalysisGroupValue.entityManager();
-        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state JOIN state.analysisGroup AS ag WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored AND state.ignored IS NOT :ignored AND ag.ignored IS NOT :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind", AnalysisGroupValue.class);
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o JOIN o.lsState AS state JOIN state.analysisGroup AS ag WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.stringValue = :stringValue  AND o.ignored IS NOT :ignored AND state.ignored IS NOT :ignored AND ag.ignored IS NOT :ignored AND state.lsType = :stateType AND state.lsKind = :stateKind", AnalysisGroupValue.class);
         q.setParameter("lsType", "stringValue");
         q.setParameter("lsKind", "curve id");
         q.setParameter("stateType", "data");
