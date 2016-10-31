@@ -41,5 +41,7 @@ public interface PropertiesUtilService {
 
 	boolean getRestrictExperiments();
 
+	boolean getEnableProjectRoles();
+
 	
 }
