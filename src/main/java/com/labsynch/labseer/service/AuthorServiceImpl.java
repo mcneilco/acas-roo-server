@@ -89,19 +89,22 @@ public class AuthorServiceImpl implements AuthorService {
 		} else {
 			author = authors.get(0);
 		}
-
 		if (author != null){
-			Set<AuthorRole> roles = author.getAuthorRoles();
-			for (AuthorRole role : roles){
-				LsRole entry = role.getRoleEntry();
-				if (entry.getLsType()!= null && entry.getLsType().equalsIgnoreCase("Project")){
-					projectThings.addAll(LsThing.findLsThingsByCodeNameEquals(entry.getLsKind()).getResultList());
-				}else if (entry.getRoleName().equals(propertiesUtilService.getAcasAdminRole())){
-					Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
-					projectThings.addAll(allProjects);
+			if (propertiesUtilService.getEnableProjectRoles()){
+				Set<AuthorRole> roles = author.getAuthorRoles();
+				for (AuthorRole role : roles){
+					LsRole entry = role.getRoleEntry();
+					if (entry.getLsType()!= null && entry.getLsType().equalsIgnoreCase("Project")){
+						projectThings.addAll(LsThing.findLsThingsByCodeNameEquals(entry.getLsKind()).getResultList());
+					}else if (entry.getRoleName().equals(propertiesUtilService.getAcasAdminRole())){
+						Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
+						projectThings.addAll(allProjects);
+					}
 				}
+			}else{
+				Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
+				projectThings.addAll(allProjects);
 			}
-
 		}
 
 		return projectThings;
