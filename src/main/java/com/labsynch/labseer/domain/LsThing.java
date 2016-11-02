@@ -143,6 +143,16 @@ public class LsThing extends AbstractThing {
     }
     
     @Transactional
+    public static String toJsonArrayWithNestedFirstLsThings(Collection<com.labsynch.labseer.domain.LsThing> collection) {
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels","firstLsThings.lsStates.lsValues","firstLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
+    
+    @Transactional
+    public static String toJsonArrayWithNestedSecondLsThings(Collection<com.labsynch.labseer.domain.LsThing> collection) {
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "secondLsThings.secondLsThing.lsStates.lsValues","secondLsThings.secondLsThing.lsLabels","secondLsThings.lsStates.lsValues","secondLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
+    
+    @Transactional
     public static String toJsonArrayPretty(Collection<com.labsynch.labseer.domain.LsThing> collection) {
         return new JSONSerializer().exclude("*.class", "lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
     }
