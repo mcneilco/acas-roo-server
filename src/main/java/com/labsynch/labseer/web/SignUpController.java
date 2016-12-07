@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LsRole;
+import com.labsynch.labseer.service.AuthorService;
 import com.labsynch.labseer.service.DatabaseAuthenticationProvider;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -38,6 +39,9 @@ public class SignUpController {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+	private AuthorService authorService;
 
     @Autowired
     private SignUpValidator validator;
@@ -117,11 +121,18 @@ public class SignUpController {
             author.setActivationKey(activationKey);
             author.setEnabled(false);
             author.setLocked(false);
+            if (author.getRecordedBy() == null) author.setRecordedBy("acas");
+            if (author.getRecordedDate() == null) author.setRecordedDate(new Date());
             
             logger.info("about to save author: " + author.toJson());
-            author.persist();
+            try{
+            	author = authorService.saveAuthor(author);
+            }catch (Exception e){
+            	logger.error("Caught error saving author from signup form",e);
+            	return "signup/error";
+            }
             
-            addAuthorToUserRole(author);
+//            addAuthorToUserRole(author);
             
             
             SimpleMailMessage mail = new SimpleMailMessage();

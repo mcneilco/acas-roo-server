@@ -1,6 +1,7 @@
 package com.labsynch.labseer.utils;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.service.AuthorRoleService;
+import com.labsynch.labseer.service.AuthorService;
 
 @Service
 public class SecurityUtils {
@@ -27,6 +29,9 @@ public class SecurityUtils {
 	
 	@Autowired
     private AuthorRoleService authorRoleService;
+	
+	@Autowired
+    private AuthorService authorService;
 
 	@Transactional
 	public void updateAuthorInfo(Authentication authentication) {
@@ -61,7 +66,7 @@ public class SecurityUtils {
 
 	}
 
-	private static Author createAuthor(Authentication authentication) {
+	private Author createAuthor(Authentication authentication) {
 
 		Object principal = authentication.getPrincipal();
 
@@ -86,7 +91,11 @@ public class SecurityUtils {
 			author.setLastName(lastName);
 			author.setEmailAddress(principalUserName);
 			author.setPassword(principalUserName);
-			author.persist();
+			author.setRecordedBy("acas");
+			author.setRecordedDate(new Date());
+			author.setLsType("default");
+			author.setLsKind("default");
+			author = authorService.saveAuthor(author);
 
 		} else {
 			principalUserName = ((User)principal).getUsername();
@@ -96,7 +105,11 @@ public class SecurityUtils {
 			author.setLastName(principalUserName);
 			author.setEmailAddress(principalUserName);
 			author.setPassword(principalUserName);
-			author.persist();
+			author.setRecordedBy("acas");
+			author.setRecordedDate(new Date());
+			author.setLsType("default");
+			author.setLsKind("default");
+			author = authorService.saveAuthor(author);
 		}
 		
 
