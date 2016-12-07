@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -243,9 +244,11 @@ public class AuthorServiceImpl implements AuthorService {
 		if (logger.isDebugEnabled()) logger.debug("incoming meta author: " + author.toJson() + "\n");
 		Author newAuthor = new Author(author);
 		if (newAuthor.getCodeName() == null){
-			if (newAuthor.getLsTypeAndKind() == null) newAuthor.setLsTypeAndKind(newAuthor.getLsType()+"_"+newAuthor.getLsKind());
 			newAuthor.setCodeName(autoLabelService.getAuthorCodeName());
 		}
+		if (newAuthor.getLsType() == null) newAuthor.setLsType("default");
+		if (newAuthor.getLsKind() == null) newAuthor.setLsKind("default");
+		if (newAuthor.getLsTypeAndKind() == null) newAuthor.setLsTypeAndKind(newAuthor.getLsType()+"_"+newAuthor.getLsKind());
 		newAuthor.persist();
 		if (author.getLsLabels() != null){
 			Set<AuthorLabel> lsLabels = new HashSet<AuthorLabel>();
