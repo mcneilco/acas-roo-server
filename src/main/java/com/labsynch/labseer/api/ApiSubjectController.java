@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.dto.ContainerSubjectsDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectCsvDataDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
@@ -284,5 +285,21 @@ public class ApiSubjectController {
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+    
+    @Transactional
+    @RequestMapping(value = "/getSubjectsByContainerInteractions", method = RequestMethod.POST, headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getSubjectsByContainerInteractions(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        try{
+        	Collection<ContainerSubjectsDTO> requests = ContainerSubjectsDTO.fromJsonArrayToCoes(json);
+        	Collection<ContainerSubjectsDTO> results = subjectService.getSubjectsByContainerAndInteraction(requests);
+        	return new ResponseEntity<String>(ContainerSubjectsDTO.toJsonArray(results), headers, HttpStatus.OK);
+        } catch (Exception e){
+        	logger.error("Uncaught error in getSubjectsByCodeNames",e);
+            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

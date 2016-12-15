@@ -15,6 +15,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,7 @@ import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.dto.ContainerSubjectsDTO;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
@@ -640,6 +642,45 @@ public class SubjectServiceImpl implements SubjectService {
 			}		
 		}
 		return results;
+	}
+	
+	@Override
+	public Collection<ContainerSubjectsDTO> getSubjectsByContainerAndInteraction(Collection<ContainerSubjectsDTO> requests){
+		for (ContainerSubjectsDTO request : requests){
+			EntityManager em = Subject.entityManager();
+			if (SimpleUtil.isNumeric(request.getContainerIdOrCodeName())){
+				Long id = Long.valueOf(request.getContainerIdOrCodeName());
+				String queryString = "SELECT subject FROM Subject subject "
+						+ "JOIN subject.containers itx "
+						+ "JOIN itx.container container "
+						+ "WHERE subject.ignored <> true AND itx.ignored <> true AND container.ignored <> true ";
+				if (request.getInteractionType() != null) queryString+= "AND itx.lsType = :itxType ";
+				if (request.getInteractionKind() != null) queryString+= "AND itx.lsKind = :itxKind ";
+				queryString += "AND container.id = :id ";
+				TypedQuery<Subject> q = em.createQuery(queryString, Subject.class);
+				q.setParameter("id", id);
+				if (request.getInteractionType() != null) q.setParameter("itxType", request.getInteractionType());
+				if (request.getInteractionKind() != null) q.setParameter("itxKind", request.getInteractionKind());
+				Collection<Subject> subjects = q.getResultList();
+				request.setSubjects(subjects);
+			}else{
+				String codeName = request.getContainerIdOrCodeName();
+				String queryString = "SELECT subject FROM Subject subject "
+						+ "JOIN subject.containers itx "
+						+ "JOIN itx.container container "
+						+ "WHERE subject.ignored <> true AND itx.ignored <> true AND container.ignored <> true ";
+				if (request.getInteractionType() != null) queryString+= "AND itx.lsType = :itxType ";
+				if (request.getInteractionKind() != null) queryString+= "AND itx.lsKind = :itxKind ";
+				queryString += "AND container.codeName = :codeName ";
+				TypedQuery<Subject> q = em.createQuery(queryString, Subject.class);
+				q.setParameter("codeName", codeName);
+				if (request.getInteractionType() != null) q.setParameter("itxType", request.getInteractionType());
+				if (request.getInteractionKind() != null) q.setParameter("itxKind", request.getInteractionKind());
+				Collection<Subject> subjects = q.getResultList();
+				request.setSubjects(subjects);
+			}
+		}
+		return requests;
 	}
 	
 	

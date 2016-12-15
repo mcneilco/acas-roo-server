@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.dto.ContainerSubjectsDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
@@ -32,6 +33,8 @@ public interface SubjectService {
 	Collection<SubjectCodeNameDTO> getSubjectsByCodeNames(List<String> codeNames);
 	HashMap<String, TempThingDTO> createOnlySubjectsFromCSV(String subjectFilePath,
 			List<Long> treatmentGroupIds) throws Exception;
+	Collection<ContainerSubjectsDTO> getSubjectsByContainerAndInteraction(
+			Collection<ContainerSubjectsDTO> requests);
 
 	
 	
