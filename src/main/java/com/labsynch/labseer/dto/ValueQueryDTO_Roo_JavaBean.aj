@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.dto;
 
+import com.labsynch.labseer.dto.ValueQueryDTO;
 
 privileged aspect ValueQueryDTO_Roo_JavaBean {
     

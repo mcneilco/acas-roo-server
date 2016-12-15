@@ -3,12 +3,12 @@
 
 package com.labsynch.labseer.dto;
 
+import com.labsynch.labseer.dto.ValueQueryDTO;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 
 privileged aspect ValueQueryDTO_Roo_Json {
     

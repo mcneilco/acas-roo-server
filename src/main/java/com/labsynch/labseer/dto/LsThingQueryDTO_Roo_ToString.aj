@@ -3,13 +3,13 @@
 
 package com.labsynch.labseer.dto;
 
-import com.labsynch.labseer.dto.ValueQueryDTO;
+import com.labsynch.labseer.dto.LsThingQueryDTO;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-privileged aspect ValueQueryDTO_Roo_ToString {
+privileged aspect LsThingQueryDTO_Roo_ToString {
     
-    public String ValueQueryDTO.toString() {
+    public String LsThingQueryDTO.toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     
