@@ -5,19 +5,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 
 @Service
 @Transactional
 public class ExperimentStateServiceImpl implements ExperimentStateService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ExperimentStateServiceImpl.class);
 
 	@Override
 	public List<ExperimentState> getExperimentStatesByExperimentIdAndStateTypeKind(Long experimentId, String stateType, 
@@ -86,5 +89,21 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 			experimentState = updateExperimentState(experimentState);
 		}
 		return null;
+	}
+	
+	@Override
+	public ExperimentState getExperimentState(String idOrCodeName,
+			String stateType, String stateKind) {
+		ExperimentState state = null;
+		try{
+			Long id;
+			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
+			else id = Experiment.findExperimentsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			state = ExperimentState.findExperimentStatesByExptIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+		}catch (Exception e){
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			state = null;
+		}
+		return state;
 	}
 }

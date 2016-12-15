@@ -22,6 +22,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -75,8 +76,9 @@ public class LsThingState extends AbstractState {
 		
 	}
 
+	@Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().include("lsValues").exclude("*.class", "lsThing").transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     public static LsThingState fromJsonToLsThingState(String json) {

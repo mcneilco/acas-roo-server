@@ -93,6 +93,58 @@ private ItxProtocolProtocolStateService itxProtocolProtocolStateService;
 @Autowired
 private ItxSubjectContainerStateService itxSubjectContainerStateService;
 
+@RequestMapping(value = "/states/{entity}/{idOrCodeName}/bystate/{stateType}/{stateKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+@ResponseBody
+@Transactional
+public ResponseEntity<String> getStateByPath (
+		@PathVariable("entity") String entity,
+		@PathVariable("idOrCodeName") String idOrCodeName,
+		@PathVariable("stateType") String stateType,
+		@PathVariable("stateKind") String stateKind) {
+
+	HttpHeaders headers = new HttpHeaders();
+	headers.add("Content-Type", "application/json; charset=utf-8");
+	//this if/else if block controls which lsThing is being hit
+	logger.debug("ENTITY IS: " + entity);
+	if (entity.equals("protocol")) {
+		ProtocolState protocolState = protocolStateService.getProtocolState(idOrCodeName, stateType, stateKind);
+		if (protocolState==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		else return new ResponseEntity<String>(protocolState.toJson(), headers, HttpStatus.OK);
+	}
+	if (entity.equals("experiment")) {
+		ExperimentState experimentState = experimentStateService.getExperimentState(idOrCodeName, stateType, stateKind);
+		if (experimentState==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		else return new ResponseEntity<String>(experimentState.toJson(), headers, HttpStatus.OK);
+	}
+	if (entity.equals("analysisGroup")) {
+		AnalysisGroupState analysisGroupState = analysisGroupStateService.getAnalysisGroupState(idOrCodeName, stateType, stateKind);
+		if (analysisGroupState==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		else return new ResponseEntity<String>(analysisGroupState.toJson(), headers, HttpStatus.OK);
+	}
+	if (entity.equals("treatmentGroup")) {
+		TreatmentGroupState treatmentGroupState = treatmentGroupStateService.getTreatmentGroupState(idOrCodeName, stateType, stateKind);
+		if (treatmentGroupState==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		else return new ResponseEntity<String>(treatmentGroupState.toJson(), headers, HttpStatus.OK);
+	}
+	if (entity.equals("subject")) {
+		SubjectState subjectState = subjectStateService.getSubjectState(idOrCodeName, stateType, stateKind);
+		if (subjectState==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		else return new ResponseEntity<String>(subjectState.toJson(), headers, HttpStatus.OK);
+	}
+	if (entity.equals("lsThing")) {
+		LsThingState lsThingState = lsThingStateService.getLsThingState(idOrCodeName, stateType, stateKind);
+		if (lsThingState==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		else return new ResponseEntity<String>(lsThingState.toJson(), headers, HttpStatus.OK);
+	}
+	if (entity.equals("container")) {
+		ContainerState containerState = containerStateService.getContainerState(idOrCodeName, stateType, stateKind);
+		if (containerState==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		else return new ResponseEntity<String>(containerState.toJson(), headers, HttpStatus.OK);
+	}
+	
+	return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+}
+
 //ListStatesJsonArray
 
 @RequestMapping(value = "/protocolstates", method = RequestMethod.GET, headers = "Accept=application/json")

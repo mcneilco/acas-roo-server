@@ -11,15 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -111,5 +107,21 @@ public class LsThingStateServiceImpl implements LsThingStateService {
 			lsThingState = updateLsThingState(lsThingState);
 		}
 		return null;
+	}
+	
+	@Override
+	public LsThingState getLsThingState(String idOrCodeName,
+			String stateType, String stateKind) {
+		LsThingState state = null;
+		try{
+			Long id;
+			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
+			else id = LsThing.findLsThingsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			state = LsThingState.findLsThingStatesByLsThingIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+		}catch (Exception e){
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			state = null;
+		}
+		return state;
 	}
 }

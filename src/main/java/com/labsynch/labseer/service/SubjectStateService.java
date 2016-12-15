@@ -28,6 +28,9 @@ public interface SubjectStateService {
 	Collection<SubjectState> updateSubjectStates(
 			Collection<SubjectState> subjectStates);
 
+	SubjectState getSubjectState(String idOrCodeName, String stateType,
+			String stateKind);
+
 	
 	
 }

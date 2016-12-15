@@ -14,9 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -119,6 +118,22 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 			analysisGroupState = updateAnalysisGroupState(analysisGroupState);
 		}
 		return null;
+	}
+	
+	@Override
+	public AnalysisGroupState getAnalysisGroupState(String idOrCodeName,
+			String stateType, String stateKind) {
+		AnalysisGroupState state = null;
+		try{
+			Long id;
+			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
+			else id = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			state = AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+		}catch (Exception e){
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			state = null;
+		}
+		return state;
 	}
 
 

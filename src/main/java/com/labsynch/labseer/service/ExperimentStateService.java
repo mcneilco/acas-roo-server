@@ -27,5 +27,8 @@ public interface ExperimentStateService {
 
 	public Collection<ExperimentState> updateExperimentStates(
 			Collection<ExperimentState> experimentStates);
+
+	public ExperimentState getExperimentState(String idOrCodeName,
+			String stateType, String stateKind);
 	
 }

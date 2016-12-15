@@ -22,6 +22,7 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -113,6 +114,22 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 			protocolState = updateProtocolState(protocolState);
 		}
 		return null;
+	}
+	
+	@Override
+	public ProtocolState getProtocolState(String idOrCodeName,
+			String stateType, String stateKind) {
+		ProtocolState state = null;
+		try{
+			Long id;
+			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
+			else id = Protocol.findProtocolsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			state = ProtocolState.findProtocolStatesByProtocolIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+		}catch (Exception e){
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			state = null;
+		}
+		return state;
 	}
 
 }

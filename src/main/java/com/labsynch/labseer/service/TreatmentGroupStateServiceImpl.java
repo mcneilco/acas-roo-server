@@ -11,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -106,6 +109,22 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 			treatmentGroupState = updateTreatmentGroupState(treatmentGroupState);
 		}
 		return null;
+	}
+	
+	@Override
+	public TreatmentGroupState getTreatmentGroupState(String idOrCodeName,
+			String stateType, String stateKind) {
+		TreatmentGroupState state = null;
+		try{
+			Long id;
+			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
+			else id = TreatmentGroup.findTreatmentGroupsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			state = TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+		}catch (Exception e){
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			state = null;
+		}
+		return state;
 	}
 
 }

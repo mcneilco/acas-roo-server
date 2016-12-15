@@ -278,4 +278,31 @@ public class ContainerValue extends AbstractValue {
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.ContainerValue> collection) {
         return new JSONSerializer().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
+
+    public static TypedQuery<ContainerValue> findContainerValuesByContainerIDAndStateTypeKindAndValueTypeKind(Long containerId, String stateType,
+			String stateKind, String valueType, String valueKind) {
+
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT cv FROM ContainerValue AS cv " +
+				"JOIN cv.lsState cs " +
+				"JOIN cs.container c " +
+				"WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
+				"AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored IS NOT :ignored " +
+				"AND c.ignored IS NOT :ignored " +
+				"AND c.id = :containerId ";
+		TypedQuery<ContainerValue> q = em.createQuery(hsqlQuery, ContainerValue.class);
+		q.setParameter("containerId", containerId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		
+		return q;
+    }
 }

@@ -1,6 +1,7 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,19 @@ public interface ContainerStateService {
 
 	Collection<ContainerState> saveContainerStates(
 			Collection<ContainerState> containerStates);
+
+	ContainerState getContainerState(String idOrCodeName, String stateType,
+			String stateKind);
+
+	List<ContainerState> getContainerStatesByContainerIdAndStateTypeKind(
+			Long containerId, String stateType, String stateKind);
+
+	ContainerState createContainerStateByContainerIdAndStateTypeKind(
+			Long containerId, String stateType, String stateKind);
+
+	ContainerState createContainerStateByContainerIdAndStateTypeKindAndRecordedBy(
+			Long containerId, String stateType, String stateKind,
+			String recordedBy);
 
 	
 	

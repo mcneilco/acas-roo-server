@@ -92,7 +92,7 @@ public class AnalysisGroupState extends AbstractState {
 	}
 
 	public String toJson() {
-		return new JSONSerializer().exclude("*.class", "analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer().include("lsValues").exclude("*.class", "analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
 	public static com.labsynch.labseer.domain.AnalysisGroupState fromJsonToAnalysisGroupState(String json) {

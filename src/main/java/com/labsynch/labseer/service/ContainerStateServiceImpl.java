@@ -18,10 +18,9 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.LsTransaction;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.UpdateLog;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -137,6 +136,55 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 			savedContainerStates.add(savedContainerState);
 		}
 		return savedContainerStates;
+	}
+	
+	@Override
+	public ContainerState getContainerState(String idOrCodeName,
+			String stateType, String stateKind) {
+		ContainerState state = null;
+		try{
+			Long id;
+			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
+			else id = Container.findContainerByCodeNameEquals(idOrCodeName).getId();
+			state = ContainerState.findContainerStatesByContainerIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+		}catch (Exception e){
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			state = null;
+		}
+		return state;
+	}
+	
+	@Override
+	public List<ContainerState> getContainerStatesByContainerIdAndStateTypeKind(Long containerId, String stateType, 
+			String stateKind) {	
+		
+		List<ContainerState> containerStates = ContainerState.findContainerStatesByContainerIDAndStateTypeKind(containerId, stateType, stateKind).getResultList();
+
+		return containerStates;
+	}
+	
+	@Override
+	public ContainerState createContainerStateByContainerIdAndStateTypeKind(Long containerId, String stateType, String stateKind) {
+		ContainerState containerState = new ContainerState();
+		Container container = Container.findContainer(containerId);
+		containerState.setContainer(container);
+		containerState.setLsType(stateType);
+		containerState.setLsKind(stateKind);
+		containerState.setRecordedBy("default");
+		containerState.persist();
+		return containerState;
+	}
+	
+	@Override
+	public ContainerState createContainerStateByContainerIdAndStateTypeKindAndRecordedBy(Long containerId, String stateType, String stateKind, String recordedBy) {
+		ContainerState containerState = new ContainerState();
+		Container container = Container.findContainer(containerId);
+		containerState.setContainer(container);
+		containerState.setLsType(stateType);
+		containerState.setLsKind(stateKind);
+		containerState.setRecordedBy(recordedBy);
+		containerState.persist();
+		return containerState;
 	}
 
 

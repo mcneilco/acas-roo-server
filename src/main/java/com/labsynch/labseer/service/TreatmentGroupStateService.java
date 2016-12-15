@@ -30,6 +30,9 @@ public interface TreatmentGroupStateService {
 	Collection<TreatmentGroupState> updateTreatmentGroupStates(
 			Collection<TreatmentGroupState> treatmentGroupStates);
 
+	TreatmentGroupState getTreatmentGroupState(String idOrCodeName,
+			String stateType, String stateKind);
+
 	
 	
 }

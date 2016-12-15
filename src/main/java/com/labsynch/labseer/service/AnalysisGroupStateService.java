@@ -33,6 +33,9 @@ public interface AnalysisGroupStateService {
 	Collection<AnalysisGroupState> updateAnalysisGroupStates(
 			Collection<AnalysisGroupState> analysisGroupStates);
 
+	AnalysisGroupState getAnalysisGroupState(String idOrCodeName,
+			String stateType, String stateKind);
+
 	
 	
 }

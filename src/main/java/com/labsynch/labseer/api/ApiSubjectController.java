@@ -289,12 +289,16 @@ public class ApiSubjectController {
     @Transactional
     @RequestMapping(value = "/getSubjectsByContainerInteractions", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<java.lang.String> getSubjectsByContainerInteractions(@RequestBody String json) {
+    public ResponseEntity<java.lang.String> getSubjectsByContainerInteractions(@RequestBody String json,
+    		@RequestParam(value = "with", required = false) String with) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         try{
         	Collection<ContainerSubjectsDTO> requests = ContainerSubjectsDTO.fromJsonArrayToCoes(json);
         	Collection<ContainerSubjectsDTO> results = subjectService.getSubjectsByContainerAndInteraction(requests);
+        	if (with != null && with.equalsIgnoreCase("stub")){
+            	return new ResponseEntity<String>(ContainerSubjectsDTO.toJsonArrayStub(results), headers, HttpStatus.OK);
+        	}
         	return new ResponseEntity<String>(ContainerSubjectsDTO.toJsonArray(results), headers, HttpStatus.OK);
         } catch (Exception e){
         	logger.error("Uncaught error in getSubjectsByCodeNames",e);

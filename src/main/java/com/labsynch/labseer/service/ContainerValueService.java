@@ -1,9 +1,11 @@
 package com.labsynch.labseer.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 
 @Service
@@ -18,5 +20,19 @@ public interface ContainerValueService {
 
 	Collection<ContainerValue> saveContainerValues(
 			Collection<ContainerValue> containerValues);
+
+	ContainerValue getContainerValue(String idOrCodeName, String stateType,
+			String stateKind, String valueType, String valueKind);
+
+	ContainerValue updateContainerValue(String idOrCodeName, String stateType,
+			String stateKind, String valueType, String valueKind, String value);
+
+	ContainerValue createContainerValueFromLsStateAndTypeAndKindAndValue(
+			ContainerState containerState, String lsType, String lsKind,
+			String value, String recordedBy);
+
+	List<ContainerValue> getContainerValuesByContainerIdAndStateTypeKindAndValueTypeKind(
+			Long containerId, String stateType, String stateKind,
+			String valueType, String valueKind);
 
 }

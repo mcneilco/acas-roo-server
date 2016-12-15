@@ -19,6 +19,7 @@ import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -110,6 +111,22 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 			subjectState = updateSubjectState(subjectState);
 		}
 		return null;
+	}
+	
+	@Override
+	public SubjectState getSubjectState(String idOrCodeName,
+			String stateType, String stateKind) {
+		SubjectState state = null;
+		try{
+			Long id;
+			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
+			else id = Subject.findSubjectsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			state = SubjectState.findSubjectStatesBySubjectIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+		}catch (Exception e){
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			state = null;
+		}
+		return state;
 	}
 
 }

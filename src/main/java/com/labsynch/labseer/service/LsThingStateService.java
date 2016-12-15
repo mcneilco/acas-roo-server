@@ -26,4 +26,7 @@ public interface LsThingStateService {
 	Collection<LsThingState> updateLsThingStates(
 			Collection<LsThingState> lsThingStates);
 
+	LsThingState getLsThingState(String idOrCodeName, String stateType,
+			String stateKind);
+
 }

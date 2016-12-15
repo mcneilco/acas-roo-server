@@ -26,4 +26,7 @@ public interface ProtocolStateService {
 	Collection<ProtocolState> updateProtocolStates(
 			Collection<ProtocolState> protocolStates);
 
+	ProtocolState getProtocolState(String idOrCodeName, String stateType,
+			String stateKind);
+
 }

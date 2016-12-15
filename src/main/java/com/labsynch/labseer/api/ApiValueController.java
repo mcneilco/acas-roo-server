@@ -149,6 +149,10 @@ public class ApiValueController {
 			LsThingValue lsThingValue = lsThingValueService.updateLsThingValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
 			return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
 		}
+		if (entity.equals("container")) {
+			ContainerValue containerValue = containerValueService.updateContainerValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
+			return new ResponseEntity<String>(containerValue.toJson(), headers, HttpStatus.OK);
+		}
 		
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
 	}
@@ -197,6 +201,11 @@ public class ApiValueController {
 			LsThingValue lsThingValue = lsThingValueService.getLsThingValue(idOrCodeName, stateType, stateKind, valueType, valueKind);
 			if (lsThingValue==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 			else return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
+		}
+		if (entity.equals("container")) {
+			ContainerValue containerValue = containerValueService.getContainerValue(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			if (containerValue==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(containerValue.toJson(), headers, HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);

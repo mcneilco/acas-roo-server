@@ -75,9 +75,10 @@ public class ProtocolState extends AbstractState {
 		}
 		
 	}
-
+    
+    @Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().include("lsValues").exclude("*.class", "protocol").transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     public static ProtocolState fromJsonToProtocolState(String json) {

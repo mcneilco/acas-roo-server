@@ -214,7 +214,7 @@ public class SubjectState extends AbstractState {
 
     @Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().include("lsValues").exclude("*.class", "subject").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional

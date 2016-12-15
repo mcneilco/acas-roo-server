@@ -32,6 +32,14 @@ public class ContainerSubjectsDTO {
 	public static String toJsonArray(Collection<ContainerSubjectsDTO> collection) {
         return new JSONSerializer().include("subjects.lsStates.lsValues","subjects.lsLabels").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
+	
+	public String toJsonStub() {
+        return new JSONSerializer().include("subjects").exclude("*.class","subjects.lsStates","subjects.lsLabels").transform(new ExcludeNulls(), void.class).serialize(this);
+    }
+	
+	public static String toJsonArrayStub(Collection<ContainerSubjectsDTO> collection) {
+        return new JSONSerializer().include("subjects").exclude("*.class","subjects.lsStates","subjects.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
 
 }
 
