@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,28 +18,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.labsynch.labseer.domain.AbstractState;
 import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ExperimentState;
-import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxExperimentExperimentState;
 import com.labsynch.labseer.domain.ItxProtocolProtocolState;
 import com.labsynch.labseer.domain.ItxSubjectContainerState;
 import com.labsynch.labseer.domain.LsThingState;
-import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.domain.ProtocolState;
-import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupState;
-import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.service.AnalysisGroupService;
+import com.labsynch.labseer.dto.AnalysisGroupStatePathDTO;
+import com.labsynch.labseer.dto.ContainerStatePathDTO;
+import com.labsynch.labseer.dto.ExperimentStatePathDTO;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
+import com.labsynch.labseer.dto.LsThingStatePathDTO;
+import com.labsynch.labseer.dto.ProtocolStatePathDTO;
+import com.labsynch.labseer.dto.SubjectStatePathDTO;
+import com.labsynch.labseer.dto.TreatmentGroupStatePathDTO;
 import com.labsynch.labseer.service.AnalysisGroupStateService;
 import com.labsynch.labseer.service.ContainerStateService;
-import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ItxContainerContainerStateService;
 import com.labsynch.labseer.service.ItxExperimentExperimentStateService;
@@ -140,6 +137,49 @@ public ResponseEntity<String> getStateByPath (
 		ContainerState containerState = containerStateService.getContainerState(idOrCodeName, stateType, stateKind);
 		if (containerState==null) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		else return new ResponseEntity<String>(containerState.toJson(), headers, HttpStatus.OK);
+	}
+	
+	return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+}
+
+@RequestMapping(value = "/states/{entity}/getStatesByIdOrCodeNameAndStateTypeAndKind", method = RequestMethod.POST, headers = "Accept=application/json")
+@ResponseBody
+@Transactional
+public ResponseEntity<String> getStatesByPaths (
+		@PathVariable("entity") String entity,
+		@RequestBody String json) {
+	Collection<GenericStatePathRequest> genericRequests = GenericStatePathRequest.fromJsonArrayToGenericStatePathRequests(json);
+	HttpHeaders headers = new HttpHeaders();
+	headers.add("Content-Type", "application/json; charset=utf-8");
+	//this if/else if block controls which lsThing is being hit
+	logger.debug("ENTITY IS: " + entity);
+	if (entity.equals("protocol")) {
+		Collection<ProtocolStatePathDTO> results = protocolStateService.getProtocolStates(genericRequests);
+		return new ResponseEntity<String>(ProtocolStatePathDTO.toJsonArray(results), headers, HttpStatus.OK);
+	}
+	if (entity.equals("experiment")) {
+		Collection<ExperimentStatePathDTO> results = experimentStateService.getExperimentStates(genericRequests);
+		return new ResponseEntity<String>(ExperimentStatePathDTO.toJsonArray(results), headers, HttpStatus.OK);
+	}
+	if (entity.equals("analysisGroup")) {
+		Collection<AnalysisGroupStatePathDTO> results = analysisGroupStateService.getAnalysisGroupStates(genericRequests);
+		return new ResponseEntity<String>(AnalysisGroupStatePathDTO.toJsonArray(results), headers, HttpStatus.OK);
+	}
+	if (entity.equals("treatmentGroup")) {
+		Collection<TreatmentGroupStatePathDTO> results = treatmentGroupStateService.getTreatmentGroupStates(genericRequests);
+		return new ResponseEntity<String>(TreatmentGroupStatePathDTO.toJsonArray(results), headers, HttpStatus.OK);
+	}
+	if (entity.equals("subject")) {
+		Collection<SubjectStatePathDTO> results = subjectStateService.getSubjectStates(genericRequests);
+		return new ResponseEntity<String>(SubjectStatePathDTO.toJsonArray(results), headers, HttpStatus.OK);
+	}
+	if (entity.equals("lsThing")) {
+		Collection<LsThingStatePathDTO> results = lsThingStateService.getLsThingStates(genericRequests);
+		return new ResponseEntity<String>(LsThingStatePathDTO.toJsonArray(results), headers, HttpStatus.OK);
+	}
+	if (entity.equals("container")) {
+		Collection<ContainerStatePathDTO> results = containerStateService.getContainerStates(genericRequests);
+		return new ResponseEntity<String>(ContainerStatePathDTO.toJsonArray(results), headers, HttpStatus.OK);
 	}
 	
 	return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);

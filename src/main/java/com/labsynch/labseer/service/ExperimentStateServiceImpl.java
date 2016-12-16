@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.dto.ExperimentStatePathDTO;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 
@@ -96,14 +99,36 @@ public class ExperimentStateServiceImpl implements ExperimentStateService {
 			String stateType, String stateKind) {
 		ExperimentState state = null;
 		try{
-			Long id;
-			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
-			else id = Experiment.findExperimentsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
-			state = ExperimentState.findExperimentStatesByExptIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+			Collection<ExperimentState> states = getExperimentStates(idOrCodeName, stateType, stateKind);
+			state = states.iterator().next();
 		}catch (Exception e){
 			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			state = null;
 		}
 		return state;
+	}
+
+	@Override
+	public Collection<ExperimentStatePathDTO> getExperimentStates(
+			Collection<GenericStatePathRequest> genericRequests) {
+		Collection<ExperimentStatePathDTO> results = new ArrayList<ExperimentStatePathDTO>();
+		for (GenericStatePathRequest request : genericRequests){
+			ExperimentStatePathDTO result = new ExperimentStatePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setStateType(request.getStateType());
+			result.setStateKind(request.getStateKind());
+			result.setStates(getExperimentStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<ExperimentState> getExperimentStates(String idOrCodeName, String stateType, String stateKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return ExperimentState.findExperimentStatesByExptIDAndStateTypeKind(id, stateType, stateKind).getResultList();
+		}else{
+			return ExperimentState.findExperimentStatesByExperimentCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+		}
 	}
 }

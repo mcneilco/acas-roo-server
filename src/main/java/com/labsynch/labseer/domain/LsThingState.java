@@ -115,4 +115,22 @@ public class LsThingState extends AbstractState {
 		q.setParameter("ignored", true);
 		return q;
 	}
+
+	public static TypedQuery<LsThingState> findLsThingStatesByLsThingCodeNameAndStateTypeKind(
+			String lsThingCodeName, String stateType, String stateKind) {
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT lsts FROM LsThingState AS lsts " +
+		"JOIN lsts.lsThing lst " +
+		"WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+		"AND lst.codeName = :lsThingCodeName ";
+		TypedQuery<LsThingState> q = em.createQuery(hsqlQuery, LsThingState.class);
+		q.setParameter("lsThingCodeName", lsThingCodeName);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 }

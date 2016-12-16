@@ -144,4 +144,22 @@ public class AnalysisGroupState extends AbstractState {
 			return q;
 		}
 
+	public static TypedQuery<AnalysisGroupState> findAnalysisGroupStatesByAnalysisGroupCodeNameAndStateTypeKind(String analysisGroupCodeName, 
+			String stateType, 
+			String stateKind) {
+			if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+			if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+			
+			EntityManager em = entityManager();
+			String hsqlQuery = "SELECT ags FROM AnalysisGroupState AS ags " +
+			"JOIN ags.analysisGroup ag " +
+			"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+			"AND ag.codeName = :analysisGroupCodeName ";
+			TypedQuery<AnalysisGroupState> q = em.createQuery(hsqlQuery, AnalysisGroupState.class);
+			q.setParameter("analysisGroupCodeName", analysisGroupCodeName);
+			q.setParameter("stateType", stateType);
+			q.setParameter("stateKind", stateKind);
+			q.setParameter("ignored", true);
+			return q;
+		}
 }

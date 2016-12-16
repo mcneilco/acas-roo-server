@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +22,8 @@ import org.supercsv.prefs.CsvPreference;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.dto.AnalysisGroupValuePathDTO;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 
@@ -241,16 +244,39 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 
 	@Override
 	public AnalysisGroupValue getAnalysisGroupValue(String idOrCodeName,
-			String stateType, String stateKind, String valueType,
-			String valueKind) {
+			String stateType, String stateKind, String valueType, String valueKind) {
 		AnalysisGroupValue value = null;
 		try{
-			Long id = AnalysisGroup.findAnalysisGroupsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
-			value = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+			Collection<AnalysisGroupValue> values = getAnalysisGroupValues(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			value = values.iterator().next();
 		}catch (Exception e){
-			logger.debug("Caught error "+e.toString()+" trying to find a value.");
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			value = null;
 		}
 		return value;
+	}
+
+	@Override
+	public Collection<AnalysisGroupValuePathDTO> getAnalysisGroupValues(
+			Collection<GenericValuePathRequest> genericRequests) {
+		Collection<AnalysisGroupValuePathDTO> results = new ArrayList<AnalysisGroupValuePathDTO>();
+		for (GenericValuePathRequest request : genericRequests){
+			AnalysisGroupValuePathDTO result = new AnalysisGroupValuePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setValueType(request.getValueType());
+			result.setValueKind(request.getValueKind());
+			result.setValues(getAnalysisGroupValues(request.getIdOrCodeName(), request.getStateType(), request.getStateKind(), request.getValueType(), request.getValueKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<AnalysisGroupValue> getAnalysisGroupValues(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getResultList();
+		}else{
+			return AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupCodeNameAndStateTypeKindAndValueTypeKind(idOrCodeName, stateType, stateKind, valueType, valueKind).getResultList();
+		}
 	}
 }

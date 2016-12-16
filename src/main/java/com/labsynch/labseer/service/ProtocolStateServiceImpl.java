@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -11,16 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
+import com.labsynch.labseer.dto.ProtocolStatePathDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -121,15 +117,37 @@ public class ProtocolStateServiceImpl implements ProtocolStateService {
 			String stateType, String stateKind) {
 		ProtocolState state = null;
 		try{
-			Long id;
-			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
-			else id = Protocol.findProtocolsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
-			state = ProtocolState.findProtocolStatesByProtocolIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+			Collection<ProtocolState> states = getProtocolStates(idOrCodeName, stateType, stateKind);
+			state = states.iterator().next();
 		}catch (Exception e){
 			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			state = null;
 		}
 		return state;
+	}
+
+	@Override
+	public Collection<ProtocolStatePathDTO> getProtocolStates(
+			Collection<GenericStatePathRequest> genericRequests) {
+		Collection<ProtocolStatePathDTO> results = new ArrayList<ProtocolStatePathDTO>();
+		for (GenericStatePathRequest request : genericRequests){
+			ProtocolStatePathDTO result = new ProtocolStatePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setStateType(request.getStateType());
+			result.setStateKind(request.getStateKind());
+			result.setStates(getProtocolStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<ProtocolState> getProtocolStates(String idOrCodeName, String stateType, String stateKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return ProtocolState.findProtocolStatesByProtocolIDAndStateTypeKind(id, stateType, stateKind).getResultList();
+		}else{
+			return ProtocolState.findProtocolStatesByProtocolCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+		}
 	}
 
 }

@@ -19,6 +19,8 @@ import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.UpdateLog;
+import com.labsynch.labseer.dto.ContainerStatePathDTO;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -143,15 +145,37 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 			String stateType, String stateKind) {
 		ContainerState state = null;
 		try{
-			Long id;
-			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
-			else id = Container.findContainerByCodeNameEquals(idOrCodeName).getId();
-			state = ContainerState.findContainerStatesByContainerIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+			Collection<ContainerState> states = getContainerStates(idOrCodeName, stateType, stateKind);
+			state = states.iterator().next();
 		}catch (Exception e){
 			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			state = null;
 		}
 		return state;
+	}
+
+	@Override
+	public Collection<ContainerStatePathDTO> getContainerStates(
+			Collection<GenericStatePathRequest> genericRequests) {
+		Collection<ContainerStatePathDTO> results = new ArrayList<ContainerStatePathDTO>();
+		for (GenericStatePathRequest request : genericRequests){
+			ContainerStatePathDTO result = new ContainerStatePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setStateType(request.getStateType());
+			result.setStateKind(request.getStateKind());
+			result.setStates(getContainerStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<ContainerState> getContainerStates(String idOrCodeName, String stateType, String stateKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return ContainerState.findContainerStatesByContainerIDAndStateTypeKind(id, stateType, stateKind).getResultList();
+		}else{
+			return ContainerState.findContainerStatesByContainerCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+		}
 	}
 	
 	@Override

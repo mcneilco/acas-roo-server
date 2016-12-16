@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +22,9 @@ import org.supercsv.prefs.CsvPreference;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
 import com.labsynch.labseer.dto.TreatmentGroupValueDTO;
+import com.labsynch.labseer.dto.TreatmentGroupValuePathDTO;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 
@@ -227,17 +230,40 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 
 	@Override
 	public TreatmentGroupValue getTreatmentGroupValue(String idOrCodeName,
-			String stateType, String stateKind, String valueType,
-			String valueKind) {
+			String stateType, String stateKind, String valueType, String valueKind) {
 		TreatmentGroupValue value = null;
 		try{
-			Long id = TreatmentGroup.findTreatmentGroupsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
-			value = TreatmentGroupValue.findTreatmentGroupValuesByTreatmentGroupIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+			Collection<TreatmentGroupValue> values = getTreatmentGroupValues(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			value = values.iterator().next();
 		}catch (Exception e){
-			logger.debug("Caught error "+e.toString()+" trying to find a value.");
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			value = null;
 		}
 		return value;
+	}
+
+	@Override
+	public Collection<TreatmentGroupValuePathDTO> getTreatmentGroupValues(
+			Collection<GenericValuePathRequest> genericRequests) {
+		Collection<TreatmentGroupValuePathDTO> results = new ArrayList<TreatmentGroupValuePathDTO>();
+		for (GenericValuePathRequest request : genericRequests){
+			TreatmentGroupValuePathDTO result = new TreatmentGroupValuePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setValueType(request.getValueType());
+			result.setValueKind(request.getValueKind());
+			result.setValues(getTreatmentGroupValues(request.getIdOrCodeName(), request.getStateType(), request.getStateKind(), request.getValueType(), request.getValueKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<TreatmentGroupValue> getTreatmentGroupValues(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return TreatmentGroupValue.findTreatmentGroupValuesByTreatmentGroupIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getResultList();
+		}else{
+			return TreatmentGroupValue.findTreatmentGroupValuesByTreatmentGroupCodeNameAndStateTypeKindAndValueTypeKind(idOrCodeName, stateType, stateKind, valueType, valueKind).getResultList();
+		}
 	}
 
 }

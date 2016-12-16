@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -11,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
+import com.labsynch.labseer.dto.TreatmentGroupStatePathDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -116,15 +117,37 @@ public class TreatmentGroupStateServiceImpl implements TreatmentGroupStateServic
 			String stateType, String stateKind) {
 		TreatmentGroupState state = null;
 		try{
-			Long id;
-			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
-			else id = TreatmentGroup.findTreatmentGroupsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
-			state = TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+			Collection<TreatmentGroupState> states = getTreatmentGroupStates(idOrCodeName, stateType, stateKind);
+			state = states.iterator().next();
 		}catch (Exception e){
 			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			state = null;
 		}
 		return state;
+	}
+
+	@Override
+	public Collection<TreatmentGroupStatePathDTO> getTreatmentGroupStates(
+			Collection<GenericStatePathRequest> genericRequests) {
+		Collection<TreatmentGroupStatePathDTO> results = new ArrayList<TreatmentGroupStatePathDTO>();
+		for (GenericStatePathRequest request : genericRequests){
+			TreatmentGroupStatePathDTO result = new TreatmentGroupStatePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setStateType(request.getStateType());
+			result.setStateKind(request.getStateKind());
+			result.setStates(getTreatmentGroupStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<TreatmentGroupState> getTreatmentGroupStates(String idOrCodeName, String stateType, String stateKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupIDAndStateTypeKind(id, stateType, stateKind).getResultList();
+		}else{
+			return TreatmentGroupState.findTreatmentGroupStatesByTreatmentGroupCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+		}
 	}
 
 }

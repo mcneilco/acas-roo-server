@@ -22,7 +22,9 @@ import org.supercsv.prefs.CsvPreference;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
 import com.labsynch.labseer.dto.SubjectValueDTO;
+import com.labsynch.labseer.dto.SubjectValuePathDTO;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 
@@ -255,16 +257,39 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 	
 	@Override
 	public SubjectValue getSubjectValue(String idOrCodeName,
-			String stateType, String stateKind, String valueType,
-			String valueKind) {
+			String stateType, String stateKind, String valueType, String valueKind) {
 		SubjectValue value = null;
 		try{
-			Long id = Subject.findSubjectsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
-			value = SubjectValue.findSubjectValuesBySubjectIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+			Collection<SubjectValue> values = getSubjectValues(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			value = values.iterator().next();
 		}catch (Exception e){
-			logger.debug("Caught error "+e.toString()+" trying to find a value.");
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			value = null;
 		}
 		return value;
+	}
+
+	@Override
+	public Collection<SubjectValuePathDTO> getSubjectValues(
+			Collection<GenericValuePathRequest> genericRequests) {
+		Collection<SubjectValuePathDTO> results = new ArrayList<SubjectValuePathDTO>();
+		for (GenericValuePathRequest request : genericRequests){
+			SubjectValuePathDTO result = new SubjectValuePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setValueType(request.getValueType());
+			result.setValueKind(request.getValueKind());
+			result.setValues(getSubjectValues(request.getIdOrCodeName(), request.getStateType(), request.getStateKind(), request.getValueType(), request.getValueKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<SubjectValue> getSubjectValues(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return SubjectValue.findSubjectValuesBySubjectIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getResultList();
+		}else{
+			return SubjectValue.findSubjectValuesBySubjectCodeNameAndStateTypeKindAndValueTypeKind(idOrCodeName, stateType, stateKind, valueType, valueKind).getResultList();
+		}
 	}
 }

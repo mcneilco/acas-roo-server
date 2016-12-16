@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
+import com.labsynch.labseer.dto.SubjectValuePathDTO;
 
 @Service
 public interface SubjectValueService {
@@ -43,5 +45,8 @@ public interface SubjectValueService {
 
 	public SubjectValue getSubjectValue(String idOrCodeName, String stateType,
 			String stateKind, String valueType, String valueKind);
+
+	public Collection<SubjectValuePathDTO> getSubjectValues(
+			Collection<GenericValuePathRequest> genericRequests);
 	
 }

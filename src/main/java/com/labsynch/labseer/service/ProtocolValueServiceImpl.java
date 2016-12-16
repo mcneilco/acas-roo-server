@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
+import com.labsynch.labseer.dto.ProtocolValuePathDTO;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 
@@ -182,16 +184,39 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 	
 	@Override
 	public ProtocolValue getProtocolValue(String idOrCodeName,
-			String stateType, String stateKind, String valueType,
-			String valueKind) {
+			String stateType, String stateKind, String valueType, String valueKind) {
 		ProtocolValue value = null;
 		try{
-			Long id = Protocol.findProtocolsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
-			value = ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+			Collection<ProtocolValue> values = getProtocolValues(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			value = values.iterator().next();
 		}catch (Exception e){
-			logger.debug("Caught error "+e.toString()+" trying to find a value.");
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			value = null;
 		}
 		return value;
+	}
+
+	@Override
+	public Collection<ProtocolValuePathDTO> getProtocolValues(
+			Collection<GenericValuePathRequest> genericRequests) {
+		Collection<ProtocolValuePathDTO> results = new ArrayList<ProtocolValuePathDTO>();
+		for (GenericValuePathRequest request : genericRequests){
+			ProtocolValuePathDTO result = new ProtocolValuePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setValueType(request.getValueType());
+			result.setValueKind(request.getValueKind());
+			result.setValues(getProtocolValues(request.getIdOrCodeName(), request.getStateType(), request.getStateKind(), request.getValueType(), request.getValueKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<ProtocolValue> getProtocolValues(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getResultList();
+		}else{
+			return ProtocolValue.findProtocolValuesByProtocolCodeNameAndStateTypeKindAndValueTypeKind(idOrCodeName, stateType, stateKind, valueType, valueKind).getResultList();
+		}
 	}
 }

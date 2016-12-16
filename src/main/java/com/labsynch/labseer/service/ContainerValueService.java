@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.dto.ContainerValuePathDTO;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
 
 @Service
 public interface ContainerValueService {
@@ -34,5 +36,8 @@ public interface ContainerValueService {
 	List<ContainerValue> getContainerValuesByContainerIdAndStateTypeKindAndValueTypeKind(
 			Long containerId, String stateType, String stateKind,
 			String valueType, String valueKind);
+
+	Collection<ContainerValuePathDTO> getContainerValues(
+			Collection<GenericValuePathRequest> genericRequests);
 
 }

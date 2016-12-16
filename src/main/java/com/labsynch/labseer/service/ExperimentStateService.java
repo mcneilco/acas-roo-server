@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.ExperimentState;
+import com.labsynch.labseer.dto.ExperimentStatePathDTO;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
 
 @Service
 public interface ExperimentStateService {
@@ -30,5 +32,8 @@ public interface ExperimentStateService {
 
 	public ExperimentState getExperimentState(String idOrCodeName,
 			String stateType, String stateKind);
+
+	public Collection<ExperimentStatePathDTO> getExperimentStates(
+			Collection<GenericStatePathRequest> genericRequests);
 	
 }

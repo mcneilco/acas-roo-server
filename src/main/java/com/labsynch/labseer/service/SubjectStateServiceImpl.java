@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -11,13 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
+import com.labsynch.labseer.dto.SubjectStatePathDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -118,15 +117,37 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 			String stateType, String stateKind) {
 		SubjectState state = null;
 		try{
-			Long id;
-			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
-			else id = Subject.findSubjectsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
-			state = SubjectState.findSubjectStatesBySubjectIDAndStateTypeKind(id, stateType, stateKind).getSingleResult();
+			Collection<SubjectState> states = getSubjectStates(idOrCodeName, stateType, stateKind);
+			state = states.iterator().next();
 		}catch (Exception e){
 			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			state = null;
 		}
 		return state;
+	}
+
+	@Override
+	public Collection<SubjectStatePathDTO> getSubjectStates(
+			Collection<GenericStatePathRequest> genericRequests) {
+		Collection<SubjectStatePathDTO> results = new ArrayList<SubjectStatePathDTO>();
+		for (GenericStatePathRequest request : genericRequests){
+			SubjectStatePathDTO result = new SubjectStatePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setStateType(request.getStateType());
+			result.setStateKind(request.getStateKind());
+			result.setStates(getSubjectStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<SubjectState> getSubjectStates(String idOrCodeName, String stateType, String stateKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return SubjectState.findSubjectStatesBySubjectIDAndStateTypeKind(id, stateType, stateKind).getResultList();
+		}else{
+			return SubjectState.findSubjectStatesBySubjectCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+		}
 	}
 
 }

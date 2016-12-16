@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.dto.ContainerStatePathDTO;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
 
 @Service
 public interface ContainerStateService {
@@ -37,6 +39,9 @@ public interface ContainerStateService {
 	ContainerState createContainerStateByContainerIdAndStateTypeKindAndRecordedBy(
 			Long containerId, String stateType, String stateKind,
 			String recordedBy);
+
+	Collection<ContainerStatePathDTO> getContainerStates(
+			Collection<GenericStatePathRequest> genericRequests);
 
 	
 	

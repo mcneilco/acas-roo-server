@@ -161,4 +161,22 @@ public class ContainerState extends AbstractState {
 			q.setParameter("ignored", true);
 			return q;
 		}
+
+	public static TypedQuery<ContainerState> findContainerStatesByContainerCodeNameAndStateTypeKind(
+			String containerCodeName, String stateType, String stateKind) {
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT cs FROM ContainerState AS cs " +
+		"JOIN cs.container c " +
+		"WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
+		"AND c.codeName = :containerCodeName ";
+		TypedQuery<ContainerState> q = em.createQuery(hsqlQuery, ContainerState.class);
+		q.setParameter("containerCodeName", containerCodeName);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 }

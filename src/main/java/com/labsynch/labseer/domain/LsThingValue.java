@@ -191,6 +191,33 @@ public class LsThingValue extends AbstractValue {
 		return q;
 	}
 	
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsThingCodeNameAndStateTypeKindAndValueTypeKind(
+			String lsThingCodeName, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT lstv FROM LsThingValue AS lstv " +
+				"JOIN lstv.lsState lsts " +
+				"JOIN lsts.lsThing lst " +
+				"WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+				"AND lstv.lsType = :valueType AND lstv.lsKind = :valueKind AND lstv.ignored IS NOT :ignored " +
+				"AND lst.ignored IS NOT :ignored " +
+				"AND lst.codeName = :lsThingCodeName ";
+		TypedQuery<LsThingValue> q = em.createQuery(hsqlQuery, LsThingValue.class);
+		q.setParameter("lsThingCodeName", lsThingCodeName);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+	
 	public static com.labsynch.labseer.domain.LsThingValue create(com.labsynch.labseer.domain.LsThingValue lsThingValue) {
         LsThingValue newLsThingValue = new JSONDeserializer<LsThingValue>().use(null, LsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new LsThingValue());
         return newLsThingValue;

@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.dto.ContainerValuePathDTO;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -70,15 +72,37 @@ public class ContainerValueServiceImpl implements ContainerValueService {
 			String stateType, String stateKind, String valueType, String valueKind) {
 		ContainerValue value = null;
 		try{
-			Long id;
-			if (SimpleUtil.isNumeric(idOrCodeName)) id = Long.valueOf(idOrCodeName);
-			else id = Container.findContainerByCodeNameEquals(idOrCodeName).getId();
-			value = ContainerValue.findContainerValuesByContainerIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
+			Collection<ContainerValue> values = getContainerValues(idOrCodeName, stateType, stateKind, valueType, valueKind);
+			value = values.iterator().next();
 		}catch (Exception e){
 			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
 			value = null;
 		}
 		return value;
+	}
+
+	@Override
+	public Collection<ContainerValuePathDTO> getContainerValues(
+			Collection<GenericValuePathRequest> genericRequests) {
+		Collection<ContainerValuePathDTO> results = new ArrayList<ContainerValuePathDTO>();
+		for (GenericValuePathRequest request : genericRequests){
+			ContainerValuePathDTO result = new ContainerValuePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setValueType(request.getValueType());
+			result.setValueKind(request.getValueKind());
+			result.setValues(getContainerValues(request.getIdOrCodeName(), request.getStateType(), request.getStateKind(), request.getValueType(), request.getValueKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<ContainerValue> getContainerValues(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return ContainerValue.findContainerValuesByContainerIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getResultList();
+		}else{
+			return ContainerValue.findContainerValuesByContainerCodeNameAndStateTypeKindAndValueTypeKind(idOrCodeName, stateType, stateKind, valueType, valueKind).getResultList();
+		}
 	}
 	
 	@Override
