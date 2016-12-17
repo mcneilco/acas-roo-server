@@ -759,7 +759,7 @@ public class SubjectServiceImpl implements SubjectService {
 		//container code
 		if (query.getContainerCode() != null){
 			Join<Subject, ItxSubjectContainer> itx = subject.join("containers");
-			Join<ItxSubjectContainer, Container> container = itx.join("containers");
+			Join<ItxSubjectContainer, Container> container = itx.join("container");
 			Predicate itxNotIgn = cb.not(itx.<Boolean>get("ignored"));
 			Predicate containerNotIgn = cb.not(container.<Boolean>get("ignored"));
 			Predicate containerCode = cb.equal(container.<String>get("codeName"), query.getContainerCode());
@@ -801,10 +801,17 @@ public class SubjectServiceImpl implements SubjectService {
 						throw new Exception("valueType must be specified if value is specified!");
 					}else if(valueQuery.getValueType().equals("dateValue")){
 						String postgresTimeUnit = "day";
-						Expression<Calendar> dateTruncExpr = cb.function("date_trunc", Calendar.class, cb.literal(postgresTimeUnit), value.get("dateValue").as(Calendar.class));
-						Calendar queryDate = Calendar.getInstance();
-						queryDate.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+						Expression<Date> dateTruncExpr = cb.function("date_trunc", Date.class, cb.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+						Calendar cal = Calendar.getInstance(); // locale-specific
+						cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+						cal.set(Calendar.HOUR_OF_DAY, 0);
+						cal.set(Calendar.MINUTE, 0);
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MILLISECOND, 0);
+						long time = cal.getTimeInMillis();
+						Date queryDate = new Date(time);
 						Predicate valueLike = cb.equal(dateTruncExpr, queryDate);
+						valuePredicatesList.add(valueLike);
 					}else{
 //						only works with string value types: stringValue, codeValue, fileValue, clobValue
 						Predicate valueLike = cb.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
@@ -817,8 +824,13 @@ public class SubjectServiceImpl implements SubjectService {
 				predicateList.add(cb.and(valuePredicates));
 			}
 		}
-		
-		return null;
+		predicates = predicateList.toArray(predicates);
+		criteria.where(cb.and(predicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		idList = q.getResultList();
+		logger.debug("Found "+idList.size()+" results.");
+		return idList;
 	}
 
 	@Override
