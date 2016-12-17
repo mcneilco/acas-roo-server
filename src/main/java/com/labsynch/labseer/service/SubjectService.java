@@ -14,6 +14,8 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
+import com.labsynch.labseer.dto.SubjectSearchRequest;
+import com.labsynch.labseer.dto.SubjectSearchResultDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
 
 @Service
@@ -35,6 +37,8 @@ public interface SubjectService {
 			List<Long> treatmentGroupIds) throws Exception;
 	Collection<ContainerSubjectsDTO> getSubjectsByContainerAndInteraction(
 			Collection<ContainerSubjectsDTO> requests);
+	Collection<Long> searchSubjectIdsByQueryDTO(SubjectSearchRequest query) throws Exception;
+	Collection<Subject> getSubjectsByIds(Collection<Long> subjectIds);
 
 	
 	

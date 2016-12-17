@@ -1,5 +1,6 @@
 package com.labsynch.labseer.api;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,7 +28,10 @@ import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectCsvDataDTO;
+import com.labsynch.labseer.dto.SubjectSearchRequest;
+import com.labsynch.labseer.dto.SubjectSearchResultDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.SubjectService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -305,5 +309,50 @@ public class ApiSubjectController {
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @RequestMapping(value = "/searchSubjects", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> searchSubjects(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.add("Content-Type", "application/json; charset=utf-8");
+    	SubjectSearchRequest query = SubjectSearchRequest.fromJsonToSubjectSearchRequest(json);
+    	ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+    	boolean errorsFound = false;Collection<Long> subjectIds;
+    	SubjectSearchResultDTO result = new SubjectSearchResultDTO();
+    	try{
+    		subjectIds = subjectService.searchSubjectIdsByQueryDTO(query);
+    		int maxResults = 1000;
+    		if (query.getMaxResults() != null) maxResults = query.getMaxResults();
+    		result.setMaxResults(maxResults);
+    		result.setNumberOfResults(subjectIds.size());
+    		if (result.getNumberOfResults() <= result.getMaxResults()){
+    			result.setResults(subjectService.getSubjectsByIds(subjectIds));
+    		}
+    	}catch (Exception e){
+    		logger.error("Caught searching for subjects in generic interaction search",e);
+    		ErrorMessage error = new ErrorMessage();
+    	    error.setErrorLevel("error");
+    	    error.setMessage(e.getMessage());
+    	    errors.add(error);
+    	    errorsFound = true;
+    	}
+    	
+    	if (errorsFound) {
+    	    return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+    	} else if (with != null) {
+    		if (with.equalsIgnoreCase("nestedfull")) {
+    			return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("stub")) {
+				return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
+			}
+		}
+    		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+    }
+    
+    
+
 
 }

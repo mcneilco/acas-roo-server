@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +17,12 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +34,16 @@ import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.domain.ItxSubjectContainer;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingState;
+import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
@@ -37,8 +54,10 @@ import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.SubjectLabelDTO;
+import com.labsynch.labseer.dto.SubjectSearchRequest;
 import com.labsynch.labseer.dto.SubjectStateDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.dto.ValueQueryDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -682,6 +701,135 @@ public class SubjectServiceImpl implements SubjectService {
 		}
 		return requests;
 	}
+
+	@Override
+	public Collection<Long> searchSubjectIdsByQueryDTO(
+			SubjectSearchRequest query) throws Exception {
+		List<Long> idList = new ArrayList<Long>();
+		EntityManager em = Subject.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
+		Root<Subject> subject = criteria.from(Subject.class);
+		
+		criteria.select(subject.<Long>get("id"));
+		criteria.distinct(true);
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		
+		//subjectType
+		if (query.getSubjectType() != null){
+			Predicate subjectType = cb.equal(subject.<String>get("lsType"), query.getSubjectType());
+			predicateList.add(subjectType);
+		}
+		//subjectKind
+		if (query.getSubjectKind() != null){
+			Predicate subjectKind = cb.equal(subject.<String>get("lsKind"), query.getSubjectKind());
+			predicateList.add(subjectKind);
+		}
+		//protocol label and experiment label
+		if (query.getProtocolLabelLike() != null && query.getExperimentLabelLike() != null){
+			Join<Subject, TreatmentGroup> tg = subject.join("treatmentGroups");
+			Join<TreatmentGroup, AnalysisGroup> ag = tg.join("analysisGroups");
+			Join<AnalysisGroup, Experiment> experiment = ag.join("experiments");
+			Predicate tgNotIgn = cb.not(tg.<Boolean>get("ignored"));
+			Predicate agNotIgn = cb.not(ag.<Boolean>get("ignored"));
+			Predicate exptNotIgn = cb.not(experiment.<Boolean>get("ignored"));
+			predicateList.add(tgNotIgn);
+			predicateList.add(agNotIgn);
+			predicateList.add(exptNotIgn);
+			
+			if (query.getExperimentLabelLike() != null){
+				Join<Experiment, ExperimentLabel> experimentLabel = experiment.join("lsLabels");
+				Predicate exptLabelNotIgn = cb.not(experimentLabel.<Boolean>get("ignored"));
+				predicateList.add(exptLabelNotIgn);
+				Predicate experimentLabelLike = cb.like(experimentLabel.<String>get("labelText"), '%'+query.getExperimentLabelLike()+'%');
+				predicateList.add(experimentLabelLike);
+			}
+			if (query.getProtocolLabelLike() != null){
+				Join<Experiment, Protocol> protocol = experiment.join("protocol");
+				Join<Protocol, ProtocolLabel> protocolLabel = protocol.join("lsLabels");
+				Predicate protNotIgn = cb.not(protocol.<Boolean>get("ignored"));
+				Predicate protLabelNotIgn = cb.not(protocolLabel.<Boolean>get("ignored"));
+				predicateList.add(protNotIgn);
+				predicateList.add(protLabelNotIgn);
+				Predicate protocolLabelLike = cb.like(protocolLabel.<String>get("labelText"), '%'+query.getProtocolLabelLike()+'%');
+				predicateList.add(protocolLabelLike);
+			}
+		}
+		//container code
+		if (query.getContainerCode() != null){
+			Join<Subject, ItxSubjectContainer> itx = subject.join("containers");
+			Join<ItxSubjectContainer, Container> container = itx.join("containers");
+			Predicate itxNotIgn = cb.not(itx.<Boolean>get("ignored"));
+			Predicate containerNotIgn = cb.not(container.<Boolean>get("ignored"));
+			Predicate containerCode = cb.equal(container.<String>get("codeName"), query.getContainerCode());
+			predicateList.add(itxNotIgn);
+			predicateList.add(containerNotIgn);
+			predicateList.add(containerCode);
+		}
+		//values
+		if (query.getValues() != null){
+			for (ValueQueryDTO valueQuery : query.getValues()){
+				List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
+				Join<Subject, SubjectState> state = subject.join("lsStates");
+				Join<SubjectState, SubjectValue> value = state.join("lsValues");
+				
+				Predicate stateNotIgn = cb.isFalse(state.<Boolean>get("ignored"));
+				Predicate valueNotIgn = cb.isFalse(value.<Boolean>get("ignored"));
+				valuePredicatesList.add(stateNotIgn);
+				valuePredicatesList.add(valueNotIgn);
+				
+				if (valueQuery.getStateType() != null){
+					Predicate stateType = cb.equal(state.<String>get("lsType"),valueQuery.getStateType());
+					valuePredicatesList.add(stateType);
+				}
+				if (valueQuery.getStateKind() != null){
+					Predicate stateKind = cb.equal(state.<String>get("lsKind"),valueQuery.getStateKind());
+					valuePredicatesList.add(stateKind);
+				}
+				if (valueQuery.getValueType() != null){
+					Predicate valueType = cb.equal(value.<String>get("lsType"),valueQuery.getValueType());
+					valuePredicatesList.add(valueType);
+				}
+				if (valueQuery.getValueKind() != null){
+					Predicate valueKind = cb.equal(value.<String>get("lsKind"),valueQuery.getValueKind());
+					valuePredicatesList.add(valueKind);
+				}
+				if (valueQuery.getValue() != null){
+					if (valueQuery.getValueType() == null){
+						logger.error("valueType must be specified if value is specified!");
+						throw new Exception("valueType must be specified if value is specified!");
+					}else if(valueQuery.getValueType().equals("dateValue")){
+						String postgresTimeUnit = "day";
+						Expression<Calendar> dateTruncExpr = cb.function("date_trunc", Calendar.class, cb.literal(postgresTimeUnit), value.get("dateValue").as(Calendar.class));
+						Calendar queryDate = Calendar.getInstance();
+						queryDate.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+						Predicate valueLike = cb.equal(dateTruncExpr, queryDate);
+					}else{
+//						only works with string value types: stringValue, codeValue, fileValue, clobValue
+						Predicate valueLike = cb.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
+						valuePredicatesList.add(valueLike);
+					}
+				}
+//				gather predicates with AND
+				Predicate[] valuePredicates = new Predicate[0];
+				valuePredicates = valuePredicatesList.toArray(valuePredicates);
+				predicateList.add(cb.and(valuePredicates));
+			}
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Collection<Subject> getSubjectsByIds(Collection<Long> ids) {
+		Collection<Subject> results = new ArrayList<Subject>();
+		for (Long id : ids){
+			results.add(Subject.findSubject(id));
+		}
+		return results;
+	}
+
 	
 	
 
