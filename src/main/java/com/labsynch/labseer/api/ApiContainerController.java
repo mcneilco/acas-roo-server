@@ -21,18 +21,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerQueryResultDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
 import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
+import com.labsynch.labseer.dto.GenericQueryCodeTableResultDTO;
 import com.labsynch.labseer.dto.IdCollectionDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
@@ -41,7 +45,6 @@ import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.ContainerService;
-import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -811,6 +814,60 @@ public class ApiContainerController {
         	logger.error("Uncaught error in getContainersByCodeNames",e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @RequestMapping(value = "/genericBrowserSearch", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> genericBrowserSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
+    	HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-Type", "application/json; charset=utf-8");
+      ContainerBrowserQueryDTO query = ContainerBrowserQueryDTO.fromJsonToContainerBrowserQueryDTO(json);
+      ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+      boolean errorsFound = false;
+      Collection<Long> containerIds;
+      ContainerQueryResultDTO result = new ContainerQueryResultDTO();
+      try{
+      	containerIds = containerService.searchContainerIdsByBrowserQueryDTO(query);
+      	int maxResults = 1000;
+      	if (query.getQueryDTO().getMaxResults() != null) maxResults = query.getQueryDTO().getMaxResults();
+      	result.setMaxResults(maxResults);
+      	result.setNumberOfResults(containerIds.size());
+      	if (result.getNumberOfResults() <= result.getMaxResults()){
+      		result.setResults(containerService.getContainersByIds(containerIds));
+      	}
+      }catch (Exception e){
+      	logger.error("Caught searching for containers in generic interaction search",e);
+      	ErrorMessage error = new ErrorMessage();
+          error.setErrorLevel("error");
+          error.setMessage(e.getMessage());
+          errors.add(error);
+          errorsFound = true;
+      }
+      
+      if (errorsFound) {
+          return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+      } else {
+      	if (with != null) {
+      		if (with.equalsIgnoreCase("nestedfull")) {
+      			return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
+      		} else if (with.equalsIgnoreCase("prettyjson")) {
+      			return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
+      		} else if (with.equalsIgnoreCase("nestedstub")) {
+      			return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+      		} else if (with.equalsIgnoreCase("stub")) {
+      			return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
+      		} else if (with.equalsIgnoreCase("codeTable")) {
+      			GenericQueryCodeTableResultDTO resultDTO = new GenericQueryCodeTableResultDTO();
+      			resultDTO.setMaxResults(result.getMaxResults());
+      			resultDTO.setNumberOfResults(result.getNumberOfResults());
+      			if (result.getResults() != null){
+    				resultDTO.setResults((Collection<CodeTableDTO>) containerService.convertToCodeTables(new ArrayList<Container>(result.getResults())));
+      			}
+      			return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
+      		}
+      	}
+      	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+      }
+        
     }
     
 }

@@ -3,13 +3,13 @@
 
 package com.labsynch.labseer.dto;
 
-import com.labsynch.labseer.dto.LsThingQueryCodeTableResultDTO;
+import com.labsynch.labseer.dto.AuthorQueryResultDTO;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-privileged aspect LsThingQueryCodeTableResultDTO_Roo_ToString {
+privileged aspect AuthorQueryResultDTO_Roo_ToString {
     
-    public String LsThingQueryCodeTableResultDTO.toString() {
+    public String AuthorQueryResultDTO.toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     

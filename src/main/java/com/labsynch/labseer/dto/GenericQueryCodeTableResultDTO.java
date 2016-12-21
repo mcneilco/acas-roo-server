@@ -15,7 +15,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString
 @RooJson
-public class LsThingQueryCodeTableResultDTO {
+public class GenericQueryCodeTableResultDTO {
 
 	Integer maxResults;
 	
@@ -23,7 +23,7 @@ public class LsThingQueryCodeTableResultDTO {
 	
 	Collection<CodeTableDTO> results;
 	
-	public LsThingQueryCodeTableResultDTO(){
+	public GenericQueryCodeTableResultDTO(){
 		
 	}
 	

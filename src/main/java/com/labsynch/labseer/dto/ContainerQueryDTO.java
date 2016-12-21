@@ -10,7 +10,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-public class LsThingQueryDTO {
+public class ContainerQueryDTO {
 
 	Date recordedDateGreaterThan;
 	
@@ -28,15 +28,17 @@ public class LsThingQueryDTO {
 	
 	Collection<ItxQueryDTO> secondInteractions;
 	
+	Collection<ItxQueryDTO> subjects;
+	
 	Collection<ValueQueryDTO> values;
 	
 	Collection<LabelQueryDTO> labels;
 	
-	public LsThingQueryDTO(){
+	public ContainerQueryDTO(){
 		
 	}
 	
-	public LsThingQueryDTO(LsThingQueryDTO queryDTO){
+	public ContainerQueryDTO(ContainerQueryDTO queryDTO){
 		this.recordedDateGreaterThan = queryDTO.getRecordedDateGreaterThan();
 		this.recordedDateLessThan = queryDTO.getRecordedDateLessThan();
 		this.lsType = queryDTO.getLsType();
