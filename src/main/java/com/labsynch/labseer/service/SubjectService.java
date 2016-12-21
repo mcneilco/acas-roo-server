@@ -17,6 +17,7 @@ import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.SubjectSearchRequest;
 import com.labsynch.labseer.dto.SubjectSearchResultDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.dto.ValueQueryDTO;
 
 @Service
 public interface SubjectService {
@@ -39,6 +40,7 @@ public interface SubjectService {
 			Collection<ContainerSubjectsDTO> requests);
 	Collection<Long> searchSubjectIdsByQueryDTO(SubjectSearchRequest query) throws Exception;
 	Collection<Subject> getSubjectsByIds(Collection<Long> subjectIds);
+	boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO);
 
 	
 	

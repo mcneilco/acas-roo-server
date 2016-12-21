@@ -1,14 +1,19 @@
 package com.labsynch.labseer.api;
 
 import com.labsynch.labseer.domain.ItxSubjectContainer;
+import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.service.ItxSubjectContainerService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
+
 import flexjson.JSONTokener;
+
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +53,24 @@ public class ApiItxSubjectContainerController {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(itxSubjectContainer.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/getBySubjectIdOrCodeName/{subjectIdOrCodeName}", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getBySubjectIdOrCodeName(@PathVariable("subjectIdOrCodeName") String subjectIdOrCodeName) {
+        Subject subject = null;
+    	if (SimpleUtil.isNumeric(subjectIdOrCodeName)){
+        	subject = Subject.findSubject(Long.valueOf(subjectIdOrCodeName));
+        }else{
+        	subject = Subject.findSubjectByCodeNameEquals(subjectIdOrCodeName);
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        if (subject == null) {
+            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        }
+        Collection<ItxSubjectContainer> itxSubjectContainers = subject.getContainers();
+        return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(itxSubjectContainers), headers, HttpStatus.OK);
     }
 
     @RequestMapping(headers = "Accept=application/json")

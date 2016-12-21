@@ -31,6 +31,7 @@ import com.labsynch.labseer.dto.SubjectCsvDataDTO;
 import com.labsynch.labseer.dto.SubjectSearchRequest;
 import com.labsynch.labseer.dto.SubjectSearchResultDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.dto.ValueQueryDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.SubjectService;
 import com.labsynch.labseer.service.SubjectValueService;
@@ -350,6 +351,35 @@ public class ApiSubjectController {
 			}
 		}
     		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/setSubjectValues/{idOrCodeName}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> setSubjectValues(@RequestBody String json, 
+    		@PathVariable("idOrCodeName") String idOrCodeName){
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.add("Content-Type", "application/json; charset=utf-8");
+    	try{
+    		ValueQueryDTO pathDTO = ValueQueryDTO.fromJsonToValueQueryDTO(json);
+    		
+    		if (pathDTO.getValueType() == null){
+    			return new ResponseEntity<String>("ERROR: Must provide valueType", headers, HttpStatus.BAD_REQUEST);
+    		}
+    		
+    		Subject subject = null;
+	    	if (SimpleUtil.isNumeric(idOrCodeName)){
+	        	subject = Subject.findSubject(Long.valueOf(idOrCodeName));
+	        }else{
+	        	subject = Subject.findSubjectByCodeNameEquals(idOrCodeName);
+	        }
+	        if (subject == null) {
+	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+	        }
+    		subjectService.setSubjectValuesByPath(subject, pathDTO);
+    		return new ResponseEntity<String>(headers, HttpStatus.OK);
+    	}catch (Exception e){
+    		logger.error("Caught error in setSubjectValues",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
     }
     
     

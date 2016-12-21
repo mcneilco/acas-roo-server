@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -840,6 +841,58 @@ public class SubjectServiceImpl implements SubjectService {
 			results.add(Subject.findSubject(id));
 		}
 		return results;
+	}
+
+	@Transactional
+	@Override
+	public boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO) {
+		EntityManager em = Subject.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SubjectValue> criteria = cb.createQuery(SubjectValue.class);
+		Root<SubjectValue> subjectValue = criteria.from(SubjectValue.class);
+		Join<SubjectValue, SubjectState> subjectState = subjectValue.join("lsState");
+		
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		Predicate subjectEqual = cb.equal(subjectState.<Subject>get("subject"), subject);
+		predicateList.add(subjectEqual);
+		if (pathDTO.getStateType() != null){
+			Predicate stateType = cb.equal(subjectState.<String>get("lsType"), pathDTO.getStateType());
+			predicateList.add(stateType);
+		}
+		if (pathDTO.getStateKind() != null){
+			Predicate stateKind = cb.equal(subjectState.<String>get("lsKind"), pathDTO.getStateKind());
+			predicateList.add(stateKind);
+		}
+		if (pathDTO.getValueType() != null){
+			Predicate valueType = cb.equal(subjectValue.<String>get("lsType"), pathDTO.getValueType());
+			predicateList.add(valueType);
+		}
+		if (pathDTO.getValueKind() != null){
+			Predicate valueKind = cb.equal(subjectValue.<String>get("lsKind"), pathDTO.getValueKind());
+			predicateList.add(valueKind);
+		}
+		
+		
+		predicates = predicateList.toArray(predicates);
+		criteria.where(cb.and(predicates));
+		TypedQuery<SubjectValue> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<SubjectValue> subjectValues = q.getResultList();
+		logger.debug("Found "+subjectValues.size()+" subject values.");
+		
+		if (subjectValues != null){
+			for (SubjectValue value : subjectValues){
+				if (pathDTO.getValueType().equals("stringValue")) value.setStringValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("codeValue")) value.setCodeValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("fileValue")) value.setFileValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("urlValue")) value.setUrlValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("clobValue")) value.setClobValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("numericValue")) value.setNumericValue(new BigDecimal(pathDTO.getValue()));
+				value.merge();
+			}
+		}
+		return true;
 	}
 
 	
