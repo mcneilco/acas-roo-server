@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
+import com.labsynch.labseer.dto.SubjectCodeDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.SubjectSearchRequest;
@@ -41,6 +42,8 @@ public interface SubjectService {
 	Collection<Long> searchSubjectIdsByQueryDTO(SubjectSearchRequest query) throws Exception;
 	Collection<Subject> getSubjectsByIds(Collection<Long> subjectIds);
 	boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO);
+	Collection<SubjectCodeDTO> getExperimentCodes(
+			Collection<SubjectCodeDTO> subjectCodeDTOs);
 
 	
 	

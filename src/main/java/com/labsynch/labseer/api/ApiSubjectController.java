@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
+import com.labsynch.labseer.dto.SubjectCodeDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectCsvDataDTO;
 import com.labsynch.labseer.dto.SubjectSearchRequest;
@@ -378,6 +379,20 @@ public class ApiSubjectController {
     		return new ResponseEntity<String>(headers, HttpStatus.OK);
     	}catch (Exception e){
     		logger.error("Caught error in setSubjectValues",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+    }
+    
+    @RequestMapping(value = "/getExperimentCodes", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<String> getExperimentCodes(@RequestBody String json){
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.add("Content-Type", "application/json; charset=utf-8");
+    	try{
+    		Collection<SubjectCodeDTO> subjectCodeDTOs = SubjectCodeDTO.fromJsonArrayToSubjectCoes(json);
+    		subjectCodeDTOs = subjectService.getExperimentCodes(subjectCodeDTOs);
+    		return new ResponseEntity<String>(SubjectCodeDTO.toJsonArray(subjectCodeDTOs), headers, HttpStatus.OK);
+    	}catch (Exception e){
+    		logger.error("Caught error in getExperimentCodes",e);
     		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
     	}
     }

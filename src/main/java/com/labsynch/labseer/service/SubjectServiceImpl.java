@@ -40,9 +40,6 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.domain.ItxSubjectContainer;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingState;
-import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.Subject;
@@ -50,14 +47,18 @@ import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.dto.AnalysisGroupCodeDTO;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
+import com.labsynch.labseer.dto.ExperimentCodeDTO;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
+import com.labsynch.labseer.dto.SubjectCodeDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.SubjectLabelDTO;
 import com.labsynch.labseer.dto.SubjectSearchRequest;
 import com.labsynch.labseer.dto.SubjectStateDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.dto.TreatmentGroupCodeDTO;
 import com.labsynch.labseer.dto.ValueQueryDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -893,6 +894,37 @@ public class SubjectServiceImpl implements SubjectService {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public Collection<SubjectCodeDTO> getExperimentCodes(
+			Collection<SubjectCodeDTO> subjectCodeDTOs) {
+		for (SubjectCodeDTO subjectDTO : subjectCodeDTOs){
+			Subject subject = Subject.findSubjectByCodeNameEquals(subjectDTO.getSubjectCode());
+			Collection<TreatmentGroupCodeDTO> tgDTOs = new ArrayList<TreatmentGroupCodeDTO>();
+			for (TreatmentGroup tg : subject.getTreatmentGroups()){
+				TreatmentGroupCodeDTO tgDTO = new TreatmentGroupCodeDTO();
+				tgDTO.setTreatmentGroupCode(tg.getCodeName());
+				Collection<AnalysisGroupCodeDTO> agDTOs = new ArrayList<AnalysisGroupCodeDTO>();
+				for (AnalysisGroup ag : tg.getAnalysisGroups()){
+					AnalysisGroupCodeDTO agDTO = new AnalysisGroupCodeDTO();
+					agDTO.setAnalysisGroupCode(ag.getCodeName());
+					Collection<ExperimentCodeDTO> exptDTOs = new ArrayList<ExperimentCodeDTO>();
+					for (Experiment expt : ag.getExperiments()){
+						ExperimentCodeDTO exptDTO = new ExperimentCodeDTO();
+						exptDTO.setExperimentCode(expt.getCodeName());
+						exptDTO.setProtocolCode(expt.getProtocol().getCodeName());
+						exptDTOs.add(exptDTO);
+					}
+					agDTO.setExperimentCodes(exptDTOs);
+					agDTOs.add(agDTO);
+				}
+				tgDTO.setAnalysisGroupCodes(agDTOs);
+				tgDTOs.add(tgDTO);
+			}
+			subjectDTO.setTreatmentGroupCodes(tgDTOs);
+		}
+		return subjectCodeDTOs;
 	}
 
 	
