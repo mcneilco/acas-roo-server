@@ -97,4 +97,11 @@ public class ItxSubjectContainerValue extends AbstractValue {
 		int numberOfDeletedEntities = q.executeUpdate();
 		return numberOfDeletedEntities;
 	}
+
+
+	public static ItxSubjectContainerValue create(
+			ItxSubjectContainerValue itxSubjectContainerValue) {
+		ItxSubjectContainerValue newItxSubjectContainerValue = new JSONDeserializer<ItxSubjectContainerValue>().use(null, ItxSubjectContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(itxSubjectContainerValue.toJson(), new ItxSubjectContainerValue());
+        return newItxSubjectContainerValue;
+	}
 }
