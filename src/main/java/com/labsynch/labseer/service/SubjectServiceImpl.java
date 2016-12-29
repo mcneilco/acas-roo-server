@@ -20,6 +20,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
@@ -718,6 +719,10 @@ public class SubjectServiceImpl implements SubjectService {
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		
+		//subject not ignored
+		Predicate subjNotIgn = cb.not(subject.<Boolean>get("ignored"));
+		predicateList.add(subjNotIgn);
+		
 		//subjectType
 		if (query.getSubjectType() != null){
 			Predicate subjectType = cb.equal(subject.<String>get("lsType"), query.getSubjectType());
@@ -729,7 +734,7 @@ public class SubjectServiceImpl implements SubjectService {
 			predicateList.add(subjectKind);
 		}
 		//protocol label and experiment label
-		if (query.getProtocolLabelLike() != null && query.getExperimentLabelLike() != null){
+		if (query.getProtocolLabelLike() != null || query.getExperimentLabelLike() != null){
 			Join<Subject, TreatmentGroup> tg = subject.join("treatmentGroups");
 			Join<TreatmentGroup, AnalysisGroup> ag = tg.join("analysisGroups");
 			Join<AnalysisGroup, Experiment> experiment = ag.join("experiments");
@@ -849,9 +854,11 @@ public class SubjectServiceImpl implements SubjectService {
 	public boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO) {
 		EntityManager em = Subject.entityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SubjectValue> criteria = cb.createQuery(SubjectValue.class);
+		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
 		Root<SubjectValue> subjectValue = criteria.from(SubjectValue.class);
 		Join<SubjectValue, SubjectState> subjectState = subjectValue.join("lsState");
+		criteria.select(subjectValue.<Long>get("id"));
+		criteria.distinct(true);
 		
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
@@ -877,23 +884,32 @@ public class SubjectServiceImpl implements SubjectService {
 		
 		predicates = predicateList.toArray(predicates);
 		criteria.where(cb.and(predicates));
-		TypedQuery<SubjectValue> q = em.createQuery(criteria);
+		TypedQuery<Long> q = em.createQuery(criteria);
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		Collection<SubjectValue> subjectValues = q.getResultList();
-		logger.debug("Found "+subjectValues.size()+" subject values.");
+		Collection<Long> subjectValueIds = q.getResultList();
+		logger.debug("Found "+subjectValueIds.size()+" subject values.");
 		
-		if (subjectValues != null){
-			for (SubjectValue value : subjectValues){
-				if (pathDTO.getValueType().equals("stringValue")) value.setStringValue(pathDTO.getValue());
-				if (pathDTO.getValueType().equals("codeValue")) value.setCodeValue(pathDTO.getValue());
-				if (pathDTO.getValueType().equals("fileValue")) value.setFileValue(pathDTO.getValue());
-				if (pathDTO.getValueType().equals("urlValue")) value.setUrlValue(pathDTO.getValue());
-				if (pathDTO.getValueType().equals("clobValue")) value.setClobValue(pathDTO.getValue());
-				if (pathDTO.getValueType().equals("numericValue")) value.setNumericValue(new BigDecimal(pathDTO.getValue()));
-				value.merge();
+		if (subjectValueIds != null){
+			CriteriaUpdate<SubjectValue> update = cb.createCriteriaUpdate(SubjectValue.class);
+			Root<SubjectValue> sv = update.from(SubjectValue.class);
+			if (!pathDTO.getValueType().equals(("numericValue")) && !pathDTO.getValueType().equals(("dateValue"))){
+				update.set(pathDTO.getValueType(), pathDTO.getValue());
+			}else if (pathDTO.getValueType().equals(("numericValue"))){
+				update.set(pathDTO.getValueType(), new BigDecimal(pathDTO.getValue()));
+			}else if (pathDTO.getValueType().equals(("dateValue"))){
+				Date date = new Date();
+				date.setTime(Long.valueOf(pathDTO.getValue()));
+				update.set(pathDTO.getValueType(), date);
 			}
+			Expression<Long> exp = sv.<Long>get("id");
+			update.where(exp.in(subjectValueIds));
+			Query updateQuery = em.createQuery(update);
+			int valuesUpdated = updateQuery.executeUpdate();
+			logger.debug("Updated "+valuesUpdated+" subject values.");
+			if (subjectValueIds.size() == valuesUpdated) return true;
 		}
-		return true;
+		
+		return false;
 	}
 
 	@Override

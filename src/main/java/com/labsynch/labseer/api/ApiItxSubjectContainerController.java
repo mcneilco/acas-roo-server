@@ -87,21 +87,34 @@ public class ApiItxSubjectContainerController {
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJson(@RequestBody ItxSubjectContainer itxSubjectContainer) {
-        ItxSubjectContainer savedItx = itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer);
+        logger.debug("Incoming itxSubjectContainer JSON: "+itxSubjectContainer.toJson());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(savedItx.toJson(), headers, HttpStatus.CREATED);
+        try{
+        	ItxSubjectContainer savedItx = itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer);
+            return new ResponseEntity<String>(savedItx.toJson(), headers, HttpStatus.CREATED);
+        }catch(Exception e){
+        	logger.error("Caught error creating itxSubjectContainerContainer from JSON", e);
+        	return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody List<ItxSubjectContainer> itxSubjectContainers) {
-        Collection<ItxSubjectContainer> savedItxSubjectContainers = new ArrayList<ItxSubjectContainer>();
-        for (ItxSubjectContainer itxSubjectContainer : itxSubjectContainers) {
-            savedItxSubjectContainers.add(itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer));
-        }
-        HttpHeaders headers = new HttpHeaders();
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(savedItxSubjectContainers), headers, HttpStatus.CREATED);
+        try{
+        	Collection<ItxSubjectContainer> savedItxSubjectContainers = new ArrayList<ItxSubjectContainer>();
+            for (ItxSubjectContainer itxSubjectContainer : itxSubjectContainers) {
+                savedItxSubjectContainers.add(itxSubjectContainerService.saveLsItxSubjectContainer(itxSubjectContainer));
+            }
+            return new ResponseEntity<String>(ItxSubjectContainer.toJsonArray(savedItxSubjectContainers), headers, HttpStatus.CREATED);
+        }catch(Exception e){
+        	logger.error("Caught error creating itxSubjectContainerContainer from JSON Array", e);
+        	return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    	
     }
 
     @Transactional

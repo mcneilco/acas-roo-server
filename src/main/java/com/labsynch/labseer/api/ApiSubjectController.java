@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
@@ -218,16 +219,31 @@ public class ApiSubjectController {
         return new ResponseEntity<String>(Subject.toJsonArray(updatedSubjects), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
-        Subject subject = Subject.findSubject(id);
+	@Transactional
+    @RequestMapping(value = "/{idOrCodeName}", method = RequestMethod.DELETE)
+    public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("idOrCodeName") String idOrCodeName) {
+    	Subject subject;
+    	if(SimpleUtil.isNumeric(idOrCodeName)) {
+	    	subject = Subject.findSubject(Long.valueOf(idOrCodeName));
+ 		} else {
+ 			subject = Subject.findSubjectByCodeNameEquals(idOrCodeName);
+ 		}
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (subject == null) {
+        if (subject == null || (subject.isIgnored() && subject.isDeleted())) {
+            logger.info("Did not find the subject before delete");
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        } else {
+            logger.info("deleting the subject: " + idOrCodeName);
+            subject.logicalDelete();
+            if (Subject.findSubject(subject.getId()) == null || Subject.findSubject(subject.getId()).isIgnored()) {
+                logger.info("Did not find the subject after delete");
+                return new ResponseEntity<String>(headers, HttpStatus.OK);
+            } else {
+                logger.info("Found the subject after delete");
+                return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
-        subject.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
 	@RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -312,6 +328,7 @@ public class ApiSubjectController {
         }
     }
     
+    @Transactional
     @RequestMapping(value = "/searchSubjects", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> searchSubjects(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
     	HttpHeaders headers = new HttpHeaders();

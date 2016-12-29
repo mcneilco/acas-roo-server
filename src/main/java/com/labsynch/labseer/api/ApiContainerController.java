@@ -311,18 +311,23 @@ public class ApiContainerController {
     }
 
     @Transactional
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
-        Container container = Container.findContainer(id);
+    @RequestMapping(value = "/{idOrCodeName}", method = RequestMethod.DELETE)
+    public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("idOrCodeName") String idOrCodeName) {
+    	Container container;
+    	if(SimpleUtil.isNumeric(idOrCodeName)) {
+	    	container = Container.findContainer(Long.valueOf(idOrCodeName));
+ 		} else {
+ 			container = Container.findContainerByCodeNameEquals(idOrCodeName);
+ 		}
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         if (container == null || (container.isIgnored() && container.isDeleted())) {
             logger.info("Did not find the container before delete");
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         } else {
-            logger.info("deleting the container: " + id);
+            logger.info("deleting the container: " + idOrCodeName);
             container.logicalDelete();
-            if (Container.findContainer(id) == null || Container.findContainer(id).isIgnored()) {
+            if (Container.findContainer(container.getId()) == null || Container.findContainer(container.getId()).isIgnored()) {
                 logger.info("Did not find the container after delete");
                 return new ResponseEntity<String>(headers, HttpStatus.OK);
             } else {
