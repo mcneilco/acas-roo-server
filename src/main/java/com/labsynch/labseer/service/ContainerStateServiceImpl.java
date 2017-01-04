@@ -2,11 +2,23 @@ package com.labsynch.labseer.service;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +32,7 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.UpdateLog;
 import com.labsynch.labseer.dto.ContainerStatePathDTO;
+import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.GenericStatePathRequest;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -209,6 +222,94 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 		containerState.setRecordedBy(recordedBy);
 		containerState.persist();
 		return containerState;
+	}
+
+	@Override
+	public Collection<ContainerState> getContainerStatesByContainerValue(
+			ContainerValueRequestDTO query) throws Exception {
+		EntityManager em = ContainerState.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<ContainerState> criteria = criteriaBuilder.createQuery(ContainerState.class);
+		Root<ContainerState> state = criteria.from(ContainerState.class);
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		criteria.distinct(true);
+		
+		Join<ContainerState, Container> container = state.join("container");
+		Join<ContainerState, ContainerValue> value = state.join("lsValues");
+		
+		Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
+		Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
+		predicateList.add(stateNotIgn);
+		predicateList.add(valueNotIgn);
+		
+		if (query.getStateType() != null){
+			Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),query.getStateType());
+			predicateList.add(stateType);
+		}
+		if (query.getStateKind() != null){
+			Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),query.getStateKind());
+			predicateList.add(stateKind);
+		}
+		if (query.getValueType() != null){
+			Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),query.getValueType());
+			predicateList.add(valueType);
+		}
+		if (query.getValueKind() != null){
+			Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),query.getValueKind());
+			predicateList.add(valueKind);
+		}
+		if (query.getValue() != null){
+			if (query.getValueType() == null){
+				logger.error("valueType must be specified if value is specified!");
+				throw new Exception("valueType must be specified if value is specified!");
+			}else if (query.getValueType().equalsIgnoreCase("dateValue")){
+				String postgresTimeUnit = "day";
+				Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+				Calendar cal = Calendar.getInstance(); // locale-specific
+				boolean parsedTime = false;
+				if (SimpleUtil.isNumeric(query.getValue())){
+					cal.setTimeInMillis(Long.valueOf(query.getValue()));
+					parsedTime = true;
+				}else{
+					try{
+						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+						cal.setTime(sdf.parse(query.getValue()));
+						parsedTime = true;
+					}catch (Exception e){
+						logger.warn("Failed to parse date in LsThing generic query for value",e);
+					}
+				}
+				cal.set(Calendar.HOUR_OF_DAY, 0);
+				cal.set(Calendar.MINUTE, 0);
+				cal.set(Calendar.SECOND, 0);
+				cal.set(Calendar.MILLISECOND, 0);
+				long time = cal.getTimeInMillis();
+				Date queryDate = new Date(time);
+				Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
+				if (parsedTime) predicateList.add(valueLike);
+			}else{
+				//only works with string value types: stringValue, codeValue, fileValue, clobValue
+				Predicate valueLike = criteriaBuilder.like(value.<String>get(query.getValueType()), '%' + query.getValue() + '%');
+				predicateList.add(valueLike);
+			}
+		}
+		
+		if (query.getContainerType() != null){
+			Predicate thingType = criteriaBuilder.equal(container.<String>get("lsType"), query.getContainerType());
+			predicateList.add(thingType);
+		}
+		if (query.getContainerKind() != null){
+			Predicate thingKind = criteriaBuilder.equal(container.<String>get("lsKind"), query.getContainerKind());
+			predicateList.add(thingKind);
+		}
+		
+		//gather predicates with AND
+		Predicate[] predicates = new Predicate[0];
+		predicates = predicateList.toArray(predicates);
+		criteria.where(criteriaBuilder.and(predicates));
+		TypedQuery<ContainerState> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		return q.getResultList();
 	}
 
 

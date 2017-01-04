@@ -2326,6 +2326,7 @@ public class ContainerServiceImpl implements ContainerService {
 		List<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
 		for (Container container: containers){
 			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setId(container.getId());
 			codeTable.setCode(container.getCodeName());
 			codeTable.setName(pickBestLabel(container));
 			codeTable.setIgnored(container.isIgnored());

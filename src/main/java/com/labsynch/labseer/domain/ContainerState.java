@@ -105,6 +105,11 @@ public class ContainerState extends AbstractState {
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.ContainerState> collection) {
         return new JSONSerializer().exclude("*.class", "container").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
+    
+    @Transactional
+	public static String toJsonArrayWithNestedContainers(Collection<ContainerState> collection) {
+        return new JSONSerializer().exclude("*.class").include("lsValues","container.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+	}
 
     public static Collection<com.labsynch.labseer.domain.ContainerState> fromJsonArrayToContainerStates(String json) {
         return new JSONDeserializer<List<ContainerState>>().use(null, ArrayList.class).use("values", ContainerState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
@@ -179,4 +184,5 @@ public class ContainerState extends AbstractState {
 		q.setParameter("ignored", true);
 		return q;
 	}
+	
 }
