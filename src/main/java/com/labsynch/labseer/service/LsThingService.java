@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import org.hibernate.StaleObjectStateException;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.LsThing;
@@ -40,7 +41,7 @@ public interface LsThingService {
 
 	LsThing saveLsThing(LsThing lsThing) throws UniqueNameException;
 
-	LsThing updateLsThing(LsThing jsonLsThing);
+	LsThing updateLsThing(LsThing jsonLsThing) throws StaleObjectStateException;
 
 	LsThing saveLsThing(LsThing lsThing, boolean checkLsThingName)
 			throws UniqueNameException;

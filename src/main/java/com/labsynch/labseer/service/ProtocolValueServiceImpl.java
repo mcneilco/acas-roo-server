@@ -132,20 +132,12 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 			}
 			else if (protocolValues.size() == 1){
 				protocolValue = protocolValues.get(0);
-				if (valueType.equals("stringValue")) protocolValue.setStringValue(value);
-				if (valueType.equals("fileValue")) protocolValue.setFileValue(value);
-				if (valueType.equals("clobValue")) protocolValue.setClobValue(value);
-				if (valueType.equals("blobValue")) protocolValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
-				if (valueType.equals("numericValue")) protocolValue.setNumericValue(new BigDecimal(value));
-				if (valueType.equals("dateValue")) protocolValue.setDateValue(new Date(Long.parseLong(value)));
-				if (valueType.equals("codeValue")) protocolValue.setCodeValue(value);
+				protocolValue.setIgnored(true);
 				protocolValue.merge();
-				logger.debug("Updated the protocol value: " + protocolValue.toJson());
+				logger.debug("Ignored the protocol value: " + protocolValue.toJson());
 			}
-			else if (protocolValues.isEmpty()){
-				protocolValue = createProtocolValueByProtocolIdAndStateTypeKindAndValueTypeKind(protocolId, stateType, stateKind, valueType, valueKind, value);
-				logger.debug("Created the protocol value: " + protocolValue.toJson());
-			}
+			protocolValue = createProtocolValueByProtocolIdAndStateTypeKindAndValueTypeKind(protocolId, stateType, stateKind, valueType, valueKind, value);
+			logger.debug("Created the protocol value: " + protocolValue.toJson());
 		}
 		return protocolValue;
 

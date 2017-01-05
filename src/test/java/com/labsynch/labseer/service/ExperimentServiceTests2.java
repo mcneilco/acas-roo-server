@@ -84,7 +84,7 @@ public class ExperimentServiceTests2 {
 	}
 
 	@SuppressWarnings({ "unchecked", "null" })
-	@Test
+//	@Test
 	@Transactional
 	public void GetExprerimentsFilters_2(){
 
@@ -294,7 +294,7 @@ public class ExperimentServiceTests2 {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Test
+//	@Test
 	@Transactional
 	public void GetExprerimentsWithBatchCodes_1(){
 		Collection<String> codeValues = new HashSet<String>();
@@ -309,15 +309,17 @@ public class ExperimentServiceTests2 {
 	}
 	
 	@Test
-	@Transactional
+	//@Transactional
 	public void geneIdQueryFromJson() {
-		String json = "{\"experimentCodeList\":[\"Root Node\",\"default\",\"PROT-00000002\",\"EXPT-00000002\",\"tags_EXPT-00000002\",\"PROT-00000003\",\"EXPT-00000003\",\"tags_EXPT-00000003\"],\"batchCodeList\":[],\"searchFilters\":[{\"termName\":\"Q1\",\"experimentCode\":\"EXPT-00000003\",\"lsKind\":\"18h Z-score diff.\",\"lsType\":\"numericValue\",\"operator\":\"=\",\"filterValue\":\"1.8\"},{\"termName\":\"Q2\",\"experimentCode\":\"EXPT-00000002\",\"lsKind\":\"Shapira hit\",\"lsType\":\"numericValue\",\"operator\":\"<\",\"filterValue\":\"10\"}],\"booleanFilter\":\"and\",\"advancedFilter\":\"\"}";
+		String jsonOld = "{\"experimentCodeList\":[\"EXPT-00000552\",\"tags_EXPT-00000190\",\"PROT-00000160\"],\"batchCodeList\":[\"GENE-000029\",\"GENE-002764\",\"GENE-000011\"],\"searchFilters\":[{\"filterValue\":\"1000\",\"termName\":\"Q1\",\"experimentCode\":\"EXPT-00000552\",\"lsKind\":\"Whole_Blood\",\"lsType\":\"numericValue\",\"operator\":\">\"}],\"booleanFilter\":\"and\",\"advancedFilter\":\"\"}";
+		String jsonarray = "{\"experimentCodeList\":[\"EXPT-00000190\"],\"batchCodeList\":[],\"searchFilters\":[{\"experimentCode\":\"EXPT-00000190\",\"lsType\":\"numericValue\",\"lsKind\":\"Adipocyte\",\"operator\":\">\",\"filterValue\":\"1\",\"termName\":\"Q1\"}],\"booleanFilter\":\"or\",\"advancedFilter\":\"\"}";
+		String json = "{\"experimentCodeList\":[\"EXPT-00000227\"],\"batchCodeList\":[],\"searchFilters\":[{\"experimentCode\":\"EXPT-00000227\",\"lsType\":\"numericValue\",\"lsKind\":\"Hit\",\"operator\":\"=\",\"filterValue\":\"1\",\"termName\":\"Q1\"}],\"booleanFilter\":\"or\",\"advancedFilter\":\"\"}";
 		logger.debug("incoming json: " + json);
 	    ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(json);
 	    logger.debug("converted json: " + searchRequest.toJson());
 	    List<AnalysisGroupValueDTO> agValues = null;
 	    try {
-	        agValues = experimentService.getFilteredAGData(searchRequest, false);
+	        agValues = experimentService.getFilteredAGData(searchRequest, true);
 	        logger.debug("number of agvalues found: " + agValues.size());
 	    } catch (Exception e) {
 	        logger.error(e.toString());

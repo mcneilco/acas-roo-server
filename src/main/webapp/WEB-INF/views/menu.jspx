@@ -123,8 +123,8 @@
             <menu:item id="fi_experimentlabel_experiment" messageCode="global_menu_find" url="/experimentlabels?find=ByExperiment&amp;form" z="2U3TP8VIBSMAEtbdpkQlN1gfnCw="/>
             <menu:item id="fi_experimentlabel_experimentandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByExperimentAndIgnoredNot&amp;form" z="mcIgBlrdh24WXE8RUOwQYUMTTZM="/>
             <menu:item id="fi_experimentlabel_labeltextlike" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLike&amp;form" z="PYv94k7Dol6QPVhe3R86cGR/bbg="/>
-            <menu:item id="fi_experimentlabel_labeltextlikeandlstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="FECyIQ2Y8ja5GASA260VwxPRI2s="/>
             <menu:item id="fi_experimentlabel_lstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="n6BVW2/nOYW6PDMTJXM0WCF5ImM="/>
+            <menu:item id="fi_experimentlabel_labeltextlikeandlstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="FECyIQ2Y8ja5GASA260VwxPRI2s="/>
         </menu:category>
         <menu:category id="c_unitkind" z="7YWBluDqoyAGJ4xzyVHzZLg6m7c=">
             <menu:item id="i_unitkind_new" messageCode="global_menu_new" url="/unitkinds?form" z="GkwkeWRp6oEmEiokiC+TnTXLX6o="/>
@@ -449,9 +449,6 @@
         <menu:category id="c_itxprotocolprotocol" z="lmgYw5QqKJwU04tbGuaKaMJoxlc=">
             <menu:item id="i_itxprotocolprotocol_new" messageCode="global_menu_new" url="/itxprotocolprotocols?form" z="dMXVapq9fuBlhNUnKCw6jF2F8ug="/>
             <menu:item id="i_itxprotocolprotocol_list" messageCode="global_menu_list" url="/itxprotocolprotocols?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iq6qexLG4PaxGfjcA03XJ0+5AaQ="/>
-            <menu:item id="fi_itxprotocolprotocol_firstprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByFirstProtocol&amp;form" z="UJuHinNHGy4nCOcXPxemLzxtACw="/>
-            <menu:item id="fi_itxprotocolprotocol_lstransactionequals" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByLsTransactionEquals&amp;form" z="t2qEPlGnBoKuT2h+SyEOZ446WTs="/>
-            <menu:item id="fi_itxprotocolprotocol_secondprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=BySecondProtocol&amp;form" z="AyzEdhOcH4pkRXswaVImyoHU6zc="/>
         </menu:category>
         <menu:category id="c_itxprotocolprotocolstate" z="5crXh8kZ9negy5Cyo9mf6r7Zwo8=">
             <menu:item id="i_itxprotocolprotocolstate_new" messageCode="global_menu_new" url="/itxprotocolprotocolstates?form" z="m085rBwmeyS6/phK6Wv6DPfHCQ8="/>

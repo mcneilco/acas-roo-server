@@ -62,7 +62,7 @@ public class Experiment extends AbstractThing {
     private Set<ItxExperimentExperiment> secondExperiments = new HashSet<ItxExperimentExperiment>();
 
     //Subject is grandparent
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "experiments")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "experiments", fetch = FetchType.LAZY)
     private Set<AnalysisGroup> analysisGroups = new HashSet<AnalysisGroup>();
     
     //Experiment is grandparent
@@ -287,7 +287,12 @@ public class Experiment extends AbstractThing {
     
     @Transactional
         public static String toJsonArrayStubWithProt(Collection<com.labsynch.labseer.domain.Experiment> collection) {
-            return new JSONSerializer().include("lsTags", "lsLabels", "lsStates.lsValues", "protocol.lsLabels").exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", "analysisGroups.experiment", "lsLabels.experiment").transform(new ExcludeNulls(), void.class).serialize(collection);
+            return new JSONSerializer()
+            		.include("lsTags", "lsLabels", "lsStates.lsValues", "protocol.lsLabels")
+            		.exclude("*.class", "analysisGroups", "lsStates.lsValues.lsState", "lsStates.experiment", 
+            				"analysisGroups.experiment", "lsLabels.experiment",
+            				"protocol.lsStates", "firstExperiments", "secondExperiments")
+            		.transform(new ExcludeNulls(), void.class).serialize(collection);
         }
 
     @Transactional
@@ -509,6 +514,13 @@ public class Experiment extends AbstractThing {
         q.setParameter("lsKind", lsKind);
         return q;
     }
+
+	public static Collection<Experiment> findAllNonDeletedExperiments() {
+        EntityManager em = Experiment.entityManager();
+        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.deleted IS NOT :deleted", Experiment.class);
+        q.setParameter("deleted", true);
+		return q.getResultList();
+	}
 
 //	public void statusDelete() {
 //		Long id = this.getId();

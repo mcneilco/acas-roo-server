@@ -1,15 +1,13 @@
 package com.labsynch.labseer.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,14 +27,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.LabelSequence;
-import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.IdSetDTO;
+
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -181,19 +178,32 @@ public class ApiValueControllerTest {
 
     
     @Test
-    @Transactional
-    public void getAGValueTest() throws Exception {
-    	Set<Long> idList = new HashSet<Long>();
-    	idList.add(8L);
-    	idList.add(9L);
-    	idList.add(10L);
-    	IdSetDTO idSet = new IdSetDTO();
-    	idSet.setIdSet(idList);
-    	logger.info("here is the ID list: " + idSet.toJson());
-
-    	List<AnalysisGroupValue> results = AnalysisGroupValue.findAnalysisGroupValuesByIdList(idList, false).getResultList();
-    	logger.info("number of results = " + results.size());
-    	
+    public void updateProtocolValue() throws Exception {
+    	String entity = "protocol";
+    	String idOrCodeName = "PROT-00000005";
+    	String stateType = "metadata";
+    	String stateKind = "protocol metadata";
+    	String valueType = "stringValue";
+    	String valueKind = "notebook";
+    	MockHttpServletResponse response = this.mockMvc.perform(put("/api/v1/values/"+entity+"/"+idOrCodeName+"/bystate/"+stateType+"/"+stateKind+"/byvalue/"+valueType+"/"+valueKind+"/")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content("test"))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	ProtocolValue value = ProtocolValue.fromJsonToProtocolValue(responseJson);
+    	Assert.assertTrue(value.getStringValue().equals("test"));
+    	responseJson = this.mockMvc.perform(get("/api/v1/values/"+entity+"/"+idOrCodeName+"/bystate/"+stateType+"/"+stateKind+"/byvalue/"+valueType+"/"+valueKind+"/")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse().getContentAsString();
+    	value = ProtocolValue.fromJsonToProtocolValue(responseJson);
+    	Assert.assertTrue(value.getStringValue().equals("test"));
     }
     
     @Test

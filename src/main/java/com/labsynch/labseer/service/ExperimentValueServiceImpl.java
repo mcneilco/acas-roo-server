@@ -12,8 +12,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -21,13 +19,9 @@ import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
-import com.labsynch.labseer.domain.AbstractValue;
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.StateKind;
 import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ValueKind;
@@ -243,20 +237,12 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 			}
 			else if (experimentValues.size() == 1){
 				experimentValue = experimentValues.get(0);
-				if (valueType.equals("stringValue")) experimentValue.setStringValue(value);
-				if (valueType.equals("fileValue")) experimentValue.setFileValue(value);
-				if (valueType.equals("clobValue")) experimentValue.setClobValue(value);
-				if (valueType.equals("blobValue")) experimentValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
-				if (valueType.equals("numericValue")) experimentValue.setNumericValue(new BigDecimal(value));
-				if (valueType.equals("dateValue")) experimentValue.setDateValue(new Date(Long.parseLong(value)));
-				if (valueType.equals("codeValue")) experimentValue.setCodeValue(value);
+				experimentValue.setIgnored(true);
 				experimentValue.merge();
-				logger.debug("Updated the experiment value: " + experimentValue.toJson());
+				logger.debug("Ignored the experiment value: " + experimentValue.toJson());
 			}
-			else if (experimentValues.isEmpty()){
-				experimentValue = createExperimentValueByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind, value);
-				logger.debug("Created the experiment value: " + experimentValue.toJson());
-			}
+			experimentValue = createExperimentValueByExperimentIdAndStateTypeKindAndValueTypeKind(experimentId, stateType, stateKind, valueType, valueKind, value);
+			logger.debug("Created the experiment value: " + experimentValue.toJson());
 		}
 		return experimentValue;
 	}

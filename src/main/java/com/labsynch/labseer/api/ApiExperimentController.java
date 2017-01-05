@@ -48,11 +48,14 @@ import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.BatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
+import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentGuiStubDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.SubjectStateValueDTO;
@@ -65,6 +68,8 @@ import com.labsynch.labseer.service.AnalysisGroupValueService;
 import com.labsynch.labseer.service.ExperimentService;
 import com.labsynch.labseer.service.ExperimentStateService;
 import com.labsynch.labseer.service.ExperimentValueService;
+import com.labsynch.labseer.service.GeneThingService;
+import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupValueService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -78,6 +83,12 @@ import flexjson.JSONDeserializer;
 //@RooWebJson(jsonObject = Experiment.class)
 public class ApiExperimentController {
 	private static final Logger logger = LoggerFactory.getLogger(ApiExperimentController.class);
+	
+    @Autowired
+    private LsThingService lsThingService;
+
+    @Autowired
+    private GeneThingService geneThingService;
 
 	@Autowired
 	private ExperimentService experimentService;
@@ -1095,6 +1106,15 @@ public class ApiExperimentController {
         return new ResponseEntity<String>(ExperimentFilterDTO.toJsonArray(results), headers, HttpStatus.OK);
     }
 
+    @Transactional
+    @RequestMapping(value = "/get/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getExperimentFiltersNew(@RequestBody String json) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        Collection<String> experimentCodes = new JSONDeserializer<List<String>>().use(null, ArrayList.class).use("values", String.class).deserialize(json);
+        Collection<ExperimentFilterDTO> results = experimentService.getExperimentFilters(experimentCodes);
+        return new ResponseEntity<String>(ExperimentFilterDTO.toJsonArray(results), headers, HttpStatus.OK);
+    }
 
     @Transactional
     @RequestMapping(value = "/jstreenodes/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -1111,6 +1131,56 @@ public class ApiExperimentController {
     }
 
     @Transactional
+    @RequestMapping(value = "/exptData/byGeneID", method = RequestMethod.GET, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getAgDataByGeneId(@RequestParam(value = "geneID", required = true) String geneID, 
+    															@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
+    	boolean showOnlyPublicData = false;
+    	if (onlyPublicData != null && onlyPublicData.trim().equalsIgnoreCase("true")){
+    		showOnlyPublicData = true;
+    	}
+    	
+    	PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
+    	PreferredNameDTO prefDTO = new PreferredNameDTO();
+    	prefDTO.setRequestName(geneID);
+    	Collection<PreferredNameDTO> requests = new HashSet<PreferredNameDTO>();
+    	requests.add(prefDTO);
+		requestDTO.setRequests(requests );
+        String thingType = "gene";
+        String thingKind = "entrez gene";
+        String labelType = "name";
+        String labelKind = "Entrez Gene ID";
+        logger.info("getGeneCodeNameFromNameRequest incoming json: " + requestDTO.toJson());
+        Collection<PreferredNameDTO> batchCodeResults = lsThingService.getPreferredNameFromName(thingType, thingKind, labelType, labelKind, requestDTO).getResults();
+        String batchCode = null;
+        for (PreferredNameDTO batchCodeResult : batchCodeResults){
+        	batchCode = batchCodeResult.getReferenceName();
+        }
+        
+    	List<ExperimentDataDTO> experimentData = experimentService.getExperimentData(batchCode, showOnlyPublicData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+		headers.add("Cache-Control","no-store, max-age=0, no-cache, must-revalidate"); //HTTP 1.1
+        return new ResponseEntity<String>(ExperimentDataDTO.toJsonArray(experimentData), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/exptData/byBatchCode", method = RequestMethod.GET, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> getAgDataByBatchCode(@RequestParam(value = "batchCode", required = true) String batchCode, 
+    															@RequestParam(value = "onlyPublicData", required = false) String onlyPublicData) {
+    	boolean showOnlyPublicData = false;
+    	if (onlyPublicData != null && onlyPublicData.trim().equalsIgnoreCase("true")){
+    		showOnlyPublicData = true;
+    	}
+    	
+    	batchCode = batchCode.trim();
+    	List<ExperimentDataDTO> experimentData = experimentService.getExperimentData(batchCode, showOnlyPublicData);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+		headers.add("Cache-Control","no-store, max-age=0, no-cache, must-revalidate"); //HTTP 1.1
+        return new ResponseEntity<String>(ExperimentDataDTO.toJsonArray(experimentData), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
     @RequestMapping(value = "/agdata/batchcodelist/experimentcodelist", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> getAGDataByBatchAndExperiment(
     		@RequestBody String searchRequestJSON, 
@@ -1123,11 +1193,11 @@ public class ApiExperimentController {
 		}
 		
 		ExperimentSearchRequestDTO searchRequest = ExperimentSearchRequestDTO.fromJsonToExperimentSearchRequestDTO(searchRequestJSON);
-        logger.debug("converted json: " + searchRequest.toJson());
+        if (logger.isDebugEnabled()) logger.debug("converted json: " + searchRequest.toJson());
         List<AnalysisGroupValueDTO> agValues = null;
         try {
             agValues = experimentService.getFilteredAGData(searchRequest, publicData);
-            logger.debug("number of agvalues found: " + agValues.size());
+            if (logger.isDebugEnabled()) logger.debug("number of agvalues found: " + agValues.size());
         } catch (Exception e) {
             logger.error(e.toString());
         }
@@ -1474,6 +1544,9 @@ public class ApiExperimentController {
 	public ResponseEntity<String> experimentBrowserSearch(@RequestParam(value="userName", required = false) String userName, @RequestParam(value="q", required = true) String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
+		
+		logger.debug("############# the search query string is: " + searchQuery);
+		
 		try {
 			String result;
 			if (userName == null){

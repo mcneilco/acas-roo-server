@@ -10,6 +10,14 @@ import javax.persistence.TypedQuery;
 
 privileged aspect InteractionKind_Roo_Finder {
     
+    public static TypedQuery<InteractionKind> InteractionKind.findInteractionKindsByKindNameEquals(String kindName) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        EntityManager em = InteractionKind.entityManager();
+        TypedQuery<InteractionKind> q = em.createQuery("SELECT o FROM InteractionKind AS o WHERE o.kindName = :kindName", InteractionKind.class);
+        q.setParameter("kindName", kindName);
+        return q;
+    }
+    
     public static TypedQuery<InteractionKind> InteractionKind.findInteractionKindsByKindNameEqualsAndLsType(String kindName, InteractionType lsType) {
         if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");

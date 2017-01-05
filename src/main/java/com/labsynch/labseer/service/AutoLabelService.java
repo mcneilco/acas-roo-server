@@ -43,6 +43,8 @@ public interface AutoLabelService {
 
 	String getAuthorCodeName();
 
+	String getLsThingCodeName(String lsTypeAndKind, String labelTypeAndKind);
+
 	
 	
 	

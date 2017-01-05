@@ -47,10 +47,6 @@ public class AnalysisGroup extends AbstractThing {
     @JoinTable(name = "EXPERIMENT_ANALYSISGROUP", joinColumns = { @javax.persistence.JoinColumn(name = "analysis_group_id") }, inverseJoinColumns = { @javax.persistence.JoinColumn(name = "experiment_id") })
     private Set<Experiment> experiments = new HashSet<Experiment>();
     
-    //Experiment is grandparent
-//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")  
-//    private Set<Experiment> experiments = new HashSet<Experiment>();
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "analysisGroup", fetch = FetchType.LAZY)
     private Set<AnalysisGroupLabel> lsLabels = new HashSet<AnalysisGroupLabel>();
 
@@ -60,13 +56,6 @@ public class AnalysisGroup extends AbstractThing {
     //Subject is grandparent
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, mappedBy = "analysisGroups")
     private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
-
-    //Experiment is grandparent
-//	@ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch =  FetchType.LAZY)
-//	@JoinTable(name="ANALYSISGROUP_TREATMENTGROUP", 
-//	joinColumns={@JoinColumn(name="analysis_group_id")}, 
-//	inverseJoinColumns={@JoinColumn(name="treatment_group_id")})
-//    private Set<TreatmentGroup> treatmentGroups = new HashSet<TreatmentGroup>();
     
     public AnalysisGroup() {
     }

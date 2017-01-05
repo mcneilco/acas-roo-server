@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<groupId>com.labsynch.labseer</groupId>
 	<artifactId>acas</artifactId>
 	<packaging>war</packaging>
-	<version>1.9.0.1-BUILD-SNAPSHOT</version>
+	<version>1.9.1.0-BUILD-SNAPSHOT</version>
 	<description>ACAS Java persistence layer</description>
 	<properties>
 		<aspectj.version>1.7.0.RC1</aspectj.version>
@@ -88,11 +88,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	</pluginRepositories>
 	<dependencies>
 		<!-- General dependencies for standard applications -->
-		 <dependency>
-                    <groupId>com.verhas</groupId>
-                    <artifactId>license3j</artifactId>
-                    <version>1.0.7</version>
-                </dependency>
+		<dependency>
+			<groupId>com.verhas</groupId>
+			<artifactId>license3j</artifactId>
+			<version>1.0.7</version>
+		</dependency>
 		<dependency>
 			<groupId>com.mangofactory</groupId>
 			<artifactId>swagger-springmvc</artifactId>
@@ -229,12 +229,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.3.6.Final</version>
+			<version>4.3.11.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.3.6.Final</version>
+			<version>4.3.11.Final</version>
 			<exclusions>
 				<exclusion>
 					<groupId>cglib</groupId>
@@ -447,9 +447,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<version>1.1.1</version>
 		</dependency>
 		<dependency>
-			<groupId>postgresql</groupId>
+			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.1-901.jdbc4</version>
+			<version>9.4.1212.jre7</version>
 		</dependency>
 	</dependencies>
 	<build>

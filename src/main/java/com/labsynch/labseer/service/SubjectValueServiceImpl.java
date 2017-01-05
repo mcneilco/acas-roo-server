@@ -205,20 +205,12 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 			}
 			else if (subjectValues.size() == 1){
 				subjectValue = subjectValues.get(0);
-				if (valueType.equals("stringValue")) subjectValue.setStringValue(value);
-				if (valueType.equals("fileValue")) subjectValue.setFileValue(value);
-				if (valueType.equals("clobValue")) subjectValue.setClobValue(value);
-				if (valueType.equals("blobValue")) subjectValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
-				if (valueType.equals("numericValue")) subjectValue.setNumericValue(new BigDecimal(value));
-				if (valueType.equals("dateValue")) subjectValue.setDateValue(new Date(Long.parseLong(value)));
-				if (valueType.equals("codeValue")) subjectValue.setCodeValue(value);
+				subjectValue.setIgnored(true);
 				subjectValue.merge();
-				logger.debug("Updated the subject value: " + subjectValue.toJson());
+				logger.debug("Ignored the subject value: " + subjectValue.toJson());
 			}
-			else if (subjectValues.isEmpty()){
-				subjectValue = createSubjectValueBySubjectIdAndStateTypeKindAndValueTypeKind(subjectId, stateType, stateKind, valueType, valueKind, value);
-				logger.debug("Created the subject value: " + subjectValue.toJson());
-			}
+			subjectValue = createSubjectValueBySubjectIdAndStateTypeKindAndValueTypeKind(subjectId, stateType, stateKind, valueType, valueKind, value);
+			logger.debug("Created the subject value: " + subjectValue.toJson());
 		}
 		return subjectValue;
 

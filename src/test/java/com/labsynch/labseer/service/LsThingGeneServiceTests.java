@@ -94,7 +94,7 @@ public class LsThingGeneServiceTests {
 		
 	}
 	
-	@Test
+	//@Test
 	public void Test_3(){
 		
 		String json = "{\"requests\":[{\"requestName\":\"31248\"}, {\"requestName\":\"2\"}, {\"requestName\":\"15\"}, {\"requestName\":\"blah\"}]}";
@@ -111,7 +111,7 @@ public class LsThingGeneServiceTests {
 		
 	}
 
-    @Test
+   // @Test
     public void getGeneCodeDataTest() throws Exception {
     	String json = "[\"GENE-202547\"]";
     	String responseJson = this.mockMvc.perform(post("/api/v1/analysisgroupvalues/geneCodeData?format=csv&onlyPublicData=true")
@@ -124,7 +124,7 @@ public class LsThingGeneServiceTests {
     	logger.info(responseJson);
     }
 
-    @Test
+   // @Test
     public void getGeneCodeDataFullTest() {
     	String json = "[\"GENE-202547\"]";
     	String onlyPublicData = "true";
@@ -160,7 +160,9 @@ public class LsThingGeneServiceTests {
     
     @Test
     public void getGeneDataTest2(){
-    	String json = "{\"experimentCodeList\":[\"EXPT-00000039\"],\"batchCodeList\":[\"GENE-202547\"],\"booleanFilter\":\"and\",\"advancedFilter\":\"\",\"advancedFilterSQL\":\"\"}";
+//    	String json = "{\"experimentCodeList\":[\"EXPT-00000039\"],\"batchCodeList\":[\"GENE-202547\"],\"booleanFilter\":\"and\",\"advancedFilter\":\"\",\"advancedFilterSQL\":\"\"}";
+//    	String json = "{\"experimentCodeList\":[\"EXPT-00000521\"],\"batchCodeList\":[\"GENE-202547\"],\"booleanFilter\":\"and\",\"advancedFilter\":\"\",\"advancedFilterSQL\":\"\"}";
+    	String json = "{\"experimentCodeList\":[\"PROT-00000333\",\"EXPT-00000333\",\"tags_EXPT-00000333\",\"PROT-00000283\",\"EXPT-00000283\",\"tags_EXPT-00000283\",\"PROT-00000299\",\"EXPT-00000299\",\"tags_EXPT-00000299\",\"PROT-00000308\",\"EXPT-00000308\",\"tags_EXPT-00000308\",\"PROT-00000302\",\"EXPT-00000302\",\"tags_EXPT-00000302\"],\"batchCodeList\":[],\"searchFilters\":[{\"experimentCode\":\"EXPT-00000283\",\"lsType\":\"numericValue\",\"lsKind\":\"Hit\",\"operator\":\"!=\",\"filterValue\":\"0\",\"termName\":\"Q1\"},{\"experimentCode\":\"EXPT-00000308\",\"lsType\":\"numericValue\",\"lsKind\":\"Hit\",\"operator\":\"!=\",\"filterValue\":\"0\",\"termName\":\"Q2\"},{\"experimentCode\":\"EXPT-00000333\",\"lsType\":\"numericValue\",\"lsKind\":\"Hit\",\"operator\":\"!=\",\"filterValue\":\"0\",\"termName\":\"Q3\"},{\"experimentCode\":\"EXPT-00000299\",\"lsType\":\"numericValue\",\"lsKind\":\"Hit\",\"operator\":\"!=\",\"filterValue\":\"0\",\"termName\":\"Q4\"},{\"experimentCode\":\"EXPT-00000302\",\"lsType\":\"numericValue\",\"lsKind\":\"Hit\",\"operator\":\"!=\",\"filterValue\":\"0\",\"termName\":\"Q5\"}],\"booleanFilter\":\"or\",\"advancedFilter\":\"\"}";
     	String onlyPublicData = "true";
 		Boolean publicData = false;
 		if (onlyPublicData != null && onlyPublicData.equalsIgnoreCase("true")){
@@ -174,12 +176,17 @@ public class LsThingGeneServiceTests {
             List<AnalysisGroupValueDTO> agValues = null;
             agValues = experimentService.getFilteredAGData(searchRequest, publicData);
             logger.debug("number of agvalues found: " + agValues.size());
+            
+//            for (AnalysisGroupValueDTO agValue : agValues){
+//            	logger.debug(agValue.toJson());
+//            }
+            
         } catch (Exception e) {
             logger.error(e.toString());
         }
     }
     
-    @Test
+   // @Test
     public void getFilteredGeneDataTest() throws Exception {
     	String json = "{\"experimentCodeList\":[\"EXPT-00000039\"],\"batchCodeList\":[\"GENE-202547\"],\"booleanFilter\":\"and\",\"advancedFilter\":\"\"}";
     	String responseJson = this.mockMvc.perform(post("/api/v1/experiments/agdata/batchcodelist/experimentcodelist?format=csv&onlyPublicData=true")

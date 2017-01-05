@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 
@@ -29,6 +30,30 @@ public class AnalysisGroupValueTest {
 	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueTest.class);
 	
 	//@Test
+	@Transactional
+    public void getLsthingsByName() {
+    	String lsType = "gene";
+		String lsKind = "entrez gene";
+		String labelType = "name";
+		String labelKind = "Entrez Gene ID";
+		String labelText = "47767";
+		List<LsThing> results = LsThing.findLsThingByLabelText(lsType, lsKind, labelType, labelKind, labelText).getResultList();
+		logger.info("query labelText: " + labelText + " number of results: " + results.size());
+		if (results.size()>0){
+			for(LsThing result : results){
+				//12597
+				logger.info("attempting to output JSON: -----------------  " + result.getCodeName() + "  " + result.getId());
+//				LsThing newThing = LsThing.findLsThing(result.getId());
+//				Set<LsTag> tags = newThing.getLsTags();
+//				for (LsTag tag:tags){
+//					logger.info("tag here: " + tag.toJson());
+//				}
+				logger.info(result.toJson());
+			}
+		}
+	}
+	
+		@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
 			

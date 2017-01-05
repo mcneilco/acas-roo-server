@@ -160,7 +160,7 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 				logger.debug("Created the analysisGroup state: " + analysisGroupStates.get(0).toJson());
 			}
 		}
-		//fetch the value, update it if it exists, and if it doesn't exist, create it
+		//fetch the value, ignore it if it exists, then create a new one
 		List<AnalysisGroupValue> analysisGroupValues;
 		AnalysisGroupValue analysisGroupValue = null;
 		if(analysisGroup != null) {
@@ -171,20 +171,12 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 			}
 			else if (analysisGroupValues.size() == 1){
 				analysisGroupValue = analysisGroupValues.get(0);
-				if (valueType.equals("stringValue")) analysisGroupValue.setStringValue(value);
-				if (valueType.equals("fileValue")) analysisGroupValue.setFileValue(value);
-				if (valueType.equals("clobValue")) analysisGroupValue.setClobValue(value);
-				if (valueType.equals("blobValue")) analysisGroupValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
-				if (valueType.equals("numericValue")) analysisGroupValue.setNumericValue(new BigDecimal(value));
-				if (valueType.equals("dateValue")) analysisGroupValue.setDateValue(new Date(Long.parseLong(value)));
-				if (valueType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
+				analysisGroupValue.setIgnored(true);
 				analysisGroupValue.merge();
-				logger.debug("Updated the analysisGroup value: " + analysisGroupValue.toJson());
+				logger.debug("Ignored the analysisGroup value: " + analysisGroupValue.toJson());
 			}
-			else if (analysisGroupValues.isEmpty()) {
-				analysisGroupValue = createAnalysisGroupValueByAnalysisGroupIdAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind, value);
-				logger.debug("Created the analysisGroup value: " + analysisGroupValue.toJson());
-			}
+			analysisGroupValue = createAnalysisGroupValueByAnalysisGroupIdAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind, value);
+			logger.debug("Created the analysisGroup value: " + analysisGroupValue.toJson());
 		}
 		return analysisGroupValue;
 
