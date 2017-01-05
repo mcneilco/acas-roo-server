@@ -157,7 +157,7 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 		} else {
 			if (logger.isDebugEnabled()) logger.debug("No container values to update");
 		}
-		
+		updatedContainerState.flush();
 		return ContainerState.findContainerState(updatedContainerState.getId());
 	}
 
@@ -196,6 +196,7 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 		} else {
 			if (logger.isDebugEnabled()) logger.debug("No container values to save");
 		}
+		newLsState.flush();
 		return ContainerState.findContainerState(newLsState.getId());
 	}
 

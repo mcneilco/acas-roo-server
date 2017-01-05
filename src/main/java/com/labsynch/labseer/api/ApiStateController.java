@@ -535,7 +535,6 @@ return new ResponseEntity<String>(lsThingState.toJson(),headers, HttpStatus.OK);
 
 @RequestMapping(value = "/containerstates", method = RequestMethod.PUT, headers = "Accept=application/json")
 @ResponseBody
-@Transactional
 public ResponseEntity<String> updateContainerStateFromJson (@RequestBody ContainerState containerState) {
 HttpHeaders headers = new HttpHeaders();
 headers.add("Content-Type", "application/json; charset=utf-8");
@@ -665,7 +664,6 @@ return new ResponseEntity<String>(LsThingState.toJsonArray(lsThingStates),header
 
 @RequestMapping(value = "/containerstates/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
 @ResponseBody
-@Transactional
 public ResponseEntity<String> updateContainerStatesFromJsonArray (@RequestBody List<ContainerState> containerStates) {
 HttpHeaders headers = new HttpHeaders();
 headers.add("Content-Type", "application/json; charset=utf-8");
@@ -783,7 +781,6 @@ return new ResponseEntity<String>(lsThingState.toJson(),headers, HttpStatus.OK);
 
 @RequestMapping(value = "/containerstates", method = RequestMethod.POST, headers = "Accept=application/json")
 @ResponseBody
-@Transactional
 public ResponseEntity<String> createContainerStateFromJson (@RequestBody ContainerState containerState) {
 HttpHeaders headers = new HttpHeaders();
 headers.add("Content-Type", "application/json; charset=utf-8");
@@ -900,7 +897,6 @@ return new ResponseEntity<String>(LsThingState.toJsonArray(lsThingStates),header
 
 @RequestMapping(value = "/containerstates/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
 @ResponseBody
-@Transactional
 public ResponseEntity<String> createContainerStatesFromJsonArray (@RequestBody List<ContainerState> containerStates) {
 HttpHeaders headers = new HttpHeaders();
 headers.add("Content-Type", "application/json; charset=utf-8");
