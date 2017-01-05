@@ -98,7 +98,7 @@ public class ContainerState extends AbstractState {
 
     @Transactional
     public static String toJsonArray(Collection<com.labsynch.labseer.domain.ContainerState> collection) {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class", "container", "lsValues.lsState").include("lsValues").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
@@ -108,7 +108,7 @@ public class ContainerState extends AbstractState {
     
     @Transactional
 	public static String toJsonArrayWithNestedContainers(Collection<ContainerState> collection) {
-        return new JSONSerializer().exclude("*.class").include("lsValues","container.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class", "lsValues.lsState").include("lsValues","container.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
 	}
 
     public static Collection<com.labsynch.labseer.domain.ContainerState> fromJsonArrayToContainerStates(String json) {

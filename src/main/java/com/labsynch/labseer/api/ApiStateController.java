@@ -539,11 +539,14 @@ return new ResponseEntity<String>(lsThingState.toJson(),headers, HttpStatus.OK);
 public ResponseEntity<String> updateContainerStateFromJson (@RequestBody ContainerState containerState) {
 HttpHeaders headers = new HttpHeaders();
 headers.add("Content-Type", "application/json; charset=utf-8");
-if (ContainerState.findContainerState(containerState.getId()) == null) {
-	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+try{
+	containerState = containerStateService.updateContainerState(containerState);
+	return new ResponseEntity<String>(containerState.toJson(),headers, HttpStatus.OK);
+}catch (Exception e){
+	logger.error("Caught exception in update container state", e);
+	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 }
-containerState = containerStateService.updateContainerState(containerState);
-return new ResponseEntity<String>(containerState.toJson(),headers, HttpStatus.OK);
+
 }
 
 @RequestMapping(value = "/itxcontainercontainerstates", method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -666,8 +669,14 @@ return new ResponseEntity<String>(LsThingState.toJsonArray(lsThingStates),header
 public ResponseEntity<String> updateContainerStatesFromJsonArray (@RequestBody List<ContainerState> containerStates) {
 HttpHeaders headers = new HttpHeaders();
 headers.add("Content-Type", "application/json; charset=utf-8");
-containerStates = (List<ContainerState>) containerStateService.updateContainerStates(containerStates);
-return new ResponseEntity<String>(ContainerState.toJsonArray(containerStates),headers, HttpStatus.OK);
+try{
+	containerStates = (List<ContainerState>) containerStateService.updateContainerStates(containerStates);
+	return new ResponseEntity<String>(ContainerState.toJsonArray(containerStates),headers, HttpStatus.OK);
+}catch (Exception e){
+	logger.error("Caught exception in update container state", e);
+	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+}
+
 }
 
 @RequestMapping(value = "/itxcontainercontainerstates/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -778,8 +787,13 @@ return new ResponseEntity<String>(lsThingState.toJson(),headers, HttpStatus.OK);
 public ResponseEntity<String> createContainerStateFromJson (@RequestBody ContainerState containerState) {
 HttpHeaders headers = new HttpHeaders();
 headers.add("Content-Type", "application/json; charset=utf-8");
-containerState = containerStateService.saveContainerState(containerState);
-return new ResponseEntity<String>(containerState.toJson(),headers, HttpStatus.OK);
+try{
+	containerState = containerStateService.saveContainerState(containerState);
+	return new ResponseEntity<String>(containerState.toJson(),headers, HttpStatus.OK);
+}catch (Exception e){
+	logger.error("Caught exception in create container state", e);
+	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+}
 }
 
 @RequestMapping(value = "/itxcontainercontainerstates", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -890,8 +904,13 @@ return new ResponseEntity<String>(LsThingState.toJsonArray(lsThingStates),header
 public ResponseEntity<String> createContainerStatesFromJsonArray (@RequestBody List<ContainerState> containerStates) {
 HttpHeaders headers = new HttpHeaders();
 headers.add("Content-Type", "application/json; charset=utf-8");
-containerStates = (List<ContainerState>) containerStateService.saveContainerStates(containerStates);
-return new ResponseEntity<String>(ContainerState.toJsonArray(containerStates),headers, HttpStatus.OK);
+try{
+	containerStates = (List<ContainerState>) containerStateService.saveContainerStates(containerStates);
+	return new ResponseEntity<String>(ContainerState.toJsonArray(containerStates),headers, HttpStatus.OK);
+}catch (Exception e){
+	logger.error("Caught exception in create container state", e);
+	return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+}
 }
 
 @RequestMapping(value = "/itxcontainercontainerstates/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")

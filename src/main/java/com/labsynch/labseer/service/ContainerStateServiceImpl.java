@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -27,8 +28,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.UpdateLog;
 import com.labsynch.labseer.dto.ContainerStatePathDTO;
@@ -119,29 +122,84 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 		return lst;
 	}
 
+	@Transactional
 	@Override
 	public ContainerState updateContainerState(ContainerState containerState) {
-		containerState.setVersion(ContainerState.findContainerState(containerState.getId()).getVersion());
-		containerState.merge();
-		return containerState;
+		ContainerState updatedContainerState;
+		if (containerState.getId() == null){
+			updatedContainerState = new ContainerState(containerState);
+			updatedContainerState.setContainer(Container.findContainer(containerState.getContainer().getId()));
+			updatedContainerState.persist();
+			if (logger.isDebugEnabled()) logger.debug("persisted new container state " + updatedContainerState.getId());
+
+		} else {
+			updatedContainerState = ContainerState.update(containerState);
+
+			if (logger.isDebugEnabled()) logger.debug("updated container state " + updatedContainerState.getId());
+
+		}
+		if (containerState.getLsValues() != null){
+			for(ContainerValue lsThingValue : containerState.getLsValues()){
+				if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedContainerState);
+				ContainerValue updatedContainerValue;
+				if (lsThingValue.getId() == null){
+					updatedContainerValue = ContainerValue.create(lsThingValue);
+					updatedContainerValue.setLsState(ContainerState.findContainerState(updatedContainerState.getId()));
+					updatedContainerValue.persist();
+					updatedContainerState.getLsValues().add(updatedContainerValue);
+				} else {
+					updatedContainerValue = ContainerValue.update(lsThingValue);
+					if (logger.isDebugEnabled()) logger.debug("updated container value " + updatedContainerValue.getId());
+				}
+				if (logger.isDebugEnabled()) logger.debug("checking container " + updatedContainerValue.toJson());
+
+			}	
+		} else {
+			if (logger.isDebugEnabled()) logger.debug("No container values to update");
+		}
+		
+		return ContainerState.findContainerState(updatedContainerState.getId());
 	}
 
+	@Transactional
 	@Override
 	public Collection<ContainerState> updateContainerStates(
 			Collection<ContainerState> containerStates) {
+		Collection<ContainerState> updatedStates = new ArrayList<ContainerState>();
 		for (ContainerState containerState : containerStates){
-			containerState = updateContainerState(containerState);
+			ContainerState updatedContainerState = updateContainerState(containerState);
+			updatedStates.add(updatedContainerState);
 		}
-		return null;
+		return updatedStates;
 	}
 
+	@Transactional
 	@Override
-	public ContainerState saveContainerState(ContainerState containerState) {
-		containerState.setContainer(Container.findContainer(containerState.getContainer().getId()));		
-		containerState.persist();
-		return containerState;
+	public ContainerState saveContainerState(ContainerState lsState) {
+		if (logger.isDebugEnabled()) logger.debug("incoming meta container: " + lsState.toJson() + "\n");
+		ContainerState newLsState = new ContainerState(lsState);
+		newLsState.setContainer(Container.findContainer(lsState.getContainer().getId()));
+		if (logger.isDebugEnabled()) logger.debug("here is the newLsState before save: " + newLsState.toJson());
+		newLsState.persist();
+		if (logger.isDebugEnabled()) logger.debug("persisted the newLsState: " + newLsState.toJson());
+		if (lsState.getLsValues() != null){
+			Set<ContainerValue> lsValues = new HashSet<ContainerValue>();
+			for(ContainerValue containerValue : lsState.getLsValues()){
+				if (logger.isDebugEnabled()) logger.debug("containerValue: " + containerValue.toJson());
+				ContainerValue newContainerValue = ContainerValue.create(containerValue);
+				newContainerValue.setLsState(newLsState);
+				newContainerValue.persist();
+				lsValues.add(newContainerValue);
+				if (logger.isDebugEnabled()) logger.debug("persisted the containerValue: " + newContainerValue.toJson());
+			}
+			newLsState.setLsValues(lsValues);
+		} else {
+			if (logger.isDebugEnabled()) logger.debug("No container values to save");
+		}
+		return ContainerState.findContainerState(newLsState.getId());
 	}
 
+	@Transactional
 	@Override
 	public Collection<ContainerState> saveContainerStates(
 			Collection<ContainerState> containerStates) {
