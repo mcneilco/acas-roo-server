@@ -13,10 +13,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -52,6 +54,8 @@ import com.labsynch.labseer.dto.AnalysisGroupCodeDTO;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
 import com.labsynch.labseer.dto.ExperimentCodeDTO;
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
+import com.labsynch.labseer.dto.MultiContainerSubjectSearchRequest;
+import com.labsynch.labseer.dto.MultiContainerSubjectSearchResultDTO;
 import com.labsynch.labseer.dto.SubjectCodeDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
@@ -941,6 +945,172 @@ public class SubjectServiceImpl implements SubjectService {
 			subjectDTO.setTreatmentGroupCodes(tgDTOs);
 		}
 		return subjectCodeDTOs;
+	}
+
+	@Override
+	public Map<String, List<Long>> searchSubjectIdsByMultiContainerQueryDTO(
+			MultiContainerSubjectSearchRequest query) throws Exception {
+		EntityManager em = Subject.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Tuple> criteria = cb.createQuery(Tuple.class);
+		Root<Subject> subject = criteria.from(Subject.class);
+		
+		criteria.multiselect(subject.<Long>get("id"));
+		criteria.distinct(true);
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		
+		//subject not ignored
+		Predicate subjNotIgn = cb.not(subject.<Boolean>get("ignored"));
+		predicateList.add(subjNotIgn);
+		
+		//subjectType
+		if (query.getSubjectType() != null){
+			Predicate subjectType = cb.equal(subject.<String>get("lsType"), query.getSubjectType());
+			predicateList.add(subjectType);
+		}
+		//subjectKind
+		if (query.getSubjectKind() != null){
+			Predicate subjectKind = cb.equal(subject.<String>get("lsKind"), query.getSubjectKind());
+			predicateList.add(subjectKind);
+		}
+		//protocol label and experiment label
+		if (query.getProtocolLabelLike() != null || query.getExperimentLabelLike() != null){
+			Join<Subject, TreatmentGroup> tg = subject.join("treatmentGroups");
+			Join<TreatmentGroup, AnalysisGroup> ag = tg.join("analysisGroups");
+			Join<AnalysisGroup, Experiment> experiment = ag.join("experiments");
+			Predicate tgNotIgn = cb.not(tg.<Boolean>get("ignored"));
+			Predicate agNotIgn = cb.not(ag.<Boolean>get("ignored"));
+			Predicate exptNotIgn = cb.not(experiment.<Boolean>get("ignored"));
+			predicateList.add(tgNotIgn);
+			predicateList.add(agNotIgn);
+			predicateList.add(exptNotIgn);
+			
+			if (query.getExperimentLabelLike() != null){
+				Join<Experiment, ExperimentLabel> experimentLabel = experiment.join("lsLabels");
+				Predicate exptLabelNotIgn = cb.not(experimentLabel.<Boolean>get("ignored"));
+				predicateList.add(exptLabelNotIgn);
+				Predicate experimentLabelLike = cb.like(experimentLabel.<String>get("labelText"), '%'+query.getExperimentLabelLike()+'%');
+				predicateList.add(experimentLabelLike);
+			}
+			if (query.getProtocolLabelLike() != null){
+				Join<Experiment, Protocol> protocol = experiment.join("protocol");
+				Join<Protocol, ProtocolLabel> protocolLabel = protocol.join("lsLabels");
+				Predicate protNotIgn = cb.not(protocol.<Boolean>get("ignored"));
+				Predicate protLabelNotIgn = cb.not(protocolLabel.<Boolean>get("ignored"));
+				predicateList.add(protNotIgn);
+				predicateList.add(protLabelNotIgn);
+				Predicate protocolLabelLike = cb.like(protocolLabel.<String>get("labelText"), '%'+query.getProtocolLabelLike()+'%');
+				predicateList.add(protocolLabelLike);
+			}
+		}
+		//container code
+		if (query.getContainerCodes() != null && query.getContainerCodes().size() > 0){
+			Join<Subject, ItxSubjectContainer> itx = subject.join("containers");
+			Join<ItxSubjectContainer, Container> container = itx.join("container");
+			Predicate itxNotIgn = cb.not(itx.<Boolean>get("ignored"));
+			Predicate containerNotIgn = cb.not(container.<Boolean>get("ignored"));
+			Expression<String> containerCodeName = container.<String>get("codeName");
+			Predicate containerCode = containerCodeName.in(query.getContainerCodes());
+			predicateList.add(itxNotIgn);
+			predicateList.add(containerNotIgn);
+			predicateList.add(containerCode);
+			criteria.multiselect(container.<String>get("codeName"), subject.<Long>get("id"));
+		}
+		//values
+		if (query.getValues() != null){
+			for (ValueQueryDTO valueQuery : query.getValues()){
+				List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
+				Join<Subject, SubjectState> state = subject.join("lsStates");
+				Join<SubjectState, SubjectValue> value = state.join("lsValues");
+				
+				Predicate stateNotIgn = cb.isFalse(state.<Boolean>get("ignored"));
+				Predicate valueNotIgn = cb.isFalse(value.<Boolean>get("ignored"));
+				valuePredicatesList.add(stateNotIgn);
+				valuePredicatesList.add(valueNotIgn);
+				
+				if (valueQuery.getStateType() != null){
+					Predicate stateType = cb.equal(state.<String>get("lsType"),valueQuery.getStateType());
+					valuePredicatesList.add(stateType);
+				}
+				if (valueQuery.getStateKind() != null){
+					Predicate stateKind = cb.equal(state.<String>get("lsKind"),valueQuery.getStateKind());
+					valuePredicatesList.add(stateKind);
+				}
+				if (valueQuery.getValueType() != null){
+					Predicate valueType = cb.equal(value.<String>get("lsType"),valueQuery.getValueType());
+					valuePredicatesList.add(valueType);
+				}
+				if (valueQuery.getValueKind() != null){
+					Predicate valueKind = cb.equal(value.<String>get("lsKind"),valueQuery.getValueKind());
+					valuePredicatesList.add(valueKind);
+				}
+				if (valueQuery.getValue() != null){
+					if (valueQuery.getValueType() == null){
+						logger.error("valueType must be specified if value is specified!");
+						throw new Exception("valueType must be specified if value is specified!");
+					}else if(valueQuery.getValueType().equals("dateValue")){
+						String postgresTimeUnit = "day";
+						Expression<Date> dateTruncExpr = cb.function("date_trunc", Date.class, cb.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+						Calendar cal = Calendar.getInstance(); // locale-specific
+						cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+						cal.set(Calendar.HOUR_OF_DAY, 0);
+						cal.set(Calendar.MINUTE, 0);
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MILLISECOND, 0);
+						long time = cal.getTimeInMillis();
+						Date queryDate = new Date(time);
+						Predicate valueLike = cb.equal(dateTruncExpr, queryDate);
+						valuePredicatesList.add(valueLike);
+					}else{
+//						only works with string value types: stringValue, codeValue, fileValue, clobValue
+						Predicate valueLike = cb.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
+						valuePredicatesList.add(valueLike);
+					}
+				}
+//				gather predicates with AND
+				Predicate[] valuePredicates = new Predicate[0];
+				valuePredicates = valuePredicatesList.toArray(valuePredicates);
+				predicateList.add(cb.and(valuePredicates));
+			}
+		}
+		predicates = predicateList.toArray(predicates);
+		criteria.where(cb.and(predicates));
+		TypedQuery<Tuple> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		Collection<Tuple> rawResults = q.getResultList();
+		Map<String, List<Long>> results = new HashMap<String, List<Long>>();
+		for (Tuple result : rawResults){
+			String containerCode = (String) result.get(0);
+			Long subjectId = (Long) result.get(1);
+			if (results.containsKey(containerCode)){
+				results.get(containerCode).add(subjectId);
+			}else{
+				ArrayList<Long> subjectIds = new ArrayList<Long>();
+				subjectIds.add(subjectId);
+				results.put(containerCode, subjectIds);
+			}
+		}
+		logger.debug("Found results for "+results.keySet().size()+" containers.");
+		return results;
+	}
+
+	@Override
+	public Collection<ContainerSubjectsDTO> getContainerSubjectsByIds(
+			Map<String, List<Long>> containerCodeSubjectIds) {
+		Collection<ContainerSubjectsDTO> results = new ArrayList<ContainerSubjectsDTO>();
+		for (String containerCode : containerCodeSubjectIds.keySet()){
+			ContainerSubjectsDTO result = new ContainerSubjectsDTO();
+			result.setContainerIdOrCodeName(containerCode);
+			Collection<Subject> subjects = new ArrayList<Subject>();
+			for (Long subjectId : containerCodeSubjectIds.get(containerCode)){
+				Subject subject = Subject.findSubject(subjectId);
+				subjects.add(subject);
+			}
+			result.setSubjects(subjects);
+			results.add(result);
+		}
+		return results;
 	}
 
 	

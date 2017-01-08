@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -12,11 +13,11 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
+import com.labsynch.labseer.dto.MultiContainerSubjectSearchRequest;
 import com.labsynch.labseer.dto.SubjectCodeDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.SubjectSearchRequest;
-import com.labsynch.labseer.dto.SubjectSearchResultDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.dto.ValueQueryDTO;
 
@@ -44,6 +45,10 @@ public interface SubjectService {
 	boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO);
 	Collection<SubjectCodeDTO> getExperimentCodes(
 			Collection<SubjectCodeDTO> subjectCodeDTOs);
+	Map<String, List<Long>> searchSubjectIdsByMultiContainerQueryDTO(
+			MultiContainerSubjectSearchRequest query) throws Exception;
+	Collection<ContainerSubjectsDTO> getContainerSubjectsByIds(
+			Map<String, List<Long>> containerCodeSubjectIds);
 
 	
 	

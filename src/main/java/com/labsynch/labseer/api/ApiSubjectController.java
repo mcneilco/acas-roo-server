@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,8 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
+import com.labsynch.labseer.dto.MultiContainerSubjectSearchRequest;
+import com.labsynch.labseer.dto.MultiContainerSubjectSearchResultDTO;
 import com.labsynch.labseer.dto.SubjectCodeDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectCsvDataDTO;
@@ -348,6 +351,54 @@ public class ApiSubjectController {
     		}
     	}catch (Exception e){
     		logger.error("Caught searching for subjects in generic interaction search",e);
+    		ErrorMessage error = new ErrorMessage();
+    	    error.setErrorLevel("error");
+    	    error.setMessage(e.getMessage());
+    	    errors.add(error);
+    	    errorsFound = true;
+    	}
+    	
+    	if (errorsFound) {
+    	    return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+    	} else if (with != null) {
+    		if (with.equalsIgnoreCase("nestedfull")) {
+    			return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("stub")) {
+				return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
+			}
+		}
+    		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @Transactional
+    @RequestMapping(value = "/searchSubjectsWithContainerCodeArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> searchSubjectsWithContainerCodeArray(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
+    	HttpHeaders headers = new HttpHeaders();
+    	headers.add("Content-Type", "application/json; charset=utf-8");
+    	MultiContainerSubjectSearchRequest query = MultiContainerSubjectSearchRequest.fromJsonToMultiContainerSubjectSearchRequest(json);
+    	ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+    	boolean errorsFound = false;
+    	Map<String, List<Long>> containerSubjectIdMaps;
+    	MultiContainerSubjectSearchResultDTO result = new MultiContainerSubjectSearchResultDTO();
+    	try{
+    		containerSubjectIdMaps = subjectService.searchSubjectIdsByMultiContainerQueryDTO(query);
+    		int maxResults = 1000;
+    		if (query.getMaxResults() != null) maxResults = query.getMaxResults();
+    		result.setMaxResults(maxResults);
+    		int numberOfSubjects = 0;
+    		for (List<Long> idList : containerSubjectIdMaps.values()){
+    			numberOfSubjects += idList.size();
+    		}
+    		result.setNumberOfResults(numberOfSubjects);
+    		if (result.getNumberOfResults() <= result.getMaxResults()){
+    			result.setResults(subjectService.getContainerSubjectsByIds(containerSubjectIdMaps));
+    		}
+    	}catch (Exception e){
+    		logger.error("Caught searching for subjects in multi container generic interaction search",e);
     		ErrorMessage error = new ErrorMessage();
     	    error.setErrorLevel("error");
     	    error.setMessage(e.getMessage());
