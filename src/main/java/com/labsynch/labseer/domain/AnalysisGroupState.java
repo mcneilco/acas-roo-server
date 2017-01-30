@@ -40,6 +40,7 @@ import flexjson.JSONSerializer;
 @RooJpaActiveRecord(finders = { "findAnalysisGroupStatesByLsTypeAndKindEquals", "findAnalysisGroupStatesByAnalysisGroup", "findAnalysisGroupStatesByLsTransactionEquals", "findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals", "findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot" })
 public class AnalysisGroupState extends AbstractState {
 
+	
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "analysis_group_id")
@@ -144,4 +145,35 @@ public class AnalysisGroupState extends AbstractState {
 			return q;
 		}
 
+
+    public static TypedQuery<AnalysisGroupState> findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(AnalysisGroup analysisGroup, String lsType, String lsKind, boolean ignored) {
+        if (analysisGroup == null) throw new IllegalArgumentException("The analysisGroup argument is required");
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = AnalysisGroupState.entityManager();
+        TypedQuery<AnalysisGroupState> q = em.createQuery("SELECT o FROM AnalysisGroupState AS o WHERE o.analysisGroup = :analysisGroup AND o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored", AnalysisGroupState.class);
+        q.setParameter("analysisGroup", analysisGroup);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
+    public static TypedQuery<AnalysisGroupState> findAnalysisGroupStatesByLsTypeAndKindEquals(String lsTypeAndKind) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = AnalysisGroupState.entityManager();
+        TypedQuery<AnalysisGroupState> q = em.createQuery("SELECT o FROM AnalysisGroupState AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", AnalysisGroupState.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+    
+    public static TypedQuery<AnalysisGroupState> findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = AnalysisGroupState.entityManager();
+        TypedQuery<AnalysisGroupState> q = em.createQuery("SELECT o FROM AnalysisGroupState AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", AnalysisGroupState.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
 }

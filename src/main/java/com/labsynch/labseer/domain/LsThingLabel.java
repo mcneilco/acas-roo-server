@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
@@ -129,6 +130,65 @@ public class LsThingLabel extends AbstractLabel {
 		return q.getSingleResult();
 	}
 	
+	public static Long countOfLsThingByPreferredName(String thingType, String thingKind, String labelType, String labelKind, String labelText) {
+		if (thingType == null || thingType.length() == 0) throw new IllegalArgumentException("The thingType argument is required");
+		if (thingKind == null || thingKind.length() == 0) throw new IllegalArgumentException("The thingKind argument is required");		
+		if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+		if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");	
+		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+
+		boolean ignored = true;
+		boolean preferred = true;
+
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT count(o) FROM LsThing AS o " +
+				"JOIN o.lsLabels AS ll1 with ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText "
+				+ "AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind AND ll1.preferred is :preferred " +
+				"WHERE o.ignored IS NOT :ignored AND o.lsType = :thingType AND o.lsKind = :thingKind ";
+		logger.debug("sql query " + query);
+		TypedQuery<Long> q = em.createQuery(query, Long.class);
+
+		q.setParameter("thingType", thingType);
+		q.setParameter("thingKind", thingKind);
+		q.setParameter("labelType", labelType);
+		q.setParameter("labelKind", labelKind);
+		q.setParameter("labelText", labelText);
+		q.setParameter("ignored", ignored);
+		q.setParameter("preferred", preferred);
+
+		return q.getSingleResult();
+	}
+	
+	
+	public static Long countOfAllLsThingByPreferredName(String thingType, String thingKind, String labelType, String labelKind, String labelText) {
+		if (thingType == null || thingType.length() == 0) throw new IllegalArgumentException("The thingType argument is required");
+		if (thingKind == null || thingKind.length() == 0) throw new IllegalArgumentException("The thingKind argument is required");		
+		if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+		if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");	
+		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+
+		boolean ignored = true;
+		boolean preferred = true;
+
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT count(o) FROM LsThing AS o " +
+				"JOIN o.lsLabels AS ll1 " +
+				"WHERE o.lsType = :thingType AND o.lsKind = :thingKind " +
+				"AND ll1.lsType = :labelType AND ll1.lsKind = :labelKind AND ll1.preferred is :preferred " +
+				"AND ll1.ignored IS NOT :ignored AND ll1.labelText = :labelText ";
+		logger.debug("sql query " + query);
+		TypedQuery<Long> q = em.createQuery(query, Long.class);
+
+		q.setParameter("thingType", thingType);
+		q.setParameter("thingKind", thingKind);
+		q.setParameter("labelType", labelType);
+		q.setParameter("labelKind", labelKind);
+		q.setParameter("labelText", labelText);
+		q.setParameter("ignored", ignored);
+		q.setParameter("preferred", preferred);
+
+		return q.getSingleResult();
+	}
 	
 	public static TypedQuery<LsThingLabel> findLsThingName(String thingType, String thingKind, String labelType, String labelKind, String labelText) {
 		if (thingType == null || thingType.length() == 0) throw new IllegalArgumentException("The thingType argument is required");
@@ -240,7 +300,28 @@ public class LsThingLabel extends AbstractLabel {
 		return q;
 	}
 	
-	private static TypedQuery<LsThingLabel> findLsThingPreferredName(
+	public static TypedQuery<LsThingLabel> findLsThingAllPreferredName(Long lsThingId, String labelType, String labelKind) {
+		if (lsThingId == null || lsThingId == 0) throw new IllegalArgumentException("The lsThingId argument is required");
+		if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+		if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
+		
+		boolean preferred = true;
+
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT DISTINCT o FROM LsThingLabel AS o WHERE o.lsType = :labelType  "
+				+ "AND o.lsKind = :labelKind "
+				+ "AND o.lsThing.id = :lsThingId "
+				+ "AND o.preferred = :preferred";
+		logger.debug("sql query " + query);
+		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
+		q.setParameter("lsThingId", lsThingId);
+		q.setParameter("labelType", labelType);
+		q.setParameter("labelKind", labelKind);
+		q.setParameter("preferred", preferred);
+		return q;
+	}
+	
+	public static TypedQuery<LsThingLabel> findLsThingPreferredName(
 			Long lsThingId, String labelType, String labelKind,
 			boolean preferred, boolean ignored) {
 		
@@ -317,7 +398,8 @@ public class LsThingLabel extends AbstractLabel {
 	public static TypedQuery<PreferredNameDTO> findLsThingPreferredName(String thingType, String thingKind, String labelType, String labelKind, Collection<String> requestNameList) {
 		
 		EntityManager em = LsThingLabel.entityManager();
-		String query = "SELECT new com.labsynch.labseer.dto.PreferredNameDTO( tl1.labelText as requestName, tl2.labelText as preferredName, lst.codeName as referenceName) " 
+		String query = "SELECT new com.labsynch.labseer.dto.PreferredNameDTO( "
+				+ "tl1.labelText as requestName, tl2.labelText as preferredName, lst.codeName as referenceName) " 
 				+ "FROM LsThing AS lst "
 				+ "JOIN lst.lsLabels tl1 "
 				+ "JOIN lst.lsLabels tl2 "
@@ -426,6 +508,99 @@ public static TypedQuery<PreferredNameDTO> findLsThingPreferredName(Set<String> 
 			}
 		}
 	}
+
+	public static TypedQuery<LsThingLabel> findLsThingLabelsByLsThingAndLsTypeAndLsKindAndLabelText(
+			LsThing lsThing, String labelType, String labelKind, String labelText) {
+		
+		if (lsThing == null ) throw new IllegalArgumentException("The lsThing argument is required");
+		if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+		if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
+		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+		
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT DISTINCT o FROM LsThingLabel AS o WHERE o.lsType = :labelType  "
+				+ "AND o.lsKind = :labelKind "
+				+ "AND o.lsThing = :lsThing "
+				+ "AND o.labelText = :labelText "
+				+ "AND o.ignored IS NOT :ignored "
+				+ "ORDER by o.id ";
+		logger.debug("sql query " + query);
+		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
+		q.setParameter("lsThing", lsThing);
+		q.setParameter("labelType", labelType);
+		q.setParameter("labelKind", labelKind);
+		q.setParameter("labelText", labelText);
+		q.setParameter("ignored", true);
+
+		return q;
+	}
+	
+	public static TypedQuery<LsThingLabel> findAllLsThingLabelsByLsThingAndLsTypeAndLsKindAndLabelText(
+			LsThing lsThing, String labelType, String labelKind, String labelText) {
+		
+		if (lsThing == null ) throw new IllegalArgumentException("The lsThing argument is required");
+		if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+		if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
+		if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+		
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT DISTINCT o FROM LsThingLabel AS o WHERE o.lsType = :labelType  "
+				+ "AND o.lsKind = :labelKind "
+				+ "AND o.lsThing = :lsThing "
+				+ "AND o.labelText = :labelText "
+				+ "ORDER by o.id ";
+		logger.debug("sql query " + query);
+		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
+		q.setParameter("lsThing", lsThing);
+		q.setParameter("labelType", labelType);
+		q.setParameter("labelKind", labelKind);
+		q.setParameter("labelText", labelText);
+
+		return q;
+	}
+
+	public static TypedQuery<LsThingLabel> findLsThingLabelsByLsThingAndLsTypeAndLsKind(
+			LsThing lsThing, String labelType, String labelKind) {
+		if (lsThing == null ) throw new IllegalArgumentException("The lsThing argument is required");
+		if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+		if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
+		
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT DISTINCT o FROM LsThingLabel AS o WHERE o.lsType = :labelType  "
+				+ "AND o.lsKind = :labelKind "
+				+ "AND o.lsThing = :lsThing "
+				+ "ORDER by o.id ";
+		logger.debug("sql query " + query);
+		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
+		q.setParameter("lsThing", lsThing);
+		q.setParameter("labelType", labelType);
+		q.setParameter("labelKind", labelKind);
+
+		return q;
+	}
+
+	public static TypedQuery<LsThingLabel> findLsThingLabelsByLsThingAndLsTypeAndLsKindNotIgnored(
+			LsThing lsThing, String labelType, String labelKind, boolean ignored) {
+		if (lsThing == null ) throw new IllegalArgumentException("The lsThing argument is required");
+		if (labelType == null || labelType.length() == 0) throw new IllegalArgumentException("The labelType argument is required");
+		if (labelKind == null || labelKind.length() == 0) throw new IllegalArgumentException("The labelKind argument is required");
+		
+		EntityManager em = LsThingLabel.entityManager();
+		String query = "SELECT DISTINCT o FROM LsThingLabel AS o WHERE o.lsType = :labelType  "
+				+ "AND o.lsKind = :labelKind "
+				+ "AND o.lsThing = :lsThing "
+				+ "AND o.ignored IS NOT :ignored "
+				+ "ORDER by o.id ";
+		logger.debug("sql query " + query);
+		TypedQuery<LsThingLabel> q = em.createQuery(query, LsThingLabel.class);
+		q.setParameter("lsThing", lsThing);
+		q.setParameter("labelType", labelType);
+		q.setParameter("labelKind", labelKind);
+		q.setParameter("ignored", ignored);
+
+		return q;
+	}
+
 
 	
 }

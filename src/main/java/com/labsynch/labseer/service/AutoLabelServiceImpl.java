@@ -351,6 +351,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 
 	}
 
+	
 	private LabelSequence createDataDictionarySequence() {
 		LabelSequence labelSequence = new LabelSequence();
 		labelSequence.setThingTypeAndKind("document_datadictionary");
@@ -510,4 +511,10 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		return labels.get(0).getAutoLabel();
 	}
 
+	@Override
+	public String getLsThingCodeName(String lsTypeAndKind, String labelTypeAndKind) {
+		Long numberOfLabels = 1L;
+		List<AutoLabelDTO> labels = getAutoLabels(lsTypeAndKind, labelTypeAndKind, numberOfLabels );
+		return labels.get(0).getAutoLabel();
+	}
 }

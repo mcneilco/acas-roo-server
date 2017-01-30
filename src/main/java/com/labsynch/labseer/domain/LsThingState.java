@@ -40,7 +40,7 @@ public class LsThingState extends AbstractState {
     @JoinColumn(name = "lsthing_id")
     private LsThing lsThing;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsState", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.REFRESH, mappedBy = "lsState", fetch = FetchType.LAZY)
     private Set<LsThingValue> lsValues = new HashSet<LsThingValue>();
 
     public LsThingState() {

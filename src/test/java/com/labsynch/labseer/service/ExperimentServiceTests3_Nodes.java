@@ -2,7 +2,9 @@
 
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,9 +18,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
 
 
@@ -32,9 +39,7 @@ public class ExperimentServiceTests3_Nodes {
 	@Autowired
 	private ExperimentService experimentService;
 
-
-
-	@Test
+	//@Test
 	@Transactional
 	public void GetExprerimentNodes_3(){
 		
@@ -73,5 +78,22 @@ public class ExperimentServiceTests3_Nodes {
 
 	}
 
+	
+	@Test
+	@Transactional
+	public void GetExprerimentNodes_4(){
+		
+		Set<String> batchCodes = new HashSet<String>();
+		String batchCode = "GENE-001144";
+		batchCodes.add(batchCode);
+		
+		boolean showOnlyPublicData = true;
+		List<ExperimentDataDTO> exptDataSet = experimentService.getExperimentData(batchCode, showOnlyPublicData);
+		logger.info("@@@@@@@@@@@@@@@@ printing the experiment metadata @@@@@@@@@@@@@");
+		logger.info(ExperimentDataDTO.toJsonArray(exptDataSet));
+		
+		
+
+	}
 
 }

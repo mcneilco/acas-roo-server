@@ -17,4 +17,14 @@ privileged aspect InteractionType_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<InteractionType> InteractionType.findInteractionTypesByTypeNameEqualsAndTypeVerbEquals(String typeName, String typeVerb) {
+        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+        if (typeVerb == null || typeVerb.length() == 0) throw new IllegalArgumentException("The typeVerb argument is required");
+        EntityManager em = InteractionType.entityManager();
+        TypedQuery<InteractionType> q = em.createQuery("SELECT o FROM InteractionType AS o WHERE o.typeName = :typeName  AND o.typeVerb = :typeVerb", InteractionType.class);
+        q.setParameter("typeName", typeName);
+        q.setParameter("typeVerb", typeVerb);
+        return q;
+    }
+    
 }

@@ -60,7 +60,7 @@ public class LsThingPreferredIdServiceTests {
 	private LsThingService lsThingService;
 	
 
-	@Test
+	//@Test
 	public void Test_1(){
 				
 		PreferredNameRequestDTO inputData = new PreferredNameRequestDTO();
@@ -127,7 +127,7 @@ public class LsThingPreferredIdServiceTests {
 				
 		PreferredNameRequestDTO inputData = new PreferredNameRequestDTO();
 		List<PreferredNameDTO> requests = new ArrayList<PreferredNameDTO>();
-		String[] inputNames = {"380653", "380654", "633417", "399588", "664857", "212124", "101056086"};
+		String[] inputNames = {"11797", "77616", "633417", "78190", "102633673", "72971", "101056086", "100132941", "100288144"};
 		for (String name : inputNames){
 			PreferredNameDTO requestName = new PreferredNameDTO();
 			requestName.setRequestName(name);
@@ -145,7 +145,7 @@ public class LsThingPreferredIdServiceTests {
         logger.info("getGeneCodeNameFromNameRequest incoming json: " + requestDTO.toJson());
         PreferredNameResultsDTO results = lsThingService.getPreferredNameFromName(thingType, thingKind, labelType, labelKind, inputData);
    
-		Assert.assertEquals(7, results.getResults().size());
+		Assert.assertEquals(9, results.getResults().size());
 
 		logger.info("#############################################");
 		logger.info(results.toJson());

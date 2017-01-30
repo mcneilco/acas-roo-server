@@ -35,7 +35,7 @@ import org.springframework.web.util.WebUtils;
 @RooWebScaffold(path = "authorroles", formBackingObject = AuthorRole.class)
 public class AuthorRoleController {
 
-//    private static final Logger logger = LoggerFactory.getLogger(AuthorRoleController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AuthorRoleController.class);
 //
 //    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
 //    @ResponseBody

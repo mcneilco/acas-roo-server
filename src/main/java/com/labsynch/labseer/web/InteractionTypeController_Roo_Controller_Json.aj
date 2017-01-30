@@ -101,4 +101,12 @@ privileged aspect InteractionTypeController_Roo_Controller_Json {
         return new ResponseEntity<String>(InteractionType.toJsonArray(InteractionType.findInteractionTypesByTypeNameEquals(typeName).getResultList()), headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByTypeNameEqualsAndTypeVerbEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> InteractionTypeController.jsonFindInteractionTypesByTypeNameEqualsAndTypeVerbEquals(@RequestParam("typeName") String typeName, @RequestParam("typeVerb") String typeVerb) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(InteractionType.toJsonArray(InteractionType.findInteractionTypesByTypeNameEqualsAndTypeVerbEquals(typeName, typeVerb).getResultList()), headers, HttpStatus.OK);
+    }
+    
 }

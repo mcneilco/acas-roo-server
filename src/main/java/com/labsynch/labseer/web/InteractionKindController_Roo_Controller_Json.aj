@@ -94,6 +94,14 @@ privileged aspect InteractionKindController_Roo_Controller_Json {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByKindNameEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> InteractionKindController.jsonFindInteractionKindsByKindNameEquals(@RequestParam("kindName") String kindName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(InteractionKind.toJsonArray(InteractionKind.findInteractionKindsByKindNameEquals(kindName).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByKindNameEqualsAndLsType", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> InteractionKindController.jsonFindInteractionKindsByKindNameEqualsAndLsType(@RequestParam("kindName") String kindName, @RequestParam("lsType") InteractionType lsType) {

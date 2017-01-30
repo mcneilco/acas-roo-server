@@ -108,7 +108,7 @@ public class ProtocolValue extends AbstractValue {
 				"WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
 				"AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored IS NOT :ignored " +
 //				"AND p.ignored IS NOT :ignored " +
-				"AND p.id = :protocolId ";
+				"AND p.id = :protocolId ORDER BY pv.id";
 		TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
 		q.setParameter("protocolId", protocolId);
 		q.setParameter("stateType", stateType);

@@ -132,20 +132,12 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 			}
 			else if (lsThingValues.size() == 1){
 				lsThingValue = lsThingValues.get(0);
-				if (valueType.equals("stringValue")) lsThingValue.setStringValue(value);
-				if (valueType.equals("fileValue")) lsThingValue.setFileValue(value);
-				if (valueType.equals("clobValue")) lsThingValue.setClobValue(value);
-				if (valueType.equals("blobValue")) lsThingValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
-				if (valueType.equals("numericValue")) lsThingValue.setNumericValue(new BigDecimal(value));
-				if (valueType.equals("dateValue")) lsThingValue.setDateValue(new Date(Long.parseLong(value)));
-				if (valueType.equals("codeValue")) lsThingValue.setCodeValue(value);
+				lsThingValue.setIgnored(true);
 				lsThingValue.merge();
-				logger.debug("Updated the lsThing value: " + lsThingValue.toJson());
+				logger.debug("Ignored the lsThing value: " + lsThingValue.toJson());
 			}
-			else if (lsThingValues.isEmpty()){
-				lsThingValue = createLsThingValueByLsThingIdAndStateTypeKindAndValueTypeKind(lsThingId, stateType, stateKind, valueType, valueKind, value);
-				logger.debug("Created the lsThing value: " + lsThingValue.toJson());
-			}
+			lsThingValue = createLsThingValueByLsThingIdAndStateTypeKindAndValueTypeKind(lsThingId, stateType, stateKind, valueType, valueKind, value);
+			logger.debug("Created the lsThing value: " + lsThingValue.toJson());
 		}
 		return lsThingValue;
 
