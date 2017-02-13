@@ -557,7 +557,7 @@ public class LsThingServiceImpl implements LsThingService {
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
 					if (logger.isDebugEnabled()) logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
-					updatedLsThing = updateNestedFirstLsThing(itxLsThingLsThing);
+					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
 					firstLsThings.add(updatedItxLsThingLsThing);
@@ -565,7 +565,7 @@ public class LsThingServiceImpl implements LsThingService {
 					//old itx needs to be updated
 					if (logger.isDebugEnabled()) logger.debug("update existing itxLsThingLsThing: " + itxLsThingLsThing.toJson());
 
-					updatedLsThing = updateNestedFirstLsThing(itxLsThingLsThing);
+					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
 					updateItxLsStates(itxLsThingLsThing, updatedItxLsThingLsThing);
