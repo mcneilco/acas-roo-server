@@ -554,6 +554,7 @@ public class LsThingServiceImpl implements LsThingService {
 			//there are itx's
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
 				ItxLsThingLsThing updatedItxLsThingLsThing;
+				logger.debug("updating itxLsThingLsThing");
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
 					if (logger.isDebugEnabled()) logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
@@ -564,7 +565,6 @@ public class LsThingServiceImpl implements LsThingService {
 				}else {
 					//old itx needs to be updated
 					if (logger.isDebugEnabled()) logger.debug("update existing itxLsThingLsThing: " + itxLsThingLsThing.toJson());
-
 					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
@@ -595,6 +595,7 @@ public class LsThingServiceImpl implements LsThingService {
 					secondLsThings.add(updatedItxLsThingLsThing);
 				}else {
 					//old itx needs to be updated
+					if (logger.isDebugEnabled()) logger.debug("update existing itxLsThingLsThing: " + itxLsThingLsThing.toJson());
 					updateNestedSecondLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);

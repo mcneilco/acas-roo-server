@@ -694,6 +694,10 @@ public class LsThing extends AbstractThing {
 	
 	public static com.labsynch.labseer.domain.LsThing update(com.labsynch.labseer.domain.LsThing lsThing) throws StaleObjectStateException {
         LsThing updatedLsThing = LsThing.findLsThing(lsThing.getId());
+        if (lsThing.getVersion() == null){
+        	logger.warn("LsThing with id: "+lsThing.getId().toString()+" passed in with no version - skipping update");
+        	return updatedLsThing;
+        }
         if (!lsThing.getVersion().equals(updatedLsThing.getVersion())){
             logger.debug("incoming version: "+lsThing.getVersion()+" existing version: "+updatedLsThing.getVersion());
         	throw new StaleObjectStateException("LsThing", lsThing.getId());
