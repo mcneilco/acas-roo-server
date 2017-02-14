@@ -112,7 +112,7 @@ public class ApiAnalysisGroupControllerTest {
 		}
     }
     
-    @Test
+    //@Test
     @Transactional
     @Rollback(value=false)
     public void updateAnalysisGroupsFromJSONTest() throws Exception {

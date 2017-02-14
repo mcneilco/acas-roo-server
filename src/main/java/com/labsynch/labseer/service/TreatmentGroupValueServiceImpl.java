@@ -169,20 +169,12 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 			}
 			else if (treatmentGroupValues.size() == 1){
 				treatmentGroupValue = treatmentGroupValues.get(0);
-				if (valueType.equals("stringValue")) treatmentGroupValue.setStringValue(value);
-				if (valueType.equals("fileValue")) treatmentGroupValue.setFileValue(value);
-				if (valueType.equals("clobValue")) treatmentGroupValue.setClobValue(value);
-				if (valueType.equals("blobValue")) treatmentGroupValue.setBlobValue(value.getBytes(Charset.forName("UTF-8")));
-				if (valueType.equals("numericValue")) treatmentGroupValue.setNumericValue(new BigDecimal(value));
-				if (valueType.equals("dateValue")) treatmentGroupValue.setDateValue(new Date(Long.parseLong(value)));
-				if (valueType.equals("codeValue")) treatmentGroupValue.setCodeValue(value);
+				treatmentGroupValue.setIgnored(true);
 				treatmentGroupValue.merge();
-				logger.debug("Updated the treatmentGroup value: " + treatmentGroupValue.toJson());
+				logger.debug("Ignored the treatmentGroup value: " + treatmentGroupValue.toJson());
 			}
-			else if (treatmentGroupValues.isEmpty()) {
-				treatmentGroupValue = createTreatmentGroupValueByTreatmentGroupIdAndStateTypeKindAndValueTypeKind(treatmentGroupId, stateType, stateKind, valueType, valueKind, value);
-				logger.debug("Created the treatmentGroup value: " + treatmentGroupValue.toJson());
-			}
+			treatmentGroupValue = createTreatmentGroupValueByTreatmentGroupIdAndStateTypeKindAndValueTypeKind(treatmentGroupId, stateType, stateKind, valueType, valueKind, value);
+			logger.debug("Created the treatmentGroup value: " + treatmentGroupValue.toJson());
 		}
 		return treatmentGroupValue;
 	}

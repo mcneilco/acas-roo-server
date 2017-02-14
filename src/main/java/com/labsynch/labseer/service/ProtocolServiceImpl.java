@@ -58,7 +58,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 
 	@Override
 	public Protocol saveLsProtocol(Protocol protocol) throws UniqueNameException{
-		logger.debug("incoming meta protocol: " + protocol.toJson() + "\n");
+		if (logger.isDebugEnabled())  logger.debug("incoming meta protocol: " + protocol.toJson() + "\n");
 		
 		//check if protocol with the same name exists
 				boolean checkProtocolName = propertiesUtilService.getUniqueProtocolName();
@@ -67,9 +67,9 @@ public class ProtocolServiceImpl implements ProtocolService {
 					Set<ProtocolLabel> protLabels = protocol.getLsLabels();
 					for (ProtocolLabel label : protLabels){
 						String labelText = label.getLabelText();
-						logger.debug("Searching for labelText: "+labelText);
+						if (logger.isDebugEnabled())  logger.debug("Searching for labelText: "+labelText);
 						List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
-						logger.debug("Found "+ protocolLabels.size() +" labels");
+						if (logger.isDebugEnabled())  logger.debug("Found "+ protocolLabels.size() +" labels");
 						for (ProtocolLabel pl : protocolLabels){
 							Protocol pro = pl.getProtocol();
 							//if the protocol is not hard deleted or soft deleted, there is a name conflict
@@ -96,7 +96,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 		
 		
 		newProtocol.persist();
-		logger.debug("persisted the newProtocol: " + newProtocol.toJson() + "\n");
+		if (logger.isDebugEnabled())  logger.debug("persisted the newProtocol: " + newProtocol.toJson() + "\n");
 		if (protocol.getLsLabels() != null){
 			Set<ProtocolLabel> lsLabels = new HashSet<ProtocolLabel>();
 			for(ProtocolLabel protocolLabel : protocol.getLsLabels()){
@@ -108,7 +108,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}	
 			newProtocol.setLsLabels(lsLabels);
 		} else {
-			logger.debug("No protocol labels to save");	
+			if (logger.isDebugEnabled())  logger.debug("No protocol labels to save");	
 		}
 
 		if (protocol.getLsStates() != null){
@@ -123,11 +123,11 @@ public class ProtocolServiceImpl implements ProtocolService {
 						protocolValue.setLsState(newProtocolState);
 						protocolValue.persist();
 						lsValues.add(protocolValue);
-						logger.debug("persisted the protocolValue: " + protocolValue.toJson());
+						if (logger.isDebugEnabled())  logger.debug("persisted the protocolValue: " + protocolValue.toJson());
 					}				
 					newProtocolState.setLsValues(lsValues);
 				} else {
-					logger.debug("No protocol values to save");
+					if (logger.isDebugEnabled())  logger.debug("No protocol values to save");
 				}
 				lsStates.add(newProtocolState);
 			}
@@ -139,18 +139,18 @@ public class ProtocolServiceImpl implements ProtocolService {
 
 	@Override
 	public Protocol updateProtocol(Protocol protocol) throws UniqueNameException{
-		logger.debug("UPDATE PROTOCOL --- incoming meta protocol: " + protocol.toJson() + "\n");
+		if (logger.isDebugEnabled())  logger.debug("UPDATE PROTOCOL --- incoming meta protocol: " + protocol.toJson() + "\n");
 		
 		boolean checkProtocolName = propertiesUtilService.getUniqueProtocolName();
-		logger.debug("checkProtocolName = "+checkProtocolName);
+		if (logger.isDebugEnabled())  logger.debug("checkProtocolName = "+checkProtocolName);
 		if (checkProtocolName){
 			boolean protocolExists = false;
 			Set<ProtocolLabel> protLabels = protocol.getLsLabels();
 			for (ProtocolLabel label : protLabels){
 				String labelText = label.getLabelText();
-				logger.debug("Searching for labelText: "+labelText);
+				if (logger.isDebugEnabled())  logger.debug("Searching for labelText: "+labelText);
 				List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolLabelsByName(labelText).getResultList();	
-				logger.debug("Found "+ protocolLabels.size() +" labels");
+				if (logger.isDebugEnabled())  logger.debug("Found "+ protocolLabels.size() +" labels");
 				for (ProtocolLabel pl : protocolLabels){
 					Protocol pro = pl.getProtocol();
 					//if the protocol is not hard deleted or soft deleted, there is a name conflict
@@ -169,7 +169,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 		if (protocol.getLsLabels() != null){
 			Set<ProtocolLabel> updatedProtocolLabels = new HashSet<ProtocolLabel>();
 			for(ProtocolLabel protocolLabel : protocol.getLsLabels()){
-				logger.debug(protocolLabel.toJson());
+				if (logger.isDebugEnabled())  logger.debug(protocolLabel.toJson());
 				if (protocolLabel.getId() == null){
 					ProtocolLabel newProtocolLabel = new ProtocolLabel(protocolLabel);
 					newProtocolLabel.setProtocol(updatedProtocol);
@@ -183,7 +183,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 			}
 			updatedProtocol.setLsLabels(updatedProtocolLabels);
 		} else {
-			logger.debug("No protocol labels to save");	
+			if (logger.isDebugEnabled())  logger.debug("No protocol labels to save");	
 		}
 		
 		
@@ -199,7 +199,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 //					updatedProtocol.getLsStates().add(newProtocolState);
 				} else {
 					updatedProtocolState = ProtocolState.update(protocolState);
-					logger.debug("updatedProtocolState: " + updatedProtocolState.toJson());
+					if (logger.isDebugEnabled())  logger.debug("updatedProtocolState: " + updatedProtocolState.toJson());
 				}
 				
 				if (protocolState.getLsValues() != null){
@@ -214,12 +214,12 @@ public class ProtocolServiceImpl implements ProtocolService {
 						} else {
 							updatedProtocolValue = ProtocolValue.update(protocolValue);
 							updatedProtocolValues.add(updatedProtocolValue);
-							logger.debug("updatedProtocolValue: " + updatedProtocolValue.toJson());
+							if (logger.isDebugEnabled())  logger.debug("updatedProtocolValue: " + updatedProtocolValue.toJson());
 						}
 					}
 					updatedProtocolState.setLsValues(updatedProtocolValues);
 				} else {
-					logger.debug("No protocol values to save");
+					if (logger.isDebugEnabled())  logger.debug("No protocol values to save");
 				}
 			updatedProtocolStates.add(updatedProtocolState);
 			}
@@ -306,7 +306,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 		Collection<Protocol> protocolList = new HashSet<Protocol>();
 		//Split the query up on spaces
 		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
-		logger.debug("Number of search terms: " + splitQuery.size());
+		if (logger.isDebugEnabled())  logger.debug("Number of search terms: " + splitQuery.size());
 		//Make the Map of terms and HashSets of protocol id's then fill. We will run intersect logic later.
 		Map<String, HashSet<Long>> resultsByTerm = new HashMap<String, HashSet<Long>>();
 		for (String term : splitQuery) {
@@ -342,7 +342,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 		for (Protocol protocol: protocolList) {
 			//For Protocol Browser, we want to see soft deleted (ignored=true, deleted=false), but not hard deleted (ignored=deleted=true)
 			if (protocol.isDeleted()){
-				logger.debug("removing a deleted protocol from the results");
+				if (logger.isDebugEnabled())  logger.debug("removing a deleted protocol from the results");
 			} else {
 				result.add(protocol);
 			}
@@ -421,12 +421,12 @@ public class ProtocolServiceImpl implements ProtocolService {
 			DateFormat df2 = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
 			try {
 				Date date = df.parse(queryString);
-				logger.debug("Successfully parsed date: "+queryString);
+				if (logger.isDebugEnabled())  logger.debug("Successfully parsed date: "+queryString);
 				protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
 			} catch (Exception e) {
 				try {
 					Date date = df2.parse(queryString);
-					logger.debug("Successfully parsed date: "+queryString);
+					if (logger.isDebugEnabled())  logger.debug("Successfully parsed date: "+queryString);
 					protocolValues = ProtocolValue.findProtocolValuesByLsKindEqualsAndDateValueLike("creation date", date).getResultList();
 				} catch (Exception e2) {
 					//do nothing

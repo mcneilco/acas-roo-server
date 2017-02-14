@@ -1,9 +1,11 @@
 package com.labsynch.labseer.api;
 
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.ItxLsThingLsThingService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONTokener;
 
@@ -59,13 +61,313 @@ public class ApiItxLsThingLsThingController {
 	@Transactional
 	@RequestMapping(headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> listJson() {
+	public ResponseEntity<java.lang.String> listAllJson() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<ItxLsThingLsThing> result = ItxLsThingLsThing.findAllItxLsThingLsThings();
 		return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArray(result), headers, HttpStatus.OK);
 	}
 
+	
+	@Transactional
+	@RequestMapping(value = "/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getItxLsThingsByTypeAndKind(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		List<ItxLsThingLsThing> itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+		if (with != null) {
+			if (with.equalsIgnoreCase("nestedfull")) {
+				return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedFull(itxLsThingLsThings), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(ItxLsThingLsThing.toPrettyJsonArray(itxLsThingLsThings), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("stub")) {
+				return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+	}
+
+	@Transactional
+	@RequestMapping(value = "/byfirstthing", method = RequestMethod.GET, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getItxLsThingsByFirstThing(
+			@RequestParam(value = "firstthing", required = true) String firstthing,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		LsThing lsThing;
+		List<ItxLsThingLsThing> itxLsThingLsThings = null;
+		if(SimpleUtil.isNumeric(firstthing)) {
+			lsThing = LsThing.findLsThing(Long.valueOf(firstthing));
+			itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByFirstLsThing(lsThing).getResultList();
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(firstthing).getSingleResult();
+				itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByFirstLsThing(lsThing).getResultList();
+			} catch(Exception ex) {
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("lsThing:" + firstthing +" not found");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedFull(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toPrettyJsonArray(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+		}
+	}
+
+	@Transactional
+	@RequestMapping(value = "/bysecondthing", method = RequestMethod.GET, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getItxLsThingsBySecondThing(
+			@RequestParam(value = "secondthing", required = true) String secondthing,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		LsThing lsThing;
+		List<ItxLsThingLsThing> itxLsThingLsThings = null;
+		if(SimpleUtil.isNumeric(secondthing)) {
+			lsThing = LsThing.findLsThing(Long.valueOf(secondthing));
+			itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(lsThing).getResultList();
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(secondthing).getSingleResult();
+				itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(lsThing).getResultList();
+			} catch(Exception ex) {
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("lsThing:" + secondthing +" not found");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedFull(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toPrettyJsonArray(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+		}
+	}
+
+	
+	@Transactional
+	@RequestMapping(value = "/byfirstthing/exclude/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getItxLsThingsByFirstThingNotTypeKind(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestParam(value = "firstthing", required = true) String firstthing,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		LsThing lsThing;
+		List<ItxLsThingLsThing> itxLsThingLsThings = null;
+		if(SimpleUtil.isNumeric(firstthing)) {
+			lsThing = LsThing.findLsThing(Long.valueOf(firstthing));
+			itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsNotTypeAndKindAndFirstLsThingEquals(lsType, lsKind, lsThing).getResultList();
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(firstthing).getSingleResult();
+				itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsNotTypeAndKindAndFirstLsThingEquals(lsType, lsKind, lsThing).getResultList();
+			} catch(Exception ex) {
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("lsThing:" + firstthing +" not found");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedFull(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toPrettyJsonArray(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+		}
+	}
+
+	@Transactional
+	@RequestMapping(value = "/bysecondthing/exclude/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getItxLsThingsBySecondThingNotTypeKind(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestParam(value = "secondthing", required = true) String secondthing,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		LsThing lsThing;
+		List<ItxLsThingLsThing> itxLsThingLsThings = null;
+		if(SimpleUtil.isNumeric(secondthing)) {
+			lsThing = LsThing.findLsThing(Long.valueOf(secondthing));
+			itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsNotTypeAndKindAndSecondLsThingEquals(lsType, lsKind, lsThing).getResultList();
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(secondthing).getSingleResult();
+				itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsNotTypeAndKindAndSecondLsThingEquals(lsType, lsKind, lsThing).getResultList();
+			} catch(Exception ex) {
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("lsThing:" + secondthing +" not found");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedFull(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toPrettyJsonArray(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+		}
+	}
+	@Transactional
+	@RequestMapping(value = "/byfirstthing/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getItxLsThingsByFirstThingAndTypeKind(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestParam(value = "firstthing", required = true) String firstthing,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		LsThing lsThing;
+		List<ItxLsThingLsThing> itxLsThingLsThings = null;
+		if(SimpleUtil.isNumeric(firstthing)) {
+			lsThing = LsThing.findLsThing(Long.valueOf(firstthing));
+			itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndFirstLsThingEquals(lsType, lsKind,  lsThing).getResultList();
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(firstthing).getSingleResult();
+				itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndFirstLsThingEquals(lsType, lsKind, lsThing).getResultList();
+			} catch(Exception ex) {
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("lsThing:" + firstthing +" not found");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedFull(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toPrettyJsonArray(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+		}
+	}
+
+	@Transactional
+	@RequestMapping(value = "/bysecondthing/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getItxLsThingsBySecondThingAndTypeKind(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestParam(value = "secondthing", required = true) String secondthing,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		LsThing lsThing;
+		List<ItxLsThingLsThing> itxLsThingLsThings = null;
+		if(SimpleUtil.isNumeric(secondthing)) {
+			lsThing = LsThing.findLsThing(Long.valueOf(secondthing));
+			itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals(lsType, lsKind, lsThing).getResultList();
+		} else {		
+			try {
+				lsThing = LsThing.findLsThingsByCodeNameEquals(secondthing).getSingleResult();
+				itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndSecondLsThingEquals(lsType, lsKind, lsThing).getResultList();
+			} catch(Exception ex) {
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("lsThing:" + secondthing +" not found");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedFull(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toPrettyJsonArray(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+		}
+	}
+
+	
+	
 	@Transactional
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json,

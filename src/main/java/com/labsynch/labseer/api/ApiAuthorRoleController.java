@@ -42,6 +42,7 @@ public class ApiAuthorRoleController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthorRoleController.class);
 
+	
     @RequestMapping(value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {

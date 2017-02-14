@@ -23,6 +23,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.map.MultiValueMap;
+import org.hibernate.StaleObjectStateException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -444,6 +445,11 @@ public class LsThingServiceImpl implements LsThingService {
 				error.setMessage("FOUND MULTIPLE LS_THINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
+				
+				for (PreferredNameDTO lsThingLabel : lsThingLabels){
+					logger.debug(lsThingLabel.toJson());
+				}
+				
 			} else {
 				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
 			}
@@ -520,7 +526,7 @@ public class LsThingServiceImpl implements LsThingService {
 	
 	@Override
 	@Transactional
-	public LsThing updateLsThing(LsThing jsonLsThing){
+	public LsThing updateLsThing(LsThing jsonLsThing) throws StaleObjectStateException{
 		LsThing updatedLsThing = LsThing.update(jsonLsThing);
 		if (jsonLsThing.getLsLabels() != null) {
 			for(LsThingLabel lsThingLabel : jsonLsThing.getLsLabels()){
@@ -548,19 +554,21 @@ public class LsThingServiceImpl implements LsThingService {
 		firstLsThings.addAll(updatedLsThing.getFirstLsThings());
 		logger.debug("found number of first interactions: " + firstLsThings.size());
 		
-		if(jsonLsThing.getFirstLsThings() != null){
+		if(jsonLsThing.getFirstLsThings() != null && jsonLsThing.getFirstLsThings().size() > 0){
 			//there are itx's
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
 				ItxLsThingLsThing updatedItxLsThingLsThing;
+				logger.debug("updating itxLsThingLsThing");
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
-					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					if (logger.isDebugEnabled()) logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
 					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
 					firstLsThings.add(updatedItxLsThingLsThing);
 				}else {
 					//old itx needs to be updated
+					if (logger.isDebugEnabled()) logger.debug("update existing itxLsThingLsThing: " + itxLsThingLsThing.toJson());
 					updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
@@ -574,23 +582,24 @@ public class LsThingServiceImpl implements LsThingService {
 		Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
 		secondLsThings.addAll(updatedLsThing.getSecondLsThings());
 //		secondLsThings.addAll(ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(updatedLsThing).getResultList());
-		logger.debug("found number of second interactions: " + secondLsThings.size());
+		if (logger.isDebugEnabled()) logger.debug("found number of second interactions: " + secondLsThings.size());
 
 		
-		if(jsonLsThing.getSecondLsThings() != null){
+		if(jsonLsThing.getSecondLsThings() != null && jsonLsThing.getSecondLsThings().size() > 0){
 			//there are itx's
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getSecondLsThings()){
 				logger.debug("updating itxLsThingLsThing");
 				ItxLsThingLsThing updatedItxLsThingLsThing;
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
-					logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
+					if (logger.isDebugEnabled()) logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
 					updateNestedSecondLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
 					secondLsThings.add(updatedItxLsThingLsThing);
 				}else {
 					//old itx needs to be updated
+					if (logger.isDebugEnabled()) logger.debug("update existing itxLsThingLsThing: " + itxLsThingLsThing.toJson());
 					updateNestedSecondLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
@@ -605,11 +614,11 @@ public class LsThingServiceImpl implements LsThingService {
 
 	}
 
-	private void updateNestedFirstLsThing(ItxLsThingLsThing itxLsThingLsThing) {
-		LsThing updatedNestedLsThing;
+	private LsThing updateNestedFirstLsThing(ItxLsThingLsThing itxLsThingLsThing) {
+		LsThing updatedNestedLsThing = null;
 		if (itxLsThingLsThing.getFirstLsThing().getId() == null){
 			//need to save a new nested lsthing
-			logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
+			if (logger.isDebugEnabled()) logger.debug("saving new nested LsThing" + itxLsThingLsThing.getFirstLsThing().toJson());
 			try{
 				updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getFirstLsThing());
 				itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
@@ -623,13 +632,15 @@ public class LsThingServiceImpl implements LsThingService {
 			updateLsStates(itxLsThingLsThing.getFirstLsThing(), updatedNestedLsThing);
 			itxLsThingLsThing.setFirstLsThing(updatedNestedLsThing);
 		}
+		
+		return updatedNestedLsThing;
 	}
 	
-	private void updateNestedSecondLsThing(ItxLsThingLsThing itxLsThingLsThing) {
-		LsThing updatedNestedLsThing;
+	private LsThing updateNestedSecondLsThing(ItxLsThingLsThing itxLsThingLsThing) {
+		LsThing updatedNestedLsThing = null;
 		if (itxLsThingLsThing.getSecondLsThing().getId() == null){
 			//need to save a new nested lsthing
-			logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
+			if (logger.isDebugEnabled()) logger.debug("saving new nested LsThing" + itxLsThingLsThing.getSecondLsThing().toJson());
 			try{
 				updatedNestedLsThing = saveLsThing(itxLsThingLsThing.getSecondLsThing());
 				itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
@@ -643,6 +654,9 @@ public class LsThingServiceImpl implements LsThingService {
 			updateLsStates(itxLsThingLsThing.getSecondLsThing(), updatedNestedLsThing);
 			itxLsThingLsThing.setSecondLsThing(updatedNestedLsThing);
 		}
+		
+		return updatedNestedLsThing;
+
 	}
 
 
@@ -656,7 +670,7 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	@Transactional
 	public LsThing saveLsThing(LsThing lsThing, boolean checkLsThingName) throws UniqueNameException{
-		logger.debug("incoming meta lsThing: " + lsThing.toJson());
+		if (logger.isDebugEnabled()) logger.debug("incoming meta lsThing: " + lsThing.toJson());
 
 		//check if lsThing with the same name exists
 		if (checkLsThingName){
@@ -688,7 +702,7 @@ public class LsThingServiceImpl implements LsThingService {
 		logger.debug("persisted the newLsThing: " + newLsThing.toJson());
 
 
-		if (lsThing.getLsLabels() != null) {
+		if (lsThing.getLsLabels() != null && lsThing.getLsLabels().size() > 0) {
 			Set<LsThingLabel> lsLabels = new HashSet<LsThingLabel>();
 			for(LsThingLabel lsThingLabel : lsThing.getLsLabels()){
 				LsThingLabel newLsThingLabel = new LsThingLabel(lsThingLabel);
@@ -701,16 +715,22 @@ public class LsThingServiceImpl implements LsThingService {
 		} else {
 			logger.debug("No lsThing labels to save");
 		}
+		
+		boolean doNotRun = true;
 
-		if(lsThing.getLsStates() != null){
+		if(lsThing.getLsStates() != null && lsThing.getLsStates().size() > 0 ){
 			Set<LsThingState> lsStates = new HashSet<LsThingState>();
 			for(LsThingState lsThingState : lsThing.getLsStates()){
 				LsThingState newLsThingState = new LsThingState(lsThingState);
 				newLsThingState.setLsThing(newLsThing);
 				logger.debug("here is the newLsThingState before save: " + newLsThingState.toJson());
 				newLsThingState.persist();
+				
+				logger.debug("@@@@@@@@@@@ lsThing will be updated by the touch.");
+				logger.debug(LsThing.findLsThing(newLsThing.getId()).toJson());
+				
 				logger.debug("persisted the newLsThingState: " + newLsThingState.toJson());
-				if (lsThingState.getLsValues() != null){
+				if (lsThingState.getLsValues() != null && lsThingState.getLsValues().size() > 0){
 					Set<LsThingValue> lsValues = new HashSet<LsThingValue>();
 					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
 						logger.debug("lsThingValue: " + lsThingValue.toJson());
@@ -728,8 +748,9 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			newLsThing.setLsStates(lsStates);
 		}
-		
-		if(lsThing.getFirstLsThings() != null){
+		// && lsThing.getFirstLsThings().size() > 0
+		if(lsThing.getFirstLsThings() != null && lsThing.getFirstLsThings().size() > 0){
+			logger.debug("@@@@@@@@@  -- trying to save first thing interaction");
 			Set<ItxLsThingLsThing> firstLsThings = new HashSet<ItxLsThingLsThing>();
 			for (ItxLsThingLsThing itxLsThingLsThing : lsThing.getFirstLsThings()){
 				if (itxLsThingLsThing.getId() == null){
@@ -748,8 +769,10 @@ public class LsThingServiceImpl implements LsThingService {
 			}
 			newLsThing.setFirstLsThings(firstLsThings);
 		}
-		
-		if(lsThing.getSecondLsThings() != null){
+
+		//&& lsThing.getSecondLsThings().size() > 0
+		if(lsThing.getSecondLsThings() != null && lsThing.getSecondLsThings().size() > 0 ){
+			logger.debug("@@@@@@@@@  -- trying to save second thing interaction");
 			Set<ItxLsThingLsThing> secondLsThings = new HashSet<ItxLsThingLsThing>();
 			for (ItxLsThingLsThing itxLsThingLsThing : lsThing.getSecondLsThings()){
 				if (itxLsThingLsThing.getId() == null){
@@ -769,6 +792,7 @@ public class LsThingServiceImpl implements LsThingService {
 			newLsThing.setSecondLsThings(secondLsThings);
 		}
 		return newLsThing;
+		//return LsThing.findLsThing(newLsThing.getId());
 	}
 	
 	@Override
@@ -1193,7 +1217,7 @@ public class LsThingServiceImpl implements LsThingService {
 				if (lsThingState.getLsValues() != null){
 					for(LsThingValue lsThingValue : lsThingState.getLsValues()){
 						if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedLsThingState);
-						LsThingValue updatedLsThingValue;
+						LsThingValue updatedLsThingValue = null;
 						if (lsThingValue.getId() == null){
 							updatedLsThingValue = LsThingValue.create(lsThingValue);
 							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
@@ -1203,8 +1227,6 @@ public class LsThingServiceImpl implements LsThingService {
 							updatedLsThingValue = LsThingValue.update(lsThingValue);
 							logger.debug("updated lsThing value " + updatedLsThingValue.getId());
 						}
-						logger.debug("checking lsThingValue " + updatedLsThingValue.toJson());
-
 					}	
 				} else {
 					logger.debug("No lsThing values to update");

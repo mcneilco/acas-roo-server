@@ -1,7 +1,10 @@
 package com.labsynch.labseer.service;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
+import org.apache.commons.collections.map.MultiValueMap;
 import org.springframework.stereotype.Service;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
@@ -9,6 +12,7 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.EntrezDbGeneDTO;
 import com.labsynch.labseer.dto.EntrezDiscontinuedGeneDTO;
+import com.labsynch.labseer.dto.GeneOrthologDTO;
 
 @Service
 public interface GeneThingService {
@@ -21,22 +25,23 @@ public interface GeneThingService {
 
 	CellProcessor[] getProcessors();
 
-	LsThing registerUpdatedGene(EntrezDbGeneDTO geneDTO, EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO,  LsTransaction lsTransaction);
-
 	String getGeneCodeName();
 
-	LsThing registerNewGene(EntrezDbGeneDTO geneDTO,
-			EntrezDiscontinuedGeneDTO entrezDiscontinuedGeneDTO,
-			LsTransaction lsTransaction);
+	void updateEntrezGenes(String entrezGenesFile, String geneHistoryFile, String taxonomyId) throws IOException;
 
-	LsThing registerDiscontinuedGene(EntrezDiscontinuedGeneDTO geneDTO,
-			LsTransaction lsTransaction);
+	void registerGeneOrthologsFromCSV(String inputFile, String ortCodeName, String recordedBy, Long lsTransactionId)
+			throws IOException;
 
-	void updateEntrezGenes(String entrezGenesFile, String geneHistoryFile,
-			String taxonomyId, LsTransaction lsTransaction) throws IOException;
+	LsThing saveOrthologEntity(String versionName, String testFileName, String orthologType, Long curationLevel,
+			String description, String curator, String recordedBy);
 
-	void updateEntrezGenes(String entrezGenesFile, String geneHistoryFile,
-			String taxonomyId) throws IOException;
+	List<GeneOrthologDTO> getOrthologsFromGeneID(String queryGeneID) throws IOException;
+
+	GeneOrthologDTO saveOrthologInteraction(GeneOrthologDTO geneOrtholog);
+
+	Collection<GeneOrthologDTO> saveOrthologInteractions(Collection<GeneOrthologDTO> geneOrthologs);
+
+//	void fixDiscontinuedEntrezGeneIDs(String geneHistoryFile, String taxonomyId) throws IOException;
 
 
 }

@@ -2,10 +2,10 @@ package com.labsynch.labseer.service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -24,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,13 +36,12 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
+import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
@@ -55,7 +51,6 @@ import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.SELColOrderDTO;
-import com.labsynch.labseer.dto.StateValueCsvDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
@@ -92,7 +87,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 	@Override
 	public void deleteLsExperiment(Experiment experiment){
-		logger.debug("incoming meta experiment: " + experiment.toJson());
+		if (logger.isDebugEnabled())  logger.debug("incoming meta experiment: " + experiment.toJson());
 
 	}
 
@@ -101,7 +96,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@Transactional
 	public Experiment updateExperiment(Experiment jsonExperiment) throws UniqueNameException{
 		//		logger.debug("incoming meta experiment: " + jsonExperiment.toPrettyJson());
-		logger.debug("recorded by: " + jsonExperiment.getRecordedBy());
+		if (logger.isDebugEnabled())  logger.debug("recorded by: " + jsonExperiment.getRecordedBy());
 
 		boolean checkExperimentName = propertiesUtilService.getUniqueExperimentName();
 		if (checkExperimentName){
@@ -109,12 +104,12 @@ public class ExperimentServiceImpl implements ExperimentService {
 			Set<ExperimentLabel> exptLabels = jsonExperiment.getLsLabels();
 			for (ExperimentLabel label : exptLabels){
 				String labelText = label.getLabelText();
-				logger.debug("Searching for labelText: "+labelText);
+				if (logger.isDebugEnabled())  logger.debug("Searching for labelText: "+labelText);
 				List<ExperimentLabel> experimentLabels = ExperimentLabel.findExperimentLabelsByName(labelText).getResultList();	
-				logger.debug("Found "+ experimentLabels.size() +" labels");
+				if (logger.isDebugEnabled())  logger.debug("Found "+ experimentLabels.size() +" labels");
 				for (ExperimentLabel el : experimentLabels){
 					Experiment exp = el.getExperiment();
-					logger.debug("Found same label on experiment: "+ exp.getId().toString() +" while experiment to update is: "+ jsonExperiment.getId().toString());
+					if (logger.isDebugEnabled())  logger.debug("Found same label on experiment: "+ exp.getId().toString() +" while experiment to update is: "+ jsonExperiment.getId().toString());
 					//if the experiment is not hard deleted or soft deleted, there is a name conflict
 					if (!exp.isIgnored() && !el.isIgnored() && exp.getId().compareTo(jsonExperiment.getId())!=0){
 						experimentExists = true;
@@ -132,7 +127,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		
 		if (jsonExperiment.getLsLabels() != null) {
 			for(ExperimentLabel experimentLabel : jsonExperiment.getLsLabels()){
-				logger.debug("Label in hand: " + experimentLabel.getLabelText());			
+				if (logger.isDebugEnabled())  logger.debug("Label in hand: " + experimentLabel.getLabelText());			
 				if (experimentLabel.getId() == null){
 					ExperimentLabel newExperimentLabel = new ExperimentLabel(experimentLabel);
 					newExperimentLabel.setExperiment(updatedExperiment);
@@ -140,11 +135,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 					updatedExperiment.getLsLabels().add(newExperimentLabel);
 				} else {
 					ExperimentLabel updatedLabel = ExperimentLabel.update(experimentLabel);
-					logger.debug("updated experiment label " + updatedLabel.getId());
+					if (logger.isDebugEnabled())  logger.debug("updated experiment label " + updatedLabel.getId());
 				}
 			}			
 		} else {
-			logger.debug("No experiment labels to update");
+			if (logger.isDebugEnabled())  logger.debug("No experiment labels to update");
 		}
 
 		if(jsonExperiment.getLsStates() != null){
@@ -157,7 +152,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 					updatedExperiment.getLsStates().add(updatedExperimentState);
 				} else {
 					updatedExperimentState = ExperimentState.update(experimentState);
-					logger.debug("updated experiment state " + experimentState.getId());
+					if (logger.isDebugEnabled())  logger.debug("updated experiment state " + experimentState.getId());
 
 				}
 				if (experimentState.getLsValues() != null){
@@ -170,16 +165,16 @@ public class ExperimentServiceImpl implements ExperimentService {
 							updatedExperimentState.getLsValues().add(updatedExperimentValue);
 						} else {
 							updatedExperimentValue = ExperimentValue.update(experimentValue);
-							logger.debug("updated experiment value " + updatedExperimentValue.getId());
+							if (logger.isDebugEnabled())  logger.debug("updated experiment value " + updatedExperimentValue.getId());
 						}
 					}	
 				} else {
-					logger.debug("No experiment values to update");
+					if (logger.isDebugEnabled())  logger.debug("No experiment values to update");
 				}
 			}
 		}
 
-		//		logger.debug("updatedExperiment: " + updatedExperiment.toPrettyJson());
+		//		if (logger.isDebugEnabled())  logger.debug("updatedExperiment: " + updatedExperiment.toPrettyJson());
 		return updatedExperiment;
 
 	}
@@ -199,7 +194,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@Override
 	@Transactional
 	public Experiment saveLsExperiment(Experiment experiment) throws UniqueNameException, NotFoundException{
-		logger.debug("incoming meta experiment: " + experiment.toJson());
+		if (logger.isDebugEnabled())  logger.debug("incoming meta experiment: " + experiment.toJson());
 
 		//check if experiment with the same name exists
 		boolean checkExperimentName = propertiesUtilService.getUniqueExperimentName();
@@ -242,7 +237,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			}
 			newExperiment.setLsLabels(lsLabels);
 		} else {
-			logger.debug("No experiment labels to save");
+			if (logger.isDebugEnabled())  logger.debug("No experiment labels to save");
 		}
 
 		if(experiment.getLsStates() != null){
@@ -260,7 +255,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 					}	
 					newExperimentState.setLsValues(lsValues);
 				} else {
-					logger.debug("No experiment values to save");
+					if (logger.isDebugEnabled())  logger.debug("No experiment values to save");
 				}
 				lsStates.add(newExperimentState);
 			}
@@ -316,9 +311,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 //				}
 //				if (newAnalysisGroup != null){
 //					analysisGroups.add(newAnalysisGroup);
-////					logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
+////					if (logger.isDebugEnabled())  logger.debug("persisted the newAnalysisGroup: " + newAnalysisGroup.toJson());
 //				} else{		
-//					logger.debug("the analysis group is NULL");
+//					if (logger.isDebugEnabled())  logger.debug("the analysis group is NULL");
 //					throw new NotFoundException("AnalysisGroup not found: " + analysisGroup.getId());
 //				}
 //			}
@@ -360,7 +355,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	public Collection<ExperimentFilterDTO> getExperimentFilters(Collection<String> experimentCodes){
 		Collection<ExperimentFilterDTO> eftSet = new HashSet<ExperimentFilterDTO>();
 		for (String experimentCode : experimentCodes){
-			logger.debug("searching for : " + experimentCode);
+			if (logger.isDebugEnabled())  logger.debug("searching for : " + experimentCode);
 			List<Experiment> experiments = Experiment.findExperimentsByCodeNameEquals(experimentCode, false).getResultList();
 			Experiment experiment = null;
 			if (experiments.size() == 1){
@@ -442,7 +437,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 		}
 
-		logger.debug(ExperimentFilterDTO.toPrettyJsonArray(eftSet));
+		if (logger.isDebugEnabled())  logger.debug(ExperimentFilterDTO.toPrettyJsonArray(eftSet));
 
 		return eftSet;
 
@@ -458,7 +453,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experiments = Experiment.findExperimentsByBatchCodes(codeValues).getResultList();
 		}
 
-		logger.debug("number of experiments found: " + experiments.size());
+		if (logger.isDebugEnabled())  logger.debug("number of experiments found: " + experiments.size());
 
 		Set<Protocol> protocols = new LinkedHashSet<Protocol>();
 		Set<JSTreeNodeDTO> nodes = new LinkedHashSet<JSTreeNodeDTO>();
@@ -521,7 +516,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		rootNode.setDescription("Root Node for All Protocols");
 		nodes.add(rootNode);
 
-		logger.debug("number of protocols found: " + protocols.size());
+		if (logger.isDebugEnabled())  logger.debug("number of protocols found: " + protocols.size());
 		for (Protocol prot : protocols){
 
 			String protocolLabel;
@@ -557,8 +552,8 @@ public class ExperimentServiceImpl implements ExperimentService {
 			nodes.add(protocolKindNode);
 		}
 
-		logger.debug("number of nodes made: " + nodes.size());
-		logger.debug(JSTreeNodeDTO.toPrettyJsonArray(nodes));
+		if (logger.isDebugEnabled())  logger.debug("number of nodes made: " + nodes.size());
+		if (logger.isDebugEnabled())  logger.debug(JSTreeNodeDTO.toPrettyJsonArray(nodes));
 
 		return nodes;
 	}
@@ -574,7 +569,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experiments = Experiment.findExperimentsByBatchCodes(codeValues).getResultList();
 		}
 
-		logger.debug("number of experiments found: " + experiments.size());
+		if (logger.isDebugEnabled()) logger.debug("number of experiments found: " + experiments.size());
 
 		Set<Protocol> protocols = new LinkedHashSet<Protocol>();
 		Set<JSTreeNodeDTO> nodes = new LinkedHashSet<JSTreeNodeDTO>();
@@ -644,7 +639,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		//		defaultNode.setDescription("Root Node for All Protocol Folders");
 		//		nodes.add(defaultNode);
 
-		logger.debug("number of protocols found: " + protocols.size());
+		if (logger.isDebugEnabled()) logger.debug("number of protocols found: " + protocols.size());
 		for (Protocol prot : protocols){
 
 			String protocolLabel;
@@ -677,7 +672,10 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 
 			for (ProtocolValue value : protocolValues){
-				if (!value.getStringValue().equalsIgnoreCase("")){
+				if (logger.isDebugEnabled()) logger.debug(value.toJson());
+				if (value.getStringValue() == null){
+					logger.error("the assay folder rule is null");
+				} else if (!value.getStringValue().equalsIgnoreCase("")){
 					assayFolderRule = value.getStringValue();
 				}
 				logger.info(value.toJson());
@@ -694,7 +692,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			if (assayFolderRules.length > 1){
 				for (int i = 1; i < assayFolderRules.length; i++){
 					String assayFolder = getAssayFolderPath(assayFolderRules, i);
-					logger.info("assay folder: " + i + " " + assayFolder);	
+					if (logger.isDebugEnabled()) logger.debug("assay folder: " + i + " " + assayFolder);	
 					JSTreeNodeDTO assayFolderNode = new JSTreeNodeDTO();
 					if (firstFolder){
 						assayFolderNode.setId(assayFolder);
@@ -720,8 +718,8 @@ public class ExperimentServiceImpl implements ExperimentService {
 			nodes.add(node);
 		}
 
-		logger.debug("number of nodes made: " + nodes.size());
-		logger.debug(JSTreeNodeDTO.toPrettyJsonArray(nodes));
+		if (logger.isDebugEnabled()) logger.debug("number of nodes made: " + nodes.size());
+		if (logger.isDebugEnabled()) logger.debug(JSTreeNodeDTO.toPrettyJsonArray(nodes));
 
 		return nodes;
 	}
@@ -730,11 +728,11 @@ public class ExperimentServiceImpl implements ExperimentService {
 		StringBuilder sb = new StringBuilder();
 
 		int count = numberOfRules;
-		logger.debug("the counter is : " + count);
+		if (logger.isDebugEnabled()) logger.debug("the counter is : " + count);
 		for (int i = 0; i < count; i++){
 			sb.append("_");
 			sb.append(assayFolderRules[i+1]);
-			logger.debug("building the assay folder: " + i + "  " + assayFolderRules[i+1]);
+			if (logger.isDebugEnabled()) logger.debug("building the assay folder: " + i + "  " + assayFolderRules[i+1]);
 		}
 
 		return sb.toString();
@@ -752,7 +750,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 			experiments = Experiment.findExperimentsByBatchCodes(codeValues).getResultList();
 		}
 
-		logger.debug("number of experiments found: " + experiments.size());
+		if (logger.isDebugEnabled()) logger.debug("number of experiments found: " + experiments.size());
 
 		Set<Protocol> protocols = new LinkedHashSet<Protocol>();
 		Set<JSTreeNodeDTO> nodes = new LinkedHashSet<JSTreeNodeDTO>();
@@ -810,7 +808,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		rootNode.setDescription("Root Node for All Protocols");
 		nodes.add(rootNode);
 
-		logger.debug("number of protocols found: " + protocols.size());
+		if (logger.isDebugEnabled())  logger.debug("number of protocols found: " + protocols.size());
 		for (Protocol prot : protocols){
 
 			String protocolLabel;
@@ -834,7 +832,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 				List<String> nodeNameList = lookupProtocolTree(prot, protocolNodeList);
 				int nodeIndex = 0;
 				for (String nodeName : nodeNameList){
-					logger.debug("here is the nodeName: " + nodeName + "  index:" + nodeIndex );
+					if (logger.isDebugEnabled())  logger.debug("here is the nodeName: " + nodeName + "  index:" + nodeIndex );
 					nodeIndex++; //incrementing to the next
 
 					JSTreeNodeDTO protocolNode = new JSTreeNodeDTO();
@@ -851,7 +849,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 					nodes.add(protocolNode);
 				}
 			} else {
-				logger.debug("this protocol is not attached by a protocol tree. set to default node");
+				if (logger.isDebugEnabled())  logger.debug("this protocol is not attached by a protocol tree. set to default node");
 				JSTreeNodeDTO protocolNode = new JSTreeNodeDTO();
 				protocolNode.setId(prot.getCodeName());
 				protocolNode.setDescription(prot.getShortDescription());
@@ -879,8 +877,8 @@ public class ExperimentServiceImpl implements ExperimentService {
 			//			nodes.add(protocolKindNode);
 		}
 
-		logger.debug("number of nodes made: " + nodes.size());
-		logger.debug(JSTreeNodeDTO.toPrettyJsonArray(nodes));
+		if (logger.isDebugEnabled())  logger.debug("number of nodes made: " + nodes.size());
+		if (logger.isDebugEnabled())  logger.debug(JSTreeNodeDTO.toPrettyJsonArray(nodes));
 
 		return nodes;
 	}
@@ -913,7 +911,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		Set<String> uniqueBatchCodes = new HashSet<String>();
 		if (searchRequest.getBatchCodeList() != null && searchRequest.getBatchCodeList().size() > 0 ){
 			uniqueBatchCodes.addAll(searchRequest.getBatchCodeList());
-			logger.debug("size of uniqueBatchCodes: " + uniqueBatchCodes.size());
+			if (logger.isDebugEnabled())  logger.debug("size of uniqueBatchCodes: " + uniqueBatchCodes.size());
 		}
 
 		List<String> batchCodes = null;
@@ -935,18 +933,18 @@ public class ExperimentServiceImpl implements ExperimentService {
 			for (ExperimentFilterSearchDTO singleSearchFilter : searchRequest.getSearchFilters()){
 				if (firstPass){
 					collectionOfCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, onlyPublicData).getResultList();
-					logger.debug("size of firstBatchCodes: " + collectionOfCodes.size());
+					if (logger.isDebugEnabled())  logger.debug("size of firstBatchCodes: " + collectionOfCodes.size());
 					firstPass = false;
 				} else {
 					batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), singleSearchFilter, onlyPublicData).getResultList();
-					logger.debug("size of firstBatchCodes: " + collectionOfCodes.size());
-					logger.debug("size of secondBatchCodes: " + batchCodes.size());
+					if (logger.isDebugEnabled())  logger.debug("size of firstBatchCodes: " + collectionOfCodes.size());
+					if (logger.isDebugEnabled())  logger.debug("size of secondBatchCodes: " + batchCodes.size());
 					if (searchRequest.getBooleanFilter().equalsIgnoreCase("AND")){
 						collectionOfCodes = CollectionUtils.intersection(collectionOfCodes, batchCodes);
 					} else {
 						collectionOfCodes = CollectionUtils.union(collectionOfCodes, batchCodes);
 					}
-					logger.info("size of intersectCodes: " + collectionOfCodes.size());
+					if (logger.isDebugEnabled())  logger.debug("size of intersectCodes: " + collectionOfCodes.size());
 				}
 			}
 		} else if (uniqueBatchCodes.size() > 0) {
@@ -961,9 +959,9 @@ public class ExperimentServiceImpl implements ExperimentService {
 		Set<String> finalUniqueBatchCodes = new HashSet<String>();
 
 		if (collectionOfCodes != null){
-			logger.debug("size of all intersectCodes: " + collectionOfCodes.size());
+			if (logger.isDebugEnabled())  logger.debug("size of all intersectCodes: " + collectionOfCodes.size());
 			finalUniqueBatchCodes.addAll(collectionOfCodes);
-			logger.debug("number of unique batchCodes found: " + finalUniqueBatchCodes.size());
+			if (logger.isDebugEnabled())  logger.debug("number of unique batchCodes found: " + finalUniqueBatchCodes.size());
 		}
 
 		finalUniqueBatchCodes.removeAll(Collections.singleton(null));
@@ -972,17 +970,17 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 		List<AnalysisGroupValueDTO> agValues = null;
 		if (finalUniqueBatchCodes.size() > 0){
-			logger.debug("looking by expriment codes and batch codes");
+			if (logger.isDebugEnabled())  logger.debug("looking by expriment codes and batch codes");
 			if (onlyPublicData) agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList(), onlyPublicData);
 			else agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(finalUniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
-			logger.debug("number of agValues found: " + agValues.size());
+			if (logger.isDebugEnabled())  logger.debug("number of agValues found: " + agValues.size());
 		} else if (!filteredGeneData && finalUniqueBatchCodes.size() == 0) {
-			logger.debug("looking by expriment codes only");
+			if (logger.isDebugEnabled())  logger.debug("looking by expriment codes only");
 			if (onlyPublicData) agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList(), onlyPublicData).getResultList();
 			else agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();
-			logger.debug("number of agValues found: " + agValues.size());
+			if (logger.isDebugEnabled())  logger.debug("number of agValues found: " + agValues.size());
 		} else if (filteredGeneData && finalUniqueBatchCodes.size() == 0){
-			logger.debug("no results found with the search filters");
+			if (logger.isDebugEnabled())  logger.debug("no results found with the search filters");
 			agValues = new ArrayList<AnalysisGroupValueDTO>();
 		}
 
@@ -1113,12 +1111,12 @@ public class ExperimentServiceImpl implements ExperimentService {
 		Collection<Experiment> experimentList = new HashSet<Experiment>();
 		//Split the query up on spaces
 		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
-		logger.debug("Number of search terms: " + splitQuery.size());
+		if (logger.isDebugEnabled())  logger.debug("Number of search terms: " + splitQuery.size());
 		//Protection from searching * in a database with too many experiments:
 		if (splitQuery.contains("*")){
 			logger.warn("Query for '*' detected. Determining if number of results is too many.");
 			int experimentCount = (int) Experiment.countExperiments();
-			logger.debug("Found "+experimentCount +" experiments.");
+			if (logger.isDebugEnabled())  logger.debug("Found "+experimentCount +" experiments.");
 			if (experimentCount > 1000){
 				throw new TooManyResultsException("Too many experiments will be returned with the query: "+"*");
 			}
@@ -1520,7 +1518,7 @@ public class ExperimentServiceImpl implements ExperimentService {
         q.setParameter("experimentId", experiment.getId());
         try{
         	int numRows = q.executeUpdate();
-            logger.info(numRows + " AnalysisGroups logically deleted.");
+            if (logger.isDebugEnabled()) logger.debug(numRows + " AnalysisGroups logically deleted.");
         }catch (Exception e){
         	logger.error("Caught error deleting AnalysisGroups under experiment: " + experiment.getCodeName()+ " "+e.toString());
         	return false;
@@ -1528,6 +1526,59 @@ public class ExperimentServiceImpl implements ExperimentService {
         return true;
 	}
 
+	@Override
+	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData) {
+		List<ExperimentDataDTO> exptDataSet = new ArrayList<ExperimentDataDTO>();
+		List<AnalysisGroupValueDTO> values = AnalysisGroupValue.findAnalysisGroupValueDTO(batchCode, showOnlyPublicData).getResultList();
+
+		Set<Long> protocolIds = new HashSet<Long>();
+		Set<Long> experimentIds = new HashSet<Long>();
+		for (AnalysisGroupValueDTO value : values){
+			protocolIds.add(value.getProtocolId());
+			experimentIds.add(value.getExperimentId());
+		}
+		
+		for (Long experimentId : experimentIds){
+			ExperimentDataDTO exptData = new ExperimentDataDTO();
+			Experiment testExperiment = Experiment.findExperiment(experimentId);
+			exptData.setExperimentId(experimentId);
+			exptData.setExperimentCodeName(testExperiment.getCodeName());
+			exptData.setExperimentName(testExperiment.findPreferredName());
+			exptData.setExperimentShortDescription(testExperiment.getShortDescription());
+			exptData.setLsTags(testExperiment.getLsTags());
+			Protocol protocol = Protocol.findProtocol(testExperiment.getProtocol().getId());
+			List<ProtocolLabel> protocolLabels = ProtocolLabel.findProtocolPreferredName(protocol.getId()).getResultList();
+			if (protocolLabels.size() > 1) logger.error("found multiple protocol preferred names for " + protocol.getCodeName());
+			for (ProtocolLabel protocolLabel : protocolLabels){
+				exptData.setProtocolName(protocolLabel.getLabelText());
+			}
+			exptData.setProtocolCodeName(protocol.getCodeName());
+			exptData.setProtocolId(protocol.getId());
+			exptData.setProtocolShortDescription(protocol.getShortDescription());
+			List<ProtocolValue> assayTreeRules = ProtocolValue.findProtocolValuesByProtocolIDAndStateTypeKindAndValueTypeKind(protocol.getId(), "metadata", "protocol metadata", "stringValue", "assay tree rule").getResultList();
+			if (assayTreeRules.size() > 1) logger.warn("found multiple assay tree rules for " + protocol.getCodeName());
+			//if (assayTreeRules.size() == 0) logger.error("no assay tree rules for " + protocol.getCodeName());
+
+			for (ProtocolValue assayTreeRule : assayTreeRules){
+				if (assayTreeRules.size() > 1) logger.warn(assayTreeRule.toJson());
+				if (assayTreeRule.getStringValue() != null){
+					exptData.setAssayFolderRule(assayTreeRule.getStringValue());
+				}
+			}
+			for (AnalysisGroupValueDTO value : values){
+				if (value.getExperimentId().longValue() == experimentId){
+					exptData.getAnalysisGroupValues().add(value);
+				}
+			}
+
+			exptDataSet.add(exptData);
+		}
+		logger.debug("@@@@@@@@@@@@@@@@ printing the experiment metadata @@@@@@@@@@@@@");
+		if (logger.isDebugEnabled()) logger.debug(ExperimentDataDTO.toJsonArray(exptDataSet));
+		
+		return exptDataSet;
+
+	}
 
 	@Override
 	public Collection<ExperimentErrorMessageDTO> findExperimentsByCodeNames(List<String> codeNames) {

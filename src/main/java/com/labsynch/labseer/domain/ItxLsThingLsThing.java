@@ -130,15 +130,7 @@ public class ItxLsThingLsThing extends AbstractThing {
     	
         return updatedItxLsThingLsThing;
     }
-    
-//    @Transactional
-//    public String toJson() {
-//        return new JSONSerializer().include("lsStates.lsValues").exclude("*.class", "lsStates.itxLsThingLsThing", "lsStates.lsValues.lsState")
-//            	.transform(new ExcludeNulls(), void.class)
-//        		.serialize(this);
-//    }
-    
-    
+        
     public static ItxLsThingLsThing fromJsonToItxLsThingLsThing(String json) {
         return new JSONDeserializer<ItxLsThingLsThing>()
         		.use(null, ItxLsThingLsThing.class)
@@ -166,20 +158,75 @@ public class ItxLsThingLsThing extends AbstractThing {
         		.deserialize(json);
     }
     
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        boolean ignored = true;
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind ";
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+    
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsNotTypeAndKindAndFirstLsThingEquals(String lsType, String lsKind, LsThing firstLsThing){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        boolean ignored = true;
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType <> :lsType " +
+				"AND o.lsKind <> :lsKind " +
+				"AND o.firstLsThing = :firstLsThing ";
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("firstLsThing", firstLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+
+    public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsNotTypeAndKindAndSecondLsThingEquals(String lsType, String lsKind, LsThing secondLsThing){
+    	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        boolean ignored = true;
+        EntityManager em = ItxLsThingLsThing.entityManager();
+		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
+				"WHERE o.ignored IS NOT :ignored " +
+				"AND o.lsType <> :lsType " +
+				"AND o.lsKind <> :lsKind " +
+				"AND o.secondLsThing = :secondLsThing ";
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("secondLsThing", secondLsThing);        
+        q.setParameter("ignored", ignored);
+        
+        return q;
+    }
+
+    
     public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByLsTypeEqualsAndLsKindEqualsAndFirstLsThingEquals(String lsType, String lsKind, LsThing firstLsThing){
     	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
-        
         boolean ignored = true;
-        
         EntityManager em = ItxLsThingLsThing.entityManager();
 		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
 				"WHERE o.ignored IS NOT :ignored " +
 				"AND o.lsType = :lsType " +
 				"AND o.lsKind = :lsKind " +
 				"AND o.firstLsThing = :firstLsThing ";
-        
         TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
@@ -193,16 +240,13 @@ public class ItxLsThingLsThing extends AbstractThing {
     	if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
-        
         boolean ignored = true;
-        
         EntityManager em = ItxLsThingLsThing.entityManager();
 		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
 				"WHERE o.ignored IS NOT :ignored " +
 				"AND o.lsType = :lsType " +
 				"AND o.lsKind = :lsKind " +
 				"AND o.secondLsThing = :secondLsThing ";
-        
         TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
@@ -391,4 +435,28 @@ public class ItxLsThingLsThing extends AbstractThing {
         		include("lsStates.lsValues").
         		transform(new ExcludeNulls(), void.class).serialize(updatedItxLsThingLsThings);
 	}
+
+	public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery("SELECT o FROM ItxLsThingLsThing AS o WHERE o.codeName = :codeName", ItxLsThingLsThing.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsByFirstLsThing(LsThing firstLsThing) {
+        if (firstLsThing == null) throw new IllegalArgumentException("The firstLsThing argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery("SELECT o FROM ItxLsThingLsThing AS o WHERE o.firstLsThing = :firstLsThing", ItxLsThingLsThing.class);
+        q.setParameter("firstLsThing", firstLsThing);
+        return q;
+    }
+
+	public static TypedQuery<ItxLsThingLsThing> findItxLsThingLsThingsBySecondLsThing(LsThing secondLsThing) {
+        if (secondLsThing == null) throw new IllegalArgumentException("The secondLsThing argument is required");
+        EntityManager em = ItxLsThingLsThing.entityManager();
+        TypedQuery<ItxLsThingLsThing> q = em.createQuery("SELECT o FROM ItxLsThingLsThing AS o WHERE o.secondLsThing = :secondLsThing", ItxLsThingLsThing.class);
+        q.setParameter("secondLsThing", secondLsThing);
+        return q;
+    }
 }

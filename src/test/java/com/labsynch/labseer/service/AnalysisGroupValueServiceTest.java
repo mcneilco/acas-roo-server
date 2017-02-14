@@ -219,7 +219,7 @@ public class AnalysisGroupValueServiceTest {
 
 		String codeValue = "FL0029938-1-1";
 		//		List<AnalysisGroupValue> agValues = AnalysisGroupValue.findAnalysisGroupValuesByCodeValueEquals(codeValue).getResultList();
-		List<AnalysisGroupValueDTO> agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(codeValue);
+		List<AnalysisGroupValueDTO> agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(codeValue, true).getResultList();
 
 		logger.info("number of agValues: " + agValues.size());
 

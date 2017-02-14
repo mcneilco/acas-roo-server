@@ -71,6 +71,8 @@ public class AnalysisGroupValueDTO {
 		this.protocolId = protocolId;
 		this.protocolName = protocolName;
 		this.experimentId = experimentId;
+		this.protocolId = protocolId;
+		this.stateId = stateId;
 		//		this.codeName = codeName;
 		this.experimentCodeName = codeName;
 		this.agId = agId;
@@ -145,6 +147,7 @@ public class AnalysisGroupValueDTO {
 
 
 	private Long id;	
+	private Long stateId;
 	private Long protocolId;
 	private String protocolName;
 	private Long experimentId;
@@ -155,6 +158,7 @@ public class AnalysisGroupValueDTO {
 	private String lsType;
 	private String lsKind;
 	private String testedLot;
+	private String geneId;
 	//	private String stringValue;
 	//	private BigDecimal numericValue;
 	private String result;
@@ -171,6 +175,7 @@ public class AnalysisGroupValueDTO {
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
 				"id", 
+				"stateId",
 				"protocolId",
 				"protocolName",
 				"experimentId",
