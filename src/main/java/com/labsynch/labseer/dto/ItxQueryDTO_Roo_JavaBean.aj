@@ -63,6 +63,14 @@ privileged aspect ItxQueryDTO_Roo_JavaBean {
         this.thingLabelKind = thingLabelKind;
     }
     
+    public String ItxQueryDTO.getThingCodeName() {
+        return this.thingCodeName;
+    }
+    
+    public void ItxQueryDTO.setThingCodeName(String thingCodeName) {
+        this.thingCodeName = thingCodeName;
+    }
+    
     public String ItxQueryDTO.getOperator() {
         return this.operator;
     }

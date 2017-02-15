@@ -2053,6 +2053,10 @@ public class LsThingServiceImpl implements LsThingService {
 					Predicate firstThingKind = criteriaBuilder.equal(firstThing.<String>get("lsKind"), interaction.getThingKind());
 					firstItxPredicates.add(firstThingKind);
 				}
+				if (interaction.getThingCodeName() != null){
+					Predicate predicate = criteriaBuilder.equal(firstThing.<String>get("codeName"), interaction.getThingCodeName());
+					firstItxPredicates.add(predicate);
+				}
 				if (interaction.getThingLabelType() != null){
 					Predicate firstThingLabelType = criteriaBuilder.equal(firstThingLabel.<String>get("lsType"), interaction.getThingLabelType());
 					firstItxPredicates.add(firstThingLabelType);
@@ -2130,6 +2134,10 @@ public class LsThingServiceImpl implements LsThingService {
 				if (interaction.getThingKind() != null){
 					Predicate secondThingKind = criteriaBuilder.equal(secondThing.<String>get("lsKind"), interaction.getThingKind());
 					secondItxPredicates.add(secondThingKind);
+				}
+				if (interaction.getThingCodeName() != null){
+					Predicate predicate = criteriaBuilder.equal(secondThing.<String>get("codeName"), interaction.getThingCodeName());
+					secondItxPredicates.add(predicate);
 				}
 				if (interaction.getThingLabelType() != null){
 					Predicate secondThingLabelType = criteriaBuilder.equal(secondThingLabel.<String>get("lsType"), interaction.getThingLabelType());

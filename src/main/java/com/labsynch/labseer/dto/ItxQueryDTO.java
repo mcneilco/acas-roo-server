@@ -16,6 +16,7 @@ public class ItxQueryDTO {
 	String thingLabelText;
 	String thingLabelType;
 	String thingLabelKind;
+	String thingCodeName;
 	String operator;
 	
 	public ItxQueryDTO(){
