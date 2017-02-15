@@ -193,6 +193,9 @@ public class ApiLsThingController {
 				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(results), headers, HttpStatus.OK);
 			} else if (with.equalsIgnoreCase("stub")) {
 				return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("codetable")) {
+				Collection<CodeTableDTO> codeTables = lsThingService.convertToCodeTables(results);
+				return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 			}
 		}
 		return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
