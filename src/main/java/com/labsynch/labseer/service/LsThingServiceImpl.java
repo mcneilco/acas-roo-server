@@ -2292,7 +2292,7 @@ public class LsThingServiceImpl implements LsThingService {
 							Predicate valueLessThan = criteriaBuilder.lessThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
 							valuePredicatesList.add(valueLessThan);
 						}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
-							Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTO(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+							Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
 							valuePredicatesList.add(valueLessThan);
 						}else{
 							Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
