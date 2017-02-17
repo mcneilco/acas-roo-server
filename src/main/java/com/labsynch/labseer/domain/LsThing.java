@@ -180,7 +180,7 @@ public class LsThing extends AbstractThing {
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.LsThing> collection) {
         return new JSONSerializer().
-        		exclude("*.class","lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
+        		exclude("*.class","lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing", "lsStates").
         		include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
