@@ -194,6 +194,10 @@ public class ApiLsThingController {
 			} else if (with.equalsIgnoreCase("stub")) {
 				return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
 			} else if (with.equalsIgnoreCase("codetable")) {
+				if (withLabelType){
+					Collection<CodeTableDTO> codeTables = lsThingService.convertToCodeTables(results, labelType);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+				}
 				Collection<CodeTableDTO> codeTables = lsThingService.convertToCodeTables(results);
 				return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 			}

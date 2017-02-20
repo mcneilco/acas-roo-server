@@ -95,6 +95,9 @@ public interface LsThingService {
 	Collection<LsThing> getLsThingsByIds(Collection<Long> lsThingIds);
 
 	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings);
+
+	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings,
+			String labelType);
 	
 	
 }
