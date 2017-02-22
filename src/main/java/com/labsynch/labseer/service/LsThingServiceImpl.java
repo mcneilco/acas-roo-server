@@ -2049,6 +2049,14 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate recordedBy = criteriaBuilder.like(thing.<String>get("recordedBy"), '%'+query.getRecordedBy()+'%');
 			predicateList.add(recordedBy);
 		}
+		if (query.getLsType() != null){
+			Predicate lsType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getLsType());
+			predicateList.add(lsType);
+		}
+		if (query.getLsKind() != null){
+			Predicate lsKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getLsKind());
+			predicateList.add(lsKind);
+		}
 		
 		//interactions
 		if (query.getFirstInteractions() != null){

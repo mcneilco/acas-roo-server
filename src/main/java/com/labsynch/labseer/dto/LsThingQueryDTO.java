@@ -18,6 +18,10 @@ public class LsThingQueryDTO {
 	
 	String recordedBy;
 	
+	String lsType;
+	
+	String lsKind;
+	
 	Integer maxResults;
 	
 	Collection<ItxQueryDTO> firstInteractions;

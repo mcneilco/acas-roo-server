@@ -36,6 +36,22 @@ privileged aspect LsThingQueryDTO_Roo_JavaBean {
         this.recordedBy = recordedBy;
     }
     
+    public String LsThingQueryDTO.getLsType() {
+        return this.lsType;
+    }
+    
+    public void LsThingQueryDTO.setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+    
+    public String LsThingQueryDTO.getLsKind() {
+        return this.lsKind;
+    }
+    
+    public void LsThingQueryDTO.setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+    
     public Integer LsThingQueryDTO.getMaxResults() {
         return this.maxResults;
     }
