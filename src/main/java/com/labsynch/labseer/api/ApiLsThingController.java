@@ -714,7 +714,8 @@ public class ApiLsThingController {
   
   
   @RequestMapping(value = "/genericInteractionSearch", method = RequestMethod.POST, headers = "Accept=application/json")
-  public ResponseEntity<java.lang.String> genericInteractionSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
+  public ResponseEntity<java.lang.String> genericInteractionSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with,
+		  @RequestParam(value = "labelType", required = false) String labelType) {
   	HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/json; charset=utf-8");
     LsThingQueryDTO query = LsThingQueryDTO.fromJsonToLsThingQueryDTO(json);
@@ -757,7 +758,11 @@ public class ApiLsThingController {
     			resultDTO.setMaxResults(result.getMaxResults());
     			resultDTO.setNumberOfResults(result.getNumberOfResults());
     			if (result.getResults() != null){
-    				resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults()));
+    				if (labelType != null && labelType.length() > 0){
+        				resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults(), labelType));
+    				}else{
+        				resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults()));
+    				}
     			}
     			return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
     		}
