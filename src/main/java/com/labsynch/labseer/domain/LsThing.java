@@ -143,7 +143,7 @@ public class LsThing extends AbstractThing {
 
     @Transactional
     public String toJsonStub() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsThing").include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "lsStates").include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     @Transactional
@@ -180,7 +180,7 @@ public class LsThing extends AbstractThing {
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.LsThing> collection) {
         return new JSONSerializer().
-        		exclude("*.class","lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing", "lsStates").
+        		exclude("*.class","lsStates").
         		include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
