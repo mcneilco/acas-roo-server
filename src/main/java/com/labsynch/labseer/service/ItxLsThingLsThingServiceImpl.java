@@ -181,6 +181,21 @@ public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {
 		return updatedItxLsThingLsThing;
 	}
 
+	@Override
+	public Collection<CodeTableDTO> convertToCodeTables(Collection<ItxLsThingLsThing> itxLsThingLsThings) {
+		Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+		for (ItxLsThingLsThing itx : itxLsThingLsThings){
+			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setId(itx.getId());
+			codeTable.setCode(itx.getCodeName());
+			codeTable.setName(itx.getCodeName());
+			codeTable.setIgnored(itx.isIgnored());
+			codeTables.add(codeTable);
+		}
+		
+		return codeTables;
+	}
+
 //	@Override
 //	@Transactional
 //	public ItxLsThingLsThing updateItxLsThingLsThing(ItxLsThingLsThing jsonItxLsThingLsThing) {
