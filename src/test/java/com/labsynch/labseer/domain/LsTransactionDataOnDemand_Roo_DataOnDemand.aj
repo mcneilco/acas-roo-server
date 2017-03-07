@@ -5,6 +5,8 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.LsTransactionDataOnDemand;
+import com.labsynch.labseer.domain.LsTransactionStatus;
+import com.labsynch.labseer.domain.LsTransactionType;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -28,7 +30,10 @@ privileged aspect LsTransactionDataOnDemand_Roo_DataOnDemand {
     public LsTransaction LsTransactionDataOnDemand.getNewTransientLsTransaction(int index) {
         LsTransaction obj = new LsTransaction();
         setComments(obj, index);
+        setRecordedBy(obj, index);
         setRecordedDate(obj, index);
+        setStatus(obj, index);
+        setType(obj, index);
         return obj;
     }
     
@@ -40,9 +45,27 @@ privileged aspect LsTransactionDataOnDemand_Roo_DataOnDemand {
         obj.setComments(comments);
     }
     
+    public void LsTransactionDataOnDemand.setRecordedBy(LsTransaction obj, int index) {
+        String recordedBy = "recordedBy_" + index;
+        if (recordedBy.length() > 255) {
+            recordedBy = recordedBy.substring(0, 255);
+        }
+        obj.setRecordedBy(recordedBy);
+    }
+    
     public void LsTransactionDataOnDemand.setRecordedDate(LsTransaction obj, int index) {
         Date recordedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setRecordedDate(recordedDate);
+    }
+    
+    public void LsTransactionDataOnDemand.setStatus(LsTransaction obj, int index) {
+        LsTransactionStatus status = LsTransactionStatus.class.getEnumConstants()[0];
+        obj.setStatus(status);
+    }
+    
+    public void LsTransactionDataOnDemand.setType(LsTransaction obj, int index) {
+        LsTransactionType type = LsTransactionType.class.getEnumConstants()[0];
+        obj.setType(type);
     }
     
     public LsTransaction LsTransactionDataOnDemand.getSpecificLsTransaction(int index) {

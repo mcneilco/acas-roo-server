@@ -2,6 +2,8 @@ package com.labsynch.labseer.domain;
 
 import java.util.Date;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -26,4 +28,13 @@ public class LsTransaction {
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "MM")
     private Date recordedDate;
+    
+    @Size(max = 255)
+    private String recordedBy;
+    
+    @Enumerated(EnumType.STRING)
+	private LsTransactionStatus status;
+    
+    @Enumerated(EnumType.STRING)
+	private LsTransactionType type;
 }
