@@ -184,8 +184,8 @@ public class ItxLsThingLsThing extends AbstractThing {
         EntityManager em = ItxLsThingLsThing.entityManager();
 		String query = "SELECT DISTINCT o FROM ItxLsThingLsThing o " +
 				"WHERE o.ignored IS NOT :ignored " +
-				"AND o.lsType <> :lsType " +
-				"AND o.lsKind <> :lsKind " +
+				"AND o.lsType = :lsType " +
+				"AND o.lsKind = :lsKind " +
 				"AND o.firstLsThing = :firstLsThing " +
 				"AND o.secondLsThing = :secondLsThing ";
         TypedQuery<ItxLsThingLsThing> q = em.createQuery(query, ItxLsThingLsThing.class);
