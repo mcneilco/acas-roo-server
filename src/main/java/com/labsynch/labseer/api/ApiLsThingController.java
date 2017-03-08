@@ -725,11 +725,8 @@ public class ApiLsThingController {
     LsThingQueryResultDTO result = new LsThingQueryResultDTO();
     try{
     	lsThingIds = lsThingService.searchLsThingIdsByQueryDTO(query);
-    	int maxResults = 1000;
-    	if (query.getMaxResults() != null) maxResults = query.getMaxResults();
-    	result.setMaxResults(maxResults);
     	result.setNumberOfResults(lsThingIds.size());
-    	if (result.getNumberOfResults() <= result.getMaxResults()){
+    	if (query.getMaxResults() == null || result.getNumberOfResults() <= result.getMaxResults()){
     		result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
     	}
     }catch (Exception e){
