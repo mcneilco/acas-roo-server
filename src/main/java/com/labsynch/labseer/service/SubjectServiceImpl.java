@@ -26,6 +26,7 @@ import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
 
+import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.domain.SubjectState;
@@ -640,6 +641,32 @@ public class SubjectServiceImpl implements SubjectService {
 			}		
 		}
 		return results;
+	}
+
+	@Transactional
+	@Override
+	public void deleteSubjectLeaveStub(Subject subject, Long lsTransaction) {
+		for (ItxSubjectContainer itx : subject.getContainers()){
+			itx.logicalDelete();
+			if (lsTransaction != null) itx.setLsTransaction(lsTransaction);
+			itx.merge();
+		}
+		EntityManager em = Subject.entityManager();
+		int deletedValueCount = 0;
+		for (SubjectState state : subject.getLsStates()){
+			Query valueQuery = em.createQuery("DELETE FROM SubjectValue o WHERE o.lsState = :state ");
+			valueQuery.setParameter("state", state);
+			deletedValueCount += valueQuery.executeUpdate();
+		}
+		logger.info("Deleted "+deletedValueCount+ " subject values.");
+		Query query = em.createQuery("DELETE FROM SubjectState o WHERE o.subject = :subject ");
+		query.setParameter("subject", subject);
+		int deletedCount = query.executeUpdate();
+		logger.info("Deleted "+deletedCount+ " subject states.");
+		subject.logicalDelete();
+		if (lsTransaction != null) subject.setLsTransaction(lsTransaction);
+		subject.merge();
+		subject.flush();
 	}
 	
 	

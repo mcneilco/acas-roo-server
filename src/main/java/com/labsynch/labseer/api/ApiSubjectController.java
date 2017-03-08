@@ -212,14 +212,20 @@ public class ApiSubjectController {
     }
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
+    public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id,
+    		@RequestParam(value = "leaveStub", required = false) Boolean leaveStub,
+    		@RequestParam(value = "lsTransaction", required = false) Long lsTransaction) {
         Subject subject = Subject.findSubject(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         if (subject == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        subject.remove();
+        if (leaveStub != null && leaveStub){
+        	subjectService.deleteSubjectLeaveStub(subject, lsTransaction);
+        }else{
+        	subject.remove();
+        }
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 

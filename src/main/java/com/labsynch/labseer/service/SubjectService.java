@@ -32,6 +32,7 @@ public interface SubjectService {
 	Collection<SubjectCodeNameDTO> getSubjectsByCodeNames(List<String> codeNames);
 	HashMap<String, TempThingDTO> createOnlySubjectsFromCSV(String subjectFilePath,
 			List<Long> treatmentGroupIds) throws Exception;
+	void deleteSubjectLeaveStub(Subject subject, Long lsTransaction);
 
 	
 	
