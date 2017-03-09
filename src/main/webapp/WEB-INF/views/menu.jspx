@@ -220,8 +220,10 @@
             <menu:item id="i_experiment_list" messageCode="global_menu_list" url="/experiments?page=1&amp;size=${empty param.size ? 10 : param.size}" z="x3HHZQOwFIYuEEtmv/C3xfJRZo8="/>
             <menu:item id="fi_experiment_codenameequals" messageCode="global_menu_find" url="/experiments?find=ByCodeNameEquals&amp;form" z="Ywq9sw9wKzMLv7cGL6eUcKGVVfk="/>
             <menu:item id="fi_experiment_codenamelike" messageCode="global_menu_find" url="/experiments?find=ByCodeNameLike&amp;form" z="7c3fTOCDLJUG0K+5e6dR4cu4SCM="/>
+            <menu:item id="fi_experiment_lskindequals" messageCode="global_menu_find" url="/experiments?find=ByLsKindEquals&amp;form" z="Lk1rdbHV6nQQ2SVN7i4Stav1pgo="/>
             <menu:item id="fi_experiment_lskindlike" messageCode="global_menu_find" url="/experiments?find=ByLsKindLike&amp;form" z="8u1bsbx8wEbG9+g4M1vftB07MVo="/>
             <menu:item id="fi_experiment_lstransaction" messageCode="global_menu_find" url="/experiments?find=ByLsTransaction&amp;form" z="pzO1es0ls0TpI6XCT8VgpFQ+fgw="/>
+            <menu:item id="fi_experiment_lstypeequals" messageCode="global_menu_find" url="/experiments?find=ByLsTypeEquals&amp;form" z="KCmI9r2YTdvXzuebkFA/Gg9pLug="/>
             <menu:item id="fi_experiment_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/experiments?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="ZPdIKu3y4iGFu48vz+317ZMFXqo="/>
             <menu:item id="fi_experiment_lstypelike" messageCode="global_menu_find" url="/experiments?find=ByLsTypeLike&amp;form" z="1JlKmuvQXXfwG65yQ4aXM+9QUcI="/>
             <menu:item id="fi_experiment_protocol" messageCode="global_menu_find" url="/experiments?find=ByProtocol&amp;form" z="1PJ4oFTXiolPLQMloNTsiixAQ28="/>

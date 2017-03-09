@@ -221,5 +221,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public String getAcasAdminRole() {
 	    return this.acasAdminRole;
 	}
-
+	//server.chemistry.package
+	String chemistryPackage;
+	
+	@Value("${server.chemistry.package}")
+	public void setChemistryPackage(String chemistryPackage) {
+		this.chemistryPackage = chemistryPackage;
+	}
+	
+	@Override
+	public String getChemistryPackage() {
+	    return this.chemistryPackage;
+	}
 }

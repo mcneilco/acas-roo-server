@@ -46,6 +46,7 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -776,5 +777,19 @@ public class ExperimentServiceTests {
 		Experiment exptToUpdate = Experiment.fromJsonToExperiment(json);
 		Experiment updatedExperiment = experimentService.updateExperiment(exptToUpdate);
 		logger.info(updatedExperiment.toJson());
+	}
+	
+	@Transactional
+	@Test
+	public void getExperimentsAsCodeTables(){
+		List<CodeTableDTO> codeTables = experimentService.getExperimentsAsCodeTables(null, null);
+		Assert.assertFalse(codeTables.isEmpty());
+		logger.info(CodeTableDTO.toJsonArray(codeTables));
+		codeTables = experimentService.getExperimentsAsCodeTables("default", null);
+		Assert.assertFalse(codeTables.isEmpty());
+		logger.info(CodeTableDTO.toJsonArray(codeTables));
+		codeTables = experimentService.getExperimentsAsCodeTables("default", "default");
+		Assert.assertFalse(codeTables.isEmpty());
+		logger.info(CodeTableDTO.toJsonArray(codeTables));
 	}
 }

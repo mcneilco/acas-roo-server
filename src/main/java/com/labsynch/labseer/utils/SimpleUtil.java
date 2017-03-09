@@ -28,6 +28,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 
+import com.github.underscore.$;
+import com.github.underscore.Function1;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingState;
+import com.labsynch.labseer.domain.LsThingValue;
+
 public class SimpleUtil {
 	
 	@Autowired
@@ -195,5 +201,59 @@ public class SimpleUtil {
 			});
 		}
 		return idList;
+	}
+	
+	public static final List<LsThingValue> pluckValueByStateTypeKindAndValueTypeKind(LsThing lsThing, String stateType, String stateKind,
+			String valueType, String valueKind){
+		final String finalStateType = stateType;
+		final String finalStateKind = stateKind;
+		final String finalValueType = valueType;
+		final String finalValueKind = valueKind;
+		
+		final com.github.underscore.Predicate<LsThingState> statePredicate = new com.github.underscore.Predicate<LsThingState>(){
+			public Boolean apply(LsThingState lsState){
+				return lsState.getLsType().equals(finalStateType) && lsState.getLsKind().equals(finalStateKind) && !lsState.isIgnored();
+			}
+		};
+		final com.github.underscore.Predicate<LsThingValue> valuePredicate = new com.github.underscore.Predicate<LsThingValue>(){
+			public Boolean apply(LsThingValue lsValue){
+				return lsValue.getLsType().equals(finalValueType) && lsValue.getLsKind().equals(finalValueKind) && !lsValue.isIgnored();
+			}
+		};
+		Function1<LsThingState, List<LsThingValue>> filterValues = new Function1<LsThingState, List<LsThingValue>>(){
+			public List<LsThingValue> apply(LsThingState lsState){
+				return $.filter(new ArrayList<LsThingValue>(lsState.getLsValues()), valuePredicate);
+			}
+		};
+		
+		List<LsThingValue> filteredValues = $.flatten($.map($.filter(new ArrayList<LsThingState>(lsThing.getLsStates()), statePredicate), filterValues));
+
+		return filteredValues;
+	}
+	
+	public static final List<LsThingValue> pluckValueByValueTypeKind(LsThing lsThing, String valueType, String valueKind){
+		final String finalValueType = valueType;
+		final String finalValueKind = valueKind;
+		
+		final com.github.underscore.Predicate<LsThingState> statePredicate = new com.github.underscore.Predicate<LsThingState>(){
+			public Boolean apply(LsThingState lsState){
+				return !lsState.isIgnored();
+			}
+		};
+		
+		final com.github.underscore.Predicate<LsThingValue> valuePredicate = new com.github.underscore.Predicate<LsThingValue>(){
+			public Boolean apply(LsThingValue lsValue){
+				return lsValue.getLsType().equals(finalValueType) && lsValue.getLsKind().equals(finalValueKind) && !lsValue.isIgnored();
+			}
+		};
+		Function1<LsThingState, List<LsThingValue>> filterValues = new Function1<LsThingState, List<LsThingValue>>(){
+			public List<LsThingValue> apply(LsThingState lsState){
+				return $.filter(new ArrayList<LsThingValue>(lsState.getLsValues()), valuePredicate);
+			}
+		};
+		
+		List<LsThingValue> filteredValues = $.flatten($.map($.filter(new ArrayList<LsThingState>(lsThing.getLsStates()), statePredicate), filterValues));
+
+		return filteredValues;
 	}
 }

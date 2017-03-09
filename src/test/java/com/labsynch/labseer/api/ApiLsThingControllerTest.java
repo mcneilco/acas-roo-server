@@ -31,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
+import com.labsynch.labseer.dto.StructureSearchDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -526,5 +527,25 @@ public class ApiLsThingControllerTest {
         		.andReturn().getResponse().getContentAsString();
         logger.info(json);
 	}
+	
+	@Test
+    @Transactional
+    public void structureSearch() throws Exception {
+		String queryMol= "\n  Mrv1641110051619032D          \n\n  5  5  0  0  0  0            999 V2000\n   -0.0446    0.6125    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7121    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.4572   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.3679   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6228    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  2  3  1  0  0  0  0\n  3  4  1  0  0  0  0\n  4  5  1  0  0  0  0\n  1  2  1  0  0  0  0\n  1  5  1  0  0  0  0\nM  END\n";
+		StructureSearchDTO query = new StructureSearchDTO(queryMol, "SUBSTRUCTURE", 10, null);
+		String json = query.toJson();
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/lsthings/structureSearch")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+//    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.debug(responseJson);
+    	Collection<LsThing> searchResults = LsThing.fromJsonArrayToLsThings(responseJson);
+    	Assert.assertFalse(searchResults.isEmpty());
+		logger.debug(LsThing.toJsonArray(searchResults));
+    }
 
 }

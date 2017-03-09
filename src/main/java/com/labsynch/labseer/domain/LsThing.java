@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.api.ApiExperimentController;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -822,6 +823,16 @@ public class LsThing extends AbstractThing {
 		}else{
 			return null;
 		}
+	}
+	
+	public static Collection<LsThing> findLsThingsByCodeNamesIn(List<String> codeNames){
+		EntityManager em = LsThing.entityManager();
+		String query = "SELECT DISTINCT lsThing FROM LsThing lsThing " +
+				"WHERE lsThing.ignored IS NOT :ignored AND ";		
+        TypedQuery<LsThing> q = (TypedQuery<LsThing>) SimpleUtil.addHqlInClause(em, query, "lsThing.codeName", codeNames);
+        q.setParameter("ignored", true);
+        
+        return q.getResultList();
 	}
 	public static TypedQuery<LsThing> findLsThingByPreferredLabelText(String thingType,
 			String thingKind, String labelType, String labelKind,

@@ -7,6 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.NoResultException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,12 +26,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.CodeTypeKindDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.GeneOrthologDTO;
 import com.labsynch.labseer.dto.GeneOrthologFileDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.dto.StoichiometryPropertiesResultsDTO;
+import com.labsynch.labseer.dto.StructureSearchDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.service.GeneThingService;
@@ -700,6 +705,73 @@ public class ApiLsThingController {
       } else {
           return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
       }
+  }
+  
+  @RequestMapping(value = "/getStoichiometryProperties", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> getStoichiometryProperties(@RequestBody String json) {
+  	Collection<CodeTypeKindDTO> requests = CodeTypeKindDTO.fromJsonArrayToCoes(json);
+  	HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json; charset=utf-8");
+  	try{
+  		StoichiometryPropertiesResultsDTO results = lsThingService.getStoichiometryProperties(requests);
+        return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
+  	}catch (Exception e){
+  		logger.error("Caught exception in getStoichiometryProperties", e);
+        return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+  	}
+      
+  }
+  
+  @RequestMapping(value = "/structureSearch", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> structureSearch(@RequestBody String json) {
+  	HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json; charset=utf-8");
+  	try{
+  		StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
+  		Collection<LsThing> results = lsThingService.structureSearch( query.getQueryMol(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
+        return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
+  	}catch (Exception e){
+  		logger.error("Caught exception in structureSearch", e);
+        return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+  	}
+      
+  }
+  
+  @RequestMapping(value = "/checkDependentExperiments", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> checkDependentExperiments(@RequestBody String json) {
+  	HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json; charset=utf-8");
+    CodeTypeKindDTO query = CodeTypeKindDTO.fromJsonToCodeTypeKindDTO(json);
+    ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+    boolean errorsFound = false;
+    LsThing lsThing;	
+	try {
+		lsThing = LsThing.findLsThingsByCodeNameEquals(query.getCodeName()).getSingleResult();
+	} catch(Exception ex) {
+		lsThing = null;
+		ErrorMessage error = new ErrorMessage();
+        error.setErrorLevel("error");
+        error.setMessage("parent:" + query.getCodeName() +" not found");
+        errors.add(error);
+        errorsFound = true;
+	}
+    DependencyCheckDTO result = null;
+    try{
+    	result = lsThingService.checkDependencies(lsThing);
+    }catch (Exception e){
+    	logger.error("Caught exception checking dependencies",e);
+    	ErrorMessage error = new ErrorMessage();
+        error.setErrorLevel("error");
+        error.setMessage(e.getMessage());
+        errors.add(error);
+        errorsFound = true;
+    }
+    if (errorsFound) {
+        return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+    } else {
+        return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+    }
+      
   }
   
   

@@ -7,19 +7,18 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-public class ErrorMessageDTO {
+public class RenderMolRequestDTO {
+	
+	private String codeName;
+	
+	private String molStructure;
+	
+	private Integer height;
+	
+	private Integer width;
+	
+	private String format;
 
-	String level;
-	
-	String message;
-	
-	public ErrorMessageDTO(){
-		
-	}
-	
-	public ErrorMessageDTO(String level, String message){
-		this.level = level;
-		this.message = message;
-	}
-	
 }
+
+

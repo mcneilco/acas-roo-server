@@ -65,6 +65,12 @@ public interface ExperimentService {
 	public Collection<Experiment> saveLsExperiments(
 			Collection<Experiment> experiments) throws UniqueNameException, NotFoundException;
 
+	public List<CodeTableDTO> getExperimentsAsCodeTables(String lsType,
+			String lsKind);
+
+	List<CodeTableDTO> convertExperimentsToCodeTables(
+			Collection<Experiment> experiments);
+
 	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData);
 	
 }

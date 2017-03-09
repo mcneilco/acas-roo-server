@@ -255,6 +255,24 @@ public class ApiExperimentController {
 
 		return new ResponseEntity<String>(ExperimentGuiStubDTO.toJsonArray(result), headers, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/codetables", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<java.lang.String> listExperimentCodeTables(
+			@RequestParam(value = "lsType", required = false) String lsType,
+			@RequestParam(value = "lsKind", required = false) String lsKind) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		try{
+			List<CodeTableDTO> result = experimentService.getExperimentsAsCodeTables(lsType, lsKind);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
+		}catch (Exception e){
+			logger.error("caught exception getting experiments as codetables",e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
+	}
 
 	@RequestMapping(value = "/subjectsstatus/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody

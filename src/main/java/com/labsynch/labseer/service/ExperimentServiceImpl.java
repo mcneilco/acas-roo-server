@@ -1611,5 +1611,34 @@ public class ExperimentServiceImpl implements ExperimentService {
 	}
 
 
+	@Override
+	public List<CodeTableDTO> getExperimentsAsCodeTables(String lsType,
+			String lsKind) {
+		Collection<Experiment> experiments;
+		if ((lsType != null && lsType.length()>0) && (lsKind != null && lsKind.length()>0)){
+			experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+		}else if (lsType != null && lsType.length()>0){
+			experiments = Experiment.findExperimentsByLsTypeEquals(lsType).getResultList();
+		}else if (lsKind != null && lsKind.length()>0){
+			experiments = Experiment.findExperimentsByLsKindEquals(lsKind).getResultList();
+		}else{
+			experiments = Experiment.findAllExperiments();
+		}
+		List<CodeTableDTO> codetables = convertExperimentsToCodeTables(experiments);
+		codetables = CodeTableDTO.sortCodeTables(codetables);
+		return codetables;
+	}
+	
+	@Override
+	public List<CodeTableDTO> convertExperimentsToCodeTables(Collection<Experiment> experiments){
+		List<CodeTableDTO> codetables = new ArrayList<CodeTableDTO>();
+		for (Experiment experiment : experiments){
+			CodeTableDTO codetable = new CodeTableDTO(experiment);
+			codetables.add(codetable);
+		}
+		return codetables;
+	}
+
+
 
 }
