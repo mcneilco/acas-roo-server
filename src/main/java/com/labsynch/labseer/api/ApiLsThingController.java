@@ -726,6 +726,7 @@ public class ApiLsThingController {
     try{
     	lsThingIds = lsThingService.searchLsThingIdsByQueryDTO(query);
     	result.setNumberOfResults(lsThingIds.size());
+    	result.setMaxResults(query.getMaxResults(0));
     	if (query.getMaxResults() == null || result.getNumberOfResults() <= result.getMaxResults()){
     		result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
     	}
