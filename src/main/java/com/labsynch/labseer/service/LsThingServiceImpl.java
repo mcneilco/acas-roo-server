@@ -1166,6 +1166,7 @@ public class LsThingServiceImpl implements LsThingService {
 		Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
 		for (LsThing lsThing : lsThings){
 			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setId(lsThing.getId());
 			codeTable.setCode(lsThing.getCodeName());
 			codeTable.setName(pickBestLabel(lsThing));
 			codeTable.setIgnored(lsThing.isIgnored());
@@ -1180,6 +1181,7 @@ public class LsThingServiceImpl implements LsThingService {
 		Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
 		for (LsThing lsThing : lsThings){
 			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setId(lsThing.getId());
 			codeTable.setCode(lsThing.getCodeName());
 			codeTable.setName(pickBestLabel(lsThing, labelType));
 			codeTable.setIgnored(lsThing.isIgnored());
