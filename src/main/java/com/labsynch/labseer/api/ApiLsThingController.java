@@ -506,9 +506,7 @@ public class ApiLsThingController {
 	
 	@Transactional
 	@RequestMapping(value="/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-	public ResponseEntity<String> createFromJsonArray(@PathVariable("lsType") String lsType, 
-			@PathVariable("lsKind") String lsKind,
-			@RequestParam(value="with", required = false) String with,
+	public ResponseEntity<String> createFromJsonArray(@RequestParam(value="with", required = false) String with,
 			@RequestBody String json) {
 		//headers and setup
 		logger.debug("----from the LsThing POST controller----");
