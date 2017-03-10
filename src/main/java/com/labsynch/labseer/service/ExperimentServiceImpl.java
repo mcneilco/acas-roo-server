@@ -39,6 +39,7 @@ import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
