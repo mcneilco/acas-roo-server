@@ -248,6 +248,49 @@ public class ApiLsThingController {
 			return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
 		}
 	}
+	
+	@Transactional
+	@RequestMapping(value = "/{lsType}/{lsKind}/codeNames/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getLsThingsByCodeNameArray(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestBody List<String> codeNames,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the LsThing get by codeName Array controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		Collection<LsThing> lsThings;		
+		try {
+			lsThings = LsThing.findLsThingsByCodeNamesIn(codeNames);
+		} catch(Exception ex) {
+			lsThings = null;
+			ErrorMessage error = new ErrorMessage();
+			error.setErrorLevel("error");
+			error.setMessage("error finding codeNames by json Array" + ex.getMessage());
+			errors.add(error);
+			errorsFound = true;
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(lsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayPretty(lsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(lsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayStub(lsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = lsThingService.convertToCodeTables(lsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(LsThing.toJsonArray(lsThings), headers, HttpStatus.OK);
+		}
+	}
 
 	@Transactional
 	@RequestMapping(value = "/{lsType}/{lsKind}/{idOrCodeName}", method = RequestMethod.DELETE, headers = "Accept=application/json")
@@ -726,7 +769,7 @@ public class ApiLsThingController {
     try{
     	lsThingIds = lsThingService.searchLsThingIdsByQueryDTO(query);
     	result.setNumberOfResults(lsThingIds.size());
-    	result.setMaxResults(query.getMaxResults(0));
+    	result.setMaxResults(query.getMaxResults());
     	if (query.getMaxResults() == null || result.getNumberOfResults() <= result.getMaxResults()){
     		result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
     	}
