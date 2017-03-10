@@ -503,6 +503,49 @@ public class ApiLsThingController {
 		}
         return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.CREATED);
     }
+	
+	@Transactional
+	@RequestMapping(value="/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> createFromJsonArray(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestParam(value="with", required = false) String with,
+			@RequestBody String json) {
+		//headers and setup
+		logger.debug("----from the LsThing POST controller----");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+        Collection<LsThing> savedLsThings = new ArrayList<LsThing>();
+        for (LsThing lsThing : lsThings){
+    		try {
+    			LsThing savedLsThing = lsThingService.saveLsThing(lsThing);
+    			savedLsThings.add(savedLsThing);
+            } catch (Exception e) {
+                logger.error("----from the POST controller----" + " ERROR:  " + e.toString());
+                ErrorMessage error = new ErrorMessage();
+                error.setErrorLevel("error");
+                error.setMessage("error occurred during saving");
+                errors.add(error);
+                errorsFound = true;
+            }
+		}
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+        }else if (with != null) {
+			if (with.equalsIgnoreCase("nestedfull")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(savedLsThings), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(savedLsThings), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(savedLsThings), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("stub")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayStub(savedLsThings), headers, HttpStatus.CREATED);
+			}
+		}
+        return new ResponseEntity<String>(LsThing.toJsonArray(savedLsThings), headers, HttpStatus.CREATED);
+    }
     
     @RequestMapping(value = "/validate", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> validateLsThing(
