@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -11,15 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
+import com.labsynch.labseer.dto.LsThingStatePathDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -111,5 +110,43 @@ public class LsThingStateServiceImpl implements LsThingStateService {
 			lsThingState = updateLsThingState(lsThingState);
 		}
 		return null;
+	}
+	
+	@Override
+	public LsThingState getLsThingState(String idOrCodeName,
+			String stateType, String stateKind) {
+		LsThingState state = null;
+		try{
+			Collection<LsThingState> states = getLsThingStates(idOrCodeName, stateType, stateKind);
+			state = states.iterator().next();
+		}catch (Exception e){
+			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			state = null;
+		}
+		return state;
+	}
+
+	@Override
+	public Collection<LsThingStatePathDTO> getLsThingStates(
+			Collection<GenericStatePathRequest> genericRequests) {
+		Collection<LsThingStatePathDTO> results = new ArrayList<LsThingStatePathDTO>();
+		for (GenericStatePathRequest request : genericRequests){
+			LsThingStatePathDTO result = new LsThingStatePathDTO();
+			result.setIdOrCodeName(request.getIdOrCodeName());
+			result.setStateType(request.getStateType());
+			result.setStateKind(request.getStateKind());
+			result.setStates(getLsThingStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
+			results.add(result);
+		}
+		return results;
+	}
+	
+	private Collection<LsThingState> getLsThingStates(String idOrCodeName, String stateType, String stateKind){
+		if (SimpleUtil.isNumeric(idOrCodeName)){
+			Long id = Long.valueOf(idOrCodeName);
+			return LsThingState.findLsThingStatesByLsThingIDAndStateTypeKind(id, stateType, stateKind).getResultList();
+		}else{
+			return LsThingState.findLsThingStatesByLsThingCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
+		}
 	}
 }

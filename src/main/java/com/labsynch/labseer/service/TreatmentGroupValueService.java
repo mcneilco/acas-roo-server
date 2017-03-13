@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
+import com.labsynch.labseer.dto.TreatmentGroupValuePathDTO;
 
 @Service
 public interface TreatmentGroupValueService {
@@ -39,5 +41,8 @@ public interface TreatmentGroupValueService {
 	public TreatmentGroupValue getTreatmentGroupValue(String idOrCodeName,
 			String stateType, String stateKind, String valueType,
 			String valueKind);
+
+	public Collection<TreatmentGroupValuePathDTO> getTreatmentGroupValues(
+			Collection<GenericValuePathRequest> genericRequests);
 	
 }

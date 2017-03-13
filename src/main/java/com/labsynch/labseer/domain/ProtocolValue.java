@@ -119,6 +119,33 @@ public class ProtocolValue extends AbstractValue {
 		return q;
 	}
 	
+	public static TypedQuery<ProtocolValue> findProtocolValuesByProtocolCodeNameAndStateTypeKindAndValueTypeKind(
+			String protocolCodeName, String stateType, String stateKind,
+			String valueType, String valueKind) {
+
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT pv FROM ProtocolValue AS pv " +
+				"JOIN pv.lsState ps " +
+				"JOIN ps.protocol p " +
+				"WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
+				"AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored IS NOT :ignored " +
+//				"AND p.ignored IS NOT :ignored " +
+				"AND p.codeName = :protocolCodeName ";
+		TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
+		q.setParameter("protocolCodeName", protocolCodeName);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+	
 	 public static TypedQuery<ProtocolValue> findProtocolValuesByLsKindEqualsAndDateValueLike(String lsKind, Date dateValue) {
 	        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
 	        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");

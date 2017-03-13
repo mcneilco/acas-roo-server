@@ -153,6 +153,14 @@ public class Subject extends AbstractThing {
 		.exclude("*.class",  "lsLabels.subject", "lsStates.subject", "lsStates.lsValues.lsState", "treatmentGroup.analysisGroup")
 		.serialize(collection);
 	}
+	
+	public static String toJsonArrayStub(Collection<Subject> collection) {
+		return new JSONSerializer()
+		.include("lsLabels")
+		.exclude("*.class", "lsStates", "treatmentGroup.analysisGroup")
+		.transform(new ExcludeNulls(), void.class)
+		.serialize(collection);
+	}
 
 
 
