@@ -82,6 +82,45 @@ public class SubjectValue extends AbstractValue {
         this.setPublicData(subjectDTO.isPublicData());
         this.setSigFigs(subjectDTO.getSigFigs());	
     }
+	
+	public SubjectValue(SubjectValue subjectValue) {
+        super.setBlobValue(subjectValue.getBlobValue());
+        super.setClobValue(subjectValue.getClobValue());
+        super.setCodeKind(subjectValue.getCodeKind());
+        super.setCodeOrigin(subjectValue.getCodeOrigin());
+        super.setCodeType(subjectValue.getCodeType());
+        super.setCodeTypeAndKind(subjectValue.getCodeTypeAndKind());
+        super.setCodeValue(subjectValue.getCodeValue());
+        super.setComments(subjectValue.getComments());
+        super.setConcentration(subjectValue.getConcentration());
+        super.setConcUnit(subjectValue.getConcUnit());
+        super.setDateValue(subjectValue.getDateValue());
+        super.setDeleted(subjectValue.isDeleted());
+        super.setFileValue(subjectValue.getFileValue());
+        super.setIgnored(subjectValue.isIgnored());
+        super.setLsKind(subjectValue.getLsKind());
+        super.setLsTransaction(subjectValue.getLsTransaction());
+        super.setLsType(subjectValue.getLsType());
+        super.setLsTypeAndKind(subjectValue.getLsTypeAndKind());
+        super.setModifiedBy(subjectValue.getModifiedBy());
+        super.setModifiedDate(subjectValue.getModifiedDate());
+        super.setNumberOfReplicates(subjectValue.getNumberOfReplicates());
+        super.setNumericValue(subjectValue.getNumericValue());
+        super.setOperatorKind(subjectValue.getOperatorKind());
+        super.setOperatorType(subjectValue.getOperatorType());
+        super.setOperatorTypeAndKind(subjectValue.getOperatorTypeAndKind());
+        super.setPublicData(subjectValue.isPublicData());
+        super.setRecordedBy(subjectValue.getRecordedBy());
+        super.setRecordedDate(subjectValue.getRecordedDate());
+        super.setSigFigs(subjectValue.getSigFigs());
+        super.setStringValue(subjectValue.getStringValue());
+        super.setUncertainty(subjectValue.getUncertainty());
+        super.setUncertaintyType(subjectValue.getUncertaintyType());
+        super.setUnitKind(subjectValue.getUnitKind());
+        super.setUnitType(subjectValue.getUnitType());
+        super.setUnitTypeAndKind(subjectValue.getUnitTypeAndKind());
+        super.setUrlValue(subjectValue.getUrlValue());
+	}
 
 	public Long getStateId() {
 		return this.lsState.getId();

@@ -224,7 +224,9 @@ public class ApiSubjectController {
 
 	@Transactional
     @RequestMapping(value = "/{idOrCodeName}", method = RequestMethod.DELETE)
-    public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("idOrCodeName") String idOrCodeName) {
+    public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("idOrCodeName") String idOrCodeName,
+    		@RequestParam(value = "lsTransaction", required = false) Long lsTransaction,
+    		@RequestParam(value = "modifiedBy", required = false) String modifiedBy) {
     	Subject subject;
     	if(SimpleUtil.isNumeric(idOrCodeName)) {
 	    	subject = Subject.findSubject(Long.valueOf(idOrCodeName));
@@ -238,7 +240,11 @@ public class ApiSubjectController {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         } else {
             logger.info("deleting the subject: " + idOrCodeName);
+            if (lsTransaction != null) subject.setLsTransaction(lsTransaction);
+            if (modifiedBy != null) subject.setModifiedBy(modifiedBy);
+            subject.setModifiedDate(new Date());
             subject.logicalDelete();
+            subject.merge();
             if (Subject.findSubject(subject.getId()) == null || Subject.findSubject(subject.getId()).isIgnored()) {
                 logger.info("Did not find the subject after delete");
                 return new ResponseEntity<String>(headers, HttpStatus.OK);
@@ -424,7 +430,9 @@ public class ApiSubjectController {
     
     @RequestMapping(value = "/setSubjectValues/{idOrCodeName}", method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<String> setSubjectValues(@RequestBody String json, 
-    		@PathVariable("idOrCodeName") String idOrCodeName){
+    		@PathVariable("idOrCodeName") String idOrCodeName,
+    		@RequestParam(value = "modifiedBy", required = true) String modifiedBy,
+    		@RequestParam(value = "lsTransaction", required = true) Long lsTransaction){
     	HttpHeaders headers = new HttpHeaders();
     	headers.add("Content-Type", "application/json; charset=utf-8");
     	try{
@@ -443,7 +451,7 @@ public class ApiSubjectController {
 	        if (subject == null) {
 	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 	        }
-    		subjectService.setSubjectValuesByPath(subject, pathDTO);
+    		subjectService.setSubjectValuesByPath(subject, pathDTO, modifiedBy, lsTransaction);
     		return new ResponseEntity<String>(headers, HttpStatus.OK);
     	}catch (Exception e){
     		logger.error("Caught error in setSubjectValues",e);

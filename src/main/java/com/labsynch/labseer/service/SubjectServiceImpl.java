@@ -881,7 +881,7 @@ public class SubjectServiceImpl implements SubjectService {
 
 	@Transactional
 	@Override
-	public boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO) {
+	public boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO, String modifiedBy, Long lsTransaction) {
 		EntityManager em = Subject.entityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> criteria = cb.createQuery(Long.class);
@@ -910,6 +910,8 @@ public class SubjectServiceImpl implements SubjectService {
 			Predicate valueKind = cb.equal(subjectValue.<String>get("lsKind"), pathDTO.getValueKind());
 			predicateList.add(valueKind);
 		}
+		Predicate notIgnored = cb.not(subjectValue.<Boolean>get("ignored"));
+		predicateList.add(notIgnored);
 		
 		
 		predicates = predicateList.toArray(predicates);
@@ -918,24 +920,41 @@ public class SubjectServiceImpl implements SubjectService {
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<Long> subjectValueIds = q.getResultList();
 		logger.debug("Found "+subjectValueIds.size()+" subject values.");
-		
+		int valuesUpdated = 0;
 		if (subjectValueIds != null){
-			CriteriaUpdate<SubjectValue> update = cb.createCriteriaUpdate(SubjectValue.class);
-			Root<SubjectValue> sv = update.from(SubjectValue.class);
-			if (!pathDTO.getValueType().equals(("numericValue")) && !pathDTO.getValueType().equals(("dateValue"))){
-				update.set(pathDTO.getValueType(), pathDTO.getValue());
-			}else if (pathDTO.getValueType().equals(("numericValue"))){
-				update.set(pathDTO.getValueType(), new BigDecimal(pathDTO.getValue()));
-			}else if (pathDTO.getValueType().equals(("dateValue"))){
-				Date date = new Date();
-				date.setTime(Long.valueOf(pathDTO.getValue()));
-				update.set(pathDTO.getValueType(), date);
+			for (Long id : subjectValueIds) {
+				SubjectValue oldValue = SubjectValue.findSubjectValue(id);
+				SubjectValue newValue = new SubjectValue(oldValue);
+				oldValue.setIgnored(true);
+				oldValue.setModifiedBy(modifiedBy);
+				oldValue.setModifiedDate(new Date());
+				oldValue.setLsTransaction(lsTransaction);
+				newValue.setLsState(oldValue.getLsState());
+				newValue.setIgnored(false);
+				newValue.setRecordedBy(modifiedBy);
+				newValue.setLsTransaction(lsTransaction);
+				newValue.setRecordedDate(new Date());
+				newValue.setModifiedBy(null);
+				newValue.setModifiedDate(null);
+				if (pathDTO.getValueType().equals("blobValue")) newValue.setBlobValue(pathDTO.getValue().getBytes());
+				if (pathDTO.getValueType().equals("clobValue")) newValue.setClobValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("codeValue")) newValue.setCodeValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("dateValue")){
+					Date date = new Date();
+					date.setTime(Long.valueOf(pathDTO.getValue()));
+					newValue.setDateValue(date);
+				}
+				if (pathDTO.getValueType().equals("fileValue")) newValue.setFileValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("numericValue")) newValue.setNumericValue(new BigDecimal(pathDTO.getValue()));
+				if (pathDTO.getValueType().equals("stringValue")) newValue.setStringValue(pathDTO.getValue());
+				if (pathDTO.getValueType().equals("urlValue")) newValue.setUrlValue(pathDTO.getValue());
+				
+				oldValue.merge();
+				newValue.persist();
+				valuesUpdated++;
 			}
-			Expression<Long> exp = sv.<Long>get("id");
-			update.where(exp.in(subjectValueIds));
-			Query updateQuery = em.createQuery(update);
-			int valuesUpdated = updateQuery.executeUpdate();
-			logger.debug("Updated "+valuesUpdated+" subject values.");
+			
+			logger.debug("Updated "+valuesUpdated+" subject values (via ignore and create new).");
 			if (subjectValueIds.size() == valuesUpdated) return true;
 		}
 		

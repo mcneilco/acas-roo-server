@@ -42,7 +42,7 @@ public interface SubjectService {
 			Collection<ContainerSubjectsDTO> requests);
 	Collection<Long> searchSubjectIdsByQueryDTO(SubjectSearchRequest query) throws Exception;
 	Collection<Subject> getSubjectsByIds(Collection<Long> subjectIds);
-	boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO);
+	boolean setSubjectValuesByPath(Subject subject, ValueQueryDTO pathDTO, String modifiedBy, Long lsTransaction);
 	Collection<SubjectCodeDTO> getExperimentCodes(
 			Collection<SubjectCodeDTO> subjectCodeDTOs);
 	Map<String, List<Long>> searchSubjectIdsByMultiContainerQueryDTO(
