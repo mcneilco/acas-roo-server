@@ -28,7 +28,7 @@ public class ItxContainerContainerServiceImpl implements ItxContainerContainerSe
 	@Override
 	@Transactional
 	public ItxContainerContainer saveLsItxContainer(ItxContainerContainer itxContainer){
-		logger.debug("incoming meta itxContainerContainer: " + itxContainer.toJson() + "\n");
+		if (logger.isDebugEnabled()) logger.debug("incoming meta itxContainerContainer: " + itxContainer.toJson() + "\n");
 		int i = 0;
 		int j = 0;
 		int batchSize = propertiesUtilService.getBatchSize();

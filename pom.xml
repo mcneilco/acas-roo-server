@@ -9,7 +9,7 @@
 			<distribution>repo</distribution>
 			<comments>
 <![CDATA[
-Copyright 2011-2016 John McNeil & Co., Inc.
+Copyright 2011-2017 John McNeil & Co., Inc.
 http://www.mcneilco.com
 info@mcneilco.com
 
@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<groupId>com.labsynch.labseer</groupId>
 	<artifactId>acas</artifactId>
 	<packaging>war</packaging>
-	<version>1.9.1.0-BUILD-SNAPSHOT</version>
+	<version>1.10.0-BUILD-SNAPSHOT</version>
 	<description>ACAS Java persistence layer</description>
 	<properties>
 		<aspectj.version>1.7.0.RC1</aspectj.version>
