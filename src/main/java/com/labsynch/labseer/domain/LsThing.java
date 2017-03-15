@@ -144,7 +144,7 @@ public class LsThing extends AbstractThing {
 
     @Transactional
     public String toJsonStub() {
-        return new JSONSerializer().exclude("*.class", "lsStates.lsThing").include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "lsStates").include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     @Transactional
@@ -181,7 +181,7 @@ public class LsThing extends AbstractThing {
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.LsThing> collection) {
         return new JSONSerializer().
-        		exclude("*.class","lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
+        		exclude("*.class","lsStates").
         		include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
@@ -695,6 +695,10 @@ public class LsThing extends AbstractThing {
 	
 	public static com.labsynch.labseer.domain.LsThing update(com.labsynch.labseer.domain.LsThing lsThing) throws StaleObjectStateException {
         LsThing updatedLsThing = LsThing.findLsThing(lsThing.getId());
+        if (lsThing.getVersion() == null){
+        	logger.warn("LsThing with id: "+lsThing.getId().toString()+" passed in with no version - skipping update");
+        	return updatedLsThing;
+        }
         if (!lsThing.getVersion().equals(updatedLsThing.getVersion())){
             logger.debug("incoming version: "+lsThing.getVersion()+" existing version: "+updatedLsThing.getVersion());
         	throw new StaleObjectStateException("LsThing", lsThing.getId());
@@ -839,11 +843,11 @@ public class LsThing extends AbstractThing {
 		EntityManager em = LsThing.entityManager();
 		String query = "SELECT DISTINCT lsThing FROM LsThing lsThing " +
 				"WHERE lsThing.ignored IS NOT :ignored AND ";		
-        TypedQuery<LsThing> q = (TypedQuery<LsThing>) SimpleUtil.addHqlInClause(em, query, "lsThing.codeName", codeNames);
-        q.setParameter("ignored", true);
-        
-        return q.getResultList();
-	}
+		TypedQuery<LsThing> q = (TypedQuery<LsThing>) SimpleUtil.addHqlInClause(em, query, "lsThing.codeName", codeNames);
+		q.setParameter("ignored", true);
+		return q.getResultList();
+		}
+	
 	public static TypedQuery<LsThing> findLsThingByPreferredLabelText(String thingType,
 			String thingKind, String labelType, String labelKind,
 			String labelText) {

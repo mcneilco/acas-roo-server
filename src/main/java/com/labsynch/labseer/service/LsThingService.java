@@ -13,11 +13,10 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeTypeKindDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
+import com.labsynch.labseer.dto.LsThingQueryDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
-import com.labsynch.labseer.dto.StoichiometryPropertiesResultsDTO;
-import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -106,6 +105,14 @@ public interface LsThingService {
 			Integer maxResults, Float similarity);
 
 	DependencyCheckDTO checkDependencies(LsThing lsThing);
+	Collection<Long> searchLsThingIdsByQueryDTO(LsThingQueryDTO query) throws Exception;
+
+	Collection<LsThing> getLsThingsByIds(Collection<Long> lsThingIds);
+
+	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings);
+
+	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings,
+			String labelType);
 	
 	
 }
