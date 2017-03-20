@@ -218,6 +218,7 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 		logger.debug("Querying for state type: "+stateType+" and state kind: "+stateKind);
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		Collection<SubjectCodeStateDTO> results = q.getResultList();
+		logger.debug("Fetched "+results.size()+" states");
 		return results;
 	}
 
