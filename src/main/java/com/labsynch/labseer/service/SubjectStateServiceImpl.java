@@ -105,14 +105,18 @@ public class SubjectStateServiceImpl implements SubjectStateService {
 	public SubjectState updateSubjectState(
 			SubjectState subjectState) {
 		subjectState.setVersion(SubjectState.findSubjectState(subjectState.getId()).getVersion());
+		Set<SubjectValue> updatedSubjectValues = new HashSet<SubjectValue>();
 		for (SubjectValue subjectValue : subjectState.getLsValues()){
 			if (subjectValue.getId() == null){
 				subjectValue.setLsState(subjectState);
 				subjectValue.persist();
+				updatedSubjectValues.add(subjectValue);
 			}else{
-				subjectValue.merge();
+				SubjectValue updatedSubjectValue = subjectValue.merge();
+				updatedSubjectValues.add(updatedSubjectValue);
 			}
 		}
+		subjectState.setLsValues(updatedSubjectValues);
 		subjectState.merge();
 		return subjectState;
 	}
