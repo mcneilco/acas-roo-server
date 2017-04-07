@@ -4,8 +4,11 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.LsTransactionStatus;
+import com.labsynch.labseer.domain.LsTransactionType;
 import com.labsynch.labseer.web.LsTransactionController;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.joda.time.format.DateTimeFormat;
@@ -95,6 +98,8 @@ privileged aspect LsTransactionController_Roo_Controller {
     void LsTransactionController.populateEditForm(Model uiModel, LsTransaction lsTransaction) {
         uiModel.addAttribute("lsTransaction", lsTransaction);
         addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("lstransactionstatuses", Arrays.asList(LsTransactionStatus.values()));
+        uiModel.addAttribute("lstransactiontypes", Arrays.asList(LsTransactionType.values()));
     }
     
     String LsTransactionController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

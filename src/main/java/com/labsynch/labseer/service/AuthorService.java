@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
+import com.labsynch.labseer.dto.AuthorBrowserQueryDTO;
+import com.labsynch.labseer.dto.AuthorQueryDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 
 @Service
@@ -35,5 +37,13 @@ public interface AuthorService {
 	public Author updateAuthor(Author author);
 
 	public Author getOrCreateAuthor(Author author);
+
+	Collection<Long> searchAuthorIdsByBrowserQueryDTO(
+			AuthorBrowserQueryDTO query) throws Exception;
+
+	Collection<Long> searchAuthorIdsByQueryDTO(AuthorQueryDTO query)
+			throws Exception;
+
+	Collection<Author> getAuthorsByIds(Collection<Long> authorIds);
 
 }

@@ -84,7 +84,7 @@ public class ContainerState extends AbstractState {
 
     @Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class").include("lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "container").include("lsValues").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
@@ -98,13 +98,18 @@ public class ContainerState extends AbstractState {
 
     @Transactional
     public static String toJsonArray(Collection<com.labsynch.labseer.domain.ContainerState> collection) {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class", "container", "lsValues.lsState").include("lsValues").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.ContainerState> collection) {
         return new JSONSerializer().exclude("*.class", "container").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
+    
+    @Transactional
+	public static String toJsonArrayWithNestedContainers(Collection<ContainerState> collection) {
+        return new JSONSerializer().exclude("*.class", "lsValues.lsState").include("lsValues","container.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+	}
 
     public static Collection<com.labsynch.labseer.domain.ContainerState> fromJsonArrayToContainerStates(String json) {
         return new JSONDeserializer<List<ContainerState>>().use(null, ArrayList.class).use("values", ContainerState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
@@ -142,4 +147,42 @@ public class ContainerState extends AbstractState {
         int results = q.executeUpdate();
         return results;
     }
+
+	public static TypedQuery<ContainerState> findContainerStatesByContainerIDAndStateTypeKind(Long containerId, 
+			String stateType, 
+			String stateKind) {
+			if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+			if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+			
+			EntityManager em = entityManager();
+			String hsqlQuery = "SELECT cs FROM ContainerState AS cs " +
+			"JOIN cs.container c " +
+			"WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
+			"AND c.id = :containerId ";
+			TypedQuery<ContainerState> q = em.createQuery(hsqlQuery, ContainerState.class);
+			q.setParameter("containerId", containerId);
+			q.setParameter("stateType", stateType);
+			q.setParameter("stateKind", stateKind);
+			q.setParameter("ignored", true);
+			return q;
+		}
+
+	public static TypedQuery<ContainerState> findContainerStatesByContainerCodeNameAndStateTypeKind(
+			String containerCodeName, String stateType, String stateKind) {
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT cs FROM ContainerState AS cs " +
+		"JOIN cs.container c " +
+		"WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
+		"AND c.codeName = :containerCodeName ";
+		TypedQuery<ContainerState> q = em.createQuery(hsqlQuery, ContainerState.class);
+		q.setParameter("containerCodeName", containerCodeName);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+	
 }
