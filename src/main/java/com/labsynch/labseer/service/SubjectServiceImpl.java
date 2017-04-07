@@ -837,18 +837,24 @@ public class SubjectServiceImpl implements SubjectService {
 						logger.error("valueType must be specified if value is specified!");
 						throw new Exception("valueType must be specified if value is specified!");
 					}else if(valueQuery.getValueType().equals("dateValue")){
-						String postgresTimeUnit = "day";
-						Expression<Date> dateTruncExpr = cb.function("date_trunc", Date.class, cb.literal(postgresTimeUnit), value.<Date>get("dateValue"));
-						Calendar cal = Calendar.getInstance(); // locale-specific
-						cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
-						cal.set(Calendar.HOUR_OF_DAY, 0);
-						cal.set(Calendar.MINUTE, 0);
-						cal.set(Calendar.SECOND, 0);
-						cal.set(Calendar.MILLISECOND, 0);
-						long time = cal.getTimeInMillis();
-						Date queryDate = new Date(time);
-						Predicate valueLike = cb.equal(dateTruncExpr, queryDate);
-						valuePredicatesList.add(valueLike);
+						Calendar cal0 = Calendar.getInstance(); // locale-specific
+						cal0.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+						cal0.set(Calendar.HOUR_OF_DAY, 0);
+						cal0.set(Calendar.MINUTE, 0);
+						cal0.set(Calendar.SECOND, 0);
+						cal0.set(Calendar.MILLISECOND, 0);
+						long time0 = cal0.getTimeInMillis();
+						Date queryDate0 = new Date(time0);
+						Calendar cal24 = Calendar.getInstance();
+						cal24.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+						cal24.set(Calendar.HOUR_OF_DAY, 23);
+						cal24.set(Calendar.MINUTE, 59);
+						cal24.set(Calendar.SECOND, 59);
+						cal24.set(Calendar.MILLISECOND, 999);
+						long time24 = cal24.getTimeInMillis();
+						Date queryDate24 = new Date(time24);
+						Predicate valueEqual = cb.between(value.<Date>get("dateValue"), queryDate0, queryDate24);
+						valuePredicatesList.add(valueEqual);
 					}else{
 //						only works with string value types: stringValue, codeValue, fileValue, clobValue
 						Predicate valueLike = cb.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
@@ -1095,18 +1101,24 @@ public class SubjectServiceImpl implements SubjectService {
 						logger.error("valueType must be specified if value is specified!");
 						throw new Exception("valueType must be specified if value is specified!");
 					}else if(valueQuery.getValueType().equals("dateValue")){
-						String postgresTimeUnit = "day";
-						Expression<Date> dateTruncExpr = cb.function("date_trunc", Date.class, cb.literal(postgresTimeUnit), value.<Date>get("dateValue"));
-						Calendar cal = Calendar.getInstance(); // locale-specific
-						cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
-						cal.set(Calendar.HOUR_OF_DAY, 0);
-						cal.set(Calendar.MINUTE, 0);
-						cal.set(Calendar.SECOND, 0);
-						cal.set(Calendar.MILLISECOND, 0);
-						long time = cal.getTimeInMillis();
-						Date queryDate = new Date(time);
-						Predicate valueLike = cb.equal(dateTruncExpr, queryDate);
-						valuePredicatesList.add(valueLike);
+						Calendar cal0 = Calendar.getInstance(); // locale-specific
+						cal0.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+						cal0.set(Calendar.HOUR_OF_DAY, 0);
+						cal0.set(Calendar.MINUTE, 0);
+						cal0.set(Calendar.SECOND, 0);
+						cal0.set(Calendar.MILLISECOND, 0);
+						long time0 = cal0.getTimeInMillis();
+						Date queryDate0 = new Date(time0);
+						Calendar cal24 = Calendar.getInstance();
+						cal24.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+						cal24.set(Calendar.HOUR_OF_DAY, 23);
+						cal24.set(Calendar.MINUTE, 59);
+						cal24.set(Calendar.SECOND, 59);
+						cal24.set(Calendar.MILLISECOND, 999);
+						long time24 = cal24.getTimeInMillis();
+						Date queryDate24 = new Date(time24);
+						Predicate valueEqual = cb.between(value.<Date>get("dateValue"), queryDate0, queryDate24);
+						valuePredicatesList.add(valueEqual);
 					}else{
 //						only works with string value types: stringValue, codeValue, fileValue, clobValue
 						Predicate valueLike = cb.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
