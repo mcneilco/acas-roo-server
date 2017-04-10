@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
+import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.LsThingQueryDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
@@ -98,6 +99,9 @@ public interface LsThingService {
 
 	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings,
 			String labelType);
+
+	Collection<Long> searchLsThingIdsByBrowserQueryDTO(
+			LsThingBrowserQueryDTO query) throws Exception;
 	
 	
 }

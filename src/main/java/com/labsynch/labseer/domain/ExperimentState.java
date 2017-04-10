@@ -24,6 +24,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -75,11 +76,10 @@ public class ExperimentState extends AbstractState {
 		return updatedExperimentState;
 	}
 	
-	public String toJson() {
-	    return new JSONSerializer().exclude("*.class")
-				.transform(new ExcludeNulls(), void.class)
-	    		.serialize(this);
-	}
+	@Transactional
+    public String toJson() {
+        return new JSONSerializer().include("lsValues").exclude("*.class", "experiment").transform(new ExcludeNulls(), void.class).serialize(this);
+    }
 	
 	public static ExperimentState fromJsonToExperimentState(String json) {
 	    return new JSONDeserializer<ExperimentState>().use(null, ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
@@ -123,4 +123,22 @@ public class ExperimentState extends AbstractState {
 			q.setParameter("ignored", true);
 			return q;
 		}
+
+	public static TypedQuery<ExperimentState> findExperimentStatesByExperimentCodeNameAndStateTypeKind(
+			String experimentCodeName, String stateType, String stateKind) {
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT evs FROM ExperimentState AS evs " +
+		"JOIN evs.experiment exp " +
+		"WHERE evs.lsType = :stateType AND evs.lsKind = :stateKind AND evs.ignored IS NOT :ignored " +
+		"AND exp.codeName = :experimentCodeName ";
+		TypedQuery<ExperimentState> q = em.createQuery(hsqlQuery, ExperimentState.class);
+		q.setParameter("experimentCodeName", experimentCodeName);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 }

@@ -6,12 +6,15 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,24 +47,32 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.ItxContainerContainerState;
 import com.labsynch.labseer.domain.ItxContainerContainerValue;
+import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerQueryDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
 import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
+import com.labsynch.labseer.dto.ItxQueryDTO;
+import com.labsynch.labseer.dto.LabelQueryDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.dto.ValueQueryDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
 import com.labsynch.labseer.dto.WellStubDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
@@ -2315,6 +2326,7 @@ public class ContainerServiceImpl implements ContainerService {
 		List<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
 		for (Container container: containers){
 			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setId(container.getId());
 			codeTable.setCode(container.getCodeName());
 			codeTable.setName(pickBestLabel(container));
 			codeTable.setIgnored(container.isIgnored());
@@ -2487,6 +2499,392 @@ public class ContainerServiceImpl implements ContainerService {
 		TypedQuery<String> q = em.createQuery(criteria);
 		
 		return q.getResultList();
+	}
+	
+	@Override
+	public Collection<Container> getContainersByIds(Collection<Long> containerIds){
+		Collection<Container> containers = new ArrayList<Container>();
+		for (Long id : containerIds){
+			containers.add(Container.findContainer(id));
+		}
+		return containers;
+	}
+	
+	@Override
+	public Collection<Long> searchContainerIdsByQueryDTO(ContainerQueryDTO query) throws Exception{
+		List<Long> containerIdList = new ArrayList<Long>();	
+		EntityManager em = Container.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+		Root<Container> thing = criteria.from(Container.class);
+		List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, query);
+		if (query.getLsType() != null){
+			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getLsType());
+			predicateList.add(thingType);
+		}
+		if (query.getLsKind() != null){
+			Predicate thingKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getLsKind());
+			predicateList.add(thingKind);
+		}
+		Predicate[] predicates = new Predicate[0];
+		//gather all predicates
+		predicates = predicateList.toArray(predicates);
+		criteria.where(criteriaBuilder.and(predicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		containerIdList = q.getResultList();
+		logger.debug("Found "+containerIdList.size()+" results.");
+		return containerIdList;
+	}
+	
+	private List<Predicate> buildPredicatesForQueryDTO(CriteriaBuilder criteriaBuilder, CriteriaQuery<Long> criteria, Root<Container> thing, ContainerQueryDTO query) throws Exception{
+		
+		criteria.select(thing.<Long>get("id"));
+		criteria.distinct(true);
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		//root container properties
+		
+		//recordedDates
+		if (query.getRecordedDateGreaterThan() != null && query.getRecordedDateLessThan() != null){
+			try{
+				Predicate createdDateBetween = criteriaBuilder.between(thing.<Date>get("recordedDate"), query.getRecordedDateGreaterThan(), query.getRecordedDateLessThan());
+				predicateList.add(createdDateBetween);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" or "+query.getRecordedDateLessThan()+" as a date.",e);
+				throw new Exception("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" or "+query.getRecordedDateLessThan()+" as a date.",e);
+			}
+		}
+		else if (query.getRecordedDateGreaterThan() != null){
+			try{
+				Predicate createdDateFrom = criteriaBuilder.greaterThanOrEqualTo(thing.<Date>get("recordedDate"), query.getRecordedDateGreaterThan());
+				predicateList.add(createdDateFrom);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" as a date.",e);
+				throw new Exception("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" as a date.",e);
+			}
+		}
+		else if (query.getRecordedDateLessThan() != null){
+			try{
+				Predicate createdDateTo = criteriaBuilder.lessThanOrEqualTo(thing.<Date>get("recordedDate"), query.getRecordedDateLessThan());
+				predicateList.add(createdDateTo);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+query.getRecordedDateLessThan()+" as a date.",e);
+				throw new Exception("Caught exception trying to parse "+query.getRecordedDateLessThan()+" as a date.",e);
+			}
+		}
+		if (query.getRecordedBy() != null){
+			Predicate recordedBy = criteriaBuilder.like(thing.<String>get("recordedBy"), '%'+query.getRecordedBy()+'%');
+			predicateList.add(recordedBy);
+		}
+		
+		//interactions
+		if (query.getFirstInteractions() != null){
+			for (ItxQueryDTO interaction : query.getFirstInteractions()){
+				Join<Container, ItxContainerContainer> firstItx = thing.join("firstContainers");
+				Join<ItxContainerContainer, Container> firstContainer = firstItx.join("firstContainer");
+				Join<Container, ContainerLabel> firstContainerLabel = firstContainer.join("lsLabels", JoinType.LEFT);
+				List<Predicate> firstItxPredicates = new ArrayList<Predicate>();
+				Predicate firstItxNotIgn = criteriaBuilder.isFalse(firstItx.<Boolean>get("ignored"));
+				Predicate firstContainerNotIgn = criteriaBuilder.isFalse(firstContainer.<Boolean>get("ignored"));
+				Predicate firstContainerLabelNotIgn = criteriaBuilder.isFalse(firstContainerLabel.<Boolean>get("ignored"));
+				firstItxPredicates.add(firstItxNotIgn);
+				firstItxPredicates.add(firstContainerNotIgn);
+				firstItxPredicates.add(firstContainerLabelNotIgn);
+				if (interaction.getInteractionType() != null){
+					Predicate firstItxType = criteriaBuilder.equal(firstItx.<String>get("lsType"), interaction.getInteractionType());
+					firstItxPredicates.add(firstItxType);
+				}
+				if (interaction.getInteractionKind() != null){
+					Predicate firstItxKind = criteriaBuilder.equal(firstItx.<String>get("lsKind"), interaction.getInteractionKind());
+					firstItxPredicates.add(firstItxKind);
+				}
+				if (interaction.getThingType() != null){
+					Predicate firstContainerType = criteriaBuilder.equal(firstContainer.<String>get("lsType"), interaction.getThingType());
+					firstItxPredicates.add(firstContainerType);
+				}
+				if (interaction.getThingKind() != null){
+					Predicate firstContainerKind = criteriaBuilder.equal(firstContainer.<String>get("lsKind"), interaction.getThingKind());
+					firstItxPredicates.add(firstContainerKind);
+				}
+				if (interaction.getThingLabelType() != null){
+					Predicate firstContainerLabelType = criteriaBuilder.equal(firstContainerLabel.<String>get("lsType"), interaction.getThingLabelType());
+					firstItxPredicates.add(firstContainerLabelType);
+				}
+				if (interaction.getThingLabelKind() != null){
+					Predicate firstContainerLabelKind = criteriaBuilder.equal(firstContainerLabel.<String>get("lsKind"), interaction.getThingLabelKind());
+					firstItxPredicates.add(firstContainerLabelKind);
+				}
+				if (interaction.getThingLabelText() != null){
+					Predicate firstContainerLabelText = criteriaBuilder.like(firstContainerLabel.<String>get("labelText"), '%'+interaction.getThingLabelText()+'%');
+					firstItxPredicates.add(firstContainerLabelText);
+				}
+				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
+				Predicate[] firstPredicates = new Predicate[0];
+				firstPredicates = firstItxPredicates.toArray(firstPredicates);
+				Predicate firstItxAndPredicates = criteriaBuilder.and(firstPredicates);
+				predicateList.add(firstItxAndPredicates);
+			}
+		}
+		if (query.getSecondInteractions() != null){
+			for (ItxQueryDTO interaction : query.getSecondInteractions()){
+				Join<Container, ItxContainerContainer> secondItx = thing.join("secondContainers");
+				Join<ItxContainerContainer, Container> secondContainer = secondItx.join("secondContainer");
+				Join<Container, ContainerLabel> secondContainerLabel = secondContainer.join("lsLabels", JoinType.LEFT);
+				List<Predicate> secondItxPredicates = new ArrayList<Predicate>();
+				Predicate secondItxNotIgn = criteriaBuilder.isFalse(secondItx.<Boolean>get("ignored"));
+				Predicate secondContainerNotIgn = criteriaBuilder.isFalse(secondContainer.<Boolean>get("ignored"));
+				Predicate secondContainerLabelNotIgn = criteriaBuilder.isFalse(secondContainerLabel.<Boolean>get("ignored"));
+				secondItxPredicates.add(secondItxNotIgn);
+				secondItxPredicates.add(secondContainerNotIgn);
+				secondItxPredicates.add(secondContainerLabelNotIgn);
+				if (interaction.getInteractionType() != null){
+					Predicate secondItxType = criteriaBuilder.equal(secondItx.<String>get("lsType"), interaction.getInteractionType());
+					secondItxPredicates.add(secondItxType);
+				}
+				if (interaction.getInteractionKind() != null){
+					Predicate secondItxKind = criteriaBuilder.equal(secondItx.<String>get("lsKind"), interaction.getInteractionKind());
+					secondItxPredicates.add(secondItxKind);
+				}
+				if (interaction.getThingType() != null){
+					Predicate secondContainerType = criteriaBuilder.equal(secondContainer.<String>get("lsType"), interaction.getThingType());
+					secondItxPredicates.add(secondContainerType);
+				}
+				if (interaction.getThingKind() != null){
+					Predicate secondContainerKind = criteriaBuilder.equal(secondContainer.<String>get("lsKind"), interaction.getThingKind());
+					secondItxPredicates.add(secondContainerKind);
+				}
+				if (interaction.getThingLabelType() != null){
+					Predicate secondContainerLabelType = criteriaBuilder.equal(secondContainerLabel.<String>get("lsType"), interaction.getThingLabelType());
+					secondItxPredicates.add(secondContainerLabelType);
+				}
+				if (interaction.getThingLabelKind() != null){
+					Predicate secondContainerLabelKind = criteriaBuilder.equal(secondContainerLabel.<String>get("lsKind"), interaction.getThingLabelKind());
+					secondItxPredicates.add(secondContainerLabelKind);
+				}
+				if (interaction.getThingLabelText() != null){
+					Predicate secondContainerLabelText = criteriaBuilder.like(secondContainerLabel.<String>get("labelText"), '%'+interaction.getThingLabelText()+'%');
+					secondItxPredicates.add(secondContainerLabelText);
+				}
+				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
+				Predicate[] secondPredicates = new Predicate[0];
+				secondPredicates = secondItxPredicates.toArray(secondPredicates);
+				Predicate secondItxAndPredicates = criteriaBuilder.and(secondPredicates);
+				predicateList.add(secondItxAndPredicates);
+			}
+		}
+		
+		//subjects
+		if (query.getSubjects() != null){
+			for (ItxQueryDTO interaction : query.getSubjects()){
+				Join<Container, ItxSubjectContainer> subjectItx = thing.join("subjects");
+				Join<ItxSubjectContainer, Subject> subject = subjectItx.join("subject");
+				Join<Subject, SubjectLabel> subjectLabel = subject.join("lsLabels", JoinType.LEFT);
+				List<Predicate> subjectItxPredicates = new ArrayList<Predicate>();
+				Predicate subjectItxNotIgn = criteriaBuilder.isFalse(subjectItx.<Boolean>get("ignored"));
+				Predicate subjectNotIgn = criteriaBuilder.isFalse(subject.<Boolean>get("ignored"));
+				Predicate subjectLabelNotIgn = criteriaBuilder.isFalse(subjectLabel.<Boolean>get("ignored"));
+				subjectItxPredicates.add(subjectItxNotIgn);
+				subjectItxPredicates.add(subjectNotIgn);
+				subjectItxPredicates.add(subjectLabelNotIgn);
+				if (interaction.getInteractionType() != null){
+					Predicate subjectItxType = criteriaBuilder.equal(subjectItx.<String>get("lsType"), interaction.getInteractionType());
+					subjectItxPredicates.add(subjectItxType);
+				}
+				if (interaction.getInteractionKind() != null){
+					Predicate subjectItxKind = criteriaBuilder.equal(subjectItx.<String>get("lsKind"), interaction.getInteractionKind());
+					subjectItxPredicates.add(subjectItxKind);
+				}
+				if (interaction.getThingType() != null){
+					Predicate subjectType = criteriaBuilder.equal(subject.<String>get("lsType"), interaction.getThingType());
+					subjectItxPredicates.add(subjectType);
+				}
+				if (interaction.getThingKind() != null){
+					Predicate subjectKind = criteriaBuilder.equal(subject.<String>get("lsKind"), interaction.getThingKind());
+					subjectItxPredicates.add(subjectKind);
+				}
+				if (interaction.getThingLabelType() != null){
+					Predicate subjectLabelType = criteriaBuilder.equal(subjectLabel.<String>get("lsType"), interaction.getThingLabelType());
+					subjectItxPredicates.add(subjectLabelType);
+				}
+				if (interaction.getThingLabelKind() != null){
+					Predicate subjectLabelKind = criteriaBuilder.equal(subjectLabel.<String>get("lsKind"), interaction.getThingLabelKind());
+					subjectItxPredicates.add(subjectLabelKind);
+				}
+				if (interaction.getThingLabelText() != null){
+					Predicate subjectLabelText = criteriaBuilder.like(subjectLabel.<String>get("labelText"), '%'+interaction.getThingLabelText()+'%');
+					subjectItxPredicates.add(subjectLabelText);
+				}
+				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
+				Predicate[] subjectPredicates = new Predicate[0];
+				subjectPredicates = subjectItxPredicates.toArray(subjectPredicates);
+				Predicate subjectItxAndPredicates = criteriaBuilder.and(subjectPredicates);
+				predicateList.add(subjectItxAndPredicates);
+			}
+		}
+		
+		//values
+		if (query.getValues() != null){
+			for (ValueQueryDTO valueQuery : query.getValues()){
+				List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
+				Join<Container, ContainerState> state = thing.join("lsStates");
+				Join<ContainerState, ContainerValue> value = state.join("lsValues");
+				
+				Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
+				Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
+				valuePredicatesList.add(stateNotIgn);
+				valuePredicatesList.add(valueNotIgn);
+				
+				if (valueQuery.getStateType() != null){
+					Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),valueQuery.getStateType());
+					valuePredicatesList.add(stateType);
+				}
+				if (valueQuery.getStateKind() != null){
+					Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),valueQuery.getStateKind());
+					valuePredicatesList.add(stateKind);
+				}
+				if (valueQuery.getValueType() != null){
+					Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),valueQuery.getValueType());
+					valuePredicatesList.add(valueType);
+				}
+				if (valueQuery.getValueKind() != null){
+					Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),valueQuery.getValueKind());
+					valuePredicatesList.add(valueKind);
+				}
+				if (valueQuery.getValue() != null){
+					if (valueQuery.getValueType() == null){
+						logger.error("valueType must be specified if value is specified!");
+						throw new Exception("valueType must be specified if value is specified!");
+					}else if (valueQuery.getValueType().equalsIgnoreCase("dateValue")){
+						String postgresTimeUnit = "day";
+						Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+						Calendar cal = Calendar.getInstance(); // locale-specific
+						boolean parsedTime = false;
+						if (SimpleUtil.isNumeric(valueQuery.getValue())){
+							cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+							parsedTime = true;
+						}else{
+							try{
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+								cal.setTime(sdf.parse(valueQuery.getValue()));
+								parsedTime = true;
+							}catch (Exception e){
+								logger.warn("Failed to parse date in Container generic query for value",e);
+							}
+						}
+						cal.set(Calendar.HOUR_OF_DAY, 0);
+						cal.set(Calendar.MINUTE, 0);
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MILLISECOND, 0);
+						long time = cal.getTimeInMillis();
+						Date queryDate = new Date(time);
+						Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
+						if (parsedTime) valuePredicatesList.add(valueLike);
+					}else{
+						//only works with string value types: stringValue, codeValue, fileValue, clobValue
+						Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
+						valuePredicatesList.add(valueLike);
+					}
+				}
+				//gather predicates with AND
+				Predicate[] valuePredicates = new Predicate[0];
+				valuePredicates = valuePredicatesList.toArray(valuePredicates);
+				predicateList.add(criteriaBuilder.and(valuePredicates));
+			}
+		}
+		
+		//labels
+		if (query.getLabels() != null){
+			for (LabelQueryDTO queryLabel : query.getLabels()){
+				Join<Container, ContainerLabel> label = thing.join("lsLabels");
+				List<Predicate> labelPredicatesList = new ArrayList<Predicate>();
+				if (queryLabel.getLabelType() != null){
+					Predicate labelType = criteriaBuilder.equal(label.<String>get("lsType"), queryLabel.getLabelType());
+					labelPredicatesList.add(labelType);
+				}
+				if (queryLabel.getLabelKind() != null){
+					Predicate labelKind = criteriaBuilder.equal(label.<String>get("lsKind"), queryLabel.getLabelKind());
+					labelPredicatesList.add(labelKind);
+				}
+				if (queryLabel.getLabelText() != null){
+					Predicate labelText = criteriaBuilder.like(label.<String>get("labelText"), '%'+queryLabel.getLabelText()+'%');
+					labelPredicatesList.add(labelText);
+				}
+				//gather labels
+				Predicate[] labelPredicates = new Predicate[0];
+				labelPredicates = labelPredicatesList.toArray(labelPredicates);
+				predicateList.add(criteriaBuilder.and(labelPredicates));
+			}
+		}
+		return predicateList;
+	}
+
+
+	@Override
+	public Collection<Long> searchContainerIdsByBrowserQueryDTO(
+			ContainerBrowserQueryDTO query) throws Exception{
+		List<Long> containerIdList = new ArrayList<Long>();	
+		EntityManager em = Container.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+		Root<Container> thing = criteria.from(Container.class);
+		List<Predicate> metaPredicateList = new ArrayList<Predicate>();
+		//split query string into terms
+		String queryString = query.getQueryString().replaceAll("\\*", "%");
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
+		//for each search term, construct a queryDTO with that term filled in every search position of the passed in queryDTO
+		for (String searchTerm : splitQuery){
+			ContainerQueryDTO queryDTO = new ContainerQueryDTO(query.getQueryDTO());
+			if (queryDTO.getFirstInteractions() != null){
+				for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
+					itx.setThingLabelText(searchTerm);
+				}
+			}
+			if (queryDTO.getSecondInteractions() != null){
+				for (ItxQueryDTO itx : queryDTO.getSecondInteractions()){
+					itx.setThingLabelText(searchTerm);
+				}
+			}
+			if (queryDTO.getSubjects() != null){
+				for (ItxQueryDTO itx : queryDTO.getSubjects()){
+					itx.setThingLabelText(searchTerm);
+				}
+			}
+			if (queryDTO.getValues() != null){
+				for (ValueQueryDTO value : queryDTO.getValues()){
+					value.setValue(searchTerm);
+				}
+			}
+			if (queryDTO.getLabels() != null){
+				for (LabelQueryDTO label : queryDTO.getLabels()){
+					label.setLabelText(searchTerm);
+				}
+			}
+			//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
+			List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
+			Predicate[] predicates = new Predicate[0];
+			predicates = predicateList.toArray(predicates);
+			Predicate searchTermPredicate = criteriaBuilder.or(predicates);
+			metaPredicateList.add(searchTermPredicate);
+		}
+		//add in thingType and thingKind as required at top level
+		if (query.getQueryDTO().getLsType() != null){
+			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getQueryDTO().getLsType());
+			metaPredicateList.add(thingType);
+		}
+		if (query.getQueryDTO().getLsKind() != null){
+			Predicate thingKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getQueryDTO().getLsKind());
+			metaPredicateList.add(thingKind);
+		}
+		//gather the predicates for each search term, and AND them all together
+		Predicate[] metaPredicates = new Predicate[0];
+		metaPredicates = metaPredicateList.toArray(metaPredicates);
+		criteria.where(criteriaBuilder.and(metaPredicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		containerIdList = q.getResultList();
+		logger.debug("Found "+containerIdList.size()+" results.");
+		return containerIdList;
 	}
 
 

@@ -43,6 +43,7 @@ import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
+import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.ItxQueryDTO;
 import com.labsynch.labseer.dto.LabelQueryDTO;
 import com.labsynch.labseer.dto.LsThingQueryDTO;
@@ -560,18 +561,18 @@ public class LsThingServiceImpl implements LsThingService {
 			//there are itx's
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
 				ItxLsThingLsThing updatedItxLsThingLsThing;
-				logger.debug("updating itxLsThingLsThing");
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
 					if (logger.isDebugEnabled()) logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
-					updateNestedFirstLsThing(itxLsThingLsThing);
+					updatedLsThing = updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
 					firstLsThings.add(updatedItxLsThingLsThing);
 				}else {
 					//old itx needs to be updated
 					if (logger.isDebugEnabled()) logger.debug("update existing itxLsThingLsThing: " + itxLsThingLsThing.toJson());
-					updateNestedFirstLsThing(itxLsThingLsThing);
+
+					updatedLsThing = updateNestedFirstLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setSecondLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
 					updateItxLsStates(itxLsThingLsThing, updatedItxLsThingLsThing);
@@ -601,7 +602,6 @@ public class LsThingServiceImpl implements LsThingService {
 					secondLsThings.add(updatedItxLsThingLsThing);
 				}else {
 					//old itx needs to be updated
-					if (logger.isDebugEnabled()) logger.debug("update existing itxLsThingLsThing: " + itxLsThingLsThing.toJson());
 					updateNestedSecondLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
@@ -2005,17 +2005,35 @@ public class LsThingServiceImpl implements LsThingService {
 	
 	@Override
 	public Collection<Long> searchLsThingIdsByQueryDTO(LsThingQueryDTO query) throws Exception{
-		List<Long> lsThingIdList = new ArrayList<Long>();
+		List<Long> lsThingIdList = new ArrayList<Long>();	
 		EntityManager em = LsThing.entityManager();
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
 		Root<LsThing> thing = criteria.from(LsThing.class);
-//		Join<LsThing, LsThingState> documentState = document.join("lsStates", JoinType.LEFT);
-//		Join<LsThing, LsThingLabel> documentLabel = document.join("lsLabels", JoinType.LEFT);
+		List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, query);
+		if (query.getLsType() != null){
+			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getLsType());
+			predicateList.add(thingType);
+		}
+		if (query.getLsKind() != null){
+			Predicate thingKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getLsKind());
+			predicateList.add(thingKind);
+		}
+		Predicate[] predicates = new Predicate[0];
+		//gather all predicates
+		predicates = predicateList.toArray(predicates);
+		criteria.where(criteriaBuilder.and(predicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		lsThingIdList = q.getResultList();
+		logger.debug("Found "+lsThingIdList.size()+" results.");
+		return lsThingIdList;
+	}
+	
+	private List<Predicate> buildPredicatesForQueryDTO(CriteriaBuilder criteriaBuilder, CriteriaQuery<Long> criteria, Root<LsThing> thing, LsThingQueryDTO query) throws Exception{
 		
 		criteria.select(thing.<Long>get("id"));
 		criteria.distinct(true);
-		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		//root lsThing properties
 		
@@ -2050,14 +2068,6 @@ public class LsThingServiceImpl implements LsThingService {
 		if (query.getRecordedBy() != null){
 			Predicate recordedBy = criteriaBuilder.like(thing.<String>get("recordedBy"), '%'+query.getRecordedBy()+'%');
 			predicateList.add(recordedBy);
-		}
-		if (query.getLsType() != null){
-			Predicate lsType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getLsType());
-			predicateList.add(lsType);
-		}
-		if (query.getLsKind() != null){
-			Predicate lsKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getLsKind());
-			predicateList.add(lsKind);
 		}
 		
 		//interactions
@@ -2270,7 +2280,7 @@ public class LsThingServiceImpl implements LsThingService {
 								cal.setTime(sdf.parse(valueQuery.getValue()));
 								parsedTime = true;
 							}catch (Exception e){
-								logger.warn("Failed to parse date in Container generic query for value",e);
+								logger.warn("Failed to parse date in LsThing generic query for value",e);
 							}
 						}
 						if (parsedTime){
@@ -2294,55 +2304,54 @@ public class LsThingServiceImpl implements LsThingService {
 								valuePredicatesList.add(valueLike);
 							}
 						}
-						
 					}else if (valueQuery.getValueType().equalsIgnoreCase("numericValue")){
-						if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
-							Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-							valuePredicatesList.add(valueGreaterThan);
-						}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
-							Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-							valuePredicatesList.add(valueGreaterThan);
-						}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
-							Predicate valueLessThan = criteriaBuilder.lessThan(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-							valuePredicatesList.add(valueLessThan);
-						}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
-							Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-							valuePredicatesList.add(valueLessThan);
-						}else{
-							Predicate valueEquals = criteriaBuilder.equal(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-							valuePredicatesList.add(valueEquals);
-						}
+					if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+						Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
+						valuePredicatesList.add(valueGreaterThan);
+					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+						Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
+						valuePredicatesList.add(valueGreaterThan);
+					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+						Predicate valueLessThan = criteriaBuilder.lessThan(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
+						valuePredicatesList.add(valueLessThan);
+					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+						Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
+						valuePredicatesList.add(valueLessThan);
 					}else{
-						//string value types: stringValue, codeValue, fileValue, clobValue
-						if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("=")){
-							Predicate valueEquals = criteriaBuilder.equal(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
-							valuePredicatesList.add(valueEquals);
-						}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("!=")){
-							Predicate valueNotEquals = criteriaBuilder.notEqual(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
-							valuePredicatesList.add(valueNotEquals);
-						}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("~")){
-							Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
-							valuePredicatesList.add(valueLike);
-						}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("!~")){
-							Predicate valueNotLike = criteriaBuilder.notLike(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
-							valuePredicatesList.add(valueNotLike);
-						}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
-							Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
-							valuePredicatesList.add(valueGreaterThan);
-						}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals(">=")){
-							Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
-							valuePredicatesList.add(valueGreaterThan);
-						}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
-							Predicate valueLessThan = criteriaBuilder.lessThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
-							valuePredicatesList.add(valueLessThan);
-						}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
-							Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
-							valuePredicatesList.add(valueLessThan);
-						}else{
-							Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
-							valuePredicatesList.add(valueLike);
-						}
+						Predicate valueEquals = criteriaBuilder.equal(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
+						valuePredicatesList.add(valueEquals);
 					}
+				}else{
+					//string value types: stringValue, codeValue, fileValue, clobValue
+					if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("=")){
+						Predicate valueEquals = criteriaBuilder.equal(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+						valuePredicatesList.add(valueEquals);
+					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("!=")){
+						Predicate valueNotEquals = criteriaBuilder.notEqual(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+						valuePredicatesList.add(valueNotEquals);
+					}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("~")){
+						Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+						valuePredicatesList.add(valueLike);
+					}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("!~")){
+						Predicate valueNotLike = criteriaBuilder.notLike(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+						valuePredicatesList.add(valueNotLike);
+					}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+						Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+						valuePredicatesList.add(valueGreaterThan);
+					}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals(">=")){
+						Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+						valuePredicatesList.add(valueGreaterThan);
+					}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+						Predicate valueLessThan = criteriaBuilder.lessThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+						valuePredicatesList.add(valueLessThan);
+					}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+						Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+						valuePredicatesList.add(valueLessThan);
+					}else{
+						Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
+						valuePredicatesList.add(valueLike);
+					}
+				}
 				}
 				//gather predicates with AND
 				Predicate[] valuePredicates = new Predicate[0];
@@ -2350,7 +2359,6 @@ public class LsThingServiceImpl implements LsThingService {
 				predicateList.add(criteriaBuilder.and(valuePredicates));
 			}
 		}
-		
 		//labels
 		if (query.getLabels() != null){
 			for (LabelQueryDTO queryLabel : query.getLabels()){
@@ -2405,9 +2413,66 @@ public class LsThingServiceImpl implements LsThingService {
 				predicateList.add(criteriaBuilder.and(labelPredicates));
 			}
 		}
-		//gather all predicates
-		predicates = predicateList.toArray(predicates);
-		criteria.where(criteriaBuilder.and(predicates));
+		return predicateList;
+	}
+
+
+	@Override
+	public Collection<Long> searchLsThingIdsByBrowserQueryDTO(
+			LsThingBrowserQueryDTO query) throws Exception{
+		List<Long> lsThingIdList = new ArrayList<Long>();	
+		EntityManager em = LsThing.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+		Root<LsThing> thing = criteria.from(LsThing.class);
+		List<Predicate> metaPredicateList = new ArrayList<Predicate>();
+		//split query string into terms
+		String queryString = query.getQueryString().replaceAll("\\*", "%");
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
+		//for each search term, construct a queryDTO with that term filled in every search position of the passed in queryDTO
+		for (String searchTerm : splitQuery){
+			LsThingQueryDTO queryDTO = new LsThingQueryDTO(query.getQueryDTO());
+			if (queryDTO.getFirstInteractions() != null){
+				for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
+					itx.setThingLabelText(searchTerm);
+				}
+			}
+			if (queryDTO.getSecondInteractions() != null){
+				for (ItxQueryDTO itx : queryDTO.getSecondInteractions()){
+					itx.setThingLabelText(searchTerm);
+				}
+			}
+			if (queryDTO.getValues() != null){
+				for (ValueQueryDTO value : queryDTO.getValues()){
+					value.setValue(searchTerm);
+				}
+			}
+			if (queryDTO.getLabels() != null){
+				for (LabelQueryDTO label : queryDTO.getLabels()){
+					label.setLabelText(searchTerm);
+				}
+			}
+			//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
+			List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
+			Predicate[] predicates = new Predicate[0];
+			predicates = predicateList.toArray(predicates);
+			Predicate searchTermPredicate = criteriaBuilder.or(predicates);
+			metaPredicateList.add(searchTermPredicate);
+		}
+		//add in thingType and thingKind as required at top level
+		if (query.getQueryDTO().getLsType() != null){
+			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getQueryDTO().getLsType());
+			metaPredicateList.add(thingType);
+		}
+		if (query.getQueryDTO().getLsKind() != null){
+			Predicate thingKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getQueryDTO().getLsKind());
+			metaPredicateList.add(thingKind);
+		}
+		//gather the predicates for each search term, and AND them all together
+		Predicate[] metaPredicates = new Predicate[0];
+		metaPredicates = metaPredicateList.toArray(metaPredicates);
+		criteria.where(criteriaBuilder.and(metaPredicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		lsThingIdList = q.getResultList();
