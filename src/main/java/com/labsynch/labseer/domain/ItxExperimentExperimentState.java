@@ -45,7 +45,7 @@ public class ItxExperimentExperimentState extends AbstractState {
     
     public static ItxExperimentExperimentState update(ItxExperimentExperimentState object) {
     	ItxExperimentExperimentState updatedObject = new JSONDeserializer<ItxExperimentExperimentState>().use(null, ItxExperimentExperimentState.class).
-        		deserializeInto(object.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxExperimentExperimentState.findItxExperimentExperimentState(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();

@@ -27,8 +27,6 @@ import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ValueKind;
 import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ExperimentValuePathDTO;
-import com.labsynch.labseer.dto.GenericValuePathRequest;
 import com.labsynch.labseer.dto.StateValueCsvDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -281,40 +279,17 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 	
 	@Override
 	public ExperimentValue getExperimentValue(String idOrCodeName,
-			String stateType, String stateKind, String valueType, String valueKind) {
+			String stateType, String stateKind, String valueType,
+			String valueKind) {
 		ExperimentValue value = null;
 		try{
-			Collection<ExperimentValue> values = getExperimentValues(idOrCodeName, stateType, stateKind, valueType, valueKind);
-			value = values.iterator().next();
+			Long id = Experiment.findExperimentsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			value = ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
 		}catch (Exception e){
-			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			logger.debug("Caught error "+e.toString()+" trying to find a value.");
 			value = null;
 		}
 		return value;
-	}
-
-	@Override
-	public Collection<ExperimentValuePathDTO> getExperimentValues(
-			Collection<GenericValuePathRequest> genericRequests) {
-		Collection<ExperimentValuePathDTO> results = new ArrayList<ExperimentValuePathDTO>();
-		for (GenericValuePathRequest request : genericRequests){
-			ExperimentValuePathDTO result = new ExperimentValuePathDTO();
-			result.setIdOrCodeName(request.getIdOrCodeName());
-			result.setValueType(request.getValueType());
-			result.setValueKind(request.getValueKind());
-			result.setValues(getExperimentValues(request.getIdOrCodeName(), request.getStateType(), request.getStateKind(), request.getValueType(), request.getValueKind()));
-			results.add(result);
-		}
-		return results;
-	}
-	
-	private Collection<ExperimentValue> getExperimentValues(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind){
-		if (SimpleUtil.isNumeric(idOrCodeName)){
-			Long id = Long.valueOf(idOrCodeName);
-			return ExperimentValue.findExperimentValuesByExptIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getResultList();
-		}else{
-			return ExperimentValue.findExperimentValuesByExperimentCodeNameAndStateTypeKindAndValueTypeKind(idOrCodeName, stateType, stateKind, valueType, valueKind).getResultList();
-		}
 	}
 
 }

@@ -34,7 +34,7 @@ public class ItxSubjectContainerValue extends AbstractValue {
     
     public static ItxSubjectContainerValue update(ItxSubjectContainerValue object) {
     	ItxSubjectContainerValue updatedObject = new JSONDeserializer<ItxSubjectContainerValue>().use(null, ItxSubjectContainerValue.class).
-        		deserializeInto(object.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxSubjectContainerValue.findItxSubjectContainerValue(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();
@@ -45,7 +45,7 @@ public class ItxSubjectContainerValue extends AbstractValue {
     public static ItxSubjectContainerValue fromJsonToItxSubjectContainerValue(String json) {
         return new JSONDeserializer<ItxSubjectContainerValue>().
         		use(null, ItxSubjectContainerValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -53,7 +53,7 @@ public class ItxSubjectContainerValue extends AbstractValue {
         return new JSONDeserializer<List<ItxSubjectContainerValue>>().
         		use(null, ArrayList.class).
         		use("values", ItxSubjectContainerValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -61,7 +61,7 @@ public class ItxSubjectContainerValue extends AbstractValue {
         return new JSONDeserializer<List<ItxSubjectContainerValue>>().
         		use(null, ArrayList.class).
         		use("values", ItxSubjectContainerValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -96,12 +96,5 @@ public class ItxSubjectContainerValue extends AbstractValue {
 		q.setParameter("experimentId", experimentId);
 		int numberOfDeletedEntities = q.executeUpdate();
 		return numberOfDeletedEntities;
-	}
-
-
-	public static ItxSubjectContainerValue create(
-			ItxSubjectContainerValue itxSubjectContainerValue) {
-		ItxSubjectContainerValue newItxSubjectContainerValue = new JSONDeserializer<ItxSubjectContainerValue>().use(null, ItxSubjectContainerValue.class).deserializeInto(itxSubjectContainerValue.toJson(), new ItxSubjectContainerValue());
-        return newItxSubjectContainerValue;
 	}
 }

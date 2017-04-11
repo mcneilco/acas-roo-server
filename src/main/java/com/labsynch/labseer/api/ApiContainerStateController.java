@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerState;
@@ -30,12 +29,10 @@ import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.UpdateLog;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
-import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.service.ContainerService;
 import com.labsynch.labseer.service.ContainerStateService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
-import flexjson.JSONSerializer;
 import flexjson.JSONTokener;
 
 @Controller
@@ -270,25 +267,6 @@ public class ApiContainerStateController {
           IOUtils.closeQuietly(br);
       }
       return new ResponseEntity<String>("[]", headers, HttpStatus.OK);
-  }
-  
-  @Transactional
-  @RequestMapping(value = "/getContainerStatesByContainerValue", method = RequestMethod.POST, headers = "Accept=application/json")
-  @ResponseBody
-  public ResponseEntity<java.lang.String> getContainersByContainerValue(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
-      HttpHeaders headers = new HttpHeaders();
-      headers.add("Content-Type", "application/json; charset=utf-8");
-      try{
-      	ContainerValueRequestDTO requestDTO = ContainerValueRequestDTO.fromJsonToContainerValueRequestDTO(json);
-      	Collection<ContainerState> searchResults = csService.getContainerStatesByContainerValue(requestDTO);
-      	if (with != null && with.equalsIgnoreCase("nestedContainer")){
-      		return new ResponseEntity<String>(ContainerState.toJsonArrayWithNestedContainers(searchResults), headers, HttpStatus.OK);
-      	}
-      	return new ResponseEntity<String>(ContainerState.toJsonArray(searchResults), headers, HttpStatus.OK);
-      } catch (Exception e){
-      	logger.error("Uncaught error in getContainerStatesByContainerValue",e);
-          return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
   }
 
 	

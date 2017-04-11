@@ -63,22 +63,6 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
         this.experimentName = experimentName;
     }
     
-    public Long AnalysisGroupValueDTO.getAgId() {
-        return this.agId;
-    }
-    
-    public void AnalysisGroupValueDTO.setAgId(Long agId) {
-        this.agId = agId;
-    }
-    
-    public Long AnalysisGroupValueDTO.getAgStateId() {
-        return this.agStateId;
-    }
-    
-    public void AnalysisGroupValueDTO.setAgStateId(Long agStateId) {
-        this.agStateId = agStateId;
-    }
-    
     public String AnalysisGroupValueDTO.getLsType() {
         return this.lsType;
     }

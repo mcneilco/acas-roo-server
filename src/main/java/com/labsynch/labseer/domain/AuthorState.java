@@ -79,7 +79,7 @@ public class AuthorState extends AbstractState {
 	}
 
 	public static com.labsynch.labseer.domain.AuthorState fromJsonToAuthorState(String json) {
-		return new JSONDeserializer<AuthorState>().use(null, AuthorState.class).deserialize(json);
+		return new JSONDeserializer<AuthorState>().use(null, AuthorState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
 	}
 
 	public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.AuthorState> collection) {
@@ -87,7 +87,7 @@ public class AuthorState extends AbstractState {
 	}
 
 	public static Collection<com.labsynch.labseer.domain.AuthorState> fromJsonArrayToAuthorStates(String json) {
-		return new JSONDeserializer<List<AuthorState>>().use(null, ArrayList.class).use("values", AuthorState.class).deserialize(json);
+		return new JSONDeserializer<List<AuthorState>>().use(null, ArrayList.class).use("values", AuthorState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
 	}
 	
 	public String toJson() {

@@ -2,24 +2,11 @@ package com.labsynch.labseer.service;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,17 +15,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Container;
-import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
-import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.SubjectState;
 import com.labsynch.labseer.domain.UpdateLog;
-import com.labsynch.labseer.dto.ContainerStatePathDTO;
-import com.labsynch.labseer.dto.ContainerValueRequestDTO;
-import com.labsynch.labseer.dto.GenericStatePathRequest;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -122,85 +105,29 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 		return lst;
 	}
 
-	@Transactional
 	@Override
 	public ContainerState updateContainerState(ContainerState containerState) {
-		ContainerState updatedContainerState;
-		if (containerState.getId() == null){
-			updatedContainerState = new ContainerState(containerState);
-			updatedContainerState.setContainer(Container.findContainer(containerState.getContainer().getId()));
-			updatedContainerState.persist();
-			if (logger.isDebugEnabled()) logger.debug("persisted new container state " + updatedContainerState.getId());
-
-		} else {
-			updatedContainerState = ContainerState.update(containerState);
-
-			if (logger.isDebugEnabled()) logger.debug("updated container state " + updatedContainerState.getId());
-
-		}
-		if (containerState.getLsValues() != null){
-			for(ContainerValue lsThingValue : containerState.getLsValues()){
-				if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedContainerState);
-				ContainerValue updatedContainerValue;
-				if (lsThingValue.getId() == null){
-					updatedContainerValue = ContainerValue.create(lsThingValue);
-					updatedContainerValue.setLsState(ContainerState.findContainerState(updatedContainerState.getId()));
-					updatedContainerValue.persist();
-					updatedContainerState.getLsValues().add(updatedContainerValue);
-				} else {
-					updatedContainerValue = ContainerValue.update(lsThingValue);
-					if (logger.isDebugEnabled()) logger.debug("updated container value " + updatedContainerValue.getId());
-				}
-				if (logger.isDebugEnabled()) logger.debug("checking container " + updatedContainerValue.toJson());
-
-			}	
-		} else {
-			if (logger.isDebugEnabled()) logger.debug("No container values to update");
-		}
-		updatedContainerState.flush();
-		return ContainerState.findContainerState(updatedContainerState.getId());
+		containerState.setVersion(ContainerState.findContainerState(containerState.getId()).getVersion());
+		containerState.merge();
+		return containerState;
 	}
 
-	@Transactional
 	@Override
 	public Collection<ContainerState> updateContainerStates(
 			Collection<ContainerState> containerStates) {
-		Collection<ContainerState> updatedStates = new ArrayList<ContainerState>();
 		for (ContainerState containerState : containerStates){
-			ContainerState updatedContainerState = updateContainerState(containerState);
-			updatedStates.add(updatedContainerState);
+			containerState = updateContainerState(containerState);
 		}
-		return updatedStates;
+		return null;
 	}
 
-	@Transactional
 	@Override
-	public ContainerState saveContainerState(ContainerState lsState) {
-		if (logger.isDebugEnabled()) logger.debug("incoming meta container: " + lsState.toJson() + "\n");
-		ContainerState newLsState = new ContainerState(lsState);
-		newLsState.setContainer(Container.findContainer(lsState.getContainer().getId()));
-		if (logger.isDebugEnabled()) logger.debug("here is the newLsState before save: " + newLsState.toJson());
-		newLsState.persist();
-		if (logger.isDebugEnabled()) logger.debug("persisted the newLsState: " + newLsState.toJson());
-		if (lsState.getLsValues() != null){
-			Set<ContainerValue> lsValues = new HashSet<ContainerValue>();
-			for(ContainerValue containerValue : lsState.getLsValues()){
-				if (logger.isDebugEnabled()) logger.debug("containerValue: " + containerValue.toJson());
-				ContainerValue newContainerValue = ContainerValue.create(containerValue);
-				newContainerValue.setLsState(newLsState);
-				newContainerValue.persist();
-				lsValues.add(newContainerValue);
-				if (logger.isDebugEnabled()) logger.debug("persisted the containerValue: " + newContainerValue.toJson());
-			}
-			newLsState.setLsValues(lsValues);
-		} else {
-			if (logger.isDebugEnabled()) logger.debug("No container values to save");
-		}
-		newLsState.flush();
-		return ContainerState.findContainerState(newLsState.getId());
+	public ContainerState saveContainerState(ContainerState containerState) {
+		containerState.setContainer(Container.findContainer(containerState.getContainer().getId()));		
+		containerState.persist();
+		return containerState;
 	}
 
-	@Transactional
 	@Override
 	public Collection<ContainerState> saveContainerStates(
 			Collection<ContainerState> containerStates) {
@@ -210,165 +137,6 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 			savedContainerStates.add(savedContainerState);
 		}
 		return savedContainerStates;
-	}
-	
-	@Override
-	public ContainerState getContainerState(String idOrCodeName,
-			String stateType, String stateKind) {
-		ContainerState state = null;
-		try{
-			Collection<ContainerState> states = getContainerStates(idOrCodeName, stateType, stateKind);
-			state = states.iterator().next();
-		}catch (Exception e){
-			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
-			state = null;
-		}
-		return state;
-	}
-
-	@Override
-	public Collection<ContainerStatePathDTO> getContainerStates(
-			Collection<GenericStatePathRequest> genericRequests) {
-		Collection<ContainerStatePathDTO> results = new ArrayList<ContainerStatePathDTO>();
-		for (GenericStatePathRequest request : genericRequests){
-			ContainerStatePathDTO result = new ContainerStatePathDTO();
-			result.setIdOrCodeName(request.getIdOrCodeName());
-			result.setStateType(request.getStateType());
-			result.setStateKind(request.getStateKind());
-			result.setStates(getContainerStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
-			results.add(result);
-		}
-		return results;
-	}
-	
-	private Collection<ContainerState> getContainerStates(String idOrCodeName, String stateType, String stateKind){
-		if (SimpleUtil.isNumeric(idOrCodeName)){
-			Long id = Long.valueOf(idOrCodeName);
-			return ContainerState.findContainerStatesByContainerIDAndStateTypeKind(id, stateType, stateKind).getResultList();
-		}else{
-			return ContainerState.findContainerStatesByContainerCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
-		}
-	}
-	
-	@Override
-	public List<ContainerState> getContainerStatesByContainerIdAndStateTypeKind(Long containerId, String stateType, 
-			String stateKind) {	
-		
-		List<ContainerState> containerStates = ContainerState.findContainerStatesByContainerIDAndStateTypeKind(containerId, stateType, stateKind).getResultList();
-
-		return containerStates;
-	}
-	
-	@Override
-	public ContainerState createContainerStateByContainerIdAndStateTypeKind(Long containerId, String stateType, String stateKind) {
-		ContainerState containerState = new ContainerState();
-		Container container = Container.findContainer(containerId);
-		containerState.setContainer(container);
-		containerState.setLsType(stateType);
-		containerState.setLsKind(stateKind);
-		containerState.setRecordedBy("default");
-		containerState.persist();
-		return containerState;
-	}
-	
-	@Override
-	public ContainerState createContainerStateByContainerIdAndStateTypeKindAndRecordedBy(Long containerId, String stateType, String stateKind, String recordedBy) {
-		ContainerState containerState = new ContainerState();
-		Container container = Container.findContainer(containerId);
-		containerState.setContainer(container);
-		containerState.setLsType(stateType);
-		containerState.setLsKind(stateKind);
-		containerState.setRecordedBy(recordedBy);
-		containerState.persist();
-		return containerState;
-	}
-
-	@Override
-	public Collection<ContainerState> getContainerStatesByContainerValue(
-			ContainerValueRequestDTO query) throws Exception {
-		EntityManager em = ContainerState.entityManager();
-		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<ContainerState> criteria = criteriaBuilder.createQuery(ContainerState.class);
-		Root<ContainerState> state = criteria.from(ContainerState.class);
-		List<Predicate> predicateList = new ArrayList<Predicate>();
-		criteria.distinct(true);
-		
-		Join<ContainerState, Container> container = state.join("container");
-		Join<ContainerState, ContainerValue> value = state.join("lsValues");
-		
-		Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
-		Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
-		predicateList.add(stateNotIgn);
-		predicateList.add(valueNotIgn);
-		
-		if (query.getStateType() != null){
-			Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),query.getStateType());
-			predicateList.add(stateType);
-		}
-		if (query.getStateKind() != null){
-			Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),query.getStateKind());
-			predicateList.add(stateKind);
-		}
-		if (query.getValueType() != null){
-			Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),query.getValueType());
-			predicateList.add(valueType);
-		}
-		if (query.getValueKind() != null){
-			Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),query.getValueKind());
-			predicateList.add(valueKind);
-		}
-		if (query.getValue() != null){
-			if (query.getValueType() == null){
-				logger.error("valueType must be specified if value is specified!");
-				throw new Exception("valueType must be specified if value is specified!");
-			}else if (query.getValueType().equalsIgnoreCase("dateValue")){
-				String postgresTimeUnit = "day";
-				Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
-				Calendar cal = Calendar.getInstance(); // locale-specific
-				boolean parsedTime = false;
-				if (SimpleUtil.isNumeric(query.getValue())){
-					cal.setTimeInMillis(Long.valueOf(query.getValue()));
-					parsedTime = true;
-				}else{
-					try{
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-						cal.setTime(sdf.parse(query.getValue()));
-						parsedTime = true;
-					}catch (Exception e){
-						logger.warn("Failed to parse date in LsThing generic query for value",e);
-					}
-				}
-				cal.set(Calendar.HOUR_OF_DAY, 0);
-				cal.set(Calendar.MINUTE, 0);
-				cal.set(Calendar.SECOND, 0);
-				cal.set(Calendar.MILLISECOND, 0);
-				long time = cal.getTimeInMillis();
-				Date queryDate = new Date(time);
-				Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
-				if (parsedTime) predicateList.add(valueLike);
-			}else{
-				//only works with string value types: stringValue, codeValue, fileValue, clobValue
-				Predicate valueLike = criteriaBuilder.like(value.<String>get(query.getValueType()), '%' + query.getValue() + '%');
-				predicateList.add(valueLike);
-			}
-		}
-		
-		if (query.getContainerType() != null){
-			Predicate thingType = criteriaBuilder.equal(container.<String>get("lsType"), query.getContainerType());
-			predicateList.add(thingType);
-		}
-		if (query.getContainerKind() != null){
-			Predicate thingKind = criteriaBuilder.equal(container.<String>get("lsKind"), query.getContainerKind());
-			predicateList.add(thingKind);
-		}
-		
-		//gather predicates with AND
-		Predicate[] predicates = new Predicate[0];
-		predicates = predicateList.toArray(predicates);
-		criteria.where(criteriaBuilder.and(predicates));
-		TypedQuery<ContainerState> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		return q.getResultList();
 	}
 
 

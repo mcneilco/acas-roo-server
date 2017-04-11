@@ -86,7 +86,7 @@ public class SubjectDTO {
     }
 
 	public static SubjectDTO fromJsonToSubjectDTO(String json) {
-        return new JSONDeserializer<SubjectDTO>().use(null, SubjectDTO.class).deserialize(json);
+        return new JSONDeserializer<SubjectDTO>().use(null, SubjectDTO.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
 	public static String toJsonArray(Collection<SubjectDTO> collection) {
@@ -97,7 +97,7 @@ public class SubjectDTO {
     }
 
 	public static Collection<SubjectDTO> fromJsonArrayToSubjectDTO(String json) {
-        return new JSONDeserializer<List<SubjectDTO>>().use(null, ArrayList.class).use("values", SubjectDTO.class).deserialize(json);
+        return new JSONDeserializer<List<SubjectDTO>>().use(null, ArrayList.class).use("values", SubjectDTO.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 }
 

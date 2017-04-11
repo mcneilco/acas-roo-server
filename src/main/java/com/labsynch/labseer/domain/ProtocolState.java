@@ -75,14 +75,13 @@ public class ProtocolState extends AbstractState {
 		}
 		
 	}
-    
-    @Transactional
+
     public String toJson() {
-        return new JSONSerializer().include("lsValues").exclude("*.class", "protocol").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     public static ProtocolState fromJsonToProtocolState(String json) {
-        return new JSONDeserializer<ProtocolState>().use(null, ProtocolState.class).deserialize(json);
+        return new JSONDeserializer<ProtocolState>().use(null, ProtocolState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
     
     public static String toJsonArray(Collection<ProtocolState> collection) {
@@ -90,11 +89,11 @@ public class ProtocolState extends AbstractState {
     }
     
     public static Collection<ProtocolState> fromJsonArrayToProtocolStates(String json) {
-        return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).deserialize(json);
+        return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<ProtocolState> fromJsonArrayToProtocolStates(Reader json) {
-        return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).deserialize(json);
+        return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
 	public static TypedQuery<ProtocolState> findProtocolStatesByProtocolIDAndStateTypeKind(
@@ -120,22 +119,4 @@ public class ProtocolState extends AbstractState {
 	public String toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
-
-	public static TypedQuery<ProtocolState> findProtocolStatesByProtocolCodeNameAndStateTypeKind(
-			String protocolCodeName, String stateType, String stateKind) {
-		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		
-		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT ps FROM ProtocolState AS ps " +
-		"JOIN ps.protocol p " +
-		"WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
-		"AND p.codeName = :protocolCodeName ";
-		TypedQuery<ProtocolState> q = em.createQuery(hsqlQuery, ProtocolState.class);
-		q.setParameter("protocolCodeName", protocolCodeName);
-		q.setParameter("stateType", stateType);
-		q.setParameter("stateKind", stateKind);
-		q.setParameter("ignored", true);
-		return q;
-	}
 }

@@ -56,7 +56,6 @@ import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.StateValueDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.SubjectStateValueDTO;
@@ -1578,19 +1577,5 @@ public class ApiExperimentController {
         result = experimentService.findExperimentsByRequestMetadata(requestParams);
         
         return new ResponseEntity<String>(Experiment.toJsonArrayStubWithProt(result), headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(value = "/getCodeNameFromNameRequest", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> getCodeNameFromName(@RequestBody String json, 
-    		@RequestParam(value = "experimentType", required = true) String experimentType, 
-    		@RequestParam(value = "experimentKind", required = true) String experimentKind, 
-    		@RequestParam(value = "labelType", required = false) String labelType, 
-    		@RequestParam(value = "labelKind", required = false) String labelKind) {
-    	PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);
-        logger.info("getCodeNameFromNameRequest incoming json: " + requestDTO.toJson());
-        PreferredNameResultsDTO results = experimentService.getCodeNameFromName(experimentType, experimentKind, labelType, labelKind, requestDTO);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
     }
 }

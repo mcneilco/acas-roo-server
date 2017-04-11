@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.dto.AnalysisGroupValuePathDTO;
-import com.labsynch.labseer.dto.GenericValuePathRequest;
 
 @Service
 public interface AnalysisGroupValueService {
@@ -50,9 +48,6 @@ public interface AnalysisGroupValueService {
 	public AnalysisGroupValue getAnalysisGroupValue(String idOrCodeName,
 			String stateType, String stateKind, String valueType,
 			String valueKind);
-
-	public Collection<AnalysisGroupValuePathDTO> getAnalysisGroupValues(
-			Collection<GenericValuePathRequest> genericRequests);
 
 	
 }

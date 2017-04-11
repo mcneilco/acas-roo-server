@@ -1,12 +1,10 @@
 package com.labsynch.labseer.api;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,20 +22,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.dto.ContainerSubjectsDTO;
-import com.labsynch.labseer.dto.MultiContainerSubjectSearchRequest;
-import com.labsynch.labseer.dto.MultiContainerSubjectSearchResultDTO;
-import com.labsynch.labseer.dto.SubjectCodeDTO;
 import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 import com.labsynch.labseer.dto.SubjectCsvDataDTO;
-import com.labsynch.labseer.dto.SubjectSearchRequest;
-import com.labsynch.labseer.dto.SubjectSearchResultDTO;
 import com.labsynch.labseer.dto.TempThingDTO;
-import com.labsynch.labseer.dto.ValueQueryDTO;
-import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.SubjectService;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -222,37 +211,16 @@ public class ApiSubjectController {
         return new ResponseEntity<String>(Subject.toJsonArray(updatedSubjects), headers, HttpStatus.OK);
     }
 
-	@Transactional
-    @RequestMapping(value = "/{idOrCodeName}", method = RequestMethod.DELETE)
-    public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("idOrCodeName") String idOrCodeName,
-    		@RequestParam(value = "lsTransaction", required = false) Long lsTransaction,
-    		@RequestParam(value = "modifiedBy", required = false) String modifiedBy) {
-    	Subject subject;
-    	if(SimpleUtil.isNumeric(idOrCodeName)) {
-	    	subject = Subject.findSubject(Long.valueOf(idOrCodeName));
- 		} else {
- 			subject = Subject.findSubjectByCodeNameEquals(idOrCodeName);
- 		}
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
+        Subject subject = Subject.findSubject(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (subject == null || (subject.isIgnored() && subject.isDeleted())) {
-            logger.info("Did not find the subject before delete");
+        if (subject == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        } else {
-            logger.info("deleting the subject: " + idOrCodeName);
-            if (lsTransaction != null) subject.setLsTransaction(lsTransaction);
-            if (modifiedBy != null) subject.setModifiedBy(modifiedBy);
-            subject.setModifiedDate(new Date());
-            subject.logicalDelete();
-            subject.merge();
-            if (Subject.findSubject(subject.getId()) == null || Subject.findSubject(subject.getId()).isIgnored()) {
-                logger.info("Did not find the subject after delete");
-                return new ResponseEntity<String>(headers, HttpStatus.OK);
-            } else {
-                logger.info("Found the subject after delete");
-                return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
-            }
         }
+        subject.remove();
+        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
 	@RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -316,164 +284,5 @@ public class ApiSubjectController {
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-    
-    @Transactional
-    @RequestMapping(value = "/getSubjectsByContainerInteractions", method = RequestMethod.POST, headers = "Accept=application/json")
-    @ResponseBody
-    public ResponseEntity<java.lang.String> getSubjectsByContainerInteractions(@RequestBody String json,
-    		@RequestParam(value = "with", required = false) String with) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        try{
-        	Collection<ContainerSubjectsDTO> requests = ContainerSubjectsDTO.fromJsonArrayToCoes(json);
-        	Collection<ContainerSubjectsDTO> results = subjectService.getSubjectsByContainerAndInteraction(requests);
-        	if (with != null && with.equalsIgnoreCase("stub")){
-            	return new ResponseEntity<String>(ContainerSubjectsDTO.toJsonArrayStub(results), headers, HttpStatus.OK);
-        	}
-        	return new ResponseEntity<String>(ContainerSubjectsDTO.toJsonArray(results), headers, HttpStatus.OK);
-        } catch (Exception e){
-        	logger.error("Uncaught error in getSubjectsByCodeNames",e);
-            return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    @Transactional
-    @RequestMapping(value = "/searchSubjects", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> searchSubjects(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
-    	HttpHeaders headers = new HttpHeaders();
-    	headers.add("Content-Type", "application/json; charset=utf-8");
-    	SubjectSearchRequest query = SubjectSearchRequest.fromJsonToSubjectSearchRequest(json);
-    	ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-    	boolean errorsFound = false;Collection<Long> subjectIds;
-    	SubjectSearchResultDTO result = new SubjectSearchResultDTO();
-    	try{
-    		subjectIds = subjectService.searchSubjectIdsByQueryDTO(query);
-    		int maxResults = 1000;
-    		if (query.getMaxResults() != null) maxResults = query.getMaxResults();
-    		result.setMaxResults(maxResults);
-    		result.setNumberOfResults(subjectIds.size());
-    		if (result.getNumberOfResults() <= result.getMaxResults()){
-    			result.setResults(subjectService.getSubjectsByIds(subjectIds));
-    		}
-    	}catch (Exception e){
-    		logger.error("Caught searching for subjects in generic interaction search",e);
-    		ErrorMessage error = new ErrorMessage();
-    	    error.setErrorLevel("error");
-    	    error.setMessage(e.getMessage());
-    	    errors.add(error);
-    	    errorsFound = true;
-    	}
-    	
-    	if (errorsFound) {
-    	    return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
-    	} else if (with != null) {
-    		if (with.equalsIgnoreCase("nestedfull")) {
-    			return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("prettyjson")) {
-				return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("nestedstub")) {
-				return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("stub")) {
-				return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
-			}
-		}
-    		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
-    }
-    
-    @Transactional
-    @RequestMapping(value = "/searchSubjectsWithContainerCodeArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> searchSubjectsWithContainerCodeArray(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
-    	HttpHeaders headers = new HttpHeaders();
-    	headers.add("Content-Type", "application/json; charset=utf-8");
-    	MultiContainerSubjectSearchRequest query = MultiContainerSubjectSearchRequest.fromJsonToMultiContainerSubjectSearchRequest(json);
-    	ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-    	boolean errorsFound = false;
-    	Map<String, List<Long>> containerSubjectIdMaps;
-    	MultiContainerSubjectSearchResultDTO result = new MultiContainerSubjectSearchResultDTO();
-    	try{
-    		containerSubjectIdMaps = subjectService.searchSubjectIdsByMultiContainerQueryDTO(query);
-    		int maxResults = 1000;
-    		if (query.getMaxResults() != null) maxResults = query.getMaxResults();
-    		result.setMaxResults(maxResults);
-    		int numberOfSubjects = 0;
-    		for (List<Long> idList : containerSubjectIdMaps.values()){
-    			numberOfSubjects += idList.size();
-    		}
-    		result.setNumberOfResults(numberOfSubjects);
-    		if (result.getNumberOfResults() <= result.getMaxResults()){
-    			result.setResults(subjectService.getContainerSubjectsByIds(containerSubjectIdMaps));
-    		}
-    	}catch (Exception e){
-    		logger.error("Caught searching for subjects in multi container generic interaction search",e);
-    		ErrorMessage error = new ErrorMessage();
-    	    error.setErrorLevel("error");
-    	    error.setMessage(e.getMessage());
-    	    errors.add(error);
-    	    errorsFound = true;
-    	}
-    	
-    	if (errorsFound) {
-    	    return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
-    	} else if (with != null) {
-    		if (with.equalsIgnoreCase("nestedfull")) {
-    			return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("prettyjson")) {
-				return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("nestedstub")) {
-				return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
-			} else if (with.equalsIgnoreCase("stub")) {
-				return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
-			}
-		}
-    		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(value = "/setSubjectValues/{idOrCodeName}", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> setSubjectValues(@RequestBody String json, 
-    		@PathVariable("idOrCodeName") String idOrCodeName,
-    		@RequestParam(value = "modifiedBy", required = true) String modifiedBy,
-    		@RequestParam(value = "lsTransaction", required = true) Long lsTransaction){
-    	HttpHeaders headers = new HttpHeaders();
-    	headers.add("Content-Type", "application/json; charset=utf-8");
-    	try{
-    		ValueQueryDTO pathDTO = ValueQueryDTO.fromJsonToValueQueryDTO(json);
-    		
-    		if (pathDTO.getValueType() == null){
-    			return new ResponseEntity<String>("ERROR: Must provide valueType", headers, HttpStatus.BAD_REQUEST);
-    		}
-    		
-    		Subject subject = null;
-	    	if (SimpleUtil.isNumeric(idOrCodeName)){
-	        	subject = Subject.findSubject(Long.valueOf(idOrCodeName));
-	        }else{
-	        	subject = Subject.findSubjectByCodeNameEquals(idOrCodeName);
-	        }
-	        if (subject == null) {
-	            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-	        }
-    		subjectService.setSubjectValuesByPath(subject, pathDTO, modifiedBy, lsTransaction);
-    		return new ResponseEntity<String>(headers, HttpStatus.OK);
-    	}catch (Exception e){
-    		logger.error("Caught error in setSubjectValues",e);
-    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
-    	}
-    }
-    
-    @RequestMapping(value = "/getExperimentCodes", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> getExperimentCodes(@RequestBody String json){
-    	HttpHeaders headers = new HttpHeaders();
-    	headers.add("Content-Type", "application/json; charset=utf-8");
-    	try{
-    		Collection<SubjectCodeDTO> subjectCodeDTOs = SubjectCodeDTO.fromJsonArrayToSubjectCoes(json);
-    		subjectCodeDTOs = subjectService.getExperimentCodes(subjectCodeDTOs);
-    		return new ResponseEntity<String>(SubjectCodeDTO.toJsonArray(subjectCodeDTOs), headers, HttpStatus.OK);
-    	}catch (Exception e){
-    		logger.error("Caught error in getExperimentCodes",e);
-    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
-    	}
-    }
-    
-    
-
 
 }

@@ -3,7 +3,6 @@
 package com.labsynch.labseer.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -39,8 +38,6 @@ import com.labsynch.labseer.domain.ThingType;
 import com.labsynch.labseer.domain.ValueKind;
 import com.labsynch.labseer.domain.ValueType;
 import com.labsynch.labseer.dto.AutoLabelDTO;
-import com.labsynch.labseer.dto.TypeDTO;
-import com.labsynch.labseer.dto.TypeKindDTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -85,13 +82,6 @@ public class CreateProjectsTests {
 
 		ValueType valueTypeString = ValueType.getOrCreate("stringValue");
 		ValueKind.getOrCreate(valueTypeString, "short description");
-		
-		TypeDTO roleType = new TypeDTO("Project");
-		List<TypeDTO> roleTypes = new ArrayList<TypeDTO>();
-		roleTypes.add(roleType);
-		TypeDTO.getOrCreateRoleTypes(roleTypes);
-		
-		List<TypeKindDTO> roleKinds = new ArrayList<TypeKindDTO>();
 
 		String thingTypeAndKind = "project_project";
 		String labelTypeAndKind = "name_project name";
@@ -143,9 +133,6 @@ public class CreateProjectsTests {
 		val3.setRecordedBy("acas admin");
 		val3.persist();
 		
-		TypeKindDTO roleKind = new TypeKindDTO("Project", lsThing.getCodeName());
-		roleKinds.add(roleKind);
-		
 		////////////////////////////////
 
 
@@ -182,8 +169,6 @@ public class CreateProjectsTests {
 		val3.setRecordedBy("acas admin");
 		val3.persist();		
 		
-		roleKind = new TypeKindDTO("Project", lsThing.getCodeName());
-		roleKinds.add(roleKind);
 		
 		////////////////////////////////
 
@@ -218,13 +203,7 @@ public class CreateProjectsTests {
 		val2.persist();
 		val3 = LsThingValue.saveLsThingValue(lsTransaction, lsThingState, "stringValue", "short description", "project short description");
 		val3.setRecordedBy("acas admin");
-		val3.persist();
-		
-		roleKind = new TypeKindDTO("Project", lsThing.getCodeName());
-		roleKinds.add(roleKind);
-		
-		//////////////////////////////////
-		TypeKindDTO.getOrCreateRoleKinds(roleKinds);
+		val3.persist();		
 	}
 
 	//@Test

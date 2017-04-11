@@ -23,7 +23,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.CustomDateTimeFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
@@ -121,7 +120,7 @@ public class ContainerValue extends AbstractValue {
     
     public static ContainerValue create(ContainerValue containerValue) {
     	ContainerValue newContainerValue = new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).
-        		deserializeInto(containerValue.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(containerValue.toJson(), 
         				new ContainerValue());	
     
         return newContainerValue;
@@ -211,24 +210,20 @@ public class ContainerValue extends AbstractValue {
         return entityManager().createQuery("SELECT o FROM ContainerValue o", ContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-//    public static com.labsynch.labseer.domain.ContainerValue fromJsonToContainerValue(String json) {
-//        return new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).use(Date.class, new CustomDateTimeFactory()).deserialize(json);
-//    }
-    
     public static com.labsynch.labseer.domain.ContainerValue fromJsonToContainerValue(String json) {
-        return new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).deserialize(json);
+        return new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ContainerValue> fromJsonArrayToContainerValues(String json) {
-        return new JSONDeserializer<List<ContainerValue>>().use(null, ArrayList.class).use("values", ContainerValue.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerValue>>().use(null, ArrayList.class).use("values", ContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ContainerValue> fromJsonArrayToContainerValues(Reader json) {
-        return new JSONDeserializer<List<ContainerValue>>().use(null, ArrayList.class).use("values", ContainerValue.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerValue>>().use(null, ArrayList.class).use("values", ContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
     
     public static com.labsynch.labseer.domain.ContainerValue update(com.labsynch.labseer.domain.ContainerValue containerValue) {
-        ContainerValue updatedContainerValue = new JSONDeserializer<ContainerValue>().use(null, ArrayList.class).use("values", ContainerValue.class).deserializeInto(containerValue.toJson(), ContainerValue.findContainerValue(containerValue.getId()));
+        ContainerValue updatedContainerValue = new JSONDeserializer<ContainerValue>().use(null, ArrayList.class).use("values", ContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(containerValue.toJson(), ContainerValue.findContainerValue(containerValue.getId()));
         updatedContainerValue.setModifiedDate(new Date());
         updatedContainerValue.merge();
         return updatedContainerValue;
@@ -282,59 +277,5 @@ public class ContainerValue extends AbstractValue {
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.ContainerValue> collection) {
         return new JSONSerializer().exclude("*.class", "lsState").transform(new ExcludeNulls(), void.class).serialize(collection);
-    }
-
-    public static TypedQuery<ContainerValue> findContainerValuesByContainerIDAndStateTypeKindAndValueTypeKind(Long containerId, String stateType,
-			String stateKind, String valueType, String valueKind) {
-
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
-
-		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT cv FROM ContainerValue AS cv " +
-				"JOIN cv.lsState cs " +
-				"JOIN cs.container c " +
-				"WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
-				"AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored IS NOT :ignored " +
-				"AND c.ignored IS NOT :ignored " +
-				"AND c.id = :containerId ";
-		TypedQuery<ContainerValue> q = em.createQuery(hsqlQuery, ContainerValue.class);
-		q.setParameter("containerId", containerId);
-		q.setParameter("stateType", stateType);
-		q.setParameter("stateKind", stateKind);
-		q.setParameter("valueType", valueType);
-		q.setParameter("valueKind", valueKind);
-		q.setParameter("ignored", true);
-		
-		return q;
-    }
-    
-    public static TypedQuery<ContainerValue> findContainerValuesByContainerCodeNameAndStateTypeKindAndValueTypeKind(String codeName, String stateType,
-			String stateKind, String valueType, String valueKind) {
-
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
-
-		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT cv FROM ContainerValue AS cv " +
-				"JOIN cv.lsState cs " +
-				"JOIN cs.container c " +
-				"WHERE cs.lsType = :stateType AND cs.lsKind = :stateKind AND cs.ignored IS NOT :ignored " +
-				"AND cv.lsType = :valueType AND cv.lsKind = :valueKind AND cv.ignored IS NOT :ignored " +
-				"AND c.ignored IS NOT :ignored " +
-				"AND c.codeName = :codeName ";
-		TypedQuery<ContainerValue> q = em.createQuery(hsqlQuery, ContainerValue.class);
-		q.setParameter("codeName", codeName);
-		q.setParameter("stateType", stateType);
-		q.setParameter("stateKind", stateKind);
-		q.setParameter("valueType", valueType);
-		q.setParameter("valueKind", valueKind);
-		q.setParameter("ignored", true);
-		
-		return q;
     }
 }

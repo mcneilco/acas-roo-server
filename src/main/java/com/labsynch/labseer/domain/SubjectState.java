@@ -191,15 +191,15 @@ public class SubjectState extends AbstractState {
     }
 
     public static com.labsynch.labseer.domain.SubjectState fromJsonToSubjectState(String json) {
-        return new JSONDeserializer<SubjectState>().use(null, SubjectState.class).deserialize(json);
+        return new JSONDeserializer<SubjectState>().use(null, SubjectState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.SubjectState> fromJsonArrayToSubjectStates(Reader json) {
-        return new JSONDeserializer<List<SubjectState>>().use(null, ArrayList.class).use("values", SubjectState.class).deserialize(json);
+        return new JSONDeserializer<List<SubjectState>>().use(null, ArrayList.class).use("values", SubjectState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.SubjectState> fromJsonArrayToSubjectStates(String json) {
-        return new JSONDeserializer<List<SubjectState>>().use(null, ArrayList.class).use("values", SubjectState.class).deserialize(json);
+        return new JSONDeserializer<List<SubjectState>>().use(null, ArrayList.class).use("values", SubjectState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     @Transactional
@@ -214,7 +214,7 @@ public class SubjectState extends AbstractState {
 
     @Transactional
     public String toJson() {
-        return new JSONSerializer().include("lsValues").exclude("*.class", "subject").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 
     @Transactional
@@ -235,24 +235,6 @@ public class SubjectState extends AbstractState {
 		"AND s.id = :subjectId ";
 		TypedQuery<SubjectState> q = em.createQuery(hsqlQuery, SubjectState.class);
 		q.setParameter("subjectId", subjectId);
-		q.setParameter("stateType", stateType);
-		q.setParameter("stateKind", stateKind);
-		q.setParameter("ignored", true);
-		return q;
-	}
-
-	public static TypedQuery<SubjectState> findSubjectStatesBySubjectCodeNameAndStateTypeKind(
-			String subjectCodeName, String stateType, String stateKind) {
-		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		
-		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT ss FROM SubjectState AS ss " +
-		"JOIN ss.subject s " +
-		"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored " +
-		"AND s.codeName = :subjectCodeName ";
-		TypedQuery<SubjectState> q = em.createQuery(hsqlQuery, SubjectState.class);
-		q.setParameter("subjectCodeName", subjectCodeName);
 		q.setParameter("stateType", stateType);
 		q.setParameter("stateKind", stateKind);
 		q.setParameter("ignored", true);

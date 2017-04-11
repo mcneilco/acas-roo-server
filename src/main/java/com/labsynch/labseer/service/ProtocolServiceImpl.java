@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.domain.LsTag;
-import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolState;
@@ -44,8 +43,6 @@ public class ProtocolServiceImpl implements ProtocolService {
 	@Autowired
 	private AutoLabelService autoLabelService;
 
-	@Autowired
-	private AuthorService authorService;
 
 	//    @PostConstruct
 	//    public void init(){
@@ -267,40 +264,6 @@ public class ProtocolServiceImpl implements ProtocolService {
 //		
 //		return protocolList;
 //	}
-	
-	@Override
-	public Collection<Protocol> findProtocolsByGenericMetaDataSearch(String queryString, String userName) {
-		Collection<Protocol> rawResults = findProtocolsByGenericMetaDataSearch(queryString);
-		if (propertiesUtilService.getRestrictExperiments()){
-			Collection<LsThing> projects = authorService.getUserProjects(userName);
-			List<String> allowedProjectCodeNames = new ArrayList<String>();
-			for (LsThing project : projects){
-				allowedProjectCodeNames.add(project.getCodeName());
-			}
-			Collection<Protocol> results = new HashSet<Protocol>();
-			for (Protocol rawResult : rawResults){
-				String protocolProject = null;
-				for (ProtocolState state : rawResult.getLsStates()){
-					for (ProtocolValue value : state.getLsValues()){
-						if (value.getLsKind().equals("project")){
-							protocolProject = value.getCodeValue();
-							break;
-						}
-					}
-				}
-				if (protocolProject == null){
-					//no project associated with protocol, pass it through
-					results.add(rawResult);
-				}
-				else if (allowedProjectCodeNames.contains(protocolProject)){
-					results.add(rawResult);
-				}
-			}
-			return results;
-		}else{
-			return rawResults;
-		}
-	}
 	
 	public Collection<Protocol> findProtocolsByGenericMetaDataSearch(String queryString) {
 		//make our HashSets: protocolIdList will be filled/cleared/refilled for each term

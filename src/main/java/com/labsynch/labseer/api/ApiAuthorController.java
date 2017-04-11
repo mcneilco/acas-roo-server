@@ -3,6 +3,7 @@ package com.labsynch.labseer.api;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -22,16 +23,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.dto.AuthorBrowserQueryDTO;
 import com.labsynch.labseer.dto.AuthorNameDTO;
-import com.labsynch.labseer.dto.AuthorQueryResultDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.GenericQueryCodeTableResultDTO;
-import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.AuthorService;
 import com.labsynch.labseer.utils.PropertiesFileService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 import com.labsynch.labseer.web.AuthorController;
 
 @Controller
@@ -308,52 +309,6 @@ public class ApiAuthorController {
         headers.add("Content-Type", "application/json");
         return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
     }
-	
-	@RequestMapping(value = "/genericBrowserSearch", method = RequestMethod.POST, headers = "Accept=application/json")
-	  public ResponseEntity<java.lang.String> genericBrowserSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
-	  	HttpHeaders headers = new HttpHeaders();
-	    headers.add("Content-Type", "application/json; charset=utf-8");
-	    AuthorBrowserQueryDTO query = AuthorBrowserQueryDTO.fromJsonToAuthorBrowserQueryDTO(json);
-	    ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-	    boolean errorsFound = false;
-	    Collection<Long> authorIds;
-	    AuthorQueryResultDTO result = new AuthorQueryResultDTO();
-	    try{
-	    	authorIds = authorService.searchAuthorIdsByBrowserQueryDTO(query);
-	    	int maxResults = 1000;
-	    	if (query.getQueryDTO().getMaxResults() != null) maxResults = query.getQueryDTO().getMaxResults();
-	    	result.setMaxResults(maxResults);
-	    	result.setNumberOfResults(authorIds.size());
-	    	if (result.getNumberOfResults() <= result.getMaxResults()){
-	    		result.setResults(authorService.getAuthorsByIds(authorIds));
-	    	}
-	    }catch (Exception e){
-	    	logger.error("Caught searching for authors in generic interaction search",e);
-	    	ErrorMessage error = new ErrorMessage();
-	        error.setErrorLevel("error");
-	        error.setMessage(e.getMessage());
-	        errors.add(error);
-	        errorsFound = true;
-	    }
-	    
-	    if (errorsFound) {
-	        return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
-	    } else {
-	    	if (with != null) {
-	    		if (with.equalsIgnoreCase("codeTable")) {
-	    			GenericQueryCodeTableResultDTO resultDTO = new GenericQueryCodeTableResultDTO();
-	    			resultDTO.setMaxResults(result.getMaxResults());
-	    			resultDTO.setNumberOfResults(result.getNumberOfResults());
-	    			if (result.getResults() != null){
-	    				resultDTO.setResults((Collection<CodeTableDTO>) authorService.convertToCodeTables(new ArrayList<Author>(result.getResults())));
-	    			}
-	    			return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
-	    		}
-	    	}
-	    	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
-	    }
-	      
-	  }
     
 
 

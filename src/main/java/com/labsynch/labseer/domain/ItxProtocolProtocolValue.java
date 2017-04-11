@@ -32,7 +32,7 @@ public class ItxProtocolProtocolValue extends AbstractValue {
     
     public static ItxProtocolProtocolValue update(ItxProtocolProtocolValue object) {
     	ItxProtocolProtocolValue updatedObject = new JSONDeserializer<ItxProtocolProtocolValue>().use(null, ItxProtocolProtocolValue.class).
-        		deserializeInto(object.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxProtocolProtocolValue.findItxProtocolProtocolValue(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();
@@ -43,7 +43,7 @@ public class ItxProtocolProtocolValue extends AbstractValue {
     public static ItxProtocolProtocolValue fromJsonToItxProtocolProtocolValue(String json) {
         return new JSONDeserializer<ItxProtocolProtocolValue>().
         		use(null, ItxProtocolProtocolValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -51,7 +51,7 @@ public class ItxProtocolProtocolValue extends AbstractValue {
         return new JSONDeserializer<List<ItxProtocolProtocolValue>>().
         		use(null, ArrayList.class).
         		use("values", ItxProtocolProtocolValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -59,7 +59,7 @@ public class ItxProtocolProtocolValue extends AbstractValue {
         return new JSONDeserializer<List<ItxProtocolProtocolValue>>().
         		use(null, ArrayList.class).
         		use("values", ItxProtocolProtocolValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -85,7 +85,7 @@ public class ItxProtocolProtocolValue extends AbstractValue {
     }
 	
 	public static ItxProtocolProtocolValue create(ItxProtocolProtocolValue lsThingValue) {
-        ItxProtocolProtocolValue newItxProtocolProtocolValue = new JSONDeserializer<ItxProtocolProtocolValue>().use(null, ItxProtocolProtocolValue.class).deserializeInto(lsThingValue.toJson(), new ItxProtocolProtocolValue());
+        ItxProtocolProtocolValue newItxProtocolProtocolValue = new JSONDeserializer<ItxProtocolProtocolValue>().use(null, ItxProtocolProtocolValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new ItxProtocolProtocolValue());
         return newItxProtocolProtocolValue;
     }
 }

@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.List;
 
 import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.dto.GenericValuePathRequest;
-import com.labsynch.labseer.dto.ProtocolValuePathDTO;
 
 public interface ProtocolValueService {
 
@@ -30,9 +28,6 @@ public interface ProtocolValueService {
 
 	ProtocolValue getProtocolValue(String idOrCodeName, String stateType,
 			String stateKind, String valueType, String valueKind);
-
-	Collection<ProtocolValuePathDTO> getProtocolValues(
-			Collection<GenericValuePathRequest> genericRequests);
 
 
 }

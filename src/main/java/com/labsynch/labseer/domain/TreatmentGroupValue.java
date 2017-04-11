@@ -106,7 +106,7 @@ public class TreatmentGroupValue extends AbstractValue {
 
 	public static TreatmentGroupValue create(TreatmentGroupValue treatmentGroupValue) {
     	TreatmentGroupValue newTreatmentGroupValue = new JSONDeserializer<TreatmentGroupValue>().use(null, TreatmentGroupValue.class).
-        		deserializeInto(treatmentGroupValue.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(treatmentGroupValue.toJson(), 
         				new TreatmentGroupValue());	
     
         return newTreatmentGroupValue;
@@ -133,7 +133,7 @@ public class TreatmentGroupValue extends AbstractValue {
 	public static TreatmentGroupValue update(TreatmentGroupValue treatmentGroupValue) {
 		TreatmentGroupValue updatedTreatmentGroupValue = new JSONDeserializer<TreatmentGroupValue>().
 		use(null, TreatmentGroupValue.class).
-		
+		use(BigDecimal.class, new CustomBigDecimalFactory()).
 		deserializeInto(treatmentGroupValue.toJson(), TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupValue.getId()));
 		updatedTreatmentGroupValue.setModifiedDate(new Date());
 		updatedTreatmentGroupValue.merge();
@@ -191,7 +191,7 @@ public class TreatmentGroupValue extends AbstractValue {
     public static TreatmentGroupValue fromJsonToTreatmentGroupValue(String json) {
         return new JSONDeserializer<TreatmentGroupValue>().
         		use(null, TreatmentGroupValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
         
@@ -199,7 +199,7 @@ public class TreatmentGroupValue extends AbstractValue {
         return new JSONDeserializer<List<TreatmentGroupValue>>().
         		use(null, ArrayList.class).
         		use("values", TreatmentGroupValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -207,7 +207,7 @@ public class TreatmentGroupValue extends AbstractValue {
         return new JSONDeserializer<List<TreatmentGroupValue>>().
         		use(null, ArrayList.class).
         		use("values", TreatmentGroupValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
  
@@ -433,32 +433,6 @@ public class TreatmentGroupValue extends AbstractValue {
 				"AND tg.id = :treatmentGroupId ";
 		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
 		q.setParameter("treatmentGroupId", treatmentGroupId);
-		q.setParameter("stateType", stateType);
-		q.setParameter("stateKind", stateKind);
-		q.setParameter("valueType", valueType);
-		q.setParameter("valueKind", valueKind);
-		q.setParameter("ignored", true);
-		return q;
-	}
-	
-	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByTreatmentGroupCodeNameAndStateTypeKindAndValueTypeKind(
-			String codeName, String stateType, String stateKind,
-			String valueType, String valueKind) {
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
-		
-		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
-				"JOIN tgv.lsState tgs " +
-				"JOIN tgs.treatmentGroup tg " +
-				"WHERE tgs.lsType = :stateType AND tgs.lsKind = :stateKind AND tgs.ignored IS NOT :ignored " +
-				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
-				"AND tg.ignored IS NOT :ignored " +
-				"AND tg.codeName = :codeName ";
-		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
-		q.setParameter("codeName", codeName);
 		q.setParameter("stateType", stateType);
 		q.setParameter("stateKind", stateKind);
 		q.setParameter("valueType", valueType);

@@ -14,17 +14,14 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
-import com.labsynch.labseer.dto.ContainerQueryDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
 import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.dto.ContainerWellCodeDTO;
 import com.labsynch.labseer.dto.CreatePlateRequestDTO;
-import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.PlateStubDTO;
 import com.labsynch.labseer.dto.PlateWellDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
@@ -133,13 +130,5 @@ public interface ContainerService {
 
 	Collection<String> getContainersByContainerValue(
 			ContainerValueRequestDTO requestDTO) throws Exception;
-
-	Collection<Long> searchContainerIdsByBrowserQueryDTO(
-			ContainerBrowserQueryDTO query) throws Exception;
-
-	Collection<Container> getContainersByIds(Collection<Long> containerIds);
-
-	Collection<Long> searchContainerIdsByQueryDTO(ContainerQueryDTO query)
-			throws Exception;
 	
 }

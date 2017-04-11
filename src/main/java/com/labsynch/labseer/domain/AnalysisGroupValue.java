@@ -157,7 +157,7 @@ public class AnalysisGroupValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.AnalysisGroupValue create(com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
-		AnalysisGroupValue newAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(null, AnalysisGroupValue.class).deserializeInto(analysisGroupValue.toJson(), new AnalysisGroupValue());
+		AnalysisGroupValue newAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(null, AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(analysisGroupValue.toJson(), new AnalysisGroupValue());
 		return newAnalysisGroupValue;
 	}
 
@@ -618,18 +618,18 @@ public class AnalysisGroupValue extends AbstractValue {
 
 	@Transactional
 	public static com.labsynch.labseer.domain.AnalysisGroupValue fromJsonToAnalysisGroupValue(String json) {
-		AnalysisGroupValue analysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().deserialize(json, AnalysisGroupValue.class);
+		AnalysisGroupValue analysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json, AnalysisGroupValue.class);
 		return analysisGroupValue;
 	}
 
 	@Transactional
 	public static Collection<com.labsynch.labseer.domain.AnalysisGroupValue> fromJsonArrayToAnalysisGroupValues(String json) {
-		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).deserialize(json);
+		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
 	}
 
 	@Transactional
 	public static Collection<com.labsynch.labseer.domain.AnalysisGroupValue> fromJsonArrayToAnalysisGroupValues(Reader json) {
-		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).deserialize(json);
+		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
 	}
 
 	@Transactional
@@ -710,7 +710,7 @@ public class AnalysisGroupValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.AnalysisGroupValue update(com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
-		AnalysisGroupValue updatedAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().deserializeInto(analysisGroupValue.toJson(), analysisGroupValue);
+		AnalysisGroupValue updatedAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(analysisGroupValue.toJson(), analysisGroupValue);
 		updatedAnalysisGroupValue.setModifiedDate(new Date());
 		updatedAnalysisGroupValue.merge();
 		return updatedAnalysisGroupValue;
@@ -1348,34 +1348,8 @@ public class AnalysisGroupValue extends AbstractValue {
 		q.setParameter("valueKind", valueKind);
 		q.setParameter("ignored", true);
 		return q;
-    }
-	
-	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByAnalysisGroupCodeNameAndStateTypeKindAndValueTypeKind(String analysisGroupCodeName, String stateType,
-			String stateKind, String valueType, String valueKind) {
+	}
 
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
-
-		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT agv FROM AnalysisGroupValue AS agv " +
-				"JOIN agv.lsState ags " +
-				"JOIN ags.analysisGroup ag " +
-				"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
-				"AND agv.lsType = :valueType AND agv.lsKind = :valueKind AND agv.ignored IS NOT :ignored " +
-				"AND ag.ignored IS NOT :ignored " +
-				"AND ag.codeName = :analysisGroupCodeName ";
-		TypedQuery<AnalysisGroupValue> q = em.createQuery(hsqlQuery, AnalysisGroupValue.class);
-		q.setParameter("analysisGroupCodeName", analysisGroupCodeName);
-		q.setParameter("stateType", stateType);
-		q.setParameter("stateKind", stateKind);
-		q.setParameter("valueType", valueType);
-		q.setParameter("valueKind", valueKind);
-		q.setParameter("ignored", true);
-		return q;
-    }
-    
 	public static String[] getColumns(){
 		String[] headerColumns = new String[] {
 				"analysisGroupId",

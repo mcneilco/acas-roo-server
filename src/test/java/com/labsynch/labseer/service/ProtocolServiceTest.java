@@ -6,7 +6,6 @@ import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,12 +23,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AuthorRole;
-import com.labsynch.labseer.domain.LsRole;
-import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -353,71 +348,5 @@ public class ProtocolServiceTest {
 	public void findScientistProtocolValue() {
 		Collection<ProtocolValue> protocolValues  = ProtocolValue.findProtocolValuesByLsKindEqualsAndStringValueLike("scientist", "*").getResultList();
 		logger.info(ProtocolValue.toJsonArray(protocolValues));
-	}
-	
-	@Test
-	//@Transactional
-	public void CreateProtocolFromNestedJson_withProject(){
-		LsTransaction lsTransaction = new LsTransaction();
-		lsTransaction.setComments("protocol 102 transactions");
-		lsTransaction.setRecordedDate(new Date());
-		lsTransaction.persist();
-		
-		//String json = "{ \"name\": \"\",\"shortDescription\": \"\",\"lsTransaction\": null,\"protocolStates\": [ { \"protocolValues\": [ { \"valueType\": \"stringValue\",\"valueKind\": \"reader instrument\",\"stringValue\": \"Molecular Dynamics FLIPR\",\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\": null,\"sigFigs\": null,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve min\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":                0,\"sigFigs\":                2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve max\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":              100,\"sigFigs\":                2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"lsTransaction\": null,\"thingIdValue\": null,\"sampleId\": null,\"sampleName\": \"\",\"publicData\": false,\"recordedDate\":    1353216427000 } ],\"recordedBy\": \"userName\",\"stateType\": \"metadata\",\"stateKind\": \"protocol parameters\",\"comments\": \"\",\"lsTransaction\": null,\"ignored\": false,\"recordedDate\":    1353216427000 } ] }";
-		//String json = "{ \"codeName\": \"protocolName101\",\"shortDescription\": \"protocol short description\",\"lsTransaction\": { \"comments\": \"protocol 102 transactions\",\"id\":      1,\"recordedDate\": 1.354e+12,\"version\":      0 },\"recordedBy\": \"userName\",\"recordedDate\": 1.354e+12,\"protocolStates\": [ { \"protocolValues\": [ { \"valueType\": \"stringValue\",\"valueKind\": \"reader instrument\",\"stringValue\": \"Molecular Dynamics FLIPR\",\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\": null,\"sigFigs\": null,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"publicData\": true,\"lsTransaction\": { \"comments\": \"protocol 102 transactions\",\"id\":      1,\"recordedDate\": 1.354e+12,\"version\":      0 },\"batchCode\": null,\"recordedDate\": 1.354e+12 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve min\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":      0,\"sigFigs\":      2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"publicData\": true,\"lsTransaction\": { \"comments\": \"protocol 102 transactions\",\"id\":      1,\"recordedDate\": 1.354e+12,\"version\":      0 },\"batchCode\": null,\"recordedDate\": 1.354e+12 },{ \"valueType\": \"numericValue\",\"valueKind\": \"curve max\",\"stringValue\": null,\"fileValue\": null,\"urlValue\": null,\"dateValue\": null,\"clobValue\": null,\"blobValue\": null,\"valueOperator\": null,\"numericValue\":    100,\"sigFigs\":      2,\"uncertainty\": null,\"valueUnit\": null,\"concValue\": null,\"concUnit\": \"\",\"comments\": null,\"ignored\": false,\"publicData\": true,\"lsTransaction\": { \"comments\": \"protocol 102 transactions\",\"id\":      1,\"recordedDate\": 1.354e+12,\"version\":      0 },\"batchCode\": null,\"recordedDate\": 1.354e+12 } ],\"recordedBy\": \"userName\",\"stateType\": \"metadata\",\"stateKind\": \"protocol analysis parameters\",\"comments\": \"\",\"lsTransaction\": { \"comments\": \"protocol 102 transactions\",\"id\":      1,\"recordedDate\": 1.354e+12,\"version\":      0 },\"ignored\": false,\"recordedDate\": 1.354e+12 } ] }";
-		String json = "{\"codeName\":\"PROT-00000006E\",\"lsType\":\"default\",\"lsKind\":\"default\",\"shortDescription\":\"protocol created by generic data parser\",\"lsTransaction\":7,\"recordedBy\":\"mcneilco\",\"recordedDate\":1398908476000,\"lsLabels\":[{\"protocol\":null,\"labelText\":\"Target Y binding\",\"recordedBy\":\"mcneilco\",\"lsType\":\"name\",\"lsKind\":\"protocol name\",\"preferred\":true,\"ignored\":false,\"lsTransaction\":7,\"recordedDate\":1398908476000}],\"lsStates\":[]}";
-		Protocol protocol = Protocol.fromJsonToProtocol(json);
-		ProtocolState metadata = new ProtocolState();
-		metadata.setLsType("metadata");
-		metadata.setLsKind("protocol metadata");
-		metadata.setRecordedBy(protocol.getRecordedBy());
-		metadata.setRecordedDate(protocol.getRecordedDate());
-		metadata.setLsValues(new HashSet<ProtocolValue>());
-		ProtocolValue projectValue = new ProtocolValue();
-		projectValue.setLsType("codeValue");
-		projectValue.setLsKind("project");
-		projectValue.setCodeValue(LsThing.findLsThing("project", "project").getResultList().get(0).getCodeName());
-		projectValue.setRecordedBy(protocol.getRecordedBy());
-		projectValue.setRecordedDate(protocol.getRecordedDate());
-		metadata.getLsValues().add(projectValue);
-		protocol.getLsStates().add(metadata);
-		
-		logger.info("initial json values: " + protocol.toJson());
-
-		
-		Protocol output;
-		try {
-			output = protocolService.saveLsProtocol(protocol);
-			logger.info(output.toJson());
-		} catch (UniqueNameException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	@Transactional
-	@Test
-	public void protocolBrowserSearchTest_projectRestrictions() {
-		//to run this test from an empty database:
-		//first start up ACAS to populate default types/kinds
-		//then run all tests in CreateProjectsTests sequentially to create three projects, two users, lsroles, and author roles
-		//then run CreateProtocolFromNestedJson_withProject (above) to create a test protocol tagged with one of the projects
-		//then run this test. The first user should have access to the project, the second should not
-		String projectCode = ProtocolValue.findProtocolValuesByLsKindEqualsAndCodeValueLike("project", "*").getResultList().get(0).getCodeValue();
-		logger.info(projectCode);
-		String userName = AuthorRole.findAuthorRolesByRoleEntry(LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals("Project", projectCode).getResultList().get(0)).getResultList().get(0).getUserEntry().getUserName();
-		String code = "PROT-00000006E";
-		String query = code;
-		logger.info("Searching with the query: "+ query + " with userName: "+userName);
-		
-		Collection<Protocol> resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query, userName);
-		logger.info("Found: "+ resultProtocols.toString());
-		Assert.assertFalse(resultProtocols.isEmpty());
-		
-		userName = "bsplit";
-		logger.info("Searching with the query: "+ query + " with userName: "+userName);
-		resultProtocols = protocolService.findProtocolsByGenericMetaDataSearch(query, userName);
-		logger.info("Found: "+ resultProtocols.toString());
-		Assert.assertTrue(resultProtocols.isEmpty());
 	}
 }

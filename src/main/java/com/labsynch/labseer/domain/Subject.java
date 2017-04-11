@@ -143,7 +143,7 @@ public class Subject extends AbstractThing {
 	public static Subject fromJsonToSample(String json) {
 		return new JSONDeserializer<Subject>().
 				use(null, Subject.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
 				deserialize(json);
 	}
 
@@ -153,30 +153,22 @@ public class Subject extends AbstractThing {
 		.exclude("*.class",  "lsLabels.subject", "lsStates.subject", "lsStates.lsValues.lsState", "treatmentGroup.analysisGroup")
 		.serialize(collection);
 	}
-	
-	public static String toJsonArrayStub(Collection<Subject> collection) {
-		return new JSONSerializer()
-		.include("lsLabels")
-		.exclude("*.class", "lsStates", "treatmentGroup.analysisGroup")
-		.transform(new ExcludeNulls(), void.class)
-		.serialize(collection);
-	}
 
 
 
 	public static Subject fromJsonToSubject(String json) {
         return new JSONDeserializer<Subject>().
         		use(null, Subject.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
 
 	public static Collection<Subject> fromJsonArrayToSubjects(String json) {
-        return new JSONDeserializer<List<Subject>>().use(null, ArrayList.class).use("values", Subject.class).deserialize(json);
+        return new JSONDeserializer<List<Subject>>().use(null, ArrayList.class).use("values", Subject.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
 	public static Collection<Subject> fromJsonArrayToSubjects(Reader json) {
-        return new JSONDeserializer<List<Subject>>().use(null, ArrayList.class).use("values", Subject.class).deserialize(json);
+        return new JSONDeserializer<List<Subject>>().use(null, ArrayList.class).use("values", Subject.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 	
 	@Transactional

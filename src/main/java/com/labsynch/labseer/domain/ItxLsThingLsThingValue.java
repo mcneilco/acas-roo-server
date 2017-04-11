@@ -73,28 +73,28 @@ public class ItxLsThingLsThingValue extends AbstractValue {
     }
 
     public static com.labsynch.labseer.domain.ItxLsThingLsThingValue update(com.labsynch.labseer.domain.ItxLsThingLsThingValue object) {
-        ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).deserializeInto(object.toJson(), ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
+        ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
         updatedObject.setModifiedDate(new Date());
         updatedObject.merge();
         return updatedObject;
     }
 
     public static com.labsynch.labseer.domain.ItxLsThingLsThingValue updateNoMerge(com.labsynch.labseer.domain.ItxLsThingLsThingValue object) {
-        ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).deserializeInto(object.toJson(), ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
+        ItxLsThingLsThingValue updatedObject = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), ItxLsThingLsThingValue.findItxLsThingLsThingValue(object.getId()));
         updatedObject.setModifiedDate(new Date());
         return updatedObject;
     }
 
     public static com.labsynch.labseer.domain.ItxLsThingLsThingValue fromJsonToItxLsThingLsThingValue(String json) {
-        return new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).deserialize(json);
+        return new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ItxLsThingLsThingValue> fromJsonArrayToItxLsThingLsThingValues(String json) {
-        return new JSONDeserializer<List<ItxLsThingLsThingValue>>().use(null, ArrayList.class).use("values", ItxLsThingLsThingValue.class).deserialize(json);
+        return new JSONDeserializer<List<ItxLsThingLsThingValue>>().use(null, ArrayList.class).use("values", ItxLsThingLsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ItxLsThingLsThingValue> fromJsonArrayToItxLsThingLsThingValues(Reader json) {
-        return new JSONDeserializer<List<ItxLsThingLsThingValue>>().use(null, ArrayList.class).use("values", ItxLsThingLsThingValue.class).deserialize(json);
+        return new JSONDeserializer<List<ItxLsThingLsThingValue>>().use(null, ArrayList.class).use("values", ItxLsThingLsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     @Transactional
@@ -113,7 +113,7 @@ public class ItxLsThingLsThingValue extends AbstractValue {
     }
 
     public static com.labsynch.labseer.domain.ItxLsThingLsThingValue create(com.labsynch.labseer.domain.ItxLsThingLsThingValue lsThingValue) {
-        ItxLsThingLsThingValue newItxLsThingLsThingValue = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).deserializeInto(lsThingValue.toJson(), new ItxLsThingLsThingValue());
+        ItxLsThingLsThingValue newItxLsThingLsThingValue = new JSONDeserializer<ItxLsThingLsThingValue>().use(null, ItxLsThingLsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new ItxLsThingLsThingValue());
         return newItxLsThingLsThingValue;
     }
 

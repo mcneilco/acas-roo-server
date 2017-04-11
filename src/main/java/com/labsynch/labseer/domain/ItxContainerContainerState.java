@@ -43,7 +43,7 @@ public class ItxContainerContainerState extends AbstractState {
     
     public static ItxContainerContainerState update(ItxContainerContainerState object) {
     	ItxContainerContainerState updatedObject = new JSONDeserializer<ItxContainerContainerState>().use(null, ItxContainerContainerState.class).
-        		deserializeInto(object.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxContainerContainerState.findItxContainerContainerState(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();

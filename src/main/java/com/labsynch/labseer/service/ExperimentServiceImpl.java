@@ -22,7 +22,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,16 +39,12 @@ import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
-import com.labsynch.labseer.dto.PreferredNameDTO;
-import com.labsynch.labseer.dto.PreferredNameRequestDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.SELColOrderDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.dto.ValueTypeKindDTO;
@@ -1613,64 +1608,6 @@ public class ExperimentServiceImpl implements ExperimentService {
 		}
 		
 		return results;
-	}
-
-
-	@Override
-	public PreferredNameResultsDTO getCodeNameFromName(String experimentType,
-			String experimentKind, String labelType, String labelKind,
-			PreferredNameRequestDTO requestDTO) {
-		logger.info("number of requests: " + requestDTO.getRequests().size());
-		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
-
-		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
-		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
-
-		for (PreferredNameDTO request : requests){
-			request.setPreferredName("");
-			request.setReferenceName("");
-			List<Experiment> experiments = new ArrayList<Experiment>();
-			if (labelType==null || labelKind==null || labelType.length()==0 || labelKind.length()==0){
-				experiments = Experiment.findExperimentByLabelText(experimentType, experimentKind, request.getRequestName()).getResultList();
-
-			}else{
-				experiments = Experiment.findExperimentByLabelText(experimentType, experimentKind, labelType, labelKind, request.getRequestName()).getResultList();
-			}
-			if (experiments.size() == 1){
-				request.setPreferredName(pickBestLabel(experiments.get(0)));
-				request.setReferenceName(experiments.get(0).getCodeName());
-			} else if (experiments.size() > 1){
-				responseOutput.setError(true);
-				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setLevel("MULTIPLE RESULTS");
-				error.setMessage("FOUND MULTIPLE EXPERIMENTS WITH THE SAME NAME: " + request.getRequestName() );	
-				logger.error("FOUND MULTIPLE EXPERIMENTS WITH THE SAME NAME: " + request.getRequestName());
-				errors.add(error);
-			} else {
-				try{
-					Experiment codeNameMatch = Experiment.findExperimentsByCodeNameEquals(request.getRequestName()).getSingleResult();
-					if (codeNameMatch.getLsKind().equals(experimentKind) && codeNameMatch.getLsType().equals(experimentType)){
-						logger.info("Made it to the codeMatch");
-						request.setPreferredName(pickBestLabel(codeNameMatch));
-	 					request.setReferenceName(codeNameMatch.getCodeName());
-					}else{
-						logger.info("Did not find an EXPERIMENT WITH THE REQUESTED NAME: " + request.getRequestName());
-					}
-				}catch (EmptyResultDataAccessException e){
-					logger.info("Did not find an EXPERIMENT WITH THE REQUESTED NAME: " + request.getRequestName());
-				}
-			}
-		}
-		responseOutput.setResults(requests);
-		responseOutput.setErrorMessages(errors);
-
-		return responseOutput;
-	}
-	
-	private String pickBestLabel(Experiment experiment) {
-		Collection<ExperimentLabel> labels = experiment.getLsLabels();
-		if (labels.isEmpty()) return null;
-		return ExperimentLabel.pickBestLabel(labels).getLabelText();
 	}
 
 

@@ -1,6 +1,5 @@
 package com.labsynch.labseer.service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -15,10 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupState;
 import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.dto.AnalysisGroupStatePathDTO;
-import com.labsynch.labseer.dto.GenericStatePathRequest;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentState;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -121,44 +119,6 @@ public class AnalysisGroupStateServiceImpl implements AnalysisGroupStateService 
 			analysisGroupState = updateAnalysisGroupState(analysisGroupState);
 		}
 		return null;
-	}
-	
-	@Override
-	public AnalysisGroupState getAnalysisGroupState(String idOrCodeName,
-			String stateType, String stateKind) {
-		AnalysisGroupState state = null;
-		try{
-			Collection<AnalysisGroupState> states = getAnalysisGroupStates(idOrCodeName, stateType, stateKind);
-			state = states.iterator().next();
-		}catch (Exception e){
-			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
-			state = null;
-		}
-		return state;
-	}
-
-	@Override
-	public Collection<AnalysisGroupStatePathDTO> getAnalysisGroupStates(
-			Collection<GenericStatePathRequest> genericRequests) {
-		Collection<AnalysisGroupStatePathDTO> results = new ArrayList<AnalysisGroupStatePathDTO>();
-		for (GenericStatePathRequest request : genericRequests){
-			AnalysisGroupStatePathDTO result = new AnalysisGroupStatePathDTO();
-			result.setIdOrCodeName(request.getIdOrCodeName());
-			result.setStateType(request.getStateType());
-			result.setStateKind(request.getStateKind());
-			result.setStates(getAnalysisGroupStates(request.getIdOrCodeName(), request.getStateType(), request.getStateKind()));
-			results.add(result);
-		}
-		return results;
-	}
-	
-	private Collection<AnalysisGroupState> getAnalysisGroupStates(String idOrCodeName, String stateType, String stateKind){
-		if (SimpleUtil.isNumeric(idOrCodeName)){
-			Long id = Long.valueOf(idOrCodeName);
-			return AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupIDAndStateTypeKind(id, stateType, stateKind).getResultList();
-		}else{
-			return AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupCodeNameAndStateTypeKind(idOrCodeName, stateType, stateKind).getResultList();
-		}
 	}
 
 

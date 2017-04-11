@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.List;
 
 import com.labsynch.labseer.domain.ProtocolState;
-import com.labsynch.labseer.dto.GenericStatePathRequest;
-import com.labsynch.labseer.dto.ProtocolStatePathDTO;
 
 public interface ProtocolStateService {
 
@@ -27,11 +25,5 @@ public interface ProtocolStateService {
 
 	Collection<ProtocolState> updateProtocolStates(
 			Collection<ProtocolState> protocolStates);
-
-	ProtocolState getProtocolState(String idOrCodeName, String stateType,
-			String stateKind);
-
-	Collection<ProtocolStatePathDTO> getProtocolStates(
-			Collection<GenericStatePathRequest> genericRequests);
 
 }

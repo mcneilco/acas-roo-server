@@ -68,7 +68,7 @@ public class ItxExperimentExperiment extends AbstractThing {
     
     public static ItxExperimentExperiment update(ItxExperimentExperiment object) {
     	ItxExperimentExperiment updatedObject = new JSONDeserializer<ItxExperimentExperiment>().use(null, ItxExperimentExperiment.class).
-        		deserializeInto(object.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxExperimentExperiment.findItxExperimentExperiment(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();

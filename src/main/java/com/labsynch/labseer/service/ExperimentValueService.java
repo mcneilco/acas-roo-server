@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ExperimentValuePathDTO;
-import com.labsynch.labseer.dto.GenericValuePathRequest;
 import com.labsynch.labseer.dto.StateValueDTO;
 
 @Service
@@ -47,8 +45,5 @@ public interface ExperimentValueService {
 	public ExperimentValue getExperimentValue(String idOrCodeName,
 			String stateType, String stateKind, String valueType,
 			String valueKind);
-
-	public Collection<ExperimentValuePathDTO> getExperimentValues(
-			Collection<GenericValuePathRequest> genericRequests);
 	
 }

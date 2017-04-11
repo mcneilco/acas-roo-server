@@ -79,7 +79,7 @@ public class ItxContainerContainerValue extends AbstractValue {
 
 	public static ItxContainerContainerValue update(ItxContainerContainerValue object) {
     	ItxContainerContainerValue updatedObject = new JSONDeserializer<ItxContainerContainerValue>().use(null, ItxContainerContainerValue.class).
-        		deserializeInto(object.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxContainerContainerValue.findItxContainerContainerValue(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();
@@ -90,7 +90,7 @@ public class ItxContainerContainerValue extends AbstractValue {
     public static ItxContainerContainerValue fromJsonToItxContainerContainerValue(String json) {
         return new JSONDeserializer<ItxContainerContainerValue>().
         		use(null, ItxContainerContainerValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -98,7 +98,7 @@ public class ItxContainerContainerValue extends AbstractValue {
         return new JSONDeserializer<List<ItxContainerContainerValue>>().
         		use(null, ArrayList.class).
         		use("values", ItxContainerContainerValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -106,7 +106,7 @@ public class ItxContainerContainerValue extends AbstractValue {
         return new JSONDeserializer<List<ItxContainerContainerValue>>().
         		use(null, ArrayList.class).
         		use("values", ItxContainerContainerValue.class).
-        		
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).
         		deserialize(json);
     }
     
@@ -132,7 +132,7 @@ public class ItxContainerContainerValue extends AbstractValue {
     }
 	
 	public static com.labsynch.labseer.domain.ItxContainerContainerValue create(com.labsynch.labseer.domain.ItxContainerContainerValue lsThingValue) {
-        ItxContainerContainerValue newItxContainerContainerValue = new JSONDeserializer<ItxContainerContainerValue>().use(null, ItxContainerContainerValue.class).deserializeInto(lsThingValue.toJson(), new ItxContainerContainerValue());
+        ItxContainerContainerValue newItxContainerContainerValue = new JSONDeserializer<ItxContainerContainerValue>().use(null, ItxContainerContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new ItxContainerContainerValue());
         return newItxContainerContainerValue;
     }
 }

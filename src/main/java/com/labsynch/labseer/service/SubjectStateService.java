@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.dto.GenericStatePathRequest;
-import com.labsynch.labseer.dto.SubjectStatePathDTO;
 
 @Service
 public interface SubjectStateService {
@@ -29,12 +27,6 @@ public interface SubjectStateService {
 
 	Collection<SubjectState> updateSubjectStates(
 			Collection<SubjectState> subjectStates);
-
-	SubjectState getSubjectState(String idOrCodeName, String stateType,
-			String stateKind);
-
-	Collection<SubjectStatePathDTO> getSubjectStates(
-			Collection<GenericStatePathRequest> genericRequests);
 
 	
 	

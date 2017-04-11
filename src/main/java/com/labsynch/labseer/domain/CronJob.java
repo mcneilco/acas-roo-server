@@ -85,7 +85,7 @@ public class CronJob {
 
 	@Id
     @SequenceGenerator(name = "cronJobGen", sequenceName = "CRON_JOB_PKSEQ")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "cronJobGen")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "cronJobGen")
     @Column(name = "id")
     private Long id;
 

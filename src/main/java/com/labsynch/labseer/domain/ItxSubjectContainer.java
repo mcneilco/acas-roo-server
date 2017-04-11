@@ -19,8 +19,6 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -38,8 +36,6 @@ import flexjson.JSONSerializer;
 @RooJson
 @RooJpaActiveRecord(finders = { "findItxSubjectContainersBySubject", "findItxSubjectContainersByCodeNameEquals", "findItxSubjectContainersByContainer", "findItxSubjectContainersByLsTransactionEquals" })
 public class ItxSubjectContainer extends AbstractThing {
-	
-	private static final Logger logger = LoggerFactory.getLogger(ItxSubjectContainer.class);
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
@@ -73,7 +69,7 @@ public class ItxSubjectContainer extends AbstractThing {
     
     public static ItxSubjectContainer update(ItxSubjectContainer object) {
     	ItxSubjectContainer updatedObject = new JSONDeserializer<ItxSubjectContainer>().use(null, ItxSubjectContainer.class).
-        		deserializeInto(object.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxSubjectContainer.findItxSubjectContainer(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();
@@ -155,29 +151,6 @@ public class ItxSubjectContainer extends AbstractThing {
         return new JSONDeserializer<List<ItxSubjectContainer>>().use(null, ArrayList.class).use("values", ItxSubjectContainer.class)
         		.use(BigDecimal.class, new CustomBigDecimalFactory())
         		.deserialize(json);
-    }
-
-    public static ItxSubjectContainer updateNoStates(ItxSubjectContainer itxSubjectContainer) {
-    	ItxSubjectContainer updatedItxSubjectContainer = ItxSubjectContainer.findItxSubjectContainer(itxSubjectContainer.getId());
-    	updatedItxSubjectContainer.setRecordedBy(itxSubjectContainer.getRecordedBy());
-    	updatedItxSubjectContainer.setRecordedDate(itxSubjectContainer.getRecordedDate());
-    	updatedItxSubjectContainer.setIgnored(itxSubjectContainer.isIgnored());
-    	updatedItxSubjectContainer.setDeleted(itxSubjectContainer.isDeleted());
-    	updatedItxSubjectContainer.setLsTransaction(itxSubjectContainer.getLsTransaction());
-    	updatedItxSubjectContainer.setModifiedBy(itxSubjectContainer.getModifiedBy());
-    	updatedItxSubjectContainer.setCodeName(itxSubjectContainer.getCodeName());
-    	updatedItxSubjectContainer.setLsType(itxSubjectContainer.getLsType());
-    	updatedItxSubjectContainer.setLsKind(itxSubjectContainer.getLsKind());
-    	updatedItxSubjectContainer.setLsTypeAndKind(itxSubjectContainer.getLsTypeAndKind());
-    	updatedItxSubjectContainer.subject = Subject.findSubject(itxSubjectContainer.getSubject().getId());
-    	updatedItxSubjectContainer.container = Container.findContainer(itxSubjectContainer.getContainer().getId());    	
-    	updatedItxSubjectContainer.setModifiedDate(new Date());
-    	updatedItxSubjectContainer.merge();
-    	
-    	logger.debug("------------ Just updated the itxSubjectContainer: ");
-    	if(logger.isDebugEnabled()) logger.debug(updatedItxSubjectContainer.toJson());
-    	
-        return updatedItxSubjectContainer;
     }
 
 }

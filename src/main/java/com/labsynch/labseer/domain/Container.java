@@ -114,7 +114,7 @@ public class Container extends AbstractThing {
 	public static Container fromJsonToContainer(String json) {
 		return new JSONDeserializer<Container>().
 				use(null, Container.class).
-				
+				use(BigDecimal.class, new CustomBigDecimalFactory()).
 				deserialize(json);
 	}
 
@@ -158,7 +158,7 @@ public class Container extends AbstractThing {
 		return new JSONDeserializer<List<Container>>().
 				use(null, ArrayList.class).
 				use("values", Container.class).        		
-				
+				use(BigDecimal.class, new CustomBigDecimalFactory()).
 				deserialize(json);
 	}
 	
@@ -166,7 +166,7 @@ public class Container extends AbstractThing {
 		return new JSONDeserializer<List<Container>>().
 				use(null, ArrayList.class).
 				use("values", Container.class).        		
-				
+				use(BigDecimal.class, new CustomBigDecimalFactory()).
 				deserialize(json);
 	}
 

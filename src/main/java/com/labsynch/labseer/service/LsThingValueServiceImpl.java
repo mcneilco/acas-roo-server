@@ -16,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
-import com.labsynch.labseer.dto.GenericValuePathRequest;
-import com.labsynch.labseer.dto.LsThingValuePathDTO;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 
@@ -176,39 +174,16 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 	
 	@Override
 	public LsThingValue getLsThingValue(String idOrCodeName,
-			String stateType, String stateKind, String valueType, String valueKind) {
+			String stateType, String stateKind, String valueType,
+			String valueKind) {
 		LsThingValue value = null;
 		try{
-			Collection<LsThingValue> values = getLsThingValues(idOrCodeName, stateType, stateKind, valueType, valueKind);
-			value = values.iterator().next();
+			Long id = LsThing.findLsThingsByCodeNameEquals(idOrCodeName).getSingleResult().getId();
+			value = LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getSingleResult();
 		}catch (Exception e){
-			logger.error("Caught error "+e.toString()+" trying to find a state.",e);
+			logger.debug("Caught error "+e.toString()+" trying to find a value.");
 			value = null;
 		}
 		return value;
-	}
-
-	@Override
-	public Collection<LsThingValuePathDTO> getLsThingValues(
-			Collection<GenericValuePathRequest> genericRequests) {
-		Collection<LsThingValuePathDTO> results = new ArrayList<LsThingValuePathDTO>();
-		for (GenericValuePathRequest request : genericRequests){
-			LsThingValuePathDTO result = new LsThingValuePathDTO();
-			result.setIdOrCodeName(request.getIdOrCodeName());
-			result.setValueType(request.getValueType());
-			result.setValueKind(request.getValueKind());
-			result.setValues(getLsThingValues(request.getIdOrCodeName(), request.getStateType(), request.getStateKind(), request.getValueType(), request.getValueKind()));
-			results.add(result);
-		}
-		return results;
-	}
-	
-	private Collection<LsThingValue> getLsThingValues(String idOrCodeName, String stateType, String stateKind, String valueType, String valueKind){
-		if (SimpleUtil.isNumeric(idOrCodeName)){
-			Long id = Long.valueOf(idOrCodeName);
-			return LsThingValue.findLsThingValuesByLsThingIDAndStateTypeKindAndValueTypeKind(id, stateType, stateKind, valueType, valueKind).getResultList();
-		}else{
-			return LsThingValue.findLsThingValuesByLsThingCodeNameAndStateTypeKindAndValueTypeKind(idOrCodeName, stateType, stateKind, valueType, valueKind).getResultList();
-		}
 	}
 }

@@ -14,8 +14,6 @@ import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
 import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 import com.labsynch.labseer.dto.JSTreeNodeDTO;
-import com.labsynch.labseer.dto.PreferredNameRequestDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.TooManyResultsException;
@@ -67,9 +65,6 @@ public interface ExperimentService {
 	public Collection<Experiment> saveLsExperiments(
 			Collection<Experiment> experiments) throws UniqueNameException, NotFoundException;
 
-	public PreferredNameResultsDTO getCodeNameFromName(String experimentType,
-			String experimentKind, String labelType, String labelKind,
-			PreferredNameRequestDTO requestDTO);
 	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData);
 	
 }

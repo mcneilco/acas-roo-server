@@ -60,56 +60,5 @@ public class ItxSubjectContainerServiceImpl implements ItxSubjectContainerServic
 		
 		return ItxSubjectContainer.findItxSubjectContainer(newItxSubjContainer.getId());
 	}
-	
-	@Override
-	@Transactional
-	public ItxSubjectContainer updateItxSubjectContainer(ItxSubjectContainer jsonItxSubjectContainer){
-		
-		ItxSubjectContainer updatedItxSubjectContainer = ItxSubjectContainer.updateNoStates(jsonItxSubjectContainer);
-		updatedItxSubjectContainer.merge();
-		logger.debug("here is the updated itx: " + updatedItxSubjectContainer.toJson());
-		logger.debug("----------------- here is the itx id " + updatedItxSubjectContainer.getId() + "   -----------");
-		
-		if(jsonItxSubjectContainer.getLsStates() != null){
-			for(ItxSubjectContainerState itxSubjectContainerState : jsonItxSubjectContainer.getLsStates()){
-				logger.debug("-------- current itxSubjectContainerState ID: " + itxSubjectContainerState.getId());
-				ItxSubjectContainerState updatedItxSubjectContainerState;
-				if (itxSubjectContainerState.getId() == null){
-					updatedItxSubjectContainerState = new ItxSubjectContainerState(itxSubjectContainerState);
-					updatedItxSubjectContainerState.setItxSubjectContainer(ItxSubjectContainer.findItxSubjectContainer(updatedItxSubjectContainer.getId()));
-					updatedItxSubjectContainerState.persist();
-					updatedItxSubjectContainer.getLsStates().add(updatedItxSubjectContainerState);
-				} else {
-
-					if (itxSubjectContainerState.getItxSubjectContainer() == null) itxSubjectContainerState.setItxSubjectContainer(updatedItxSubjectContainer);
-					updatedItxSubjectContainerState = ItxSubjectContainerState.update(itxSubjectContainerState);			
-					updatedItxSubjectContainer.getLsStates().add(updatedItxSubjectContainerState);
-					logger.debug("updated itxSubjectContainer state " + updatedItxSubjectContainerState.getId());
-
-				}
-				if (itxSubjectContainerState.getLsValues() != null){
-					for(ItxSubjectContainerValue itxSubjectContainerValue : itxSubjectContainerState.getLsValues()){
-						ItxSubjectContainerValue updatedItxSubjectContainerValue;
-						if (itxSubjectContainerValue.getId() == null){
-							updatedItxSubjectContainerValue = ItxSubjectContainerValue.create(itxSubjectContainerValue);
-							updatedItxSubjectContainerValue.setLsState(updatedItxSubjectContainerState);
-							updatedItxSubjectContainerValue.persist();
-							updatedItxSubjectContainerState.getLsValues().add(updatedItxSubjectContainerValue);
-
-						} else {
-							//itxSubjectContainerValue.setLsState(updatedItxSubjectContainerState);
-							itxSubjectContainerValue.setLsState(updatedItxSubjectContainerState);
-							updatedItxSubjectContainerValue = ItxSubjectContainerValue.update(itxSubjectContainerValue);
-							updatedItxSubjectContainerState.getLsValues().add(updatedItxSubjectContainerValue);
-						}
-					}	
-				} else {
-					logger.debug("No itxSubjectContainer values to update");
-				}
-			}
-		}
-		
-		return updatedItxSubjectContainer;
-	}
 
 }

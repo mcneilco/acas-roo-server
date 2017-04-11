@@ -194,15 +194,15 @@ public class Protocol extends AbstractThing {
     }
 
     public static com.labsynch.labseer.domain.Protocol fromJsonToProtocol(String json) {
-        return new JSONDeserializer<Protocol>().use(null, Protocol.class).deserialize(json);
+        return new JSONDeserializer<Protocol>().use(null, Protocol.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.Protocol> fromJsonArrayToProtocols(String json) {
-        return new JSONDeserializer<List<Protocol>>().use(null, ArrayList.class).use("values", Protocol.class).deserialize(json);
+        return new JSONDeserializer<List<Protocol>>().use(null, ArrayList.class).use("values", Protocol.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.Protocol> fromJsonArrayToProtocols(Reader json) {
-        return new JSONDeserializer<List<Protocol>>().use(null, ArrayList.class).use("values", Protocol.class).deserialize(json);
+        return new JSONDeserializer<List<Protocol>>().use(null, ArrayList.class).use("values", Protocol.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     @Transactional

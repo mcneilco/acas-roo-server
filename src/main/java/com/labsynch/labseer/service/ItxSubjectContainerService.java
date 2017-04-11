@@ -10,9 +10,6 @@ public interface ItxSubjectContainerService {
 
 	@Transactional
 	ItxSubjectContainer saveLsItxSubjectContainer(ItxSubjectContainer itxSubjectContainer);
-
-	ItxSubjectContainer updateItxSubjectContainer(
-			ItxSubjectContainer jsonItxSubjectContainer);
 	
 	
 	

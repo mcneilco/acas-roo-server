@@ -5,9 +5,6 @@
     <form:create id="fc_com_labsynch_labseer_domain_LsTransaction" modelAttribute="lsTransaction" path="/lstransactions" render="${empty dependencies}" z="5OlJHau1hgqakxVIIHLTj9nxVdc=">
         <field:textarea field="comments" id="c_com_labsynch_labseer_domain_LsTransaction_comments" z="rdVRnTqqOyJuQB6ZYN781SrvHHk="/>
         <field:datetime dateTimePattern="${lsTransaction_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_LsTransaction_recordedDate" required="true" z="vg6whOF5huXV2IA9llqnBvmmh2A="/>
-        <field:select field="status" id="c_com_labsynch_labseer_domain_LsTransaction_status" items="${lstransactionstatuses}" path="lstransactionstatuses" z="GHWMThgtKCEueTWSQ9Mj4zfyH1k="/>
-        <field:select field="type" id="c_com_labsynch_labseer_domain_LsTransaction_type" items="${lstransactiontypes}" path="lstransactiontypes" z="c/ISC/dzcO2w1xmI+76S5MBENts="/>
-        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_LsTransaction_recordedBy" z="yHN9olKRJ/CL8Exz2auH7kTub+4="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_LsTransaction" render="${not empty dependencies}" z="74K0G7wBMXYFpgCRkyjTTatOiiI="/>
 </div>

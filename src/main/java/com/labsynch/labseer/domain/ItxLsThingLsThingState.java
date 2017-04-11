@@ -66,7 +66,7 @@ public class ItxLsThingLsThingState extends AbstractState {
     
 //    public static ItxLsThingLsThingState update(ItxLsThingLsThingState object) {
 //    	ItxLsThingLsThingState updatedObject = new JSONDeserializer<ItxLsThingLsThingState>().use(null, ItxLsThingLsThingState.class).
-//        		deserializeInto(object.toJson(), 
+//        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
 //        				ItxLsThingLsThingState.findItxLsThingLsThingState(object.getId()));
 //    	updatedObject.setModifiedDate(new Date());
 //    	updatedObject.merge();
@@ -76,7 +76,7 @@ public class ItxLsThingLsThingState extends AbstractState {
 	public static ItxLsThingLsThingState updateNoMerge(
 			ItxLsThingLsThingState object) {
 		ItxLsThingLsThingState updatedObject = new JSONDeserializer<ItxLsThingLsThingState>().use(null, ItxLsThingLsThingState.class).
-        		deserializeInto(object.toJson(), 
+        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
         				ItxLsThingLsThingState.findItxLsThingLsThingState(object.getId()));
     	updatedObject.setModifiedDate(new Date());
         return updatedObject;

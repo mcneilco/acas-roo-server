@@ -211,23 +211,5 @@ public class TreatmentGroupState extends AbstractState {
 			q.setParameter("ignored", true);
 			return q;
 		}
-
-	public static TypedQuery<TreatmentGroupState> findTreatmentGroupStatesByTreatmentGroupCodeNameAndStateTypeKind(
-			String treatmentGroupCodeName, String stateType, String stateKind) {
-		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		
-		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT ags FROM TreatmentGroupState AS ags " +
-		"JOIN ags.treatmentGroup ag " +
-		"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
-		"AND ag.codeName = :treatmentGroupCodeName ";
-		TypedQuery<TreatmentGroupState> q = em.createQuery(hsqlQuery, TreatmentGroupState.class);
-		q.setParameter("treatmentGroupCodeName", treatmentGroupCodeName);
-		q.setParameter("stateType", stateType);
-		q.setParameter("stateKind", stateKind);
-		q.setParameter("ignored", true);
-		return q;
-	}
 	
 }

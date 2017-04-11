@@ -75,19 +75,19 @@ public class ProtocolValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.ProtocolValue fromJsonToProtocolValue(String json) {
-        return new JSONDeserializer<ProtocolValue>().use(null, ProtocolValue.class).deserialize(json);
+        return new JSONDeserializer<ProtocolValue>().use(null, ProtocolValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ProtocolValue> fromJsonArrayToProtocolValues(String json) {
-        return new JSONDeserializer<List<ProtocolValue>>().use(null, ArrayList.class).use("values", ProtocolValue.class).deserialize(json);
+        return new JSONDeserializer<List<ProtocolValue>>().use(null, ArrayList.class).use("values", ProtocolValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ProtocolValue> fromJsonArrayToProtocolValues(Reader json) {
-        return new JSONDeserializer<List<ProtocolValue>>().use(null, ArrayList.class).use("values", ProtocolValue.class).deserialize(json);
+        return new JSONDeserializer<List<ProtocolValue>>().use(null, ArrayList.class).use("values", ProtocolValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
     }
 
     public static com.labsynch.labseer.domain.ProtocolValue update(com.labsynch.labseer.domain.ProtocolValue protocolValue) {
-        ProtocolValue updatedProtocolValue = new JSONDeserializer<ProtocolValue>().use(null, ProtocolValue.class).deserializeInto(protocolValue.toJson(), ProtocolValue.findProtocolValue(protocolValue.getId()));
+        ProtocolValue updatedProtocolValue = new JSONDeserializer<ProtocolValue>().use(null, ProtocolValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(protocolValue.toJson(), ProtocolValue.findProtocolValue(protocolValue.getId()));
         updatedProtocolValue.merge();
         return updatedProtocolValue;
     }
@@ -111,33 +111,6 @@ public class ProtocolValue extends AbstractValue {
 				"AND p.id = :protocolId ORDER BY pv.id";
 		TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
 		q.setParameter("protocolId", protocolId);
-		q.setParameter("stateType", stateType);
-		q.setParameter("stateKind", stateKind);
-		q.setParameter("valueType", valueType);
-		q.setParameter("valueKind", valueKind);
-		q.setParameter("ignored", true);
-		return q;
-	}
-	
-	public static TypedQuery<ProtocolValue> findProtocolValuesByProtocolCodeNameAndStateTypeKindAndValueTypeKind(
-			String protocolCodeName, String stateType, String stateKind,
-			String valueType, String valueKind) {
-
-		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
-		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
-		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
-		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
-		
-		EntityManager em = entityManager();
-		String hsqlQuery = "SELECT pv FROM ProtocolValue AS pv " +
-				"JOIN pv.lsState ps " +
-				"JOIN ps.protocol p " +
-				"WHERE ps.lsType = :stateType AND ps.lsKind = :stateKind AND ps.ignored IS NOT :ignored " +
-				"AND pv.lsType = :valueType AND pv.lsKind = :valueKind AND pv.ignored IS NOT :ignored " +
-//				"AND p.ignored IS NOT :ignored " +
-				"AND p.codeName = :protocolCodeName ";
-		TypedQuery<ProtocolValue> q = em.createQuery(hsqlQuery, ProtocolValue.class);
-		q.setParameter("protocolCodeName", protocolCodeName);
 		q.setParameter("stateType", stateType);
 		q.setParameter("stateKind", stateKind);
 		q.setParameter("valueType", valueType);
