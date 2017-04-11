@@ -221,5 +221,17 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public String getAcasAdminRole() {
 	    return this.acasAdminRole;
 	}
+	
+	String enableProjectRoles;
+	
+	@Value("${server.project.roles.enable}")
+	public void setEnableProjectRoles(String enableProjectRoles) {
+	    this.enableProjectRoles = enableProjectRoles;
+	}
+	
+	@Override
+	public boolean getEnableProjectRoles() {
+		return Boolean.parseBoolean(this.enableProjectRoles);
+	}
 
 }

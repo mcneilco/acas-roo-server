@@ -526,5 +526,45 @@ public class ApiLsThingControllerTest {
         		.andReturn().getResponse().getContentAsString();
         logger.info(json);
 	}
+	
+	@Test
+    public void searchReturnWithFirstLsThings() throws Exception {
+        String json = this.mockMvc.perform(get("/api/v1/lsthings/search?lsType=batch&with=firstLsThings&q=LSMB000005")
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        
+        logger.info(json);
+        Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+        for (LsThing lsThing : lsThings){
+        	Assert.assertNotNull(lsThing.getFirstLsThings());
+        	Assert.assertTrue(!lsThing.getFirstLsThings().isEmpty());
+        	for (ItxLsThingLsThing firstItx : lsThing.getFirstLsThings()){
+        		Assert.assertNotNull(firstItx.getFirstLsThing());
+        	}
+        }
+    }
+	
+	@Test
+    public void searchReturnWithSecondLsThings() throws Exception {
+        String json = this.mockMvc.perform(get("/api/v1/lsthings/search?lsType=batch&with=secondLsThings&q=LSMB000005")
+        		.contentType(MediaType.APPLICATION_JSON)
+        		.accept(MediaType.APPLICATION_JSON))
+        		.andExpect(status().isOk())
+        		.andExpect(content().contentType("application/json"))
+        		.andReturn().getResponse().getContentAsString();
+        
+        logger.info(json);
+        Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+        for (LsThing lsThing : lsThings){
+        	Assert.assertNotNull(lsThing.getSecondLsThings());
+        	Assert.assertTrue(!lsThing.getSecondLsThings().isEmpty());
+        	for (ItxLsThingLsThing secondItx : lsThing.getSecondLsThings()){
+        		Assert.assertNotNull(secondItx.getSecondLsThing());
+        	}
+        }
+    }
 
 }
