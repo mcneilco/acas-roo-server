@@ -14,6 +14,7 @@ public class ValueQueryDTO {
 	String valueType;
 	String valueKind;
 	String value;
+	String operator;
 	
 	public ValueQueryDTO(){
 		

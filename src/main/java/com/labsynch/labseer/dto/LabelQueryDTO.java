@@ -12,6 +12,7 @@ public class LabelQueryDTO {
 	String labelText;
 	String labelType;
 	String labelKind;
+	String operator;
 	
 	public LabelQueryDTO(){
 		

@@ -97,6 +97,9 @@ public interface LsThingService {
 
 	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings);
 
+	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings,
+			String labelType);
+
 	Collection<Long> searchLsThingIdsByBrowserQueryDTO(
 			LsThingBrowserQueryDTO query) throws Exception;
 	
