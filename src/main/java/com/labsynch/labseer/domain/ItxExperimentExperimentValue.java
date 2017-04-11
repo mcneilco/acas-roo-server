@@ -34,7 +34,7 @@ public class ItxExperimentExperimentValue extends AbstractValue {
     
     public static ItxExperimentExperimentValue update(ItxExperimentExperimentValue object) {
     	ItxExperimentExperimentValue updatedObject = new JSONDeserializer<ItxExperimentExperimentValue>().use(null, ItxExperimentExperimentValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+        		deserializeInto(object.toJson(), 
         				ItxExperimentExperimentValue.findItxExperimentExperimentValue(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();
@@ -45,7 +45,7 @@ public class ItxExperimentExperimentValue extends AbstractValue {
     public static ItxExperimentExperimentValue fromJsonToItxExperimentExperimentValue(String json) {
         return new JSONDeserializer<ItxExperimentExperimentValue>().
         		use(null, ItxExperimentExperimentValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
     
@@ -53,7 +53,7 @@ public class ItxExperimentExperimentValue extends AbstractValue {
         return new JSONDeserializer<List<ItxExperimentExperimentValue>>().
         		use(null, ArrayList.class).
         		use("values", ItxExperimentExperimentValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
     
@@ -61,7 +61,7 @@ public class ItxExperimentExperimentValue extends AbstractValue {
         return new JSONDeserializer<List<ItxExperimentExperimentValue>>().
         		use(null, ArrayList.class).
         		use("values", ItxExperimentExperimentValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
     
@@ -87,7 +87,7 @@ public class ItxExperimentExperimentValue extends AbstractValue {
     }
 	
 	public static ItxExperimentExperimentValue create(ItxExperimentExperimentValue lsThingValue) {
-        ItxExperimentExperimentValue newItxExperimentExperimentValue = new JSONDeserializer<ItxExperimentExperimentValue>().use(null, ItxExperimentExperimentValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new ItxExperimentExperimentValue());
+        ItxExperimentExperimentValue newItxExperimentExperimentValue = new JSONDeserializer<ItxExperimentExperimentValue>().use(null, ItxExperimentExperimentValue.class).deserializeInto(lsThingValue.toJson(), new ItxExperimentExperimentValue());
         return newItxExperimentExperimentValue;
     }
 }

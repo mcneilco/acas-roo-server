@@ -94,7 +94,7 @@ public class LsThingValue extends AbstractValue {
 	public static LsThingValue fromJsonToLsThingValue(String json) {
         return new JSONDeserializer<LsThingValue>().
         		use(null, LsThingValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
         
@@ -102,7 +102,7 @@ public class LsThingValue extends AbstractValue {
         return new JSONDeserializer<List<LsThingValue>>().
         		use(null, ArrayList.class).
         		use("values", LsThingValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
     
@@ -110,7 +110,7 @@ public class LsThingValue extends AbstractValue {
         return new JSONDeserializer<List<LsThingValue>>().
         		use(null, ArrayList.class).
         		use("values", LsThingValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
 
@@ -122,7 +122,7 @@ public class LsThingValue extends AbstractValue {
 		try {
 			updatedLsThingValue = new JSONDeserializer<LsThingValue>().
 					use(null, LsThingValue.class).
-					use(BigDecimal.class, new CustomBigDecimalFactory()).
+					
 					deserializeInto(lsThingValue.toJson(), LsThingValue.findLsThingValue(lsThingValue.getId()));	
 			LsThingState lsThingState = LsThingState.findLsThingState(lsThingValue.getLsState().getId());
 			updatedLsThingValue.setLsState(lsThingState);
@@ -219,7 +219,7 @@ public class LsThingValue extends AbstractValue {
 	}
 	
 	public static com.labsynch.labseer.domain.LsThingValue create(com.labsynch.labseer.domain.LsThingValue lsThingValue) {
-        LsThingValue newLsThingValue = new JSONDeserializer<LsThingValue>().use(null, LsThingValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(lsThingValue.toJson(), new LsThingValue());
+        LsThingValue newLsThingValue = new JSONDeserializer<LsThingValue>().use(null, LsThingValue.class).deserializeInto(lsThingValue.toJson(), new LsThingValue());
         return newLsThingValue;
     }
 	

@@ -82,7 +82,7 @@ public class LsThingState extends AbstractState {
     }
     
     public static LsThingState fromJsonToLsThingState(String json) {
-        return new JSONDeserializer<LsThingState>().use(null, LsThingState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<LsThingState>().use(null, LsThingState.class).deserialize(json);
     }
     
     public static String toJsonArray(Collection<LsThingState> collection) {
@@ -90,11 +90,11 @@ public class LsThingState extends AbstractState {
     }
     
     public static Collection<LsThingState> fromJsonArrayToLsThingStates(String json) {
-        return new JSONDeserializer<List<LsThingState>>().use(null, ArrayList.class).use("values", LsThingState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<LsThingState>>().use(null, ArrayList.class).use("values", LsThingState.class).deserialize(json);
     }
 
     public static Collection<LsThingState> fromJsonArrayToLsThingStates(Reader json) {
-        return new JSONDeserializer<List<LsThingState>>().use(null, ArrayList.class).use("values", LsThingState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<LsThingState>>().use(null, ArrayList.class).use("values", LsThingState.class).deserialize(json);
     }
 
 	public static TypedQuery<LsThingState> findLsThingStatesByLsThingIDAndStateTypeKind(

@@ -82,7 +82,7 @@ public class ProtocolState extends AbstractState {
     }
     
     public static ProtocolState fromJsonToProtocolState(String json) {
-        return new JSONDeserializer<ProtocolState>().use(null, ProtocolState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<ProtocolState>().use(null, ProtocolState.class).deserialize(json);
     }
     
     public static String toJsonArray(Collection<ProtocolState> collection) {
@@ -90,11 +90,11 @@ public class ProtocolState extends AbstractState {
     }
     
     public static Collection<ProtocolState> fromJsonArrayToProtocolStates(String json) {
-        return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).deserialize(json);
     }
 
     public static Collection<ProtocolState> fromJsonArrayToProtocolStates(Reader json) {
-        return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ProtocolState>>().use(null, ArrayList.class).use("values", ProtocolState.class).deserialize(json);
     }
 
 	public static TypedQuery<ProtocolState> findProtocolStatesByProtocolIDAndStateTypeKind(

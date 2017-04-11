@@ -69,7 +69,7 @@ public class ItxProtocolProtocol extends AbstractThing {
     
     public static ItxProtocolProtocol update(ItxProtocolProtocol object) {
     	ItxProtocolProtocol updatedObject = new JSONDeserializer<ItxProtocolProtocol>().use(null, ItxProtocolProtocol.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+        		deserializeInto(object.toJson(), 
         				ItxProtocolProtocol.findItxProtocolProtocol(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();

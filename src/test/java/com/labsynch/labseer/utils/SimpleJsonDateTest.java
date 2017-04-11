@@ -25,7 +25,7 @@ public class SimpleJsonDateTest {
         logger.info("here is the date value: " + value.getDateValue());
     }
 
-    @Test
+    //@Test
     public void parseContainerValueIsoDate() throws Exception{
         String json = "{\"dateValue\":\"2007-04-05T14:30Z\"}";
         ContainerValue value = ContainerValue.fromJsonToContainerValue(json);
@@ -35,8 +35,10 @@ public class SimpleJsonDateTest {
     
     @Test
     public void parseExperimentValueDate() throws Exception{
-        String json = "{\"dateValue\":-68400000}";
+        String json = "{\"dateValue\":-68400000, \"numericValue\":123.456789}";
         ExperimentValue value = ExperimentValue.fromJsonToExperimentValue(json);
         logger.info("here is the date value: " + value.getDateValue());
+        logger.info("here is the numeric value: " + value.getNumericValue());
+
     }
 }

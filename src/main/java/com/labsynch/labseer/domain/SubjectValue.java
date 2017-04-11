@@ -145,7 +145,7 @@ public class SubjectValue extends AbstractValue {
 	
 	
 	public static com.labsynch.labseer.domain.SubjectValue create(com.labsynch.labseer.domain.SubjectValue subjectValue) {
-		SubjectValue newsubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(subjectValue.toJson(), new SubjectValue());
+		SubjectValue newsubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).deserializeInto(subjectValue.toJson(), new SubjectValue());
 		return newsubjectValue;
 	}
 
@@ -163,7 +163,7 @@ public class SubjectValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.SubjectValue fromJsonToSubjectValue(String json) {
-		return new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).deserialize(json);
 	}
 
 	@Transactional
@@ -180,11 +180,11 @@ public class SubjectValue extends AbstractValue {
 	}
 
 	public static Collection<com.labsynch.labseer.domain.SubjectValue> fromJsonArrayToSubjectValues(Reader json) {
-		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("lsState", SubjectState.class).use("values", SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("lsState", SubjectState.class).use("values", SubjectValue.class).deserialize(json);
 	}
 
 	public static Collection<com.labsynch.labseer.domain.SubjectValue> fromJsonArrayToSubjectValues(String json) {
-		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("values", SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("values", SubjectValue.class).deserialize(json);
 	}
 
 	public static long countSubjectValues() {
@@ -268,7 +268,7 @@ public class SubjectValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.SubjectValue update(com.labsynch.labseer.domain.SubjectValue subjectValue) {
-		SubjectValue updatedSubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(subjectValue.toJson(), SubjectValue.findSubjectValue(subjectValue.getId()));
+		SubjectValue updatedSubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).deserializeInto(subjectValue.toJson(), SubjectValue.findSubjectValue(subjectValue.getId()));
 		updatedSubjectValue.setModifiedDate(new Date());
 		updatedSubjectValue.merge();
 		return updatedSubjectValue;

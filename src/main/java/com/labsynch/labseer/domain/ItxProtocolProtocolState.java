@@ -43,7 +43,7 @@ public class ItxProtocolProtocolState extends AbstractState {
     
     public static ItxProtocolProtocolState update(ItxProtocolProtocolState object) {
     	ItxProtocolProtocolState updatedObject = new JSONDeserializer<ItxProtocolProtocolState>().use(null, ItxProtocolProtocolState.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+        		deserializeInto(object.toJson(), 
         				ItxProtocolProtocolState.findItxProtocolProtocolState(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();
