@@ -82,7 +82,7 @@ public class ExperimentState extends AbstractState {
     }
 	
 	public static ExperimentState fromJsonToExperimentState(String json) {
-	    return new JSONDeserializer<ExperimentState>().use(null, ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	    return new JSONDeserializer<ExperimentState>().use(null, ExperimentState.class).deserialize(json);
 	}
 	
 	public static String toJsonArray(Collection<ExperimentState> collection) {
@@ -93,11 +93,11 @@ public class ExperimentState extends AbstractState {
 	
 	
 	public static Collection<ExperimentState> fromJsonArrayToExperimentStates(String json) {
-	    return new JSONDeserializer<List<ExperimentState>>().use(null, ArrayList.class).use("values", ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	    return new JSONDeserializer<List<ExperimentState>>().use(null, ArrayList.class).use("values", ExperimentState.class).deserialize(json);
 	}
 	
 	public static Collection<ExperimentState> fromJsonArrayToExperimentStates(Reader json) {
-	    return new JSONDeserializer<List<ExperimentState>>().use(null, ArrayList.class).use("values", ExperimentState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+	    return new JSONDeserializer<List<ExperimentState>>().use(null, ArrayList.class).use("values", ExperimentState.class).deserialize(json);
 	}
 
 

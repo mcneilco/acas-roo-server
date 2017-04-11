@@ -71,14 +71,14 @@ public class AuthorValue extends AbstractValue {
     
     public static AuthorValue create(AuthorValue authorValue) {
     	AuthorValue newAuthorValue = new JSONDeserializer<AuthorValue>().use(null, AuthorValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(authorValue.toJson(), 
+        		deserializeInto(authorValue.toJson(), 
         				new AuthorValue());	
     
         return newAuthorValue;
     }
     
     public static AuthorValue update(AuthorValue authorValue) {
-        AuthorValue updatedAuthorValue = new JSONDeserializer<AuthorValue>().use(null, ArrayList.class).use("values", AuthorValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(authorValue.toJson(), AuthorValue.findAuthorValue(authorValue.getId()));
+        AuthorValue updatedAuthorValue = new JSONDeserializer<AuthorValue>().use(null, ArrayList.class).use("values", AuthorValue.class).deserializeInto(authorValue.toJson(), AuthorValue.findAuthorValue(authorValue.getId()));
         updatedAuthorValue.setModifiedDate(new Date());
         updatedAuthorValue.merge();
         return updatedAuthorValue;

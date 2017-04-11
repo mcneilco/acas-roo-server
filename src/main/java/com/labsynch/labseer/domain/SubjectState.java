@@ -191,15 +191,15 @@ public class SubjectState extends AbstractState {
     }
 
     public static com.labsynch.labseer.domain.SubjectState fromJsonToSubjectState(String json) {
-        return new JSONDeserializer<SubjectState>().use(null, SubjectState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<SubjectState>().use(null, SubjectState.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.SubjectState> fromJsonArrayToSubjectStates(Reader json) {
-        return new JSONDeserializer<List<SubjectState>>().use(null, ArrayList.class).use("values", SubjectState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<SubjectState>>().use(null, ArrayList.class).use("values", SubjectState.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.SubjectState> fromJsonArrayToSubjectStates(String json) {
-        return new JSONDeserializer<List<SubjectState>>().use(null, ArrayList.class).use("values", SubjectState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<SubjectState>>().use(null, ArrayList.class).use("values", SubjectState.class).deserialize(json);
     }
 
     @Transactional
