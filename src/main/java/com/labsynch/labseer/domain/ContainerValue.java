@@ -22,8 +22,6 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.CustomDateTimeFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
@@ -211,9 +209,6 @@ public class ContainerValue extends AbstractValue {
         return entityManager().createQuery("SELECT o FROM ContainerValue o", ContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
-//    public static com.labsynch.labseer.domain.ContainerValue fromJsonToContainerValue(String json) {
-//        return new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).use(Date.class, new CustomDateTimeFactory()).deserialize(json);
-//    }
     
     public static com.labsynch.labseer.domain.ContainerValue fromJsonToContainerValue(String json) {
         return new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).deserialize(json);

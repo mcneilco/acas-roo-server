@@ -1,7 +1,6 @@
 package com.labsynch.labseer.domain;
 
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,7 +26,6 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.SubjectValueDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
