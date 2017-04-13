@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -153,6 +154,47 @@ public class ExperimentLabel extends AbstractLabel {
         q.setParameter("protocolId", protocolId);
         return q;
     }
+    
+    public static ExperimentLabel pickBestLabel(Collection<ExperimentLabel> labels) {
+		if (labels.isEmpty()) return null;
+		Collection<ExperimentLabel> preferredLabels = new HashSet<ExperimentLabel>();
+		for (ExperimentLabel label : labels){
+			if (label.isPreferred()) preferredLabels.add(label);
+		}
+		if (!preferredLabels.isEmpty()){
+			ExperimentLabel bestLabel = preferredLabels.iterator().next();
+			for (ExperimentLabel preferredLabel : preferredLabels){
+				if (preferredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = preferredLabel;
+			}
+			return bestLabel;
+		} else {
+			Collection<ExperimentLabel> nameLabels = new HashSet<ExperimentLabel>();
+			for (ExperimentLabel label : labels){
+				if (label.getLsType().equals("name")) nameLabels.add(label);
+			}
+			if (!nameLabels.isEmpty()){
+				ExperimentLabel bestLabel = nameLabels.iterator().next();
+				for (ExperimentLabel nameLabel : nameLabels){
+					if (nameLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = nameLabel;
+				}
+				return bestLabel;
+			} else {
+				Collection<ExperimentLabel> notIgnoredLabels = new HashSet<ExperimentLabel>();
+				for (ExperimentLabel label : labels){
+					if (!label.isIgnored()) notIgnoredLabels.add(label);
+				}
+				if (!notIgnoredLabels.isEmpty()){
+					ExperimentLabel bestLabel = notIgnoredLabels.iterator().next();
+					for (ExperimentLabel notIgnoredLabel : notIgnoredLabels){
+						if (notIgnoredLabel.getRecordedDate().compareTo(bestLabel.getRecordedDate()) > 0) bestLabel = notIgnoredLabel;
+					}
+					return bestLabel;
+				} else {
+					return labels.iterator().next();
+				}
+			}
+		}
+	}
 
     @Transactional
     public void logicalDelete() {

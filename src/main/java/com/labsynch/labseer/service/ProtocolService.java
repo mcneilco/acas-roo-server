@@ -29,6 +29,9 @@ public interface ProtocolService {
 	Set<Protocol> findProtocolsByRequestMetadata(
 			Map<String, String> requestParams);
 
+	Collection<Protocol> findProtocolsByGenericMetaDataSearch(
+			String queryString, String userName);
+
 	Collection<ProtocolErrorMessageDTO> findProtocolsByCodeNames(
 			List<String> codeNames);
 	
