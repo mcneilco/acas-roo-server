@@ -9,6 +9,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJson
 public class ItxQueryDTO {
 
+	
 	String interactionType;
 	String interactionKind;
 	String thingType;

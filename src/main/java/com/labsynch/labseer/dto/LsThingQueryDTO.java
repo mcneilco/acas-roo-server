@@ -18,11 +18,11 @@ public class LsThingQueryDTO {
 	
 	String recordedBy;
 	
+	Integer maxResults;
+	
 	String lsType;
 	
 	String lsKind;
-	
-	Integer maxResults;
 	
 	Collection<ItxQueryDTO> firstInteractions;
 	
@@ -34,5 +34,18 @@ public class LsThingQueryDTO {
 	
 	public LsThingQueryDTO(){
 		
+	}
+	
+	public LsThingQueryDTO(LsThingQueryDTO queryDTO){
+		this.recordedDateGreaterThan = queryDTO.getRecordedDateGreaterThan();
+		this.recordedDateLessThan = queryDTO.getRecordedDateLessThan();
+		this.lsType = queryDTO.getLsType();
+		this.lsKind = queryDTO.getLsKind();
+		this.recordedBy = queryDTO.getRecordedBy();
+		this.maxResults = queryDTO.getMaxResults();
+		this.firstInteractions = queryDTO.getFirstInteractions();
+		this.secondInteractions = queryDTO.getSecondInteractions();
+		this.values = queryDTO.getValues();
+		this.labels = queryDTO.getLabels();
 	}
 }

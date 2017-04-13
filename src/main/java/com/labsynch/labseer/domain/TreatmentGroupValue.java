@@ -440,6 +440,32 @@ public class TreatmentGroupValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+	
+	public static TypedQuery<TreatmentGroupValue> findTreatmentGroupValuesByTreatmentGroupCodeNameAndStateTypeKindAndValueTypeKind(
+			String codeName, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT tgv FROM TreatmentGroupValue AS tgv " +
+				"JOIN tgv.lsState tgs " +
+				"JOIN tgs.treatmentGroup tg " +
+				"WHERE tgs.lsType = :stateType AND tgs.lsKind = :stateKind AND tgs.ignored IS NOT :ignored " +
+				"AND tgv.lsType = :valueType AND tgv.lsKind = :valueKind AND tgv.ignored IS NOT :ignored " +
+				"AND tg.ignored IS NOT :ignored " +
+				"AND tg.codeName = :codeName ";
+		TypedQuery<TreatmentGroupValue> q = em.createQuery(hsqlQuery, TreatmentGroupValue.class);
+		q.setParameter("codeName", codeName);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
 
 
 }

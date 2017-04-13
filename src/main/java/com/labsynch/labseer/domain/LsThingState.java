@@ -22,6 +22,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -75,8 +76,9 @@ public class LsThingState extends AbstractState {
 		
 	}
 
+	@Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().include("lsValues").exclude("*.class", "lsThing").transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     public static LsThingState fromJsonToLsThingState(String json) {
@@ -108,6 +110,24 @@ public class LsThingState extends AbstractState {
 		"AND lst.id = :lsThingId ";
 		TypedQuery<LsThingState> q = em.createQuery(hsqlQuery, LsThingState.class);
 		q.setParameter("lsThingId", lsThingId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+
+	public static TypedQuery<LsThingState> findLsThingStatesByLsThingCodeNameAndStateTypeKind(
+			String lsThingCodeName, String stateType, String stateKind) {
+		if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT lsts FROM LsThingState AS lsts " +
+		"JOIN lsts.lsThing lst " +
+		"WHERE lsts.lsType = :stateType AND lsts.lsKind = :stateKind AND lsts.ignored IS NOT :ignored " +
+		"AND lst.codeName = :lsThingCodeName ";
+		TypedQuery<LsThingState> q = em.createQuery(hsqlQuery, LsThingState.class);
+		q.setParameter("lsThingCodeName", lsThingCodeName);
 		q.setParameter("stateType", stateType);
 		q.setParameter("stateKind", stateKind);
 		q.setParameter("ignored", true);

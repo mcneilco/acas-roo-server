@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.dto.AnalysisGroupStatePathDTO;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
 
 @Service
 public interface AnalysisGroupStateService {
@@ -32,6 +34,12 @@ public interface AnalysisGroupStateService {
 
 	Collection<AnalysisGroupState> updateAnalysisGroupStates(
 			Collection<AnalysisGroupState> analysisGroupStates);
+
+	AnalysisGroupState getAnalysisGroupState(String idOrCodeName,
+			String stateType, String stateKind);
+
+	Collection<AnalysisGroupStatePathDTO> getAnalysisGroupStates(
+			Collection<GenericStatePathRequest> genericRequests);
 
 	
 	

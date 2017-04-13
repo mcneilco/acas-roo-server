@@ -271,31 +271,35 @@ public class ProtocolServiceImpl implements ProtocolService {
 	@Override
 	public Collection<Protocol> findProtocolsByGenericMetaDataSearch(String queryString, String userName) {
 		Collection<Protocol> rawResults = findProtocolsByGenericMetaDataSearch(queryString);
-		Collection<LsThing> projects = authorService.getUserProjects(userName);
-		List<String> allowedProjectCodeNames = new ArrayList<String>();
-		for (LsThing project : projects){
-			allowedProjectCodeNames.add(project.getCodeName());
-		}
-		Collection<Protocol> results = new HashSet<Protocol>();
-		for (Protocol rawResult : rawResults){
-			String protocolProject = null;
-			for (ProtocolState state : rawResult.getLsStates()){
-				for (ProtocolValue value : state.getLsValues()){
-					if (value.getLsKind().equals("project")){
-						protocolProject = value.getCodeValue();
-						break;
+		if (propertiesUtilService.getRestrictExperiments()){
+			Collection<LsThing> projects = authorService.getUserProjects(userName);
+			List<String> allowedProjectCodeNames = new ArrayList<String>();
+			for (LsThing project : projects){
+				allowedProjectCodeNames.add(project.getCodeName());
+			}
+			Collection<Protocol> results = new HashSet<Protocol>();
+			for (Protocol rawResult : rawResults){
+				String protocolProject = null;
+				for (ProtocolState state : rawResult.getLsStates()){
+					for (ProtocolValue value : state.getLsValues()){
+						if (value.getLsKind().equals("project")){
+							protocolProject = value.getCodeValue();
+							break;
+						}
 					}
 				}
+				if (protocolProject == null){
+					//no project associated with protocol, pass it through
+					results.add(rawResult);
+				}
+				else if (allowedProjectCodeNames.contains(protocolProject)){
+					results.add(rawResult);
+				}
 			}
-			if (protocolProject == null){
-				//no project associated with protocol, pass it through
-				results.add(rawResult);
-			}
-			else if (allowedProjectCodeNames.contains(protocolProject)){
-				results.add(rawResult);
-			}
+			return results;
+		}else{
+			return rawResults;
 		}
-		return results;
 	}
 	
 	public Collection<Protocol> findProtocolsByGenericMetaDataSearch(String queryString) {

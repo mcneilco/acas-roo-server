@@ -36,6 +36,14 @@ privileged aspect LsThingQueryDTO_Roo_JavaBean {
         this.recordedBy = recordedBy;
     }
     
+    public Integer LsThingQueryDTO.getMaxResults() {
+        return this.maxResults;
+    }
+    
+    public void LsThingQueryDTO.setMaxResults(Integer maxResults) {
+        this.maxResults = maxResults;
+    }
+    
     public String LsThingQueryDTO.getLsType() {
         return this.lsType;
     }
@@ -50,14 +58,6 @@ privileged aspect LsThingQueryDTO_Roo_JavaBean {
     
     public void LsThingQueryDTO.setLsKind(String lsKind) {
         this.lsKind = lsKind;
-    }
-    
-    public Integer LsThingQueryDTO.getMaxResults() {
-        return this.maxResults;
-    }
-    
-    public void LsThingQueryDTO.setMaxResults(Integer maxResults) {
-        this.maxResults = maxResults;
     }
     
     public Collection<ItxQueryDTO> LsThingQueryDTO.getFirstInteractions() {
