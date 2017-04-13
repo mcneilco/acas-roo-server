@@ -103,7 +103,7 @@ public class LsThing extends AbstractThing {
     }
 
     public static com.labsynch.labseer.domain.LsThing fromJsonToProtocol(String json) {
-        return new JSONDeserializer<LsThing>().use(null, LsThing.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<LsThing>().use(null, LsThing.class).deserialize(json);
     }
 
     @Transactional
@@ -112,11 +112,11 @@ public class LsThing extends AbstractThing {
     }
 
     public static Collection<com.labsynch.labseer.domain.LsThing> fromJsonArrayToProtocols(String json) {
-        return new JSONDeserializer<List<LsThing>>().use(null, ArrayList.class).use("values", LsThing.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<LsThing>>().use(null, ArrayList.class).use("values", LsThing.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.LsThing> fromJsonArrayToProtocols(Reader json) {
-        return new JSONDeserializer<List<LsThing>>().use(null, ArrayList.class).use("values", LsThing.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<LsThing>>().use(null, ArrayList.class).use("values", LsThing.class).deserialize(json);
     }
     
     @Transactional

@@ -97,7 +97,7 @@ public class AnalysisGroupState extends AbstractState {
 	}
 
 	public static com.labsynch.labseer.domain.AnalysisGroupState fromJsonToAnalysisGroupState(String json) {
-		return new JSONDeserializer<AnalysisGroupState>().use(null, AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<AnalysisGroupState>().use(null, AnalysisGroupState.class).deserialize(json);
 	}
 
 	public static String toJsonArray(Collection<com.labsynch.labseer.domain.AnalysisGroupState> collection) {
@@ -109,11 +109,11 @@ public class AnalysisGroupState extends AbstractState {
 	}
 
 	public static Collection<com.labsynch.labseer.domain.AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(String json) {
-		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).deserialize(json);
 	}
 
 	public static Collection<com.labsynch.labseer.domain.AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(Reader json) {
-		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).deserialize(json);
 	}
 
 	public static int deleteByExperimentID(Long experimentId) {

@@ -67,7 +67,7 @@ public class ExperimentDataDTO {
     }
 
 	public static ExperimentDataDTO fromJsonToExperimentDataDTO(String json) {
-        return new JSONDeserializer<ExperimentDataDTO>().use(null, ExperimentDataDTO.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<ExperimentDataDTO>().use(null, ExperimentDataDTO.class).deserialize(json);
     }
 
 	public static String toJsonArray(Collection<ExperimentDataDTO> collection) {
@@ -85,7 +85,7 @@ public class ExperimentDataDTO {
     }
 
 	public static Collection<ExperimentDataDTO> fromJsonArrayToExperimentDataDTO(String json) {
-        return new JSONDeserializer<List<ExperimentDataDTO>>().use(null, ArrayList.class).use("values", ExperimentDataDTO.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ExperimentDataDTO>>().use(null, ArrayList.class).use("values", ExperimentDataDTO.class).deserialize(json);
     }
 }
 	

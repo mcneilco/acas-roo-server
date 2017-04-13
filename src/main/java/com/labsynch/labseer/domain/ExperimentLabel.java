@@ -210,7 +210,7 @@ public class ExperimentLabel extends AbstractLabel {
     }
 
     public static com.labsynch.labseer.domain.ExperimentLabel fromJsonToExperimentLabel(String json) {
-        return new JSONDeserializer<ExperimentLabel>().use(null, ExperimentLabel.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<ExperimentLabel>().use(null, ExperimentLabel.class).deserialize(json);
     }
 
     public static String toJsonArray(Collection<com.labsynch.labseer.domain.ExperimentLabel> collection) {
@@ -222,10 +222,10 @@ public class ExperimentLabel extends AbstractLabel {
     }
 
     public static Collection<com.labsynch.labseer.domain.ExperimentLabel> fromJsonArrayToExperimentLabels(String json) {
-        return new JSONDeserializer<List<ExperimentLabel>>().use(null, ArrayList.class).use("values", ExperimentLabel.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ExperimentLabel>>().use(null, ArrayList.class).use("values", ExperimentLabel.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ExperimentLabel> fromJsonArrayToExperimentLabels(Reader json) {
-        return new JSONDeserializer<List<ExperimentLabel>>().use(null, ArrayList.class).use("values", ExperimentLabel.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ExperimentLabel>>().use(null, ArrayList.class).use("values", ExperimentLabel.class).deserialize(json);
     }
 }

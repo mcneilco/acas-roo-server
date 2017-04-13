@@ -47,4 +47,12 @@ privileged aspect ValueQueryDTO_Roo_JavaBean {
         this.value = value;
     }
     
+    public String ValueQueryDTO.getOperator() {
+        return this.operator;
+    }
+    
+    public void ValueQueryDTO.setOperator(String operator) {
+        this.operator = operator;
+    }
+    
 }

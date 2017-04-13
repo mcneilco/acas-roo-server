@@ -22,7 +22,6 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
@@ -120,7 +119,7 @@ public class ContainerValue extends AbstractValue {
     
     public static ContainerValue create(ContainerValue containerValue) {
     	ContainerValue newContainerValue = new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(containerValue.toJson(), 
+        		deserializeInto(containerValue.toJson(), 
         				new ContainerValue());	
     
         return newContainerValue;
@@ -210,20 +209,21 @@ public class ContainerValue extends AbstractValue {
         return entityManager().createQuery("SELECT o FROM ContainerValue o", ContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 
+    
     public static com.labsynch.labseer.domain.ContainerValue fromJsonToContainerValue(String json) {
-        return new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<ContainerValue>().use(null, ContainerValue.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ContainerValue> fromJsonArrayToContainerValues(String json) {
-        return new JSONDeserializer<List<ContainerValue>>().use(null, ArrayList.class).use("values", ContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ContainerValue>>().use(null, ArrayList.class).use("values", ContainerValue.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ContainerValue> fromJsonArrayToContainerValues(Reader json) {
-        return new JSONDeserializer<List<ContainerValue>>().use(null, ArrayList.class).use("values", ContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ContainerValue>>().use(null, ArrayList.class).use("values", ContainerValue.class).deserialize(json);
     }
     
     public static com.labsynch.labseer.domain.ContainerValue update(com.labsynch.labseer.domain.ContainerValue containerValue) {
-        ContainerValue updatedContainerValue = new JSONDeserializer<ContainerValue>().use(null, ArrayList.class).use("values", ContainerValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(containerValue.toJson(), ContainerValue.findContainerValue(containerValue.getId()));
+        ContainerValue updatedContainerValue = new JSONDeserializer<ContainerValue>().use(null, ArrayList.class).use("values", ContainerValue.class).deserializeInto(containerValue.toJson(), ContainerValue.findContainerValue(containerValue.getId()));
         updatedContainerValue.setModifiedDate(new Date());
         updatedContainerValue.merge();
         return updatedContainerValue;

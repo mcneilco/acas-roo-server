@@ -31,4 +31,12 @@ privileged aspect LabelQueryDTO_Roo_JavaBean {
         this.labelKind = labelKind;
     }
     
+    public String LabelQueryDTO.getOperator() {
+        return this.operator;
+    }
+    
+    public void LabelQueryDTO.setOperator(String operator) {
+        this.operator = operator;
+    }
+    
 }

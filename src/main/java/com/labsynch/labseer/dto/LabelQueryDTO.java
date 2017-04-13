@@ -13,7 +13,7 @@ public class LabelQueryDTO {
 	String labelType;
 	String labelKind;
 	String operator;
-		
+	
 	public LabelQueryDTO(){
 		
 	}
