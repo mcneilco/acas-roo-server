@@ -73,7 +73,7 @@ public class ItxSubjectContainer extends AbstractThing {
     
     public static ItxSubjectContainer update(ItxSubjectContainer object) {
     	ItxSubjectContainer updatedObject = new JSONDeserializer<ItxSubjectContainer>().use(null, ItxSubjectContainer.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(object.toJson(), 
+        		deserializeInto(object.toJson(), 
         				ItxSubjectContainer.findItxSubjectContainer(object.getId()));
     	updatedObject.setModifiedDate(new Date());
     	updatedObject.merge();

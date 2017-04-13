@@ -106,7 +106,7 @@ public class TreatmentGroupValue extends AbstractValue {
 
 	public static TreatmentGroupValue create(TreatmentGroupValue treatmentGroupValue) {
     	TreatmentGroupValue newTreatmentGroupValue = new JSONDeserializer<TreatmentGroupValue>().use(null, TreatmentGroupValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(treatmentGroupValue.toJson(), 
+        		deserializeInto(treatmentGroupValue.toJson(), 
         				new TreatmentGroupValue());	
     
         return newTreatmentGroupValue;
@@ -133,7 +133,7 @@ public class TreatmentGroupValue extends AbstractValue {
 	public static TreatmentGroupValue update(TreatmentGroupValue treatmentGroupValue) {
 		TreatmentGroupValue updatedTreatmentGroupValue = new JSONDeserializer<TreatmentGroupValue>().
 		use(null, TreatmentGroupValue.class).
-		use(BigDecimal.class, new CustomBigDecimalFactory()).
+		
 		deserializeInto(treatmentGroupValue.toJson(), TreatmentGroupValue.findTreatmentGroupValue(treatmentGroupValue.getId()));
 		updatedTreatmentGroupValue.setModifiedDate(new Date());
 		updatedTreatmentGroupValue.merge();
@@ -191,7 +191,7 @@ public class TreatmentGroupValue extends AbstractValue {
     public static TreatmentGroupValue fromJsonToTreatmentGroupValue(String json) {
         return new JSONDeserializer<TreatmentGroupValue>().
         		use(null, TreatmentGroupValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
         
@@ -199,7 +199,7 @@ public class TreatmentGroupValue extends AbstractValue {
         return new JSONDeserializer<List<TreatmentGroupValue>>().
         		use(null, ArrayList.class).
         		use("values", TreatmentGroupValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
     
@@ -207,7 +207,7 @@ public class TreatmentGroupValue extends AbstractValue {
         return new JSONDeserializer<List<TreatmentGroupValue>>().
         		use(null, ArrayList.class).
         		use("values", TreatmentGroupValue.class).
-        		use(BigDecimal.class, new CustomBigDecimalFactory()).
+        		
         		deserialize(json);
     }
  

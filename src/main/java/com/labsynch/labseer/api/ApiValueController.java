@@ -27,6 +27,7 @@ import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValuePathDTO;
+import com.labsynch.labseer.dto.CodeNameValueDTO;
 import com.labsynch.labseer.dto.ContainerValuePathDTO;
 import com.labsynch.labseer.dto.ExperimentValuePathDTO;
 import com.labsynch.labseer.dto.GenericValuePathRequest;
@@ -136,6 +137,85 @@ public class ApiValueController {
 		if (entity.equals("container")) {
 			ContainerValue containerValue = containerValueService.updateContainerValue(idOrCodeName, stateType, stateKind, valueType, valueKind, value);
 			return new ResponseEntity<String>(containerValue.toJson(), headers, HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);
+	}
+	
+	@RequestMapping(value = "/values/{entity}/jsonArray/bystate/{stateType}/{stateKind}/byvalue/{valueType}/{valueKind}/", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<String> getValueByPathWithCodeNameArray (
+			@PathVariable("entity") String entity,
+			@RequestBody Collection<String> codeNames,
+			@PathVariable("stateType") String stateType,
+			@PathVariable("stateKind") String stateKind,
+			@PathVariable("valueType") String valueType,
+			@PathVariable("valueKind") String valueKind) {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		//this if/else if block controls which lsThing is being hit
+		logger.debug("ENTITY IS: " + entity);
+		if (entity.equals("protocol")) {
+			Collection<CodeNameValueDTO> values = new ArrayList<CodeNameValueDTO>();
+			for (String codeName : codeNames){
+				ProtocolValue protocolValue = protocolValueService.getProtocolValue(codeName, stateType, stateKind, valueType, valueKind);
+				CodeNameValueDTO valueDTO = new CodeNameValueDTO(codeName, protocolValue);
+				values.add(valueDTO);
+			}
+			if (values.isEmpty()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(CodeNameValueDTO.toJsonArray(values), headers, HttpStatus.OK);
+		}
+		if (entity.equals("experiment")) {
+			Collection<CodeNameValueDTO> values = new ArrayList<CodeNameValueDTO>();
+			for (String codeName : codeNames){
+				ExperimentValue experimentValue = experimentValueService.getExperimentValue(codeName, stateType, stateKind, valueType, valueKind);
+				CodeNameValueDTO valueDTO = new CodeNameValueDTO(codeName, experimentValue);
+				values.add(valueDTO);
+			}
+			if (values.isEmpty()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(CodeNameValueDTO.toJsonArray(values), headers, HttpStatus.OK);
+		}
+		if (entity.equals("analysisGroup")) {
+			Collection<CodeNameValueDTO> values = new ArrayList<CodeNameValueDTO>();
+			for (String codeName : codeNames){
+				AnalysisGroupValue analysisGroupValue = analysisGroupValueService.getAnalysisGroupValue(codeName, stateType, stateKind, valueType, valueKind);
+				CodeNameValueDTO valueDTO = new CodeNameValueDTO(codeName, analysisGroupValue);
+				values.add(valueDTO);
+			}
+			if (values.isEmpty()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(CodeNameValueDTO.toJsonArray(values), headers, HttpStatus.OK);
+		}
+		if (entity.equals("treatmentGroup")) {
+			Collection<CodeNameValueDTO> values = new ArrayList<CodeNameValueDTO>();
+			for (String codeName : codeNames){
+				TreatmentGroupValue treatmentGroupValue = treatmentGroupValueService.getTreatmentGroupValue(codeName, stateType, stateKind, valueType, valueKind);
+				CodeNameValueDTO valueDTO = new CodeNameValueDTO(codeName, treatmentGroupValue);
+				values.add(valueDTO);
+			}
+			if (values.isEmpty()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(CodeNameValueDTO.toJsonArray(values), headers, HttpStatus.OK);
+		}
+		if (entity.equals("subject")) {
+			Collection<CodeNameValueDTO> values = new ArrayList<CodeNameValueDTO>();
+			for (String codeName : codeNames){
+				SubjectValue subjectValue = subjectValueService.getSubjectValue(codeName, stateType, stateKind, valueType, valueKind);
+				CodeNameValueDTO valueDTO = new CodeNameValueDTO(codeName, subjectValue);
+				values.add(valueDTO);
+			}
+			if (values.isEmpty()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(CodeNameValueDTO.toJsonArray(values), headers, HttpStatus.OK);
+		}
+		if (entity.equals("lsThing")) {
+			Collection<CodeNameValueDTO> values = new ArrayList<CodeNameValueDTO>();
+			for (String codeName : codeNames){
+				LsThingValue lsThingValue = lsThingValueService.getLsThingValue(codeName, stateType, stateKind, valueType, valueKind);
+				CodeNameValueDTO valueDTO = new CodeNameValueDTO(codeName, lsThingValue);
+				values.add(valueDTO);
+			}
+			if (values.isEmpty()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+			else return new ResponseEntity<String>(CodeNameValueDTO.toJsonArray(values), headers, HttpStatus.OK);
 		}
 		
 		return new ResponseEntity<String>("INVALID ENTITY", headers, HttpStatus.BAD_REQUEST);

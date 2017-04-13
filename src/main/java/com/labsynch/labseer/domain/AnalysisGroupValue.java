@@ -157,7 +157,7 @@ public class AnalysisGroupValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.AnalysisGroupValue create(com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
-		AnalysisGroupValue newAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(null, AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(analysisGroupValue.toJson(), new AnalysisGroupValue());
+		AnalysisGroupValue newAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(null, AnalysisGroupValue.class).deserializeInto(analysisGroupValue.toJson(), new AnalysisGroupValue());
 		return newAnalysisGroupValue;
 	}
 
@@ -618,18 +618,18 @@ public class AnalysisGroupValue extends AbstractValue {
 
 	@Transactional
 	public static com.labsynch.labseer.domain.AnalysisGroupValue fromJsonToAnalysisGroupValue(String json) {
-		AnalysisGroupValue analysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json, AnalysisGroupValue.class);
+		AnalysisGroupValue analysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().deserialize(json, AnalysisGroupValue.class);
 		return analysisGroupValue;
 	}
 
 	@Transactional
 	public static Collection<com.labsynch.labseer.domain.AnalysisGroupValue> fromJsonArrayToAnalysisGroupValues(String json) {
-		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).deserialize(json);
 	}
 
 	@Transactional
 	public static Collection<com.labsynch.labseer.domain.AnalysisGroupValue> fromJsonArrayToAnalysisGroupValues(Reader json) {
-		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<AnalysisGroupValue>>().use(null, ArrayList.class).use("values", AnalysisGroupValue.class).deserialize(json);
 	}
 
 	@Transactional
@@ -710,7 +710,7 @@ public class AnalysisGroupValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.AnalysisGroupValue update(com.labsynch.labseer.domain.AnalysisGroupValue analysisGroupValue) {
-		AnalysisGroupValue updatedAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(analysisGroupValue.toJson(), analysisGroupValue);
+		AnalysisGroupValue updatedAnalysisGroupValue = new JSONDeserializer<AnalysisGroupValue>().deserializeInto(analysisGroupValue.toJson(), analysisGroupValue);
 		updatedAnalysisGroupValue.setModifiedDate(new Date());
 		updatedAnalysisGroupValue.merge();
 		return updatedAnalysisGroupValue;

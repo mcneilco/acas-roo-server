@@ -267,7 +267,7 @@ public class Experiment extends AbstractThing {
 
     @Transactional
     public static com.labsynch.labseer.domain.Experiment fromJsonToExperiment(String json) {
-        return new JSONDeserializer<Experiment>().use(null, Experiment.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<Experiment>().use(null, Experiment.class).deserialize(json);
     }
 
     @Transactional
@@ -317,12 +317,12 @@ public class Experiment extends AbstractThing {
 
     @Transactional
     public static Collection<com.labsynch.labseer.domain.Experiment> fromJsonArrayToExperiments(String json) {
-        return new JSONDeserializer<List<Experiment>>().use(null, ArrayList.class).use("values", Experiment.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<Experiment>>().use(null, ArrayList.class).use("values", Experiment.class).deserialize(json);
     }
 
     @Transactional
     public static Collection<com.labsynch.labseer.domain.Experiment> fromJsonArrayToExperiments(Reader json) {
-        return new JSONDeserializer<List<Experiment>>().use(null, ArrayList.class).use("values", Experiment.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<Experiment>>().use(null, ArrayList.class).use("values", Experiment.class).deserialize(json);
     }
 
     @Transactional

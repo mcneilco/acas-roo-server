@@ -1,7 +1,6 @@
 package com.labsynch.labseer.domain;
 
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -26,8 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-
 import flexjson.JSONDeserializer;
 
 @RooJavaBean
@@ -47,12 +44,12 @@ public class ExperimentValue extends AbstractValue {
     }
 
     public static com.labsynch.labseer.domain.ExperimentValue create(com.labsynch.labseer.domain.ExperimentValue experimentValue) {
-        ExperimentValue newExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(experimentValue.toJson(), new ExperimentValue());
+        ExperimentValue newExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).deserializeInto(experimentValue.toJson(), new ExperimentValue());
         return newExperimentValue;
     }
 
     public static com.labsynch.labseer.domain.ExperimentValue create(String experimentValueJson) {
-        ExperimentValue newExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(experimentValueJson, new ExperimentValue());
+        ExperimentValue newExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).deserializeInto(experimentValueJson, new ExperimentValue());
         return newExperimentValue;
     }
 
@@ -74,15 +71,16 @@ public class ExperimentValue extends AbstractValue {
     }
 
     public static com.labsynch.labseer.domain.ExperimentValue fromJsonToExperimentValue(String json) {
-        return new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).deserialize(json);
+
     }
 
     public static Collection<com.labsynch.labseer.domain.ExperimentValue> fromJsonArrayToExperimentValues(String json) {
-        return new JSONDeserializer<List<ExperimentValue>>().use(null, ArrayList.class).use("values", ExperimentValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ExperimentValue>>().use(null, ArrayList.class).use("values", ExperimentValue.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.ExperimentValue> fromJsonArrayToExperimentValues(Reader json) {
-        return new JSONDeserializer<List<ExperimentValue>>().use(null, ArrayList.class).use("values", ExperimentValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ExperimentValue>>().use(null, ArrayList.class).use("values", ExperimentValue.class).deserialize(json);
     }
 
     @Transactional
@@ -131,7 +129,7 @@ public class ExperimentValue extends AbstractValue {
     }
 
     public static com.labsynch.labseer.domain.ExperimentValue update(com.labsynch.labseer.domain.ExperimentValue experimentValue) {
-        ExperimentValue updatedExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(experimentValue.toJson(), ExperimentValue.findExperimentValue(experimentValue.getId()));
+        ExperimentValue updatedExperimentValue = new JSONDeserializer<ExperimentValue>().use(null, ExperimentValue.class).deserializeInto(experimentValue.toJson(), ExperimentValue.findExperimentValue(experimentValue.getId()));
         updatedExperimentValue.setModifiedDate(new Date());
         updatedExperimentValue.merge();
         return updatedExperimentValue;

@@ -57,7 +57,7 @@ public class ContainerState extends AbstractState {
     }
 
 //    public static com.labsynch.labseer.domain.ContainerState update(com.labsynch.labseer.domain.ContainerState containerState) {
-//        ContainerState updatedContainerState = new JSONDeserializer<ContainerState>().use(null, ArrayList.class).use("values", ContainerState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(containerState.toJson(), ContainerState.findContainerState(containerState.getId()));
+//        ContainerState updatedContainerState = new JSONDeserializer<ContainerState>().use(null, ArrayList.class).use("values", ContainerState.class).deserializeInto(containerState.toJson(), ContainerState.findContainerState(containerState.getId()));
 //        updatedContainerState.setModifiedDate(new Date());
 //        updatedContainerState.merge();
 //        return updatedContainerState;
@@ -93,7 +93,7 @@ public class ContainerState extends AbstractState {
     }
 
     public static com.labsynch.labseer.domain.ContainerState fromJsonToContainerState(String json) {
-        return new JSONDeserializer<ContainerState>().use(null, ContainerState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<ContainerState>().use(null, ContainerState.class).deserialize(json);
     }
 
     @Transactional
@@ -112,11 +112,11 @@ public class ContainerState extends AbstractState {
 	}
 
     public static Collection<com.labsynch.labseer.domain.ContainerState> fromJsonArrayToContainerStates(String json) {
-        return new JSONDeserializer<List<ContainerState>>().use(null, ArrayList.class).use("values", ContainerState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ContainerState>>().use(null, ArrayList.class).use("values", ContainerState.class).deserialize(json);
     }
     
     public static Collection<com.labsynch.labseer.domain.ContainerState> fromJsonArrayToContainerStates(Reader json) {
-        return new JSONDeserializer<List<ContainerState>>().use(null, ArrayList.class).use("values", ContainerState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<ContainerState>>().use(null, ArrayList.class).use("values", ContainerState.class).deserialize(json);
     }
 
 
