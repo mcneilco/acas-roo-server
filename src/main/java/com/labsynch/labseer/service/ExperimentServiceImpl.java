@@ -1082,6 +1082,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		if (propertiesUtilService.getRestrictExperiments()){
 			Collection<LsThing> projects = authorService.getUserProjects(userName);
 			List<String> allowedProjectCodeNames = new ArrayList<String>();
+			allowedProjectCodeNames.add("unassigned");
 			for (LsThing project : projects){
 				allowedProjectCodeNames.add(project.getCodeName());
 			}
