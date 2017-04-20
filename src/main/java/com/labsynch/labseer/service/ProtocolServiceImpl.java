@@ -212,6 +212,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 							updatedProtocolValue.persist();
 							updatedProtocolValues.add(updatedProtocolValue);
 						} else {
+							protocolValue.setLsState(updatedProtocolState);
 							updatedProtocolValue = ProtocolValue.update(protocolValue);
 							updatedProtocolValues.add(updatedProtocolValue);
 							if (logger.isDebugEnabled())  logger.debug("updatedProtocolValue: " + updatedProtocolValue.toJson());
