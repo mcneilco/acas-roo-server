@@ -28,6 +28,10 @@ import com.labsynch.labseer.dto.CodeTypeKindDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.GeneOrthologDTO;
 import com.labsynch.labseer.dto.GeneOrthologFileDTO;
+import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
+import com.labsynch.labseer.dto.GenericQueryCodeTableResultDTO;
+import com.labsynch.labseer.dto.LsThingQueryDTO;
+import com.labsynch.labseer.dto.LsThingQueryResultDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
@@ -193,6 +197,13 @@ public class ApiLsThingController {
 				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(results), headers, HttpStatus.OK);
 			} else if (with.equalsIgnoreCase("stub")) {
 				return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("codetable")) {
+				if (withLabelType){
+					Collection<CodeTableDTO> codeTables = lsThingService.convertToCodeTables(results, labelType);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+				}
+				Collection<CodeTableDTO> codeTables = lsThingService.convertToCodeTables(results);
+				return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 			}
 		}
 		return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
@@ -239,6 +250,49 @@ public class ApiLsThingController {
 				}
 			}
 			return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
+		}
+	}
+	
+	@Transactional
+	@RequestMapping(value = "/{lsType}/{lsKind}/codeNames/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getLsThingsByCodeNameArray(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestBody List<String> codeNames,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the LsThing get by codeName Array controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		Collection<LsThing> lsThings;		
+		try {
+			lsThings = LsThing.findLsThingsByCodeNamesIn(codeNames);
+		} catch(Exception ex) {
+			lsThings = null;
+			ErrorMessage error = new ErrorMessage();
+			error.setErrorLevel("error");
+			error.setMessage("error finding codeNames by json Array" + ex.getMessage());
+			errors.add(error);
+			errorsFound = true;
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(lsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayPretty(lsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(lsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayStub(lsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = lsThingService.convertToCodeTables(lsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(LsThing.toJsonArray(lsThings), headers, HttpStatus.OK);
 		}
 	}
 
@@ -452,6 +506,47 @@ public class ApiLsThingController {
 			}
 		}
         return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.CREATED);
+    }
+	
+	@Transactional
+	@RequestMapping(value="/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> createFromJsonArray(@RequestParam(value="with", required = false) String with,
+			@RequestBody String json) {
+		//headers and setup
+		logger.debug("----from the LsThing POST controller----");
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+        ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+        boolean errorsFound = false;
+        Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+        Collection<LsThing> savedLsThings = new ArrayList<LsThing>();
+        for (LsThing lsThing : lsThings){
+    		try {
+    			LsThing savedLsThing = lsThingService.saveLsThing(lsThing);
+    			savedLsThings.add(savedLsThing);
+            } catch (Exception e) {
+                logger.error("----from the POST controller----" + " ERROR:  " + e.toString());
+                ErrorMessage error = new ErrorMessage();
+                error.setErrorLevel("error");
+                error.setMessage("error occurred during saving");
+                errors.add(error);
+                errorsFound = true;
+            }
+		}
+        if (errorsFound) {
+            return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+        }else if (with != null) {
+			if (with.equalsIgnoreCase("nestedfull")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(savedLsThings), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(savedLsThings), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(savedLsThings), headers, HttpStatus.CREATED);
+			} else if (with.equalsIgnoreCase("stub")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayStub(savedLsThings), headers, HttpStatus.CREATED);
+			}
+		}
+        return new ResponseEntity<String>(LsThing.toJsonArray(savedLsThings), headers, HttpStatus.CREATED);
     }
     
     @RequestMapping(value = "/validate", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -719,6 +814,59 @@ public class ApiLsThingController {
   	}
       
   }
+  @RequestMapping(value = "/genericBrowserSearch", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> genericBrowserSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
+  	HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json; charset=utf-8");
+    LsThingBrowserQueryDTO query = LsThingBrowserQueryDTO.fromJsonToLsThingBrowserQueryDTO(json);
+    ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+    boolean errorsFound = false;
+    Collection<Long> lsThingIds;
+    LsThingQueryResultDTO result = new LsThingQueryResultDTO();
+    try{
+    	lsThingIds = lsThingService.searchLsThingIdsByBrowserQueryDTO(query);
+    	int maxResults = 1000;
+    	if (query.getQueryDTO().getMaxResults() != null) maxResults = query.getQueryDTO().getMaxResults();
+    	result.setMaxResults(maxResults);
+    	result.setNumberOfResults(lsThingIds.size());
+    	if (result.getNumberOfResults() <= result.getMaxResults()){
+    		result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
+    	}
+    }catch (Exception e){
+    	logger.error("Caught searching for lsThings in generic interaction search",e);
+    	ErrorMessage error = new ErrorMessage();
+        error.setErrorLevel("error");
+        error.setMessage(e.getMessage());
+        errors.add(error);
+        errorsFound = true;
+    }
+    
+    if (errorsFound) {
+        return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+    } else {
+    	if (with != null) {
+    		if (with.equalsIgnoreCase("nestedfull")) {
+    			return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
+    		} else if (with.equalsIgnoreCase("prettyjson")) {
+    			return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
+    		} else if (with.equalsIgnoreCase("nestedstub")) {
+    			return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+    		} else if (with.equalsIgnoreCase("stub")) {
+    			return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
+    		} else if (with.equalsIgnoreCase("codeTable")) {
+    			GenericQueryCodeTableResultDTO resultDTO = new GenericQueryCodeTableResultDTO();
+    			resultDTO.setMaxResults(result.getMaxResults());
+    			resultDTO.setNumberOfResults(result.getNumberOfResults());
+    			if (result.getResults() != null){
+    				resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults()));
+    			}
+    			return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
+    		}
+    	}
+    	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+    }
+      
+  }
   
   @RequestMapping(value = "/structureSearch", method = RequestMethod.POST, headers = "Accept=application/json")
   public ResponseEntity<java.lang.String> structureSearch(@RequestBody String json) {
@@ -768,6 +916,64 @@ public class ApiLsThingController {
         return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
     } else {
         return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+    }
+      
+  }
+  
+  
+  @RequestMapping(value = "/genericInteractionSearch", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> genericInteractionSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with,
+		  @RequestParam(value = "labelType", required = false) String labelType) {
+  	HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json; charset=utf-8");
+    LsThingQueryDTO query = LsThingQueryDTO.fromJsonToLsThingQueryDTO(json);
+    ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+    boolean errorsFound = false;
+    Collection<Long> lsThingIds;
+    LsThingQueryResultDTO result = new LsThingQueryResultDTO();
+    try{
+    	lsThingIds = lsThingService.searchLsThingIdsByQueryDTO(query);
+    	result.setNumberOfResults(lsThingIds.size());
+    	result.setMaxResults(query.getMaxResults());
+    	if (query.getMaxResults() == null || result.getNumberOfResults() <= result.getMaxResults()){
+    		result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
+    	}
+    }catch (Exception e){
+    	logger.error("Caught searching for lsThings in generic interaction search",e);
+    	ErrorMessage error = new ErrorMessage();
+        error.setErrorLevel("error");
+        error.setMessage(e.getMessage());
+        errors.add(error);
+        errorsFound = true;
+    }
+    
+    if (errorsFound) {
+        return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+    } else {
+    	if (with != null) {
+    		if (with.equalsIgnoreCase("nestedfull")) {
+    			return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
+    		} else if (with.equalsIgnoreCase("prettyjson")) {
+    			return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
+    		} else if (with.equalsIgnoreCase("nestedstub")) {
+    			return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+    		} else if (with.equalsIgnoreCase("stub")) {
+    			return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
+    		} else if (with.equalsIgnoreCase("codeTable")) {
+    			GenericQueryCodeTableResultDTO resultDTO = new GenericQueryCodeTableResultDTO();
+    			resultDTO.setMaxResults(result.getMaxResults());
+    			resultDTO.setNumberOfResults(result.getNumberOfResults());
+    			if (result.getResults() != null){
+    				if (labelType != null && labelType.length() > 0){
+        				resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults(), labelType));
+    				}else{
+        				resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults()));
+    				}
+    			}
+    			return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
+    		}
+    	}
+    	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
     }
       
   }

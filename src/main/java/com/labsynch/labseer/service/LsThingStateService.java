@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import com.labsynch.labseer.domain.LsThingState;
+import com.labsynch.labseer.dto.GenericStatePathRequest;
+import com.labsynch.labseer.dto.LsThingStatePathDTO;
 
 public interface LsThingStateService {
 
@@ -25,5 +27,11 @@ public interface LsThingStateService {
 
 	Collection<LsThingState> updateLsThingStates(
 			Collection<LsThingState> lsThingStates);
+
+	LsThingState getLsThingState(String idOrCodeName, String stateType,
+			String stateKind);
+
+	Collection<LsThingStatePathDTO> getLsThingStates(
+			Collection<GenericStatePathRequest> genericRequests);
 
 }

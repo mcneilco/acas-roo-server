@@ -1,11 +1,24 @@
 package com.labsynch.labseer.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +40,14 @@ import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
 import com.labsynch.labseer.dto.AuthGroupsDTO;
 import com.labsynch.labseer.dto.AuthProjectGroupsDTO;
+import com.labsynch.labseer.dto.AuthorBrowserQueryDTO;
+import com.labsynch.labseer.dto.AuthorQueryDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ItxQueryDTO;
+import com.labsynch.labseer.dto.LabelQueryDTO;
+import com.labsynch.labseer.dto.ValueQueryDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 @Transactional
@@ -155,9 +174,11 @@ public class AuthorServiceImpl implements AuthorService {
 				for (LsRole projectRole : projectRoles){
 					groups.add(new StringBuilder().append(projectRole.getLsType()).append("_").append(projectRole.getLsKind()).append("_").append(projectRole.getRoleName()).toString());
 				}
-				List<LsRole> acasAdminRoles = LsRole.findLsRolesByRoleNameEquals(propertiesUtilService.getAcasAdminRole()).getResultList();
-				for (LsRole acasAdminRole : acasAdminRoles){
-					groups.add(new StringBuilder().append(acasAdminRole.getLsType()).append("_").append(acasAdminRole.getLsKind()).append("_").append(acasAdminRole.getRoleName()).toString());
+				if (propertiesUtilService.getAcasAdminRole() !=null && propertiesUtilService.getAcasAdminRole().length()> 0){
+					List<LsRole> acasAdminRoles = LsRole.findLsRolesByRoleNameEquals(propertiesUtilService.getAcasAdminRole()).getResultList();
+					for (LsRole acasAdminRole : acasAdminRoles){
+						groups.add(new StringBuilder().append(acasAdminRole.getLsType()).append("_").append(acasAdminRole.getLsKind()).append("_").append(acasAdminRole.getRoleName()).toString());
+					}
 				}
 
 				projectLabels = project.getLsLabels();
@@ -372,6 +393,247 @@ public class AuthorServiceImpl implements AuthorService {
 			logger.debug("Author "+userName+" not found. Creating new author");
 			return saveAuthor(author);
 		}
+	}
+	
+	@Override
+	public Collection<Author> getAuthorsByIds(Collection<Long> authorIds){
+		Collection<Author> authors = new ArrayList<Author>();
+		for (Long id : authorIds){
+			authors.add(Author.findAuthor(id));
+		}
+		return authors;
+	}
+	
+	@Override
+	public Collection<Long> searchAuthorIdsByQueryDTO(AuthorQueryDTO query) throws Exception{
+		List<Long> authorIdList = new ArrayList<Long>();	
+		EntityManager em = Author.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+		Root<Author> thing = criteria.from(Author.class);
+		List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, query);
+		if (query.getLsType() != null){
+			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getLsType());
+			predicateList.add(thingType);
+		}
+		if (query.getLsKind() != null){
+			Predicate thingKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getLsKind());
+			predicateList.add(thingKind);
+		}
+		Predicate[] predicates = new Predicate[0];
+		//gather all predicates
+		predicates = predicateList.toArray(predicates);
+		criteria.where(criteriaBuilder.and(predicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		authorIdList = q.getResultList();
+		logger.debug("Found "+authorIdList.size()+" results.");
+		return authorIdList;
+	}
+	
+	private List<Predicate> buildPredicatesForQueryDTO(CriteriaBuilder criteriaBuilder, CriteriaQuery<Long> criteria, Root<Author> thing, AuthorQueryDTO query) throws Exception{
+		
+		criteria.select(thing.<Long>get("id"));
+		criteria.distinct(true);
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		//root author properties
+		
+		//recordedDates
+		if (query.getRecordedDateGreaterThan() != null && query.getRecordedDateLessThan() != null){
+			try{
+				Predicate createdDateBetween = criteriaBuilder.between(thing.<Date>get("recordedDate"), query.getRecordedDateGreaterThan(), query.getRecordedDateLessThan());
+				predicateList.add(createdDateBetween);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" or "+query.getRecordedDateLessThan()+" as a date.",e);
+				throw new Exception("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" or "+query.getRecordedDateLessThan()+" as a date.",e);
+			}
+		}
+		else if (query.getRecordedDateGreaterThan() != null){
+			try{
+				Predicate createdDateFrom = criteriaBuilder.greaterThanOrEqualTo(thing.<Date>get("recordedDate"), query.getRecordedDateGreaterThan());
+				predicateList.add(createdDateFrom);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" as a date.",e);
+				throw new Exception("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" as a date.",e);
+			}
+		}
+		else if (query.getRecordedDateLessThan() != null){
+			try{
+				Predicate createdDateTo = criteriaBuilder.lessThanOrEqualTo(thing.<Date>get("recordedDate"), query.getRecordedDateLessThan());
+				predicateList.add(createdDateTo);
+			}catch (Exception e){
+				logger.error("Caught exception trying to parse "+query.getRecordedDateLessThan()+" as a date.",e);
+				throw new Exception("Caught exception trying to parse "+query.getRecordedDateLessThan()+" as a date.",e);
+			}
+		}
+		if (query.getRecordedBy() != null){
+			Predicate recordedBy = criteriaBuilder.like(thing.<String>get("recordedBy"), '%'+query.getRecordedBy()+'%');
+			predicateList.add(recordedBy);
+		}
+		if (query.getFirstName() != null){
+			Predicate firstName = criteriaBuilder.like(thing.<String>get("firstName"), '%'+query.getFirstName()+'%');
+			predicateList.add(firstName);
+		}
+		if (query.getLastName() != null){
+			Predicate lastName = criteriaBuilder.like(thing.<String>get("lastName"), '%'+query.getLastName()+'%');
+			predicateList.add(lastName);
+		}
+		if (query.getUserName() != null){
+			Predicate userName = criteriaBuilder.like(thing.<String>get("userName"), '%'+query.getUserName()+'%');
+			predicateList.add(userName);
+		}
+		
+		//values
+		if (query.getValues() != null){
+			for (ValueQueryDTO valueQuery : query.getValues()){
+				List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
+				Join<Author, AuthorState> state = thing.join("lsStates");
+				Join<AuthorState, AuthorValue> value = state.join("lsValues");
+				
+				Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
+				Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
+				valuePredicatesList.add(stateNotIgn);
+				valuePredicatesList.add(valueNotIgn);
+				
+				if (valueQuery.getStateType() != null){
+					Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),valueQuery.getStateType());
+					valuePredicatesList.add(stateType);
+				}
+				if (valueQuery.getStateKind() != null){
+					Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),valueQuery.getStateKind());
+					valuePredicatesList.add(stateKind);
+				}
+				if (valueQuery.getValueType() != null){
+					Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),valueQuery.getValueType());
+					valuePredicatesList.add(valueType);
+				}
+				if (valueQuery.getValueKind() != null){
+					Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),valueQuery.getValueKind());
+					valuePredicatesList.add(valueKind);
+				}
+				if (valueQuery.getValue() != null){
+					if (valueQuery.getValueType() == null){
+						logger.error("valueType must be specified if value is specified!");
+						throw new Exception("valueType must be specified if value is specified!");
+					}else if (valueQuery.getValueType().equalsIgnoreCase("dateValue")){
+						String postgresTimeUnit = "day";
+						Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+						Calendar cal = Calendar.getInstance(); // locale-specific
+						boolean parsedTime = false;
+						if (SimpleUtil.isNumeric(valueQuery.getValue())){
+							cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+							parsedTime = true;
+						}else{
+							try{
+								SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+								cal.setTime(sdf.parse(valueQuery.getValue()));
+								parsedTime = true;
+							}catch (Exception e){
+								logger.warn("Failed to parse date in Author generic query for value",e);
+							}
+						}
+						cal.set(Calendar.HOUR_OF_DAY, 0);
+						cal.set(Calendar.MINUTE, 0);
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MILLISECOND, 0);
+						long time = cal.getTimeInMillis();
+						Date queryDate = new Date(time);
+						Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
+						if (parsedTime) valuePredicatesList.add(valueLike);
+					}else{
+						//only works with string value types: stringValue, codeValue, fileValue, clobValue
+						Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
+						valuePredicatesList.add(valueLike);
+					}
+				}
+				//gather predicates with AND
+				Predicate[] valuePredicates = new Predicate[0];
+				valuePredicates = valuePredicatesList.toArray(valuePredicates);
+				predicateList.add(criteriaBuilder.and(valuePredicates));
+			}
+		}
+		
+		//labels
+		if (query.getLabels() != null){
+			for (LabelQueryDTO queryLabel : query.getLabels()){
+				Join<Author, AuthorLabel> label = thing.join("lsLabels");
+				List<Predicate> labelPredicatesList = new ArrayList<Predicate>();
+				if (queryLabel.getLabelType() != null){
+					Predicate labelType = criteriaBuilder.equal(label.<String>get("lsType"), queryLabel.getLabelType());
+					labelPredicatesList.add(labelType);
+				}
+				if (queryLabel.getLabelKind() != null){
+					Predicate labelKind = criteriaBuilder.equal(label.<String>get("lsKind"), queryLabel.getLabelKind());
+					labelPredicatesList.add(labelKind);
+				}
+				if (queryLabel.getLabelText() != null){
+					Predicate labelText = criteriaBuilder.like(label.<String>get("labelText"), '%'+queryLabel.getLabelText()+'%');
+					labelPredicatesList.add(labelText);
+				}
+				//gather labels
+				Predicate[] labelPredicates = new Predicate[0];
+				labelPredicates = labelPredicatesList.toArray(labelPredicates);
+				predicateList.add(criteriaBuilder.and(labelPredicates));
+			}
+		}
+		return predicateList;
+	}
+
+
+	@Override
+	public Collection<Long> searchAuthorIdsByBrowserQueryDTO(
+			AuthorBrowserQueryDTO query) throws Exception{
+		List<Long> authorIdList = new ArrayList<Long>();	
+		EntityManager em = Author.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
+		Root<Author> thing = criteria.from(Author.class);
+		List<Predicate> metaPredicateList = new ArrayList<Predicate>();
+		//split query string into terms
+		String queryString = query.getQueryString().replaceAll("\\*", "%");
+		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+		logger.debug("Number of search terms: " + splitQuery.size());
+		//for each search term, construct a queryDTO with that term filled in every search position of the passed in queryDTO
+		for (String searchTerm : splitQuery){
+			AuthorQueryDTO queryDTO = new AuthorQueryDTO(query.getQueryDTO());
+			if (queryDTO.getValues() != null){
+				for (ValueQueryDTO value : queryDTO.getValues()){
+					value.setValue(searchTerm);
+				}
+			}
+			if (queryDTO.getLabels() != null){
+				for (LabelQueryDTO label : queryDTO.getLabels()){
+					label.setLabelText(searchTerm);
+				}
+			}
+			queryDTO.setFirstName(searchTerm);
+			queryDTO.setLastName(searchTerm);
+			queryDTO.setUserName(searchTerm);
+			//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
+			List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
+			Predicate[] predicates = new Predicate[0];
+			predicates = predicateList.toArray(predicates);
+			Predicate searchTermPredicate = criteriaBuilder.or(predicates);
+			metaPredicateList.add(searchTermPredicate);
+		}
+		//add in thingType and thingKind as required at top level
+		if (query.getQueryDTO().getLsType() != null){
+			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getQueryDTO().getLsType());
+			metaPredicateList.add(thingType);
+		}
+		if (query.getQueryDTO().getLsKind() != null){
+			Predicate thingKind = criteriaBuilder.equal(thing.<String>get("lsKind"), query.getQueryDTO().getLsKind());
+			metaPredicateList.add(thingKind);
+		}
+		//gather the predicates for each search term, and AND them all together
+		Predicate[] metaPredicates = new Predicate[0];
+		metaPredicates = metaPredicateList.toArray(metaPredicates);
+		criteria.where(criteriaBuilder.and(metaPredicates));
+		TypedQuery<Long> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		authorIdList = q.getResultList();
+		logger.debug("Found "+authorIdList.size()+" results.");
+		return authorIdList;
 	}
 
 }

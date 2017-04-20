@@ -1,7 +1,6 @@
 package com.labsynch.labseer.domain;
 
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -27,7 +26,6 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
 import com.labsynch.labseer.dto.SubjectValueDTO;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
@@ -82,6 +80,45 @@ public class SubjectValue extends AbstractValue {
         this.setPublicData(subjectDTO.isPublicData());
         this.setSigFigs(subjectDTO.getSigFigs());	
     }
+	
+	public SubjectValue(SubjectValue subjectValue) {
+        super.setBlobValue(subjectValue.getBlobValue());
+        super.setClobValue(subjectValue.getClobValue());
+        super.setCodeKind(subjectValue.getCodeKind());
+        super.setCodeOrigin(subjectValue.getCodeOrigin());
+        super.setCodeType(subjectValue.getCodeType());
+        super.setCodeTypeAndKind(subjectValue.getCodeTypeAndKind());
+        super.setCodeValue(subjectValue.getCodeValue());
+        super.setComments(subjectValue.getComments());
+        super.setConcentration(subjectValue.getConcentration());
+        super.setConcUnit(subjectValue.getConcUnit());
+        super.setDateValue(subjectValue.getDateValue());
+        super.setDeleted(subjectValue.isDeleted());
+        super.setFileValue(subjectValue.getFileValue());
+        super.setIgnored(subjectValue.isIgnored());
+        super.setLsKind(subjectValue.getLsKind());
+        super.setLsTransaction(subjectValue.getLsTransaction());
+        super.setLsType(subjectValue.getLsType());
+        super.setLsTypeAndKind(subjectValue.getLsTypeAndKind());
+        super.setModifiedBy(subjectValue.getModifiedBy());
+        super.setModifiedDate(subjectValue.getModifiedDate());
+        super.setNumberOfReplicates(subjectValue.getNumberOfReplicates());
+        super.setNumericValue(subjectValue.getNumericValue());
+        super.setOperatorKind(subjectValue.getOperatorKind());
+        super.setOperatorType(subjectValue.getOperatorType());
+        super.setOperatorTypeAndKind(subjectValue.getOperatorTypeAndKind());
+        super.setPublicData(subjectValue.isPublicData());
+        super.setRecordedBy(subjectValue.getRecordedBy());
+        super.setRecordedDate(subjectValue.getRecordedDate());
+        super.setSigFigs(subjectValue.getSigFigs());
+        super.setStringValue(subjectValue.getStringValue());
+        super.setUncertainty(subjectValue.getUncertainty());
+        super.setUncertaintyType(subjectValue.getUncertaintyType());
+        super.setUnitKind(subjectValue.getUnitKind());
+        super.setUnitType(subjectValue.getUnitType());
+        super.setUnitTypeAndKind(subjectValue.getUnitTypeAndKind());
+        super.setUrlValue(subjectValue.getUrlValue());
+	}
 
 	public Long getStateId() {
 		return this.lsState.getId();
@@ -106,7 +143,7 @@ public class SubjectValue extends AbstractValue {
 	
 	
 	public static com.labsynch.labseer.domain.SubjectValue create(com.labsynch.labseer.domain.SubjectValue subjectValue) {
-		SubjectValue newsubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(subjectValue.toJson(), new SubjectValue());
+		SubjectValue newsubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).deserializeInto(subjectValue.toJson(), new SubjectValue());
 		return newsubjectValue;
 	}
 
@@ -124,7 +161,7 @@ public class SubjectValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.SubjectValue fromJsonToSubjectValue(String json) {
-		return new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).deserialize(json);
 	}
 
 	@Transactional
@@ -141,11 +178,11 @@ public class SubjectValue extends AbstractValue {
 	}
 
 	public static Collection<com.labsynch.labseer.domain.SubjectValue> fromJsonArrayToSubjectValues(Reader json) {
-		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("lsState", SubjectState.class).use("values", SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("lsState", SubjectState.class).use("values", SubjectValue.class).deserialize(json);
 	}
 
 	public static Collection<com.labsynch.labseer.domain.SubjectValue> fromJsonArrayToSubjectValues(String json) {
-		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("values", SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<SubjectValue>>().use(null, ArrayList.class).use("values", SubjectValue.class).deserialize(json);
 	}
 
 	public static long countSubjectValues() {
@@ -229,7 +266,7 @@ public class SubjectValue extends AbstractValue {
 	}
 
 	public static com.labsynch.labseer.domain.SubjectValue update(com.labsynch.labseer.domain.SubjectValue subjectValue) {
-		SubjectValue updatedSubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserializeInto(subjectValue.toJson(), SubjectValue.findSubjectValue(subjectValue.getId()));
+		SubjectValue updatedSubjectValue = new JSONDeserializer<SubjectValue>().use(null, SubjectValue.class).deserializeInto(subjectValue.toJson(), SubjectValue.findSubjectValue(subjectValue.getId()));
 		updatedSubjectValue.setModifiedDate(new Date());
 		updatedSubjectValue.merge();
 		return updatedSubjectValue;
@@ -442,6 +479,33 @@ public class SubjectValue extends AbstractValue {
 				"AND s.id = :subjectId ";
 		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
 		q.setParameter("subjectId", subjectId);
+		q.setParameter("stateType", stateType);
+		q.setParameter("stateKind", stateKind);
+		q.setParameter("valueType", valueType);
+		q.setParameter("valueKind", valueKind);
+		q.setParameter("ignored", true);
+		return q;
+	}
+	
+	public static TypedQuery<SubjectValue> findSubjectValuesBySubjectCodeNameAndStateTypeKindAndValueTypeKind(
+			String subjectCodeName, String stateType, String stateKind,
+			String valueType, String valueKind) {
+		
+		if (stateType == null || stateType.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+		if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+		if (valueType == null || valueType.length() == 0) throw new IllegalArgumentException("The valueType argument is required");
+		if (valueKind == null || valueKind.length() == 0) throw new IllegalArgumentException("The valueKind argument is required");
+		
+		EntityManager em = entityManager();
+		String hsqlQuery = "SELECT sv FROM SubjectValue AS sv " +
+				"JOIN sv.lsState ss " +
+				"JOIN ss.subject s " +
+				"WHERE ss.lsType = :stateType AND ss.lsKind = :stateKind AND ss.ignored IS NOT :ignored " +
+				"AND sv.lsType = :valueType AND sv.lsKind = :valueKind AND sv.ignored IS NOT :ignored " +
+				"AND s.ignored IS NOT :ignored " +
+				"AND s.codeName = :subjectCodeName ";
+		TypedQuery<SubjectValue> q = em.createQuery(hsqlQuery, SubjectValue.class);
+		q.setParameter("subjectCodeName", subjectCodeName);
 		q.setParameter("stateType", stateType);
 		q.setParameter("stateKind", stateKind);
 		q.setParameter("valueType", valueType);

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.service.DatabaseAuthenticationProvider;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @RequestMapping("/forgotpassword/**")
 @Controller
@@ -27,6 +28,9 @@ public class ForgotPasswordController {
     private transient MailSender mailSender;
 
     private transient SimpleMailMessage simpleMailMessage;
+    
+    @Autowired
+    private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
 	private MessageDigestPasswordEncoder messageDigestPasswordEncoder;
@@ -75,7 +79,10 @@ public class ForgotPasswordController {
         		SimpleMailMessage mail = new SimpleMailMessage();
         		mail.setTo(form.getEmailAddress());
         		mail.setSubject("ACAS Password Recovery");
-        		mail.setText("Hi "+User.getFirstName()+",\n"+"You recently requested for your password to be reset. Your new password is "+newPassword+". \n"+"Thank you, \nAdmin");
+        		mail.setText("Hi "+User.getFirstName()+",\n"
+        				+ "You recently requested for your password to be reset. Your new password is "+newPassword+"\n"
+        				+ "Please login to ACAS here and remember to change your password. "+ propertiesUtilService.getClientFullPath() + "\n"
+        				+"Thank you, \nAdmin");
         		mailSender.send(mail);
         	}
 

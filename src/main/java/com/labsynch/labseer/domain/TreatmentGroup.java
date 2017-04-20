@@ -96,7 +96,7 @@ public class TreatmentGroup extends AbstractThing {
     }
 
     public static com.labsynch.labseer.domain.TreatmentGroup fromJsonToTreatmentGroup(String json) {
-        return new JSONDeserializer<TreatmentGroup>().use(null, TreatmentGroup.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<TreatmentGroup>().use(null, TreatmentGroup.class).deserialize(json);
     }
 
     public static String toJsonArray(Collection<com.labsynch.labseer.domain.TreatmentGroup> collection) {
@@ -104,11 +104,11 @@ public class TreatmentGroup extends AbstractThing {
     }
 
     public static Collection<com.labsynch.labseer.domain.TreatmentGroup> fromJsonArrayToTreatmentGroups(String json) {
-        return new JSONDeserializer<List<TreatmentGroup>>().use(null, ArrayList.class).use("values", TreatmentGroup.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<TreatmentGroup>>().use(null, ArrayList.class).use("values", TreatmentGroup.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.TreatmentGroup> fromJsonArrayToTreatmentGroups(Reader json) {
-        return new JSONDeserializer<List<TreatmentGroup>>().use(null, ArrayList.class).use("values", TreatmentGroup.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<TreatmentGroup>>().use(null, ArrayList.class).use("values", TreatmentGroup.class).deserialize(json);
     }
 
     public static int deleteByExperimentID(Long experimentId) {

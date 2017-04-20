@@ -148,19 +148,19 @@ public class AnalysisGroup extends AbstractThing {
     }
 
     public static com.labsynch.labseer.domain.AnalysisGroup fromJsonToAnalysisGroup(String json) {
-        return new JSONDeserializer<AnalysisGroup>().use(null, AnalysisGroup.class).use("analysisGroup.lsStates", AnalysisGroupState.class).use("analysisGroup.lsStates.lsValues", AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json, AnalysisGroup.class);
+        return new JSONDeserializer<AnalysisGroup>().use(null, AnalysisGroup.class).use("analysisGroup.lsStates", AnalysisGroupState.class).use("analysisGroup.lsStates.lsValues", AnalysisGroupValue.class).deserialize(json, AnalysisGroup.class);
     }
 
     public static com.labsynch.labseer.domain.AnalysisGroup fromJsonToAnalysisGroup2(Reader json) {
-        return new JSONDeserializer<AnalysisGroup>().use(null, AnalysisGroup.class).use("analysisGroup.lsStates", AnalysisGroupState.class).use("analysisGroup.lsStates.lsValues", AnalysisGroupValue.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<AnalysisGroup>().use(null, AnalysisGroup.class).use("analysisGroup.lsStates", AnalysisGroupState.class).use("analysisGroup.lsStates.lsValues", AnalysisGroupValue.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.AnalysisGroup> fromJsonArrayToAnalysisGroups(Reader json) {
-        return new JSONDeserializer<List<AnalysisGroup>>().use(null, ArrayList.class).use("values", AnalysisGroup.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<AnalysisGroup>>().use(null, ArrayList.class).use("values", AnalysisGroup.class).deserialize(json);
     }
 
     public static Collection<com.labsynch.labseer.domain.AnalysisGroup> fromJsonArrayToAnalysisGroups(String json) {
-        return new JSONDeserializer<List<AnalysisGroup>>().use(null, ArrayList.class).use("values", AnalysisGroup.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+        return new JSONDeserializer<List<AnalysisGroup>>().use(null, ArrayList.class).use("values", AnalysisGroup.class).deserialize(json);
     }
 
     //@Transactional
