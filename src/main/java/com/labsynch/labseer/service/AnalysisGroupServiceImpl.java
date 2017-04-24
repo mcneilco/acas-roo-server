@@ -239,6 +239,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 							analysisGroupValue.persist();
 //							logger.debug("persisted the analysisGroupValue: " + analysisGroupValue.toJson());							
 						} else {
+							analysisGroupValue.setLsState(updatedAnalysisGroupState);
 							AnalysisGroupValue updatedAnalysisGroupValue = AnalysisGroupValue.update(analysisGroupValue);
 						}
 						}				

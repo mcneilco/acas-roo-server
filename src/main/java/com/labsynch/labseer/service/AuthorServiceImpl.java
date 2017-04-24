@@ -174,9 +174,11 @@ public class AuthorServiceImpl implements AuthorService {
 				for (LsRole projectRole : projectRoles){
 					groups.add(new StringBuilder().append(projectRole.getLsType()).append("_").append(projectRole.getLsKind()).append("_").append(projectRole.getRoleName()).toString());
 				}
-				List<LsRole> acasAdminRoles = LsRole.findLsRolesByRoleNameEquals(propertiesUtilService.getAcasAdminRole()).getResultList();
-				for (LsRole acasAdminRole : acasAdminRoles){
-					groups.add(new StringBuilder().append(acasAdminRole.getLsType()).append("_").append(acasAdminRole.getLsKind()).append("_").append(acasAdminRole.getRoleName()).toString());
+				if (propertiesUtilService.getAcasAdminRole() !=null && propertiesUtilService.getAcasAdminRole().length()> 0){
+					List<LsRole> acasAdminRoles = LsRole.findLsRolesByRoleNameEquals(propertiesUtilService.getAcasAdminRole()).getResultList();
+					for (LsRole acasAdminRole : acasAdminRoles){
+						groups.add(new StringBuilder().append(acasAdminRole.getLsType()).append("_").append(acasAdminRole.getLsKind()).append("_").append(acasAdminRole.getRoleName()).toString());
+					}
 				}
 
 				projectLabels = project.getLsLabels();

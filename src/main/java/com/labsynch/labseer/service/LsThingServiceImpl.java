@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,6 +31,11 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.hibernate.StaleObjectStateException;
 import org.openscience.cdk.exception.CDKException;
+
+import com.github.underscore.Function1;
+import com.github.underscore.Tuple;
+import com.github.underscore.$;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +55,7 @@ import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeTypeKindDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
+import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.ItxQueryDTO;
 import com.labsynch.labseer.dto.LabelQueryDTO;
 import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
@@ -2133,51 +2140,7 @@ public class LsThingServiceImpl implements LsThingService {
 		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
 		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
 		Root<LsThing> thing = criteria.from(LsThing.class);
-//		Join<LsThing, LsThingState> documentState = document.join("lsStates", JoinType.LEFT);
-//		Join<LsThing, LsThingLabel> documentLabel = document.join("lsLabels", JoinType.LEFT);
-		
-		criteria.select(thing.<Long>get("id"));
-		criteria.distinct(true);
-		Predicate[] predicates = new Predicate[0];
-		List<Predicate> predicateList = new ArrayList<Predicate>();
-		//root lsThing properties
-		
-		//exclude ignored things
-		Predicate thingNotIgn = criteriaBuilder.isFalse(thing.<Boolean>get("ignored"));
-		predicateList.add(thingNotIgn);
-		
-		//recordedDates
-		if (query.getRecordedDateGreaterThan() != null && query.getRecordedDateLessThan() != null){
-			try{
-				Predicate createdDateBetween = criteriaBuilder.between(thing.<Date>get("recordedDate"), query.getRecordedDateGreaterThan(), query.getRecordedDateLessThan());
-				predicateList.add(createdDateBetween);
-			}catch (Exception e){
-				logger.error("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" or "+query.getRecordedDateLessThan()+" as a date.",e);
-				throw new Exception("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" or "+query.getRecordedDateLessThan()+" as a date.",e);
-			}
-		}
-		else if (query.getRecordedDateGreaterThan() != null){
-			try{
-				Predicate createdDateFrom = criteriaBuilder.greaterThanOrEqualTo(thing.<Date>get("recordedDate"), query.getRecordedDateGreaterThan());
-				predicateList.add(createdDateFrom);
-			}catch (Exception e){
-				logger.error("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" as a date.",e);
-				throw new Exception("Caught exception trying to parse "+query.getRecordedDateGreaterThan()+" as a date.",e);
-			}
-		}
-		else if (query.getRecordedDateLessThan() != null){
-			try{
-				Predicate createdDateTo = criteriaBuilder.lessThanOrEqualTo(thing.<Date>get("recordedDate"), query.getRecordedDateLessThan());
-				predicateList.add(createdDateTo);
-			}catch (Exception e){
-				logger.error("Caught exception trying to parse "+query.getRecordedDateLessThan()+" as a date.",e);
-				throw new Exception("Caught exception trying to parse "+query.getRecordedDateLessThan()+" as a date.",e);
-			}
-		}
-		if (query.getRecordedBy() != null){
-			Predicate recordedBy = criteriaBuilder.like(thing.<String>get("recordedBy"), '%'+query.getRecordedBy()+'%');
-			predicateList.add(recordedBy);
-		}
+		List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, query);
 		if (query.getLsType() != null){
 			Predicate lsType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getLsType());
 			predicateList.add(lsType);
@@ -2536,9 +2499,9 @@ public class LsThingServiceImpl implements LsThingService {
 		predicates = predicateList.toArray(predicates);
 		criteria.where(criteriaBuilder.and(predicates));
 		TypedQuery<Long> q = em.createQuery(criteria);
-		logger.info(q.unwrap(org.hibernate.Query.class).getQueryString());
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		lsThingIdList = q.getResultList();
-		logger.info("Found "+lsThingIdList.size()+" results.");
+		logger.debug("Found "+lsThingIdList.size()+" results.");
 		return lsThingIdList;
 	}
 		

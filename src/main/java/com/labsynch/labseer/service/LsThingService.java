@@ -19,6 +19,7 @@ import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 import com.labsynch.labseer.dto.StoichiometryPropertiesResultsDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -103,8 +104,8 @@ public interface LsThingService {
 	StoichiometryPropertiesResultsDTO getStoichiometryProperties(
 			Collection<CodeTypeKindDTO> requests);
 
-//	Collection<LsThing> structureSearch(String queryMol, String searchType,
-//			Integer maxResults, Float similarity);
+	Collection<LsThing> structureSearch(String queryMol, String searchType,
+			Integer maxResults, Float similarity);
 
 	DependencyCheckDTO checkDependencies(LsThing lsThing);
 	
