@@ -103,8 +103,8 @@ public interface LsThingService {
 	StoichiometryPropertiesResultsDTO getStoichiometryProperties(
 			Collection<CodeTypeKindDTO> requests);
 
-	Collection<LsThing> structureSearch(String queryMol, String searchType,
-			Integer maxResults, Float similarity);
+//	Collection<LsThing> structureSearch(String queryMol, String searchType,
+//			Integer maxResults, Float similarity);
 
 	DependencyCheckDTO checkDependencies(LsThing lsThing);
 	
@@ -114,11 +114,15 @@ public interface LsThingService {
 
 	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings);
 
-	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings,
-			String labelType);
+	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings, String labelType);
 
-	Collection<Long> searchLsThingIdsByBrowserQueryDTO(
-			LsThingBrowserQueryDTO query) throws Exception;
+	Collection<Long> searchLsThingIdsByBrowserQueryDTO(LsThingBrowserQueryDTO query) throws Exception;
+
+	Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, String searchType,
+			Integer maxResults, Float similarity) throws Exception;
+
+	Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, String searchType,
+			Integer maxResults, Float similarity);
 	
 	
 }

@@ -31,4 +31,12 @@ privileged aspect MolPropertiesDTO_Roo_JavaBean {
         this.molFormula = molFormula;
     }
     
+    public String MolPropertiesDTO.getSmiles() {
+        return this.smiles;
+    }
+    
+    public void MolPropertiesDTO.setSmiles(String smiles) {
+        this.smiles = smiles;
+    }
+    
 }

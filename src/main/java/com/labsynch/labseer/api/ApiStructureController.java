@@ -234,10 +234,19 @@ public class ApiStructureController {
 	@RequestMapping(value = "/searchStructures", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> searchStructures(@RequestBody String json) {
     	HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
+        headers.add("Content-Type", "application/json;charset=utf-8");
+        Collection<Structure> structures;
         try{
+        	logger.info("##################################################################");
+
+        	logger.info("incoming JSON: " + json);
         	StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
-        	Collection<Structure> structures = structureService.searchStructures( query.getQueryMol(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
+        	logger.info("incoming query: " + query.getLsType() + "  " + query.getLsKind());
+        	if (query.getLsType() != null && query.getLsKind() != null){
+            	structures = structureService.searchStructuresByTypeKind( query.getQueryMol(), query.getLsType(), query.getLsKind(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
+        	} else {
+            	structures = structureService.searchStructures( query.getQueryMol(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
+        	}
             return new ResponseEntity<String>(Structure.toJsonArray(structures), headers, HttpStatus.OK);
         }catch (Exception e){
     		logger.error("Caught exception saving structure",e);
@@ -245,5 +254,5 @@ public class ApiStructureController {
     	}
     	
     }
-
+	
 }

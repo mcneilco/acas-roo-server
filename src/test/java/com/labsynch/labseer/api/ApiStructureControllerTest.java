@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.dto.MolPropertiesDTO;
+import com.labsynch.labseer.dto.StructureSearchDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -43,7 +44,7 @@ public class ApiStructureControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
 	    
-    @Test
+    //@Test
     @Transactional
     public void calculateMoleculeProperties() throws Exception{
     	String json = "{\"molStructure\":\"\\n  Mrv1641110051619032D          \\n\\n  5  5  0  0  0  0            999 V2000\\n   -0.0446    0.6125    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\\n   -0.7121    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n   -0.4572   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n    0.3679   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n    0.6228    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n  2  3  1  0  0  0  0\\n  3  4  1  0  0  0  0\\n  4  5  1  0  0  0  0\\n  1  2  1  0  0  0  0\\n  1  5  1  0  0  0  0\\nM  END\\n\"}";
@@ -60,6 +61,42 @@ public class ApiStructureControllerTest {
 		Assert.assertEquals("C4H8O",result.getMolFormula());
 		Assert.assertTrue(result.getMolStructure().length()>0);
 		Assert.assertTrue(result.getMolWeight() - new Double(72.1059) < 0.001);
+    }
+
+    @Test
+    @Transactional
+    public void searchStructures() throws Exception{
+    	String json = "{\"queryMol\":\"\\n  Mrv1641110051619032D          \\n\\n  5  5  0  0  0  0            999 V2000\\n   -0.0446    0.6125    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\\n   -0.7121    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n   -0.4572   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n    0.3679   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n    0.6228    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n  2  3  1  0  0  0  0\\n  3  4  1  0  0  0  0\\n  4  5  1  0  0  0  0\\n  1  2  1  0  0  0  0\\n  1  5  1  0  0  0  0\\nM  END\\n\"}";
+    	StructureSearchDTO queryDTO = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
+//    	queryDTO.setLsType("chemistry");
+//    	queryDTO.setLsKind("monomer");
+    	queryDTO.setMaxResults(100);
+    	queryDTO.setSearchType("exact");
+    	logger.info(queryDTO.toJson());
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/structure/searchStructures")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(queryDTO.toJson()))
+    			//.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+		logger.info(response.getContentAsString());
+		
+    }
+    
+   // @Test
+    @Transactional
+    public void searchStructuresAndMeta() throws Exception{
+    	String json = "{\"molStructure\":\"\\n  Mrv1641110051619032D          \\n\\n  5  5  0  0  0  0            999 V2000\\n   -0.0446    0.6125    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\\n   -0.7121    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n   -0.4572   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n    0.3679   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n    0.6228    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n  2  3  1  0  0  0  0\\n  3  4  1  0  0  0  0\\n  4  5  1  0  0  0  0\\n  1  2  1  0  0  0  0\\n  1  5  1  0  0  0  0\\nM  END\\n\"}";
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/structure/structureAndMetaSearch")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+		logger.info(response.getContentAsString());
+		
     }
     
 

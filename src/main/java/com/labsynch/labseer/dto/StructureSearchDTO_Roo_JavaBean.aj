@@ -15,6 +15,22 @@ privileged aspect StructureSearchDTO_Roo_JavaBean {
         this.queryMol = queryMol;
     }
     
+    public String StructureSearchDTO.getLsType() {
+        return this.lsType;
+    }
+    
+    public void StructureSearchDTO.setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+    
+    public String StructureSearchDTO.getLsKind() {
+        return this.lsKind;
+    }
+    
+    public void StructureSearchDTO.setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+    
     public String StructureSearchDTO.getSearchType() {
         return this.searchType;
     }

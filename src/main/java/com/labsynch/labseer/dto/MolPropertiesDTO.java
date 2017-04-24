@@ -14,7 +14,9 @@ public class MolPropertiesDTO {
 	private Double molWeight;
 	
 	private String molFormula;
-	
+
+	private String smiles;
+
 }
 
 

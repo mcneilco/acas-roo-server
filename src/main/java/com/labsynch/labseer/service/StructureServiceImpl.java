@@ -76,7 +76,7 @@ public class StructureServiceImpl implements StructureService {
 		result.setMolStructure(molStructure);
 		result.setMolWeight(AtomContainerManipulator.getNaturalExactMass(molecule));
 		result.setMolFormula(MolecularFormulaManipulator.getString(MolecularFormulaManipulator.getMolecularFormula(molecule)));
-		
+        result.setSmiles(SmilesGenerator.unique().create(molecule));
 		return result;
 	}
 
@@ -116,7 +116,37 @@ public class StructureServiceImpl implements StructureService {
 		Structure structure = Structure.findStructureByCodeName(codeName);
 		return renderMolStructure(structure.getMolStructure(), height, width, format);
 	}
+
+	@Override
+	public Collection<Structure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType, Integer maxResults, Float similarity){
+		String chemistryPackage = propertiesUtilService.getChemistryPackage();
+		if (chemistryPackage == null) chemistryPackage = "rdkit";
+		Collection<Structure> searchResults = new HashSet<Structure>();
+		if (chemistryPackage.equalsIgnoreCase("rdkit")){
+			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")){
+				searchResults = rdkitSubstructureSearch(queryMol, maxResults);
+			}else if (searchType.equalsIgnoreCase("SIMILARITY")){
+				searchResults = rdkitSimilaritySearch(queryMol, similarity, maxResults);
+			}else if (searchType.equalsIgnoreCase("EXACT")){
+				searchResults = rdkitExactSearch(queryMol, lsType, lsKind, maxResults);
+			}
+		}else{
+			logger.error("Configured chemistry package not set up!! "+chemistryPackage);
+		}
+		return searchResults;
+	}
 	
+	private Collection<Structure> rdkitExactSearch(String queryMol, String lsType, String lsKind, Integer maxResults) {
+		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring)) AND ls_type = :lsType AND ls_kind = :lsKind";
+		EntityManager em = Structure.entityManager();
+		Query q = em.createNativeQuery(queryString, Structure.class);
+		q.setParameter("queryMol", queryMol);
+		q.setParameter("lsType", lsType);
+		q.setParameter("lsKind", lsKind);
+		if (maxResults != null) q.setMaxResults(maxResults);
+		return q.getResultList();
+	}
+
 	@Override
 	public Collection<Structure> searchStructures(String queryMol, String searchType, Integer maxResults, Float similarity){
 		String chemistryPackage = propertiesUtilService.getChemistryPackage();
@@ -130,6 +160,19 @@ public class StructureServiceImpl implements StructureService {
 			}else if (searchType.equalsIgnoreCase("EXACT")){
 				searchResults = rdkitExactSearch(queryMol, maxResults);
 			}
+		}else{
+			logger.error("Configured chemistry package not set up!! "+chemistryPackage);
+		}
+		return searchResults;
+	}
+	
+	@Override
+	public Collection<String> searchStructuresCodes(String queryMol, String searchType, Integer maxResults, Float similarity){
+		String chemistryPackage = propertiesUtilService.getChemistryPackage();
+		if (chemistryPackage == null) chemistryPackage = "rdkit";
+		Collection<String> searchResults = new HashSet<String>();
+		if (chemistryPackage.equalsIgnoreCase("rdkit")){
+			searchResults = rdkitSubstructureSearchCodes(queryMol, maxResults);
 		}else{
 			logger.error("Configured chemistry package not set up!! "+chemistryPackage);
 		}
@@ -172,4 +215,23 @@ public class StructureServiceImpl implements StructureService {
 		return q.getResultList();
 	}
 
+	private Collection<String> rdkitSubstructureSearchCodes(String queryMol, Integer maxResults) {
+		String queryString = "SELECT s.code_name FROM structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
+		EntityManager em = Structure.entityManager();
+		Query q = em.createNativeQuery(queryString);
+		q.setParameter("queryMol", queryMol);
+		if (maxResults != null) q.setMaxResults(maxResults);
+		return q.getResultList();
+	}
+	
+	private Collection<Structure> substructureSearchInLsThingList(String queryMol, List<Long> thingIdList,
+			Integer maxResults) {
+		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
+		EntityManager em = Structure.entityManager();
+		Query q = em.createNativeQuery(queryString, Structure.class);
+		q.setParameter("queryMol", queryMol);
+		if (maxResults != null) q.setMaxResults(maxResults);
+		return q.getResultList();
+	}
+	
 	}

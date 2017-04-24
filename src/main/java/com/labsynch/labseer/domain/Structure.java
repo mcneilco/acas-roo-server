@@ -48,6 +48,17 @@ public class Structure {
     @Size(max=1000)
     private String smiles;
     
+	//@NotNull
+	@Size(max = 255)
+	private String lsType;
+	
+	//@NotNull
+	@Size(max = 255)
+	private String lsKind;	
+
+	@Size(max = 255)
+	private String lsTypeAndKind;
+    
     @NotNull
     private boolean ignored;
     

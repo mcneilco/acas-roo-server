@@ -159,6 +159,39 @@ public class SimpleUtil {
     	return q;
 	}
 	
+	public static Query addHqlInClauseNativeQuery(EntityManager em, String queryString, String attributeName, List<String> matchStrings){
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(matchStrings);
+    	int startIndex = 0;
+    	while (startIndex < matchStrings.size()){
+    		int endIndex;
+    		if (startIndex+PARAMETER_LIMIT < matchStrings.size()) endIndex = startIndex+PARAMETER_LIMIT;
+    		else endIndex = matchStrings.size();
+    		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
+    		String groupName = "strings"+startIndex;
+    		String sqlClause = " "+attributeName+" IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCodes);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+    	Query q = em.createNativeQuery(queryString);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+    	return q;
+	}
+	
 	public static Predicate buildInPredicate(CriteriaBuilder cb, Expression<String> property, List<String> values) {
 		Predicate predicate = null;
         int listSize = values.size();

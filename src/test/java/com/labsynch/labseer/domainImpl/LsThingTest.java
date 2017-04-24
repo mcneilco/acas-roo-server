@@ -24,13 +24,38 @@ import com.labsynch.labseer.domain.LsThing;
 @ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})
 @Configurable
 public class LsThingTest {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(LsThingTest.class);
-	
-		@Test
+
+
+	@Test
 	@Transactional
-    public void getLsthingsByName() {
-    	String lsType = "gene";
+	public void getLsthingsByProjectName() {
+		String lsType = "project";
+		String lsKind = "project";
+		String labelType = "name";
+		String labelKind = "project name";
+		String labelText = "Project 1";
+		List<LsThing> results = LsThing.findLsThingByLabelText(lsType, lsKind, labelType, labelKind, labelText).getResultList();
+		logger.info("query labelText: " + labelText + " number of results: " + results.size());
+		if (results.size()>0){
+			for(LsThing result : results){
+				//12597
+				logger.info("attempting to output JSON: -----------------  " + result.getCodeName() + "  " + result.getId());
+				LsThing newThing = LsThing.findLsThing(result.getId());
+				Set<LsTag> tags = newThing.getLsTags();
+				for (LsTag tag:tags){
+					logger.info("tag here: " + tag.toJson());
+				}
+				logger.info(newThing.toJson());
+			}
+		}
+	}
+
+	//@Test
+	@Transactional
+	public void getLsthingsByName() {
+		String lsType = "gene";
 		String lsKind = "entrez gene";
 		String labelType = "name";
 		String labelKind = "Entrez Gene ID";
@@ -51,11 +76,11 @@ public class LsThingTest {
 		}
 	}
 
-	
-	@Test
+
+	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKind(){
-			
+
 		Long experimentId = 9L;
 		String stateType = "data";
 		String stateKind = "Generic";
@@ -63,7 +88,7 @@ public class LsThingTest {
 		logger.info(AnalysisGroupValue.toJsonArray(results));
 		assert(results.size() == 11);
 	}
-	
+
 	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithBadData() {
@@ -78,7 +103,7 @@ public class LsThingTest {
 		}
 		assert(results.size() == 0);
 	}
-	
+
 	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindWithCodeName() {
@@ -103,11 +128,11 @@ public class LsThingTest {
 		}
 		if(!didCatch) assert(results.size() == 11);
 	}
-	
+
 	//@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByExpIdAndStateTypeKindAndValueTypeKind(){
-			
+
 		Long experimentId = 9L;
 		String stateType = "data";
 		String stateKind = "Generic";
@@ -117,7 +142,7 @@ public class LsThingTest {
 		logger.info(AnalysisGroupValue.toJsonArray(results));
 		assert(results.size() == 2);
 	}
-	
+
 	@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByAnalysisGroupIdStateTypeAndKind() {
@@ -127,7 +152,7 @@ public class LsThingTest {
 		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKind(analysisGroupId, stateType, stateKind).getResultList();
 		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
-	
+
 	@Test
 	@Transactional
 	public void QueryAnalysisGroupValueByAnalysisGroupIdStateTypeAndKindAndValueTypeKind() {
@@ -139,6 +164,6 @@ public class LsThingTest {
 		List<AnalysisGroupValue> analysisGroupValues = AnalysisGroupValue.findAnalysisGroupValuesByAnalysisGroupIDAndStateTypeKindAndValueTypeKind(analysisGroupId, stateType, stateKind, valueType, valueKind).getResultList();
 		logger.info(String.valueOf(analysisGroupValues.size()));
 	}
-	
-	
+
+
 }

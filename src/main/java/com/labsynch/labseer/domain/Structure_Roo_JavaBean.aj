@@ -32,6 +32,30 @@ privileged aspect Structure_Roo_JavaBean {
         this.smiles = smiles;
     }
     
+    public String Structure.getLsType() {
+        return this.lsType;
+    }
+    
+    public void Structure.setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+    
+    public String Structure.getLsKind() {
+        return this.lsKind;
+    }
+    
+    public void Structure.setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+    
+    public String Structure.getLsTypeAndKind() {
+        return this.lsTypeAndKind;
+    }
+    
+    public void Structure.setLsTypeAndKind(String lsTypeAndKind) {
+        this.lsTypeAndKind = lsTypeAndKind;
+    }
+    
     public boolean Structure.isIgnored() {
         return this.ignored;
     }

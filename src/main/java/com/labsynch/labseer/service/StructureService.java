@@ -26,4 +26,9 @@ public interface StructureService {
 	Collection<Structure> searchStructures(String queryMol, String searchType,
 			Integer maxResults, Float similarity);
 
+	Collection<String> searchStructuresCodes(String queryMol, String searchType, Integer maxResults, Float similarity);
+
+	Collection<Structure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType,
+			Integer maxResults, Float similarity);
+
 }
