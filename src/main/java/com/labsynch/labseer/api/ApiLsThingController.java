@@ -207,7 +207,7 @@ public class ApiLsThingController {
 	}
 
 	@Transactional
-	@RequestMapping(value = "/{lsType}/{lsKind}/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{lsType}/{lsKind}/{idOrCodeName:.+}", method = RequestMethod.GET, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> getLsThingByIdCodeName(@PathVariable("lsType") String lsType, 
 			@PathVariable("lsKind") String lsKind,
 			@PathVariable("idOrCodeName") String idOrCodeName,
