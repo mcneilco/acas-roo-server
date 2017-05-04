@@ -56,12 +56,37 @@ public class ApiStructureController {
 		headers.setExpires(0); // Expire the cache
 		
 		RenderMolRequestDTO request = RenderMolRequestDTO.fromJsonToRenderMolRequestDTO(json);
+		logger.info("########## render mol structure route #############");
+		logger.info("incoming request json: " + request.toJson());
 		try{
 			byte[] image = structureService.renderMolStructure(request.getMolStructure(), request.getHeight(), request.getWidth(), request.getFormat());  
 			return new ResponseEntity<byte[]>(image, headers, HttpStatus.OK);
 		}catch (Exception e){
 			logger.error("Caught exception in renderMolStructure",e);
 			return new ResponseEntity<byte[]>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/renderMolStructureBase64", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> renderMolStructureBase64(@RequestBody String json) {
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.setContentType(MediaType.IMAGE_PNG);
+	    headers.add("Access-Control-Allow-Headers", "Content-Type");
+	    headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
+		headers.add("Pragma","no-cache"); //HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		
+		RenderMolRequestDTO request = RenderMolRequestDTO.fromJsonToRenderMolRequestDTO(json);
+		logger.info("########## render mol structure route #############");
+		logger.info("incoming request json: " + request.toJson());
+		try{
+			String image = structureService.renderMolStructureBase64(request.getMolStructure(), request.getHeight(), request.getWidth(), request.getFormat());  
+			return new ResponseEntity<String>(image, headers, HttpStatus.OK);
+		}catch (Exception e){
+			logger.error("Caught exception in renderMolStructure",e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -100,7 +125,7 @@ public class ApiStructureController {
         
     }
 	
-	@RequestMapping(value = "/renderStructureByCodeName", method = RequestMethod.POST)
+	@RequestMapping(value = "/renderStructureByCodeName", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<byte[]> renderStructureByCodeName(@RequestParam(value="codeName", required=true) String codeName,
 			@RequestParam(value="height", required=true) int height,
@@ -247,6 +272,7 @@ public class ApiStructureController {
         	} else {
             	structures = structureService.searchStructures( query.getQueryMol(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
         	}
+        	logger.info("number of structs found: " + structures.size());
             return new ResponseEntity<String>(Structure.toJsonArray(structures), headers, HttpStatus.OK);
         }catch (Exception e){
     		logger.error("Caught exception saving structure",e);

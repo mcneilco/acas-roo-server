@@ -66,7 +66,7 @@ public class ApiStructureControllerTest {
     @Test
     @Transactional
     public void searchStructures() throws Exception{
-    	String json = "{\"queryMol\":\"\\n  Mrv1641110051619032D          \\n\\n  5  5  0  0  0  0            999 V2000\\n   -0.0446    0.6125    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\\n   -0.7121    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n   -0.4572   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n    0.3679   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n    0.6228    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\\n  2  3  1  0  0  0  0\\n  3  4  1  0  0  0  0\\n  4  5  1  0  0  0  0\\n  1  2  1  0  0  0  0\\n  1  5  1  0  0  0  0\\nM  END\\n\"}";
+    	String json = "{\"queryMol\":\"Molecule from ChemDoodle Web Components\\n\\nhttp://www.ichemlabs.com\\n  5  5  0  0  0  0            999 V2000\\n    0.0000    0.7694    0.0000 C   0  0  0  0  0  0\\n    0.8090    0.1816    0.0000 C   0  0  0  0  0  0\\n    0.5000   -0.7694    0.0000 C   0  0  0  0  0  0\\n   -0.5000   -0.7694    0.0000 C   0  0  0  0  0  0\\n   -0.8090    0.1816    0.0000 C   0  0  0  0  0  0\\n  1  2  1  0     0  0\\n  2  3  1  0     0  0\\n  3  4  1  0     0  0\\n  4  5  1  0     0  0\\n  5  1  1  0     0  0\\nM  END\"}";
     	StructureSearchDTO queryDTO = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
 //    	queryDTO.setLsType("chemistry");
 //    	queryDTO.setLsKind("monomer");

@@ -31,4 +31,7 @@ public interface StructureService {
 	Collection<Structure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType,
 			Integer maxResults, Float similarity);
 
+	String renderMolStructureBase64(String molStructure, Integer hSize, Integer wSize, String format)
+			throws IOException, CDKException;
+
 }

@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,6 +16,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.openscience.cdk.depict.Depiction;
 import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.exception.CDKException;
@@ -64,6 +67,36 @@ public class StructureServiceImpl implements StructureService {
 		byte[] imageInByte = baos.toByteArray();
 
 		return imageInByte;
+	}
+	
+	@Override
+	public String renderMolStructureBase64(String molStructure, Integer hSize, Integer wSize, String format) throws IOException, CDKException{
+		if (molStructure == null || molStructure.equalsIgnoreCase("")) throw new IllegalArgumentException("The molStructure argument is required");
+//		if (format == null || format.equalsIgnoreCase("") || !(format.equalsIgnoreCase("jpg") || format.equalsIgnoreCase("png"))) throw new IllegalArgumentException("The accepted formats are jpg or png");
+		
+		int WIDTH = hSize;
+		int HEIGHT = wSize;
+		IAtomContainer molecule = readMolStructure(molStructure);
+		DepictionGenerator sdg = new DepictionGenerator().withSize(WIDTH, HEIGHT).withFillToFit();
+		Depiction depiction = sdg.depict(molecule);
+		Image image = depiction.toImg();
+		
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		String result = null;
+		  try
+		  {
+			  OutputStream b64 = new Base64OutputStream(os);
+			  ImageIO.write((RenderedImage) image, "png", b64);
+			  result = os.toString("UTF-8");
+			  b64.close();
+			  os.close();
+		  }
+		  catch (final IOException ioe)
+		  {
+		    throw new RuntimeException(ioe);
+		  }
+
+		return result;
 	}
 
 	@Override
@@ -137,12 +170,25 @@ public class StructureServiceImpl implements StructureService {
 	}
 	
 	private Collection<Structure> rdkitExactSearch(String queryMol, String lsType, String lsKind, Integer maxResults) {
-		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring)) AND ls_type = :lsType AND ls_kind = :lsKind";
+		if (lsType == null && lsKind == null){
+			return (rdkitExactSearchNoTypeKind(queryMol, maxResults));
+		} else {
+			String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring)) AND ls_type = :lsType AND ls_kind = :lsKind";
+			EntityManager em = Structure.entityManager();
+			Query q = em.createNativeQuery(queryString, Structure.class);
+			q.setParameter("queryMol", queryMol);
+			q.setParameter("lsType", lsType);
+			q.setParameter("lsKind", lsKind);
+			if (maxResults != null) q.setMaxResults(maxResults);
+			return q.getResultList();
+		}
+	}
+	
+	private Collection<Structure> rdkitExactSearchNoTypeKind(String queryMol, Integer maxResults) {
+		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring))";
 		EntityManager em = Structure.entityManager();
 		Query q = em.createNativeQuery(queryString, Structure.class);
 		q.setParameter("queryMol", queryMol);
-		q.setParameter("lsType", lsType);
-		q.setParameter("lsKind", lsKind);
 		if (maxResults != null) q.setMaxResults(maxResults);
 		return q.getResultList();
 	}
@@ -208,6 +254,7 @@ public class StructureServiceImpl implements StructureService {
 	private Collection<Structure> rdkitSubstructureSearch(String queryMol,
 			Integer maxResults) {
 		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
+		logger.info("query string " + queryString);
 		EntityManager em = Structure.entityManager();
 		Query q = em.createNativeQuery(queryString, Structure.class);
 		q.setParameter("queryMol", queryMol);

@@ -822,12 +822,18 @@ public class ApiLsThingController {
   	HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/json; charset=utf-8");
   	try{
-  		StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
+  		if (json.isEmpty()) logger.info("EMPTY JSON");
+  		if (json.equalsIgnoreCase("")) logger.info("NO CONTENT JSON");
+
+  		logger.info("################################### STRUCTURE JSON ########### ");
+  		logger.info("incoming structure search query json: " + json);
   		logger.info("################################### ");
 
-  		logger.info("incoming structure search query json: " + json);
+  		StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
   		Collection<LsThing> results = lsThingService.structureSearch( query.getQueryMol(), query.getLsType(), query.getLsKind(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
-        return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
+ 
+  		logger.info("##### number of results found: " + results.size());
+  		return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
   	}catch (Exception e){
   		logger.error("Caught exception in structureSearch", e);
         return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -840,6 +846,7 @@ public class ApiLsThingController {
 		      @RequestParam(value = "with", required = false) String with,
 			  @RequestParam(value = "labelType", required = false) String labelType) {
 	  
+	  logger.info("input json: " + stuctureThingQuery);
 	  	StructureAndThingSearchDTO structureAndThingQuery = StructureAndThingSearchDTO.fromJsonToStructureAndThingSearchDTO(stuctureThingQuery);
 	  	HttpHeaders headers = new HttpHeaders();
 	    headers.add("Content-Type", "application/json; charset=utf-8");
@@ -895,63 +902,6 @@ public class ApiLsThingController {
 	  }	  
 	 
   
-  @RequestMapping(value = "/checkDependentExperiments", method = RequestMethod.POST, headers = "Accept=application/json")
-  public ResponseEntity<java.lang.String> checkDependentExperiments(@RequestBody String json) {
-  	HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "application/json; charset=utf-8");
-    CodeTypeKindDTO query = CodeTypeKindDTO.fromJsonToCodeTypeKindDTO(json);
-    ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-    boolean errorsFound = false;
-    LsThing lsThing;	
-	try {
-		lsThing = LsThing.findLsThingsByCodeNameEquals(query.getCodeName()).getSingleResult();
-	} catch(Exception ex) {
-		lsThing = null;
-		ErrorMessage error = new ErrorMessage();
-        error.setErrorLevel("error");
-        error.setMessage("parent:" + query.getCodeName() +" not found");
-        errors.add(error);
-        errorsFound = true;
-	}
-    DependencyCheckDTO result = null;
-    try{
-    	result = lsThingService.checkDependencies(lsThing);
-    }catch (Exception e){
-    	logger.error("Caught exception checking dependencies",e);
-  @RequestMapping(value = "/genericBrowserSearch", method = RequestMethod.POST, headers = "Accept=application/json")
-  public ResponseEntity<java.lang.String> genericBrowserSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
-  	HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "application/json; charset=utf-8");
-    LsThingBrowserQueryDTO query = LsThingBrowserQueryDTO.fromJsonToLsThingBrowserQueryDTO(json);
-    ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
-    boolean errorsFound = false;
-    Collection<Long> lsThingIds;
-    LsThingQueryResultDTO result = new LsThingQueryResultDTO();
-    try{
-    	lsThingIds = lsThingService.searchLsThingIdsByBrowserQueryDTO(query);
-    	int maxResults = 1000;
-    	if (query.getQueryDTO().getMaxResults() != null) maxResults = query.getQueryDTO().getMaxResults();
-    	result.setMaxResults(maxResults);
-    	result.setNumberOfResults(lsThingIds.size());
-    	if (result.getNumberOfResults() <= result.getMaxResults()){
-    		result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
-    	}
-    }catch (Exception e){
-    	logger.error("Caught searching for lsThings in generic interaction search",e);
-    	ErrorMessage error = new ErrorMessage();
-        error.setErrorLevel("error");
-        error.setMessage(e.getMessage());
-        errors.add(error);
-        errorsFound = true;
-    }
-    if (errorsFound) {
-        return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
-    } else {
-        return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
-    }
-      
-  }
-
   @RequestMapping(value = "/genericBrowserSearch", method = RequestMethod.POST, headers = "Accept=application/json")
   public ResponseEntity<java.lang.String> genericBrowserSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
   	HttpHeaders headers = new HttpHeaders();
@@ -1006,21 +956,6 @@ public class ApiLsThingController {
       
   }
 
-  
-  @RequestMapping(value = "/structureSearch", method = RequestMethod.POST, headers = "Accept=application/json")
-  public ResponseEntity<java.lang.String> structureSearch(@RequestBody String json) {
-  	HttpHeaders headers = new HttpHeaders();
-    headers.add("Content-Type", "application/json; charset=utf-8");
-  	try{
-  		StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
-  		Collection<LsThing> results = lsThingService.structureSearch( query.getQueryMol(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
-        return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
-  	}catch (Exception e){
-  		logger.error("Caught exception in structureSearch", e);
-        return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
-  	}
-      
-  }
   
   @RequestMapping(value = "/checkDependentExperiments", method = RequestMethod.POST, headers = "Accept=application/json")
   public ResponseEntity<java.lang.String> checkDependentExperiments(@RequestBody String json) {
