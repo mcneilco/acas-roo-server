@@ -209,6 +209,11 @@ public class AuthorServiceImpl implements AuthorService {
 	@Override
 	public CodeTableDTO getProjectCodeTable(LsThing project) {
 		CodeTableDTO codeTable = new CodeTableDTO();
+		logger.debug("current project: " + project.getCodeName());
+		Set<LsThingLabel> projectLabels = project.getLsLabels();
+		for (LsThingLabel projectLabel : projectLabels){
+			logger.debug(projectLabel.getLabelText());
+		}
 		codeTable.setName(LsThingLabel.pickBestLabel(project.getLsLabels()).getLabelText());
 		codeTable.setCode(project.getCodeName());
 		codeTable.setIgnored(project.isIgnored());
