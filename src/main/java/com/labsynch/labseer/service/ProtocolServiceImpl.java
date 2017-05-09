@@ -273,6 +273,7 @@ public class ProtocolServiceImpl implements ProtocolService {
 		Collection<Protocol> rawResults = findProtocolsByGenericMetaDataSearch(queryString);
 		Collection<LsThing> projects = authorService.getUserProjects(userName);
 		List<String> allowedProjectCodeNames = new ArrayList<String>();
+		allowedProjectCodeNames.add("unassigned");
 		for (LsThing project : projects){
 			allowedProjectCodeNames.add(project.getCodeName());
 		}

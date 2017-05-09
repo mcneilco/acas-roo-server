@@ -35,8 +35,6 @@ public class AnalysisGroupValueDTO {
 	//			el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, agv.stringValue as stringValue, 
 	//			agv.numericValue as numericValue, agv2.codeValue AS testedLot  
 
-
-
 	public AnalysisGroupValueDTO(
 			Long id,
 			Long protocolId,
