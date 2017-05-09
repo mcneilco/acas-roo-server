@@ -93,11 +93,11 @@ public class AnalysisGroupState extends AbstractState {
 	}
 
 	public String toJson() {
-		return new JSONSerializer().exclude("*.class", "analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(this);
+		return new JSONSerializer().include("lsValues").exclude("*.class", "analysisGroup.experiment").transform(new ExcludeNulls(), void.class).serialize(this);
 	}
 
 	public static com.labsynch.labseer.domain.AnalysisGroupState fromJsonToAnalysisGroupState(String json) {
-		return new JSONDeserializer<AnalysisGroupState>().use(null, AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<AnalysisGroupState>().use(null, AnalysisGroupState.class).deserialize(json);
 	}
 
 	public static String toJsonArray(Collection<com.labsynch.labseer.domain.AnalysisGroupState> collection) {
@@ -109,11 +109,11 @@ public class AnalysisGroupState extends AbstractState {
 	}
 
 	public static Collection<com.labsynch.labseer.domain.AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(String json) {
-		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).deserialize(json);
 	}
 
 	public static Collection<com.labsynch.labseer.domain.AnalysisGroupState> fromJsonArrayToAnalysisGroupStates(Reader json) {
-		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).use(BigDecimal.class, new CustomBigDecimalFactory()).deserialize(json);
+		return new JSONDeserializer<List<AnalysisGroupState>>().use(null, ArrayList.class).use("values", AnalysisGroupState.class).deserialize(json);
 	}
 
 	public static int deleteByExperimentID(Long experimentId) {
@@ -145,6 +145,24 @@ public class AnalysisGroupState extends AbstractState {
 			return q;
 		}
 
+	public static TypedQuery<AnalysisGroupState> findAnalysisGroupStatesByAnalysisGroupCodeNameAndStateTypeKind(String analysisGroupCodeName, 
+			String stateType, 
+			String stateKind) {
+			if (stateType == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateType argument is required");
+			if (stateKind == null || stateKind.length() == 0) throw new IllegalArgumentException("The stateKind argument is required");
+			
+			EntityManager em = entityManager();
+			String hsqlQuery = "SELECT ags FROM AnalysisGroupState AS ags " +
+			"JOIN ags.analysisGroup ag " +
+			"WHERE ags.lsType = :stateType AND ags.lsKind = :stateKind AND ags.ignored IS NOT :ignored " +
+			"AND ag.codeName = :analysisGroupCodeName ";
+			TypedQuery<AnalysisGroupState> q = em.createQuery(hsqlQuery, AnalysisGroupState.class);
+			q.setParameter("analysisGroupCodeName", analysisGroupCodeName);
+			q.setParameter("stateType", stateType);
+			q.setParameter("stateKind", stateKind);
+			q.setParameter("ignored", true);
+			return q;
+		}
 
     public static TypedQuery<AnalysisGroupState> findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(AnalysisGroup analysisGroup, String lsType, String lsKind, boolean ignored) {
         if (analysisGroup == null) throw new IllegalArgumentException("The analysisGroup argument is required");
