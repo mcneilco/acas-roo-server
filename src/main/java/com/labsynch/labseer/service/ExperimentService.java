@@ -67,9 +67,9 @@ public interface ExperimentService {
 	public Collection<Experiment> saveLsExperiments(
 			Collection<Experiment> experiments) throws UniqueNameException, NotFoundException;
 
+	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData);
 	public PreferredNameResultsDTO getCodeNameFromName(String experimentType,
 			String experimentKind, String labelType, String labelKind,
 			PreferredNameRequestDTO requestDTO);
-	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData);
 	
 }
