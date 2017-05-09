@@ -142,7 +142,6 @@
             <menu:item id="fi_experimentvalue_lskindequalsandcodevaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndCodeValueLike&amp;form" z="TkQpcyXT3kCx8QtfIhMU1s1sVJQ="/>
             <menu:item id="fi_experimentvalue_lskindequalsandstringvaluelike" messageCode="global_menu_find" url="/experimentvalues?find=ByLsKindEqualsAndStringValueLike&amp;form" z="6Qb9CBQGfKxEpfaKiiWPzblfnN8="/>
             <menu:item id="fi_experimentvalue_lsstate" messageCode="global_menu_find" url="/experimentvalues?find=ByLsState&amp;form" z="9GTDsaIh52NGmUSF7Nmpi7Y11+o="/>
-            <menu:item id="fi_experimentvalue_lsstateandignorednotandlskindequalsandlstypeequalsandstringvalueequals" messageCode="global_menu_find" url="/experimentvalues?find=ByLsStateAndIgnoredNotAndLsKindEqualsAndLsTypeEqualsAndStringValueEquals&amp;form" z="7er6Ts6GhGJENszpULj1IVCpeR8="/>
         </menu:category>
         <menu:category id="c_itxsubjectcontainerstate" z="mlbpXhpw+dPookWsn6xL3DWl+Eg=">
             <menu:item id="i_itxsubjectcontainerstate_new" messageCode="global_menu_new" url="/itxsubjectcontainerstates?form" z="Wo/7xJ/02ah0rzPycINQdhlSUuU="/>
@@ -446,9 +445,6 @@
         <menu:category id="c_itxprotocolprotocol" z="lmgYw5QqKJwU04tbGuaKaMJoxlc=">
             <menu:item id="i_itxprotocolprotocol_new" messageCode="global_menu_new" url="/itxprotocolprotocols?form" z="dMXVapq9fuBlhNUnKCw6jF2F8ug="/>
             <menu:item id="i_itxprotocolprotocol_list" messageCode="global_menu_list" url="/itxprotocolprotocols?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iq6qexLG4PaxGfjcA03XJ0+5AaQ="/>
-            <menu:item id="fi_itxprotocolprotocol_firstprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByFirstProtocol&amp;form" z="UJuHinNHGy4nCOcXPxemLzxtACw="/>
-            <menu:item id="fi_itxprotocolprotocol_lstransactionequals" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByLsTransactionEquals&amp;form" z="t2qEPlGnBoKuT2h+SyEOZ446WTs="/>
-            <menu:item id="fi_itxprotocolprotocol_secondprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=BySecondProtocol&amp;form" z="AyzEdhOcH4pkRXswaVImyoHU6zc="/>
         </menu:category>
         <menu:category id="c_itxprotocolprotocolstate" z="5crXh8kZ9negy5Cyo9mf6r7Zwo8=">
             <menu:item id="i_itxprotocolprotocolstate_new" messageCode="global_menu_new" url="/itxprotocolprotocolstates?form" z="m085rBwmeyS6/phK6Wv6DPfHCQ8="/>
@@ -501,9 +497,6 @@
         <menu:category id="c_itxlsthinglsthing" z="8Gc/rkZ1RT71J+B3ubM/dh2H9VE=">
             <menu:item id="i_itxlsthinglsthing_new" messageCode="global_menu_new" url="/itxlsthinglsthings?form" z="Sv7z8vH12pw4uXJL4KvD5bntOUk="/>
             <menu:item id="i_itxlsthinglsthing_list" messageCode="global_menu_list" url="/itxlsthinglsthings?page=1&amp;size=${empty param.size ? 10 : param.size}" z="dTBbXYSN3UodAC+gzSIDn7jQ2LQ="/>
-            <menu:item id="fi_itxlsthinglsthing_codenameequals" messageCode="global_menu_find" url="/itxlsthinglsthings?find=ByCodeNameEquals&amp;form" z="BEKIehLO6xE9H85uNGTFPB4mVJ4="/>
-            <menu:item id="fi_itxlsthinglsthing_firstlsthing" messageCode="global_menu_find" url="/itxlsthinglsthings?find=ByFirstLsThing&amp;form" z="ZZJRfrNA3gWAokYxcfofVeMdEQ0="/>
-            <menu:item id="fi_itxlsthinglsthing_secondlsthing" messageCode="global_menu_find" url="/itxlsthinglsthings?find=BySecondLsThing&amp;form" z="HSzcUMc8kzGBOsMmcZLWbdLAz/c="/>
         </menu:category>
         <menu:category id="c_itxlsthinglsthingvalue" z="16NynK8hvte1Jz5OlnZk7yx2Cws=">
             <menu:item id="i_itxlsthinglsthingvalue_new" messageCode="global_menu_new" url="/itxlsthinglsthingvalues?form" z="lSlbM5i6/TIvqxkWP3izDKm7cSg="/>
