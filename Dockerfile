@@ -8,7 +8,6 @@ RUN		["mvn", "clean"]
 ADD		. /src
 RUN		mvn compile war:war
 RUN		mv target/acas*.war $CATALINA_HOME/webapps/acas.war
-RUN		mv target/*BUILD* $CATALINA_HOME/webapps/acas
 RUN		rm -rf /src
 WORKDIR	$CATALINA_HOME
 EXPOSE	8080

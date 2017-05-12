@@ -1836,7 +1836,14 @@ public class LsThingServiceImpl implements LsThingService {
 					for (LsThing foundLsThing: foundLsThings){
 						if (lsThing.getId() == null || lsThing.getId().compareTo(foundLsThing.getId()) != 0){
 							//we found an lsThing that is not the same as the one being validated that has the same label
-							throw new UniqueNameException("LsThing with lsKind "+lsKind+" and with the name "+labelText+" already exists! ", foundLsThing.getCodeName(), foundLsThing.pickBestCorpName().getLabelText());
+							String bestLabel = "";
+							LsThingLabel bestCorpName = foundLsThing.pickBestCorpName();
+							if (bestCorpName != null) bestLabel = bestCorpName.getLabelText();
+							else{
+								LsThingLabel bestName = foundLsThing.pickBestName();
+								if (bestName != null) bestLabel = bestName.getLabelText();
+							}
+							throw new UniqueNameException("LsThing with lsKind "+lsKind+" and with the name "+labelText+" already exists! ", foundLsThing.getCodeName(), bestLabel);
 						}
 					}
 				}
