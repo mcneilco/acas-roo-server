@@ -2114,7 +2114,7 @@ public class LsThingServiceImpl implements LsThingService {
 		//Query q = SimpleUtil.addHqlInClauseNativeQuery(em, queryString, "value.code_value", structureCodes);
 		q.setParameter("lsType", "codeValue");
 		q.setParameter("lsKind", "structure");
-		q.setParameter("structureCodes", "structureCodes");
+		q.setParameter("structureCodes", structureCodes);
 		if (logger.isDebugEnabled()){
 			logger.info("number of structure codes: " + structureCodes.size());
 			String fullQuery = q.unwrap(org.hibernate.Query.class).getQueryString();
@@ -2163,12 +2163,48 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, String searchType, Integer maxResults, Float similarity) throws Exception{
 		Collection<Long> thingIdList = searchLsThingIdsByQueryDTO(query);
-		Collection<String> structureCodes = structureService.searchStructuresCodes(queryMol, searchType, maxResults, similarity);
-		List<String> structureCodeList = new ArrayList<String>();
-		structureCodeList.addAll(structureCodes);
-		Collection<Long> structureThingIdList = findLsThingIdsByStructureCodes(structureCodeList);
-		thingIdList.removeAll(structureThingIdList);
-		thingIdList.addAll(structureThingIdList);
+		logger.debug(" thing ids:");
+		for (Long id : thingIdList){
+			logger.debug(" thing id: " + id);
+		}
+
+		Collection<String> structureCodes = null;
+		if (queryMol == null || queryMol.equals("") || queryMol.isEmpty()){
+			logger.debug("number of meta things found: " + thingIdList.size());
+		} else {
+			structureCodes = structureService.searchStructuresCodes(queryMol, searchType, maxResults, similarity);
+			logger.debug("number of structureCodes found: " + structureCodes.size());
+			
+			
+			for (String structureCode : structureCodes){
+				logger.debug("found code: " + structureCode);
+			}
+			
+			List<String> structureCodeList = new ArrayList<String>();
+			structureCodeList.addAll(structureCodes);
+			 Collection<LsThing> structThings = findLsThingsByStructureCodes(structureCodeList);
+
+			
+			Collection<Long> structureThingIdList = new ArrayList<Long>();
+			for (LsThing lsThing : structThings){
+				structureThingIdList.add(lsThing.getId());
+				logger.debug("struct thing id: " + lsThing.getId());
+			}
+			
+					//findLsThingIdsByStructureCodes(structureCodeList);
+			logger.debug("number of structureThingIdList found: " + structureThingIdList.size());
+
+			logger.debug("structure thing ids:");
+			for (Long sid : structureThingIdList){
+				logger.debug("structure thing id: " + sid);
+			}
+
+
+			thingIdList.retainAll(structureThingIdList);
+		}
+		
+		logger.debug("number of filtered things found: " + thingIdList.size());
+
 		return thingIdList;
 	}
 

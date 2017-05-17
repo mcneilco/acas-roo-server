@@ -263,7 +263,7 @@ public class StructureServiceImpl implements StructureService {
 	}
 
 	private Collection<String> rdkitSubstructureSearchCodes(String queryMol, Integer maxResults) {
-		String queryString = "SELECT s.code_name FROM structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
+		String queryString = "SELECT s.code_name FROM structure s WHERE s.ignored <> '1' AND rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
 		EntityManager em = Structure.entityManager();
 		Query q = em.createNativeQuery(queryString);
 		q.setParameter("queryMol", queryMol);

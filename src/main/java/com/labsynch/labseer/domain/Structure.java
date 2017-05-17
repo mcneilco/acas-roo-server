@@ -79,6 +79,8 @@ public class Structure {
     
     public Structure (Structure structure) {
     	this.setCodeName(structure.getCodeName());
+    	this.setLsType(structure.getLsType());
+    	this.setLsKind(structure.getLsKind());
         this.setMolStructure(structure.getMolStructure());
         this.setSmiles(structure.getSmiles());
         this.setIgnored(structure.isIgnored());
@@ -98,6 +100,8 @@ public class Structure {
         updatedStructure.setIgnored(structure.isIgnored());
         updatedStructure.setDeleted(structure.isDeleted());
         updatedStructure.setCodeName(structure.getCodeName());
+        updatedStructure.setLsType(structure.getLsType());
+        updatedStructure.setLsKind(structure.getLsKind());
         updatedStructure.setModifiedBy(structure.getModifiedBy());
         updatedStructure.setModifiedDate(structure.getModifiedDate());
         updatedStructure.setLsTransaction(structure.getLsTransaction());
