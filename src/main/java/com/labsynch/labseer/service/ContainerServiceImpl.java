@@ -444,8 +444,8 @@ public class ContainerServiceImpl implements ContainerService {
 		predicateList.add(locationCodeNameEquals);
 		Predicate itxType = cb.equal(firstItx.<String>get("lsType"), "moved to");
 		predicateList.add(itxType);
-		Predicate barcodeLsKind = cb.equal(barcode.<String>get("lsKind"), "barcode");
-		predicateList.add(barcodeLsKind);
+		Predicate barcodePreferred = cb.isTrue(barcode.<Boolean>get("preferred"));
+		predicateList.add(barcodePreferred);
 		
 		//optional container type/kind
 		if (containerType != null && containerType.length()>0){
@@ -719,7 +719,7 @@ public class ContainerServiceImpl implements ContainerService {
 
 	@Override
 	public Collection<CodeLabelDTO> getContainerCodesByLabels(
-			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind) {
+			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind, Boolean like) {
 		EntityManager em = Container.entityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
@@ -729,8 +729,19 @@ public class ContainerServiceImpl implements ContainerService {
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		Expression<String> containerLabelText = label.<String>get("labelText");
-		Predicate containerLabelTextEquals = SimpleUtil.buildInPredicate(cb, containerLabelText, labelTexts);
-		predicateList.add(containerLabelTextEquals);
+		if (like){
+			List<Predicate> containerLabelTextsLike = new ArrayList<Predicate>();
+			for (String labelText : labelTexts){
+				Predicate containerLabelTextLike = cb.like(containerLabelText, "%"+labelText+"%");
+				containerLabelTextsLike.add(containerLabelTextLike);
+			}
+			Predicate[] labelPredicates = new Predicate[0];
+			Predicate containerLabelTextLikePredicate = cb.or(containerLabelTextsLike.toArray(labelPredicates));
+			predicateList.add(containerLabelTextLikePredicate);
+		}else{
+			Predicate containerLabelTextEquals = SimpleUtil.buildInPredicate(cb, containerLabelText, labelTexts);
+			predicateList.add(containerLabelTextEquals);
+		}
 		
 		//optional container type/kind and label type/kind
 		if (containerType != null && containerType.length()>0){
@@ -802,12 +813,12 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += " physicalStateValue.codeValue  ";
 		queryString += " )  ";
 		queryString += " from Container as well ";
-		queryString += makeInnerJoinHql("well.lsStates", "statusContentState", "status", "content");
-		queryString += makeLeftJoinHql("well.lsLabels", "wellName", "name", "well name");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","amountValue", "numericValue","amount");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","batchCodeValue", "codeValue","batch code");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","solventCodeValue", "codeValue","solvent code");
-		queryString += makeLeftJoinHql("statusContentState.lsValues","physicalStateValue", "codeValue","physical state");
+		queryString += SimpleUtil.makeInnerJoinHql("well.lsStates", "statusContentState", "status", "content");
+		queryString += SimpleUtil.makeLeftJoinHql("well.lsLabels", "wellName", "name", "well name");
+		queryString += SimpleUtil.makeLeftJoinHql("statusContentState.lsValues","amountValue", "numericValue","amount");
+		queryString += SimpleUtil.makeLeftJoinHql("statusContentState.lsValues","batchCodeValue", "codeValue","batch code");
+		queryString += SimpleUtil.makeLeftJoinHql("statusContentState.lsValues","solventCodeValue", "codeValue","solvent code");
+		queryString += SimpleUtil.makeLeftJoinHql("statusContentState.lsValues","physicalStateValue", "codeValue","physical state");
 		queryString += "where ( well.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "well.codeName", wellCodes);
 		Collection<WellContentDTO> results = new HashSet<WellContentDTO>();
@@ -838,7 +849,7 @@ public class ContainerServiceImpl implements ContainerService {
 			emptyWellsQuery += "well.recordedBy, well.recordedDate ";
 			emptyWellsQuery += " )  ";
 			emptyWellsQuery += " from Container as well ";
-			emptyWellsQuery += makeLeftJoinHql("well.lsLabels", "wellName", "name", "well name");
+			emptyWellsQuery += SimpleUtil.makeLeftJoinHql("well.lsLabels", "wellName", "name", "well name");
 			emptyWellsQuery += "where ( well.ignored <> true ) and ";
 			Collection<Query> emptyWellQueries = SimpleUtil.splitHqlInClause(em, emptyWellsQuery, "well.codeName", notFoundWellCodes);
 			Collection<WellContentDTO> emptyWellResults = new HashSet<WellContentDTO>();
@@ -869,20 +880,7 @@ public class ContainerServiceImpl implements ContainerService {
 		return sortedResults;
 	}
 	
-	private String makeLeftJoinHql(String table, String alias, String lsType, String lsKind){
-		String queryString = "left join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
-		return queryString;
-	}
-	private String makeInnerJoinHql(String table, String alias, String lsType, String lsKind){
-		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
-		return queryString;
-	}
 	
-	private String makeInnerJoinHql(String table, String alias, String lsType){
-		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".ignored <> true ";
-		return queryString;
-	}
-
 	@Override
 	public ContainerDependencyCheckDTO checkDependencies(Container container) {
 		ContainerDependencyCheckDTO result = new ContainerDependencyCheckDTO();
@@ -1802,7 +1800,7 @@ public class ContainerServiceImpl implements ContainerService {
 		EntityManager em = ContainerValue.entityManager();
 		String queryString = "SELECT new map( well.codeName as wellCode, well.id as wellId, state.id as stateId) "
 				+ "from Container as well ";
-		queryString += makeInnerJoinHql("well.lsStates", "state", "status", "content");
+		queryString += SimpleUtil.makeInnerJoinHql("well.lsStates", "state", "status", "content");
 		queryString += "where ( well.ignored <> true ) and ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "well.codeName", wellCodes);
 		List<Map<String,Object>> results = new ArrayList<Map<String,Object>>();
@@ -1870,9 +1868,9 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += "plateType.codeValue  ";
 		queryString += " )  ";
 		queryString += " from Container as plate ";
-		queryString += makeInnerJoinHql("plate.lsLabels", "barcode", "barcode", "barcode");
-		queryString += makeLeftJoinHql("plate.lsStates", "metadataInformationState", "metadata", "information");
-		queryString += makeLeftJoinHql("metadataInformationState.lsValues","plateType", "codeValue","plate type");
+		queryString += SimpleUtil.makeInnerJoinHql("plate.lsLabels", "barcode", "barcode", "barcode");
+		queryString += SimpleUtil.makeLeftJoinHql("plate.lsStates", "metadataInformationState", "metadata", "information");
+		queryString += SimpleUtil.makeLeftJoinHql("metadataInformationState.lsValues","plateType", "codeValue","plate type");
 		queryString += "where barcode.labelText = :plateBarcode";
 		TypedQuery<PlateStubDTO> q = em.createQuery(queryString, PlateStubDTO.class);
 		q.setParameter("plateBarcode", plateBarcode);
@@ -1928,8 +1926,8 @@ public class ContainerServiceImpl implements ContainerService {
 				+ "container.codeName, "
 				+ "definition )"
 				+ " FROM Container container ";
-		queryString += makeInnerJoinHql("container.firstContainers", "itx", "defines", "definition container_container");
-		queryString += makeInnerJoinHql("itx.firstContainer", "definition", "definition container");
+		queryString += SimpleUtil.makeInnerJoinHql("container.firstContainers", "itx", "defines", "definition container_container");
+		queryString += SimpleUtil.makeInnerJoinHql("itx.firstContainer", "definition", "definition container");
 		queryString += "where ( container.ignored <> true ) and ( ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<ContainerErrorMessageDTO> results = new HashSet<ContainerErrorMessageDTO>();
@@ -1958,6 +1956,30 @@ public class ContainerServiceImpl implements ContainerService {
 		
 		return results;
 	}
+	
+	
+	public Collection<Map<String, Long>> getItxIdsByContainerCodeNamesAndItxTypeAndKind(
+			List<String> codeNames, String itxType, String itxKind) {
+		if (codeNames.isEmpty()) return new ArrayList<Map<String, Long>>();
+		EntityManager em = Container.entityManager();
+		String queryString = "SELECT new map(container.codeName as containerCodeName, itx.id as itxId)"
+				+ " FROM Container container ";
+		queryString += SimpleUtil.makeInnerJoinHql("container.secondContainers", "itx", itxType, itxKind);
+		queryString += "where ( container.ignored <> true ) and ( ";
+		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
+		Collection<Map<String, Long>> results = new HashSet<Map<String, Long>>();
+		for (Query q : queries){
+			for (Object rawResult : q.getResultList()){
+				Map<String,Object> result = (Map<String, Object>) rawResult;
+				String containerCodeName = (String) result.get("containerCodeName");
+				Long itxId = (Long) result.get("itxId");
+				Map<String, Long> codeNameIdMap = new HashMap<String, Long>();
+				codeNameIdMap.put(containerCodeName, itxId);
+				results.add(codeNameIdMap);
+			}
+		}
+		return results;
+	}
 
 	@Override
 	public Collection<ContainerWellCodeDTO> getWellCodesByContainerCodes(
@@ -1968,8 +1990,8 @@ public class ContainerServiceImpl implements ContainerService {
 				+ "container.codeName as containerCodeName, "
 				+ "well.codeName as wellCodeName )"
 				+ " FROM Container container ";
-		queryString += makeInnerJoinHql("container.secondContainers", "itx", "has member");
-		queryString += makeInnerJoinHql("itx.secondContainer", "well", "well");
+		queryString += SimpleUtil.makeInnerJoinHql("container.secondContainers", "itx", "has member");
+		queryString += SimpleUtil.makeInnerJoinHql("itx.secondContainer", "well", "well");
 		queryString += "where ( container.ignored <> true ) and ( well.ignored <> true) and ( ";
 		Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "container.codeName", codeNames);
 		Collection<Map<String,String>> results = new HashSet<Map<String,String>>();
@@ -2011,57 +2033,102 @@ public class ContainerServiceImpl implements ContainerService {
 	@Override
 	public Collection<ContainerLocationDTO> moveToLocation(
 			Collection<ContainerLocationDTO> requests) {
+		logger.debug("Total requests " + requests.size());
+		//check modified by and modified Date for all
+		List<ContainerLocationDTO> requestsWithErrors = new ArrayList<ContainerLocationDTO>();
+		List<ContainerLocationDTO> requestsWithoutErrors = new ArrayList<ContainerLocationDTO>();
+		Map<String, ContainerLocationDTO> mapByContainerCodeName = new HashMap<String, ContainerLocationDTO>();
+		List<String> requestContainerCodeNames = new ArrayList<String>();
+		List<String> requestLocationCodeNames = new ArrayList<String>();
+		//Mark errors for missing modifiedBy and modifiedDate and gather container codenames and location codenames and do two bulk GETs
 		for (ContainerLocationDTO request : requests){
-			//verify modifiedBy and modifiedDate are provided
 			if (request.getModifiedBy() == null){
 				request.setLevel("error");
 				request.setMessage("modifiedBy must be provided");
+				requestsWithErrors.add(request);
 				continue;
 			}
 			if (request.getModifiedDate() == null){
 				request.setLevel("error");
 				request.setMessage("modifiedDate must be provided");
+				requestsWithErrors.add(request);
 				continue;
+			}else{
+				//filter out only found pairs
+				requestContainerCodeNames.add(request.getContainerCodeName());
+				requestLocationCodeNames.add(request.getLocationCodeName());
+				mapByContainerCodeName.put(request.getContainerCodeName(), request);
+				requestsWithoutErrors.add(request);
 			}
-			Container container;
-			try{
-				container = Container.findContainerByCodeNameEquals(request.getContainerCodeName());
-			}catch (EmptyResultDataAccessException e){
-				request.setLevel("error");
-				request.setMessage("containerCodeName not found");
-				continue;
+		}
+		logger.debug("Requests without missing property errors " + requestsWithoutErrors.size());
+		//Bulk GET of containers and locations
+		Collection<ContainerErrorMessageDTO> foundContainerDTOs = getContainersByCodeNames(requestContainerCodeNames);
+		Collection<ContainerErrorMessageDTO> foundLocationDTOs = getContainersByCodeNames(requestLocationCodeNames);
+		Map<String, Container> foundContainers = new HashMap<String, Container>();
+		Map<String, Container> foundLocations = new HashMap<String, Container>();
+		for (ContainerErrorMessageDTO foundContainerDTO : foundContainerDTOs){
+			if (foundContainerDTO.getLevel() != null){
+				ContainerLocationDTO notFoundResult = mapByContainerCodeName.get(foundContainerDTO.getContainerCodeName());
+				if (notFoundResult != null){
+					requestsWithErrors.add(notFoundResult);
+					requestsWithoutErrors.remove(notFoundResult);
+				}
+			}else{
+				foundContainers.put(foundContainerDTO.getContainerCodeName(), foundContainerDTO.getContainer());
 			}
-			Container location;
-			try{
-				location = Container.findContainerByCodeNameEquals(request.getLocationCodeName());
-			}catch (EmptyResultDataAccessException e){
-				request.setLevel("error");
-				request.setMessage("locationCodeName not found");
-				continue;
+		}
+		for (ContainerErrorMessageDTO foundLocationDTO : foundLocationDTOs){
+			if (foundLocationDTO.getLevel() == null){
+				foundLocations.put(foundLocationDTO.getContainerCodeName(), foundLocationDTO.getContainer());
 			}
-			if (!location.getLsType().equals("location")){
-				request.setLevel("error");
-				request.setMessage("locationCodeName not a location");
-				continue;
-			}
-			//container and location found, and location verified to be "location" type. Changing interactions.
-			Collection<ItxContainerContainer> oldMovedToItxs = ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals("moved to", container).getResultList();
-			for (ItxContainerContainer oldMovedToItx : oldMovedToItxs){
-				oldMovedToItx.setIgnored(true);
-				oldMovedToItx.setModifiedBy(request.getModifiedBy());
-				oldMovedToItx.setModifiedDate(request.getModifiedDate());
-				oldMovedToItx.merge();
-			}
-			//create new "moved to" interaction
+		}
+		//Bulk GET of old ITX's IDs
+		List<String> foundContainerCodeNames = new ArrayList<String>();
+		foundContainerCodeNames.addAll(foundContainers.keySet());
+		Collection<Map<String, Long>> oldItxIdMaps = getItxIdsByContainerCodeNamesAndItxTypeAndKind(foundContainerCodeNames, "moved to", "container_location");
+		List<ItxContainerContainer> oldItxs = new ArrayList<ItxContainerContainer>();
+		for (Map<String, Long> oldItxIdMap : oldItxIdMaps){
+			ItxContainerContainer oldItxStub = new ItxContainerContainer();
+			String containerCodeName = oldItxIdMap.keySet().iterator().next();
+			Long oldItxId = oldItxIdMap.get(containerCodeName);
+			ContainerLocationDTO request = mapByContainerCodeName.get(containerCodeName);
+			oldItxStub.setId(oldItxId);
+			oldItxStub.setModifiedBy(request.getModifiedBy());
+			oldItxStub.setModifiedDate(request.getModifiedDate());
+			oldItxs.add(oldItxStub);
+		}
+		try{
+			//Bulk Update/Ignore of old ITX's
+			ignoreItxContainerContainers(oldItxs);
+		}catch (SQLException e){
+			logger.error("Caught error trying to ignore old \"moved to\" interactions",e);
+		}
+		//Make bulk array of new ITX's
+		List<ItxContainerContainer> newMovedToItxs = new ArrayList<ItxContainerContainer>();
+		LsTransaction lsTransaction = new LsTransaction();
+		lsTransaction.setRecordedDate(new Date());
+		lsTransaction.persist();
+		for (ContainerLocationDTO request : requestsWithoutErrors){
+			Container container = foundContainers.get(request.getContainerCodeName());
+			Container location = foundLocations.get(request.getLocationCodeName());
 			ItxContainerContainer newMovedToItx = new ItxContainerContainer();
 			newMovedToItx.setLsType("moved to");
 			newMovedToItx.setLsKind(container.getLsType()+"_"+location.getLsType());
 			newMovedToItx.setRecordedBy(request.getModifiedBy());
 			newMovedToItx.setRecordedDate(request.getModifiedDate());
+			newMovedToItx.setLsTransaction(lsTransaction.getId());
 			newMovedToItx.setFirstContainer(container);
 			newMovedToItx.setSecondContainer(location);
-			newMovedToItx.persist();
+			newMovedToItxs.add(newMovedToItx);
 		}
+		//Save bulk array of new itx's
+		try{
+			insertItxContainerContainers(newMovedToItxs);
+		}catch (SQLException e){
+			logger.error("Caught error trying to insert new \"moved to\" interactions",e);
+		}
+		
 		return requests;
 	}
 	
@@ -2241,6 +2308,30 @@ public class ContainerServiceImpl implements ContainerService {
 			@Override
 			public int getBatchSize() {
 				return states.size();
+			}
+		  });
+	}
+	
+	@Override
+	@Transactional
+	public void ignoreItxContainerContainers(final List<ItxContainerContainer> itxContainerContainers) throws SQLException{
+		jdbcTemplate = new JdbcTemplate(dataSource);
+		String sql = "UPDATE ITX_CONTAINER_CONTAINER "
+				+ "set ignored = ?, modified_by = ?, modified_date = ?, version = version + 1 WHERE id = ?";
+		jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+			@Override
+			public void setValues(PreparedStatement ps, int i) throws SQLException {
+				ItxContainerContainer itx = itxContainerContainers.get(i);
+				ps.setBoolean(1, true);
+				ps.setString(2, itx.getModifiedBy());
+				if (itx.getModifiedDate() != null) ps.setTimestamp(3, new java.sql.Timestamp(itx.getModifiedDate().getTime()));
+				else ps.setTimestamp(3, null);
+				ps.setLong(4, itx.getId());
+			}
+					
+			@Override
+			public int getBatchSize() {
+				return itxContainerContainers.size();
 			}
 		  });
 	}
@@ -2448,7 +2539,7 @@ public class ContainerServiceImpl implements ContainerService {
 
 	@Override
 	public Collection<String> getContainersByContainerValue(
-			ContainerValueRequestDTO requestDTO) throws Exception {
+			ContainerValueRequestDTO requestDTO, Boolean like) throws Exception {
 		//validate request
 		if (requestDTO.getContainerType() == null) throw new Exception("Container type must be specified");
 		if (requestDTO.getContainerKind() == null) throw new Exception("Container kind must be specified");
@@ -2486,11 +2577,21 @@ public class ContainerServiceImpl implements ContainerService {
 		Predicate valueKind = cb.equal(containerValue.<String>get("lsKind"), requestDTO.getValueKind());
 		Predicate valueNotIgnored = cb.not(containerValue.<Boolean>get("ignored"));
 		if (requestDTO.getValueType().equals("stringValue")){
-			Predicate stringValue = cb.equal(containerValue.<String>get("stringValue"), requestDTO.getValue());
+			Predicate stringValue;
+			if (like){
+				stringValue = cb.like(containerValue.<String>get("stringValue"), "%"+requestDTO.getValue()+"%");
+			}else{
+				stringValue = cb.equal(containerValue.<String>get("stringValue"), requestDTO.getValue());
+			}
 			Predicate valuePredicate = cb.and(valueType,valueKind, valueNotIgnored, stringValue);
 			predicateList.add(valuePredicate);
 		}else if(requestDTO.getValueType().equals("codeValue")){
-			Predicate codeValue = cb.equal(containerValue.<String>get("codeValue"), requestDTO.getValue());
+			Predicate codeValue;
+			if (like){
+				codeValue = cb.like(containerValue.<String>get("codeValue"), "%"+requestDTO.getValue()+"%");
+			}else{
+				codeValue = cb.equal(containerValue.<String>get("codeValue"), requestDTO.getValue());
+			}
 			Predicate valuePredicate = cb.and(valueType,valueKind, valueNotIgnored, codeValue);
 			predicateList.add(valuePredicate);
 		}
