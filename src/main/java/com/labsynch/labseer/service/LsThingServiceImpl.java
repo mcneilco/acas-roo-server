@@ -2169,7 +2169,10 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 
 		Collection<String> structureCodes = null;
-		if (queryMol == null || queryMol.equals("") || queryMol.isEmpty()){
+		logger.debug("incoming query mol: " + queryMol);
+		logger.debug("length of query mol: " + queryMol.length());
+
+		if (queryMol == null || queryMol.equals("") || queryMol.isEmpty() || queryMol.length() < 165){
 			logger.debug("number of meta things found: " + thingIdList.size());
 		} else {
 			structureCodes = structureService.searchStructuresCodes(queryMol, searchType, maxResults, similarity);
