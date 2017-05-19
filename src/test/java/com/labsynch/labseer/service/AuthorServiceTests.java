@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -45,11 +46,15 @@ public class AuthorServiceTests {
 	@Transactional
 	public void getAuthorProjectsTest() {
 
-		String userName = "jblow";
-		Collection<LsThing> results = authorService.getUserProjects(userName);
+		String userName = "jmcneil";
+		Collection<LsThing> projects = authorService.getUserProjects(userName);
 		logger.info("------- Results from getAuthorProjectsTest ----------");
 
-		logger.info(LsThing.toJsonArrayStub(results));
+		logger.info(LsThing.toJsonArrayStub(projects));
+		
+		Collection<CodeTableDTO> codeTableProjects = authorService.convertProjectsToCodeTables(projects);
+		logger.info(CodeTableDTO.toJsonArray(codeTableProjects));
+		
 	}
 
 	

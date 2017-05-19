@@ -123,8 +123,8 @@
             <menu:item id="fi_experimentlabel_experiment" messageCode="global_menu_find" url="/experimentlabels?find=ByExperiment&amp;form" z="2U3TP8VIBSMAEtbdpkQlN1gfnCw="/>
             <menu:item id="fi_experimentlabel_experimentandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByExperimentAndIgnoredNot&amp;form" z="mcIgBlrdh24WXE8RUOwQYUMTTZM="/>
             <menu:item id="fi_experimentlabel_labeltextlike" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLike&amp;form" z="PYv94k7Dol6QPVhe3R86cGR/bbg="/>
-            <menu:item id="fi_experimentlabel_lstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="n6BVW2/nOYW6PDMTJXM0WCF5ImM="/>
             <menu:item id="fi_experimentlabel_labeltextlikeandlstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="FECyIQ2Y8ja5GASA260VwxPRI2s="/>
+            <menu:item id="fi_experimentlabel_lstypeandkindequalsandpreferrednotandignorednot" messageCode="global_menu_find" url="/experimentlabels?find=ByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot&amp;form" z="n6BVW2/nOYW6PDMTJXM0WCF5ImM="/>
         </menu:category>
         <menu:category id="c_unitkind" z="7YWBluDqoyAGJ4xzyVHzZLg6m7c=">
             <menu:item id="i_unitkind_new" messageCode="global_menu_new" url="/unitkinds?form" z="GkwkeWRp6oEmEiokiC+TnTXLX6o="/>
