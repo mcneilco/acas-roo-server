@@ -1,23 +1,10 @@
 package com.labsynch.labseer.api;
 
-import com.labsynch.labseer.domain.ItxLsThingLsThing;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.exceptions.ErrorMessage;
-import com.labsynch.labseer.service.ItxLsThingLsThingService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.SimpleUtil;
-
-import flexjson.JSONTokener;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
+import com.labsynch.labseer.service.ItxLsThingLsThingService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Controller
 @RequestMapping("/api/v1/itxLsThingLsThings")
@@ -87,6 +82,10 @@ public class ApiItxLsThingLsThingController {
 				return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
 			} else if (with.equalsIgnoreCase("stub")) {
 				return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("codetable")) {
+				Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+				codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+				return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 			}
 		}
 		return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
@@ -131,6 +130,10 @@ public class ApiItxLsThingLsThingController {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
 				} else if (with.equalsIgnoreCase("stub")) {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+					codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 				}
 			}
 			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
@@ -176,6 +179,10 @@ public class ApiItxLsThingLsThingController {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
 				} else if (with.equalsIgnoreCase("stub")) {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+					codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 				}
 			}
 			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
@@ -223,6 +230,10 @@ public class ApiItxLsThingLsThingController {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
 				} else if (with.equalsIgnoreCase("stub")) {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+					codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 				}
 			}
 			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
@@ -269,6 +280,10 @@ public class ApiItxLsThingLsThingController {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
 				} else if (with.equalsIgnoreCase("stub")) {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+					codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 				}
 			}
 			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
@@ -314,6 +329,10 @@ public class ApiItxLsThingLsThingController {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
 				} else if (with.equalsIgnoreCase("stub")) {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+					codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 				}
 			}
 			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
@@ -360,6 +379,75 @@ public class ApiItxLsThingLsThingController {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
 				} else if (with.equalsIgnoreCase("stub")) {
 					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+					codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+		}
+	}
+	
+	@Transactional
+	@RequestMapping(value = "/byfirstthingandsecondthing/{lsType}/{lsKind}", method = RequestMethod.GET, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> getItxLsThingsByFirstThingAndSecondThingAndTypeKind(@PathVariable("lsType") String lsType, 
+			@PathVariable("lsKind") String lsKind,
+			@RequestParam(value = "firstthing", required = true) String firstthing,
+			@RequestParam(value = "secondthing", required = true) String secondthing,
+			@RequestParam(value = "with", required = false) String with) {
+		logger.debug("----from the ApiItxLsThingLsThingController GET controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		LsThing firstLsThing = null;
+		LsThing secondLsThing = null;
+		List<ItxLsThingLsThing> itxLsThingLsThings = null;
+		if(SimpleUtil.isNumeric(firstthing)) {
+			firstLsThing = LsThing.findLsThing(Long.valueOf(firstthing));
+		} else {		
+			try {
+				firstLsThing = LsThing.findLsThingsByCodeNameEquals(firstthing).getSingleResult();
+			} catch(Exception ex) {
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("lsThing:" + firstthing +" not found");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if(SimpleUtil.isNumeric(secondthing)) {
+			secondLsThing = LsThing.findLsThing(Long.valueOf(secondthing));
+		} else {		
+			try {
+				secondLsThing = LsThing.findLsThingsByCodeNameEquals(secondthing).getSingleResult();
+			} catch(Exception ex) {
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("lsThing:" + secondthing +" not found");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+		} else {
+			//find them
+			itxLsThingLsThings = ItxLsThingLsThing.findItxLsThingLsThingsByTypeAndKindAndFirstLsThingEqualsAndSecondLsThingEquals(lsType, lsKind, firstLsThing, secondLsThing).getResultList();
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedFull(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toPrettyJsonArray(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+					codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 				}
 			}
 			return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(itxLsThingLsThings), headers, HttpStatus.OK);
@@ -488,6 +576,10 @@ public class ApiItxLsThingLsThingController {
 				return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayWithNestedStub(updatedItxLsThingLsThings), headers, HttpStatus.OK);
 			} else if (with.equalsIgnoreCase("stub")) {
 				return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArrayStub(updatedItxLsThingLsThings), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("codetable")) {
+				Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+				codeTables = itxLsThingLsThingService.convertToCodeTables(itxLsThingLsThings);
+				return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 			}
 		}
 		return new ResponseEntity<String>(ItxLsThingLsThing.toJsonArray(updatedItxLsThingLsThings), headers, HttpStatus.OK);

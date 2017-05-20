@@ -4,6 +4,8 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.LsTransactionStatus;
+import com.labsynch.labseer.domain.LsTransactionType;
 import java.util.Date;
 
 privileged aspect LsTransaction_Roo_JavaBean {
@@ -22,6 +24,30 @@ privileged aspect LsTransaction_Roo_JavaBean {
     
     public void LsTransaction.setRecordedDate(Date recordedDate) {
         this.recordedDate = recordedDate;
+    }
+    
+    public String LsTransaction.getRecordedBy() {
+        return this.recordedBy;
+    }
+    
+    public void LsTransaction.setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+    
+    public LsTransactionStatus LsTransaction.getStatus() {
+        return this.status;
+    }
+    
+    public void LsTransaction.setStatus(LsTransactionStatus status) {
+        this.status = status;
+    }
+    
+    public LsTransactionType LsTransaction.getType() {
+        return this.type;
+    }
+    
+    public void LsTransaction.setType(LsTransactionType type) {
+        this.type = type;
     }
     
 }

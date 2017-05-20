@@ -168,6 +168,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 							updatedExperimentValue.persist();
 							updatedExperimentState.getLsValues().add(updatedExperimentValue);
 						} else {
+							experimentValue.setLsState(updatedExperimentState);
 							updatedExperimentValue = ExperimentValue.update(experimentValue);
 							if (logger.isDebugEnabled())  logger.debug("updated experiment value " + updatedExperimentValue.getId());
 						}

@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 
 import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.dto.GenericValuePathRequest;
+import com.labsynch.labseer.dto.LsThingValuePathDTO;
 
 public interface LsThingValueService {
 
@@ -28,6 +30,9 @@ public interface LsThingValueService {
 
 	LsThingValue getLsThingValue(String idOrCodeName, String stateType,
 			String stateKind, String valueType, String valueKind);
+
+	Collection<LsThingValuePathDTO> getLsThingValues(
+			Collection<GenericValuePathRequest> genericRequests);
 
 
 }

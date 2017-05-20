@@ -199,6 +199,7 @@ public class TreatmentGroupServiceImpl implements TreatmentGroupService {
 							treatmentGroupValue.setLsState(TreatmentGroupState.findTreatmentGroupState(treatmentGroupState.getId()));
 							treatmentGroupValue.persist();
 						} else {
+							treatmentGroupValue.setLsState(TreatmentGroupState.findTreatmentGroupState(treatmentGroupState.getId()));
 							TreatmentGroupValue updatedTreatmentGroupValue = TreatmentGroupValue.update(treatmentGroupValue);
 							// logger.debug(updatedTreatmentGroupValue.toJson());
 						}
