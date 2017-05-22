@@ -448,13 +448,22 @@ public class ApiContainerController {
     		@RequestParam(value="containerKind", required=false) String containerKind,
     		@RequestParam(value="labelType", required=false) String labelType,
     		@RequestParam(value="labelKind", required=false) String labelKind,
-    		@RequestParam(value="like", required=false) Boolean like) {
+    		@RequestParam(value="like", required=false) Boolean like,
+    		@RequestParam(value="maxResults", required=false) Integer maxResults) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (like == null) like = false;
         try{
         	Collection<CodeLabelDTO> searchResults = containerService.getContainerCodesByLabels(labelTexts, containerType, containerKind, labelType, labelKind, like);
-            return new ResponseEntity<String>(CodeLabelDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+            if (maxResults != null && maxResults > 0 && searchResults.size() > maxResults){
+            	ContainerQueryResultDTO resultDTO = new ContainerQueryResultDTO();
+            	resultDTO.setMaxResults(maxResults);
+            	resultDTO.setNumberOfResults(searchResults.size());
+            	return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
+            }
+            else{
+            	return new ResponseEntity<String>(CodeLabelDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+            }
         } catch (Exception e){
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -811,14 +820,23 @@ public class ApiContainerController {
     @RequestMapping(value = "/getContainerCodeNamesByContainerValue", method = RequestMethod.POST, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> getContainersByContainerValue(@RequestBody String json,
-    		@RequestParam(value="like", required=false) Boolean like) {
+    		@RequestParam(value="like", required=false) Boolean like,
+    		@RequestParam(value="maxResults", required=false) Integer maxResults) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (like == null) like = false;
         try{
         	ContainerValueRequestDTO requestDTO = ContainerValueRequestDTO.fromJsonToContainerValueRequestDTO(json);
         	Collection<String> searchResults = containerService.getContainersByContainerValue(requestDTO, like);
-        	return new ResponseEntity<String>(new JSONSerializer().serialize(searchResults), headers, HttpStatus.OK);
+            if (maxResults != null && maxResults > 0 && searchResults.size() > maxResults){
+            	ContainerQueryResultDTO resultDTO = new ContainerQueryResultDTO();
+            	resultDTO.setMaxResults(maxResults);
+            	resultDTO.setNumberOfResults(searchResults.size());
+            	return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
+            }
+            else{
+            	return new ResponseEntity<String>(new JSONSerializer().serialize(searchResults), headers, HttpStatus.OK);
+            }
         } catch (Exception e){
         	logger.error("Uncaught error in getContainersByCodeNames",e);
             return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
