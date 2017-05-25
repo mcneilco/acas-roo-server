@@ -719,7 +719,7 @@ public class ContainerServiceImpl implements ContainerService {
 
 	@Override
 	public Collection<CodeLabelDTO> getContainerCodesByLabels(
-			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind, Boolean like) {
+			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind, Boolean like, Boolean rightLike) {
 		EntityManager em = Container.entityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = cb.createTupleQuery();
@@ -729,10 +729,15 @@ public class ContainerServiceImpl implements ContainerService {
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		Expression<String> containerLabelText = label.<String>get("labelText");
-		if (like){
+		if (like != null && like){
 			List<Predicate> containerLabelTextsLike = new ArrayList<Predicate>();
 			for (String labelText : labelTexts){
-				Predicate containerLabelTextLike = cb.like(containerLabelText, "%"+labelText+"%");
+				Predicate containerLabelTextLike;
+				if (rightLike != null && rightLike){
+					containerLabelTextLike = cb.like(containerLabelText, labelText+"%");
+				}else{
+					containerLabelTextLike = cb.like(containerLabelText, "%"+labelText+"%");
+				}
 				containerLabelTextsLike.add(containerLabelTextLike);
 			}
 			Predicate[] labelPredicates = new Predicate[0];
@@ -2549,7 +2554,7 @@ public class ContainerServiceImpl implements ContainerService {
 
 	@Override
 	public Collection<String> getContainersByContainerValue(
-			ContainerValueRequestDTO requestDTO, Boolean like) throws Exception {
+			ContainerValueRequestDTO requestDTO, Boolean like, Boolean rightLike) throws Exception {
 		//validate request
 		if (requestDTO.getContainerType() == null) throw new Exception("Container type must be specified");
 		if (requestDTO.getContainerKind() == null) throw new Exception("Container kind must be specified");
@@ -2588,8 +2593,12 @@ public class ContainerServiceImpl implements ContainerService {
 		Predicate valueNotIgnored = cb.not(containerValue.<Boolean>get("ignored"));
 		if (requestDTO.getValueType().equals("stringValue")){
 			Predicate stringValue;
-			if (like){
-				stringValue = cb.like(containerValue.<String>get("stringValue"), "%"+requestDTO.getValue()+"%");
+			if (like != null && like){
+				if (rightLike != null && rightLike){
+					stringValue = cb.like(containerValue.<String>get("stringValue"), requestDTO.getValue()+"%");
+				}else{
+					stringValue = cb.like(containerValue.<String>get("stringValue"), "%"+requestDTO.getValue()+"%");
+				}
 			}else{
 				stringValue = cb.equal(containerValue.<String>get("stringValue"), requestDTO.getValue());
 			}
@@ -2597,8 +2606,12 @@ public class ContainerServiceImpl implements ContainerService {
 			predicateList.add(valuePredicate);
 		}else if(requestDTO.getValueType().equals("codeValue")){
 			Predicate codeValue;
-			if (like){
-				codeValue = cb.like(containerValue.<String>get("codeValue"), "%"+requestDTO.getValue()+"%");
+			if (like != null && like){
+				if (rightLike != null && rightLike){
+					codeValue = cb.like(containerValue.<String>get("codeValue"), requestDTO.getValue()+"%");
+				}else{
+					codeValue = cb.like(containerValue.<String>get("codeValue"), "%"+requestDTO.getValue()+"%");
+				}
 			}else{
 				codeValue = cb.equal(containerValue.<String>get("codeValue"), requestDTO.getValue());
 			}

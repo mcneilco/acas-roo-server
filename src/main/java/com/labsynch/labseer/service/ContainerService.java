@@ -60,7 +60,7 @@ public interface ContainerService {
 			List<String> plateBarcodes);
 
 	Collection<CodeLabelDTO> getContainerCodesByLabels(
-			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind, Boolean like);
+			List<String> labelTexts, String containerType, String containerKind, String labelType, String labelKind, Boolean like, Boolean likeRight);
 
 	ContainerDependencyCheckDTO checkDependencies(Container container);
 
@@ -136,7 +136,7 @@ public interface ContainerService {
 			throws SQLException;
 
 	Collection<String> getContainersByContainerValue(
-			ContainerValueRequestDTO requestDTO, Boolean like) throws Exception;
+			ContainerValueRequestDTO requestDTO, Boolean like, Boolean likeRight) throws Exception;
 
 	Collection<Long> searchContainerIdsByBrowserQueryDTO(
 			ContainerBrowserQueryDTO query) throws Exception;
