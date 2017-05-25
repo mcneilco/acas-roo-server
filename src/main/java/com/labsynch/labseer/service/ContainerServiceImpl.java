@@ -785,16 +785,26 @@ public class ContainerServiceImpl implements ContainerService {
 			}
 		}
 		Collection<CodeLabelDTO> results = new ArrayList<CodeLabelDTO>();
-		for (String requestLabel: labelTexts){
-			CodeLabelDTO result = new CodeLabelDTO();
-			result.setRequestLabel(requestLabel);
-			if (resultMap.containsKey(requestLabel)){
-				result.setFoundCodeNames(resultMap.get(requestLabel));
-			}else{
-				result.setFoundCodeNames(new ArrayList<String>());
+		if (like != null && like){
+			for (String foundLabel : resultMap.keySet()){
+				CodeLabelDTO result = new CodeLabelDTO();
+				result.setRequestLabel(foundLabel);
+				result.setFoundCodeNames(resultMap.get(foundLabel));
+				results.add(result);
 			}
-			results.add(result);
+		}else{
+			for (String requestLabel: labelTexts){
+				CodeLabelDTO result = new CodeLabelDTO();
+				result.setRequestLabel(requestLabel);
+				if (resultMap.containsKey(requestLabel)){
+					result.setFoundCodeNames(resultMap.get(requestLabel));
+				}else{
+					result.setFoundCodeNames(new ArrayList<String>());
+				}
+				results.add(result);
+			}
 		}
+		
 		return results;
 	}
 
