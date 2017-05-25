@@ -643,7 +643,7 @@ public class ContainerLSServiceTests {
 		List<String> plateBarcodes = new ArrayList<String>();
 		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
 		logger.info("querying with: "+plateBarcodes.toString());
-		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null, false);
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null, false, false);
 		logger.info(CodeLabelDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
 	}
@@ -654,7 +654,7 @@ public class ContainerLSServiceTests {
 		List<String> plateBarcodes = new ArrayList<String>();
 		plateBarcodes.add(Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate").getResultList().get(0).getLsLabels().iterator().next().getLabelText());
 		logger.info("querying with: "+plateBarcodes.toString());
-		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "container", "plate", "barcode", "barcode", false);
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "container", "plate", "barcode", "barcode", false, false);
 		logger.info(CodeLabelDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
 	}
@@ -668,9 +668,44 @@ public class ContainerLSServiceTests {
 		Container container = query.getSingleResult();
 		plateBarcodes.add(container.getLsLabels().iterator().next().getLabelText());
 		logger.info("querying with: "+plateBarcodes.toString());
-		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "plate", "plate", "name", "barcode", false);
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, "plate", "plate", "name", "barcode", false, false);
 		logger.info(CodeLabelDTO.toJsonArray(result));
-		Assert.assertTrue(result.size() == 0);
+		Assert.assertTrue(result.size() == 1);
+		for (CodeLabelDTO singleResult : result){
+			Assert.assertTrue(singleResult.getFoundCodeNames().size() == 0);
+		}
+	}
+	
+	@Test
+	@Transactional
+	public void getContainerCodesByLabels_like(){
+		List<String> plateBarcodes = new ArrayList<String>();
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+		query.setMaxResults(1);
+		Container container = query.getSingleResult();
+		String plateBarcode = container.getLsLabels().iterator().next().getLabelText();
+		String trimmedPlateBarcode = plateBarcode.substring(1, plateBarcode.length() - 2);
+		plateBarcodes.add(trimmedPlateBarcode);
+		logger.info("querying with: "+plateBarcodes.toString());
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null, true, false);
+		logger.info(CodeLabelDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
+	}
+	
+	@Test
+	@Transactional
+	public void getContainerCodesByLabels_rightLike(){
+		List<String> plateBarcodes = new ArrayList<String>();
+		TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+		query.setMaxResults(1);
+		Container container = query.getSingleResult();
+		String plateBarcode = container.getLsLabels().iterator().next().getLabelText();
+		String trimmedPlateBarcode = plateBarcode.substring(0, plateBarcode.length() - 2);
+		plateBarcodes.add(trimmedPlateBarcode);
+		logger.info("querying with: "+plateBarcodes.toString());
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null, true, true);
+		logger.info(CodeLabelDTO.toJsonArray(result));
+		Assert.assertTrue(result.size() > 0);
 	}
 	
 	@Test
@@ -712,7 +747,7 @@ public class ContainerLSServiceTests {
 		List<String> plateBarcodes = new ArrayList<String>();
 		plateBarcodes.add("hitpick master plate");
 		logger.info("querying with: "+plateBarcodes.toString());
-		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null, false);
+		Collection<CodeLabelDTO> result = containerService.getContainerCodesByLabels(plateBarcodes, null, null, null, null, false, false);
 		logger.info(CodeLabelDTO.toJsonArray(result));
 		Assert.assertTrue(result.size() > 0);
 	}
@@ -1265,7 +1300,41 @@ public class ContainerLSServiceTests {
     	requestDTO.setValueKind("created user");
     	requestDTO.setValue("bob");
     	String json = requestDTO.toJson();
-    	Collection<String> results = containerService.getContainersByContainerValue(requestDTO, false);
+    	Collection<String> results = containerService.getContainersByContainerValue(requestDTO, false, false);
+    	logger.info(results.toString());
+    	Assert.assertTrue(results.size() > 0);
+	}
+	
+	@Test
+    @Transactional
+    public void searchContainerCodesByContainerValue_like() throws Exception{
+    	ContainerValueRequestDTO requestDTO = new ContainerValueRequestDTO();
+    	requestDTO.setContainerType("container");
+    	requestDTO.setContainerKind("plate");;
+    	requestDTO.setStateType("metadata");
+    	requestDTO.setStateKind("information");
+    	requestDTO.setValueType("codeValue");
+    	requestDTO.setValueKind("created user");
+    	requestDTO.setValue("o");
+    	String json = requestDTO.toJson();
+    	Collection<String> results = containerService.getContainersByContainerValue(requestDTO, true, false);
+    	logger.info(results.toString());
+    	Assert.assertTrue(results.size() > 0);
+	}
+	
+	@Test
+    @Transactional
+    public void searchContainerCodesByContainerValue_rightLike() throws Exception{
+    	ContainerValueRequestDTO requestDTO = new ContainerValueRequestDTO();
+    	requestDTO.setContainerType("container");
+    	requestDTO.setContainerKind("plate");;
+    	requestDTO.setStateType("metadata");
+    	requestDTO.setStateKind("information");
+    	requestDTO.setValueType("codeValue");
+    	requestDTO.setValueKind("created user");
+    	requestDTO.setValue("bo");
+    	String json = requestDTO.toJson();
+    	Collection<String> results = containerService.getContainersByContainerValue(requestDTO, true, true);
     	logger.info(results.toString());
     	Assert.assertTrue(results.size() > 0);
 	}

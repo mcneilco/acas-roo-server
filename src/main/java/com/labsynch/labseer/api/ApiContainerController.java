@@ -449,12 +449,14 @@ public class ApiContainerController {
     		@RequestParam(value="labelType", required=false) String labelType,
     		@RequestParam(value="labelKind", required=false) String labelKind,
     		@RequestParam(value="like", required=false) Boolean like,
+    		@RequestParam(value="rightLike", required=false) Boolean rightLike,
     		@RequestParam(value="maxResults", required=false) Integer maxResults) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (like == null) like = false;
+        if (rightLike == null) rightLike = false;
         try{
-        	Collection<CodeLabelDTO> searchResults = containerService.getContainerCodesByLabels(labelTexts, containerType, containerKind, labelType, labelKind, like);
+        	Collection<CodeLabelDTO> searchResults = containerService.getContainerCodesByLabels(labelTexts, containerType, containerKind, labelType, labelKind, like, rightLike);
             if (maxResults != null && maxResults > 0 && searchResults.size() > maxResults){
             	ContainerQueryResultDTO resultDTO = new ContainerQueryResultDTO();
             	resultDTO.setMaxResults(maxResults);
@@ -821,13 +823,15 @@ public class ApiContainerController {
     @ResponseBody
     public ResponseEntity<java.lang.String> getContainersByContainerValue(@RequestBody String json,
     		@RequestParam(value="like", required=false) Boolean like,
+    		@RequestParam(value="rightLike", required=false) Boolean rightLike,
     		@RequestParam(value="maxResults", required=false) Integer maxResults) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         if (like == null) like = false;
+        if (rightLike == null) rightLike = false;
         try{
         	ContainerValueRequestDTO requestDTO = ContainerValueRequestDTO.fromJsonToContainerValueRequestDTO(json);
-        	Collection<String> searchResults = containerService.getContainersByContainerValue(requestDTO, like);
+        	Collection<String> searchResults = containerService.getContainersByContainerValue(requestDTO, like, rightLike);
             if (maxResults != null && maxResults > 0 && searchResults.size() > maxResults){
             	ContainerQueryResultDTO resultDTO = new ContainerQueryResultDTO();
             	resultDTO.setMaxResults(maxResults);
