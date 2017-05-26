@@ -2565,64 +2565,105 @@ public class ContainerServiceImpl implements ContainerService {
 		else if (!requestDTO.getValueType().equals("stringValue") && !requestDTO.getValueType().equals("codeValue")) throw new Exception("Only value types of stringValue or codeValue are accepted"); 
 		if (requestDTO.getValue() == null) throw new Exception("Value must be specified");
 		
-		EntityManager em = Container.entityManager();
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> criteria = cb.createQuery(String.class);
-		Root<Container> containerRoot = criteria.from(Container.class);
-		criteria.select(containerRoot.<String>get("codeName"));
-		criteria.distinct(true);
-		Predicate[] predicates = new Predicate[0];
-		List<Predicate> predicateList = new ArrayList<Predicate>();
-		
-		Predicate containerType = cb.equal(containerRoot.<String>get("lsType"), requestDTO.getContainerType());
-		Predicate containerKind = cb.equal(containerRoot.<String>get("lsKind"), requestDTO.getContainerKind());
-		Predicate containerNotIgnored = cb.not(containerRoot.<Boolean>get("ignored"));
-		Predicate containerPredicate = cb.and(containerType, containerKind, containerNotIgnored);
-		predicateList.add(containerPredicate);
-		
-		Join<Container, ContainerState> containerState = containerRoot.join("lsStates");
-		Predicate stateType = cb.equal(containerState.<String>get("lsType"), requestDTO.getStateType());
-		Predicate stateKind = cb.equal(containerState.<String>get("lsKind"), requestDTO.getStateKind());
-		Predicate stateNotIgnored = cb.not(containerState.<Boolean>get("ignored"));
-		Predicate statePredicate = cb.and(stateType, stateKind, stateNotIgnored);
-		predicateList.add(statePredicate);
-		
-		Join<ContainerState, ContainerValue> containerValue = containerState.join("lsValues");
-		Predicate valueType = cb.equal(containerValue.<String>get("lsType"), requestDTO.getValueType());
-		Predicate valueKind = cb.equal(containerValue.<String>get("lsKind"), requestDTO.getValueKind());
-		Predicate valueNotIgnored = cb.not(containerValue.<Boolean>get("ignored"));
-		if (requestDTO.getValueType().equals("stringValue")){
-			Predicate stringValue;
-			if (like != null && like){
-				if (rightLike != null && rightLike){
-					stringValue = cb.like(containerValue.<String>get("stringValue"), requestDTO.getValue()+"%");
+		if (like != null && like){
+			String fullQuery = "SELECT DISTINCT container.codeName FROM Container container "
+					+ "JOIN container.lsStates containerState "
+					+ "JOIN containerState.lsValues containerValue "
+					+ "WHERE container.lsType = " + "'"+requestDTO.getContainerType()+"'"+" "
+					+ "AND container.lsKind = " + "'"+requestDTO.getContainerKind()+"'"+" "
+					+ "AND container.ignored <> true "
+					+ "AND containerState.lsType = " + "'"+requestDTO.getStateType()+"'"+" "
+					+ "AND containerState.lsKind = " + "'"+requestDTO.getStateKind()+"'"+" "
+					+ "AND containerState.ignored <> true "
+					+ "AND containerValue.lsType = " + "'"+requestDTO.getValueType()+"'"+" "
+					+ "AND containerValue.lsKind = " + "'"+requestDTO.getValueKind()+"'"+" "
+					+ "AND containerValue.ignored <> true ";
+			if (requestDTO.getValueType().equals("stringValue")){
+				if (like != null && like){
+					if (rightLike != null && rightLike){
+						fullQuery += "AND containerValue.stringValue LIKE " + "'"+requestDTO.getValue()+"%'";
+					}else{
+						fullQuery += "AND containerValue.stringValue LIKE " + "'%"+requestDTO.getValue()+"%'";
+					}
 				}else{
-					stringValue = cb.like(containerValue.<String>get("stringValue"), "%"+requestDTO.getValue()+"%");
+					fullQuery += "AND containerValue.stringValue = " + "'"+requestDTO.getValue()+"'";
 				}
-			}else{
-				stringValue = cb.equal(containerValue.<String>get("stringValue"), requestDTO.getValue());
-			}
-			Predicate valuePredicate = cb.and(valueType,valueKind, valueNotIgnored, stringValue);
-			predicateList.add(valuePredicate);
-		}else if(requestDTO.getValueType().equals("codeValue")){
-			Predicate codeValue;
-			if (like != null && like){
-				if (rightLike != null && rightLike){
-					codeValue = cb.like(containerValue.<String>get("codeValue"), requestDTO.getValue()+"%");
+			}else if (requestDTO.getValueType().equals("codeValue")){
+				if (like != null && like){
+					if (rightLike != null && rightLike){
+						fullQuery += "AND containerValue.codeValue LIKE " + "'"+requestDTO.getValue()+"%'";
+					}else{
+						fullQuery += "AND containerValue.codeValue LIKE " + "'%"+requestDTO.getValue()+"%'";
+					}
 				}else{
-					codeValue = cb.like(containerValue.<String>get("codeValue"), "%"+requestDTO.getValue()+"%");
+					fullQuery += "AND containerValue.codeValue = " + "'"+requestDTO.getValue()+"'";
 				}
-			}else{
-				codeValue = cb.equal(containerValue.<String>get("codeValue"), requestDTO.getValue());
 			}
-			Predicate valuePredicate = cb.and(valueType,valueKind, valueNotIgnored, codeValue);
-			predicateList.add(valuePredicate);
+			if (logger.isDebugEnabled()) logger.debug(fullQuery);
+			EntityManager em = Container.entityManager();
+			TypedQuery<String> q = em.createQuery(fullQuery, String.class);
+			
+			return q.getResultList();
+		}else{
+			EntityManager em = Container.entityManager();
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<String> criteria = cb.createQuery(String.class);
+			Root<Container> containerRoot = criteria.from(Container.class);
+			criteria.select(containerRoot.<String>get("codeName"));
+			criteria.distinct(true);
+			Predicate[] predicates = new Predicate[0];
+			List<Predicate> predicateList = new ArrayList<Predicate>();
+			
+			Predicate containerType = cb.equal(containerRoot.<String>get("lsType"), requestDTO.getContainerType());
+			Predicate containerKind = cb.equal(containerRoot.<String>get("lsKind"), requestDTO.getContainerKind());
+			Predicate containerNotIgnored = cb.not(containerRoot.<Boolean>get("ignored"));
+			Predicate containerPredicate = cb.and(containerType, containerKind, containerNotIgnored);
+			predicateList.add(containerPredicate);
+			
+			Join<Container, ContainerState> containerState = containerRoot.join("lsStates");
+			Predicate stateType = cb.equal(containerState.<String>get("lsType"), requestDTO.getStateType());
+			Predicate stateKind = cb.equal(containerState.<String>get("lsKind"), requestDTO.getStateKind());
+			Predicate stateNotIgnored = cb.not(containerState.<Boolean>get("ignored"));
+			Predicate statePredicate = cb.and(stateType, stateKind, stateNotIgnored);
+			predicateList.add(statePredicate);
+			
+			Join<ContainerState, ContainerValue> containerValue = containerState.join("lsValues");
+			Predicate valueType = cb.equal(containerValue.<String>get("lsType"), requestDTO.getValueType());
+			Predicate valueKind = cb.equal(containerValue.<String>get("lsKind"), requestDTO.getValueKind());
+			Predicate valueNotIgnored = cb.not(containerValue.<Boolean>get("ignored"));
+			if (requestDTO.getValueType().equals("stringValue")){
+				Predicate stringValue;
+				if (like != null && like){
+					if (rightLike != null && rightLike){
+						stringValue = cb.like(containerValue.<String>get("stringValue"), requestDTO.getValue()+"%");
+					}else{
+						stringValue = cb.like(containerValue.<String>get("stringValue"), "%"+requestDTO.getValue()+"%");
+					}
+				}else{
+					stringValue = cb.equal(containerValue.<String>get("stringValue"), requestDTO.getValue());
+				}
+				Predicate valuePredicate = cb.and(valueType,valueKind, valueNotIgnored, stringValue);
+				predicateList.add(valuePredicate);
+			}else if(requestDTO.getValueType().equals("codeValue")){
+				Predicate codeValue;
+				if (like != null && like){
+					if (rightLike != null && rightLike){
+						codeValue = cb.like(containerValue.<String>get("codeValue"), requestDTO.getValue()+"%");
+					}else{
+						codeValue = cb.like(containerValue.<String>get("codeValue"), "%"+requestDTO.getValue()+"%");
+					}
+				}else{
+					codeValue = cb.equal(containerValue.<String>get("codeValue"), requestDTO.getValue());
+				}
+				Predicate valuePredicate = cb.and(valueType,valueKind, valueNotIgnored, codeValue);
+				predicateList.add(valuePredicate);
+			}
+			predicates = predicateList.toArray(predicates);
+			criteria.where(cb.and(predicates));
+			TypedQuery<String> q = em.createQuery(criteria);
+			
+			return q.getResultList();
 		}
-		predicates = predicateList.toArray(predicates);
-		criteria.where(cb.and(predicates));
-		TypedQuery<String> q = em.createQuery(criteria);
-		
-		return q.getResultList();
 	}
 	
 	@Override
