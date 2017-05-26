@@ -1,4 +1,4 @@
-FROM mcneilco/tomcat-maven
+FROM mcneilco/tomcat-maven:feature-inventory
 WORKDIR /src
 ENV CATALINA_HOME /usr/local/tomcat
 ENV PATH $CATALINA_HOME/bin:$PATH
