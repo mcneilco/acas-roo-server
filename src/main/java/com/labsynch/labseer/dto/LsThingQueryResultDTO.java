@@ -49,7 +49,7 @@ public class LsThingQueryResultDTO {
 
     @Transactional
     public String toJsonStub() {
-        return new JSONSerializer().exclude("*.class", "results.lsStates.lsThing").include("results.lsTags", "results.lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "results.lsStates").include("results.lsTags", "results.lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(this);
     }
 	
 }

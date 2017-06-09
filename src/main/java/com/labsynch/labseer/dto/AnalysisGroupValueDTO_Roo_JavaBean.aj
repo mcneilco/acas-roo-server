@@ -15,14 +15,6 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
         this.id = id;
     }
     
-    public Long AnalysisGroupValueDTO.getStateId() {
-        return this.stateId;
-    }
-    
-    public void AnalysisGroupValueDTO.setStateId(Long stateId) {
-        this.stateId = stateId;
-    }
-    
     public Long AnalysisGroupValueDTO.getProtocolId() {
         return this.protocolId;
     }
@@ -63,22 +55,6 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
         this.experimentName = experimentName;
     }
     
-    public Long AnalysisGroupValueDTO.getAgId() {
-        return this.agId;
-    }
-    
-    public void AnalysisGroupValueDTO.setAgId(Long agId) {
-        this.agId = agId;
-    }
-    
-    public Long AnalysisGroupValueDTO.getAgStateId() {
-        return this.agStateId;
-    }
-    
-    public void AnalysisGroupValueDTO.setAgStateId(Long agStateId) {
-        this.agStateId = agStateId;
-    }
-    
     public String AnalysisGroupValueDTO.getLsType() {
         return this.lsType;
     }
@@ -101,14 +77,6 @@ privileged aspect AnalysisGroupValueDTO_Roo_JavaBean {
     
     public void AnalysisGroupValueDTO.setTestedLot(String testedLot) {
         this.testedLot = testedLot;
-    }
-    
-    public String AnalysisGroupValueDTO.getGeneId() {
-        return this.geneId;
-    }
-    
-    public void AnalysisGroupValueDTO.setGeneId(String geneId) {
-        this.geneId = geneId;
     }
     
     public String AnalysisGroupValueDTO.getResult() {

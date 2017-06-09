@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +38,12 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentDataDTO;
@@ -1080,6 +1084,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 		if (propertiesUtilService.getRestrictExperiments()){
 			Collection<LsThing> projects = authorService.getUserProjects(userName);
 			List<String> allowedProjectCodeNames = new ArrayList<String>();
+			allowedProjectCodeNames.add("unassigned");
 			for (LsThing project : projects){
 				allowedProjectCodeNames.add(project.getCodeName());
 			}
