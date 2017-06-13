@@ -14,9 +14,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.openscience.cdk.depict.Depiction;
 import org.openscience.cdk.depict.DepictionGenerator;
@@ -33,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.MolPropertiesDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -114,9 +112,9 @@ public class StructureServiceImpl implements StructureService {
 	}
 
 	@Override
-	public Structure saveStructure(Structure structure) throws IOException, CDKException{
+	public ChemStructure saveStructure(ChemStructure structure) throws IOException, CDKException{
 		logger.debug(structure.toJson());
-		Structure newStructure = new Structure(structure);
+		ChemStructure newStructure = new ChemStructure(structure);
 		logger.debug(newStructure.toJson());
 		if (structure.getCodeName() == null){
 			String thingTypeAndKind = "structure_chemical";
@@ -130,8 +128,8 @@ public class StructureServiceImpl implements StructureService {
 	}
 
 	@Override
-	public Structure updateStructure(Structure structure) {
-		Structure updatedStructure = Structure.update(structure);
+	public ChemStructure updateStructure(ChemStructure structure) {
+		ChemStructure updatedStructure = ChemStructure.update(structure);
 		return updatedStructure;
 	}
 	
@@ -146,15 +144,15 @@ public class StructureServiceImpl implements StructureService {
 	@Override
 	public byte[] renderStructureByCodeName(String codeName, Integer height,
 			Integer width, String format) throws IOException, CDKException {
-		Structure structure = Structure.findStructureByCodeName(codeName);
+		ChemStructure structure = ChemStructure.findStructureByCodeName(codeName);
 		return renderMolStructure(structure.getMolStructure(), height, width, format);
 	}
 
 	@Override
-	public Collection<Structure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType, Integer maxResults, Float similarity){
+	public Collection<ChemStructure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType, Integer maxResults, Float similarity){
 		String chemistryPackage = propertiesUtilService.getChemistryPackage();
 		if (chemistryPackage == null) chemistryPackage = "rdkit";
-		Collection<Structure> searchResults = new HashSet<Structure>();
+		Collection<ChemStructure> searchResults = new HashSet<ChemStructure>();
 		if (chemistryPackage.equalsIgnoreCase("rdkit")){
 			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")){
 				searchResults = rdkitSubstructureSearch(queryMol, maxResults);
@@ -169,13 +167,13 @@ public class StructureServiceImpl implements StructureService {
 		return searchResults;
 	}
 	
-	private Collection<Structure> rdkitExactSearch(String queryMol, String lsType, String lsKind, Integer maxResults) {
+	private Collection<ChemStructure> rdkitExactSearch(String queryMol, String lsType, String lsKind, Integer maxResults) {
 		if (lsType == null && lsKind == null){
 			return (rdkitExactSearchNoTypeKind(queryMol, maxResults));
 		} else {
 			String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring)) AND ls_type = :lsType AND ls_kind = :lsKind";
-			EntityManager em = Structure.entityManager();
-			Query q = em.createNativeQuery(queryString, Structure.class);
+			EntityManager em = ChemStructure.entityManager();
+			Query q = em.createNativeQuery(queryString, ChemStructure.class);
 			q.setParameter("queryMol", queryMol);
 			q.setParameter("lsType", lsType);
 			q.setParameter("lsKind", lsKind);
@@ -184,20 +182,20 @@ public class StructureServiceImpl implements StructureService {
 		}
 	}
 	
-	private Collection<Structure> rdkitExactSearchNoTypeKind(String queryMol, Integer maxResults) {
+	private Collection<ChemStructure> rdkitExactSearchNoTypeKind(String queryMol, Integer maxResults) {
 		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring))";
-		EntityManager em = Structure.entityManager();
-		Query q = em.createNativeQuery(queryString, Structure.class);
+		EntityManager em = ChemStructure.entityManager();
+		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
 		if (maxResults != null) q.setMaxResults(maxResults);
 		return q.getResultList();
 	}
 
 	@Override
-	public Collection<Structure> searchStructures(String queryMol, String searchType, Integer maxResults, Float similarity){
+	public Collection<ChemStructure> searchStructures(String queryMol, String searchType, Integer maxResults, Float similarity){
 		String chemistryPackage = propertiesUtilService.getChemistryPackage();
 		if (chemistryPackage == null) chemistryPackage = "rdkit";
-		Collection<Structure> searchResults = new HashSet<Structure>();
+		Collection<ChemStructure> searchResults = new HashSet<ChemStructure>();
 		if (chemistryPackage.equalsIgnoreCase("rdkit")){
 			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")){
 				searchResults = rdkitSubstructureSearch(queryMol, maxResults);
@@ -225,19 +223,19 @@ public class StructureServiceImpl implements StructureService {
 		return searchResults;
 	}
 
-	private Collection<Structure> rdkitExactSearch(String queryMol,
+	private Collection<ChemStructure> rdkitExactSearch(String queryMol,
 			Integer maxResults) {
 		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring))";
-		EntityManager em = Structure.entityManager();
-		Query q = em.createNativeQuery(queryString, Structure.class);
+		EntityManager em = ChemStructure.entityManager();
+		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
 		if (maxResults != null) q.setMaxResults(maxResults);
 		return q.getResultList();
 	}
 
-	private Collection<Structure> rdkitSimilaritySearch(String queryMol,
+	private Collection<ChemStructure> rdkitSimilaritySearch(String queryMol,
 			Float similarity, Integer maxResults) {
-		EntityManager em = Structure.entityManager();
+		EntityManager em = ChemStructure.entityManager();
 		if (similarity != null){
 			String similarityQueryString = "set rdkit.tanimoto_threshold = "+similarity.toString();
 			Query similarityQuery = em.createNativeQuery(similarityQueryString);
@@ -245,18 +243,18 @@ public class StructureServiceImpl implements StructureService {
 			logger.debug("set tanimoto threshold to "+similarity.toString());
 		}
 		String queryString = "SELECT s.* FROM Structure s JOIN get_mfp2_neighbors_mol(mol_from_ctab( CAST( :queryMol AS cstring))) similarity ON s.id = similarity.id";
-		Query q = em.createNativeQuery(queryString, Structure.class);
+		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
 		if (maxResults != null) q.setMaxResults(maxResults);
 		return q.getResultList();
 	}
 
-	private Collection<Structure> rdkitSubstructureSearch(String queryMol,
+	private Collection<ChemStructure> rdkitSubstructureSearch(String queryMol,
 			Integer maxResults) {
 		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
 		logger.info("query string " + queryString);
-		EntityManager em = Structure.entityManager();
-		Query q = em.createNativeQuery(queryString, Structure.class);
+		EntityManager em = ChemStructure.entityManager();
+		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
 		if (maxResults != null) q.setMaxResults(maxResults);
 		return q.getResultList();
@@ -264,18 +262,18 @@ public class StructureServiceImpl implements StructureService {
 
 	private Collection<String> rdkitSubstructureSearchCodes(String queryMol, Integer maxResults) {
 		String queryString = "SELECT s.code_name FROM structure s WHERE s.ignored <> '1' AND rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
-		EntityManager em = Structure.entityManager();
+		EntityManager em = ChemStructure.entityManager();
 		Query q = em.createNativeQuery(queryString);
 		q.setParameter("queryMol", queryMol);
 		if (maxResults != null) q.setMaxResults(maxResults);
 		return q.getResultList();
 	}
 	
-	private Collection<Structure> substructureSearchInLsThingList(String queryMol, List<Long> thingIdList,
+	private Collection<ChemStructure> substructureSearchInLsThingList(String queryMol, List<Long> thingIdList,
 			Integer maxResults) {
 		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
-		EntityManager em = Structure.entityManager();
-		Query q = em.createNativeQuery(queryString, Structure.class);
+		EntityManager em = ChemStructure.entityManager();
+		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
 		if (maxResults != null) q.setMaxResults(maxResults);
 		return q.getResultList();

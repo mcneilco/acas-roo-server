@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.openscience.cdk.exception.CDKException;
 import org.springframework.stereotype.Service;
 
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.MolPropertiesDTO;
 
 @Service
@@ -16,19 +16,19 @@ public interface StructureService {
 
 	MolPropertiesDTO calculateMoleculeProperties(String molStructure) throws IOException, CDKException;
 
-	Structure saveStructure(Structure structure) throws IOException, CDKException;
+	ChemStructure saveStructure(ChemStructure structure) throws IOException, CDKException;
 
-	Structure updateStructure(Structure structure);
+	ChemStructure updateStructure(ChemStructure structure);
 
 	byte[] renderStructureByCodeName(String codeName, Integer height,
 			Integer width, String format) throws IOException, CDKException;
 
-	Collection<Structure> searchStructures(String queryMol, String searchType,
+	Collection<ChemStructure> searchStructures(String queryMol, String searchType,
 			Integer maxResults, Float similarity);
 
 	Collection<String> searchStructuresCodes(String queryMol, String searchType, Integer maxResults, Float similarity);
 
-	Collection<Structure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType,
+	Collection<ChemStructure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType,
 			Integer maxResults, Float similarity);
 
 	String renderMolStructureBase64(String molStructure, Integer hSize, Integer wSize, String format)

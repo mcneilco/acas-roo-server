@@ -3,13 +3,13 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-privileged aspect Structure_Roo_ToString {
+privileged aspect ChemStructure_Roo_ToString {
     
-    public String Structure.toString() {
+    public String ChemStructure.toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     

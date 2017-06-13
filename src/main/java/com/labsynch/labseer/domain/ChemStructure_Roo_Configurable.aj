@@ -3,11 +3,11 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import org.springframework.beans.factory.annotation.Configurable;
 
-privileged aspect Structure_Roo_Configurable {
+privileged aspect ChemStructure_Roo_Configurable {
     
-    declare @type: Structure: @Configurable;
+    declare @type: ChemStructure: @Configurable;
     
 }

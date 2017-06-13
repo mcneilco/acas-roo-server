@@ -3,7 +3,6 @@ package com.labsynch.labseer.domain;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,65 +21,63 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "STRUCTURE_PKSEQ", finders={"findStructuresByCodeNameEquals"})
-public class Structure {
+@RooJpaActiveRecord(sequenceName = "CHEM_STRUCTURE_PKSEQ", finders = { "findChemStructureByCodeNameEquals", "findChemStructuresByCodeNameEquals" })
+public class ChemStructure {
 
-	private static final Logger logger = LoggerFactory.getLogger(Structure.class);
+    private static final Logger logger = LoggerFactory.getLogger(ChemStructure.class);
 
-	@Id
-    @SequenceGenerator(name = "structureGen", sequenceName = "STRUCTURE_PKSEQ")
+    @Id
+    @SequenceGenerator(name = "structureGen", sequenceName = "CHEM_STRUCTURE_PKSEQ")
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "structureGen")
     @Column(name = "id")
     private Long id;
-	
-	@NotNull
-	@Column(unique=true)
-	private String codeName;
-	
-	@Version
+
+    @NotNull
+    @Column(unique = true)
+    private String codeName;
+
+    @Version
     @Column(name = "version")
     private Integer version;
-	
-    @NotNull
-    @Column(columnDefinition="text")
-    private String molStructure;
-    
-    @Size(max=1000)
-    private String smiles;
-    
-	//@NotNull
-	@Size(max = 255)
-	private String lsType;
-	
-	//@NotNull
-	@Size(max = 255)
-	private String lsKind;	
 
-	@Size(max = 255)
-	private String lsTypeAndKind;
-    
+    @NotNull
+    @Column(columnDefinition = "text")
+    private String molStructure;
+
+    @Size(max = 1000)
+    private String smiles;
+
+    @Size(max = 255)
+    private String lsType;
+
+    @Size(max = 255)
+    private String lsKind;
+
+    @Size(max = 255)
+    private String lsTypeAndKind;
+
     @NotNull
     private boolean ignored;
-    
+
     @NotNull
     private boolean deleted;
-    
+
     @NotNull
     private String recordedBy;
-    
+
     @NotNull
     private Date recordedDate;
-    
+
     private String modifiedBy;
-    
+
     private Date modifiedDate;
-    
+
     private Long lsTransaction;
-    
-    public Structure (Structure structure) {
-    	this.setCodeName(structure.getCodeName());
-    	this.setLsType(structure.getLsType());
-    	this.setLsKind(structure.getLsKind());
+
+    public ChemStructure(com.labsynch.labseer.domain.ChemStructure structure) {
+        this.setCodeName(structure.getCodeName());
+        this.setLsType(structure.getLsType());
+        this.setLsKind(structure.getLsKind());
         this.setMolStructure(structure.getMolStructure());
         this.setSmiles(structure.getSmiles());
         this.setIgnored(structure.isIgnored());
@@ -92,9 +89,9 @@ public class Structure {
         this.setModifiedDate(structure.getModifiedDate());
         this.setLsTransaction(structure.getLsTransaction());
     }
-    
-    public static Structure update(Structure structure) {
-        Structure updatedStructure = Structure.findStructure(structure.getId());
+
+    public static com.labsynch.labseer.domain.ChemStructure update(com.labsynch.labseer.domain.ChemStructure structure) {
+        ChemStructure updatedStructure = ChemStructure.findChemStructure(structure.getId());
         updatedStructure.setMolStructure(structure.getMolStructure());
         updatedStructure.setSmiles(structure.getSmiles());
         updatedStructure.setIgnored(structure.isIgnored());
@@ -106,27 +103,27 @@ public class Structure {
         updatedStructure.setModifiedDate(structure.getModifiedDate());
         updatedStructure.setLsTransaction(structure.getLsTransaction());
         updatedStructure.merge();
-        updatedStructure.setVersion(Structure.findStructure(structure.getId()).getVersion());
-        return updatedStructure;
+        return structure;
     }
 
-	public Long getId() {
+    public Long getId() {
         return this.id;
     }
 
-	public void setId(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-	public Integer getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-	public void setVersion(Integer version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
-	
-	public static Structure findStructureByCodeName(String codeName){
-		return Structure.findStructuresByCodeNameEquals(codeName).getSingleResult();
-	}
+
+    public static com.labsynch.labseer.domain.ChemStructure findStructureByCodeName(String codeName) {
+    	ChemStructure result = ChemStructure.findChemStructuresByCodeNameEquals(codeName).getSingleResult();
+    	return result;
+    }
 }

@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS rdkit;
 
-CREATE TABLE IF NOT EXISTS structure
+CREATE TABLE IF NOT EXISTS chem_structure
 (
   id bigint NOT NULL,
   code_name character varying(255) NOT NULL,
@@ -15,15 +15,15 @@ CREATE TABLE IF NOT EXISTS structure
   ls_transaction bigint,
   version integer,
   rdkmol mol,
-  CONSTRAINT structure_pkey PRIMARY KEY (id),
-  CONSTRAINT structure_code_name_key UNIQUE (code_name)
+  CONSTRAINT chem_structure_pkey PRIMARY KEY (id),
+  CONSTRAINT chem_structure_code_name_key UNIQUE (code_name)
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE structure
+ALTER TABLE chem_structure
   OWNER TO acas;
-GRANT ALL ON TABLE structure TO acas;
+GRANT ALL ON TABLE chem_structure TO acas;
 
 
 DO
@@ -34,17 +34,17 @@ BEGIN
    SELECT INTO _kind  c.relkind
    FROM   pg_class     c
    JOIN   pg_namespace n ON n.oid = c.relnamespace
-   WHERE  c.relname = 'structure_pkseq'      -- sequence name here
+   WHERE  c.relname = 'chem_structure_pkseq'      -- sequence name here
    AND    n.nspname = 'acas';  -- schema name here
 
    IF NOT FOUND THEN       -- name is free
-      CREATE SEQUENCE structure_pkseq
+      CREATE SEQUENCE chem_structure_pkseq
   		START WITH 1
   		INCREMENT BY 1
   		NO MINVALUE
   		NO MAXVALUE
   		CACHE 1;
-	  ALTER TABLE structure_pkseq
+	  ALTER TABLE chem_structure_pkseq
   		OWNER TO acas;
    ELSIF _kind = 'S' THEN  -- sequence exists
       -- do nothing?
@@ -62,12 +62,12 @@ BEGIN
    SELECT INTO _kind  c.relkind
    FROM   pg_class     c
    JOIN   pg_namespace n ON n.oid = c.relnamespace
-   WHERE  c.relname = 'structure_pkseq'      -- sequence name here
+   WHERE  c.relname = 'chem_structure_pkseq'      -- sequence name here
    AND    n.nspname = 'acas';  -- schema name here
 
    IF NOT FOUND THEN       -- name is free
-      CREATE INDEX structure_mol_structure
-  		ON structure(mol_structure);
+      CREATE INDEX chem_structure_mol_structure
+  		ON chem_structure(mol_structure);
    ELSIF _kind = 'I' THEN  -- index exists
       -- do nothing?
    ELSE                    -- conflicting object of different type exists
@@ -84,12 +84,12 @@ BEGIN
    SELECT INTO _kind  c.relkind
    FROM   pg_class     c
    JOIN   pg_namespace n ON n.oid = c.relnamespace
-   WHERE  c.relname = 'structure_pkseq'      -- sequence name here
+   WHERE  c.relname = 'chem_structure_pkseq'      -- sequence name here
    AND    n.nspname = 'acas';  -- schema name here
 
    IF NOT FOUND THEN       -- name is free
-   	CREATE INDEX structure_smiles
-  		ON structure(smiles);
+   	CREATE INDEX chem_structure_smiles
+  		ON chem_structure(smiles);
    ELSIF _kind = 'I' THEN  -- index exists
       -- do nothing?
    ELSE                    -- conflicting object of different type exists
@@ -111,7 +111,7 @@ BEGIN
 
    IF NOT FOUND THEN       -- name is free
    	CREATE INDEX rdk_mols_idx
-  		ON structure USING gist(rdkmol);
+  		ON chem_structure USING gist(rdkmol);
    ELSIF _kind = 'I' THEN  -- index exists
       -- do nothing?
    ELSE                    -- conflicting object of different type exists
@@ -121,7 +121,7 @@ END
 $do$;
 
 --fingerprint table
-CREATE TABLE IF NOT EXISTS structure_fps
+CREATE TABLE IF NOT EXISTS chem_structure_fps
 (
 	id bigint NOT NULL,
 	torsionbv bfp,
@@ -131,9 +131,9 @@ CREATE TABLE IF NOT EXISTS structure_fps
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE structure
+ALTER TABLE chem_structure
   OWNER TO acas;
-GRANT ALL ON TABLE structure_fps TO acas;
+GRANT ALL ON TABLE chem_structure_fps TO acas;
 
 --fingerprint indexes
 DO
@@ -149,7 +149,7 @@ BEGIN
 
    IF NOT FOUND THEN       -- name is free
    	CREATE INDEX fps_ttbv_idx
-  		ON structure_fps USING gist(torsionbv);
+  		ON chem_structure_fps USING gist(torsionbv);
    ELSIF _kind = 'I' THEN  -- index exists
       -- do nothing?
    ELSE                    -- conflicting object of different type exists
@@ -171,7 +171,7 @@ BEGIN
 
    IF NOT FOUND THEN       -- name is free
    	CREATE INDEX fps_mfp2_idx
-  		ON structure_fps USING gist(mfp2);
+  		ON chem_structure_fps USING gist(mfp2);
    ELSIF _kind = 'I' THEN  -- index exists
       -- do nothing?
    ELSE                    -- conflicting object of different type exists
@@ -193,7 +193,7 @@ BEGIN
 
    IF NOT FOUND THEN       -- name is free
    	CREATE INDEX fps_ffp2_idx
-  		ON structure_fps USING gist(ffp2);
+  		ON chem_structure_fps USING gist(ffp2);
    ELSIF _kind = 'I' THEN  -- index exists
       -- do nothing?
    ELSE                    -- conflicting object of different type exists
@@ -207,7 +207,7 @@ CREATE OR REPLACE FUNCTION build_rdkmol_func () RETURNS trigger AS '
 	BEGIN
 		NEW.rdkmol = mol_from_ctab(NEW.mol_structure::cstring);
 		NEW.smiles = mol_to_smiles(NEW.rdkmol);
-		INSERT INTO structure_fps(id, torsionbv, mfp2, ffp2)
+		INSERT INTO chem_structure_fps(id, torsionbv, mfp2, ffp2)
 		VALUES (NEW.id, torsionbv_fp(NEW.rdkmol), morganbv_fp(NEW.rdkmol), featmorganbv_fp(NEW.rdkmol));
 		RETURN NEW;
 	END;
@@ -226,7 +226,7 @@ BEGIN
 
    IF NOT FOUND THEN       -- name is free
    	CREATE TRIGGER build_rdkmol_trg BEFORE INSERT OR UPDATE
-   		ON structure FOR EACH ROW
+   		ON chem_structure FOR EACH ROW
    		EXECUTE PROCEDURE build_rdkmol_func ();
    ELSIF _kind = 'I' THEN  -- index exists
       -- do nothing?
@@ -241,7 +241,7 @@ create or replace function get_mfp2_neighbors_smiles(smiles text)
     returns table(id bigint, rdkmol mol, similarity double precision) as
   $$
   select id,rdkmol,tanimoto_sml(morganbv_fp(mol_from_smiles($1::cstring)),mfp2) as similarity
-  from structure_fps join structure using (id)
+  from chem_structure_fps join chem_structure using (id)
   where morganbv_fp(mol_from_smiles($1::cstring))%mfp2
   order by morganbv_fp(mol_from_smiles($1::cstring))<%>mfp2;
   $$ language sql stable ;
@@ -250,7 +250,7 @@ create or replace function get_mfp2_neighbors_mol(queryMol mol)
     returns table(id bigint, rdkmol mol, similarity double precision) as
   $$
   select id,rdkmol,tanimoto_sml(morganbv_fp($1),mfp2) as similarity
-  from structure_fps join structure using (id)
+  from chem_structure_fps join chem_structure using (id)
   where morganbv_fp($1)%mfp2
   order by morganbv_fp($1)<%>mfp2;
   $$ language sql stable ;

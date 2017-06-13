@@ -50,7 +50,7 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeTypeKindDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
@@ -2085,10 +2085,10 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, String searchType, Integer maxResults, Float similarity){
 		Collection<LsThing> lsThings = new HashSet<LsThing>();
-		Collection<Structure> structures = structureService.searchStructuresByTypeKind(queryMol, lsType, lsKind, searchType, maxResults, similarity);
+		Collection<ChemStructure> structures = structureService.searchStructuresByTypeKind(queryMol, lsType, lsKind, searchType, maxResults, similarity);
 		if (structures != null && !structures.isEmpty()){
 			List<String> structureCodes = new ArrayList<String>();
-			for (Structure structure : structures){
+			for (ChemStructure structure : structures){
 				structureCodes.add(structure.getCodeName());
 			}
 			lsThings = findLsThingsByStructureCodes(structureCodes);

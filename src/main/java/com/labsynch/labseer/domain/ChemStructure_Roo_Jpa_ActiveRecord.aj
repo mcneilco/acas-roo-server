@@ -3,73 +3,73 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
-privileged aspect Structure_Roo_Jpa_ActiveRecord {
+privileged aspect ChemStructure_Roo_Jpa_ActiveRecord {
     
     @PersistenceContext
-    transient EntityManager Structure.entityManager;
+    transient EntityManager ChemStructure.entityManager;
     
-    public static final EntityManager Structure.entityManager() {
-        EntityManager em = new Structure().entityManager;
+    public static final EntityManager ChemStructure.entityManager() {
+        EntityManager em = new ChemStructure().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
         return em;
     }
     
-    public static long Structure.countStructures() {
-        return entityManager().createQuery("SELECT COUNT(o) FROM Structure o", Long.class).getSingleResult();
+    public static long ChemStructure.countChemStructures() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ChemStructure o", Long.class).getSingleResult();
     }
     
-    public static List<Structure> Structure.findAllStructures() {
-        return entityManager().createQuery("SELECT o FROM Structure o", Structure.class).getResultList();
+    public static List<ChemStructure> ChemStructure.findAllChemStructures() {
+        return entityManager().createQuery("SELECT o FROM ChemStructure o", ChemStructure.class).getResultList();
     }
     
-    public static Structure Structure.findStructure(Long id) {
+    public static ChemStructure ChemStructure.findChemStructure(Long id) {
         if (id == null) return null;
-        return entityManager().find(Structure.class, id);
+        return entityManager().find(ChemStructure.class, id);
     }
     
-    public static List<Structure> Structure.findStructureEntries(int firstResult, int maxResults) {
-        return entityManager().createQuery("SELECT o FROM Structure o", Structure.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    public static List<ChemStructure> ChemStructure.findChemStructureEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ChemStructure o", ChemStructure.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional
-    public void Structure.persist() {
+    public void ChemStructure.persist() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.persist(this);
     }
     
     @Transactional
-    public void Structure.remove() {
+    public void ChemStructure.remove() {
         if (this.entityManager == null) this.entityManager = entityManager();
         if (this.entityManager.contains(this)) {
             this.entityManager.remove(this);
         } else {
-            Structure attached = Structure.findStructure(this.id);
+            ChemStructure attached = ChemStructure.findChemStructure(this.id);
             this.entityManager.remove(attached);
         }
     }
     
     @Transactional
-    public void Structure.flush() {
+    public void ChemStructure.flush() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.flush();
     }
     
     @Transactional
-    public void Structure.clear() {
+    public void ChemStructure.clear() {
         if (this.entityManager == null) this.entityManager = entityManager();
         this.entityManager.clear();
     }
     
     @Transactional
-    public Structure Structure.merge() {
+    public ChemStructure ChemStructure.merge() {
         if (this.entityManager == null) this.entityManager = entityManager();
-        Structure merged = this.entityManager.merge(this);
+        ChemStructure merged = this.entityManager.merge(this);
         this.entityManager.flush();
         return merged;
     }

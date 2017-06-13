@@ -3,14 +3,14 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import javax.persistence.Entity;
 
-privileged aspect Structure_Roo_Jpa_Entity {
+privileged aspect ChemStructure_Roo_Jpa_Entity {
     
-    declare @type: Structure: @Entity;
+    declare @type: ChemStructure: @Entity;
     
-    public Structure.new() {
+    public ChemStructure.new() {
         super();
     }
 

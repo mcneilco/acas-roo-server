@@ -3,9 +3,6 @@ package com.labsynch.labseer.api;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.NoResultException;
-
-import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.MolPropertiesDTO;
 import com.labsynch.labseer.dto.RenderMolRequestDTO;
 import com.labsynch.labseer.dto.StructureSearchDTO;
@@ -114,7 +110,7 @@ public class ApiStructureController {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
     	try{
-    		Structure structure = Structure.findStructureByCodeName(codeName);
+    		ChemStructure structure = ChemStructure.findStructureByCodeName(codeName);
             return new ResponseEntity<String>(structure.toJson(), headers, HttpStatus.OK);
     	}catch (EmptyResultDataAccessException empty){
     		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
@@ -183,7 +179,7 @@ public class ApiStructureController {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
     	try{
-    		Structure structure = Structure.fromJsonToStructure(json);
+    		ChemStructure structure = ChemStructure.fromJsonToChemStructure(json);
     		structure = structureService.saveStructure(structure);
     		structure.flush();
             return new ResponseEntity<String>(structure.toJson(), headers, HttpStatus.CREATED);
@@ -199,13 +195,13 @@ public class ApiStructureController {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         try{
-        	Collection<Structure> structures = Structure.fromJsonArrayToStructures(json);
-            Collection<Structure> savedStructures = new ArrayList<Structure>();
-        	for (Structure structure : structures) {
-                Structure savedStructure = structureService.saveStructure(structure);
+        	Collection<ChemStructure> structures = ChemStructure.fromJsonArrayToChemStructures(json);
+            Collection<ChemStructure> savedStructures = new ArrayList<ChemStructure>();
+        	for (ChemStructure structure : structures) {
+                ChemStructure savedStructure = structureService.saveStructure(structure);
                 savedStructures.add(savedStructure);
             }
-            return new ResponseEntity<String>(Structure.toJsonArray(savedStructures), headers, HttpStatus.CREATED);
+            return new ResponseEntity<String>(ChemStructure.toJsonArray(savedStructures), headers, HttpStatus.CREATED);
         }catch (Exception e){
     		logger.error("Caught exception saving structure",e);
     		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -216,7 +212,7 @@ public class ApiStructureController {
 	@Transactional
     @RequestMapping(value = { "/{id}", "/" }, method = RequestMethod.PUT, headers = "Accept=application/json")
     public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
-        Structure structure = Structure.fromJsonToStructure(json);
+        ChemStructure structure = ChemStructure.fromJsonToChemStructure(json);
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         structure = structureService.updateStructure(structure);
@@ -231,13 +227,13 @@ public class ApiStructureController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			Collection<Structure> structures = Structure.fromJsonArrayToStructures(json);
-			Collection<Structure> updatedStructures = new ArrayList<Structure>();
-			for (Structure structure : structures) {
-				Structure updatedStructure = structureService.saveStructure(structure);
+			Collection<ChemStructure> structures = ChemStructure.fromJsonArrayToChemStructures(json);
+			Collection<ChemStructure> updatedStructures = new ArrayList<ChemStructure>();
+			for (ChemStructure structure : structures) {
+				ChemStructure updatedStructure = structureService.saveStructure(structure);
 				updatedStructures.add(updatedStructure);
 			}
-            return new ResponseEntity<String>(Structure.toJsonArray(updatedStructures), headers, HttpStatus.OK);
+            return new ResponseEntity<String>(ChemStructure.toJsonArray(updatedStructures), headers, HttpStatus.OK);
         }catch (Exception e){
     		logger.error("Caught exception updating structures",e);
     		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -246,7 +242,7 @@ public class ApiStructureController {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
-		Structure structure = Structure.findStructure(id);
+		ChemStructure structure = ChemStructure.findChemStructure(id);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		if (structure == null) {
@@ -260,7 +256,7 @@ public class ApiStructureController {
     public ResponseEntity<java.lang.String> searchStructures(@RequestBody String json) {
     	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json;charset=utf-8");
-        Collection<Structure> structures;
+        Collection<ChemStructure> structures;
         try{
         	logger.info("##################################################################");
 
@@ -273,7 +269,7 @@ public class ApiStructureController {
             	structures = structureService.searchStructures( query.getQueryMol(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
         	}
         	logger.info("number of structs found: " + structures.size());
-            return new ResponseEntity<String>(Structure.toJsonArray(structures), headers, HttpStatus.OK);
+            return new ResponseEntity<String>(ChemStructure.toJsonArray(structures), headers, HttpStatus.OK);
         }catch (Exception e){
     		logger.error("Caught exception saving structure",e);
     		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);

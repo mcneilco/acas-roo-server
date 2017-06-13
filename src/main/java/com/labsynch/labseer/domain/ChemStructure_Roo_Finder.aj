@@ -3,16 +3,16 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.Structure;
+import com.labsynch.labseer.domain.ChemStructure;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-privileged aspect Structure_Roo_Finder {
+privileged aspect ChemStructure_Roo_Finder {
     
-    public static TypedQuery<Structure> Structure.findStructuresByCodeNameEquals(String codeName) {
+    public static TypedQuery<ChemStructure> ChemStructure.findChemStructuresByCodeNameEquals(String codeName) {
         if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
-        EntityManager em = Structure.entityManager();
-        TypedQuery<Structure> q = em.createQuery("SELECT o FROM Structure AS o WHERE o.codeName = :codeName", Structure.class);
+        EntityManager em = ChemStructure.entityManager();
+        TypedQuery<ChemStructure> q = em.createQuery("SELECT o FROM ChemStructure AS o WHERE o.codeName = :codeName", ChemStructure.class);
         q.setParameter("codeName", codeName);
         return q;
     }
