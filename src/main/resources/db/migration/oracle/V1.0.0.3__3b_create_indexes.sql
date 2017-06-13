@@ -16,9 +16,6 @@ CREATE INDEX trtgrp_subj_trtgrpid_idx ON treatmentgroup_subject(treatment_group_
 CREATE INDEX trtgrp_subj_subjid_idx ON treatmentgroup_subject(subject_id);
 
 
-create index sbjlbl_sbj_fk ON subject_label(subject_id);
-create index sbjst_sbj_fk ON subject_state(subject_id);
-create index sbjvl_sbjst_fk ON subject_value(subject_state_id);
 
 create index trtgrplbl_trtgrp_fk ON treatment_group_label(treatment_group_id);
 create index trtgrpst_trtgrp_fk ON treatment_group_state(treatment_group_id);
