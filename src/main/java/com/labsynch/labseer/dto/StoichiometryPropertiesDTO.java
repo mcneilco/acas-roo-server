@@ -78,6 +78,7 @@ public class StoichiometryPropertiesDTO {
 			this.preferredName = parent.pickBestName().getLabelText();
 		}
 		List<LsThingValue> molWeightValues = SimpleUtil.pluckValueByValueTypeKind(thing, "numericValue", "molecular weight");
+
 		if (molWeightValues.size() > 0){
 			this.molWeight = molWeightValues.get(0).getNumericValue();
 		} else{
@@ -86,7 +87,10 @@ public class StoichiometryPropertiesDTO {
 				this.molWeight = molWeightValues.get(0).getNumericValue();
 			}else if (parent != null){
 				molWeightValues = SimpleUtil.pluckValueByValueTypeKind(parent, "numericValue", "molecular weight");
-				if (molWeightValues.size() > 0){
+				List<LsThingValue> duplexMolWeightValues = SimpleUtil.pluckValueByValueTypeKind(parent, "numericValue", "duplex molecular weight");
+				if (molWeightValues.size() == 0 && duplexMolWeightValues.size() > 0){
+					this.molWeight = duplexMolWeightValues.get(0).getNumericValue();
+				} else if (molWeightValues.size() > 0){
 					this.molWeight = molWeightValues.get(0).getNumericValue();
 				}else{
 					molWeightValues = SimpleUtil.pluckValueByValueTypeKind(parent, "numericValue", "measured molecular weight");
@@ -96,6 +100,9 @@ public class StoichiometryPropertiesDTO {
 				}
 			}
 		}
+ 
+		
+		
 		List<LsThingValue> densityValues = SimpleUtil.pluckValueByValueTypeKind(thing, "numericValue", "density");
 		if (densityValues.size() > 0){
 			this.density = densityValues.get(0).getNumericValue();
