@@ -171,7 +171,7 @@ public class StructureServiceImpl implements StructureService {
 		if (lsType == null && lsKind == null){
 			return (rdkitExactSearchNoTypeKind(queryMol, maxResults));
 		} else {
-			String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring)) AND ls_type = :lsType AND ls_kind = :lsKind";
+			String queryString = "SELECT s.* FROM chem_structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring)) AND ls_type = :lsType AND ls_kind = :lsKind";
 			EntityManager em = ChemStructure.entityManager();
 			Query q = em.createNativeQuery(queryString, ChemStructure.class);
 			q.setParameter("queryMol", queryMol);
@@ -183,7 +183,7 @@ public class StructureServiceImpl implements StructureService {
 	}
 	
 	private Collection<ChemStructure> rdkitExactSearchNoTypeKind(String queryMol, Integer maxResults) {
-		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring))";
+		String queryString = "SELECT s.* FROM chem_structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring))";
 		EntityManager em = ChemStructure.entityManager();
 		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
@@ -225,7 +225,7 @@ public class StructureServiceImpl implements StructureService {
 
 	private Collection<ChemStructure> rdkitExactSearch(String queryMol,
 			Integer maxResults) {
-		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring))";
+		String queryString = "SELECT s.* FROM chem_structure s WHERE rdkmol @= mol_from_ctab( CAST( :queryMol AS cstring))";
 		EntityManager em = ChemStructure.entityManager();
 		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
@@ -242,7 +242,7 @@ public class StructureServiceImpl implements StructureService {
 			similarityQuery.executeUpdate();
 			logger.debug("set tanimoto threshold to "+similarity.toString());
 		}
-		String queryString = "SELECT s.* FROM Structure s JOIN get_mfp2_neighbors_mol(mol_from_ctab( CAST( :queryMol AS cstring))) similarity ON s.id = similarity.id";
+		String queryString = "SELECT s.* FROM chem_structure s JOIN get_mfp2_neighbors_mol(mol_from_ctab( CAST( :queryMol AS cstring))) similarity ON s.id = similarity.id";
 		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
 		if (maxResults != null) q.setMaxResults(maxResults);
@@ -251,7 +251,7 @@ public class StructureServiceImpl implements StructureService {
 
 	private Collection<ChemStructure> rdkitSubstructureSearch(String queryMol,
 			Integer maxResults) {
-		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
+		String queryString = "SELECT s.* FROM chem_structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
 		logger.info("query string " + queryString);
 		EntityManager em = ChemStructure.entityManager();
 		Query q = em.createNativeQuery(queryString, ChemStructure.class);
@@ -261,7 +261,7 @@ public class StructureServiceImpl implements StructureService {
 	}
 
 	private Collection<String> rdkitSubstructureSearchCodes(String queryMol, Integer maxResults) {
-		String queryString = "SELECT s.code_name FROM structure s WHERE s.ignored <> '1' AND rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
+		String queryString = "SELECT s.code_name FROM chem_structure s WHERE s.ignored <> '1' AND rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
 		EntityManager em = ChemStructure.entityManager();
 		Query q = em.createNativeQuery(queryString);
 		q.setParameter("queryMol", queryMol);
@@ -271,7 +271,7 @@ public class StructureServiceImpl implements StructureService {
 	
 	private Collection<ChemStructure> substructureSearchInLsThingList(String queryMol, List<Long> thingIdList,
 			Integer maxResults) {
-		String queryString = "SELECT s.* FROM Structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
+		String queryString = "SELECT s.* FROM chem_structure s WHERE rdkmol @> qmol_from_ctab( CAST( :queryMol AS cstring))";
 		EntityManager em = ChemStructure.entityManager();
 		Query q = em.createNativeQuery(queryString, ChemStructure.class);
 		q.setParameter("queryMol", queryMol);
