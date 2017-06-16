@@ -33,9 +33,6 @@ public class ChangePasswordValidator implements Validator {
     private static final Logger logger = LoggerFactory.getLogger(ChangePasswordValidator.class);
 
 
-	@Autowired
-	private MessageDigestPasswordEncoder messageDigestPasswordEncoder;
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -67,10 +64,6 @@ public class ChangePasswordValidator implements Validator {
 					Author person = (Author) query.getSingleResult();
 					String storedPassword = person.getPassword();
 					String currentPassword = form.getOldPassword();
-//					if (!messageDigestPasswordEncoder.isPasswordValid(storedPassword, currentPassword, null)) {
-//						errors.rejectValue("oldPassword",
-//								"changepassword.invalidpassword");
-//					}
 					
 		    	    String encryptedPassword = null;
 		    		try {

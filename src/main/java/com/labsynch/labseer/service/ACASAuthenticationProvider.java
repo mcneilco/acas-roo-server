@@ -116,7 +116,6 @@ AbstractUserDetailsAuthenticationProvider {
 		}
 
 		messageDigestPasswordEncoder.setEncodeHashAsBase64(true);
-		//	    String encryptedPassword = messageDigestPasswordEncoder.encodePassword(password, null); 
 		String encryptedPassword = null;
 		try {
 			if (propertiesUtilService.getAuthStrategy().equalsIgnoreCase("properties")){
