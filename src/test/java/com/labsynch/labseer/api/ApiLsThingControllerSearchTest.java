@@ -124,7 +124,7 @@ public class ApiLsThingControllerSearchTest {
 //		logger.debug(LsThing.toJsonArray(searchResults));
     }
 	
-	@Test
+	//@Test
     @Transactional
     public void thingMetadataStructureSearch() throws Exception {
 		StructureAndThingSearchDTO metaStructQuery = new StructureAndThingSearchDTO();		
@@ -178,6 +178,59 @@ public class ApiLsThingControllerSearchTest {
     	logger.info(responseJson);
 	}
   
+	@Test
+    @Transactional
+    public void thingMetadataStructureSearch2() throws Exception {
+		StructureAndThingSearchDTO metaStructQuery = new StructureAndThingSearchDTO();		
+		LsThingQueryDTO thingQuery = new LsThingQueryDTO();
+		thingQuery.setLsType("parent");
+		thingQuery.setLsKind("small molecule");
+//		ValueQueryDTO valueQuery = new ValueQueryDTO();
+//		valueQuery.setStateType("properties");
+//		valueQuery.setStateKind("parent properties");
+//		valueQuery.setValueType("codeValue");
+//		valueQuery.setValueKind("structure");
+//		//valueQuery.setValue("");
+//		Collection<ValueQueryDTO> values = new HashSet<ValueQueryDTO>();
+//		values.add(valueQuery);
+//		thingQuery.setValues(values);
+//		Collection<LabelQueryDTO> labels = new HashSet<LabelQueryDTO>();
+//		LabelQueryDTO label = new LabelQueryDTO();
+//		label.setLabelType("name");
+//		//label.setLabelKind("alias");
+//		label.setLabelText("201");
+//		label.setOperator("like");
+//		labels.add(label);
+//		LabelQueryDTO label2 = new LabelQueryDTO();
+//		label2.setLabelType("name");
+//		//label2.setLabelKind("alias");
+//		label2.setLabelText("201");
+//		labels.add(label2);		
+		
+//		thingQuery.setLabels(labels);
+		metaStructQuery.setLsThingQueryDTO(thingQuery);
+//		LsThingQueryDTO emptyThingQuery = new LsThingQueryDTO();
+//		metaStructQuery.setLsThingQueryDTO(emptyThingQuery);
+//    	String queryMolJson = "{\"queryMol\":\"Molecule from ChemDoodle Web Components\n\nhttp://www.ichemlabs.com\n  6  6  0  0  0  0            999 V2000\n    0.0000    1.0000    0.0000 C   0  0  0  0  0  0\n    0.8660    0.5000    0.0000 C   0  0  0  0  0  0\n    0.8660   -0.5000    0.0000 C   0  0  0  0  0  0\n    0.0000   -1.0000    0.0000 C   0  0  0  0  0  0\n   -0.8660   -0.5000    0.0000 C   0  0  0  0  0  0\n   -0.8660    0.5000    0.0000 C   0  0  0  0  0  0\n  1  2  1  0     0  0\n  2  3  2  0     0  0\n  3  4  1  0     0  0\n  4  5  2  0     0  0\n  5  6  1  0     0  0\n  6  1  2  0     0  0\nM  END\",\"searchType\":\"SUBSTRUCTURE\",\"lsType\":\"chemistry\",\"lsKind\":\"reagent\",\"maxResults\":100,\"similarity\":null}";
+    	String queryMolJson = "{\"queryMol\":\"Molecule from ChemDoodle Web Components\\n\\nhttp://www.ichemlabs.com\\n  5  5  0  0  0  0            999 V2000\\n    0.0000    0.7694    0.0000 C   0  0  0  0  0  0\\n    0.8090    0.1816    0.0000 C   0  0  0  0  0  0\\n    0.5000   -0.7694    0.0000 C   0  0  0  0  0  0\\n   -0.5000   -0.7694    0.0000 C   0  0  0  0  0  0\\n   -0.8090    0.1816    0.0000 C   0  0  0  0  0  0\\n  1  2  1  0     0  0\\n  2  3  1  0     0  0\\n  3  4  1  0     0  0\\n  4  5  1  0     0  0\\n  5  1  1  0     0  0\\nM  END\"}";
+  	
+    	StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(queryMolJson);
+		metaStructQuery.setQueryMol(query.getQueryMol());
+		metaStructQuery.setSearchType("SUBSTRUCTURE");
+		metaStructQuery.setMaxResults(10);
+		
+		String json = metaStructQuery.toJson();
+		logger.info("############## -- metaStructQuery #################" );
+		logger.info(json);
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/lsthings/structureAndMetaSearch")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+	}
     
     
 }

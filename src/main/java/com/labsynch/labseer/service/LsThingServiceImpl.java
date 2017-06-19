@@ -2192,16 +2192,17 @@ public class LsThingServiceImpl implements LsThingService {
 			
 			List<String> structureCodeList = new ArrayList<String>();
 			structureCodeList.addAll(structureCodes);
-			 Collection<LsThing> structThings = findLsThingsByStructureCodes(structureCodeList);
-
-			
+			Collection<LsThing> structThings = null;
 			Collection<Long> structureThingIdList = new ArrayList<Long>();
-			for (LsThing lsThing : structThings){
-				structureThingIdList.add(lsThing.getId());
-				logger.debug("struct thing id: " + lsThing.getId());
+			if (structureCodeList.size() > 0){
+				structThings = findLsThingsByStructureCodes(structureCodeList);
+				for (LsThing lsThing : structThings){
+					structureThingIdList.add(lsThing.getId());
+					logger.debug("struct thing id: " + lsThing.getId());
+				}
 			}
 			
-					//findLsThingIdsByStructureCodes(structureCodeList);
+			//findLsThingIdsByStructureCodes(structureCodeList);
 			logger.debug("number of structureThingIdList found: " + structureThingIdList.size());
 
 			logger.debug("structure thing ids:");
