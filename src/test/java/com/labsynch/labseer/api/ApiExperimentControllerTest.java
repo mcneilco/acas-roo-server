@@ -29,6 +29,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -190,6 +191,35 @@ public class ApiExperimentControllerTest {
         	Assert.assertNotNull(response.getExperiment().getProtocol().getLsLabels());
         	Assert.assertTrue(!response.getExperiment().getProtocol().getLsLabels().isEmpty());
     	}
+    }
+    
+    @Test
+    public void getExperimentsAsCodeTables() throws Exception {
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	Collection<CodeTableDTO> codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	Assert.assertFalse(codetables.isEmpty());
+    	logger.info(CodeTableDTO.toJsonArray(codetables));
+    	
+    	responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables?lsType=default&lsKind=default")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	Assert.assertFalse(codetables.isEmpty());
+    	logger.info(CodeTableDTO.toJsonArray(codetables));
+    	
+    	responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables?lsType=invalidType")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	Assert.assertTrue(codetables.isEmpty());
     }
 
 }

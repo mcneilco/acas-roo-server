@@ -24,16 +24,21 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.CodeTypeKindDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.GeneOrthologDTO;
 import com.labsynch.labseer.dto.GeneOrthologFileDTO;
 import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.GenericQueryCodeTableResultDTO;
+import com.labsynch.labseer.dto.LsThingQueryCodeTableResultDTO;
 import com.labsynch.labseer.dto.LsThingQueryDTO;
 import com.labsynch.labseer.dto.LsThingQueryResultDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.dto.StoichiometryPropertiesResultsDTO;
+import com.labsynch.labseer.dto.StructureAndThingSearchDTO;
+import com.labsynch.labseer.dto.StructureSearchDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.service.GeneThingService;
@@ -797,6 +802,106 @@ public class ApiLsThingController {
       }
   }
   
+  @RequestMapping(value = "/getStoichiometryProperties", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> getStoichiometryProperties(@RequestBody String json) {
+  	Collection<CodeTypeKindDTO> requests = CodeTypeKindDTO.fromJsonArrayToCoes(json);
+  	HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json; charset=utf-8");
+  	try{
+  		StoichiometryPropertiesResultsDTO results = lsThingService.getStoichiometryProperties(requests);
+        return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
+  	}catch (Exception e){
+  		logger.error("Caught exception in getStoichiometryProperties", e);
+        return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+  	}
+      
+  }
+  
+  @RequestMapping(value = "/structureSearch", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> structureSearch(@RequestBody String json) {
+  	HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json; charset=utf-8");
+  	try{
+  		if (json.isEmpty()) logger.info("EMPTY JSON");
+  		if (json.equalsIgnoreCase("")) logger.info("NO CONTENT JSON");
+
+  		logger.info("################################### STRUCTURE JSON ########### ");
+  		logger.info("incoming structure search query json: " + json);
+  		logger.info("################################### ");
+
+  		StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
+  		Collection<LsThing> results = lsThingService.structureSearch( query.getQueryMol(), query.getLsType(), query.getLsKind(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
+ 
+  		logger.info("##### number of results found: " + results.size());
+  		return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
+  	}catch (Exception e){
+  		logger.error("Caught exception in structureSearch", e);
+        return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+  	}
+      
+  }
+  
+  @RequestMapping(value = "/structureAndMetaSearch", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> structureAndMetaSearch(@RequestBody String stuctureThingQuery,  
+		      @RequestParam(value = "with", required = false) String with,
+			  @RequestParam(value = "labelType", required = false) String labelType) {
+	  
+	  logger.info("input json: " + stuctureThingQuery);
+	  	StructureAndThingSearchDTO structureAndThingQuery = StructureAndThingSearchDTO.fromJsonToStructureAndThingSearchDTO(stuctureThingQuery);
+	  	HttpHeaders headers = new HttpHeaders();
+	    headers.add("Content-Type", "application/json; charset=utf-8");
+	    ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+	    boolean errorsFound = false;
+	    Collection<Long> lsThingIds;
+	    LsThingQueryResultDTO result = new LsThingQueryResultDTO();
+	    try{
+	    	lsThingIds = lsThingService.searchLsThingIdsByQueryDTOandStructure(structureAndThingQuery.getLsThingQueryDTO(), structureAndThingQuery.getQueryMol(), structureAndThingQuery.getSearchType(), structureAndThingQuery.getMaxResults(), structureAndThingQuery.getSimilarity());
+	    	result.setNumberOfResults(lsThingIds.size());
+	    	result.setMaxResults(structureAndThingQuery.getMaxResults());
+	    	if (structureAndThingQuery.getMaxResults() == null || result.getNumberOfResults() <= result.getMaxResults()){
+	    		result.setResults(lsThingService.getLsThingsByIds(lsThingIds));
+	    	}
+	    }catch (Exception e){
+	    	logger.error("Caught searching for lsThings in generic interaction search",e);
+	    	ErrorMessage error = new ErrorMessage();
+	        error.setErrorLevel("error");
+	        error.setMessage(e.getMessage());
+	        errors.add(error);
+	        errorsFound = true;
+	    }
+	    
+	    if (errorsFound) {
+	        return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+	    } else {
+	    	if (with != null) {
+	    		if (with.equalsIgnoreCase("nestedfull")) {
+	    			return new ResponseEntity<String>(result.toJsonWithNestedFull(), headers, HttpStatus.OK);
+	    		} else if (with.equalsIgnoreCase("prettyjson")) {
+	    			return new ResponseEntity<String>(result.toPrettyJson(), headers, HttpStatus.OK);
+	    		} else if (with.equalsIgnoreCase("nestedstub")) {
+	    			return new ResponseEntity<String>(result.toJsonWithNestedStubs(), headers, HttpStatus.OK);
+	    		} else if (with.equalsIgnoreCase("stub")) {
+	    			return new ResponseEntity<String>(result.toJsonStub(), headers, HttpStatus.OK);
+	    		} else if (with.equalsIgnoreCase("codeTable")) {
+	    			LsThingQueryCodeTableResultDTO resultDTO = new LsThingQueryCodeTableResultDTO();
+	    			resultDTO.setMaxResults(result.getMaxResults());
+	    			resultDTO.setNumberOfResults(result.getNumberOfResults());
+	    			if (result.getResults() != null){
+	    				if (labelType != null && labelType.length() > 0){
+	        				resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults(), labelType));
+	    				}else{
+	        				resultDTO.setResults(lsThingService.convertToCodeTables(result.getResults()));
+	    				}
+	    			}
+	    			return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
+	    		}
+	    	}
+	    	return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+	    }
+	      
+	  }	  
+	 
+  
   @RequestMapping(value = "/genericBrowserSearch", method = RequestMethod.POST, headers = "Accept=application/json")
   public ResponseEntity<java.lang.String> genericBrowserSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
   	HttpHeaders headers = new HttpHeaders();
@@ -850,6 +955,45 @@ public class ApiLsThingController {
     }
       
   }
+
+  
+  @RequestMapping(value = "/checkDependentExperiments", method = RequestMethod.POST, headers = "Accept=application/json")
+  public ResponseEntity<java.lang.String> checkDependentExperiments(@RequestBody String json) {
+  	HttpHeaders headers = new HttpHeaders();
+    headers.add("Content-Type", "application/json; charset=utf-8");
+    CodeTypeKindDTO query = CodeTypeKindDTO.fromJsonToCodeTypeKindDTO(json);
+    ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+    boolean errorsFound = false;
+    LsThing lsThing;	
+	try {
+		lsThing = LsThing.findLsThingsByCodeNameEquals(query.getCodeName()).getSingleResult();
+	} catch(Exception ex) {
+		lsThing = null;
+		ErrorMessage error = new ErrorMessage();
+        error.setErrorLevel("error");
+        error.setMessage("parent:" + query.getCodeName() +" not found");
+        errors.add(error);
+        errorsFound = true;
+	}
+    DependencyCheckDTO result = null;
+    try{
+    	result = lsThingService.checkDependencies(lsThing);
+    }catch (Exception e){
+    	logger.error("Caught exception checking dependencies",e);
+    	ErrorMessage error = new ErrorMessage();
+        error.setErrorLevel("error");
+        error.setMessage(e.getMessage());
+        errors.add(error);
+        errorsFound = true;
+    }
+    if (errorsFound) {
+        return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.NOT_FOUND);
+    } else {
+        return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+    }
+      
+  }
+  
   
   @RequestMapping(value = "/genericInteractionSearch", method = RequestMethod.POST, headers = "Accept=application/json")
   public ResponseEntity<java.lang.String> genericInteractionSearch(@RequestBody String json, @RequestParam(value = "with", required = false) String with,

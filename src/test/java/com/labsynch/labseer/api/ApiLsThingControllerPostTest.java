@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.dto.StructureSearchDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -52,6 +53,26 @@ public class ApiLsThingControllerPostTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
     }
     
+	@Test
+    @Transactional
+    public void structureSearch() throws Exception {
+		String queryMol= "\n  Mrv1641110051619032D          \n\n  5  5  0  0  0  0            999 V2000\n   -0.0446    0.6125    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7121    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.4572   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.3679   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6228    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  2  3  1  0  0  0  0\n  3  4  1  0  0  0  0\n  4  5  1  0  0  0  0\n  1  2  1  0  0  0  0\n  1  5  1  0  0  0  0\nM  END\n";
+		StructureSearchDTO query = new StructureSearchDTO(queryMol, "small molecule", "reagent", "SUBSTRUCTURE", 10, null);
+		String json = query.toJson();
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/lsthings/structureSearch")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(json)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+//    			.andExpect(content().contentType("application/json"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.debug(responseJson);
+    	Collection<LsThing> searchResults = LsThing.fromJsonArrayToLsThings(responseJson);
+    	Assert.assertFalse(searchResults.isEmpty());
+		logger.debug(LsThing.toJsonArray(searchResults));
+    }
+	
     @Test
     public void registerReferenceThingTest() throws Exception {
     	String json = "{\"lsType\":\"reference\",\"lsKind\":\"webpage\",\"corpName\":\"\",\"recordedBy\":\"egao\",\"recordedDate\":1436823212184,\"shortDescription\":\" \",\"lsLabels\":[],\"lsStates\":[{\"lsType\":\"metadata\",\"lsKind\":\"reference metadata\",\"lsValues\":[{\"lsType\":\"urlValue\",\"lsKind\":\"external url\",\"ignored\":false,\"recordedDate\":1436823212188,\"recordedBy\":\"egao\",\"value\":\"http://www.google.com\",\"urlValue\":\"http://www.google.com\"}],\"ignored\":false,\"recordedDate\":1436823212185,\"recordedBy\":\"egao\"}],\"firstLsThings\":[],\"secondLsThings\":[],\"cid\":\"c38\",\"_changing\":false,\"_previousAttributes\":{\"lsType\":\"thing\",\"lsKind\":\"thing\",\"corpName\":\"\",\"recordedBy\":\"egao\",\"recordedDate\":1436823200318,\"shortDescription\":\" \",\"lsLabels\":[],\"lsStates\":[{\"lsType\":\"metadata\",\"lsKind\":\"reference metadata\",\"lsValues\":[{\"lsType\":\"urlValue\",\"lsKind\":\"external url\",\"ignored\":false,\"recordedDate\":1436823212188,\"recordedBy\":\"egao\",\"value\":\"http://www.google.com\",\"urlValue\":\"http://www.google.com\"}],\"ignored\":false,\"recordedDate\":1436823212185,\"recordedBy\":\"egao\"}],\"firstLsThings\":[]},\"changed\":{\"secondLsThings\":[]},\"_pending\":false,\"urlRoot\":\"/api/things/reference/webpage\",\"className\":\"WebpageReference\",\"lsProperties\":{\"defaultLabels\":[],\"defaultValues\":[{\"key\":\"external url\",\"stateType\":\"metadata\",\"stateKind\":\"reference metadata\",\"type\":\"urlValue\",\"kind\":\"external url\"}],\"defaultFirstLsThingItx\":[],\"defaultSecondLsThingItx\":[]},\"validationError\":null,\"idAttribute\":\"id\"}";
@@ -67,6 +88,5 @@ public class ApiLsThingControllerPostTest {
     	LsThing postedLsThing = LsThing.fromJsonToLsThing(responseJson);
     	logger.info(postedLsThing.toJson());
     }
-    
 
 }

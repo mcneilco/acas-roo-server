@@ -7,7 +7,9 @@
 
     <context:property-placeholder ignore-resource-not-found="true"  location="file://${ACAS_HOME}/conf/compiled/conf.properties" order="1" ignore-unresolvable="true" />
     <context:property-placeholder ignore-resource-not-found="true"  location="file:///mnt/environments/acas/acas.env" order="2" ignore-unresolvable="true" />
-    <context:property-placeholder ignore-unresolvable="true" location="classpath*:META-INF/spring/*.properties" order="3"/>
+
+ 
+  <context:property-placeholder ignore-unresolvable="true" location="classpath*:META-INF/spring/*.properties" order="3"/>
 
     <!-- Turn on AspectJ @Configurable support. As a result, any time you instantiate 
 		an object, Spring will attempt to perform dependency injection on that object. 

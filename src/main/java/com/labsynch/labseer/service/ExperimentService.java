@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
@@ -67,9 +68,15 @@ public interface ExperimentService {
 	public Collection<Experiment> saveLsExperiments(
 			Collection<Experiment> experiments) throws UniqueNameException, NotFoundException;
 
-	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData);
+	public List<CodeTableDTO> getExperimentsAsCodeTables(String lsType,
+			String lsKind);
+
+	List<CodeTableDTO> convertExperimentsToCodeTables(
+			Collection<Experiment> experiments);
+
 	public PreferredNameResultsDTO getCodeNameFromName(String experimentType,
 			String experimentKind, String labelType, String labelKind,
 			PreferredNameRequestDTO requestDTO);
+	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData);
 	
 }

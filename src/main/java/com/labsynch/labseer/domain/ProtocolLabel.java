@@ -160,11 +160,12 @@ public class ProtocolLabel extends AbstractLabel {
     }
 
     public static TypedQuery<com.labsynch.labseer.domain.ProtocolLabel> findProtocolLabelsByName(String labelText) {
-        String labelType = "name";
-        String labelKind = "protocol name";
-        boolean preferred = true;
         boolean ignored = true;
-        TypedQuery<ProtocolLabel> q = findProtocolLabelsByName(labelText, labelType, labelKind, preferred, ignored);
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        TypedQuery<ProtocolLabel> q = em.createQuery("SELECT o FROM ProtocolLabel AS o WHERE o.labelText = :labelText " + "AND o.ignored IS NOT :ignored", ProtocolLabel.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
         return q;
     }
 

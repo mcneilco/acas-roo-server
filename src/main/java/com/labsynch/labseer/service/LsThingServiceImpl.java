@@ -1,13 +1,16 @@
 package com.labsynch.labseer.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -26,6 +30,12 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.hibernate.StaleObjectStateException;
+import org.openscience.cdk.exception.CDKException;
+
+import com.github.underscore.Function1;
+import com.github.underscore.Tuple;
+import com.github.underscore.$;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,21 +50,27 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.CodeTypeKindDTO;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.ItxQueryDTO;
 import com.labsynch.labseer.dto.LabelQueryDTO;
+import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.LsThingQueryDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.dto.StoichiometryPropertiesDTO;
+import com.labsynch.labseer.dto.StoichiometryPropertiesResultsDTO;
 import com.labsynch.labseer.dto.ValuePathDTO;
 import com.labsynch.labseer.dto.ValueQueryDTO;
 import com.labsynch.labseer.dto.ValueRuleDTO;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
+import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueInteractionsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.ItxLsThingLsThingComparator;
@@ -76,6 +92,9 @@ public class LsThingServiceImpl implements LsThingService {
 	
 	@Autowired
 	private AuthorService authorService;
+	
+	@Autowired
+	private StructureService structureService;
 
 	@Override
 	public String getProjectCodes(){
@@ -561,6 +580,7 @@ public class LsThingServiceImpl implements LsThingService {
 			//there are itx's
 			for (ItxLsThingLsThing itxLsThingLsThing : jsonLsThing.getFirstLsThings()){
 				ItxLsThingLsThing updatedItxLsThingLsThing;
+				logger.debug("updating itxLsThingLsThing");
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
 					if (logger.isDebugEnabled()) logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
@@ -601,6 +621,7 @@ public class LsThingServiceImpl implements LsThingService {
 					secondLsThings.add(updatedItxLsThingLsThing);
 				}else {
 					//old itx needs to be updated
+					if (logger.isDebugEnabled()) logger.debug("update existing itxLsThingLsThing: " + itxLsThingLsThing.toJson());
 					updateNestedSecondLsThing(itxLsThingLsThing);
 					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = ItxLsThingLsThing.update(itxLsThingLsThing);
@@ -1914,6 +1935,14 @@ public class LsThingServiceImpl implements LsThingService {
 	}
 	
 	@Override
+	public DependencyCheckDTO checkDependencies(LsThing lsThing){
+		DependencyCheckDTO result = new DependencyCheckDTO();
+		result.getQueryCodeNames().add(lsThing.getCodeName());
+		result.checkForDependentData();
+		return result;
+	}
+	
+	@Override
 	public DependencyCheckDTO checkBatchDependencies(LsThing batch){
 		DependencyCheckDTO result = new DependencyCheckDTO();
 		result.getQueryCodeNames().add(batch.getCodeName());
@@ -2000,6 +2029,108 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		return true;
 	}
+
+
+	@Override
+	public byte[] renderStructureByLsThingCodeName(String codeName,
+			Integer height, Integer width, String format) throws IOException,
+			CDKException, NotFoundException {
+		LsThing lsThing = LsThing.findLsThingsByCodeNameEquals(codeName).getSingleResult();
+		List<LsThingValue> pluckedValues = SimpleUtil.pluckValueByStateTypeKindAndValueTypeKind(lsThing, "properties", "parent properties", "codeValue","structure");
+		if (pluckedValues.size() == 0){
+			logger.debug("No structure found for LsThing: "+codeName);
+			throw new NotFoundException("No structure found for LsThing: "+codeName);
+		}
+		else{
+			if (pluckedValues.size() > 1) logger.warn("Multiple structures found for LsThing "+codeName+". Using the first.");
+			return structureService.renderStructureByCodeName(pluckedValues.get(0).getCodeValue(), height, width, format);
+		}
+	}
+
+
+	@Override
+	public StoichiometryPropertiesResultsDTO getStoichiometryProperties(
+			Collection<CodeTypeKindDTO> requests) {
+		StoichiometryPropertiesResultsDTO resultDTO = new StoichiometryPropertiesResultsDTO();
+		List<String> codeNames = new ArrayList<String>();
+		for (CodeTypeKindDTO request : requests){
+			codeNames.add(request.getCodeName());
+		}
+		Collection<LsThing> foundLsThings = LsThing.findLsThingsByCodeNamesIn(codeNames);
+		HashMap<String, LsThing> lsThingsByCodeName = new HashMap<String, LsThing>();
+		for (LsThing lsThing : foundLsThings){
+			lsThingsByCodeName.put(lsThing.getCodeName(), lsThing);
+		}
+		for (CodeTypeKindDTO request : requests){
+			if (lsThingsByCodeName.containsKey(request.getCodeName())){
+				try{
+					StoichiometryPropertiesDTO result = new StoichiometryPropertiesDTO(lsThingsByCodeName.get(request.getCodeName()));
+					resultDTO.getResults().add(result);
+				}catch(Exception e){
+					resultDTO.setHasError(true);
+					logger.error("Error getting stoichiometry properties for "+request.getCodeName(),e);
+					ErrorMessageDTO error = new ErrorMessageDTO("error", "error"+ e.getMessage() + "encountered getting properties for "+request.getCodeName());
+					resultDTO.getErrorMessages().add(error);
+				}
+			}else{
+				resultDTO.setHasError(true);
+				ErrorMessageDTO error = new ErrorMessageDTO("error", "lsThing could not be found for codeName "+request.getCodeName());
+				resultDTO.getErrorMessages().add(error);
+			}
+		}
+		return resultDTO;
+	}
+
+	
+	@Override
+	public Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, String searchType, Integer maxResults, Float similarity){
+		Collection<LsThing> lsThings = new HashSet<LsThing>();
+		Collection<ChemStructure> structures = structureService.searchStructuresByTypeKind(queryMol, lsType, lsKind, searchType, maxResults, similarity);
+		if (structures != null && !structures.isEmpty()){
+			List<String> structureCodes = new ArrayList<String>();
+			for (ChemStructure structure : structures){
+				structureCodes.add(structure.getCodeName());
+			}
+			lsThings = findLsThingsByStructureCodes(structureCodes);
+		}
+		return lsThings;
+	}
+	
+	private Collection<LsThing> findLsThingsByStructureCodes(List<String> structureCodes){
+		String queryString = "SELECT thing FROM LsThing thing JOIN thing.lsStates state JOIN state.lsValues value "
+				+ "WHERE value.lsType = :lsType AND value.lsKind = :lsKind AND thing.ignored IS NOT true AND state.ignored IS NOT true AND value.ignored IS NOT true"
+				+ " AND ";
+		EntityManager em = LsThing.entityManager();
+		Query q = SimpleUtil.addHqlInClause(em, queryString, "value.codeValue", structureCodes);
+		q.setParameter("lsType", "codeValue");
+		q.setParameter("lsKind", "structure");
+		return q.getResultList();
+	}
+
+	
+	private Collection<Long> findLsThingIdsByStructureCodes(List<String> structureCodes){
+		//TODO - refactor code to deal with > 1000 entries in Oracle case
+		String queryString = "SELECT thing.id FROM ls_thing thing "
+				+ "JOIN ls_thing_state state ON state.lsthing_id = thing.id "
+				+ "JOIN ls_thing_value value on value.lsthing_state_id = state.id "
+				+ "WHERE value.ls_type = :lsType AND value.ls_kind = :lsKind "
+				+ "AND thing.ignored IS NOT true AND state.ignored IS NOT true AND value.ignored IS NOT true "
+				+ "AND value.code_value in (:structureCodes)";
+		EntityManager em = LsThing.entityManager();
+		Query q = em.createNativeQuery(queryString);
+		//Query q = SimpleUtil.addHqlInClauseNativeQuery(em, queryString, "value.code_value", structureCodes);
+		q.setParameter("lsType", "codeValue");
+		q.setParameter("lsKind", "structure");
+		q.setParameter("structureCodes", structureCodes);
+		if (logger.isDebugEnabled()){
+			logger.info("number of structure codes: " + structureCodes.size());
+			String fullQuery = q.unwrap(org.hibernate.Query.class).getQueryString();
+			logger.info(fullQuery);
+		}
+		return q.getResultList();
+	}
+	
+	
 	@Override
 	public Collection<LsThing> getLsThingsByIds(Collection<Long> lsThingIds){
 		Collection<LsThing> lsThings = new ArrayList<LsThing>();
@@ -2035,6 +2166,70 @@ public class LsThingServiceImpl implements LsThingService {
 		logger.debug("Found "+lsThingIdList.size()+" results.");
 		return lsThingIdList;
 	}
+		
+	@Override
+	public Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, String searchType, Integer maxResults, Float similarity) throws Exception{
+		Collection<Long> thingIdList = searchLsThingIdsByQueryDTO(query);
+		logger.debug(" thing ids:");
+		for (Long id : thingIdList){
+			logger.debug(" thing id: " + id);
+		}
+
+		Collection<String> structureCodes = null;
+		logger.debug("incoming query mol: " + queryMol);
+		logger.debug("length of query mol: " + queryMol.length());
+
+		if (queryMol == null || queryMol.equals("") || queryMol.isEmpty() || queryMol.length() < 165){
+			logger.debug("number of meta things found: " + thingIdList.size());
+		} else {
+			structureCodes = structureService.searchStructuresCodes(queryMol, searchType, maxResults, similarity);
+			logger.debug("number of structureCodes found: " + structureCodes.size());
+			
+			
+			for (String structureCode : structureCodes){
+				logger.debug("found code: " + structureCode);
+			}
+			
+			List<String> structureCodeList = new ArrayList<String>();
+			structureCodeList.addAll(structureCodes);
+			Collection<LsThing> structThings = null;
+			Collection<Long> structureThingIdList = new ArrayList<Long>();
+			if (structureCodeList.size() > 0){
+				structThings = findLsThingsByStructureCodes(structureCodeList);
+				for (LsThing lsThing : structThings){
+					structureThingIdList.add(lsThing.getId());
+					logger.debug("struct thing id: " + lsThing.getId());
+				}
+			}
+			
+			//findLsThingIdsByStructureCodes(structureCodeList);
+			logger.debug("number of structureThingIdList found: " + structureThingIdList.size());
+
+			logger.debug("structure thing ids:");
+			for (Long sid : structureThingIdList){
+				logger.debug("structure thing id: " + sid);
+			}
+
+
+			thingIdList.retainAll(structureThingIdList);
+		}
+		
+		logger.debug("number of filtered things found: " + thingIdList.size());
+
+		return thingIdList;
+	}
+
+	
+	public Collection<LsThing> lsThingSearchByMetaAndStructure(LsThingQueryDTO query, String queryMol, String searchType, Integer maxResults, Float similarity) throws Exception{
+		Collection<LsThing> lsThings = new HashSet<LsThing>();
+		Collection<Long> lsThingIds = searchLsThingIdsByQueryDTOandStructure(query, searchType, searchType, maxResults, similarity);
+		for (Long id : lsThingIds){
+			lsThings.add(LsThing.findLsThing(id));
+		}
+		return lsThings;
+	}
+
+
 	
 	private List<Predicate> buildPredicatesForQueryDTO(CriteriaBuilder criteriaBuilder, CriteriaQuery<Long> criteria, Root<LsThing> thing, LsThingQueryDTO query) throws Exception{
 		
@@ -2383,14 +2578,20 @@ public class LsThingServiceImpl implements LsThingService {
 						if ( queryLabel.getOperator().equals("=")){
 							Predicate labelEquals = criteriaBuilder.equal(label.<String>get("labelText"), queryLabel.getLabelText());
 							labelPredicatesList.add(labelEquals);
+						} else if ( queryLabel.getOperator().equalsIgnoreCase("equals")){
+							Predicate labelEquals = criteriaBuilder.equal(label.<String>get("labelText"), queryLabel.getLabelText());
+							labelPredicatesList.add(labelEquals);
 						}else if (queryLabel.getOperator().equals("!=")){
 							Predicate labelNotEquals = criteriaBuilder.notEqual(label.<String>get("labelText"), queryLabel.getLabelText());
 							labelPredicatesList.add(labelNotEquals);
 						}else if(queryLabel.getOperator().equals("~")){
-							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), queryLabel.getLabelText());
+							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
+							labelPredicatesList.add(labelLike);
+						}else if(queryLabel.getOperator().equalsIgnoreCase("like")){
+							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
 							labelPredicatesList.add(labelLike);
 						}else if(queryLabel.getOperator().equals("!~")){
-							Predicate labelNotLike = criteriaBuilder.notLike(label.<String>get("labelText"), queryLabel.getLabelText());
+							Predicate labelNotLike = criteriaBuilder.notLike(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
 							labelPredicatesList.add(labelNotLike);
 						}else if(queryLabel.getOperator().equals(">")){
 							Predicate labelGreaterThan = criteriaBuilder.greaterThan(label.<String>get("labelText"), queryLabel.getLabelText());
@@ -2421,6 +2622,7 @@ public class LsThingServiceImpl implements LsThingService {
 		}
 		return predicateList;
 	}
+
 
 
 	@Override
@@ -2485,4 +2687,14 @@ public class LsThingServiceImpl implements LsThingService {
 		logger.debug("Found "+lsThingIdList.size()+" results.");
 		return lsThingIdList;
 	}
+
+
+	@Override
+	public Collection<LsThing> structureSearch(String queryMol, String searchType, Integer maxResults,
+			Float similarity) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 }

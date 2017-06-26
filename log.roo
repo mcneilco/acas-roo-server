@@ -779,3 +779,20 @@ quit
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2017-01-27 17:13:04
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2017-01-27 17:13:20
 // Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2017-01-27 23:26:02
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2017-06-09 13:16:10
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2017-06-09 13:24:43
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2017-06-09 13:24:54
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2017-06-09 15:51:54
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2017-06-09 15:52:33
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2017-06-09 16:27:16
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2017-06-09 16:32:07
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2017-06-09 16:35:11
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2017-06-09 16:35:24
+focus --class ~.domain.ChemStructure
+finder list
+finder add findChemStructuresByCodeNameEquals
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log closed at 2017-06-10 13:15:40
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2017-06-12 17:23:15
+focus --class ~.domain.ChemStructure
+finder list
+finder add findChemStructuresByCodeNameEquals

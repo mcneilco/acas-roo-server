@@ -39,7 +39,7 @@ import flexjson.JSONSerializer;
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "analysisGroups", "lsLabels" })
 @RooJson
-@RooJpaActiveRecord(finders = { "findExperimentsByCodeNameEquals", "findExperimentsByLsTransaction", "findExperimentsByProtocol", "findExperimentsByLsTypeEqualsAndLsKindEquals", "findExperimentsByLsKindLike", "findExperimentsByLsTypeLike", "findExperimentsByCodeNameLike", "findExperimentsByRecordedByLike" })
+@RooJpaActiveRecord(finders = { "findExperimentsByCodeNameEquals", "findExperimentsByLsTransaction", "findExperimentsByProtocol", "findExperimentsByLsTypeEqualsAndLsKindEquals", "findExperimentsByLsTypeEquals", "findExperimentsByLsKindEquals", "findExperimentsByLsKindLike", "findExperimentsByLsTypeLike", "findExperimentsByCodeNameLike", "findExperimentsByRecordedByLike" })
 public class Experiment extends AbstractThing {
 
     private static final Logger logger = LoggerFactory.getLogger(Experiment.class);

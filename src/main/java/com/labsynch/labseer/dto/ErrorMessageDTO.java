@@ -13,4 +13,13 @@ public class ErrorMessageDTO {
 	
 	String message;
 	
+	public ErrorMessageDTO(){
+		
+	}
+	
+	public ErrorMessageDTO(String level, String message){
+		this.level = level;
+		this.message = message;
+	}
+	
 }
