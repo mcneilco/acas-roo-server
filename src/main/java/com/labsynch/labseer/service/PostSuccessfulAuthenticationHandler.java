@@ -6,7 +6,6 @@ import java.util.Collection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +14,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.WebAttributes;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -56,7 +54,7 @@ public class PostSuccessfulAuthenticationHandler extends  SimpleUrlAuthenticatio
 		
 	}
 	
-	protected String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) {
+	protected String getRedirectUrl(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
         SavedRequest savedRequest = requestCache.getRequest(request, response);
 
@@ -88,7 +86,7 @@ public class PostSuccessfulAuthenticationHandler extends  SimpleUrlAuthenticatio
 	}
 	
 	public String onAuthenticationSuccessOld(HttpServletRequest request, HttpServletResponse response,
-			Authentication authentication) throws ServletException, IOException {
+			Authentication authentication) throws ServletException, IOException, Exception {
 		
         SavedRequest savedRequest = requestCache.getRequest(request, response);
 
@@ -119,7 +117,7 @@ public class PostSuccessfulAuthenticationHandler extends  SimpleUrlAuthenticatio
 	}
 
 
-	public void setRequestCache(RequestCache requestCache) {
+	public void setRequestCache(RequestCache requestCache) throws Exception {
 		this.requestCache = requestCache;
 
 	}
