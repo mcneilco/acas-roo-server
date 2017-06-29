@@ -35,6 +35,9 @@ public class AnalysisGroupValueDTO {
 	//			el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, agv.stringValue as stringValue, 
 	//			agv.numericValue as numericValue, agv2.codeValue AS testedLot  
 
+//	+ "ag.id as agId, ags.id as agStateId, "
+
+
 	public AnalysisGroupValueDTO(
 			Long id,
 			Long protocolId,
@@ -42,6 +45,8 @@ public class AnalysisGroupValueDTO {
 			Long experimentId, 
 			String codeName, 
 			String prefName,
+			Long agId,
+			Long agStateId,
 			String lsType, 
 			String lsKind,
 			String stringValue, 
@@ -62,11 +67,15 @@ public class AnalysisGroupValueDTO {
 			){
 
 		this.id = id;
+
 		this.protocolId = protocolId;
 		this.protocolName = protocolName;
 		this.experimentId = experimentId;
 		//		this.codeName = codeName;
 		this.experimentCodeName = codeName;
+		this.agId = agId;
+		this.agStateId = agStateId;
+
 		this.lsType = lsType;
 		this.lsKind = lsKind;
 		this.testedLot = testedLot;
@@ -141,6 +150,8 @@ public class AnalysisGroupValueDTO {
 	private Long experimentId;
 	private String experimentCodeName;
 	private String experimentName;
+	private Long agId;
+	private Long agStateId;
 	private String lsType;
 	private String lsKind;
 	private String testedLot;
@@ -165,6 +176,8 @@ public class AnalysisGroupValueDTO {
 				"experimentId",
 				"experimentCodeName",
 				"experimentName",
+				"agId",
+				"agStateId",				
 				"lsType",
 				"lsKind",
 				"testedLot",
@@ -185,6 +198,8 @@ public class AnalysisGroupValueDTO {
 
 	public static CellProcessor[] getProcessors() {
 		final CellProcessor[] processors = new CellProcessor[] { 
+				new Optional(),
+				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
