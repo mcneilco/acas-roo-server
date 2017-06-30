@@ -35,6 +35,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
         return "experiments/list";
     }
     
+    @RequestMapping(params = { "find=ByLsKindEquals", "form" }, method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByLsKindEqualsForm(Model uiModel) {
+        return "experiments/findExperimentsByLsKindEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByLsKindEquals(@RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsKindEquals(lsKind).getResultList());
+        return "experiments/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsKindLike", "form" }, method = RequestMethod.GET)
     public String ExperimentController.findExperimentsByLsKindLikeForm(Model uiModel) {
         return "experiments/findExperimentsByLsKindLike";
@@ -54,6 +65,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     @RequestMapping(params = "find=ByLsTransaction", method = RequestMethod.GET)
     public String ExperimentController.findExperimentsByLsTransaction(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
         uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTransaction(lsTransaction).getResultList());
+        return "experiments/list";
+    }
+    
+    @RequestMapping(params = { "find=ByLsTypeEquals", "form" }, method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByLsTypeEqualsForm(Model uiModel) {
+        return "experiments/findExperimentsByLsTypeEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET)
+    public String ExperimentController.findExperimentsByLsTypeEquals(@RequestParam("lsType") String lsType, Model uiModel) {
+        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeEquals(lsType).getResultList());
         return "experiments/list";
     }
     
