@@ -99,5 +99,19 @@ public class ApiStructureControllerTest {
 		
     }
     
+    @Test
+	public void convertSmilesToMol() throws Exception{
+		String smiles = "O=C1NC%91=NC2NC=NC=21.[*:1]%91 |$;;;;;;;;;;_R1$|";
+		//String smiles = "CCC>>CCN";
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/structure/convertSmilesToMol")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(smiles))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse();
+		String molStructure = response.getContentAsString();
+		logger.info(molStructure);
+	}
+    
 
 }

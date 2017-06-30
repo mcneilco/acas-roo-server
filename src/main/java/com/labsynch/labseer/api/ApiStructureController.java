@@ -277,4 +277,21 @@ public class ApiStructureController {
     	
     }
 	
+	@Transactional
+    @RequestMapping(value = "/convertSmilesToMol", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> convertSmilesToMol(
+    		@RequestBody String smiles) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+    	try{
+    		String molStructure = structureService.convertSmilesToMol(smiles);
+            return new ResponseEntity<String>(molStructure, headers, HttpStatus.OK);
+    	}catch (EmptyResultDataAccessException empty){
+    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+    	}catch (Exception e){
+    		logger.error("Caught exception saving structure",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
+        
+    }
 }

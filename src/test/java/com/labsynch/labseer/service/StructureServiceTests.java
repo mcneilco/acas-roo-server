@@ -112,5 +112,13 @@ public class StructureServiceTests {
 		logger.info("number of structures found: " + structures.size());
 		//Assert.assertTrue(searchResults.isEmpty());
 	}
+	
+	@Test
+	public void convertSmilesToMol() throws Exception{
+		String smiles = "O=C1NC%91=NC2NC=NC=21.[*:1]%91 |$;;;;;;;;;;_R1$|";
+		//String smiles = "CCC>>CCN";
+		String molStructure = structureService.convertSmilesToMol(smiles);
+		logger.info(molStructure);
+	}
 
 }
