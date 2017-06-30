@@ -37,4 +37,6 @@ public interface StructureService {
 
 	String convertSmilesToMol(String smiles) throws InvalidSmilesException, Exception;
 
+	String cleanMolStructure(String molStructure) throws Exception;
+
 }

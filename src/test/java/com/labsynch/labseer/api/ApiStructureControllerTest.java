@@ -113,5 +113,19 @@ public class ApiStructureControllerTest {
 		logger.info(molStructure);
 	}
     
+    @Test
+	public void cleanMolStructure() throws Exception{
+    	String molStructure = "\n  Mrv1641110051619032D          \n\n  5  5  0  0  0  0            999 V2000\n   -0.0446    0.6125    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.7121    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.4572   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.3679   -0.6572    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.6228    0.1274    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n  2  3  1  0  0  0  0\n  3  4  1  0  0  0  0\n  4  5  1  0  0  0  0\n  1  2  1  0  0  0  0\n  1  5  1  0  0  0  0\nM  END\n";
+		//String smiles = "CCC>>CCN";
+		MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/structure/cleanMolStructure")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(molStructure))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse();
+		String cleanedMolStructure = response.getContentAsString();
+		logger.info(cleanedMolStructure);
+	}
+    
 
 }

@@ -289,9 +289,26 @@ public class ApiStructureController {
     	}catch (EmptyResultDataAccessException empty){
     		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
     	}catch (Exception e){
-    		logger.error("Caught exception saving structure",e);
+    		logger.error("Caught exception converting smiles to MOL",e);
     		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
     	}
         
+    }
+	
+	@Transactional
+    @RequestMapping(value = "/cleanMolStructure", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> cleanMolStructure(
+    		@RequestBody String molStructure) {
+    	HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+    	try{
+    		String cleanedMolStructure = structureService.cleanMolStructure(molStructure);
+            return new ResponseEntity<String>(cleanedMolStructure, headers, HttpStatus.OK);
+    	}catch (EmptyResultDataAccessException empty){
+    		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+    	}catch (Exception e){
+    		logger.error("Caught exception cleaning MOL structure",e);
+    		return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+    	}
     }
 }

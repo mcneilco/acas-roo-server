@@ -20,11 +20,10 @@ import org.apache.commons.codec.binary.Base64OutputStream;
 import org.openscience.cdk.depict.Depiction;
 import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.exception.CDKException;
-import org.openscience.cdk.exception.InvalidSmilesException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.MDLV2000Reader;
 import org.openscience.cdk.io.MDLV2000Writer;
-import org.openscience.cdk.io.SMILESReader;
+import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
 import org.openscience.cdk.smiles.SmilesParser;
@@ -150,11 +149,31 @@ public class StructureServiceImpl implements StructureService {
 	public String convertSmilesToMol(String smiles) throws Exception{
 		SmilesParser smilesParser  = new SmilesParser(SilentChemObjectBuilder.getInstance());
 	    IAtomContainer molecule   = smilesParser.parseSmiles("c1ccccc1");
+	    StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+	    sdg.setMolecule(molecule);
+	    sdg.generateCoordinates();
+	    IAtomContainer cleanedMolecule = sdg.getMolecule();
 	    StringWriter sw = new StringWriter();
 	    MDLV2000Writer molWriter = new MDLV2000Writer(sw);
-	    molWriter.writeMolecule(molecule);
+	    molWriter.writeMolecule(cleanedMolecule);
 	    String molStructure = sw.getBuffer().toString();
+	    molWriter.close();
 		return molStructure;
+	}
+	
+	@Override
+	public String cleanMolStructure(String molStructure) throws Exception{
+	    IAtomContainer molecule = readMolStructure(molStructure);
+	    StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+	    sdg.setMolecule(molecule);
+	    sdg.generateCoordinates();
+	    IAtomContainer cleanedMolecule = sdg.getMolecule();
+	    StringWriter sw = new StringWriter();
+	    MDLV2000Writer molWriter = new MDLV2000Writer(sw);
+	    molWriter.writeMolecule(cleanedMolecule);
+	    String cleanedMolStructure = sw.getBuffer().toString();
+	    molWriter.close();
+		return cleanedMolStructure;
 	}
 
 	@Override
