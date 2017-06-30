@@ -24,14 +24,6 @@ privileged aspect Experiment_Roo_Finder {
         return q;
     }
     
-    public static TypedQuery<Experiment> Experiment.findExperimentsByLsKindEquals(String lsKind) {
-        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
-        EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsKind = :lsKind", Experiment.class);
-        q.setParameter("lsKind", lsKind);
-        return q;
-    }
-    
     public static TypedQuery<Experiment> Experiment.findExperimentsByLsKindLike(String lsKind) {
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         lsKind = lsKind.replace('*', '%');
@@ -44,14 +36,6 @@ privileged aspect Experiment_Roo_Finder {
         EntityManager em = Experiment.entityManager();
         TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Experiment.class);
         q.setParameter("lsKind", lsKind);
-        return q;
-    }
-    
-    public static TypedQuery<Experiment> Experiment.findExperimentsByLsTypeEquals(String lsType) {
-        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
-        EntityManager em = Experiment.entityManager();
-        TypedQuery<Experiment> q = em.createQuery("SELECT o FROM Experiment AS o WHERE o.lsType = :lsType", Experiment.class);
-        q.setParameter("lsType", lsType);
         return q;
     }
     
