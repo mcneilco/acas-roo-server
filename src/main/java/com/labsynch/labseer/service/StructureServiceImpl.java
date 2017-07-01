@@ -148,7 +148,7 @@ public class StructureServiceImpl implements StructureService {
 	@Override
 	public String convertSmilesToMol(String smiles) throws Exception{
 		SmilesParser smilesParser  = new SmilesParser(SilentChemObjectBuilder.getInstance());
-	    IAtomContainer molecule   = smilesParser.parseSmiles("c1ccccc1");
+	    IAtomContainer molecule   = smilesParser.parseSmiles(smiles);
 	    StructureDiagramGenerator sdg = new StructureDiagramGenerator();
 	    sdg.setMolecule(molecule);
 	    sdg.generateCoordinates();
