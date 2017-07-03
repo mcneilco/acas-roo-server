@@ -41,7 +41,8 @@ public class ApiExperimentLabelController {
 	@Transactional
 	@RequestMapping(params = "FindByName", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> jsonFindExperimentLabelByNameGet(@RequestParam("name") String name, @RequestParam(value = "protocolId", required = false) Long protocolId) {
+	public ResponseEntity<java.lang.String> jsonFindExperimentLabelByNameGet(@RequestParam("name") String name, 
+			@RequestParam(value = "protocolId", required = false) Long protocolId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		List<ExperimentLabel> experimentLabels;
