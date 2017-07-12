@@ -45,7 +45,8 @@ public interface ContainerStateService {
 			Collection<GenericStatePathRequest> genericRequests);
 
 	Collection<ContainerState> getContainerStatesByContainerValue(
-			ContainerValueRequestDTO requestDTO) throws Exception;
+			ContainerValueRequestDTO requestDTO, Boolean like, Boolean rightLike)
+			throws Exception;
 
 	
 	

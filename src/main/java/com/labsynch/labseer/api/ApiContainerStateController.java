@@ -29,6 +29,7 @@ import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.UpdateLog;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
+import com.labsynch.labseer.dto.ContainerQueryResultDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
 import com.labsynch.labseer.dto.ContainerValueRequestDTO;
 import com.labsynch.labseer.service.ContainerService;
@@ -275,16 +276,29 @@ public class ApiContainerStateController {
   @Transactional
   @RequestMapping(value = "/getContainerStatesByContainerValue", method = RequestMethod.POST, headers = "Accept=application/json")
   @ResponseBody
-  public ResponseEntity<java.lang.String> getContainersByContainerValue(@RequestBody String json, @RequestParam(value = "with", required = false) String with) {
+  public ResponseEntity<java.lang.String> getContainerStatesByContainerValue(@RequestBody String json, 
+		  @RequestParam(value="like", required=false) Boolean like,
+		  @RequestParam(value="rightLike", required=false) Boolean rightLike,
+		  @RequestParam(value="maxResults", required=false) Integer maxResults,
+		  @RequestParam(value = "with", required = false) String with) {
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", "application/json; charset=utf-8");
       try{
       	ContainerValueRequestDTO requestDTO = ContainerValueRequestDTO.fromJsonToContainerValueRequestDTO(json);
-      	Collection<ContainerState> searchResults = csService.getContainerStatesByContainerValue(requestDTO);
-      	if (with != null && with.equalsIgnoreCase("nestedContainer")){
-      		return new ResponseEntity<String>(ContainerState.toJsonArrayWithNestedContainers(searchResults), headers, HttpStatus.OK);
-      	}
-      	return new ResponseEntity<String>(ContainerState.toJsonArray(searchResults), headers, HttpStatus.OK);
+      	Collection<ContainerState> searchResults = csService.getContainerStatesByContainerValue(requestDTO, like, rightLike);
+      	if (maxResults != null && maxResults > 0 && searchResults.size() > maxResults){
+        	ContainerQueryResultDTO resultDTO = new ContainerQueryResultDTO();
+        	resultDTO.setMaxResults(maxResults);
+        	resultDTO.setNumberOfResults(searchResults.size());
+        	return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
+        }
+        else{
+        	if (with != null && with.equalsIgnoreCase("nestedContainer")){
+          		return new ResponseEntity<String>(ContainerState.toJsonArrayWithNestedContainers(searchResults), headers, HttpStatus.OK);
+          	}
+          	return new ResponseEntity<String>(ContainerState.toJsonArray(searchResults), headers, HttpStatus.OK);
+        }
+      	
       } catch (Exception e){
       	logger.error("Uncaught error in getContainerStatesByContainerValue",e);
           return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
