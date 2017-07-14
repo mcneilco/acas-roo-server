@@ -295,9 +295,10 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 		if (requestDTO.getValue() == null) throw new Exception("Value must be specified");
 		
 		if (like != null && like){
-			String fullQuery = "SELECT DISTINCT containerState FROM Container container "
-					+ "JOIN container.lsStates containerState "
-					+ "JOIN containerState.lsValues containerValue "
+			String fullQuery = "SELECT DISTINCT containerState FROM ContainerState containerState "
+					+ "JOIN FETCH containerState.container container "
+					+ "JOIN FETCH containerState.lsValues containerValue "
+					+ "LEFT JOIN FETCH container.lsLabels containerLabel "
 					+ "WHERE container.lsType = " + "'"+requestDTO.getContainerType()+"'"+" "
 					+ "AND container.lsKind = " + "'"+requestDTO.getContainerKind()+"'"+" "
 					+ "AND container.ignored <> true "
