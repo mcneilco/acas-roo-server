@@ -53,6 +53,7 @@ import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerQueryResultDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
 import com.labsynch.labseer.dto.ContainerValueRequestDTO;
@@ -275,6 +276,34 @@ public class ApiContainerControllerTest {
     		Assert.assertEquals(plateBarcodes.get(i).replaceAll("\"", ""), result.getRequestLabel());
     		i++;
     	}
+    }
+    
+    @Test
+    @Transactional
+    public void getContainerCodesByLabels_tooManyResults() throws Exception{
+    	List<String> plateBarcodes = new ArrayList<String>();
+    	TypedQuery<Container> query = Container.findContainersByLsTypeEqualsAndLsKindEquals("container","plate");
+    	query.setMaxResults(3);
+    	for (Container container : query.getResultList()){
+    		plateBarcodes.add("\""+container.getLsLabels().iterator().next().getLabelText()+"\"");	
+    	}
+    	Integer maxResults = 2;
+		String json = plateBarcodes.toString();
+		logger.info(json);
+		Assert.assertFalse(json.equals("{}"));
+    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainerCodesByLabels?maxResults="+maxResults.toString())
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON)
+    			.content(json))
+    			.andExpect(status().isOk())
+    			.andExpect(content().contentType("application/json;charset=utf-8"))
+    			.andReturn().getResponse();
+    	String responseJson = response.getContentAsString();
+    	logger.info(responseJson);
+    	ContainerQueryResultDTO result = ContainerQueryResultDTO.fromJsonToContainerQueryResultDTO(responseJson);
+    	Assert.assertEquals(maxResults, result.getMaxResults());
+    	Assert.assertTrue((result.getNumberOfResults() > maxResults));
+    	Assert.assertNull(result.getResults());
     }
     
     @Test
@@ -1648,6 +1677,35 @@ public class ApiContainerControllerTest {
 	    			.andExpect(content().contentType("application/json;charset=utf-8"))
 	    			.andReturn().getResponse();
 			logger.info(response.getContentAsString());
+	    }
+	    
+	    @Test
+	    @Transactional
+	    public void searchContainerCodesByContainerValue_tooManyResults() throws Exception{
+	    	ContainerValueRequestDTO requestDTO = new ContainerValueRequestDTO();
+	    	requestDTO.setContainerType("container");
+	    	requestDTO.setContainerKind("plate");;
+	    	requestDTO.setStateType("metadata");
+	    	requestDTO.setStateKind("information");
+	    	requestDTO.setValueType("codeValue");
+	    	requestDTO.setValueKind("created user");
+	    	requestDTO.setValue("bob");
+	    	String json = requestDTO.toJson();
+	    	Integer maxResults = 2;
+	    	MockHttpServletResponse response = this.mockMvc.perform(post("/api/v1/containers/getContainerCodeNamesByContainerValue?maxResults="+maxResults.toString())
+	    			.contentType(MediaType.APPLICATION_JSON)
+	    			.accept(MediaType.APPLICATION_JSON)
+	    			.content(json))
+	    			.andExpect(status().isOk())
+	    			.andExpect(content().contentType("application/json;charset=utf-8"))
+	    			.andReturn().getResponse();
+			logger.info(response.getContentAsString());
+			String responseJson = response.getContentAsString();
+	    	logger.info(responseJson);
+	    	ContainerQueryResultDTO result = ContainerQueryResultDTO.fromJsonToContainerQueryResultDTO(responseJson);
+	    	Assert.assertEquals(maxResults, result.getMaxResults());
+	    	Assert.assertTrue((result.getNumberOfResults() > maxResults));
+	    	Assert.assertNull(result.getResults());
 	    }
     
 
