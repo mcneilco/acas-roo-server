@@ -299,6 +299,7 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 					+ "JOIN FETCH containerState.container container "
 					+ "JOIN FETCH containerState.lsValues containerValue "
 					+ "LEFT JOIN FETCH container.lsLabels containerLabel "
+					+ "LEFT JOIN FETCH containerState.lsValues otherContainerValues "
 					+ "WHERE container.lsType = " + "'"+requestDTO.getContainerType()+"'"+" "
 					+ "AND container.lsKind = " + "'"+requestDTO.getContainerKind()+"'"+" "
 					+ "AND container.ignored <> true "
@@ -307,7 +308,8 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 					+ "AND containerState.ignored <> true "
 					+ "AND containerValue.lsType = " + "'"+requestDTO.getValueType()+"'"+" "
 					+ "AND containerValue.lsKind = " + "'"+requestDTO.getValueKind()+"'"+" "
-					+ "AND containerValue.ignored <> true ";
+					+ "AND containerValue.ignored <> true "
+					+ "AND otherContainerValues.id != containerValue.id ";
 			if (requestDTO.getValueType().equals("stringValue")){
 				if (like != null && like){
 					if (rightLike != null && rightLike){
