@@ -100,7 +100,9 @@ public class Container extends AbstractThing {
 	}
 
 	public String toJsonStub() {
-		return new JSONSerializer().exclude("*.class")
+		return new JSONSerializer()
+				.exclude("*.class", "lsStates")
+				.include("lsLabels")
 				.transform(new ExcludeNulls(), void.class)
 				.prettyPrint(true)
 				.serialize(this);
@@ -149,7 +151,8 @@ public class Container extends AbstractThing {
 	
 	public static String toJsonArrayStub(Collection<Container> collection) {
 		return new JSONSerializer()
-			.exclude("*.class")
+			.exclude("*.class", "lsStates")
+			.include("lsLabels")
 			.transform(new ExcludeNulls(), void.class)
 			.serialize(collection);
 	}
