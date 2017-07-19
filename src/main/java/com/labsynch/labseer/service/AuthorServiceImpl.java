@@ -68,7 +68,7 @@ public class AuthorServiceImpl implements AuthorService {
 		codeTable.setName(author.getFirstName() + " " + author.getLastName());
 		codeTable.setCode(author.getUserName());
 		codeTable.setId(author.getId());
-		codeTable.setIgnored(false);
+		codeTable.setIgnored(author.isIgnored());
 		return codeTable;
 	}
 
