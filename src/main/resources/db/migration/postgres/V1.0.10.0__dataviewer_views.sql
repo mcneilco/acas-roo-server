@@ -1,6 +1,6 @@
 
 
-CREATE OR REPLACE VIEW acas.V_API_DV_PROTOCOL 
+CREATE OR REPLACE VIEW V_API_DV_PROTOCOL 
 AS
 SELECT distinct prot.id as protocol_id,
 prot.code_name as protocol_codeName, 
@@ -9,7 +9,7 @@ FROM protocol prot
 JOIN protocol_label pl ON prot.id = pl.protocol_id AND pl.ignored <> '1' 
 AND pl.preferred = '1' AND pl.ls_type = 'name';
 
-CREATE OR REPLACE VIEW acas.V_API_DV_EXPERIMENT 
+CREATE OR REPLACE VIEW V_API_DV_EXPERIMENT 
 AS
 SELECT distinct 
 exp.id as experiment_id,
@@ -21,7 +21,7 @@ JOIN experiment_label el ON exp.id = el.experiment_id AND el.ignored <> '1'
 AND el.preferred = '1' AND el.ls_type = 'name';
 
 
-CREATE OR REPLACE VIEW acas.vw_dv_ag_results 
+CREATE OR REPLACE VIEW vw_dv_ag_results 
 AS
 select 
  p.id as protocol_id, 
@@ -58,14 +58,14 @@ select
  agv.comments,
  agv.recorded_date::date AS recorded_date,
  agv.public_data
-FROM acas.protocol p
-     JOIN acas.experiment e ON p.id = e.protocol_id AND p.ignored = false AND e.ignored = false
-     JOIN acas.experiment_analysisgroup eag ON e.id = eag.experiment_id
-     JOIN acas.analysis_group ag ON eag.analysis_group_id = ag.id AND ag.ignored = false
-     JOIN acas.analysis_group_state ags ON ags.analysis_group_id = ag.id AND ags.ignored = false
-     JOIN acas.analysis_group_value agv ON agv.analysis_state_id = ags.id AND agv.ls_kind::text <> 'batch code'::text AND agv.ls_kind::text <> 'time'::text
-     JOIN acas.analysis_group_value agv2 ON agv2.analysis_state_id = ags.id AND agv2.ls_kind::text = 'batch code'::text
-     LEFT JOIN acas.analysis_group_value agv4 ON agv4.analysis_state_id = ags.id AND agv4.ls_kind::text = 'time'::text
+FROM protocol p
+     JOIN experiment e ON p.id = e.protocol_id AND p.ignored = false AND e.ignored = false
+     JOIN experiment_analysisgroup eag ON e.id = eag.experiment_id
+     JOIN analysis_group ag ON eag.analysis_group_id = ag.id AND ag.ignored = false
+     JOIN analysis_group_state ags ON ags.analysis_group_id = ag.id AND ags.ignored = false
+     JOIN analysis_group_value agv ON agv.analysis_state_id = ags.id AND agv.ls_kind::text <> 'batch code'::text AND agv.ls_kind::text <> 'time'::text
+     JOIN analysis_group_value agv2 ON agv2.analysis_state_id = ags.id AND agv2.ls_kind::text = 'batch code'::text
+     LEFT JOIN analysis_group_value agv4 ON agv4.analysis_state_id = ags.id AND agv4.ls_kind::text = 'time'::text
   WHERE  agv.ignored = false;
 
 -- can switch the underlying view to allow a little flexibility
@@ -74,7 +74,7 @@ CREATE OR REPLACE VIEW V_API_DV_AG_RESULTS AS SELECT * FROM vw_dv_ag_results;
 CREATE OR REPLACE VIEW DV_API_ALL_AG_RESULTS AS SELECT * FROM vw_dv_ag_results;
 
 
-CREATE OR REPLACE VIEW acas.VW_DV_EXPT_AG_KINDS 
+CREATE OR REPLACE VIEW VW_DV_EXPT_AG_KINDS 
 AS
 SELECT distinct agr.protocol_id, agr.protocol_code,  pl.label_text as protocol_name, 
 agr.experiment_id, agr.experiment_code, el.label_text as experiment_name, 
