@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
@@ -34,5 +35,8 @@ public interface ProtocolService {
 
 	Collection<ProtocolErrorMessageDTO> findProtocolsByCodeNames(
 			List<String> codeNames);
+	
+	Collection<String> getProtocolCodesByDateValueComparison(
+			DateValueComparisonRequest requestDTO) throws Exception;
 	
 }
