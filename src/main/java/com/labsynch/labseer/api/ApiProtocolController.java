@@ -34,6 +34,7 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ProtocolDTO;
 import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 import com.labsynch.labseer.exceptions.ErrorMessage;
@@ -486,5 +487,21 @@ public class ApiProtocolController {
             return new ResponseEntity<String>(ProtocolErrorMessageDTO.toJsonArrayStub(foundProtocols), headers, HttpStatus.OK);
         }
     }
+	
+	@Transactional
+    @RequestMapping(value = "/getProtocolCodesByDateValueComparison", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> getExperimentCodesByDateValueComparison(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		DateValueComparisonRequest requestDTO = DateValueComparisonRequest.fromJsonToDateValueComparisonRequest(json);
+		try {
+			Collection<String> results = protocolService.getProtocolCodesByDateValueComparison(requestDTO);
+			return new ResponseEntity<String>(new JSONSerializer().exclude("*.class").serialize(results), headers, HttpStatus.OK);
+		} catch(Exception e){
+			logger.error("Caught error in getProtocolCodesByDateValueComparison",e);
+			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 	
 }
