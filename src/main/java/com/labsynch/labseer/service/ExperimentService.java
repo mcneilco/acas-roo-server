@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentFilterDTO;
@@ -78,5 +79,9 @@ public interface ExperimentService {
 			String experimentKind, String labelType, String labelKind,
 			PreferredNameRequestDTO requestDTO);
 	public List<ExperimentDataDTO> getExperimentData(String batchCode, boolean showOnlyPublicData);
+	
+	public Collection<String> getExperimentCodesByDateValueComparison(
+			DateValueComparisonRequest requestDTO) throws Exception;
+
 	
 }

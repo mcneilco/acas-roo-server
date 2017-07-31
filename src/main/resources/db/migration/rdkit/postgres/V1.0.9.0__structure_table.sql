@@ -25,6 +25,16 @@ ALTER TABLE chem_structure
   OWNER TO acas;
 GRANT ALL ON TABLE chem_structure TO acas;
 
+DO 
+$do$
+BEGIN
+    BEGIN
+        ALTER TABLE chem_structure ADD COLUMN rdkmol mol;
+    EXCEPTION
+        WHEN duplicate_column THEN RAISE NOTICE 'column mol already exists in chem_structure.';
+    END;
+END
+$do$;
 
 DO
 $do$
