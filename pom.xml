@@ -33,8 +33,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<version>1.12.0-RC</version>
 	<description>ACAS Java persistence layer</description>
 	<properties>
-		<aspectj.version>1.7.0.RC1</aspectj.version>
-		<java.version>1.7</java.version>
+		<aspectj.version>1.8.10</aspectj.version>
+		<java.version>1.8</java.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
@@ -495,10 +495,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.4</version>
+				<version>3.6.0</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<useIncrementalCompilation>false</useIncrementalCompilation>
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
@@ -537,7 +538,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>aspectj-maven-plugin</artifactId>
-				<version>1.2</version>
+				<version>1.9</version>
 				<!-- NB: do not use 1.3 or 1.3.x due to MASPECTJ-90 and do not use 1.4 
 					due to declare parents issue -->
 				<dependencies>
@@ -556,6 +557,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				</dependencies>
 				<executions>
 					<execution>
+						<phase>process-sources</phase>
 						<goals>
 							<goal>compile</goal>
 							<goal>test-compile</goal>
@@ -570,6 +572,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 							<artifactId>spring-aspects</artifactId>
 						</aspectLibrary>
 					</aspectLibraries>
+					<Xlint>ignore</Xlint>
+					<complianceLevel>${java.version}</complianceLevel>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
