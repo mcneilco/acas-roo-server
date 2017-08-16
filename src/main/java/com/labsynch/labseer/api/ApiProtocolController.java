@@ -334,7 +334,7 @@ public class ApiProtocolController {
         } catch (EmptyResultDataAccessException e){
         	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(protocol.toJsonStub(), headers, HttpStatus.OK);
     }
 
     @Transactional
