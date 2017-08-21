@@ -593,14 +593,15 @@ public class ProtocolServiceImpl implements ProtocolService {
 		String query = "SELECT new Map( protocol.codeName AS codeName, protocol.modifiedDate AS modifiedDate, protocol.recordedDate as recordedDate, value.dateValue AS dateValue )"
 				+ "FROM Protocol AS protocol "
 				+ "JOIN protocol.lsStates  state "
-				+ "LEFT OUTER JOIN state.lsValues AS value "
-				+ "WHERE protocol.ignored = false "
-				+ "AND state.ignored = false "
-				+ "AND value.ignored = false "
+				+ "WITH state.ignored = false "
 				+ "AND state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind "
+				+ "LEFT OUTER JOIN state.lsValues AS value "
+				+ "WITH value.ignored = false "
 				+ "AND value.lsType = :valueType "
-				+ "AND value.lsKind = :valueKind ";
+				+ "AND value.lsKind = :valueKind "
+				+ "WHERE protocol.ignored = false "
+				;
 		if (requestDTO.getLsType() != null && requestDTO.getLsType().length()>0) query += "AND protocol.lsType = :protocolType ";
 		if (requestDTO.getLsKind() != null && requestDTO.getLsKind().length()>0) query += "AND protocol.lsKind = :protocolKind ";
 		

@@ -1716,14 +1716,15 @@ public class ExperimentServiceImpl implements ExperimentService {
 		String query = "SELECT new Map( experiment.codeName AS codeName, experiment.modifiedDate AS modifiedDate, experiment.recordedDate as recordedDate, value.dateValue AS dateValue )"
 				+ "FROM Experiment AS experiment "
 				+ "JOIN experiment.lsStates  state "
-				+ "LEFT OUTER JOIN state.lsValues AS value "
-				+ "WHERE experiment.ignored = false "
-				+ "AND state.ignored = false "
-				+ "AND value.ignored = false "
+				+ "WITH state.ignored = false "
 				+ "AND state.lsType = :stateType "
 				+ "AND state.lsKind = :stateKind "
+				+ "LEFT OUTER JOIN state.lsValues AS value "
+				+ "WITH value.ignored = false "
 				+ "AND value.lsType = :valueType "
-				+ "AND value.lsKind = :valueKind ";
+				+ "AND value.lsKind = :valueKind "
+				+ "WHERE experiment.ignored = false "
+				;
 		if (requestDTO.getLsType() != null && requestDTO.getLsType().length()>0) query += "AND experiment.lsType = :experimentType ";
 		if (requestDTO.getLsKind() != null && requestDTO.getLsKind().length()>0) query += "AND experiment.lsKind = :experimentKind ";
 		
