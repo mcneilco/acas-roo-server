@@ -117,6 +117,8 @@ public class ApiContainerController {
         if (format != null && format.equalsIgnoreCase("codeTable")){
         	List<CodeTableDTO> codeTableContainers = containerService.convertToCodeTables(containers);
         	return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTableContainers), headers, HttpStatus.OK);
+        }else if (format != null && format.equalsIgnoreCase("stub")){
+            return new ResponseEntity<String>(Container.toJsonArrayStub(containers), headers, HttpStatus.OK);
         }
         return new ResponseEntity<String>(Container.toJsonArray(containers), headers, HttpStatus.OK);
     }
