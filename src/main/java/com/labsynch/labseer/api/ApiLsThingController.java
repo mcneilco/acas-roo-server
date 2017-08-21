@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeTypeKindDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.GeneOrthologDTO;
 import com.labsynch.labseer.dto.GeneOrthologFileDTO;
@@ -45,6 +46,8 @@ import com.labsynch.labseer.service.GeneThingService;
 import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+
+import flexjson.JSONSerializer;
 
 @Controller
 @RequestMapping("api/v1/lsthings")
@@ -1166,6 +1169,22 @@ public class ApiLsThingController {
 			}
 		}
 		return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
+	}
+	
+	@Transactional
+    @RequestMapping(value = "/getLsThingCodesByDateValueComparison", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> getExperimentCodesByDateValueComparison(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		DateValueComparisonRequest requestDTO = DateValueComparisonRequest.fromJsonToDateValueComparisonRequest(json);
+		try {
+			Collection<String> results = lsThingService.getLsThingCodesByDateValueComparison(requestDTO);
+			return new ResponseEntity<String>(new JSONSerializer().exclude("*.class").serialize(results), headers, HttpStatus.OK);
+		} catch(Exception e){
+			logger.error("Caught error in getLsThingCodesByDateValueComparison",e);
+			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 }
