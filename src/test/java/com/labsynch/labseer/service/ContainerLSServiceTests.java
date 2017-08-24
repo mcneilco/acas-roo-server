@@ -1224,7 +1224,7 @@ public class ContainerLSServiceTests {
 		String batchConcUnits = "mM";
 		String physicalState = "liquid";
 		for(Container well : wells){
-			WellContentDTO wellDTO = new WellContentDTO(well.getCodeName(), null, null, null, recordedBy, null, amount, amountUnits, null, batchConcentration, batchConcUnits, null, physicalState);
+			WellContentDTO wellDTO = new WellContentDTO(well.getCodeName(), null, null, null, recordedBy, null, null, amount, amountUnits, null, batchConcentration, batchConcUnits, null, physicalState);
 			wellDTOs.add(wellDTO);
 		}
 		logger.info(WellContentDTO.toJsonArray(wellDTOs));
