@@ -112,5 +112,20 @@ public class StructureServiceTests {
 		logger.info("number of structures found: " + structures.size());
 		//Assert.assertTrue(searchResults.isEmpty());
 	}
+	
+	@Test
+	public void convertSmilesToMol() throws Exception{
+		String smiles = "O=C1NC%91=NC2NC=NC=21.[*:1]%91 |$;;;;;;;;;;_R1$|";
+		//String smiles = "CCC>>CCN";
+		String molStructure = structureService.convertSmilesToMol(smiles);
+		logger.info(molStructure);
+	}
+	
+	@Test
+	public void cleanMol() throws Exception{
+		String queryMol = "Molecule from ChemDoodle Web Components\n\nhttp://www.ichemlabs.com\n  5  5  0  0  0  0            999 V2000\n    0.0000    0.7694    0.0000 C   0  0  0  0  0  0\n    0.8090    0.1816    0.0000 C   0  0  0  0  0  0\n    0.5000   -0.7694    0.0000 C   0  0  0  0  0  0\n   -0.5000   -0.7694    0.0000 C   0  0  0  0  0  0\n   -0.8090    0.1816    0.0000 C   0  0  0  0  0  0\n  1  2  1  0     0  0\n  2  3  1  0     0  0\n  3  4  1  0     0  0\n  4  5  1  0     0  0\n  5  1  1  0     0  0\nM  END";
+		String molStructure = structureService.cleanMolStructure(queryMol);
+		logger.info(molStructure);
+	}
 
 }
