@@ -31,6 +31,7 @@ import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -214,6 +215,27 @@ public class ApiProtocolControllerTest {
         	Assert.assertNotNull(response.getName());
         	Assert.assertNotNull(response.getId());
     	}
+    }
+    
+    @Test
+    public void getProtocolCodesByDateValueComparison() throws Exception {
+    	DateValueComparisonRequest request = new DateValueComparisonRequest();
+		request.setStateType("metadata");
+		request.setStateKind("protocol metadata");
+		request.setValueKind("completion date");
+		request.setSecondsDelta(60);
+		
+		String requestJson = request.toJson();
+		
+		logger.info(requestJson);
+    	String responseJson =  this.mockMvc.perform(post("/api/v1/protocols/getProtocolCodesByDateValueComparison")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(requestJson)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+		
     }
     
 

@@ -47,6 +47,7 @@ import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.BatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
 import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
@@ -77,6 +78,7 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Controller
 @RequestMapping("api/v1/experiments")
@@ -1611,4 +1613,20 @@ public class ApiExperimentController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
     }
+    
+    @Transactional
+    @RequestMapping(value = "/getExperimentCodesByDateValueComparison", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> getExperimentCodesByDateValueComparison(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		DateValueComparisonRequest requestDTO = DateValueComparisonRequest.fromJsonToDateValueComparisonRequest(json);
+		try {
+			Collection<String> results = experimentService.getExperimentCodesByDateValueComparison(requestDTO);
+			return new ResponseEntity<String>(new JSONSerializer().exclude("*.class").serialize(results), headers, HttpStatus.OK);
+		} catch(Exception e){
+			logger.error("Caught error in getExperimentCodesByDateValueComparison",e);
+			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
