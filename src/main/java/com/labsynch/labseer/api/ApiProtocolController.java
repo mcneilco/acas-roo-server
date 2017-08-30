@@ -253,7 +253,7 @@ public class ApiProtocolController {
         if (protocol.getId() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(protocol.toJsonStub(), headers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
@@ -334,7 +334,7 @@ public class ApiProtocolController {
         } catch (EmptyResultDataAccessException e){
         	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>(protocol.toJson(), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(protocol.toJsonStub(), headers, HttpStatus.OK);
     }
 
     @Transactional
