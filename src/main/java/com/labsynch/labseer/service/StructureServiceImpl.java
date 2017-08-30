@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -21,8 +22,11 @@ import org.openscience.cdk.depict.DepictionGenerator;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.interfaces.IAtomContainer;
 import org.openscience.cdk.io.MDLV2000Reader;
+import org.openscience.cdk.io.MDLV2000Writer;
+import org.openscience.cdk.layout.StructureDiagramGenerator;
 import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesGenerator;
+import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.AtomContainerManipulator;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 import org.slf4j.Logger;
@@ -139,6 +143,37 @@ public class StructureServiceImpl implements StructureService {
 		molecule = mdlReader.read(molecule);
 		mdlReader.close();
 		return molecule;
+	}
+	
+	@Override
+	public String convertSmilesToMol(String smiles) throws Exception{
+		SmilesParser smilesParser  = new SmilesParser(SilentChemObjectBuilder.getInstance());
+	    IAtomContainer molecule   = smilesParser.parseSmiles(smiles);
+	    StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+	    sdg.setMolecule(molecule);
+	    sdg.generateCoordinates();
+	    IAtomContainer cleanedMolecule = sdg.getMolecule();
+	    StringWriter sw = new StringWriter();
+	    MDLV2000Writer molWriter = new MDLV2000Writer(sw);
+	    molWriter.writeMolecule(cleanedMolecule);
+	    String molStructure = sw.getBuffer().toString();
+	    molWriter.close();
+		return molStructure;
+	}
+	
+	@Override
+	public String cleanMolStructure(String molStructure) throws Exception{
+	    IAtomContainer molecule = readMolStructure(molStructure);
+	    StructureDiagramGenerator sdg = new StructureDiagramGenerator();
+	    sdg.setMolecule(molecule);
+	    sdg.generateCoordinates();
+	    IAtomContainer cleanedMolecule = sdg.getMolecule();
+	    StringWriter sw = new StringWriter();
+	    MDLV2000Writer molWriter = new MDLV2000Writer(sw);
+	    molWriter.writeMolecule(cleanedMolecule);
+	    String cleanedMolStructure = sw.getBuffer().toString();
+	    molWriter.close();
+		return cleanedMolStructure;
 	}
 
 	@Override

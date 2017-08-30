@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.ChemStructure;
@@ -33,5 +34,9 @@ public interface StructureService {
 
 	String renderMolStructureBase64(String molStructure, Integer hSize, Integer wSize, String format)
 			throws IOException, CDKException;
+
+	String convertSmilesToMol(String smiles) throws InvalidSmilesException, Exception;
+
+	String cleanMolStructure(String molStructure) throws Exception;
 
 }
