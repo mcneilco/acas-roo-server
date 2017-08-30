@@ -120,7 +120,7 @@ public class Protocol extends AbstractThing {
             }
         }
         logger.debug("attempting to merge protocol");
-        logger.debug(updatedProtocol.toPrettyJson());
+        if (logger.isDebugEnabled()) logger.debug(updatedProtocol.toPrettyJson());
         updatedProtocol.merge();
         logger.debug("successfully merged protocol");
         return updatedProtocol;
