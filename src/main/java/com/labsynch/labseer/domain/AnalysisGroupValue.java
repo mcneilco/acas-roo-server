@@ -401,31 +401,30 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ ", agv3.numericValue as testedTime "
 				+ ", agv3.unitKind as testedTimeUnit "
 		+ " ) FROM AnalysisGroup ag  "
-//						+ "JOIN  LsThing thing " 
 		+ "JOIN ag.lsStates ags with ags.lsType IN ('data', 'metadata') and ags.ignored = false " 
 		+ "JOIN ags.lsValues agv with agv.lsKind NOT IN ('tested concentration', 'batch code', 'time') and agv.ignored = false " 
 		+ "JOIN ags.lsValues agv2 with agv2.lsKind = 'batch code' and agv2.ignored = false "
 		+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
-//		+ "JOIN thing.lsLabels tl with tl.ignored = false and tl.lsType = 'name' and tl.lsKind = 'Entrez Gene ID' and tl.ignored = false and tl.preferred = true " 
 		+ "JOIN ag.experiments expt with expt.ignored = false " 
 		+ "LEFT OUTER JOIN expt.protocol prot with prot.ignored = false "
 		+ "JOIN expt.protocol prot with prot.ignored = false "
         + "JOIN prot.lsLabels protLabel with protLabel.ignored = false "
 		+ "LEFT OUTER JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
-//        + "JOIN TempSelectTable tst with tst.lsTransaction = :transactionId "
-		+ "WHERE ag.ignored = false "
-//				+ "AND thing.codeName = agv2.codeValue AND thing.lsType = 'gene' "
-//				+ "and thing.lsKind = 'entrez gene' "
-		+ "AND agv2.codeValue IN (:batchCodeList) AND agv.publicData = :publicData " 
-		+ "AND expt.codeName IN (:experimentCodeList) and expt.ignored = false";
-		
+		+ "WHERE ag.ignored = false AND agv.publicData = :publicData ";
+		if (!batchCodeList.isEmpty()) {
+			sqlQuery += "AND agv2.codeValue IN (:batchCodeList) ";
+
+		}
+		if (!experimentCodeList.isEmpty()) {
+			sqlQuery += "AND expt.codeName IN (:experimentCodeList) ";
+		}
 		
 		logger.debug("query sql: " + sqlQuery);
 
 		EntityManager em = entityManager();
 		TypedQuery<AnalysisGroupValueDTO> q = em.createQuery(sqlQuery, AnalysisGroupValueDTO.class);
-		q.setParameter("batchCodeList", batchCodeList);
-		q.setParameter("experimentCodeList", experimentCodeList);
+		if (!batchCodeList.isEmpty()) q.setParameter("batchCodeList", batchCodeList);
+		if (!experimentCodeList.isEmpty()) q.setParameter("experimentCodeList", experimentCodeList);
 		q.setParameter("publicData", publicData);
 		
 		List<AnalysisGroupValueDTO> results = q.getResultList();

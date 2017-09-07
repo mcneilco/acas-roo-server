@@ -908,7 +908,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@SuppressWarnings({ "unchecked", "null" })
 	@Override
 	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest, Boolean onlyPublicData){
-
+		//DataViewer route to get analysis group data (results) based on filter parameters
 		searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
 		searchRequest.getExperimentCodeList().removeAll(Collections.singleton(null));
 
@@ -990,74 +990,6 @@ public class ExperimentServiceImpl implements ExperimentService {
 		}
 
 		return agValues;
-
-
-		//		if (searchRequest.getBooleanFilter() != null && searchRequest.getBooleanFilter().equalsIgnoreCase("ADVANCED")){
-		//			// not implemented yet -- do same as AND for now
-		//			searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
-		//			List<String> batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters()).getResultList();			
-		//			Set<String> uniqueBatchCodes = new HashSet<String>();
-		//			uniqueBatchCodes.addAll(batchCodes);
-		//			uniqueBatchCodes.removeAll(Collections.singleton(null));
-		//
-		//			logger.debug("number of batchCodes found: " + batchCodes.size());
-		//			logger.debug("number of uniqueBatchCodes found: " + uniqueBatchCodes.size());
-		//
-		//			if (uniqueBatchCodes.size() > 0){
-		//				logger.debug("looking by expriment codes and batch codes in default AND block");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(uniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
-		//				logger.debug("number of agValues found: " + agValues.size());
-		//
-		//			} else {
-		//				logger.debug("looking by expriment codes only");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();	
-		//			}
-		//		} else if (searchRequest.getBooleanFilter() != null && searchRequest.getBooleanFilter().equalsIgnoreCase("OR")){
-		//			searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
-		//			Set<String> uniqueBatchCodes = new HashSet<String>();
-		//			if (searchRequest.getBatchCodeList() != null && searchRequest.getBatchCodeList().size() > 0) {
-		//				uniqueBatchCodes.addAll(searchRequest.getBatchCodeList());				
-		//			}
-		//			for (ExperimentFilterSearchDTO filter : searchRequest.getSearchFilters()){
-		//				List<String> batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), filter).getResultList();
-		//				uniqueBatchCodes.addAll(batchCodes);
-		//			}
-		//			uniqueBatchCodes.removeAll(Collections.singleton(null));
-		//			if (uniqueBatchCodes.size() > 0){
-		//				logger.debug("looking by expriment codes and batch codes in OR block");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(uniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
-		//			} else {
-		//				logger.debug("looking by expriment codes only");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();	
-		//			}		
-		//		} else {
-		//			//default is the AND			
-		//			logger.info("this is the default AND filter block. 2014-03-27");
-		//			searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
-		//			
-		//			
-		//			
-		//			
-		//			List<String> batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters()).getResultList();			
-		//			Set<String> uniqueBatchCodes = new HashSet<String>();
-		//			uniqueBatchCodes.addAll(batchCodes);
-		//			uniqueBatchCodes.removeAll(Collections.singleton(null));
-		//
-		//			logger.debug("number of batchCodes found: " + batchCodes.size());
-		//			logger.debug("number of uniqueBatchCodes found: " + uniqueBatchCodes.size());
-		//
-		//			if (uniqueBatchCodes.size() > 0){
-		//				logger.debug("looking by expriment codes and batch codes in default AND block");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(uniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
-		//				logger.debug("number of agValues found: " + agValues.size());
-		//
-		//			} else {
-		//				logger.debug("looking by expriment codes only");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();	
-		//			}
-		//
-		//
-		//		}
 
 	}
 	
