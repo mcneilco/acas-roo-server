@@ -308,33 +308,14 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 	}
 
 	private List<AutoLabelDTO> generateAutoLabels(LabelSequence labelSequence, Long numberOfLabels) {
-
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
-
-		long currentLastNumber = labelSequence.getLatestNumber();
-
-		labelSequence.setLatestNumber(labelSequence.getLatestNumber() + numberOfLabels);
-		labelSequence.setModifiedDate(new Date());
-		labelSequence.merge();
-
-		long startingNumber = currentLastNumber + 1L;
-		long endingNumber = currentLastNumber + numberOfLabels;
-
-		long labelNumber = startingNumber;
-		String formatLabelNumber = "%";
-		formatLabelNumber = formatLabelNumber.concat("0").concat(labelSequence.getDigits().toString()).concat("d");
-		logger.debug("format corpNumber: " + formatLabelNumber);
-		while (labelNumber <= endingNumber) {
-			String label = labelSequence.getLabelPrefix().concat(labelSequence.getLabelSeparator()).concat(String.format(formatLabelNumber, labelNumber));
-			logger.debug("new label: " + label);
+		List<String> labels = labelSequence.getNextLabels( (int) (long) numberOfLabels);
+		for (String label : labels) {
 			AutoLabelDTO autoLabel = new AutoLabelDTO();
 			autoLabel.setAutoLabel(label);
 			autoLabels.add(autoLabel);
-			labelNumber++;
 		}
-		
-		return autoLabels;		
-
+		return autoLabels;
 	}
 
 	private LabelSequence createLabelSequence(String thingTypeAndKind, String labelTypeAndKind) {

@@ -12,5 +12,7 @@
         <field:datetime dateTimePattern="${labelSequence_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_LabelSequence_modifiedDate" z="Q53n+HbfaSSw3WZSp3t4lJPVwI8="/>
         <field:textarea field="thingTypeAndKind" id="c_com_labsynch_labseer_domain_LabelSequence_thingTypeAndKind" required="true" z="dwWiDrt2I3tzeELKCTUQG5ke8yc="/>
         <field:textarea field="labelTypeAndKind" id="c_com_labsynch_labseer_domain_LabelSequence_labelTypeAndKind" required="true" z="NR9F/oL7qaHzIIpRbuTe25F5Z9I="/>
+        <field:input field="dbSequence" id="c_com_labsynch_labseer_domain_LabelSequence_dbSequence" required="true" z="12z8WwsVPmIPKoLue5Xk9sJuAcw="/>
+        <field:simple field="labelSequenceRoles" id="c_com_labsynch_labseer_domain_LabelSequence_labelSequenceRoles" messageCode="entity_reference_not_managed" messageCodeAttribute="Label Sequence Role" z="66tmAYAJcHt2mVIzWD6pcnD4Bk8="/>
     </form:update>
 </div>

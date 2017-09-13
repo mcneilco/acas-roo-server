@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_AuthorValue" object="${authorvalue}" path="/authorvalues" z="2jFHxDhDWUM4mS9f2VGhD2V2RCY=">
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_AuthorValue_ignored" object="${authorvalue}" z="IBr/RurOWZ2cdyJo3HLDWPR9XZE="/>
+        <field:display field="publicData" id="s_com_labsynch_labseer_domain_AuthorValue_publicData" object="${authorvalue}" z="2lfJKxFRUwWt6urGmBWWtiCWSqs="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_AuthorValue_deleted" object="${authorvalue}" z="1O9rkk+Qs80bwD9KmHUc6yhHQo4="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_AuthorValue_lsType" object="${authorvalue}" z="zSflTWLtfsbPkkQxkayRxg6NCoM="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_AuthorValue_lsKind" object="${authorvalue}" z="xRk1eSNf/qeoK/5BHUKdl+YvEBw="/>
+        <field:display field="lsTypeAndKind" id="s_com_labsynch_labseer_domain_AuthorValue_lsTypeAndKind" object="${authorvalue}" z="OunyRpcEuN6kGnIbiLGFLbwc7hQ="/>
+        <field:display field="codeOrigin" id="s_com_labsynch_labseer_domain_AuthorValue_codeOrigin" object="${authorvalue}" z="vyK06IHVsMn9J9bbUBVx4TBO5BM="/>
+        <field:display field="codeType" id="s_com_labsynch_labseer_domain_AuthorValue_codeType" object="${authorvalue}" z="5oRMD7tg5rgFb7hhRY2vdDF1VQk="/>
+        <field:display field="codeKind" id="s_com_labsynch_labseer_domain_AuthorValue_codeKind" object="${authorvalue}" z="cumsxWdo8KzshnbYMFRlnGoYmTI="/>
+        <field:display field="codeTypeAndKind" id="s_com_labsynch_labseer_domain_AuthorValue_codeTypeAndKind" object="${authorvalue}" z="envnDFAzf6uNg4c16X+mCQU4LQQ="/>
+        <field:display field="stringValue" id="s_com_labsynch_labseer_domain_AuthorValue_stringValue" object="${authorvalue}" z="ESIMd40+f++LnZEXHd28OETndno="/>
+        <field:display field="codeValue" id="s_com_labsynch_labseer_domain_AuthorValue_codeValue" object="${authorvalue}" z="TNtb+CI3f8qs6MG6cFiru5HWmOs="/>
+        <field:display field="fileValue" id="s_com_labsynch_labseer_domain_AuthorValue_fileValue" object="${authorvalue}" z="lNwu8kWe7xDdWvVwnf7sJO2VBTM="/>
+        <field:display field="urlValue" id="s_com_labsynch_labseer_domain_AuthorValue_urlValue" object="${authorvalue}" z="S52JMVtHBAq58PQJP806hwu+Xes="/>
+        <field:display date="true" dateTimePattern="${authorValue_datevalue_date_format}" field="dateValue" id="s_com_labsynch_labseer_domain_AuthorValue_dateValue" object="${authorvalue}" z="W2thSOlFqkoyw1DveBK+6N4vzQ4="/>
+        <field:display field="clobValue" id="s_com_labsynch_labseer_domain_AuthorValue_clobValue" object="${authorvalue}" z="NvoEpdVqCD8DXsmYZf2N2bbb2/4="/>
+        <field:display field="blobValue" id="s_com_labsynch_labseer_domain_AuthorValue_blobValue" object="${authorvalue}" z="pEytTF2qICAqMVLxpeM/SbKe+/w="/>
+        <field:display field="operatorType" id="s_com_labsynch_labseer_domain_AuthorValue_operatorType" object="${authorvalue}" z="MfgSKp+lvExzO5csv+cS5xZjLEs="/>
+        <field:display field="operatorKind" id="s_com_labsynch_labseer_domain_AuthorValue_operatorKind" object="${authorvalue}" z="zFDzYs8c0c+BL4+UoOTV4tys3Co="/>
+        <field:display field="operatorTypeAndKind" id="s_com_labsynch_labseer_domain_AuthorValue_operatorTypeAndKind" object="${authorvalue}" z="v8srmvT7YLd+yLWpzHBjgkso4Ws="/>
+        <field:display field="numericValue" id="s_com_labsynch_labseer_domain_AuthorValue_numericValue" object="${authorvalue}" z="4U7GSmlsVI13/NCyj8TyvAF1fko="/>
+        <field:display field="sigFigs" id="s_com_labsynch_labseer_domain_AuthorValue_sigFigs" object="${authorvalue}" z="nuv0FgtvP53ig87j722UIGmgF7U="/>
+        <field:display field="uncertainty" id="s_com_labsynch_labseer_domain_AuthorValue_uncertainty" object="${authorvalue}" z="1JbU3elDM17/NJgKR2Dhw6aHAyc="/>
+        <field:display field="numberOfReplicates" id="s_com_labsynch_labseer_domain_AuthorValue_numberOfReplicates" object="${authorvalue}" z="A9WWvq1+m5citNgtiiX7ZkNIETU="/>
+        <field:display field="uncertaintyType" id="s_com_labsynch_labseer_domain_AuthorValue_uncertaintyType" object="${authorvalue}" z="0xsHoIZRUQsEbTPr0xud3I3qJ10="/>
+        <field:display field="unitType" id="s_com_labsynch_labseer_domain_AuthorValue_unitType" object="${authorvalue}" z="QYnb+oSQBV9BdA1NS7zY8JAx0Pc="/>
+        <field:display field="unitKind" id="s_com_labsynch_labseer_domain_AuthorValue_unitKind" object="${authorvalue}" z="b9IcU4qOwpyKXurhwAGN+DR4OsE="/>
+        <field:display field="unitTypeAndKind" id="s_com_labsynch_labseer_domain_AuthorValue_unitTypeAndKind" object="${authorvalue}" z="ByWHIss6rl1QK9EZFhFsujvRSQ8="/>
+        <field:display field="concentration" id="s_com_labsynch_labseer_domain_AuthorValue_concentration" object="${authorvalue}" z="yriJXzNY18oppWRG1/pQWg6sV5o="/>
+        <field:display field="concUnit" id="s_com_labsynch_labseer_domain_AuthorValue_concUnit" object="${authorvalue}" z="cYkSDhqE0csUYjZ/T4YCQvjBHIg="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_AuthorValue_comments" object="${authorvalue}" z="OXkmyzhmag/qRGUvlwW9Gm55SVw="/>
+        <field:display field="lsTransaction" id="s_com_labsynch_labseer_domain_AuthorValue_lsTransaction" object="${authorvalue}" z="tjAS3GmnxdmJJcaAoyJ9nTh4dzw="/>
+        <field:display date="true" dateTimePattern="${authorValue_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_AuthorValue_recordedDate" object="${authorvalue}" z="Xo/ocxgkreYmOaV+BVf2CLzonY0="/>
+        <field:display field="recordedBy" id="s_com_labsynch_labseer_domain_AuthorValue_recordedBy" object="${authorvalue}" z="Ki5F6D3xFh445/RP3bLz01f1Pz4="/>
+        <field:display date="true" dateTimePattern="${authorValue_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_AuthorValue_modifiedDate" object="${authorvalue}" z="2GWYIuPaIBphLiPuuPO2Ut7xHgE="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_AuthorValue_modifiedBy" object="${authorvalue}" z="Du1X5vkGuinHgBepB4aGIjpqnFA="/>
+        <field:display field="lsState" id="s_com_labsynch_labseer_domain_AuthorValue_lsState" object="${authorvalue}" z="hH3BFGcjDokmlkbIMfz1jWVu1Bc="/>
+    </page:show>
+</div>

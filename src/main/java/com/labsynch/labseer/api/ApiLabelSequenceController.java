@@ -4,6 +4,7 @@ import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
 import com.labsynch.labseer.service.AutoLabelService;
+import com.labsynch.labseer.service.LabelSequenceService;
 
 import java.util.Date;
 import java.util.List;
@@ -35,6 +36,9 @@ public class ApiLabelSequenceController {
 
     @Autowired
     private AutoLabelService autoLabelService;
+    
+    @Autowired
+    private LabelSequenceService labelSequenceService;
 
     //copied only the custom methods from the LabelSequenceController.java class
     @RequestMapping(value = "/getNextLabelSequences", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -76,7 +80,7 @@ public class ApiLabelSequenceController {
         return new ResponseEntity<String>(LabelSequence.toJsonArray(result), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(params = "getNextLabelSequences", method = RequestMethod.GET, headers = "Accept=application/json")
+    @RequestMapping(value = "/getNextLabelSequences", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<java.lang.String> jsonFindLabelSequencesByThingAndLabel(@RequestParam("thingTypeAndKind") String thingTypeAndKind, @RequestParam("labelTypeAndKind") String labelTypeAndKind, @RequestParam("numberOfLabels") long numberOfLabels) {
         HttpHeaders headers = new HttpHeaders();
@@ -89,6 +93,17 @@ public class ApiLabelSequenceController {
         labelSequence.setLatestNumber(labelSequence.getLatestNumber() + numberOfLabels);
         labelSequence.merge();
         return new ResponseEntity<String>(labelSequence.toJson(), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/getAuthorizedLabelSequences", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<java.lang.String> getAuthorizedLabelSequences(@RequestParam(value="userName", required=true) String userName,
+    		@RequestParam(value="thingTypeAndKind", required=false) String thingTypeAndKind, 
+    		@RequestParam(value="labelTypeAndKind", required=false) String labelTypeAndKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        List<LabelSequence> labelSequences = labelSequenceService.getAuthorizedLabelSequences(userName, thingTypeAndKind, labelTypeAndKind);
+        return new ResponseEntity<String>(LabelSequence.toJsonArray(labelSequences), headers, HttpStatus.OK);
     }
 }
 

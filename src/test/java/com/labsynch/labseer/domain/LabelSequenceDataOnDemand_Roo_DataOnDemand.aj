@@ -27,6 +27,7 @@ privileged aspect LabelSequenceDataOnDemand_Roo_DataOnDemand {
     
     public LabelSequence LabelSequenceDataOnDemand.getNewTransientLabelSequence(int index) {
         LabelSequence obj = new LabelSequence();
+        setDbSequence(obj, index);
         setDigits(obj, index);
         setGroupDigits(obj, index);
         setIgnored(obj, index);
@@ -37,6 +38,11 @@ privileged aspect LabelSequenceDataOnDemand_Roo_DataOnDemand {
         setModifiedDate(obj, index);
         setThingTypeAndKind(obj, index);
         return obj;
+    }
+    
+    public void LabelSequenceDataOnDemand.setDbSequence(LabelSequence obj, int index) {
+        String dbSequence = "dbSequence_" + index;
+        obj.setDbSequence(dbSequence);
     }
     
     public void LabelSequenceDataOnDemand.setDigits(LabelSequence obj, int index) {

@@ -12,5 +12,6 @@
         <field:display date="true" dateTimePattern="${labelSequence_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_LabelSequence_modifiedDate" object="${labelsequence}" z="7+8zlKtMYFAwxls+1Q3Qj7q00z4="/>
         <field:display field="thingTypeAndKind" id="s_com_labsynch_labseer_domain_LabelSequence_thingTypeAndKind" object="${labelsequence}" z="+6pCbCSk25bdZFf+0KzMyUV6UmQ="/>
         <field:display field="labelTypeAndKind" id="s_com_labsynch_labseer_domain_LabelSequence_labelTypeAndKind" object="${labelsequence}" z="pqTXUfJSAsrStcp1Hz00vCtsuWo="/>
+        <field:display field="dbSequence" id="s_com_labsynch_labseer_domain_LabelSequence_dbSequence" object="${labelsequence}" z="cALGZLtsOiAb2D6mes5U2P+ZifY="/>
     </page:show>
 </div>

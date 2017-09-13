@@ -4,6 +4,7 @@
 package com.labsynch.labseer.web;
 
 import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.domain.LabelSequenceRole;
 import com.labsynch.labseer.web.LabelSequenceController;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
@@ -95,6 +96,7 @@ privileged aspect LabelSequenceController_Roo_Controller {
     void LabelSequenceController.populateEditForm(Model uiModel, LabelSequence labelSequence) {
         uiModel.addAttribute("labelSequence", labelSequence);
         addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("labelsequenceroles", LabelSequenceRole.findAllLabelSequenceRoles());
     }
     
     String LabelSequenceController.encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {

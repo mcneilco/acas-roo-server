@@ -9,6 +9,22 @@ import javax.persistence.TypedQuery;
 
 privileged aspect LabelSequence_Roo_Finder {
     
+    public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByLabelTypeAndKindEquals(String labelTypeAndKind) {
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.labelTypeAndKind = :labelTypeAndKind", LabelSequence.class);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return q;
+    }
+    
+    public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByThingTypeAndKindEquals(String thingTypeAndKind) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind", LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        return q;
+    }
+    
     public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(String thingTypeAndKind, String labelTypeAndKind) {
         if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
         if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
