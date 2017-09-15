@@ -21,6 +21,9 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.MySQLDialect;
+import org.hibernate.dialect.OracleDialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
 import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
@@ -30,6 +33,7 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.transaction.annotation.Transactional;
 
 @RooJavaBean
 @RooToString
@@ -58,7 +62,7 @@ public class LabelSequence {
 	private Integer digits;
 
 	@NotNull
-	private Long latestNumber;
+	private Long startingNumber;
 
 	@NotNull
 	private boolean ignored;
@@ -75,26 +79,31 @@ public class LabelSequence {
 
 	public LabelSequence save() {
 		//first create the database sequence, then persist the object
+		if (this.getDbSequence() == null) {
+			String dbSequence = "labelseq_"+this.getLabelPrefix()+"_"+this.getLabelTypeAndKind()+"_"+this.getThingTypeAndKind();
+			dbSequence = dbSequence.replaceAll("[^a-zA-Z_]+", "_");
+			this.setDbSequence(dbSequence);
+		}
 		EntityManager em = LabelSequence.entityManager();
-		Query q = em.createNativeQuery("CREATE SEQUENCE "+this.dbSequence);
+		Query q = em.createNativeQuery("CREATE SEQUENCE "+this.dbSequence+"START WITH "+this.getStartingNumber());
 		q.executeUpdate();
 		this.persist();
 		return this;
 	}
 
-	public List<String> getNextLabels(int numberOfLabels){
+	public List<String> generateNextLabels(Long numberOfLabels){
 		List<String> labels = new ArrayList<String>();
 		int numGenerated = 0;
 		while (numGenerated < numberOfLabels) {
-			String label = this.getNextLabel();
+			String label = this.generateNextLabel();
 			labels.add(label);
 			numGenerated++;
 		}
 		return labels;
 	}
 
-	public String getNextLabel() {
-		Long labelNumber = this.getID(this.getDbSequence());
+	public String generateNextLabel() {
+		Long labelNumber = this.incrementSequence(this.getDbSequence());
 		String formatLabelNumber = "%";
 		formatLabelNumber = formatLabelNumber.concat("0").concat(this.getDigits().toString()).concat("d");
 		String label = this.getLabelPrefix().concat(this.getLabelSeparator()).concat(String.format(formatLabelNumber, labelNumber));
@@ -102,7 +111,7 @@ public class LabelSequence {
 
 	}
 
-	public Long getID(final String sequenceName) {
+	public Long incrementSequence(final String sequenceName) {
 		ReturningWork<Long> maxReturningWork = new ReturningWork<Long>() {
 			@Override
 			public Long execute(Connection connection) throws SQLException {
@@ -112,6 +121,89 @@ public class LabelSequence {
 				ResultSet resultSet = null;
 				try {
 					preparedStatement = connection.prepareStatement( dialect.getSequenceNextValString(sequenceName));
+					resultSet = preparedStatement.executeQuery();
+					resultSet.next();
+					return resultSet.getLong(1);
+				}catch (SQLException e) {
+					throw e;
+				} finally {
+					if(preparedStatement != null) {
+						preparedStatement.close();
+					}
+					if(resultSet != null) {
+						resultSet.close();
+					}
+				}
+
+			}
+		};
+		EntityManager em = LabelSequence.entityManager();
+		Long maxRecord = em.unwrap(Session.class).doReturningWork(maxReturningWork);
+		return maxRecord;
+	}
+	
+	@Transactional
+	public Long decrementSequence() {
+		final String sequenceName = this.getDbSequence();
+		ReturningWork<Long> maxReturningWork = new ReturningWork<Long>() {
+			@Override
+			public Long execute(Connection connection) throws SQLException {
+				DialectResolver dialectResolver = new StandardDialectResolver();
+				Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
+				PreparedStatement preparedStatement = null;
+				ResultSet resultSet = null;
+				try {
+					String currentValueString = "";
+					if (dialect instanceof PostgreSQLDialect) {
+						currentValueString = "SELECT currval('"+sequenceName+"')";
+						preparedStatement = connection.prepareStatement( currentValueString);
+						resultSet = preparedStatement.executeQuery();
+						resultSet.next();
+						long currentValue = resultSet.getLong(1);
+						String setValueString = "SELECT setval('"+sequenceName+"', "+currentValue+")";
+						resultSet = preparedStatement.executeQuery();
+						resultSet.next();
+						return resultSet.getLong(1);	
+					}else if (dialect instanceof OracleDialect) {
+						throw new SQLException("Decrement sequence not implemented for Oracle");
+					}else {
+						throw new SQLException("Unsupported Hibernate Dialect:"+dialect.toString());
+					}
+				}catch (SQLException e) {
+					throw e;
+				} finally {
+					if(preparedStatement != null) {
+						preparedStatement.close();
+					}
+					if(resultSet != null) {
+						resultSet.close();
+					}
+				}
+
+			}
+		};
+		EntityManager em = LabelSequence.entityManager();
+		Long maxRecord = em.unwrap(Session.class).doReturningWork(maxReturningWork);
+		return maxRecord;
+	}
+
+	public long fetchCurrentValue() {
+		final String sequenceName = this.getDbSequence();
+		ReturningWork<Long> maxReturningWork = new ReturningWork<Long>() {
+			@Override
+			public Long execute(Connection connection) throws SQLException {
+				DialectResolver dialectResolver = new StandardDialectResolver();
+				Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
+				PreparedStatement preparedStatement = null;
+				ResultSet resultSet = null;
+				try {
+					String currentValueString = "";
+					if (dialect instanceof PostgreSQLDialect) {
+						currentValueString = "SELECT currval('"+sequenceName+"')";
+					}else if (dialect instanceof OracleDialect) {
+						currentValueString = "SELECT last_number FROM all_sequences WHERE sequence_name = '"+sequenceName+"'";
+					}
+					preparedStatement = connection.prepareStatement( currentValueString);
 					resultSet = preparedStatement.executeQuery();
 					resultSet.next();
 					return resultSet.getLong(1);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
@@ -309,7 +310,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 
 	private List<AutoLabelDTO> generateAutoLabels(LabelSequence labelSequence, Long numberOfLabels) {
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
-		List<String> labels = labelSequence.getNextLabels( (int) (long) numberOfLabels);
+		List<String> labels = labelSequence.generateNextLabels(numberOfLabels);
 		for (String label : labels) {
 			AutoLabelDTO autoLabel = new AutoLabelDTO();
 			autoLabel.setAutoLabel(label);
@@ -342,7 +343,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		labelSequence.setIgnored(false);
 		labelSequence.setLabelPrefix("DDICT");
 		labelSequence.setLabelSeparator("-");
-		labelSequence.setLatestNumber(0L);
+		labelSequence.setStartingNumber(0L);
 		labelSequence.setModifiedDate((new Date()));
 		labelSequence.persist();
 
@@ -436,7 +437,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
 
-		long currentLastNumber = labelSequence.getLatestNumber();
+		long currentLastNumber = labelSequence.fetchCurrentValue();
 
 		String formatLabelNumber = "%";
 		formatLabelNumber = formatLabelNumber.concat("0").concat(labelSequence.getDigits().toString()).concat("d");
@@ -467,11 +468,8 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		}
 		
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
-
-		long currentLastNumber = labelSequence.getLatestNumber();
-		labelSequence.setLatestNumber(labelSequence.getLatestNumber() - 1);
-		labelSequence.setModifiedDate(new Date());
-		labelSequence.merge();
+		EntityManager em = LabelSequence.entityManager();
+		
 	}
 
 	@Override

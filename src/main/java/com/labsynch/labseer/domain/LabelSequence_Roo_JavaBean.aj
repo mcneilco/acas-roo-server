@@ -58,12 +58,12 @@ privileged aspect LabelSequence_Roo_JavaBean {
         this.digits = digits;
     }
     
-    public Long LabelSequence.getLatestNumber() {
-        return this.latestNumber;
+    public Long LabelSequence.getStartingNumber() {
+        return this.startingNumber;
     }
     
-    public void LabelSequence.setLatestNumber(Long latestNumber) {
-        this.latestNumber = latestNumber;
+    public void LabelSequence.setStartingNumber(Long startingNumber) {
+        this.startingNumber = startingNumber;
     }
     
     public boolean LabelSequence.isIgnored() {

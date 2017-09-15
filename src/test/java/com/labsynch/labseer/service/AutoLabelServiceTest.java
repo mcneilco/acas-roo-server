@@ -70,7 +70,7 @@ public class AutoLabelServiceTest {
 			theSequence.setLabelPrefix("DD");
 			theSequence.setLabelSeparator("-");
 			theSequence.setLabelTypeAndKind("id_codeName");
-			theSequence.setLatestNumber(0L);
+			theSequence.setStartingNumber(0L);
 			theSequence.setModifiedDate((new Date()));
 			theSequence.setThingTypeAndKind("document_test");
 			theSequence.setVersion(0);
@@ -101,7 +101,7 @@ public class AutoLabelServiceTest {
 		newSeq.setLabelSeparator("-");
 		newSeq.setLabelTypeAndKind("id_corpName");
 		newSeq.setThingTypeAndKind("compound_parent");
-		newSeq.setLatestNumber(1L);
+		newSeq.setStartingNumber(1L);
 		newSeq.setDbSequence("test_creg_seq");
 		newSeq.save();
 	}
@@ -111,9 +111,9 @@ public class AutoLabelServiceTest {
 	@Rollback(value=false)
 	public void incrementSequence() {
 		LabelSequence testSeq = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals("compound_parent", "id_corpName").getSingleResult();
-		String testLabel = testSeq.getNextLabel();
+		String testLabel = testSeq.generateNextLabel();
 		logger.info(testLabel);
-		List<String> testLabels = testSeq.getNextLabels(100);
+		List<String> testLabels = testSeq.generateNextLabels(100L);
 		for (String label : testLabels) {
 			logger.info(label);
 		}

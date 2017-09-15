@@ -34,8 +34,8 @@ privileged aspect LabelSequenceDataOnDemand_Roo_DataOnDemand {
         setLabelPrefix(obj, index);
         setLabelSeparator(obj, index);
         setLabelTypeAndKind(obj, index);
-        setLatestNumber(obj, index);
         setModifiedDate(obj, index);
+        setStartingNumber(obj, index);
         setThingTypeAndKind(obj, index);
         return obj;
     }
@@ -84,14 +84,14 @@ privileged aspect LabelSequenceDataOnDemand_Roo_DataOnDemand {
         obj.setLabelTypeAndKind(labelTypeAndKind);
     }
     
-    public void LabelSequenceDataOnDemand.setLatestNumber(LabelSequence obj, int index) {
-        Long latestNumber = new Integer(index).longValue();
-        obj.setLatestNumber(latestNumber);
-    }
-    
     public void LabelSequenceDataOnDemand.setModifiedDate(LabelSequence obj, int index) {
         Date modifiedDate = new GregorianCalendar(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), Calendar.getInstance().get(Calendar.SECOND) + new Double(Math.random() * 1000).intValue()).getTime();
         obj.setModifiedDate(modifiedDate);
+    }
+    
+    public void LabelSequenceDataOnDemand.setStartingNumber(LabelSequence obj, int index) {
+        Long startingNumber = new Integer(index).longValue();
+        obj.setStartingNumber(startingNumber);
     }
     
     public void LabelSequenceDataOnDemand.setThingTypeAndKind(LabelSequence obj, int index) {

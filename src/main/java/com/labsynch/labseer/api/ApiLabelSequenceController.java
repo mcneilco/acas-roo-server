@@ -142,9 +142,7 @@ public class ApiLabelSequenceController {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_ACCEPTABLE);
 		}
 		LabelSequence labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());
-		labelSequence.setLatestNumber(labelSequence.getLatestNumber() + lsDTO.getNumberOfLabels());
-		labelSequence.setModifiedDate(new Date());
-		labelSequence.merge();
+		labelSequence.generateNextLabels(lsDTO.getNumberOfLabels());
 		return new ResponseEntity<String>(labelSequence.toJson(), headers, HttpStatus.OK);
 	}
 
@@ -190,8 +188,7 @@ public class ApiLabelSequenceController {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_ACCEPTABLE);
 		}
 		LabelSequence labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());
-		labelSequence.setLatestNumber(labelSequence.getLatestNumber() + numberOfLabels);
-		labelSequence.merge();
+		labelSequence.generateNextLabels(numberOfLabels);
 		return new ResponseEntity<String>(labelSequence.toJson(), headers, HttpStatus.OK);
 	}
 

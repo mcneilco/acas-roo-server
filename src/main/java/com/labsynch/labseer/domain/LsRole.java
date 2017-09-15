@@ -25,14 +25,17 @@ import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.CodeTableDTO;
+
 @RooJson
 @RooJavaBean
 @RooJpaActiveRecord(sequenceName = "LSROLE_PKSEQ", finders = { 
 		"findLsRolesByRoleNameEquals", 
 		"findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals", 
 		"findLsRolesByLsTypeEqualsAndRoleNameEquals", 
-		"findLsRolesByLsTypeEqualsAndLsKindEquals", 
-		"findLsRolesByLsTypeEquals" })
+		"findLsRolesByLsTypeEqualsAndLsKindEquals",
+		"findLsRolesByLsTypeEquals",
+		"findLsRolesByLsKindEquals"})
 
 public class LsRole {
 
@@ -137,5 +140,19 @@ public class LsRole {
 		if (this.entityManager == null) this.entityManager = entityManager();
 		this.setLsTypeAndKind(new StringBuilder().append(this.lsType).append("_").append(this.lsKind).toString());
 		this.entityManager.persist(this);
+	}
+
+	public static Collection<CodeTableDTO> toCodeTables(List<LsRole> lsRoles) {
+		Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
+		for (LsRole lsRole: lsRoles) {
+			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setId(lsRole.getId());
+			String code = lsRole.getLsType()+"_"+lsRole.getLsKind()+"_"+lsRole.getRoleName();
+			codeTable.setCode(code);
+			String name = lsRole.getLsType()+" : "+lsRole.getLsKind()+" : "+lsRole.getRoleName();
+			codeTable.setName(name);
+			codeTables.add(codeTable);
+		}
+		return codeTables;
 	}
 }

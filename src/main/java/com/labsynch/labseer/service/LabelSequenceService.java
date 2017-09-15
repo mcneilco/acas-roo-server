@@ -18,5 +18,4 @@ public interface LabelSequenceService {
 	List<LabelSequence> getAuthorizedLabelSequences(String userName, String thingTypeAndKind,
 			String labelTypeAndKind);
 
-
 }

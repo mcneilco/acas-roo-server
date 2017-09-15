@@ -435,6 +435,7 @@
         <menu:category id="c_lsrole" z="eIIF+3Nwhg0gA4BZWz9IqeIfBr0=">
             <menu:item id="i_lsrole_new" messageCode="global_menu_new" url="/lsroles?form" z="sQQU8eIYjr52rryeIj1mbQvh070="/>
             <menu:item id="i_lsrole_list" messageCode="global_menu_list" url="/lsroles?page=1&amp;size=${empty param.size ? 10 : param.size}" z="zSPyhLyoG501CR+jtEld7yKrcKg="/>
+            <menu:item id="fi_lsrole_lskindequals" messageCode="global_menu_find" url="/lsroles?find=ByLsKindEquals&amp;form" z="I+D1R+8B7i4rqXaE1E+gWb6wnYE="/>
             <menu:item id="fi_lsrole_lstypeequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEquals&amp;form" z="W4JpQHrCvTbvdaMZnx/5xpX+ICs="/>
             <menu:item id="fi_lsrole_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="gyxh+EFMUzy1xWG/2BhwPbOFt9A="/>
             <menu:item id="fi_lsrole_lstypeequalsandlskindequalsandrolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals&amp;form" z="txmF06uRmk7J4WZcz8kEQZStSvc="/>

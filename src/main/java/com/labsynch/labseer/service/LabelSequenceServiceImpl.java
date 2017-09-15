@@ -37,11 +37,6 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 				savedLabelSequence = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind()).getSingleResult();
 			}catch(EmptyResultDataAccessException e){
 				savedLabelSequence = labelSequence;
-				if (savedLabelSequence.getDbSequence() == null) {
-					String dbSequence = "labelseq_"+savedLabelSequence.getLabelPrefix()+"_"+savedLabelSequence.getLabelTypeAndKind()+"_"+savedLabelSequence.getThingTypeAndKind();
-					dbSequence = dbSequence.replaceAll("[^a-zA-Z_]+", "_");
-					savedLabelSequence.setDbSequence(dbSequence);
-				}
 				savedLabelSequence.save();
 			}
 			if (!savedLabelSequence.getLabelPrefix().equals(labelSequence.getLabelPrefix())){
