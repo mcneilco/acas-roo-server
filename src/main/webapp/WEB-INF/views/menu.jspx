@@ -211,6 +211,7 @@
             <menu:item id="fi_labelsequence_labeltypeandkindequals" messageCode="global_menu_find" url="/labelsequences?find=ByLabelTypeAndKindEquals&amp;form" z="gPT/47S0zSmQ5KysB4cKJJvYhAM="/>
             <menu:item id="fi_labelsequence_thingtypeandkindequals" messageCode="global_menu_find" url="/labelsequences?find=ByThingTypeAndKindEquals&amp;form" z="Ws8XxZDUSTjULBr2y7tQehrZnpc="/>
             <menu:item id="fi_labelsequence_thingtypeandkindequalsandlabeltypeandkindequals" messageCode="global_menu_find" url="/labelsequences?find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEquals&amp;form" z="BlzgTAU5dOfOzjFld/+z7Zbq0N4="/>
+            <menu:item id="fi_labelsequence_thingtypeandkindequalsandlabeltypeandkindequalsandlabelprefixequals" messageCode="global_menu_find" url="/labelsequences?find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals&amp;form" z="y/7LFLIrSUzymm0sN2FDsR63U2E="/>
         </menu:category>
         <menu:category id="c_containertype" z="lIn8JrrOqLZEoWuvjF5bv9D0gBs=">
             <menu:item id="i_containertype_new" messageCode="global_menu_new" url="/containertypes?form" z="tdEzAD1RNQP3GYsw2jecLOntccA="/>

@@ -46,8 +46,29 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 	public List<AutoLabelDTO> getAutoLabels(LabelSequenceDTO lsDTO) {
 
 		logger.debug("incoming label seq: " + lsDTO.toJson());
+		if (lsDTO.getLabelPrefix() != null) {
+			return getAutoLabels(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind(), lsDTO.getLabelPrefix(), lsDTO.getNumberOfLabels());
+		}
 
 		return getAutoLabels(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind(), lsDTO.getNumberOfLabels());
+	}
+	
+	public List<AutoLabelDTO> getAutoLabels(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix, Long numberOfLabels) throws NonUniqueResultException {
+		List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(thingTypeAndKind, labelTypeAndKind, labelPrefix).getResultList();
+		LabelSequence labelSequence;
+		if(labelSequences.size() == 0) {
+			logger.info("Label sequence does not exist! Create new Sequence if possible." + thingTypeAndKind + "  " + labelTypeAndKind);
+			labelSequence = createLabelSequence(thingTypeAndKind, labelTypeAndKind);
+			if (labelSequence == null){
+				throw new NoResultException();
+			}
+		} else if (labelSequences.size() > 1) {
+			logger.error("found duplicate sequences!!!");
+			throw new NonUniqueResultException();
+		} else {
+			labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	
+		}
+		return getAutoLabels(labelSequence, numberOfLabels);
 	}
 
 	@Override
@@ -67,7 +88,10 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		} else {
 			labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	
 		}
-				
+		return getAutoLabels(labelSequence, numberOfLabels);
+	}
+	
+	private List<AutoLabelDTO> getAutoLabels(LabelSequence labelSequence, Long numberOfLabels){
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
 
 		if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("document_subject") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){

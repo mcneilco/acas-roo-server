@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -35,11 +36,16 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.utils.ExcludeNulls;
+
+import flexjson.JSONSerializer;
+
 @RooJavaBean
 @RooToString
 @RooJson
 @RooJpaActiveRecord(sequenceName = "LABEL_SEQUENCE_PKSEQ", finders = { "findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals", 
-		"findLabelSequencesByThingTypeAndKindEquals", "findLabelSequencesByLabelTypeAndKindEquals" })
+		"findLabelSequencesByThingTypeAndKindEquals", "findLabelSequencesByLabelTypeAndKindEquals",
+		"findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals"})
 public class LabelSequence {
 
 	@NotNull
@@ -78,14 +84,21 @@ public class LabelSequence {
 	private Set<LabelSequenceRole> labelSequenceRoles;
 
 	public LabelSequence save() {
+		for (LabelSequenceRole labelSeqRole : this.getLabelSequenceRoles()) {
+			labelSeqRole.setLabelSequenceEntry(this);
+			if (labelSeqRole.getRoleEntry() != null && labelSeqRole.getRoleEntry().getId() != null) {
+				LsRole savedRole = LsRole.findLsRole(labelSeqRole.getRoleEntry().getId());
+				labelSeqRole.setRoleEntry(savedRole);
+			}
+		}
 		//first create the database sequence, then persist the object
 		if (this.getDbSequence() == null) {
 			String dbSequence = "labelseq_"+this.getLabelPrefix()+"_"+this.getLabelTypeAndKind()+"_"+this.getThingTypeAndKind();
-			dbSequence = dbSequence.replaceAll("[^a-zA-Z_]+", "_");
+			dbSequence = dbSequence.replaceAll("[^a-zA-Z0-9_]+", "_");
 			this.setDbSequence(dbSequence);
 		}
 		EntityManager em = LabelSequence.entityManager();
-		Query q = em.createNativeQuery("CREATE SEQUENCE "+this.dbSequence+"START WITH "+this.getStartingNumber());
+		Query q = em.createNativeQuery("CREATE SEQUENCE "+this.dbSequence+" START WITH "+this.getStartingNumber());
 		q.executeUpdate();
 		this.persist();
 		return this;
@@ -224,6 +237,14 @@ public class LabelSequence {
 		Long maxRecord = em.unwrap(Session.class).doReturningWork(maxReturningWork);
 		return maxRecord;
 	}
+	
+	public String toJson() {
+        return new JSONSerializer().exclude("*.class","labelSequenceRoles.labelSequenceEntry").include("labelSequenceRoles.roleEntry").transform(new ExcludeNulls(), void.class).serialize(this);
+    }
+	
+	public static String toJsonArray(Collection<LabelSequence> collection) {
+        return new JSONSerializer().exclude("*.class","labelSequenceRoles.labelSequenceEntry").include("labelSequenceRoles.roleEntry").transform(new ExcludeNulls(), void.class).serialize(collection);
+    }
 
 
 

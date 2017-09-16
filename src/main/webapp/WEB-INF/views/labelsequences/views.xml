@@ -25,4 +25,7 @@
 <definition extends="default" name="labelsequences/findLabelSequencesByThingTypeAndKindEquals">
         <put-attribute name="body" value="/WEB-INF/views/labelsequences/findLabelSequencesByThingTypeAndKindEquals.jspx"/>
     </definition>
+<definition extends="default" name="labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals.jspx"/>
+    </definition>
 </tiles-definitions>

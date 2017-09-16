@@ -5,23 +5,14 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.LabelSequence;
 import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 privileged aspect LabelSequence_Roo_Json {
     
-    public String LabelSequence.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
-    }
-    
     public static LabelSequence LabelSequence.fromJsonToLabelSequence(String json) {
         return new JSONDeserializer<LabelSequence>().use(null, LabelSequence.class).deserialize(json);
-    }
-    
-    public static String LabelSequence.toJsonArray(Collection<LabelSequence> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
     }
     
     public static Collection<LabelSequence> LabelSequence.fromJsonArrayToLabelSequences(String json) {

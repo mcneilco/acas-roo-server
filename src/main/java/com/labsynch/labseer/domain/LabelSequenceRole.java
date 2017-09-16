@@ -2,7 +2,9 @@ package com.labsynch.labseer.domain;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,12 +29,12 @@ import org.springframework.roo.addon.tostring.RooToString;
 public class LabelSequenceRole {
 	
     @NotNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "label_sequence_id", referencedColumnName = "id")
     private LabelSequence labelSequenceEntry;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "ls_role_id", referencedColumnName = "id")
     private LsRole roleEntry;
 

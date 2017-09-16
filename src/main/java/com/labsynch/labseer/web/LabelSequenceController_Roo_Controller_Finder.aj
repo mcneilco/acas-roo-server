@@ -45,4 +45,15 @@ privileged aspect LabelSequenceController_Roo_Controller_Finder {
         return "labelsequences/list";
     }
     
+    @RequestMapping(params = { "find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals", "form" }, method = RequestMethod.GET)
+    public String LabelSequenceController.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEqualsForm(Model uiModel) {
+        return "labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals";
+    }
+    
+    @RequestMapping(params = "find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals", method = RequestMethod.GET)
+    public String LabelSequenceController.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(@RequestParam("thingTypeAndKind") String thingTypeAndKind, @RequestParam("labelTypeAndKind") String labelTypeAndKind, @RequestParam("labelPrefix") String labelPrefix, Model uiModel) {
+        uiModel.addAttribute("labelsequences", LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(thingTypeAndKind, labelTypeAndKind, labelPrefix).getResultList());
+        return "labelsequences/list";
+    }
+    
 }

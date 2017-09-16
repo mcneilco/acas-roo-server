@@ -35,4 +35,16 @@ privileged aspect LabelSequence_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        if (labelPrefix == null || labelPrefix.length() == 0) throw new IllegalArgumentException("The labelPrefix argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind  AND o.labelPrefix = :labelPrefix", LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        q.setParameter("labelPrefix", labelPrefix);
+        return q;
+    }
+    
 }
