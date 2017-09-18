@@ -369,7 +369,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		labelSequence.setLabelSeparator("-");
 		labelSequence.setStartingNumber(0L);
 		labelSequence.setModifiedDate((new Date()));
-		labelSequence.persist();
+		labelSequence.save();
 
 		return labelSequence;
 	}

@@ -84,11 +84,13 @@ public class LabelSequence {
 	private Set<LabelSequenceRole> labelSequenceRoles;
 
 	public LabelSequence save() {
-		for (LabelSequenceRole labelSeqRole : this.getLabelSequenceRoles()) {
-			labelSeqRole.setLabelSequenceEntry(this);
-			if (labelSeqRole.getRoleEntry() != null && labelSeqRole.getRoleEntry().getId() != null) {
-				LsRole savedRole = LsRole.findLsRole(labelSeqRole.getRoleEntry().getId());
-				labelSeqRole.setRoleEntry(savedRole);
+		if (this.getLabelSequenceRoles() != null) {
+			for (LabelSequenceRole labelSeqRole : this.getLabelSequenceRoles()) {
+				labelSeqRole.setLabelSequenceEntry(this);
+				if (labelSeqRole.getRoleEntry() != null && labelSeqRole.getRoleEntry().getId() != null) {
+					LsRole savedRole = LsRole.findLsRole(labelSeqRole.getRoleEntry().getId());
+					labelSeqRole.setRoleEntry(savedRole);
+				}
 			}
 		}
 		//first create the database sequence, then persist the object
