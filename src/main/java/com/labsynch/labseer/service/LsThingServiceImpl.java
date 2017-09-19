@@ -2587,10 +2587,10 @@ public class LsThingServiceImpl implements LsThingService {
 							Predicate labelNotEquals = criteriaBuilder.notEqual(label.<String>get("labelText"), queryLabel.getLabelText());
 							labelPredicatesList.add(labelNotEquals);
 						}else if(queryLabel.getOperator().equals("~")){
-							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
+							Predicate labelLike = criteriaBuilder.like(criteriaBuilder.lower(label.<String>get("labelText")), '%' + queryLabel.getLabelText().toLowerCase() + '%');
 							labelPredicatesList.add(labelLike);
 						}else if(queryLabel.getOperator().equalsIgnoreCase("like")){
-							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
+							Predicate labelLike = criteriaBuilder.like(criteriaBuilder.lower(label.<String>get("labelText")), '%' + queryLabel.getLabelText().toLowerCase() + '%');
 							labelPredicatesList.add(labelLike);
 						}else if(queryLabel.getOperator().equals("!~")){
 							Predicate labelNotLike = criteriaBuilder.notLike(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
@@ -2608,7 +2608,7 @@ public class LsThingServiceImpl implements LsThingService {
 							Predicate labelLessThan = criteriaBuilder.lessThanOrEqualTo(label.<String>get("labelText"), queryLabel.getLabelText());
 							labelPredicatesList.add(labelLessThan);
 						}else{
-							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
+							Predicate labelLike = criteriaBuilder.like(criteriaBuilder.lower(label.<String>get("labelText")), '%' + queryLabel.getLabelText().toLowerCase() + '%');
 							labelPredicatesList.add(labelLike);
 						}
 					}else{
