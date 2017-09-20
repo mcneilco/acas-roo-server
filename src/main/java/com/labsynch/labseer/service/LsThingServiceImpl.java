@@ -2237,6 +2237,7 @@ public class LsThingServiceImpl implements LsThingService {
 		criteria.distinct(true);
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		//root lsThing properties
+		predicateList.add(criteriaBuilder.isFalse(thing.<Boolean>get("ignored")));
 		
 		//recordedDates
 		if (query.getRecordedDateGreaterThan() != null && query.getRecordedDateLessThan() != null){
