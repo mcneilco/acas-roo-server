@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeTypeKindDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.LsThingQueryDTO;
@@ -124,6 +125,9 @@ public interface LsThingService {
 
 	Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, String searchType,
 			Integer maxResults, Float similarity);
+	
+	Collection<String> getLsThingCodesByDateValueComparison(
+			DateValueComparisonRequest requestDTO) throws Exception;
 	
 	
 }

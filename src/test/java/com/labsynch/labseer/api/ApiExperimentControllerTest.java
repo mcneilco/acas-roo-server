@@ -28,8 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentLabel;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -220,6 +220,27 @@ public class ApiExperimentControllerTest {
     			.andReturn().getResponse().getContentAsString();
     	codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
     	Assert.assertTrue(codetables.isEmpty());
+    }
+    
+    @Test
+    public void getExperimentCodesByDateValueComparison() throws Exception {
+    	DateValueComparisonRequest request = new DateValueComparisonRequest();
+		request.setStateType("metadata");
+		request.setStateKind("experiment metadata");
+		request.setValueKind("completion date");
+		request.setSecondsDelta(60);
+		
+		String requestJson = request.toJson();
+		
+		logger.info(requestJson);
+    	String responseJson =  this.mockMvc.perform(post("/api/v1/experiments/getExperimentCodesByDateValueComparison")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(requestJson)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+		
     }
 
 }

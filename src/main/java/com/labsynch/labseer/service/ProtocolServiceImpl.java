@@ -14,6 +14,7 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,7 @@ import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolState;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -578,4 +580,62 @@ public class ProtocolServiceImpl implements ProtocolService {
 		
 		return results;
 	}
+	
+	@Override
+	public Collection<String> getProtocolCodesByDateValueComparison(
+			DateValueComparisonRequest requestDTO) throws Exception {
+		if (requestDTO.getStateType() == null || requestDTO.getStateType().length() == 0) throw new Exception("Must provide stateType");
+		if (requestDTO.getStateKind() == null || requestDTO.getStateKind().length() == 0) throw new Exception("Must provide stateKind");
+		if (requestDTO.getValueKind() == null || requestDTO.getValueKind().length() == 0) throw new Exception("Must provide valueKind");
+		if (requestDTO.getSecondsDelta() == null) throw new Exception("Must provide secondsDelta");
+		if (requestDTO.getNewerThanModified() == null) requestDTO.setNewerThanModified(false);
+		EntityManager em = Protocol.entityManager();
+		String query = "SELECT new Map( protocol.codeName AS codeName, protocol.modifiedDate AS modifiedDate, protocol.recordedDate as recordedDate, value.dateValue AS dateValue )"
+				+ "FROM Protocol AS protocol "
+				+ "JOIN protocol.lsStates  state "
+				+ "WITH state.ignored = false "
+				+ "AND state.lsType = :stateType "
+				+ "AND state.lsKind = :stateKind "
+				+ "LEFT OUTER JOIN state.lsValues AS value "
+				+ "WITH value.ignored = false "
+				+ "AND value.lsType = :valueType "
+				+ "AND value.lsKind = :valueKind "
+				+ "WHERE protocol.ignored = false "
+				;
+		if (requestDTO.getLsType() != null && requestDTO.getLsType().length()>0) query += "AND protocol.lsType = :protocolType ";
+		if (requestDTO.getLsKind() != null && requestDTO.getLsKind().length()>0) query += "AND protocol.lsKind = :protocolKind ";
+		
+		TypedQuery<Map> q = em.createQuery(query, Map.class);
+		q.setParameter("stateType", requestDTO.getStateType());
+		q.setParameter("stateKind", requestDTO.getStateKind());
+		q.setParameter("valueType", "dateValue");
+		q.setParameter("valueKind", requestDTO.getValueKind());
+		if (requestDTO.getLsType() != null && requestDTO.getLsType().length()>0) q.setParameter("protocolType", requestDTO.getLsType());
+		if (requestDTO.getLsKind() != null && requestDTO.getLsKind().length()>0) q.setParameter("protocolKind", requestDTO.getLsKind());
+		
+		Collection<Map> resultMaps = q.getResultList();
+		Collection<String> protocolCodes = new HashSet<String>();
+		for (Map resultMap : resultMaps){
+			if (resultMap.get("dateValue") == null) protocolCodes.add((String) resultMap.get("codeName"));
+			else{
+				Date dateValue = (Date) resultMap.get("dateValue");
+				Date modifiedDate;
+				if (resultMap.get("modifiedDate") == null){
+					modifiedDate = (Date) resultMap.get("recordedDate");
+				}else{
+					modifiedDate = (Date) resultMap.get("modifiedDate");
+				}
+				Integer secondsDelta = requestDTO.getSecondsDelta();
+				logger.debug("dateValue: "+dateValue.getTime());
+				logger.debug("modifiedDate: "+modifiedDate.getTime());
+				if (requestDTO.getNewerThanModified()){
+					if (dateValue.getTime() - secondsDelta*1000 >  modifiedDate.getTime()) protocolCodes.add((String) resultMap.get("codeName"));
+				}else{
+					if (dateValue.getTime() + secondsDelta*1000 <  modifiedDate.getTime()) protocolCodes.add((String) resultMap.get("codeName"));
+				}
+			}
+		}
+		return protocolCodes;
+	}
+
 }

@@ -50,9 +50,11 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeTypeKindDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
@@ -2585,10 +2587,10 @@ public class LsThingServiceImpl implements LsThingService {
 							Predicate labelNotEquals = criteriaBuilder.notEqual(label.<String>get("labelText"), queryLabel.getLabelText());
 							labelPredicatesList.add(labelNotEquals);
 						}else if(queryLabel.getOperator().equals("~")){
-							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
+							Predicate labelLike = criteriaBuilder.like(criteriaBuilder.lower(label.<String>get("labelText")), '%' + queryLabel.getLabelText().toLowerCase() + '%');
 							labelPredicatesList.add(labelLike);
 						}else if(queryLabel.getOperator().equalsIgnoreCase("like")){
-							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
+							Predicate labelLike = criteriaBuilder.like(criteriaBuilder.lower(label.<String>get("labelText")), '%' + queryLabel.getLabelText().toLowerCase() + '%');
 							labelPredicatesList.add(labelLike);
 						}else if(queryLabel.getOperator().equals("!~")){
 							Predicate labelNotLike = criteriaBuilder.notLike(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
@@ -2606,7 +2608,7 @@ public class LsThingServiceImpl implements LsThingService {
 							Predicate labelLessThan = criteriaBuilder.lessThanOrEqualTo(label.<String>get("labelText"), queryLabel.getLabelText());
 							labelPredicatesList.add(labelLessThan);
 						}else{
-							Predicate labelLike = criteriaBuilder.like(label.<String>get("labelText"), '%' + queryLabel.getLabelText() + '%');
+							Predicate labelLike = criteriaBuilder.like(criteriaBuilder.lower(label.<String>get("labelText")), '%' + queryLabel.getLabelText().toLowerCase() + '%');
 							labelPredicatesList.add(labelLike);
 						}
 					}else{
@@ -2694,6 +2696,63 @@ public class LsThingServiceImpl implements LsThingService {
 			Float similarity) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public Collection<String> getLsThingCodesByDateValueComparison(
+			DateValueComparisonRequest requestDTO) throws Exception {
+		if (requestDTO.getStateType() == null || requestDTO.getStateType().length() == 0) throw new Exception("Must provide stateType");
+		if (requestDTO.getStateKind() == null || requestDTO.getStateKind().length() == 0) throw new Exception("Must provide stateKind");
+		if (requestDTO.getValueKind() == null || requestDTO.getValueKind().length() == 0) throw new Exception("Must provide valueKind");
+		if (requestDTO.getSecondsDelta() == null) throw new Exception("Must provide secondsDelta");
+		if (requestDTO.getNewerThanModified() == null) requestDTO.setNewerThanModified(false);
+		EntityManager em = LsThing.entityManager();
+		String query = "SELECT new Map( lsThing.codeName AS codeName, lsThing.modifiedDate AS modifiedDate, lsThing.recordedDate as recordedDate, value.dateValue AS dateValue )"
+				+ "FROM LsThing AS lsThing "
+				+ "JOIN lsThing.lsStates  state "
+				+ "WITH state.ignored = false "
+				+ "AND state.lsType = :stateType "
+				+ "AND state.lsKind = :stateKind "
+				+ "LEFT OUTER JOIN state.lsValues AS value "
+				+ "WITH value.ignored = false "
+				+ "AND value.lsType = :valueType "
+				+ "AND value.lsKind = :valueKind "
+				+ "WHERE lsThing.ignored = false "
+				;
+		if (requestDTO.getLsType() != null && requestDTO.getLsType().length()>0) query += "AND lsThing.lsType = :lsThingType ";
+		if (requestDTO.getLsKind() != null && requestDTO.getLsKind().length()>0) query += "AND lsThing.lsKind = :lsThingKind ";
+		
+		TypedQuery<Map> q = em.createQuery(query, Map.class);
+		q.setParameter("stateType", requestDTO.getStateType());
+		q.setParameter("stateKind", requestDTO.getStateKind());
+		q.setParameter("valueType", "dateValue");
+		q.setParameter("valueKind", requestDTO.getValueKind());
+		if (requestDTO.getLsType() != null && requestDTO.getLsType().length()>0) q.setParameter("lsThingType", requestDTO.getLsType());
+		if (requestDTO.getLsKind() != null && requestDTO.getLsKind().length()>0) q.setParameter("lsThingKind", requestDTO.getLsKind());
+		
+		Collection<Map> resultMaps = q.getResultList();
+		Collection<String> lsThingCodes = new HashSet<String>();
+		for (Map resultMap : resultMaps){
+			if (resultMap.get("dateValue") == null) lsThingCodes.add((String) resultMap.get("codeName"));
+			else{
+				Date dateValue = (Date) resultMap.get("dateValue");
+				Date modifiedDate;
+				if (resultMap.get("modifiedDate") == null){
+					modifiedDate = (Date) resultMap.get("recordedDate");
+				}else{
+					modifiedDate = (Date) resultMap.get("modifiedDate");
+				}
+				Integer secondsDelta = requestDTO.getSecondsDelta();
+				logger.debug("dateValue: "+dateValue.getTime());
+				logger.debug("modifiedDate: "+modifiedDate.getTime());
+				if (requestDTO.getNewerThanModified()){
+					if (dateValue.getTime() - secondsDelta*1000 >  modifiedDate.getTime()) lsThingCodes.add((String) resultMap.get("codeName"));
+				}else{
+					if (dateValue.getTime() + secondsDelta*1000 <  modifiedDate.getTime()) lsThingCodes.add((String) resultMap.get("codeName"));
+				}
+			}
+		}
+		return lsThingCodes;
 	}
 	
 	

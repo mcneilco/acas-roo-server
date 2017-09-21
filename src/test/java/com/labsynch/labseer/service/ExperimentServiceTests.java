@@ -47,6 +47,7 @@ import com.labsynch.labseer.domain.TreatmentGroupLabel;
 import com.labsynch.labseer.domain.TreatmentGroupState;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
@@ -792,4 +793,24 @@ public class ExperimentServiceTests {
 		Assert.assertFalse(codeTables.isEmpty());
 		logger.info(CodeTableDTO.toJsonArray(codeTables));
 	}
+	
+	@Test
+	@Transactional
+	public void getExperimentsByDateValueComparison() throws Exception{
+		DateValueComparisonRequest request = new DateValueComparisonRequest();
+		request.setStateType("metadata");
+		request.setStateKind("experiment metadata");
+		request.setValueKind("completion date");
+		request.setSecondsDelta(60);
+		
+		Collection<String> results = experimentService.getExperimentCodesByDateValueComparison(request);
+		logger.info(results.toString());
+		Assert.assertTrue(results.size()>0);
+		
+		request.setNewerThanModified(true);
+		Collection<String> noResults = experimentService.getExperimentCodesByDateValueComparison(request);
+		logger.info(noResults.toString());
+		Assert.assertFalse(noResults.size()>0);
+	}
+
 }
