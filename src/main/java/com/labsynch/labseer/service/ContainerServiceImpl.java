@@ -822,6 +822,7 @@ public class ContainerServiceImpl implements ContainerService {
 		queryString += "wellName.labelText, ";
 		queryString += "well.rowIndex, well.columnIndex, ";
 		queryString += "well.recordedBy, well.recordedDate, ";
+		queryString += "statusContentState.recordedDate, ";
 		queryString += "amountValue.numericValue, amountValue.unitKind,  ";
 		queryString += " batchCodeValue.codeValue, batchCodeValue.concentration, batchCodeValue.concUnit,  ";
 		queryString += " solventCodeValue.codeValue,  ";
@@ -1376,6 +1377,7 @@ public class ContainerServiceImpl implements ContainerService {
 			benchName.setLsType("name");
 			benchName.setLsKind("common");
 			benchName.setLabelText(recordedBy);
+			benchName.setPreferred(true);
 			benchName.setLsTransaction(bench.getLsTransaction());
 			benchName.setContainer(bench);
 			bench.getLsLabels().add(benchName);
