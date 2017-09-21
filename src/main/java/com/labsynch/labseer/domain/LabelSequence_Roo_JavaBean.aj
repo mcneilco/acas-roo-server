@@ -4,7 +4,9 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.domain.LabelSequenceRole;
 import java.util.Date;
+import java.util.Set;
 
 privileged aspect LabelSequence_Roo_JavaBean {
     
@@ -56,12 +58,12 @@ privileged aspect LabelSequence_Roo_JavaBean {
         this.digits = digits;
     }
     
-    public Long LabelSequence.getLatestNumber() {
-        return this.latestNumber;
+    public Long LabelSequence.getStartingNumber() {
+        return this.startingNumber;
     }
     
-    public void LabelSequence.setLatestNumber(Long latestNumber) {
-        this.latestNumber = latestNumber;
+    public void LabelSequence.setStartingNumber(Long startingNumber) {
+        this.startingNumber = startingNumber;
     }
     
     public boolean LabelSequence.isIgnored() {
@@ -78,6 +80,22 @@ privileged aspect LabelSequence_Roo_JavaBean {
     
     public void LabelSequence.setModifiedDate(Date modifiedDate) {
         this.modifiedDate = modifiedDate;
+    }
+    
+    public String LabelSequence.getDbSequence() {
+        return this.dbSequence;
+    }
+    
+    public void LabelSequence.setDbSequence(String dbSequence) {
+        this.dbSequence = dbSequence;
+    }
+    
+    public Set<LabelSequenceRole> LabelSequence.getLabelSequenceRoles() {
+        return this.labelSequenceRoles;
+    }
+    
+    public void LabelSequence.setLabelSequenceRoles(Set<LabelSequenceRole> labelSequenceRoles) {
+        this.labelSequenceRoles = labelSequenceRoles;
     }
     
 }

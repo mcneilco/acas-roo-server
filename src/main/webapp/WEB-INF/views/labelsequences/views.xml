@@ -19,4 +19,13 @@
 <definition extends="default" name="labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals">
         <put-attribute name="body" value="/WEB-INF/views/labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals.jspx"/>
     </definition>
+<definition extends="default" name="labelsequences/findLabelSequencesByLabelTypeAndKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/findLabelSequencesByLabelTypeAndKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="labelsequences/findLabelSequencesByThingTypeAndKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/findLabelSequencesByThingTypeAndKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals">
+        <put-attribute name="body" value="/WEB-INF/views/labelsequences/findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals.jspx"/>
+    </definition>
 </tiles-definitions>

@@ -23,6 +23,6 @@ public class LabelSequenceDTO {
 
     private Integer digits;
 
-    private Long latestNumber;
+    private Long startingNumber;
 
 }

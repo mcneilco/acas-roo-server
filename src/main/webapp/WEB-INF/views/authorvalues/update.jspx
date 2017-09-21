@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_AuthorValue" modelAttribute="authorValue" path="/authorvalues" versionField="Version" z="SQEnwm/3+/6ct0bncreFInUBXd4=">
+        <field:checkbox field="ignored" id="c_com_labsynch_labseer_domain_AuthorValue_ignored" z="LGBb4sV9pnlq9IxdibVVtpd+oqM="/>
+        <field:checkbox field="publicData" id="c_com_labsynch_labseer_domain_AuthorValue_publicData" z="EvqSXq1/2Ys/7YWYaeRuB1bWb+Q="/>
+        <field:checkbox field="deleted" id="c_com_labsynch_labseer_domain_AuthorValue_deleted" z="oE0fAKbdRM+Krx6h3dV+KmLyGwM="/>
+        <field:textarea field="lsType" id="c_com_labsynch_labseer_domain_AuthorValue_lsType" required="true" z="HNuEJAtZWLystOWROZrJgABEpNw="/>
+        <field:textarea field="lsKind" id="c_com_labsynch_labseer_domain_AuthorValue_lsKind" required="true" z="7ZN4uxdb8aCA/7T4W98bWYoTILU="/>
+        <field:textarea field="lsTypeAndKind" id="c_com_labsynch_labseer_domain_AuthorValue_lsTypeAndKind" z="pu7DZPax8u0RW1h8h6ghtahpObg="/>
+        <field:textarea field="codeOrigin" id="c_com_labsynch_labseer_domain_AuthorValue_codeOrigin" z="4t8kD7kNGkcFhhyNZqH8Oe8HK3c="/>
+        <field:textarea field="codeType" id="c_com_labsynch_labseer_domain_AuthorValue_codeType" z="GR21aE2oDyrTfOcF6oqcqcpCL10="/>
+        <field:textarea field="codeKind" id="c_com_labsynch_labseer_domain_AuthorValue_codeKind" z="gks95wy9pE8Vu1zHxulhjtkcfPw="/>
+        <field:textarea field="codeTypeAndKind" id="c_com_labsynch_labseer_domain_AuthorValue_codeTypeAndKind" z="dZW7FoiNv1B3xjwqWKQVzUhuOBc="/>
+        <field:textarea field="stringValue" id="c_com_labsynch_labseer_domain_AuthorValue_stringValue" z="zqhxThOVSeQ9a/pbNRh8ykxwrBQ="/>
+        <field:textarea field="codeValue" id="c_com_labsynch_labseer_domain_AuthorValue_codeValue" z="RUQfrC5+mZnn8XAt8vvfayK/19E="/>
+        <field:textarea field="fileValue" id="c_com_labsynch_labseer_domain_AuthorValue_fileValue" z="8CC79WXCK/l/FrpSXMwKua3fmOw="/>
+        <field:textarea field="urlValue" id="c_com_labsynch_labseer_domain_AuthorValue_urlValue" z="dN+6sbRR985BdFDnUHJD3+BJEHs="/>
+        <field:datetime dateTimePattern="${authorValue_datevalue_date_format}" field="dateValue" id="c_com_labsynch_labseer_domain_AuthorValue_dateValue" z="3aLPRlxusuXVY9j07iGoijrUiYs="/>
+        <field:input field="clobValue" id="c_com_labsynch_labseer_domain_AuthorValue_clobValue" z="KH0lmhf5RKrA21Uxu4Mlo6Yh60k="/>
+        <field:input field="blobValue" id="c_com_labsynch_labseer_domain_AuthorValue_blobValue" z="FXkMkevjsvJVzbRfX/xbLoadmFI="/>
+        <field:input field="operatorType" id="c_com_labsynch_labseer_domain_AuthorValue_operatorType" max="25" z="NRTzy2MfeAbgO79oyrRUpx622eI="/>
+        <field:input field="operatorKind" id="c_com_labsynch_labseer_domain_AuthorValue_operatorKind" max="10" z="WAZYnlcs2FtO6A88/Q5nIfSq+wQ="/>
+        <field:textarea field="operatorTypeAndKind" id="c_com_labsynch_labseer_domain_AuthorValue_operatorTypeAndKind" z="Flr5KEn/Efz002Gy0uc5ilUXmFc="/>
+        <field:input field="numericValue" id="c_com_labsynch_labseer_domain_AuthorValue_numericValue" validationMessageCode="field_invalid_number" z="eR+o77jxKXD3N2wQsHBw1qgAhyw="/>
+        <field:input field="sigFigs" id="c_com_labsynch_labseer_domain_AuthorValue_sigFigs" validationMessageCode="field_invalid_integer" z="Ol03BLacS9rMEbArQyM3rwTvBlo="/>
+        <field:input field="uncertainty" id="c_com_labsynch_labseer_domain_AuthorValue_uncertainty" validationMessageCode="field_invalid_number" z="2LM1yGBVnBTLgh4hS82DlpzIrSo="/>
+        <field:input field="numberOfReplicates" id="c_com_labsynch_labseer_domain_AuthorValue_numberOfReplicates" validationMessageCode="field_invalid_integer" z="QAh3Px0sySEQCtx6m6DdQoBJ24U="/>
+        <field:textarea field="uncertaintyType" id="c_com_labsynch_labseer_domain_AuthorValue_uncertaintyType" z="80qc4UqH1v2ULuGoSKJAhI8U2Ps="/>
+        <field:input field="unitType" id="c_com_labsynch_labseer_domain_AuthorValue_unitType" max="25" z="UU2XXPdrq8VpPBo/voYqWcng0yQ="/>
+        <field:input field="unitKind" id="c_com_labsynch_labseer_domain_AuthorValue_unitKind" max="25" z="3Sc9KjA23snbPEJR7VaUlFm1zqA="/>
+        <field:textarea field="unitTypeAndKind" id="c_com_labsynch_labseer_domain_AuthorValue_unitTypeAndKind" z="ZgQFePZaCB2VSoynynjvMEZFZKI="/>
+        <field:input field="concentration" id="c_com_labsynch_labseer_domain_AuthorValue_concentration" validationMessageCode="field_invalid_number" z="3F8rjdn19h/EaoEs6wHmCZyVVy4="/>
+        <field:input field="concUnit" id="c_com_labsynch_labseer_domain_AuthorValue_concUnit" max="25" z="2lFT4UcVlKVOygfuJ0YbFaLmlpA="/>
+        <field:textarea field="comments" id="c_com_labsynch_labseer_domain_AuthorValue_comments" z="7uUBfyJkYXs0Iun/eaFFm+tOi+U="/>
+        <field:input field="lsTransaction" id="c_com_labsynch_labseer_domain_AuthorValue_lsTransaction" validationMessageCode="field_invalid_integer" z="xEQvoKejtbNIQ3ULDOCMNlmLv6M="/>
+        <field:datetime dateTimePattern="${authorValue_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_AuthorValue_recordedDate" required="true" z="nEp0U9al4f16sw4BwWewn7Snj1Y="/>
+        <field:textarea field="recordedBy" id="c_com_labsynch_labseer_domain_AuthorValue_recordedBy" required="true" z="uGCO5iULPWv2h2dT2ZkG+7W3tOs="/>
+        <field:datetime dateTimePattern="${authorValue_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_AuthorValue_modifiedDate" z="vlW/cKaeyM8TPtycn+XVQIkGqZ0="/>
+        <field:textarea field="modifiedBy" id="c_com_labsynch_labseer_domain_AuthorValue_modifiedBy" z="MRXVOZSlgOBhpXceX2xUOCZtelg="/>
+        <field:select field="lsState" id="c_com_labsynch_labseer_domain_AuthorValue_lsState" itemValue="id" items="${authorstates}" path="/authorstates" required="true" z="JcF7DIJ+wE0LQfhL7bE+Vgc6VuU="/>
+    </form:update>
+</div>

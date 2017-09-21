@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
@@ -45,8 +46,29 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 	public List<AutoLabelDTO> getAutoLabels(LabelSequenceDTO lsDTO) {
 
 		logger.debug("incoming label seq: " + lsDTO.toJson());
+		if (lsDTO.getLabelPrefix() != null) {
+			return getAutoLabels(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind(), lsDTO.getLabelPrefix(), lsDTO.getNumberOfLabels());
+		}
 
 		return getAutoLabels(lsDTO.getThingTypeAndKind(), lsDTO.getLabelTypeAndKind(), lsDTO.getNumberOfLabels());
+	}
+	
+	public List<AutoLabelDTO> getAutoLabels(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix, Long numberOfLabels) throws NonUniqueResultException {
+		List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(thingTypeAndKind, labelTypeAndKind, labelPrefix).getResultList();
+		LabelSequence labelSequence;
+		if(labelSequences.size() == 0) {
+			logger.info("Label sequence does not exist! Create new Sequence if possible." + thingTypeAndKind + "  " + labelTypeAndKind);
+			labelSequence = createLabelSequence(thingTypeAndKind, labelTypeAndKind);
+			if (labelSequence == null){
+				throw new NoResultException();
+			}
+		} else if (labelSequences.size() > 1) {
+			logger.error("found duplicate sequences!!!");
+			throw new NonUniqueResultException();
+		} else {
+			labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	
+		}
+		return getAutoLabels(labelSequence, numberOfLabels);
 	}
 
 	@Override
@@ -66,7 +88,10 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		} else {
 			labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());           	
 		}
-				
+		return getAutoLabels(labelSequence, numberOfLabels);
+	}
+	
+	private List<AutoLabelDTO> getAutoLabels(LabelSequence labelSequence, Long numberOfLabels){
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
 
 		if (labelSequence.getThingTypeAndKind().equalsIgnoreCase("document_subject") && labelSequence.getLabelTypeAndKind().equalsIgnoreCase("id_codeName")){
@@ -308,33 +333,14 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 	}
 
 	private List<AutoLabelDTO> generateAutoLabels(LabelSequence labelSequence, Long numberOfLabels) {
-
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
-
-		long currentLastNumber = labelSequence.getLatestNumber();
-
-		labelSequence.setLatestNumber(labelSequence.getLatestNumber() + numberOfLabels);
-		labelSequence.setModifiedDate(new Date());
-		labelSequence.merge();
-
-		long startingNumber = currentLastNumber + 1L;
-		long endingNumber = currentLastNumber + numberOfLabels;
-
-		long labelNumber = startingNumber;
-		String formatLabelNumber = "%";
-		formatLabelNumber = formatLabelNumber.concat("0").concat(labelSequence.getDigits().toString()).concat("d");
-		logger.debug("format corpNumber: " + formatLabelNumber);
-		while (labelNumber <= endingNumber) {
-			String label = labelSequence.getLabelPrefix().concat(labelSequence.getLabelSeparator()).concat(String.format(formatLabelNumber, labelNumber));
-			logger.debug("new label: " + label);
+		List<String> labels = labelSequence.generateNextLabels(numberOfLabels);
+		for (String label : labels) {
 			AutoLabelDTO autoLabel = new AutoLabelDTO();
 			autoLabel.setAutoLabel(label);
 			autoLabels.add(autoLabel);
-			labelNumber++;
 		}
-		
-		return autoLabels;		
-
+		return autoLabels;
 	}
 
 	private LabelSequence createLabelSequence(String thingTypeAndKind, String labelTypeAndKind) {
@@ -361,9 +367,9 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		labelSequence.setIgnored(false);
 		labelSequence.setLabelPrefix("DDICT");
 		labelSequence.setLabelSeparator("-");
-		labelSequence.setLatestNumber(0L);
+		labelSequence.setStartingNumber(0L);
 		labelSequence.setModifiedDate((new Date()));
-		labelSequence.persist();
+		labelSequence.save();
 
 		return labelSequence;
 	}
@@ -455,7 +461,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
 
-		long currentLastNumber = labelSequence.getLatestNumber();
+		long currentLastNumber = labelSequence.fetchCurrentValue();
 
 		String formatLabelNumber = "%";
 		formatLabelNumber = formatLabelNumber.concat("0").concat(labelSequence.getDigits().toString()).concat("d");
@@ -486,11 +492,8 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 		}
 		
 		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
-
-		long currentLastNumber = labelSequence.getLatestNumber();
-		labelSequence.setLatestNumber(labelSequence.getLatestNumber() - 1);
-		labelSequence.setModifiedDate(new Date());
-		labelSequence.merge();
+		EntityManager em = LabelSequence.entityManager();
+		
 	}
 
 	@Override

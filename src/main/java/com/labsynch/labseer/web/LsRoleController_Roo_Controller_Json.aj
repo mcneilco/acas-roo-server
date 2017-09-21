@@ -93,6 +93,14 @@ privileged aspect LsRoleController_Roo_Controller_Json {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLsKindEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LsRoleController.jsonFindLsRolesByLsKindEquals(@RequestParam("lsKind") String lsKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LsRole.toJsonArray(LsRole.findLsRolesByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByLsTypeEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsRoleController.jsonFindLsRolesByLsTypeEquals(@RequestParam("lsType") String lsType) {

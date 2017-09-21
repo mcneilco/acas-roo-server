@@ -108,7 +108,7 @@ public class CreateGeneIDsFromCSVFileTests {
 				newLabelSeq.setDigits(6);
 				newLabelSeq.setLabelPrefix("GENE");
 				newLabelSeq.setLabelSeparator("-");
-				newLabelSeq.setLatestNumber(1L);
+				newLabelSeq.setStartingNumber(1L);
 				newLabelSeq.setLabelTypeAndKind(labelTypeAndKind);
 				newLabelSeq.setThingTypeAndKind(thingTypeAndKind);
 				newLabelSeq.persist();

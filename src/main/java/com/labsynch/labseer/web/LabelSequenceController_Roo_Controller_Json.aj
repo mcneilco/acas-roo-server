@@ -93,12 +93,36 @@ privileged aspect LabelSequenceController_Roo_Controller_Json {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
+    @RequestMapping(params = "find=ByLabelTypeAndKindEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LabelSequenceController.jsonFindLabelSequencesByLabelTypeAndKindEquals(@RequestParam("labelTypeAndKind") String labelTypeAndKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LabelSequence.toJsonArray(LabelSequence.findLabelSequencesByLabelTypeAndKindEquals(labelTypeAndKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByThingTypeAndKindEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LabelSequenceController.jsonFindLabelSequencesByThingTypeAndKindEquals(@RequestParam("thingTypeAndKind") String thingTypeAndKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LabelSequence.toJsonArray(LabelSequence.findLabelSequencesByThingTypeAndKindEquals(thingTypeAndKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
     @RequestMapping(params = "find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LabelSequenceController.jsonFindLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(@RequestParam("thingTypeAndKind") String thingTypeAndKind, @RequestParam("labelTypeAndKind") String labelTypeAndKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(LabelSequence.toJsonArray(LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(thingTypeAndKind, labelTypeAndKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> LabelSequenceController.jsonFindLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(@RequestParam("thingTypeAndKind") String thingTypeAndKind, @RequestParam("labelTypeAndKind") String labelTypeAndKind, @RequestParam("labelPrefix") String labelPrefix) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(LabelSequence.toJsonArray(LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(thingTypeAndKind, labelTypeAndKind, labelPrefix).getResultList()), headers, HttpStatus.OK);
     }
     
 }

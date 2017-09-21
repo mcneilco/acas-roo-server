@@ -63,12 +63,12 @@ privileged aspect LabelSequenceDTO_Roo_JavaBean {
         this.digits = digits;
     }
     
-    public Long LabelSequenceDTO.getLatestNumber() {
-        return this.latestNumber;
+    public Long LabelSequenceDTO.getStartingNumber() {
+        return this.startingNumber;
     }
     
-    public void LabelSequenceDTO.setLatestNumber(Long latestNumber) {
-        this.latestNumber = latestNumber;
+    public void LabelSequenceDTO.setStartingNumber(Long startingNumber) {
+        this.startingNumber = startingNumber;
     }
     
 }

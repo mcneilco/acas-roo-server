@@ -208,7 +208,10 @@
         <menu:category id="c_labelsequence" z="ejKZ7guZhfyvW84AnNefYohcs8I=">
             <menu:item id="i_labelsequence_new" messageCode="global_menu_new" url="/labelsequences?form" z="nTXPvw/wtoW0pbK6xHA8Cuk68XM="/>
             <menu:item id="i_labelsequence_list" messageCode="global_menu_list" url="/labelsequences?page=1&amp;size=${empty param.size ? 10 : param.size}" z="UgjjbATdvO/1WdtpamU/zsHd5FA="/>
+            <menu:item id="fi_labelsequence_labeltypeandkindequals" messageCode="global_menu_find" url="/labelsequences?find=ByLabelTypeAndKindEquals&amp;form" z="gPT/47S0zSmQ5KysB4cKJJvYhAM="/>
+            <menu:item id="fi_labelsequence_thingtypeandkindequals" messageCode="global_menu_find" url="/labelsequences?find=ByThingTypeAndKindEquals&amp;form" z="Ws8XxZDUSTjULBr2y7tQehrZnpc="/>
             <menu:item id="fi_labelsequence_thingtypeandkindequalsandlabeltypeandkindequals" messageCode="global_menu_find" url="/labelsequences?find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEquals&amp;form" z="BlzgTAU5dOfOzjFld/+z7Zbq0N4="/>
+            <menu:item id="fi_labelsequence_thingtypeandkindequalsandlabeltypeandkindequalsandlabelprefixequals" messageCode="global_menu_find" url="/labelsequences?find=ByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals&amp;form" z="y/7LFLIrSUzymm0sN2FDsR63U2E="/>
         </menu:category>
         <menu:category id="c_containertype" z="lIn8JrrOqLZEoWuvjF5bv9D0gBs=">
             <menu:item id="i_containertype_new" messageCode="global_menu_new" url="/containertypes?form" z="tdEzAD1RNQP3GYsw2jecLOntccA="/>
@@ -435,6 +438,7 @@
         <menu:category id="c_lsrole" z="eIIF+3Nwhg0gA4BZWz9IqeIfBr0=">
             <menu:item id="i_lsrole_new" messageCode="global_menu_new" url="/lsroles?form" z="sQQU8eIYjr52rryeIj1mbQvh070="/>
             <menu:item id="i_lsrole_list" messageCode="global_menu_list" url="/lsroles?page=1&amp;size=${empty param.size ? 10 : param.size}" z="zSPyhLyoG501CR+jtEld7yKrcKg="/>
+            <menu:item id="fi_lsrole_lskindequals" messageCode="global_menu_find" url="/lsroles?find=ByLsKindEquals&amp;form" z="I+D1R+8B7i4rqXaE1E+gWb6wnYE="/>
             <menu:item id="fi_lsrole_lstypeequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEquals&amp;form" z="W4JpQHrCvTbvdaMZnx/5xpX+ICs="/>
             <menu:item id="fi_lsrole_lstypeequalsandlskindequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndLsKindEquals&amp;form" z="gyxh+EFMUzy1xWG/2BhwPbOFt9A="/>
             <menu:item id="fi_lsrole_lstypeequalsandlskindequalsandrolenameequals" messageCode="global_menu_find" url="/lsroles?find=ByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals&amp;form" z="txmF06uRmk7J4WZcz8kEQZStSvc="/>
@@ -451,6 +455,9 @@
         <menu:category id="c_itxprotocolprotocol" z="lmgYw5QqKJwU04tbGuaKaMJoxlc=">
             <menu:item id="i_itxprotocolprotocol_new" messageCode="global_menu_new" url="/itxprotocolprotocols?form" z="dMXVapq9fuBlhNUnKCw6jF2F8ug="/>
             <menu:item id="i_itxprotocolprotocol_list" messageCode="global_menu_list" url="/itxprotocolprotocols?page=1&amp;size=${empty param.size ? 10 : param.size}" z="iq6qexLG4PaxGfjcA03XJ0+5AaQ="/>
+            <menu:item id="fi_itxprotocolprotocol_firstprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByFirstProtocol&amp;form" z="UJuHinNHGy4nCOcXPxemLzxtACw="/>
+            <menu:item id="fi_itxprotocolprotocol_lstransactionequals" messageCode="global_menu_find" url="/itxprotocolprotocols?find=ByLsTransactionEquals&amp;form" z="t2qEPlGnBoKuT2h+SyEOZ446WTs="/>
+            <menu:item id="fi_itxprotocolprotocol_secondprotocol" messageCode="global_menu_find" url="/itxprotocolprotocols?find=BySecondProtocol&amp;form" z="AyzEdhOcH4pkRXswaVImyoHU6zc="/>
         </menu:category>
         <menu:category id="c_itxprotocolprotocolstate" z="5crXh8kZ9negy5Cyo9mf6r7Zwo8=">
             <menu:item id="i_itxprotocolprotocolstate_new" messageCode="global_menu_new" url="/itxprotocolprotocolstates?form" z="m085rBwmeyS6/phK6Wv6DPfHCQ8="/>
@@ -525,6 +532,30 @@
             <menu:item id="i_roletype_new" messageCode="global_menu_new" url="/roletypes?form" z="SCsoXt9FKGH0QpEfNXFbsigT8AE="/>
             <menu:item id="i_roletype_list" messageCode="global_menu_list" url="/roletypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="pXs+olwjk4QH+ztDyWQ6jt195ng="/>
             <menu:item id="fi_roletype_typenameequals" messageCode="global_menu_find" url="/roletypes?find=ByTypeNameEquals&amp;form" z="LSRdfHt3MP1A4Yd0obo33AAV5QY="/>
+        </menu:category>
+        <menu:category id="c_authorstate" z="llb18vu0YwqOxWtVC/L6uvKvKJQ=">
+            <menu:item id="i_authorstate_new" messageCode="global_menu_new" url="/authorstates?form" z="MGzCCAQCGKXwRI5J8ROuGK8d6WM="/>
+            <menu:item id="i_authorstate_list" messageCode="global_menu_list" url="/authorstates?page=1&amp;size=${empty param.size ? 10 : param.size}" z="3tmMLJd8Pnu//kGpFFTawQBl0v4="/>
+        </menu:category>
+        <menu:category id="c_cronjob" z="MJhorYNE+3OCIWEpf+RfPk4gCI0=">
+            <menu:item id="i_cronjob_new" messageCode="global_menu_new" url="/cronjobs?form" z="h4Gy14Qp0blpOVETAnQAg6Q6y+8="/>
+            <menu:item id="i_cronjob_list" messageCode="global_menu_list" url="/cronjobs?page=1&amp;size=${empty param.size ? 10 : param.size}" z="CoFS7ynqZBGXPy/UKVutNm+wlJw="/>
+        </menu:category>
+        <menu:category id="c_authorlabel" z="sJF8F4gD+aqm5mM+UHEgh+lQkNw=">
+            <menu:item id="i_authorlabel_new" messageCode="global_menu_new" url="/authorlabels?form" z="A77Xm/veq+3sAkX9frZK2TTZTYs="/>
+            <menu:item id="i_authorlabel_list" messageCode="global_menu_list" url="/authorlabels?page=1&amp;size=${empty param.size ? 10 : param.size}" z="sv+6kax7agMiOw1CNAT2OEnnWEA="/>
+        </menu:category>
+        <menu:category id="c_tempselecttable" z="X1VdlsMzutg1uw93oy02+OHwRJ8=">
+            <menu:item id="i_tempselecttable_new" messageCode="global_menu_new" url="/tempselecttables?form" z="REvglWHZ9RFYNQ1s3bw3Evu1juo="/>
+            <menu:item id="i_tempselecttable_list" messageCode="global_menu_list" url="/tempselecttables?page=1&amp;size=${empty param.size ? 10 : param.size}" z="jk60q6lP0txw1soEaJqLnhTg3hU="/>
+        </menu:category>
+        <menu:category id="c_labelsequencerole" z="lJsqdvfuWoIaXCw0EcJozZ1ys2E=">
+            <menu:item id="i_labelsequencerole_new" messageCode="global_menu_new" url="/labelsequenceroles?form" z="gH3x0VFtnFF5ZcxQRyIbzKYwG+s="/>
+            <menu:item id="i_labelsequencerole_list" messageCode="global_menu_list" url="/labelsequenceroles?page=1&amp;size=${empty param.size ? 10 : param.size}" z="59XrXSaThk0WaM6ME/zuC0TTvcI="/>
+        </menu:category>
+        <menu:category id="c_authorvalue" z="SEKbotDcjdwlJQ3FJKqsn3ODN0Y=">
+            <menu:item id="i_authorvalue_new" messageCode="global_menu_new" url="/authorvalues?form" z="tweyBRFzrkXNIgmrLrv8fWwl5ZQ="/>
+            <menu:item id="i_authorvalue_list" messageCode="global_menu_list" url="/authorvalues?page=1&amp;size=${empty param.size ? 10 : param.size}" z="GoQlL6SZmtPWPBUN4GYzj1Lq5gk="/>
         </menu:category>
     </menu:menu>
 </div>

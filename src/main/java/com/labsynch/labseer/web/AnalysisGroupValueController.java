@@ -58,10 +58,9 @@ import org.supercsv.prefs.CsvPreference;
 @RooWebFinder
 public class AnalysisGroupValueController {
 
-	private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AnalysisGroupValueController.class);
 
-
-	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
+    @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String create(@Valid AnalysisGroupValue analysisGroupValue, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             populateEditForm(uiModel, analysisGroupValue);
@@ -72,7 +71,7 @@ public class AnalysisGroupValueController {
         return "redirect:/analysisgroupvalues/" + encodeUrlPathSegment(analysisGroupValue.getId().toString(), httpServletRequest);
     }
 
-	@RequestMapping(params = "form", produces = "text/html")
+    @RequestMapping(params = "form", produces = "text/html")
     public String createForm(Model uiModel) {
         populateEditForm(uiModel, new AnalysisGroupValue());
         List<String[]> dependencies = new ArrayList<String[]>();
@@ -83,7 +82,7 @@ public class AnalysisGroupValueController {
         return "analysisgroupvalues/create";
     }
 
-	@RequestMapping(value = "/{id}", produces = "text/html")
+    @RequestMapping(value = "/{id}", produces = "text/html")
     public String show(@PathVariable("id") Long id, Model uiModel) {
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("analysisgroupvalue", AnalysisGroupValue.findAnalysisGroupValue(id));
@@ -91,7 +90,7 @@ public class AnalysisGroupValueController {
         return "analysisgroupvalues/show";
     }
 
-	@RequestMapping(produces = "text/html")
+    @RequestMapping(produces = "text/html")
     public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
@@ -106,7 +105,7 @@ public class AnalysisGroupValueController {
         return "analysisgroupvalues/list";
     }
 
-	@RequestMapping(method = RequestMethod.PUT, produces = "text/html")
+    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
     public String update(@Valid AnalysisGroupValue analysisGroupValue, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             populateEditForm(uiModel, analysisGroupValue);
@@ -117,13 +116,13 @@ public class AnalysisGroupValueController {
         return "redirect:/analysisgroupvalues/" + encodeUrlPathSegment(analysisGroupValue.getId().toString(), httpServletRequest);
     }
 
-	@RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
         populateEditForm(uiModel, AnalysisGroupValue.findAnalysisGroupValue(id));
         return "analysisgroupvalues/update";
     }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
         analysisGroupValue.remove();
@@ -133,32 +132,33 @@ public class AnalysisGroupValueController {
         return "redirect:/analysisgroupvalues";
     }
 
-	void addDateTimeFormatPatterns(Model uiModel) {
+    void addDateTimeFormatPatterns(Model uiModel) {
         uiModel.addAttribute("analysisGroupValue_datevalue_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
         uiModel.addAttribute("analysisGroupValue_recordeddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
         uiModel.addAttribute("analysisGroupValue_modifieddate_date_format", DateTimeFormat.patternForStyle("MM", LocaleContextHolder.getLocale()));
     }
 
-	void populateEditForm(Model uiModel, AnalysisGroupValue analysisGroupValue) {
+    void populateEditForm(Model uiModel, AnalysisGroupValue analysisGroupValue) {
         uiModel.addAttribute("analysisGroupValue", analysisGroupValue);
         addDateTimeFormatPatterns(uiModel);
         uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAllAnalysisGroupStates());
     }
 
-	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
+    String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {
             enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
         }
         try {
             pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        } catch (UnsupportedEncodingException uee) {}
+        } catch (UnsupportedEncodingException uee) {
+        }
         return pathSegment;
     }
 
-	@RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
+    public ResponseEntity<java.lang.String> showJson(@PathVariable("id") Long id) {
         AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
@@ -168,17 +168,17 @@ public class AnalysisGroupValueController {
         return new ResponseEntity<String>(analysisGroupValue.toJson(), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(headers = "Accept=application/json")
+    @RequestMapping(headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> listJson() {
+    public ResponseEntity<java.lang.String> listJson() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<AnalysisGroupValue> result = AnalysisGroupValue.findAllAnalysisGroupValues();
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(result), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJson(@RequestBody String json) {
+    @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
         AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
         analysisGroupValue.persist();
         HttpHeaders headers = new HttpHeaders();
@@ -186,9 +186,9 @@ public class AnalysisGroupValueController {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
-	@RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> createFromJsonArray(@RequestBody String json) {
-        for (AnalysisGroupValue analysisGroupValue: AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json)) {
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> createFromJsonArray(@RequestBody String json) {
+        for (AnalysisGroupValue analysisGroupValue : AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json)) {
             analysisGroupValue.persist();
         }
         HttpHeaders headers = new HttpHeaders();
@@ -196,8 +196,8 @@ public class AnalysisGroupValueController {
         return new ResponseEntity<String>(headers, HttpStatus.CREATED);
     }
 
-	@RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJson(@RequestBody String json) {
+    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
         AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.fromJsonToAnalysisGroupValue(json);
@@ -207,11 +207,11 @@ public class AnalysisGroupValueController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> updateFromJsonArray(@RequestBody String json) {
+    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> updateFromJsonArray(@RequestBody String json) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        for (AnalysisGroupValue analysisGroupValue: AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json)) {
+        for (AnalysisGroupValue analysisGroupValue : AnalysisGroupValue.fromJsonArrayToAnalysisGroupValues(json)) {
             if (analysisGroupValue.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
@@ -219,8 +219,8 @@ public class AnalysisGroupValueController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
-    public ResponseEntity<String> deleteFromJson(@PathVariable("id") Long id) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<java.lang.String> deleteFromJson(@PathVariable("id") Long id) {
         AnalysisGroupValue analysisGroupValue = AnalysisGroupValue.findAnalysisGroupValue(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -231,49 +231,49 @@ public class AnalysisGroupValueController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByCodeValueEquals", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByCodeValueEquals", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindAnalysisGroupValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue) {
+    public ResponseEntity<java.lang.String> jsonFindAnalysisGroupValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByCodeValueEquals(codeValue).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue) {
+    public ResponseEntity<java.lang.String> jsonFindAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsState", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsState", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindAnalysisGroupValuesByLsState(@RequestParam("lsState") AnalysisGroupState lsState) {
+    public ResponseEntity<java.lang.String> jsonFindAnalysisGroupValuesByLsState(@RequestParam("lsState") AnalysisGroupState lsState) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsState(lsState).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindAnalysisGroupValuesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
+    public ResponseEntity<java.lang.String> jsonFindAnalysisGroupValuesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
+    public ResponseEntity<java.lang.String> jsonFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
     }
 
-	@RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot", headers = "Accept=application/json")
+    @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot", headers = "Accept=application/json")
     @ResponseBody
-    public ResponseEntity<String> jsonFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue, @RequestParam(value = "ignored", required = false) boolean ignored) {
+    public ResponseEntity<java.lang.String> jsonFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("stringValue") String stringValue, @RequestParam(value = "ignored", required = false) boolean ignored) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(AnalysisGroupValue.toJsonArray(AnalysisGroupValue.findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(lsType, lsKind, stringValue, ignored).getResultList()), headers, HttpStatus.OK);

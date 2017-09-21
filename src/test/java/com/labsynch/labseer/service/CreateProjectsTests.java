@@ -101,7 +101,7 @@ public class CreateProjectsTests {
 			newLabelSeq.setDigits(4);
 			newLabelSeq.setLabelPrefix("PROJ");
 			newLabelSeq.setLabelSeparator("-");
-			newLabelSeq.setLatestNumber(1L);
+			newLabelSeq.setStartingNumber(1L);
 			newLabelSeq.setLabelTypeAndKind(labelTypeAndKind);
 			newLabelSeq.setThingTypeAndKind(thingTypeAndKind);
 			newLabelSeq.persist();

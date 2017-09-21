@@ -28,4 +28,7 @@
 <definition extends="default" name="lsroles/findLsRolesByLsTypeEqualsAndRoleNameEquals">
         <put-attribute name="body" value="/WEB-INF/views/lsroles/findLsRolesByLsTypeEqualsAndRoleNameEquals.jspx"/>
     </definition>
+<definition extends="default" name="lsroles/findLsRolesByLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lsroles/findLsRolesByLsKindEquals.jspx"/>
+    </definition>
 </tiles-definitions>

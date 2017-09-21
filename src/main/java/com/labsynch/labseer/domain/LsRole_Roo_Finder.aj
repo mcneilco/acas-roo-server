@@ -9,6 +9,14 @@ import javax.persistence.TypedQuery;
 
 privileged aspect LsRole_Roo_Finder {
     
+    public static TypedQuery<LsRole> LsRole.findLsRolesByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = LsRole.entityManager();
+        TypedQuery<LsRole> q = em.createQuery("SELECT o FROM LsRole AS o WHERE o.lsKind = :lsKind", LsRole.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
     public static TypedQuery<LsRole> LsRole.findLsRolesByLsTypeEquals(String lsType) {
         if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = LsRole.entityManager();

@@ -796,3 +796,4 @@ finder add findChemStructuresByCodeNameEquals
 focus --class ~.domain.ChemStructure
 finder list
 finder add findChemStructuresByCodeNameEquals
+web mvc all --package ~.web
