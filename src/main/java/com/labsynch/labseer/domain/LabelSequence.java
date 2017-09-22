@@ -99,6 +99,7 @@ public class LabelSequence {
 			dbSequence = dbSequence.replaceAll("[^a-zA-Z0-9_]+", "_");
 			this.setDbSequence(dbSequence);
 		}
+		if (this.getStartingNumber() < 1L) this.setStartingNumber(1L);
 		EntityManager em = LabelSequence.entityManager();
 		Query q = em.createNativeQuery("CREATE SEQUENCE "+this.dbSequence+" START WITH "+this.getStartingNumber());
 		q.executeUpdate();
