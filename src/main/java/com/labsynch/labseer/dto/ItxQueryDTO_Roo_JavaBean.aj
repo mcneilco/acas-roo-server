@@ -4,6 +4,8 @@
 package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.ItxQueryDTO;
+import com.labsynch.labseer.dto.ValueQueryDTO;
+import java.util.Collection;
 
 privileged aspect ItxQueryDTO_Roo_JavaBean {
     
@@ -77,6 +79,14 @@ privileged aspect ItxQueryDTO_Roo_JavaBean {
     
     public void ItxQueryDTO.setOperator(String operator) {
         this.operator = operator;
+    }
+    
+    public Collection<ValueQueryDTO> ItxQueryDTO.getThingValues() {
+        return this.thingValues;
+    }
+    
+    public void ItxQueryDTO.setThingValues(Collection<ValueQueryDTO> thingValues) {
+        this.thingValues = thingValues;
     }
     
 }

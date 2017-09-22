@@ -1,5 +1,7 @@
 package com.labsynch.labseer.dto;
 
+import java.util.Collection;
+
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -20,6 +22,8 @@ public class ItxQueryDTO {
 	String thingCodeName;
 	String operator;
 	
+	Collection<ValueQueryDTO> thingValues;
+		
 	public ItxQueryDTO(){
 		
 	}
