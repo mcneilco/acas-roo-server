@@ -34,8 +34,8 @@ DO $$
 		for label_sequence_id, db_sequence_name, starting_num in
 			SELECT id, COALESCE(db_sequence, regexp_replace(('labelseq_' || label_prefix || '_' || label_type_and_kind || '_' || thing_type_and_kind ), '[^a-zA-Z_]+', '_')), GREATEST(starting_num, 1::bigint) FROM label_sequence
 		loop
-			EXECUTE ('SELECT 1 FROM pg_class c WHERE c.relname = ' || quote_literal(db_sequence_name)) INTO seq_exists;
-			IF seq_exists IS NULL THEN
+			EXECUTE ('SELECT 1 FROM pg_class c WHERE c.relname = LOWER(' || quote_literal(db_sequence_name) || ')') INTO seq_exists;
+			IF seq_exists IS NOT NULL THEN
 				RAISE NOTICE 'Sequence already exists: %', db_sequence_name;
 			ELSE
 				EXECUTE format('CREATE SEQUENCE %s START WITH %s', db_sequence_name, starting_num);
