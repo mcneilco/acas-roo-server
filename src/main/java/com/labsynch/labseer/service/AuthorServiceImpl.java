@@ -110,19 +110,46 @@ public class AuthorServiceImpl implements AuthorService {
 			author = authors.get(0);
 		}
 		if (author != null){
+			Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
 			if (propertiesUtilService.getEnableProjectRoles()){
+				Collection<LsThing> filteredProjects = new ArrayList<LsThing>();
+				boolean isAdmin = false;
 				Set<AuthorRole> roles = author.getAuthorRoles();
+				Set<String> allowedProjectCodes = new HashSet<String>();
 				for (AuthorRole role : roles){
 					LsRole entry = role.getRoleEntry();
 					if (entry.getLsType()!= null && entry.getLsType().equalsIgnoreCase("Project")){
-						projectThings.addAll(LsThing.findLsThingsByCodeNameEquals(entry.getLsKind()).getResultList());
+						allowedProjectCodes.add(entry.getLsKind());
 					}else if (entry.getRoleName().equals(propertiesUtilService.getAcasAdminRole())){
-						Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
-						projectThings.addAll(allProjects);
+						isAdmin = true;
 					}
 				}
+				if (isAdmin) {
+					filteredProjects.addAll(allProjects);
+				}else {
+					for (LsThing project : allProjects) {
+						boolean isRestricted = false;
+						for (LsThingState state : project.getLsStates()) {
+							if (!state.isIgnored()) {
+								for (LsThingValue value : state.getLsValues()) {
+									if (!value.isIgnored()) {
+										if (value.getLsKind().equals("is restricted")) {
+											Boolean projRestricted = Boolean.valueOf(value.getCodeValue());
+											if (projRestricted != null) isRestricted = projRestricted;
+										}
+									}
+								}
+							}
+						}
+						if (isRestricted) {
+							if (allowedProjectCodes.contains(project.getCodeName())) filteredProjects.add(project);
+						}else {
+							filteredProjects.add(project);
+						}
+					}
+				}
+				projectThings.addAll(filteredProjects);
 			}else{
-				Collection<LsThing> allProjects = LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals("project", "project").getResultList();
 				projectThings.addAll(allProjects);
 			}
 		}
