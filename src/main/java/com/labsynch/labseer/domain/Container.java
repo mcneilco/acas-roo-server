@@ -133,6 +133,16 @@ public class Container extends AbstractThing {
         return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstContainers.firstContainer.lsStates.lsValues","secondContainers.secondContainer.lsStates.lsValues","firstContainers.firstContainer.lsLabels","secondContainers.secondContainer.lsLabels","firstContainers.lsStates.lsValues","secondContainers.lsStates.lsValues","firstContainers.lsLabels","secondContainers.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
     }
 	
+	@Transactional
+	public static String toJsonArrayWithNestedStubs(Collection<com.labsynch.labseer.domain.Container> collection) {
+        return new JSONSerializer()
+        		.exclude("*.class")
+        		.include("lsTags", "lsLabels", "lsStates.lsValues",
+        				"firstContainers.firstContainer.lsLabels","secondContainers.secondContainer.lsLabels")
+        		.transform(new ExcludeNulls(), void.class).serialize(collection);
+
+	}
+	
 	public static String toJsonArray(Collection<Container> collection) {
 		return new JSONSerializer()
 			.exclude("*.class")

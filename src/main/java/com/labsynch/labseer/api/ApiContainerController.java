@@ -106,19 +106,25 @@ public class ApiContainerController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         List<Container> containers = new ArrayList<Container>();
         if (lsType != null && lsType.length() > 0 && lsKind != null && lsKind.length() > 0){
-        	containers = Container.findContainersByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+        		containers = Container.findContainersByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
         }else if (lsType != null && lsType.length() > 0 && (lsKind == null || lsKind.length() == 0)){
-        	containers = Container.findContainersByLsTypeEquals(lsType).getResultList();
+        		containers = Container.findContainersByLsTypeEquals(lsType).getResultList();
         }else if((lsType == null || lsType.length()==0) && lsKind != null && lsKind.length() > 0){
-        	containers = Container.findContainersByLsKindEquals(lsKind).getResultList();
+        		containers = Container.findContainersByLsKindEquals(lsKind).getResultList();
         }else{
-        	containers = Container.findAllContainers();
+        		containers = Container.findAllContainers();
         }
-        if (format != null && format.equalsIgnoreCase("codeTable")){
-        	List<CodeTableDTO> codeTableContainers = containerService.convertToCodeTables(containers);
-        	return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTableContainers), headers, HttpStatus.OK);
-        }else if (format != null && format.equalsIgnoreCase("stub")){
-            return new ResponseEntity<String>(Container.toJsonArrayStub(containers), headers, HttpStatus.OK);
+        if (format != null) {
+	        if (format.equalsIgnoreCase("codeTable")){
+	        		List<CodeTableDTO> codeTableContainers = containerService.convertToCodeTables(containers);
+	        		return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTableContainers), headers, HttpStatus.OK);
+	        }else if (format != null && format.equalsIgnoreCase("stub")){
+	            return new ResponseEntity<String>(Container.toJsonArrayStub(containers), headers, HttpStatus.OK);
+	        }else if (format.equalsIgnoreCase("nestedfull")) {
+	  			return new ResponseEntity<String>(Container.toJsonArrayWithNestedFull(containers), headers, HttpStatus.OK);
+	  		}else if (format.equalsIgnoreCase("nestedstub")) {
+	  			return new ResponseEntity<String>(Container.toJsonArrayWithNestedStubs(containers), headers, HttpStatus.OK);
+	  		}
         }
         return new ResponseEntity<String>(Container.toJsonArray(containers), headers, HttpStatus.OK);
     }
