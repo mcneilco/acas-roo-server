@@ -145,5 +145,9 @@ public interface ContainerService {
 
 	Collection<Long> searchContainerIdsByQueryDTO(ContainerQueryDTO query)
 			throws Exception;
+
+	Collection<CodeTableDTO> convertToCodeTables(Collection<Container> results, String labelType);
+
+	Collection<CodeTableDTO> convertToCodeTables(Collection<Container> containers);
 	
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 privileged aspect ItxLsThingLsThingValueController_Roo_Controller_Json {
@@ -90,6 +91,22 @@ privileged aspect ItxLsThingLsThingValueController_Roo_Controller_Json {
         }
         itxLsThingLsThingValue.remove();
         return new ResponseEntity<String>(headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ItxLsThingLsThingValueController.jsonFindItxLsThingLsThingValuesByLsKindEquals(@RequestParam("lsKind") String lsKind) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ItxLsThingLsThingValue.toJsonArray(ItxLsThingLsThingValue.findItxLsThingLsThingValuesByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
+    }
+    
+    @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
+    @ResponseBody
+    public ResponseEntity<String> ItxLsThingLsThingValueController.jsonFindItxLsThingLsThingValuesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json; charset=utf-8");
+        return new ResponseEntity<String>(ItxLsThingLsThingValue.toJsonArray(ItxLsThingLsThingValue.findItxLsThingLsThingValuesByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
     }
     
 }
