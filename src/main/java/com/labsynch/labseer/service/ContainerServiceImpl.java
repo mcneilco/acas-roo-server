@@ -2849,6 +2849,10 @@ public class ContainerServiceImpl implements ContainerService {
 			Predicate containerKind = criteriaBuilder.equal(interactingThing.<String>get("lsKind"), interaction.getThingKind());
 			itxPredicates.add(containerKind);
 		}
+		if (interaction.getThingCodeName() != null){
+			Predicate containerCodeName = criteriaBuilder.equal(interactingThing.<String>get("codeName"), interaction.getThingCodeName());
+			itxPredicates.add(containerCodeName);
+		}
 		if (interaction.getThingLabelType() != null){
 			Predicate containerLabelType = criteriaBuilder.equal(interactingThingLabel.<String>get("lsType"), interaction.getThingLabelType());
 			itxPredicates.add(containerLabelType);
