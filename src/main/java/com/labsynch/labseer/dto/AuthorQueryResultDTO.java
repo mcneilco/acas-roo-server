@@ -29,7 +29,7 @@ public class AuthorQueryResultDTO {
 	
 	@Transactional
     public String toJson() {
-        return new JSONSerializer().exclude("*.class").include("results.lsTags", "results.lsLabels", "results.lsStates.lsValues", "results.authorRoles.roleEntry").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "results.password").include("results.lsTags", "results.lsLabels", "results.lsStates.lsValues", "results.authorRoles.roleEntry").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 	
 }

@@ -350,7 +350,20 @@ public class ApiAuthorController {
 	    }
 	      
 	  }
-    
-
+	
+	@RequestMapping(value = "/signupAuthor", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> signupFromJson(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		try{
+			Author author = Author.fromJsonToAuthor(json);
+			author = authorService.signupAuthor(author);
+			return new ResponseEntity<String>(author.toJson(), headers, HttpStatus.CREATED);
+		}catch (Exception e){
+			logger.error("Caught exception signing up author",e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
 
 }

@@ -1,0 +1,1 @@
+ALTER TABLE author MODIFY (password NULL);

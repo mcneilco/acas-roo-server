@@ -1,5 +1,7 @@
 package com.labsynch.labseer.service;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -8,9 +10,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -20,10 +24,14 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +66,9 @@ public class AuthorServiceImpl implements AuthorService {
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
+	private transient MailSender mailSender;
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthorServiceImpl.class);
 
@@ -265,6 +276,43 @@ public class AuthorServiceImpl implements AuthorService {
 			}	
 		}
 		return authors;
+	}
+	
+	@Override
+	@Transactional
+	public Author signupAuthor(Author author) {
+		Random random = new Random(System.currentTimeMillis());
+		String activationKey = "activationKey:" + random.nextInt();
+		if (logger.isDebugEnabled()) logger.debug("activation key is :" + activationKey);
+		author.setActivationKey(activationKey);
+		author.setEnabled(false);
+		author.setLocked(false);
+		
+		String randomPassword = generateRandomPassword();
+		author.setPassword(randomPassword);
+		String encryptedPassword = null;
+		try {
+			encryptedPassword = DatabaseAuthenticationProvider.getBase64ShaHash(author.getPassword());
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+		author.setPassword(encryptedPassword);
+		
+		author = saveAuthor(author);        
+        
+        SimpleMailMessage mail = new SimpleMailMessage();
+		mail.setTo(author.getEmailAddress());
+		mail.setSubject("User Activation");
+		
+		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your ACAS account: " + propertiesUtilService.getClientPath()+"/activateUser?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +""
+				+ "\n Your username is: "+author.getUserName()
+				+ "\n Your temporary password is: "+randomPassword );
+        mailSender.send(mail);
+        return author;
 	}
 
 	@Override
@@ -639,6 +687,54 @@ public class AuthorServiceImpl implements AuthorService {
 		authorIdList = q.getResultList();
 		logger.debug("Found "+authorIdList.size()+" results.");
 		return authorIdList;
+	}
+
+	public static final int temporaryPasswordLength = 18;
+
+	private String generateRandomPassword() {
+		return RandomStringUtils.randomAlphanumeric(temporaryPasswordLength);
+	}
+	
+	@Override
+	public void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain) throws Exception {
+		String storedPassword = author.getPassword();
+			
+    	    String encryptedPassword = null;
+    		try {
+    			encryptedPassword = DatabaseAuthenticationProvider.getBase64ShaHash(currentPassword);
+    		} catch (NoSuchAlgorithmException e1) {
+    			// TODO Auto-generated catch block
+    			e1.printStackTrace();
+    		} catch (UnsupportedEncodingException e1) {
+    			// TODO Auto-generated catch block
+    			e1.printStackTrace();
+    		} catch (Exception e){
+    			logger.error("exception checking user password for change password",e);
+    		}    		
+		if (!storedPassword.equals(encryptedPassword)) {
+			throw new Exception("Current password is incorrect.");
+		}
+		if (!newPassword.equals(newPasswordAgain)) {
+			throw new Exception("New passwords do not match.");
+		}
+		String encryptedNewPassword = null;
+		try {
+			encryptedNewPassword = DatabaseAuthenticationProvider.getBase64ShaHash(newPassword);
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (Exception e){
+			logger.error("exception checking user password for change password",e);
+		}
+		if (encryptedPassword.equals(encryptedNewPassword)) {
+			throw new Exception("New password cannot be the same as old password.");
+		}
+		//validation complete -> change the password
+		author.setPassword(encryptedNewPassword);
+		author.merge();
 	}
 
 }
