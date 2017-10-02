@@ -254,7 +254,7 @@ public class ApiAuthorController {
 		if (author == null) {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
-		author.remove();
+		author.logicalDelete();
 		return new ResponseEntity<String>(headers, HttpStatus.OK);
 	}
 
