@@ -302,17 +302,17 @@ public class AuthorServiceImpl implements AuthorService {
 		} 
 		author.setPassword(encryptedPassword);
 		
-		author = saveAuthor(author);        
-        
-        SimpleMailMessage mail = new SimpleMailMessage();
+		author = saveAuthor(author);		
+		
+		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(author.getEmailAddress());
 		mail.setSubject("User Activation");
 		
 		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your ACAS account: " + propertiesUtilService.getClientPath()+"/activateUser?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +""
 				+ "\n Your username is: "+author.getUserName()
 				+ "\n Your temporary password is: "+randomPassword );
-        mailSender.send(mail);
-        return author;
+		mailSender.send(mail);
+		return author;
 	}
 
 	@Override
@@ -699,18 +699,18 @@ public class AuthorServiceImpl implements AuthorService {
 	public void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain) throws Exception {
 		String storedPassword = author.getPassword();
 			
-    	    String encryptedPassword = null;
-    		try {
-    			encryptedPassword = DatabaseAuthenticationProvider.getBase64ShaHash(currentPassword);
-    		} catch (NoSuchAlgorithmException e1) {
-    			// TODO Auto-generated catch block
-    			e1.printStackTrace();
-    		} catch (UnsupportedEncodingException e1) {
-    			// TODO Auto-generated catch block
-    			e1.printStackTrace();
-    		} catch (Exception e){
-    			logger.error("exception checking user password for change password",e);
-    		}    		
+			String encryptedPassword = null;
+			try {
+				encryptedPassword = DatabaseAuthenticationProvider.getBase64ShaHash(currentPassword);
+			} catch (NoSuchAlgorithmException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (Exception e){
+				logger.error("exception checking user password for change password",e);
+			}			
 		if (!storedPassword.equals(encryptedPassword)) {
 			throw new Exception("Current password is incorrect.");
 		}
@@ -735,6 +735,32 @@ public class AuthorServiceImpl implements AuthorService {
 		//validation complete -> change the password
 		author.setPassword(encryptedNewPassword);
 		author.merge();
+	}
+	
+	@Override
+	public void resetPassword(String emailAddress) {
+		Author foundAuthor = Author.findAuthorsByEmailAddress(emailAddress).getSingleResult();
+		String newPassword = generateRandomPassword();
+		String encryptedPassword = null;
+		try {
+			encryptedPassword = DatabaseAuthenticationProvider.getBase64ShaHash(newPassword);
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (UnsupportedEncodingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+		foundAuthor.setPassword(encryptedPassword);
+		
+		foundAuthor.merge();
+		SimpleMailMessage mail = new SimpleMailMessage();
+		mail.setTo(emailAddress);
+		mail.setSubject("ACAS Password Recovery");
+		mail.setText("Hi "+foundAuthor.getFirstName()+",\n"
+				+ "You recently requested for your password to be reset. Your temporary password is "+newPassword+"\n"
+				+ "Please login to ACAS here and change your password. "+ propertiesUtilService.getClientPath()+"/passwordChange");
+		mailSender.send(mail);
 	}
 
 }

@@ -79,6 +79,18 @@ public class ApiAuthorizationController {
 
 	}
 	
+	@RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
+	public ResponseEntity<java.lang.String> resetPassword(@RequestBody String emailAddress) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json;");
+		try {
+			authorService.resetPassword(emailAddress);
+		}catch (Exception e) {
+			return new ResponseEntity<String>(headers, HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>(headers, HttpStatus.OK);
+	}
+	
 	@RequestMapping(value = "/changePassword", method = RequestMethod.POST)
 	public ResponseEntity<java.lang.String> changePassword(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();

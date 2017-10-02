@@ -50,4 +50,6 @@ public interface AuthorService {
 
 	void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain) throws Exception;
 
+	void resetPassword(String emailAddress);
+
 }
