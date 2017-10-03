@@ -1059,6 +1059,7 @@ public class ContainerServiceImpl implements ContainerService {
 			trash.setLsKind("default");
 			trash.setRecordedBy("acas");
 			trash.setRecordedDate(new Date());
+			Set<ContainerLabel> trashLabels = new HashSet<ContainerLabel>();
 			ContainerLabel trashLabel = new ContainerLabel();
 			trashLabel.setLsType("name");
 			trashLabel.setLsKind("common");
@@ -1066,14 +1067,16 @@ public class ContainerServiceImpl implements ContainerService {
 			trashLabel.setRecordedBy("acas");
 			trashLabel.setRecordedDate(new Date());
 			trashLabel.setPreferred(true);
-			trash.getLsLabels().add(trashLabel);
+			trashLabels.add(trashLabel);
 			
+			Set<ContainerState> trashStates = new HashSet<ContainerState>();
 			ContainerState trashState = new ContainerState();
 			trashState.setLsType("metadata");
 			trashState.setLsKind("information");
 			trashState.setRecordedBy("acas");
 			trashState.setRecordedDate(new Date());
-			trashState.setLsValues(new HashSet<ContainerValue>());
+			
+			Set<ContainerValue> trashValues = new HashSet<ContainerValue>();
 			
 			ContainerValue trashUserValue = new ContainerValue();
 			trashUserValue.setLsType("stringValue");
@@ -1081,7 +1084,7 @@ public class ContainerServiceImpl implements ContainerService {
 			trashUserValue.setRecordedBy("acas");
 			trashUserValue.setRecordedDate(new Date());
 			trashUserValue.setStringValue("acas");
-			trashState.getLsValues().add(trashUserValue);
+			trashValues.add(trashUserValue);
 			
 			ContainerValue trashDescriptionValue = new ContainerValue();
 			trashDescriptionValue.setLsType("stringValue");
@@ -1089,7 +1092,7 @@ public class ContainerServiceImpl implements ContainerService {
 			trashDescriptionValue.setRecordedBy("acas");
 			trashDescriptionValue.setRecordedDate(new Date());
 			trashDescriptionValue.setStringValue("trash");
-			trashState.getLsValues().add(trashDescriptionValue);
+			trashValues.add(trashDescriptionValue);
 			
 			ContainerValue trashDateValue = new ContainerValue();
 			trashDateValue.setLsType("dateValue");
@@ -1097,9 +1100,12 @@ public class ContainerServiceImpl implements ContainerService {
 			trashDateValue.setRecordedBy("acas");
 			trashDateValue.setRecordedDate(new Date());
 			trashDateValue.setDateValue(new Date());
-			trashState.getLsValues().add(trashDateValue);
+			trashValues.add(trashDateValue);
 			
-			trash.getLsStates().add(trashState);
+			trashState.setLsValues(trashValues);
+			trashStates.add(trashState);
+			trash.setLsStates(trashStates);
+			trash.setLsLabels(trashLabels);
 			
 			Container newTrash = saveLsContainer(trash);
 			newTrash.flush();
