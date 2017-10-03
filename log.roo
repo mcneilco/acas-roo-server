@@ -796,4 +796,7 @@ finder add findChemStructuresByCodeNameEquals
 focus --class ~.domain.ChemStructure
 finder list
 finder add findChemStructuresByCodeNameEquals
-web mvc all --package ~.web
+// Spring Roo 1.3.1.RELEASE [rev f4f5256] log opened at 2017-10-02 09:28:17
+// Spring Roo 1.3.1.RELEASE [rev f4f5256] log opened at 2017-10-02 09:32:09
+// Spring Roo 1.3.1.RELEASE [rev f4f5256] log opened at 2017-10-02 09:38:49
+// Spring Roo 1.2.3.RELEASE [rev 7fd62b6] log opened at 2017-10-02 11:06:11

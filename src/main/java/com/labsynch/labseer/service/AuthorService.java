@@ -46,4 +46,10 @@ public interface AuthorService {
 
 	Collection<Author> getAuthorsByIds(Collection<Long> authorIds);
 
+	Author signupAuthor(Author author);
+
+	void changePassword(Author author, String currentPassword, String newPassword, String newPasswordAgain) throws Exception;
+
+	void resetPassword(String emailAddress);
+
 }
