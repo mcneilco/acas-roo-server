@@ -88,4 +88,20 @@ privileged aspect StoichiometryPropertiesDTO_Roo_JavaBean {
         this.phase = phase;
     }
     
+    public BigDecimal StoichiometryPropertiesDTO.getAmountMade() {
+        return this.amountMade;
+    }
+    
+    public void StoichiometryPropertiesDTO.setAmountMade(BigDecimal amountMade) {
+        this.amountMade = amountMade;
+    }
+    
+    public String StoichiometryPropertiesDTO.getAmountMadeUnits() {
+        return this.amountMadeUnits;
+    }
+    
+    public void StoichiometryPropertiesDTO.setAmountMadeUnits(String amountMadeUnits) {
+        this.amountMadeUnits = amountMadeUnits;
+    }
+    
 }
