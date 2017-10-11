@@ -56,7 +56,6 @@ public class Author extends AbstractThing {
     @Size(max = 255)
     private String emailAddress;
     
-    @NotNull
     @Size(max = 255)
     private String password;
     
