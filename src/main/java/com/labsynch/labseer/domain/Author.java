@@ -47,12 +47,12 @@ public class Author extends AbstractThing {
     private String lastName;
 
     @NotNull
-    @Column(unique = true)
+//    @Column(unique = true)
     @Size(max = 255)
     private String userName;
 
     @NotNull
-    @Column(unique = true)
+//    @Column(unique = true)
     @Size(max = 255)
     private String emailAddress;
     

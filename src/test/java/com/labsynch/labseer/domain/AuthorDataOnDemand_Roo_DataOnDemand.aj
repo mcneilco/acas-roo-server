@@ -76,7 +76,7 @@ privileged aspect AuthorDataOnDemand_Roo_DataOnDemand {
     public void AuthorDataOnDemand.setEmailAddress(Author obj, int index) {
         String emailAddress = "foo" + index + "@bar.com";
         if (emailAddress.length() > 255) {
-            emailAddress = new Random().nextInt(10) + emailAddress.substring(1, 255);
+            emailAddress = emailAddress.substring(0, 255);
         }
         obj.setEmailAddress(emailAddress);
     }
@@ -178,7 +178,7 @@ privileged aspect AuthorDataOnDemand_Roo_DataOnDemand {
     public void AuthorDataOnDemand.setUserName(Author obj, int index) {
         String userName = "userName_" + index;
         if (userName.length() > 255) {
-            userName = new Random().nextInt(10) + userName.substring(1, 255);
+            userName = userName.substring(0, 255);
         }
         obj.setUserName(userName);
     }
