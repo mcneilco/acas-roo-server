@@ -159,7 +159,7 @@ public class Author extends AbstractThing {
         if (activationKey == null || activationKey.length() == 0) throw new IllegalArgumentException("The activationKey argument is required");
         if (emailAddress == null || emailAddress.length() == 0) throw new IllegalArgumentException("The emailAddress argument is required");
         EntityManager em = Author.entityManager();
-        TypedQuery<Author> q = em.createQuery("SELECT o FROM Author AS o WHERE o.activationKey = :activationKey AND o.emailAddress = :emailAddress", Author.class);
+        TypedQuery<Author> q = em.createQuery("SELECT o FROM Author AS o WHERE o.ignored = FALSE AND o.activationKey = :activationKey AND o.emailAddress = :emailAddress", Author.class);
         q.setParameter("activationKey", activationKey);
         q.setParameter("emailAddress", emailAddress);
         return q;
@@ -169,7 +169,7 @@ public class Author extends AbstractThing {
 	public static TypedQuery<Author> findAuthorsByEmailAddress(String emailAddress) {
         if (emailAddress == null || emailAddress.length() == 0) throw new IllegalArgumentException("The emailAddress argument is required");
         EntityManager em = Author.entityManager();
-        TypedQuery<Author> q = em.createQuery("SELECT o FROM Author AS o WHERE o.emailAddress = :emailAddress", Author.class);
+        TypedQuery<Author> q = em.createQuery("SELECT o FROM Author AS o WHERE o.ignored = FALSE AND o.emailAddress = :emailAddress", Author.class);
         q.setParameter("emailAddress", emailAddress);
         return q;
     }
@@ -178,7 +178,7 @@ public class Author extends AbstractThing {
 	public static TypedQuery<Author> findAuthorsByUserName(String userName) {
         if (userName == null || userName.length() == 0) throw new IllegalArgumentException("The userName argument is required");
         EntityManager em = Author.entityManager();
-        TypedQuery<Author> q = em.createQuery("SELECT o FROM Author AS o WHERE LOWER(o.userName) = LOWER(:userName)", Author.class);
+        TypedQuery<Author> q = em.createQuery("SELECT o FROM Author AS o WHERE o.ignored = FALSE AND LOWER(o.userName) = LOWER(:userName)", Author.class);
         q.setParameter("userName", userName);
         return q;
     }
