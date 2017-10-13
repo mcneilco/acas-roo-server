@@ -57,6 +57,7 @@ import com.labsynch.labseer.domain.SubjectLabel;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
@@ -1909,6 +1910,7 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 	
 	@Override
+	@Transactional
 	public Collection<ContainerErrorMessageDTO> getContainersByCodeNames(List<String> codeNames){
 		if (codeNames.isEmpty()) return new ArrayList<ContainerErrorMessageDTO>();
 		EntityManager em = Container.entityManager();
@@ -3141,6 +3143,57 @@ public class ContainerServiceImpl implements ContainerService {
 			}
 		}
 		return ContainerLabel.pickBestLabel(filteredLabels).getLabelText();
+	}
+
+	@Override
+	public Collection<ContainerBatchCodeDTO> getContainerDTOsByBatchCodes(List<String> batchCodes) {
+		EntityManager em = Container.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ContainerBatchCodeDTO> cq = cb.createQuery(ContainerBatchCodeDTO.class);
+		Root<Container> container = cq.from(Container.class);
+		Join<Container, ItxContainerContainer> secondItx = container.join("secondContainers");
+		Join<Container, ItxContainerContainer> well = secondItx.join("secondContainer");
+		Join<Container, ContainerState> wellContentState = well.join("lsStates");
+		Join<Container, ContainerState> batchCodeValue = wellContentState.join("lsValues");
+		Join<Container, ContainerLabel> containerBarcode = container.join("lsLabels");
+		Join<Container, ContainerLabel> wellLabel = well.join("lsLabels");
+		
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		predicateList.add(cb.not(container.<Boolean>get("ignored")));
+		predicateList.add(cb.not(well.<Boolean>get("ignored")));
+		predicateList.add(cb.equal(secondItx.<String>get("lsType"), "has member"));
+		predicateList.add(cb.equal(secondItx.<String>get("lsKind"), "container_well"));
+		predicateList.add(cb.not(secondItx.<Boolean>get("ignored")));
+		predicateList.add(cb.equal(wellContentState.get("lsType"), "status"));
+		predicateList.add(cb.equal(wellContentState.get("lsKind"), "content"));
+		predicateList.add(cb.not(wellContentState.<Boolean>get("ignored")));
+		predicateList.add(cb.equal(batchCodeValue.get("lsType"), "codeValue"));
+		predicateList.add(cb.equal(batchCodeValue.get("lsKind"), "batch code"));
+		predicateList.add(cb.not(batchCodeValue.<Boolean>get("ignored")));
+		predicateList.add(cb.equal(containerBarcode.<String>get("lsType"), "barcode"));
+		predicateList.add(cb.equal(containerBarcode.<String>get("lsKind"), "barcode"));
+		predicateList.add(cb.not(containerBarcode.<Boolean>get("ignored")));
+		predicateList.add(cb.equal(wellLabel.<String>get("lsType"), "name"));
+		predicateList.add(cb.equal(wellLabel.<String>get("lsKind"), "well name"));
+		predicateList.add(cb.not(wellLabel.<Boolean>get("ignored")));
+		
+		Expression<String> batchCode = batchCodeValue.<String>get("codeValue");
+		predicateList.add(batchCode.in(batchCodes));
+		
+		predicates = predicateList.toArray(predicates);
+		cq.where(cb.and(predicates));
+		cq.multiselect(batchCodeValue.<String>get("codeValue"), container.<String>get("codeName"), containerBarcode.<String>get("labelText"), well.<String>get("codeName"), wellLabel.<String>get("labelText"));
+		TypedQuery<ContainerBatchCodeDTO> q = em.createQuery(cq);
+		return q.getResultList();
+	}
+
+	@Override
+	@Transactional
+	public void logicalDeleteContainerArray(Collection<Container> foundContainers) {
+		for (Container container : foundContainers) {
+			container.logicalDelete();
+		}
 	}
 
 

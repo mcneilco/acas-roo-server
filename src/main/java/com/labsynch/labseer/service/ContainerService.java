@@ -14,6 +14,7 @@ import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
@@ -149,5 +150,9 @@ public interface ContainerService {
 	Collection<CodeTableDTO> convertToCodeTables(Collection<Container> results, String labelType);
 
 	Collection<CodeTableDTO> convertToCodeTables(Collection<Container> containers);
+
+	Collection<ContainerBatchCodeDTO> getContainerDTOsByBatchCodes(List<String> batchCodes);
+
+	void logicalDeleteContainerArray(Collection<Container> foundContainers);
 	
 }

@@ -26,6 +26,7 @@ import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
@@ -343,6 +344,23 @@ public class ApiContainerController {
 				logger.info("Found the container after delete");
 				return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+		}
+	}
+	
+	@RequestMapping(value = "/deleteArrayByCodeNames", method = RequestMethod.POST)
+	public ResponseEntity<java.lang.String> deleteArrayByCodeNames(@RequestBody List<String> codeNames) {
+		HttpHeaders headers = new HttpHeaders();
+		try {
+			Collection<ContainerErrorMessageDTO> foundContainerDTOs = containerService.getContainersByCodeNames(codeNames);
+			Collection<Container> foundContainers = new ArrayList<Container>();
+			for (ContainerErrorMessageDTO foundContainerDTO : foundContainerDTOs) {
+				foundContainers.add(foundContainerDTO.getContainer());				
+			}
+			containerService.logicalDeleteContainerArray(foundContainers);
+			return new ResponseEntity<String>(headers, HttpStatus.OK);
+		}catch(Exception e){
+			logger.error("Caught error deleting array of containers", e);
+			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -967,5 +985,20 @@ public class ApiContainerController {
 			return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 		}
 	}
+	
+	@Transactional
+	@RequestMapping(value = "/getContainerDTOsByBatchCodes", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<java.lang.String> getContainerDTOsByBatchCodes(@RequestBody List<String> batchCodes) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		try{
+			Collection<ContainerBatchCodeDTO> searchResults = containerService.getContainerDTOsByBatchCodes(batchCodes);
+			return new ResponseEntity<String>(ContainerBatchCodeDTO.toJsonArray(searchResults), headers, HttpStatus.OK);
+		} catch (Exception e){
+			logger.error("Uncaught error in getContainerDTOsByBatchCodes",e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}	
 
 }
