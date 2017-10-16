@@ -255,6 +255,8 @@ public class ApiAuthorController {
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		}
 		author.logicalDelete();
+		author.setEnabled(false);
+		author.setLocked(true);
 		return new ResponseEntity<String>(headers, HttpStatus.OK);
 	}
 

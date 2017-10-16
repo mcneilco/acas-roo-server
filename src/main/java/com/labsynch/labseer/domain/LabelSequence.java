@@ -83,6 +83,7 @@ public class LabelSequence {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "labelSequenceEntry", fetch =  FetchType.LAZY)
 	private Set<LabelSequenceRole> labelSequenceRoles;
 
+	@Transactional
 	public LabelSequence save() {
 		if (this.getLabelSequenceRoles() != null) {
 			for (LabelSequenceRole labelSeqRole : this.getLabelSequenceRoles()) {

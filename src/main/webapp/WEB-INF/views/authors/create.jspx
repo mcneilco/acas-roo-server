@@ -6,7 +6,7 @@
         <field:textarea field="firstName" id="c_com_labsynch_labseer_domain_Author_firstName" required="true" z="+CweY3nOz9RsK9se5yCsbdaFsa4="/>
         <field:textarea field="lastName" id="c_com_labsynch_labseer_domain_Author_lastName" required="true" z="LN9JI6g+rvU3ip6ug3rG5N6PtW0="/>
         <field:textarea field="userName" id="c_com_labsynch_labseer_domain_Author_userName" required="true" z="NGyLkXmGZf6sexoin1eSzcne7S0="/>
-        <field:textarea field="password" id="c_com_labsynch_labseer_domain_Author_password" required="true" z="gCq40rVJ58SRCe1R592vFrcQbMA="/>
+        <field:textarea field="password" id="c_com_labsynch_labseer_domain_Author_password" z="hEJTRUrwrqM6ZpjdYZaSiGj8aEU="/>
         <field:datetime dateTimePattern="${author_recordeddate_date_format}" field="recordedDate" id="c_com_labsynch_labseer_domain_Author_recordedDate" required="true" z="w2ud4TcqYghbHGu11BcyNEW4zBQ="/>
         <field:datetime dateTimePattern="${author_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_Author_modifiedDate" z="jGtFRtJnX81sCSAwqLrY8AaDzZ4="/>
         <field:datetime dateTimePattern="${author_activationdate_date_format}" field="activationDate" id="c_com_labsynch_labseer_domain_Author_activationDate" z="mabBBC1VTUilgd/wmGXPtZzIqnY="/>

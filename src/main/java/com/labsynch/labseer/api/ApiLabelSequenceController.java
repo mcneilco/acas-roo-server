@@ -52,13 +52,19 @@ public class ApiLabelSequenceController {
 		return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
 	}
 
-	@Transactional
+
 	@RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> createFromJson(@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
+		LabelSequence labelSequence = LabelSequence.fromJsonToLabelSequence(json);
+		Collection<LabelSequence> foundLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind(), labelSequence.getLabelPrefix()).getResultList();
+		if (!foundLabelSequences.isEmpty()) {
+			String message = "LabelSequence already exists! " + labelSequence.getLabelPrefix() +" "+labelSequence.getLabelTypeAndKind() + " " + labelSequence.getThingTypeAndKind();
+			logger.warn(message);
+			return new ResponseEntity<String>(message,headers, HttpStatus.BAD_REQUEST);
+		}
 		try{
-			LabelSequence labelSequence = LabelSequence.fromJsonToLabelSequence(json);
 			labelSequence = labelSequence.save();
 			return new ResponseEntity<String>(labelSequence.toJson(), headers, HttpStatus.CREATED);
 		}catch (Exception e){
@@ -76,8 +82,14 @@ public class ApiLabelSequenceController {
 			Collection<LabelSequence> labelSequences = LabelSequence.fromJsonArrayToLabelSequences(json);
 			Collection<LabelSequence> savedLabelSequences = new ArrayList<LabelSequence>();
 			for (LabelSequence labelSequence : labelSequences) {
-				LabelSequence savedLabelSequence = labelSequence.save();
-				savedLabelSequences.add(savedLabelSequence);
+				Collection<LabelSequence> foundLabelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind(), labelSequence.getLabelPrefix()).getResultList();
+				if (!foundLabelSequences.isEmpty()) {
+					String message = "LabelSequence already exists! " + labelSequence.getLabelPrefix() +" "+labelSequence.getLabelTypeAndKind() + " " + labelSequence.getThingTypeAndKind();
+					logger.warn(message);
+				}else {
+					LabelSequence savedLabelSequence = labelSequence.save();
+					savedLabelSequences.add(savedLabelSequence);
+				}	
 			}
 			return new ResponseEntity<String>(LabelSequence.toJsonArray(savedLabelSequences), headers, HttpStatus.CREATED);
 		}catch (Exception e){
