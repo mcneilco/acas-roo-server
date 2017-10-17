@@ -89,7 +89,7 @@ public class CmpdRegBatchCodeDTO {
 		if(countContainerValueBatchCodes() > 0){
 			linkedDataExists = true;
 		}
-		dedupeLinkedExperiments();
+//		dedupeLinkedExperiments();
 	}
 
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromExperimentValueBatchCodes() {
