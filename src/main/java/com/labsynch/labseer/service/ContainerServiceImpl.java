@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -32,6 +33,12 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
 
+import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.Oracle10gDialect;
+import org.hibernate.dialect.PostgreSQL9Dialect;
+import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
+import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
+import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +69,7 @@ import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerLocationTreeDTO;
 import com.labsynch.labseer.dto.ContainerQueryDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
@@ -3194,6 +3202,239 @@ public class ContainerServiceImpl implements ContainerService {
 		for (Container container : foundContainers) {
 			container.logicalDelete();
 		}
+	}
+	
+	@Override
+	public List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel) throws SQLException {
+		EntityManager em = Container.entityManager();
+		String queryString = null;
+		Connection connection = dataSource.getConnection();
+		DialectResolver dialectResolver = new StandardDialectResolver();
+		Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
+		if (dialect instanceof PostgreSQL9Dialect) {
+			queryString = "WITH RECURSIVE t1 ( \n" + 
+					"    code_name, \n" + 
+					"    parent_code_name, \n" + 
+					"    label_text, \n" + 
+					"    lvl, \n" + 
+					"    root_code_name, \n" + 
+					"    code_name_bread_crumb, \n" + 
+					"    label_text_bread_crumb \n" + 
+					") AS ( \n" + 
+					"  -- Anchor member. \n" + 
+					"    SELECT \n" + 
+					"        code_name, \n" + 
+					"        CAST ( NULL AS text) AS parent_code_name, \n" + 
+					"        label_text, \n" + 
+					"        1 AS lvl, \n" + 
+					"        code_name AS root_code_name, \n" + 
+					"        CAST ( code_name AS text) AS code_name_bread_crumb, \n" + 
+					"        CAST ( label_text AS text) AS label_text_bread_crumb \n" + 
+					"    FROM \n" + 
+					"        (SELECT \n" + 
+					"        c.code_name, \n" + 
+					"        cl.label_text \n" + 
+					"    FROM \n" + 
+					"        container c \n" + 
+					"        JOIN container_label cl ON \n" + 
+					"            c.id = cl.container_id \n" + 
+					"        AND \n" + 
+					"            cl.ignored = '0' \n" + 
+					"        AND \n" + 
+					"            cl.deleted = '0' \n" + 
+					"    WHERE \n" + 
+					"            c.deleted = '0' \n" + 
+					"        AND \n" + 
+					"            cl.label_text LIKE :rootLabel ) as anchord \n" + 
+					"    UNION ALL \n" + 
+					"  -- Recursive member. \n" + 
+					"     SELECT \n" + 
+					"        interactions.code_name, \n" + 
+					"        interactions.parent_code_name, \n" + 
+					"        interactions.label_text, \n" + 
+					"        lvl + 1, \n" + 
+					"        t1.root_code_name, \n" + 
+					"        t1.code_name_bread_crumb \n" + 
+					"         || '>' \n" + 
+					"         || interactions.code_name AS code_name_bread_crumb, \n" + 
+					"        t1.label_text_bread_crumb \n" + 
+					"         || '>' \n" + 
+					"         || interactions.label_text AS label_text_bread_crumb \n" + 
+					"    FROM \n" + 
+					"        (SELECT c1.code_name AS code_name, \n" + 
+					"        cl1.label_text AS label_text, \n" + 
+					"        c2.code_name AS parent_code_name \n" + 
+					"    FROM \n" + 
+					"        itx_container_container itx \n" + 
+					"        JOIN container c1 ON \n" + 
+					"            itx.first_container_id = c1.id \n" + 
+					"        AND \n" + 
+					"            c1.ignored = '0' \n" + 
+					"        AND \n" + 
+					"            c1.deleted = '0' \n" + 
+					"        JOIN container c2 ON \n" + 
+					"            itx.second_container_id = c2.id \n" + 
+					"        AND \n" + 
+					"            c2.ignored = '0' \n" + 
+					"        AND \n" + 
+					"            c2.deleted = '0' \n" + 
+					"        JOIN container_label cl1 ON \n" + 
+					"            c1.id = cl1.container_id \n" + 
+					"        AND \n" + 
+					"            cl1.ignored = '0' \n" + 
+					"        AND \n" + 
+					"            cl1.deleted = '0' \n" + 
+					"    WHERE \n" + 
+					"            itx.ls_type = 'moved to' \n" + 
+					"        AND \n" + 
+					"            itx.ignored = '0' \n" + 
+					"        AND \n" + 
+					"            itx.deleted = '0') as interactions, \n" + 
+					"        t1 \n" + 
+					"    WHERE \n" + 
+					"        interactions.parent_code_name = t1.code_name \n" + 
+					") \n" + 
+					"SELECT \n" + 
+					"    code_name, \n" + 
+					"    parent_code_name, \n" + 
+					"    label_text, \n" + 
+					"    rpad( \n" + 
+					"        '.', \n" + 
+					"        (lvl - 1) * 2, \n" + 
+					"        '.' \n" + 
+					"    ) \n" + 
+					"     || code_name AS code_tree, \n" + 
+					"    rpad( \n" + 
+					"        '.', \n" + 
+					"        (lvl - 1) * 2, \n" + 
+					"        '.' \n" + 
+					"    ) \n" + 
+					"     || label_text AS label_tree, \n" + 
+					"    lvl, \n" + 
+					"    root_code_name, \n" + 
+					"    code_name_bread_crumb, \n" + 
+					"    label_text_bread_crumb \n" + 
+					"FROM \n" + 
+					"    t1; \n" + 
+					"";
+		}else if (dialect instanceof Oracle10gDialect) {
+			queryString = "WITH interactions AS ( \n" + 
+					"    SELECT c1.code_name AS code_name, \n" + 
+					"        cl1.label_text AS label_text, \n" + 
+					"        c2.code_name AS parent_code_name \n" + 
+					"    FROM \n" + 
+					"        itx_container_container itx \n" + 
+					"        JOIN container c1 ON \n" + 
+					"            itx.first_container_id = c1.id \n" + 
+					"        AND \n" + 
+					"            c1.ignored = 0 \n" + 
+					"        AND \n" + 
+					"            c1.deleted = 0 \n" + 
+					"        JOIN container c2 ON \n" + 
+					"            itx.second_container_id = c2.id \n" + 
+					"        AND \n" + 
+					"            c2.ignored = 0 \n" + 
+					"        AND \n" + 
+					"            c2.deleted = 0 \n" + 
+					"        JOIN container_label cl1 ON \n" + 
+					"            c1.id = cl1.container_id \n" + 
+					"        AND \n" + 
+					"            cl1.ignored = 0 \n" + 
+					"        AND \n" + 
+					"            cl1.deleted = 0 \n" + 
+					"    WHERE \n" + 
+					"            itx.ls_type = 'moved to' \n" + 
+					"        AND \n" + 
+					"            itx.ignored = 0 \n" + 
+					"        AND \n" + 
+					"            itx.deleted = 0 \n" + 
+					"),anchors AS ( \n" + 
+					"    SELECT \n" + 
+					"        c.code_name, \n" + 
+					"        cl.label_text \n" + 
+					"    FROM \n" + 
+					"        container c \n" + 
+					"        JOIN container_label cl ON \n" + 
+					"            c.id = cl.container_id \n" + 
+					"        AND \n" + 
+					"            cl.ignored = 0 \n" + 
+					"        AND \n" + 
+					"            cl.deleted = 0 \n" + 
+					"    WHERE \n" + 
+					"            c.deleted = 0 \n" + 
+					"        AND \n" + 
+					"            cl.label_text LIKE :rootLabel  \n" + 
+					"),t1 ( \n" + 
+					"    code_name, \n" + 
+					"    parent_code_name, \n" + 
+					"    label_text, \n" + 
+					"    lvl, \n" + 
+					"    root_code_name, \n" + 
+					"    code_name_bread_crumb, \n" + 
+					"    label_text_bread_crumb \n" + 
+					") AS ( \n" + 
+					"  -- Anchor member. \n" + 
+					"    SELECT \n" + 
+					"        code_name, \n" + 
+					"        NULL AS parent_code_name, \n" + 
+					"        label_text, \n" + 
+					"        1 AS lvl, \n" + 
+					"        code_name AS root_code_name, \n" + 
+					"        code_name AS code_name_bread_crumb, \n" + 
+					"        label_text AS label_text_bread_crumb \n" + 
+					"    FROM \n" + 
+					"        anchors \n" + 
+					"    UNION ALL \n" + 
+					"  -- Recursive member. \n" + 
+					"     SELECT \n" + 
+					"        interactions.code_name, \n" + 
+					"        interactions.parent_code_name, \n" + 
+					"        interactions.label_text, \n" + 
+					"        lvl + 1, \n" + 
+					"        t1.root_code_name, \n" + 
+					"        t1.code_name_bread_crumb \n" + 
+					"         || '>' \n" + 
+					"         || interactions.code_name AS code_name_bread_crumb, \n" + 
+					"        t1.label_text_bread_crumb \n" + 
+					"         || '>' \n" + 
+					"         || interactions.label_text AS label_text_bread_crumb \n" + 
+					"    FROM \n" + 
+					"        interactions, \n" + 
+					"        t1 \n" + 
+					"    WHERE \n" + 
+					"        interactions.parent_code_name = t1.code_name \n" + 
+					") \n" + 
+					"    SEARCH DEPTH FIRST BY code_name SET order1 \n" + 
+					"    CYCLE code_name SET cycle TO 1 DEFAULT 0 \n" + 
+					"SELECT \n" + 
+					"    code_name, \n" + 
+					"    parent_code_name, \n" + 
+					"    label_text, \n" + 
+					"    rpad( \n" + 
+					"        '.', \n" + 
+					"        (lvl - 1) * 2, \n" + 
+					"        '.' \n" + 
+					"    ) \n" + 
+					"     || code_name AS code_tree, \n" + 
+					"    rpad( \n" + 
+					"        '.', \n" + 
+					"        (lvl - 1) * 2, \n" + 
+					"        '.' \n" + 
+					"    ) \n" + 
+					"     || label_text AS label_tree, \n" + 
+					"    lvl, \n" + 
+					"    root_code_name, \n" + 
+					"    code_name_bread_crumb, \n" + 
+					"    label_text_bread_crumb, \n" + 
+					"    cycle \n" + 
+					"FROM \n" + 
+					"    t1;";
+		}
+		logger.debug(queryString);
+		Query q = em.createNativeQuery(queryString, "ContainerLocationTreeDTOResult");
+		q.setParameter("rootLabel", rootLabel);
+		List<ContainerLocationTreeDTO> results = q.getResultList();
+		return results;
 	}
 
 
