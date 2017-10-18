@@ -31,6 +31,7 @@ import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerLocationTreeDTO;
 import com.labsynch.labseer.dto.ContainerQueryDTO;
 import com.labsynch.labseer.dto.ContainerQueryResultDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
@@ -999,6 +1000,23 @@ public class ApiContainerController {
 			logger.error("Uncaught error in getContainerDTOsByBatchCodes",e);
 			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}	
+	}
+	
+	@RequestMapping(value = "/getLocationTreeByRootLabel", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<java.lang.String> getLocationTreeByRootLabel(@RequestParam("rootLabel") String rootLabel) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		try{
+			List<ContainerLocationTreeDTO> results = containerService.getLocationTreeByRootLabel(rootLabel);
+			if (results != null){
+				return new ResponseEntity<String>(ContainerLocationTreeDTO.toJsonArray(results), headers, HttpStatus.OK);
+			}
+			else return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		} catch (Exception e){
+			logger.error("Caught exception getting location tree", e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }

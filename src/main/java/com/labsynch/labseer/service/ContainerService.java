@@ -19,6 +19,7 @@ import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerLocationTreeDTO;
 import com.labsynch.labseer.dto.ContainerQueryDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerSearchRequestDTO;
@@ -154,5 +155,7 @@ public interface ContainerService {
 	Collection<ContainerBatchCodeDTO> getContainerDTOsByBatchCodes(List<String> batchCodes);
 
 	void logicalDeleteContainerArray(Collection<Container> foundContainers);
+
+	List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel) throws SQLException;
 	
 }

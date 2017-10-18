@@ -10,9 +10,12 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.TypedQuery;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -21,6 +24,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.ContainerLocationTreeDTO;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -31,6 +35,9 @@ import flexjson.JSONSerializer;
 @RooToString
 @RooJpaActiveRecord(finders = { "findContainersByLsTypeEqualsAndLsKindEquals", "findContainersByLsTypeEquals", "findContainersByLsKindEquals" })
 @RooJson
+@SqlResultSetMapping(name="ContainerLocationTreeDTOResult", classes = {
+		@ConstructorResult(targetClass = ContainerLocationTreeDTO.class,
+		columns = {@ColumnResult(name="code_name"), @ColumnResult(name="parent_code_name"), @ColumnResult(name="label_text"), @ColumnResult(name="code_tree"), @ColumnResult(name="label_tree"), @ColumnResult(name="lvl"), @ColumnResult(name="root_code_name"), @ColumnResult(name="code_name_bread_crumb"),	@ColumnResult(name="label_text_bread_crumb")})})
 public class Container extends AbstractThing {
 
 	private Long locationId;
