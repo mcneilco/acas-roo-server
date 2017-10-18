@@ -333,14 +333,7 @@ public class AutoLabelServiceImpl implements AutoLabelService {
 	}
 
 	private List<AutoLabelDTO> generateAutoLabels(LabelSequence labelSequence, Long numberOfLabels) {
-		List<AutoLabelDTO> autoLabels = new ArrayList<AutoLabelDTO>();
-		List<String> labels = labelSequence.generateNextLabels(numberOfLabels);
-		for (String label : labels) {
-			AutoLabelDTO autoLabel = new AutoLabelDTO();
-			autoLabel.setAutoLabel(label);
-			autoLabels.add(autoLabel);
-		}
-		return autoLabels;
+		return labelSequence.generateNextLabels(numberOfLabels);
 	}
 
 	private LabelSequence createLabelSequence(String thingTypeAndKind, String labelTypeAndKind) {
