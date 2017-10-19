@@ -156,6 +156,7 @@ public interface ContainerService {
 
 	void logicalDeleteContainerArray(Collection<Container> foundContainers);
 
-	List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel) throws SQLException;
+	List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel, Boolean withContainers)
+			throws SQLException;
 	
 }

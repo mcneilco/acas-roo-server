@@ -1004,11 +1004,12 @@ public class ApiContainerController {
 	
 	@RequestMapping(value = "/getLocationTreeByRootLabel", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> getLocationTreeByRootLabel(@RequestParam("rootLabel") String rootLabel) {
+	public ResponseEntity<java.lang.String> getLocationTreeByRootLabel(@RequestParam("rootLabel") String rootLabel,
+			@RequestParam(value="withContainers", required=false) Boolean withContainers) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		try{
-			List<ContainerLocationTreeDTO> results = containerService.getLocationTreeByRootLabel(rootLabel);
+			List<ContainerLocationTreeDTO> results = containerService.getLocationTreeByRootLabel(rootLabel, withContainers);
 			if (results != null){
 				return new ResponseEntity<String>(ContainerLocationTreeDTO.toJsonArray(results), headers, HttpStatus.OK);
 			}
