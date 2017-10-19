@@ -3205,9 +3205,12 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 	
 	@Override
-	public List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel) throws SQLException {
+	public List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel, Boolean withContainers) throws SQLException {
 		EntityManager em = Container.entityManager();
 		String queryString = null;
+		if (withContainers == null) {
+			withContainers = false;
+		}
 		Connection connection = dataSource.getConnection();
 		DialectResolver dialectResolver = new StandardDialectResolver();
 		Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
@@ -3287,8 +3290,12 @@ public class ContainerServiceImpl implements ContainerService {
 					"    WHERE \n" + 
 					"            itx.ls_type = 'moved to' \n" + 
 					"        AND \n" + 
-					"            itx.ignored = '0' \n" + 
-					"        AND \n" + 
+					"            itx.ignored = '0' \n";
+					if (!withContainers) {
+						queryString+= "       AND\n" + 
+							"	    c1.ls_type = 'location'";
+					}
+					queryString+="        AND \n"+
 					"            itx.deleted = '0') as interactions, \n" + 
 					"        t1 \n" + 
 					"    WHERE \n" + 
@@ -3347,8 +3354,12 @@ public class ContainerServiceImpl implements ContainerService {
 					"        AND \n" + 
 					"            itx.ignored = 0 \n" + 
 					"        AND \n" + 
-					"            itx.deleted = 0 \n" + 
-					"),anchors AS ( \n" + 
+					"            itx.deleted = 0 \n";
+					if (!withContainers) {
+						queryString+= "       AND\n" + 
+							"	    c1.ls_type = 'location'";
+					}
+					queryString+="),anchors AS ( \n" + 
 					"    SELECT \n" + 
 					"        c.code_name, \n" + 
 					"        cl.label_text \n" + 
