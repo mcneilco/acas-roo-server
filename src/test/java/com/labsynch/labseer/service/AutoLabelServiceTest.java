@@ -111,11 +111,11 @@ public class AutoLabelServiceTest {
 	@Rollback(value=false)
 	public void incrementSequence() {
 		LabelSequence testSeq = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals("compound_parent", "id_corpName").getSingleResult();
-		String testLabel = testSeq.generateNextLabel();
-		logger.info(testLabel);
-		List<String> testLabels = testSeq.generateNextLabels(100L);
-		for (String label : testLabels) {
-			logger.info(label);
+		AutoLabelDTO testLabel = testSeq.generateNextLabel();
+		logger.info(testLabel.getAutoLabel());
+		List<AutoLabelDTO> testLabels = testSeq.generateNextLabels(100L);
+		for (AutoLabelDTO label : testLabels) {
+			logger.info(label.getAutoLabel());
 		}
 	}
 }

@@ -36,6 +36,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONSerializer;
@@ -108,23 +109,24 @@ public class LabelSequence {
 		return this;
 	}
 
-	public List<String> generateNextLabels(Long numberOfLabels){
-		List<String> labels = new ArrayList<String>();
+	public List<AutoLabelDTO> generateNextLabels(Long numberOfLabels){
+		List<AutoLabelDTO> labels = new ArrayList<AutoLabelDTO>();
 		int numGenerated = 0;
 		while (numGenerated < numberOfLabels) {
-			String label = this.generateNextLabel();
+			AutoLabelDTO label = this.generateNextLabel();
 			labels.add(label);
 			numGenerated++;
 		}
 		return labels;
 	}
 
-	public String generateNextLabel() {
+	public AutoLabelDTO generateNextLabel() {
 		Long labelNumber = this.incrementSequence(this.getDbSequence());
 		String formatLabelNumber = "%";
 		formatLabelNumber = formatLabelNumber.concat("0").concat(this.getDigits().toString()).concat("d");
 		String label = this.getLabelPrefix().concat(this.getLabelSeparator()).concat(String.format(formatLabelNumber, labelNumber));
-		return label;
+		AutoLabelDTO autoLabel = new AutoLabelDTO(label, labelNumber);
+		return autoLabel;
 
 	}
 
