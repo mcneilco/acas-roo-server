@@ -285,90 +285,143 @@ public class ContainerStateServiceImpl implements ContainerStateService {
 
 	@Override
 	public Collection<ContainerState> getContainerStatesByContainerValue(
-			ContainerValueRequestDTO query) throws Exception {
-		EntityManager em = ContainerState.entityManager();
-		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		CriteriaQuery<ContainerState> criteria = criteriaBuilder.createQuery(ContainerState.class);
-		Root<ContainerState> state = criteria.from(ContainerState.class);
-		List<Predicate> predicateList = new ArrayList<Predicate>();
-		criteria.distinct(true);
+			ContainerValueRequestDTO requestDTO, Boolean like, Boolean rightLike) throws Exception {
+		if (requestDTO.getContainerType() == null) throw new Exception("Container type must be specified");
+		if (requestDTO.getContainerKind() == null) throw new Exception("Container kind must be specified");
+		if (requestDTO.getStateType() == null) throw new Exception("State type must be specified");
+		if (requestDTO.getStateKind() == null) throw new Exception("State kind must be specified");
+		if (requestDTO.getValueType() == null) throw new Exception("Value type must be specified");
+		if (requestDTO.getValueKind() == null) throw new Exception("Value kind must be specified");
+		if (requestDTO.getValue() == null) throw new Exception("Value must be specified");
 		
-		Join<ContainerState, Container> container = state.join("container");
-		Join<ContainerState, ContainerValue> value = state.join("lsValues");
-		
-		Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
-		Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
-		predicateList.add(stateNotIgn);
-		predicateList.add(valueNotIgn);
-		
-		if (query.getStateType() != null){
-			Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),query.getStateType());
-			predicateList.add(stateType);
-		}
-		if (query.getStateKind() != null){
-			Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),query.getStateKind());
-			predicateList.add(stateKind);
-		}
-		if (query.getValueType() != null){
-			Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),query.getValueType());
-			predicateList.add(valueType);
-		}
-		if (query.getValueKind() != null){
-			Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),query.getValueKind());
-			predicateList.add(valueKind);
-		}
-		if (query.getValue() != null){
-			if (query.getValueType() == null){
-				logger.error("valueType must be specified if value is specified!");
-				throw new Exception("valueType must be specified if value is specified!");
-			}else if (query.getValueType().equalsIgnoreCase("dateValue")){
-				String postgresTimeUnit = "day";
-				Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
-				Calendar cal = Calendar.getInstance(); // locale-specific
-				boolean parsedTime = false;
-				if (SimpleUtil.isNumeric(query.getValue())){
-					cal.setTimeInMillis(Long.valueOf(query.getValue()));
-					parsedTime = true;
-				}else{
-					try{
-						SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-						cal.setTime(sdf.parse(query.getValue()));
-						parsedTime = true;
-					}catch (Exception e){
-						logger.warn("Failed to parse date in LsThing generic query for value",e);
+		if (like != null && like){
+			String fullQuery = "SELECT DISTINCT containerState FROM ContainerState containerState "
+					+ "JOIN FETCH containerState.container container "
+					+ "JOIN FETCH containerState.lsValues containerValue "
+					+ "LEFT JOIN FETCH container.lsLabels containerLabel "
+					+ "LEFT JOIN FETCH containerState.lsValues otherContainerValues "
+					+ "WHERE container.lsType = " + "'"+requestDTO.getContainerType()+"'"+" "
+					+ "AND container.lsKind = " + "'"+requestDTO.getContainerKind()+"'"+" "
+					+ "AND container.ignored <> true "
+					+ "AND containerState.lsType = " + "'"+requestDTO.getStateType()+"'"+" "
+					+ "AND containerState.lsKind = " + "'"+requestDTO.getStateKind()+"'"+" "
+					+ "AND containerState.ignored <> true "
+					+ "AND containerValue.lsType = " + "'"+requestDTO.getValueType()+"'"+" "
+					+ "AND containerValue.lsKind = " + "'"+requestDTO.getValueKind()+"'"+" "
+					+ "AND containerValue.ignored <> true "
+					+ "AND otherContainerValues.id != containerValue.id ";
+			if (requestDTO.getValueType().equals("stringValue")){
+				if (like != null && like){
+					if (rightLike != null && rightLike){
+						fullQuery += "AND containerValue.stringValue LIKE " + "'"+requestDTO.getValue()+"%'";
+					}else{
+						fullQuery += "AND containerValue.stringValue LIKE " + "'%"+requestDTO.getValue()+"%'";
 					}
+				}else{
+					fullQuery += "AND containerValue.stringValue = " + "'"+requestDTO.getValue()+"'";
 				}
-				cal.set(Calendar.HOUR_OF_DAY, 0);
-				cal.set(Calendar.MINUTE, 0);
-				cal.set(Calendar.SECOND, 0);
-				cal.set(Calendar.MILLISECOND, 0);
-				long time = cal.getTimeInMillis();
-				Date queryDate = new Date(time);
-				Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
-				if (parsedTime) predicateList.add(valueLike);
-			}else{
-				//only works with string value types: stringValue, codeValue, fileValue, clobValue
-				Predicate valueLike = criteriaBuilder.like(value.<String>get(query.getValueType()), '%' + query.getValue() + '%');
-				predicateList.add(valueLike);
+			}else if (requestDTO.getValueType().equals("codeValue")){
+				if (like != null && like){
+					if (rightLike != null && rightLike){
+						fullQuery += "AND containerValue.codeValue LIKE " + "'"+requestDTO.getValue()+"%'";
+					}else{
+						fullQuery += "AND containerValue.codeValue LIKE " + "'%"+requestDTO.getValue()+"%'";
+					}
+				}else{
+					fullQuery += "AND containerValue.codeValue = " + "'"+requestDTO.getValue()+"'";
+				}
 			}
+			if (logger.isDebugEnabled()) logger.debug(fullQuery);
+			EntityManager em = Container.entityManager();
+			TypedQuery<ContainerState> q = em.createQuery(fullQuery, ContainerState.class);
+			
+			return q.getResultList();
+		}else{
+			EntityManager em = ContainerState.entityManager();
+			CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+			CriteriaQuery<ContainerState> criteria = criteriaBuilder.createQuery(ContainerState.class);
+			Root<ContainerState> state = criteria.from(ContainerState.class);
+			List<Predicate> predicateList = new ArrayList<Predicate>();
+			criteria.distinct(true);
+			
+			Join<ContainerState, Container> container = state.join("container");
+			Join<ContainerState, ContainerValue> value = state.join("lsValues");
+			
+			Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
+			Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
+			predicateList.add(stateNotIgn);
+			predicateList.add(valueNotIgn);
+			
+			if (requestDTO.getStateType() != null){
+				Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),requestDTO.getStateType());
+				predicateList.add(stateType);
+			}
+			if (requestDTO.getStateKind() != null){
+				Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),requestDTO.getStateKind());
+				predicateList.add(stateKind);
+			}
+			if (requestDTO.getValueType() != null){
+				Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),requestDTO.getValueType());
+				predicateList.add(valueType);
+			}
+			if (requestDTO.getValueKind() != null){
+				Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),requestDTO.getValueKind());
+				predicateList.add(valueKind);
+			}
+			if (requestDTO.getValue() != null){
+				if (requestDTO.getValueType() == null){
+					logger.error("valueType must be specified if value is specified!");
+					throw new Exception("valueType must be specified if value is specified!");
+				}else if (requestDTO.getValueType().equalsIgnoreCase("dateValue")){
+					String postgresTimeUnit = "day";
+					Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+					Calendar cal = Calendar.getInstance(); // locale-specific
+					boolean parsedTime = false;
+					if (SimpleUtil.isNumeric(requestDTO.getValue())){
+						cal.setTimeInMillis(Long.valueOf(requestDTO.getValue()));
+						parsedTime = true;
+					}else{
+						try{
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+							cal.setTime(sdf.parse(requestDTO.getValue()));
+							parsedTime = true;
+						}catch (Exception e){
+							logger.warn("Failed to parse date in LsThing generic query for value",e);
+						}
+					}
+					cal.set(Calendar.HOUR_OF_DAY, 0);
+					cal.set(Calendar.MINUTE, 0);
+					cal.set(Calendar.SECOND, 0);
+					cal.set(Calendar.MILLISECOND, 0);
+					long time = cal.getTimeInMillis();
+					Date queryDate = new Date(time);
+					Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
+					if (parsedTime) predicateList.add(valueLike);
+				}else{
+					//only works with string value types: stringValue, codeValue, fileValue, clobValue
+					//because of big if/else we know we are in "equals" mode
+					Predicate valueEquals = criteriaBuilder.equal(value.<String>get(requestDTO.getValueType()), requestDTO.getValue());
+					predicateList.add(valueEquals);
+				}
+			}
+			
+			if (requestDTO.getContainerType() != null){
+				Predicate thingType = criteriaBuilder.equal(container.<String>get("lsType"), requestDTO.getContainerType());
+				predicateList.add(thingType);
+			}
+			if (requestDTO.getContainerKind() != null){
+				Predicate thingKind = criteriaBuilder.equal(container.<String>get("lsKind"), requestDTO.getContainerKind());
+				predicateList.add(thingKind);
+			}
+			
+			//gather predicates with AND
+			Predicate[] predicates = new Predicate[0];
+			predicates = predicateList.toArray(predicates);
+			criteria.where(criteriaBuilder.and(predicates));
+			TypedQuery<ContainerState> q = em.createQuery(criteria);
+			logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+			return q.getResultList();
 		}
-		
-		if (query.getContainerType() != null){
-			Predicate thingType = criteriaBuilder.equal(container.<String>get("lsType"), query.getContainerType());
-			predicateList.add(thingType);
-		}
-		if (query.getContainerKind() != null){
-			Predicate thingKind = criteriaBuilder.equal(container.<String>get("lsKind"), query.getContainerKind());
-			predicateList.add(thingKind);
-		}
-		
-		//gather predicates with AND
-		Predicate[] predicates = new Predicate[0];
-		predicates = predicateList.toArray(predicates);
-		criteria.where(criteriaBuilder.and(predicates));
-		TypedQuery<ContainerState> q = em.createQuery(criteria);
-		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		return q.getResultList();
 	}
 
 

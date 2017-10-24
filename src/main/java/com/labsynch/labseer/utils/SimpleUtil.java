@@ -192,6 +192,21 @@ public class SimpleUtil {
     	return q;
 	}
 	
+	public static String makeLeftJoinHql(String table, String alias, String lsType, String lsKind){
+		String queryString = "left join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
+		return queryString;
+	}
+	public static String makeInnerJoinHql(String table, String alias, String lsType, String lsKind){
+		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".lsKind='"+lsKind+"' and "+alias+".ignored <> true ";
+		return queryString;
+	}
+	
+	public static String makeInnerJoinHql(String table, String alias, String lsType){
+		String queryString = "inner join "+table+" as "+alias+" with "+alias+".lsType='"+lsType+"' and "+alias+".ignored <> true ";
+		return queryString;
+	}
+
+	
 	public static Predicate buildInPredicate(CriteriaBuilder cb, Expression<String> property, List<String> values) {
 		Predicate predicate = null;
         int listSize = values.size();

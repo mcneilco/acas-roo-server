@@ -32,6 +32,7 @@ public class WellContentDTO {
 	private Integer columnIndex;
 	private String recordedBy;
 	private Date recordedDate;
+	private Date lastModifiedDate;
 	
 	public WellContentDTO(){
 	}
@@ -57,6 +58,7 @@ public class WellContentDTO {
 			Integer columnIndex,
 			String recordedBy,
 			Date recordedDate,
+			Date lastModifiedDate,
 			BigDecimal amount,
 			String amountUnits,
 			String batchCode,
@@ -70,6 +72,7 @@ public class WellContentDTO {
 		this.columnIndex = columnIndex;
 		this.recordedBy = recordedBy;
 		this.recordedDate = recordedDate;
+		this.lastModifiedDate = lastModifiedDate;
 		this.amount = amount;
 		this.amountUnits = amountUnits;
 		this.batchCode = batchCode;

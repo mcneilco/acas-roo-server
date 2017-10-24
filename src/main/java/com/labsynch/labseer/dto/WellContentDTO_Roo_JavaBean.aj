@@ -129,4 +129,12 @@ privileged aspect WellContentDTO_Roo_JavaBean {
         this.recordedDate = recordedDate;
     }
     
+    public Date WellContentDTO.getLastModifiedDate() {
+        return this.lastModifiedDate;
+    }
+    
+    public void WellContentDTO.setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+    
 }
