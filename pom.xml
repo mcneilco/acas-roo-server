@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<groupId>com.labsynch.labseer</groupId>
 	<artifactId>acas</artifactId>
 	<packaging>war</packaging>
-	<version>1.11.1-RC</version>
+	<version>1.12.1-RC</version>
 	<description>ACAS Java persistence layer</description>
 	<properties>
 		<aspectj.version>1.7.0.RC1</aspectj.version>
@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<slf4j.version>1.6.4</slf4j.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
+		<cdk.version>1.5.13</cdk.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
 	</properties>
@@ -458,6 +459,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>postgresql</artifactId>
 			<version>9.4.1212.jre7</version>
 		</dependency>
+		<dependency>
+    		<groupId>com.github.javadev</groupId>
+    		<artifactId>underscore</artifactId>
+    		<version>1.19</version>
+  		</dependency>
+		<dependency>
+    		<groupId>org.openscience.cdk</groupId>
+    		<artifactId>cdk-formula</artifactId>
+    		<version>${cdk.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.openscience.cdk</groupId>
+    		<artifactId>cdk-io</artifactId>
+    		<version>${cdk.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.openscience.cdk</groupId>
+    		<artifactId>cdk-interfaces</artifactId>
+    		<version>${cdk.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.openscience.cdk</groupId>
+    		<artifactId>cdk-depict</artifactId>
+    		<version>${cdk.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.openscience.cdk</groupId>
+    		<artifactId>cdk-inchi</artifactId>
+    		<version>${cdk.version}</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -641,3 +672,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	</build>
 	<name>acas</name>
 </project>
+
+

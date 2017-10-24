@@ -103,11 +103,15 @@ public class ExperimentLabel extends AbstractLabel {
     }
 
     public static TypedQuery<com.labsynch.labseer.domain.ExperimentLabel> findExperimentLabelsByName(String labelText) {
-        String labelType = "name";
-        String labelKind = "experiment name";
-        boolean preferred = true;
         boolean ignored = true;
-        TypedQuery<ExperimentLabel> q = findExperimentLabelsByName(labelText, labelType, labelKind, preferred, ignored);
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ProtocolLabel.entityManager();
+        String query = "SELECT o FROM ExperimentLabel AS o WHERE o.labelText = :labelText " + "AND o.ignored IS NOT :ignored";
+        logger.debug("sql query " + query);
+        TypedQuery<ExperimentLabel> q = em.createQuery(query, ExperimentLabel.class);
+        logger.debug("query label text is " + labelText);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
         return q;
     }
 

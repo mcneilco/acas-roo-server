@@ -23,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,12 +36,12 @@ import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.domain.ItxProtocolProtocol;
 import com.labsynch.labseer.domain.LsTag;
 import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.domain.ProtocolLabel;
 import com.labsynch.labseer.domain.ProtocolValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
 import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
@@ -908,7 +906,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 	@SuppressWarnings({ "unchecked", "null" })
 	@Override
 	public List<AnalysisGroupValueDTO> getFilteredAGData(ExperimentSearchRequestDTO searchRequest, Boolean onlyPublicData){
-
+		//DataViewer route to get analysis group data (results) based on filter parameters
 		searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
 		searchRequest.getExperimentCodeList().removeAll(Collections.singleton(null));
 
@@ -990,74 +988,6 @@ public class ExperimentServiceImpl implements ExperimentService {
 		}
 
 		return agValues;
-
-
-		//		if (searchRequest.getBooleanFilter() != null && searchRequest.getBooleanFilter().equalsIgnoreCase("ADVANCED")){
-		//			// not implemented yet -- do same as AND for now
-		//			searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
-		//			List<String> batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters()).getResultList();			
-		//			Set<String> uniqueBatchCodes = new HashSet<String>();
-		//			uniqueBatchCodes.addAll(batchCodes);
-		//			uniqueBatchCodes.removeAll(Collections.singleton(null));
-		//
-		//			logger.debug("number of batchCodes found: " + batchCodes.size());
-		//			logger.debug("number of uniqueBatchCodes found: " + uniqueBatchCodes.size());
-		//
-		//			if (uniqueBatchCodes.size() > 0){
-		//				logger.debug("looking by expriment codes and batch codes in default AND block");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(uniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
-		//				logger.debug("number of agValues found: " + agValues.size());
-		//
-		//			} else {
-		//				logger.debug("looking by expriment codes only");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();	
-		//			}
-		//		} else if (searchRequest.getBooleanFilter() != null && searchRequest.getBooleanFilter().equalsIgnoreCase("OR")){
-		//			searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
-		//			Set<String> uniqueBatchCodes = new HashSet<String>();
-		//			if (searchRequest.getBatchCodeList() != null && searchRequest.getBatchCodeList().size() > 0) {
-		//				uniqueBatchCodes.addAll(searchRequest.getBatchCodeList());				
-		//			}
-		//			for (ExperimentFilterSearchDTO filter : searchRequest.getSearchFilters()){
-		//				List<String> batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilter(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), filter).getResultList();
-		//				uniqueBatchCodes.addAll(batchCodes);
-		//			}
-		//			uniqueBatchCodes.removeAll(Collections.singleton(null));
-		//			if (uniqueBatchCodes.size() > 0){
-		//				logger.debug("looking by expriment codes and batch codes in OR block");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(uniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
-		//			} else {
-		//				logger.debug("looking by expriment codes only");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();	
-		//			}		
-		//		} else {
-		//			//default is the AND			
-		//			logger.info("this is the default AND filter block. 2014-03-27");
-		//			searchRequest.getBatchCodeList().removeAll(Collections.singleton(null));
-		//			
-		//			
-		//			
-		//			
-		//			List<String> batchCodes = AnalysisGroupValue.findBatchCodeBySearchFilters(searchRequest.getBatchCodeList(), searchRequest.getExperimentCodeList(), searchRequest.getSearchFilters()).getResultList();			
-		//			Set<String> uniqueBatchCodes = new HashSet<String>();
-		//			uniqueBatchCodes.addAll(batchCodes);
-		//			uniqueBatchCodes.removeAll(Collections.singleton(null));
-		//
-		//			logger.debug("number of batchCodes found: " + batchCodes.size());
-		//			logger.debug("number of uniqueBatchCodes found: " + uniqueBatchCodes.size());
-		//
-		//			if (uniqueBatchCodes.size() > 0){
-		//				logger.debug("looking by expriment codes and batch codes in default AND block");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTO(uniqueBatchCodes, searchRequest.getExperimentCodeList()).getResultList();
-		//				logger.debug("number of agValues found: " + agValues.size());
-		//
-		//			} else {
-		//				logger.debug("looking by expriment codes only");
-		//				agValues = AnalysisGroupValue.findAnalysisGroupValueDTOByExperiments(searchRequest.getExperimentCodeList()).getResultList();	
-		//			}
-		//
-		//
-		//		}
 
 	}
 	
@@ -1623,6 +1553,33 @@ public class ExperimentServiceImpl implements ExperimentService {
 
 
 	@Override
+	public List<CodeTableDTO> getExperimentsAsCodeTables(String lsType,
+			String lsKind) {
+		Collection<Experiment> experiments;
+		if ((lsType != null && lsType.length()>0) && (lsKind != null && lsKind.length()>0)){
+			experiments = Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList();
+		}else if (lsType != null && lsType.length()>0){
+			experiments = Experiment.findExperimentsByLsTypeEquals(lsType).getResultList();
+		}else if (lsKind != null && lsKind.length()>0){
+			experiments = Experiment.findExperimentsByLsKindEquals(lsKind).getResultList();
+		}else{
+			experiments = Experiment.findAllExperiments();
+		}
+		List<CodeTableDTO> codetables = convertExperimentsToCodeTables(experiments);
+		codetables = CodeTableDTO.sortCodeTables(codetables);
+		return codetables;
+	}
+	
+	@Override
+	public List<CodeTableDTO> convertExperimentsToCodeTables(Collection<Experiment> experiments){
+		List<CodeTableDTO> codetables = new ArrayList<CodeTableDTO>();
+		for (Experiment experiment : experiments){
+			CodeTableDTO codetable = new CodeTableDTO(experiment);
+			codetables.add(codetable);
+		}
+		return codetables;
+	}
+	@Override
 	public PreferredNameResultsDTO getCodeNameFromName(String experimentType,
 			String experimentKind, String labelType, String labelKind,
 			PreferredNameRequestDTO requestDTO) {
@@ -1678,7 +1635,62 @@ public class ExperimentServiceImpl implements ExperimentService {
 		if (labels.isEmpty()) return null;
 		return ExperimentLabel.pickBestLabel(labels).getLabelText();
 	}
-
-
+	
+	@Override
+	public Collection<String> getExperimentCodesByDateValueComparison(
+			DateValueComparisonRequest requestDTO) throws Exception {
+		if (requestDTO.getStateType() == null || requestDTO.getStateType().length() == 0) throw new Exception("Must provide stateType");
+		if (requestDTO.getStateKind() == null || requestDTO.getStateKind().length() == 0) throw new Exception("Must provide stateKind");
+		if (requestDTO.getValueKind() == null || requestDTO.getValueKind().length() == 0) throw new Exception("Must provide valueKind");
+		if (requestDTO.getSecondsDelta() == null) throw new Exception("Must provide secondsDelta");
+		if (requestDTO.getNewerThanModified() == null) requestDTO.setNewerThanModified(false);
+		EntityManager em = Experiment.entityManager();
+		String query = "SELECT new Map( experiment.codeName AS codeName, experiment.modifiedDate AS modifiedDate, experiment.recordedDate as recordedDate, value.dateValue AS dateValue )"
+				+ "FROM Experiment AS experiment "
+				+ "JOIN experiment.lsStates  state "
+				+ "WITH state.ignored = false "
+				+ "AND state.lsType = :stateType "
+				+ "AND state.lsKind = :stateKind "
+				+ "LEFT OUTER JOIN state.lsValues AS value "
+				+ "WITH value.ignored = false "
+				+ "AND value.lsType = :valueType "
+				+ "AND value.lsKind = :valueKind "
+				+ "WHERE experiment.ignored = false "
+				;
+		if (requestDTO.getLsType() != null && requestDTO.getLsType().length()>0) query += "AND experiment.lsType = :experimentType ";
+		if (requestDTO.getLsKind() != null && requestDTO.getLsKind().length()>0) query += "AND experiment.lsKind = :experimentKind ";
+		
+		TypedQuery<Map> q = em.createQuery(query, Map.class);
+		q.setParameter("stateType", requestDTO.getStateType());
+		q.setParameter("stateKind", requestDTO.getStateKind());
+		q.setParameter("valueType", "dateValue");
+		q.setParameter("valueKind", requestDTO.getValueKind());
+		if (requestDTO.getLsType() != null && requestDTO.getLsType().length()>0) q.setParameter("experimentType", requestDTO.getLsType());
+		if (requestDTO.getLsKind() != null && requestDTO.getLsKind().length()>0) q.setParameter("experimentKind", requestDTO.getLsKind());
+		
+		Collection<Map> resultMaps = q.getResultList();
+		Collection<String> experimentCodes = new HashSet<String>();
+		for (Map resultMap : resultMaps){
+			if (resultMap.get("dateValue") == null) experimentCodes.add((String) resultMap.get("codeName"));
+			else{
+				Date dateValue = (Date) resultMap.get("dateValue");
+				Date modifiedDate;
+				if (resultMap.get("modifiedDate") == null){
+					modifiedDate = (Date) resultMap.get("recordedDate");
+				}else{
+					modifiedDate = (Date) resultMap.get("modifiedDate");
+				}
+				Integer secondsDelta = requestDTO.getSecondsDelta();
+				logger.debug("dateValue: "+dateValue.getTime());
+				logger.debug("modifiedDate: "+modifiedDate.getTime());
+				if (requestDTO.getNewerThanModified()){
+					if (dateValue.getTime() - secondsDelta*1000 >  modifiedDate.getTime()) experimentCodes.add((String) resultMap.get("codeName"));
+				}else{
+					if (dateValue.getTime() + secondsDelta*1000 <  modifiedDate.getTime()) experimentCodes.add((String) resultMap.get("codeName"));
+				}
+			}
+		}
+		return experimentCodes;
+	}
 
 }

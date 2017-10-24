@@ -28,7 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -190,6 +191,56 @@ public class ApiExperimentControllerTest {
         	Assert.assertNotNull(response.getExperiment().getProtocol().getLsLabels());
         	Assert.assertTrue(!response.getExperiment().getProtocol().getLsLabels().isEmpty());
     	}
+    }
+    
+    @Test
+    public void getExperimentsAsCodeTables() throws Exception {
+    	String responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	Collection<CodeTableDTO> codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	Assert.assertFalse(codetables.isEmpty());
+    	logger.info(CodeTableDTO.toJsonArray(codetables));
+    	
+    	responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables?lsType=default&lsKind=default")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	Assert.assertFalse(codetables.isEmpty());
+    	logger.info(CodeTableDTO.toJsonArray(codetables));
+    	
+    	responseJson =  this.mockMvc.perform(get("/api/v1/experiments/codetables?lsType=invalidType")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	codetables = CodeTableDTO.fromJsonArrayToCoes(responseJson);
+    	Assert.assertTrue(codetables.isEmpty());
+    }
+    
+    @Test
+    public void getExperimentCodesByDateValueComparison() throws Exception {
+    	DateValueComparisonRequest request = new DateValueComparisonRequest();
+		request.setStateType("metadata");
+		request.setStateKind("experiment metadata");
+		request.setValueKind("completion date");
+		request.setSecondsDelta(60);
+		
+		String requestJson = request.toJson();
+		
+		logger.info(requestJson);
+    	String responseJson =  this.mockMvc.perform(post("/api/v1/experiments/getExperimentCodesByDateValueComparison")
+    			.contentType(MediaType.APPLICATION_JSON)
+    			.content(requestJson)
+    			.accept(MediaType.APPLICATION_JSON))
+    			.andExpect(status().isOk())
+    			.andReturn().getResponse().getContentAsString();
+    	logger.info(responseJson.toString());
+		
     }
 
 }

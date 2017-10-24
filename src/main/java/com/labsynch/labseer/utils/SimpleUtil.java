@@ -28,6 +28,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 
+import com.github.underscore.$;
+import com.github.underscore.Function1;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsThingState;
+import com.labsynch.labseer.domain.LsThingValue;
+
 public class SimpleUtil {
 	
 	@Autowired
@@ -153,6 +159,39 @@ public class SimpleUtil {
     	return q;
 	}
 	
+	public static Query addHqlInClauseNativeQuery(EntityManager em, String queryString, String attributeName, List<String> matchStrings){
+		Map<String, Collection<String>> sqlCurveIdMap = new HashMap<String, Collection<String>>();
+    	List<String> allCodes = new ArrayList<String>();
+    	allCodes.addAll(matchStrings);
+    	int startIndex = 0;
+    	while (startIndex < matchStrings.size()){
+    		int endIndex;
+    		if (startIndex+PARAMETER_LIMIT < matchStrings.size()) endIndex = startIndex+PARAMETER_LIMIT;
+    		else endIndex = matchStrings.size();
+    		List<String> nextCodes = allCodes.subList(startIndex, endIndex);
+    		String groupName = "strings"+startIndex;
+    		String sqlClause = " "+attributeName+" IN (:"+groupName+")";
+    		sqlCurveIdMap.put(sqlClause, nextCodes);
+    		startIndex=endIndex;
+    	}
+    	int numClause = 1;
+    	for (String sqlClause : sqlCurveIdMap.keySet()){
+    		if (numClause == 1){
+    			queryString = queryString + sqlClause;
+    		}else{
+    			queryString = queryString + " OR " + sqlClause;
+    		}
+    		numClause++;
+    	}
+    	queryString = queryString + " )";
+    	Query q = em.createNativeQuery(queryString);
+		for (String sqlClause : sqlCurveIdMap.keySet()){
+        	String groupName = sqlClause.split(":")[1].replace(")","");
+        	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
+        }
+    	return q;
+	}
+	
 	public static Predicate buildInPredicate(CriteriaBuilder cb, Expression<String> property, List<String> values) {
 		Predicate predicate = null;
         int listSize = values.size();
@@ -195,5 +234,59 @@ public class SimpleUtil {
 			});
 		}
 		return idList;
+	}
+	
+	public static final List<LsThingValue> pluckValueByStateTypeKindAndValueTypeKind(LsThing lsThing, String stateType, String stateKind,
+			String valueType, String valueKind){
+		final String finalStateType = stateType;
+		final String finalStateKind = stateKind;
+		final String finalValueType = valueType;
+		final String finalValueKind = valueKind;
+		
+		final com.github.underscore.Predicate<LsThingState> statePredicate = new com.github.underscore.Predicate<LsThingState>(){
+			public Boolean apply(LsThingState lsState){
+				return lsState.getLsType().equals(finalStateType) && lsState.getLsKind().equals(finalStateKind) && !lsState.isIgnored();
+			}
+		};
+		final com.github.underscore.Predicate<LsThingValue> valuePredicate = new com.github.underscore.Predicate<LsThingValue>(){
+			public Boolean apply(LsThingValue lsValue){
+				return lsValue.getLsType().equals(finalValueType) && lsValue.getLsKind().equals(finalValueKind) && !lsValue.isIgnored();
+			}
+		};
+		Function1<LsThingState, List<LsThingValue>> filterValues = new Function1<LsThingState, List<LsThingValue>>(){
+			public List<LsThingValue> apply(LsThingState lsState){
+				return $.filter(new ArrayList<LsThingValue>(lsState.getLsValues()), valuePredicate);
+			}
+		};
+		
+		List<LsThingValue> filteredValues = $.flatten($.map($.filter(new ArrayList<LsThingState>(lsThing.getLsStates()), statePredicate), filterValues));
+
+		return filteredValues;
+	}
+	
+	public static final List<LsThingValue> pluckValueByValueTypeKind(LsThing lsThing, String valueType, String valueKind){
+		final String finalValueType = valueType;
+		final String finalValueKind = valueKind;
+		
+		final com.github.underscore.Predicate<LsThingState> statePredicate = new com.github.underscore.Predicate<LsThingState>(){
+			public Boolean apply(LsThingState lsState){
+				return !lsState.isIgnored();
+			}
+		};
+		
+		final com.github.underscore.Predicate<LsThingValue> valuePredicate = new com.github.underscore.Predicate<LsThingValue>(){
+			public Boolean apply(LsThingValue lsValue){
+				return lsValue.getLsType().equals(finalValueType) && lsValue.getLsKind().equals(finalValueKind) && !lsValue.isIgnored();
+			}
+		};
+		Function1<LsThingState, List<LsThingValue>> filterValues = new Function1<LsThingState, List<LsThingValue>>(){
+			public List<LsThingValue> apply(LsThingState lsState){
+				return $.filter(new ArrayList<LsThingValue>(lsState.getLsValues()), valuePredicate);
+			}
+		};
+		
+		List<LsThingValue> filteredValues = $.flatten($.map($.filter(new ArrayList<LsThingState>(lsThing.getLsStates()), statePredicate), filterValues));
+
+		return filteredValues;
 	}
 }

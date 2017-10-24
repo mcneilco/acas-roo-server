@@ -43,5 +43,7 @@ public interface PropertiesUtilService {
 
 	boolean getEnableProjectRoles();
 
+	String getChemistryPackage();
+
 	
 }

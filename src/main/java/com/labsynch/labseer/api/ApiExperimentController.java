@@ -47,6 +47,7 @@ import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.BatchCodeDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ExperimentCsvDataDTO;
 import com.labsynch.labseer.dto.ExperimentDataDTO;
 import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
@@ -77,6 +78,7 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Controller
 @RequestMapping("api/v1/experiments")
@@ -255,6 +257,24 @@ public class ApiExperimentController {
 		}
 
 		return new ResponseEntity<String>(ExperimentGuiStubDTO.toJsonArray(result), headers, HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/codetables", method = RequestMethod.GET, headers = "Accept=application/json")
+	@ResponseBody
+	@Transactional
+	public ResponseEntity<java.lang.String> listExperimentCodeTables(
+			@RequestParam(value = "lsType", required = false) String lsType,
+			@RequestParam(value = "lsKind", required = false) String lsKind) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		try{
+			List<CodeTableDTO> result = experimentService.getExperimentsAsCodeTables(lsType, lsKind);
+			return new ResponseEntity<String>(CodeTableDTO.toJsonArray(result), headers, HttpStatus.OK);
+		}catch (Exception e){
+			logger.error("caught exception getting experiments as codetables",e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+
+		}
 	}
 
 	@RequestMapping(value = "/subjectsstatus/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -1593,4 +1613,20 @@ public class ApiExperimentController {
         headers.add("Content-Type", "application/json; charset=utf-8");
         return new ResponseEntity<String>(results.toJson(), headers, HttpStatus.OK);
     }
+    
+    @Transactional
+    @RequestMapping(value = "/getExperimentCodesByDateValueComparison", method = RequestMethod.POST)
+	@ResponseBody
+	public ResponseEntity<String> getExperimentCodesByDateValueComparison(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		DateValueComparisonRequest requestDTO = DateValueComparisonRequest.fromJsonToDateValueComparisonRequest(json);
+		try {
+			Collection<String> results = experimentService.getExperimentCodesByDateValueComparison(requestDTO);
+			return new ResponseEntity<String>(new JSONSerializer().exclude("*.class").serialize(results), headers, HttpStatus.OK);
+		} catch(Exception e){
+			logger.error("Caught error in getExperimentCodesByDateValueComparison",e);
+			return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }

@@ -30,10 +30,21 @@ public class AnalysisGroupValueDTO {
 	public AnalysisGroupValueDTO(){
 		//empty constructor
 	}
-
-	//	select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, expt.id as experimentId, expt.codeName, 
-	//			el.labelText as prefName, agv.lsType as lsType, agv.lsKind as lsKind, agv.stringValue as stringValue, 
-	//			agv.numericValue as numericValue, agv2.codeValue AS testedLot  
+//	String sqlQuery = "select new com.labsynch.labseer.dto.AnalysisGroupValueDTO(agv.id, prot.id as protocolId, protLabel.labelText as protocolName, "
+//			+ "expt.id as experimentId, expt.codeName, el.labelText as prefName, "
+//			+ "ag.id as agId, ags.id as agStateId, "				
+//			+ "agv.lsType as lsType, agv.lsKind as lsKind, "
+//			+ "agv.stringValue as stringValue, agv.numericValue as numericValue, agv.codeValue as codeValue, agv.dateValue as dateValue, agv.fileValue as fileValue, " 
+//			+ "agv2.codeValue AS testedLot "
+//			+ ", agv2.codeValue as geneId  " 
+//			+ ", agv.unitKind as resultUnit "
+//			+ ", agv.operatorKind as operator "
+//			+ ", agv.uncertainty as uncertainty "
+//			+ ", agv.uncertaintyType as uncertaintyUnit "
+//			+ ", agv2.concentration as testedConcentration "
+//			+ ", agv2.concUnit as testedConcentrationUnit "
+//			+ ", agv3.numericValue as testedTime "
+//			+ ", agv3.unitKind as testedTimeUnit "
 
 	public AnalysisGroupValueDTO(
 			Long id,
@@ -42,6 +53,8 @@ public class AnalysisGroupValueDTO {
 			Long experimentId, 
 			String codeName, 
 			String prefName,
+			Long agId,
+			Long agStateId,
 			String lsType, 
 			String lsKind,
 			String stringValue, 
@@ -62,14 +75,19 @@ public class AnalysisGroupValueDTO {
 			){
 
 		this.id = id;
+
 		this.protocolId = protocolId;
 		this.protocolName = protocolName;
 		this.experimentId = experimentId;
 		//		this.codeName = codeName;
 		this.experimentCodeName = codeName;
+		this.agId = agId;
+		this.agStateId = agStateId;
+
 		this.lsType = lsType;
 		this.lsKind = lsKind;
 		this.testedLot = testedLot;
+		this.geneId = geneId;
 		this.resultUnit = resultUnit;
 		this.operator = operator;
 		this.testedTimeUnit = testedTimeUnit;
@@ -135,15 +153,44 @@ public class AnalysisGroupValueDTO {
 	}
 
 
+//	Long id,
+//	Long protocolId,
+//	String protocolName,
+//	Long experimentId, 
+//	String codeName, 
+//	String prefName,
+//	Long agId,
+//	Long agStateId,
+//	String lsType, 
+//	String lsKind,
+//	String stringValue, 
+//	BigDecimal numericValue,
+//	String codeValue,
+//	Date dateValue,
+//	String fileValue,
+//	String testedLot,
+//	String geneId,
+//	String resultUnit,
+//	String operator,
+//	BigDecimal uncertainty,
+//	String uncertaintyUnit,
+//	Double testedConcentration,
+//	String testedConcentrationUnit,
+//	BigDecimal testedTime,
+//	String testedTimeUnit
+	
 	private Long id;	
 	private Long protocolId;
 	private String protocolName;
 	private Long experimentId;
 	private String experimentCodeName;
 	private String experimentName;
+	private Long agId;
+	private Long agStateId;
 	private String lsType;
 	private String lsKind;
 	private String testedLot;
+	private String geneId;
 	//	private String stringValue;
 	//	private BigDecimal numericValue;
 	private String result;
@@ -164,21 +211,29 @@ public class AnalysisGroupValueDTO {
 				"protocolName",
 				"experimentId",
 				"experimentCodeName",
+				
 				"experimentName",
+				"agId",
+				"agStateId",				
 				"lsType",
 				"lsKind",
+				
 				"testedLot",
+				"geneId",
 				"result",
 				"resultUnit",
 				"operator",
+				
 				"testedConcentration",
 				"testedConcentrationUnit",
 				"uncertainty",
 				"uncertaintyUnit",
 				"testedTime",
+				
 				"testedTimeUnit"
 		};
 
+		
 		return headerColumns;
 
 	}
@@ -190,18 +245,25 @@ public class AnalysisGroupValueDTO {
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				
 				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				
 				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
 				new Optional(),
+				
 				new Optional(),
 				new Optional(),
+				new Optional(),
+				new Optional(),
+				new Optional(),
+				
 				new Optional()
 		};
 

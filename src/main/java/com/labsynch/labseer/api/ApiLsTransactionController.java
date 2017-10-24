@@ -55,11 +55,13 @@ public class ApiLsTransactionController {
     }
 
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> createFromJson(@RequestBody LsTransaction lsTransaction) {
-        lsTransaction.persist();
+    public ResponseEntity<java.lang.String> createFromJson(@RequestBody String lsTransaction) {
+    	LsTransaction inputLsTransaction = LsTransaction.fromJsonToLsTransaction(lsTransaction);
+    	logger.info(inputLsTransaction.toJson());
+    	inputLsTransaction.persist();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(lsTransaction.toJson(), headers, HttpStatus.CREATED);
+        return new ResponseEntity<String>(inputLsTransaction.toJson(), headers, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
@@ -73,14 +75,17 @@ public class ApiLsTransactionController {
     }
 
     @RequestMapping(value = { "/", "/{id}" }, method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody LsTransaction lsTransaction, @PathVariable("id") Long id) {
-        HttpHeaders headers = new HttpHeaders();
+    public ResponseEntity<java.lang.String> updateFromJson(@RequestBody String lsTransaction, @PathVariable("id") Long id) {
+
+    	LsTransaction inputLsTransaction = LsTransaction.fromJsonToLsTransaction(lsTransaction);
+    	logger.info(inputLsTransaction.toJson());
+    	
+    	HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        LsTransaction updatedLsTransaction = lsTransaction.merge();
-        if (updatedLsTransaction == null) {
+        if (inputLsTransaction.merge() == null) {
             return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<String>(updatedLsTransaction.toJson(), headers, HttpStatus.OK);
+        return new ResponseEntity<String>(inputLsTransaction.toJson(), headers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")

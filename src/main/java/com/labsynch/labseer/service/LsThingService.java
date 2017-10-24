@@ -1,21 +1,28 @@
 package com.labsynch.labseer.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
 import org.hibernate.StaleObjectStateException;
+import org.openscience.cdk.exception.CDKException;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.CodeTypeKindDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.LsThingQueryDTO;
 import com.labsynch.labseer.dto.LsThingValidationDTO;
 import com.labsynch.labseer.dto.PreferredNameRequestDTO;
 import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.dto.StoichiometryPropertiesResultsDTO;
+import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
+import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 
 @Service
@@ -91,17 +98,36 @@ public interface LsThingService {
 
 	Collection<LsThing> findLsThingProjectsByGenericMetaDataSearch(
 			String searchQuery, String userName);
+
+	byte[] renderStructureByLsThingCodeName(String codeName, Integer height,
+			Integer width, String format) throws IOException, CDKException, NotFoundException;
+
+	StoichiometryPropertiesResultsDTO getStoichiometryProperties(
+			Collection<CodeTypeKindDTO> requests);
+
+	Collection<LsThing> structureSearch(String queryMol, String searchType,
+			Integer maxResults, Float similarity);
+
+	DependencyCheckDTO checkDependencies(LsThing lsThing);
+	
 	Collection<Long> searchLsThingIdsByQueryDTO(LsThingQueryDTO query) throws Exception;
 
 	Collection<LsThing> getLsThingsByIds(Collection<Long> lsThingIds);
 
 	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings);
 
-	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings,
-			String labelType);
+	Collection<CodeTableDTO> convertToCodeTables(Collection<LsThing> lsThings, String labelType);
 
-	Collection<Long> searchLsThingIdsByBrowserQueryDTO(
-			LsThingBrowserQueryDTO query) throws Exception;
+	Collection<Long> searchLsThingIdsByBrowserQueryDTO(LsThingBrowserQueryDTO query) throws Exception;
+
+	Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, String searchType,
+			Integer maxResults, Float similarity) throws Exception;
+
+	Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, String searchType,
+			Integer maxResults, Float similarity);
+	
+	Collection<String> getLsThingCodesByDateValueComparison(
+			DateValueComparisonRequest requestDTO) throws Exception;
 	
 	
 }
