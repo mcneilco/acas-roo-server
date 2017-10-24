@@ -45,6 +45,10 @@ public class StoichiometryPropertiesDTO {
 	
 	String phase;
 	
+	BigDecimal amountMade;
+	
+	String amountMadeUnits;
+	
 	public String toJson() {
         return new JSONSerializer().exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
     }
@@ -100,7 +104,12 @@ public class StoichiometryPropertiesDTO {
 				}
 			}
 		}
- 
+		
+		List<LsThingValue> amountMadeValues = SimpleUtil.pluckValueByValueTypeKind(thing, "numericValue", "amount made");
+		if (amountMadeValues.size() > 0){
+			this.amountMade = amountMadeValues.get(0).getNumericValue();
+			this.amountMadeUnits = amountMadeValues.get(0).getUnitKind();
+		}
 		
 		
 		List<LsThingValue> densityValues = SimpleUtil.pluckValueByValueTypeKind(thing, "numericValue", "density");
