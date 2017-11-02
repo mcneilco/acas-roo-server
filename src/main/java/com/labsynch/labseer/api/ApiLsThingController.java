@@ -633,7 +633,6 @@ public class ApiLsThingController {
 		Collection<LsThing> savedLsThings = new ArrayList<LsThing>();
 		for (LsThing lsThing : lsThings){
 			try {
-				lsThing = LsThing.fromJsonToLsThing(json);
 				lsThing = lsThingService.updateLsThing(lsThing);
 				savedLsThings.add(lsThing);
 			} catch (Exception e) {
