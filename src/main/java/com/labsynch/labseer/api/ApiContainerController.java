@@ -1019,5 +1019,23 @@ public class ApiContainerController {
 			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	@RequestMapping(value = "/getLocationCodesByBreadcrumbArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<java.lang.String> getLocationCodeByBreadcrumb(@RequestParam("rootLabel") String rootLabel,
+			@RequestBody List<String> breadcrumbList) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		try{
+			List<ContainerLocationTreeDTO> results = containerService.getLocationCodeByLabelBreadcrumbByRecursiveQuery(rootLabel, breadcrumbList);
+			if (results != null){
+				return new ResponseEntity<String>(ContainerLocationTreeDTO.toJsonArray(results), headers, HttpStatus.OK);
+			}
+			else return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		} catch (Exception e){
+			logger.error("Caught exception getting location tree", e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 
 }
