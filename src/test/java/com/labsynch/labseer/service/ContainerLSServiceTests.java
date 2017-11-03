@@ -1372,6 +1372,13 @@ public class ContainerLSServiceTests {
 //		return results;
 	}
 	
+	@Test
+	@Transactional
+	@Rollback(value=false)
+	public void getOrCreateTrash() throws Exception {
+		containerService.getOrCreateTrash();
+	}
+	
 	
 	
 	

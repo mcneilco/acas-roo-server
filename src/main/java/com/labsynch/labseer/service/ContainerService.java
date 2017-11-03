@@ -158,5 +158,7 @@ public interface ContainerService {
 
 	List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel, Boolean withContainers)
 			throws SQLException;
+
+	Container getOrCreateTrash() throws Exception;
 	
 }
