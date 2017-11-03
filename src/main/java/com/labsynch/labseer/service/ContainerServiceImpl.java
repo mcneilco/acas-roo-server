@@ -1055,13 +1055,14 @@ public class ContainerServiceImpl implements ContainerService {
 		return results;
 	}
 	
-	private Container getOrCreateTrash() throws Exception{
-		try{
-			List<Container> trashes = Container.findContainerByContainerLabel("trash");
-			if (trashes.size() > 1 ) throw new Exception("Multiple containers called 'trash' exist.");
+	@Override
+	public Container getOrCreateTrash() throws Exception{
+		List<Container> trashes = Container.findContainerByContainerLabel("trash");
+		if (trashes.size() > 1 ) throw new Exception("Multiple containers called 'trash' exist.");
+		else if (trashes.size() == 1) {
 			Container trash = trashes.get(0);
 			return trash;
-		}catch(EmptyResultDataAccessException e){
+		}else {
 			Container trash = new Container();
 			trash.setCodeName(autoLabelService.getContainerCodeName());
 			trash.setLsType("location");

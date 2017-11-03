@@ -160,5 +160,7 @@ public interface ContainerService {
 			throws SQLException;
 
 	List<ContainerLocationTreeDTO> getLocationCodeByLabelBreadcrumbByRecursiveQuery(String rootLabel, List<String> breadcrumbList) throws SQLException;
+
+	Container getOrCreateTrash() throws Exception;
 	
 }
