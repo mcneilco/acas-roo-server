@@ -158,5 +158,7 @@ public interface ContainerService {
 
 	List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel, Boolean withContainers)
 			throws SQLException;
+
+	List<ContainerLocationTreeDTO> getLocationCodeByLabelBreadcrumbByRecursiveQuery(String rootLabel, List<String> breadcrumbList) throws SQLException;
 	
 }
