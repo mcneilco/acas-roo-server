@@ -2730,6 +2730,7 @@ public class ContainerServiceImpl implements ContainerService {
 		criteria.distinct(true);
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		//root container properties
+		predicateList.add(criteriaBuilder.not(thing.<Boolean>get("ignored")));
 		
 		//recordedDates
 		if (query.getRecordedDateGreaterThan() != null && query.getRecordedDateLessThan() != null){
@@ -2820,6 +2821,7 @@ public class ContainerServiceImpl implements ContainerService {
 			for (LabelQueryDTO queryLabel : query.getLabels()){
 				Join<Container, ContainerLabel> label = thing.join("lsLabels");
 				List<Predicate> labelPredicatesList = new ArrayList<Predicate>();
+				labelPredicatesList.add(criteriaBuilder.not(label.<Boolean>get("ignored")));
 				if (queryLabel.getLabelType() != null){
 					Predicate labelType = criteriaBuilder.equal(label.<String>get("lsType"), queryLabel.getLabelType());
 					labelPredicatesList.add(labelType);
