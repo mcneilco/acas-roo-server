@@ -1376,12 +1376,16 @@ public class ContainerLSServiceTests {
 	@Transactional
 	@Rollback(value=false)
 	public void getOrCreateTrash() throws Exception {
-		containerService.getOrCreateTrash();
+		containerService.getOrCreateTrash("acas test");
 	}
 	
+	@Test
+	@Transactional
+	@Rollback(value=false)
+	public void getOrCreateBench() throws Exception {
+		containerService.getOrCreateBench("bfrost", null);
+	}
 	
-	
-	
-	
+
 	
 }

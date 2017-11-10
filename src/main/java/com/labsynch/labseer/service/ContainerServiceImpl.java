@@ -1033,7 +1033,7 @@ public class ContainerServiceImpl implements ContainerService {
 				trashItx.setRecordedBy(dto.getModifiedBy());
 				trashItx.setRecordedDate(dto.getModifiedDate());
 				trashItx.setFirstContainer(container);
-				trashItx.setSecondContainer(getOrCreateTrash());
+				trashItx.setSecondContainer(getOrCreateTrash(dto.getModifiedBy()));
 				trashItx.persist();
 			}catch(Exception e){
 				result.setLevel("error");
@@ -1056,71 +1056,29 @@ public class ContainerServiceImpl implements ContainerService {
 	}
 	
 	@Override
-	public Container getOrCreateTrash() throws Exception{
-		List<Container> trashes = Container.findContainerByContainerLabel("trash");
-		if (trashes.size() > 1 ) throw new Exception("Multiple containers called 'trash' exist.");
-		else if (trashes.size() == 1) {
-			Container trash = trashes.get(0);
-			return trash;
-		}else {
-			Container trash = new Container();
-			trash.setCodeName(autoLabelService.getContainerCodeName());
-			trash.setLsType("location");
-			trash.setLsKind("default");
-			trash.setRecordedBy("acas");
-			trash.setRecordedDate(new Date());
-			Set<ContainerLabel> trashLabels = new HashSet<ContainerLabel>();
-			ContainerLabel trashLabel = new ContainerLabel();
-			trashLabel.setLsType("name");
-			trashLabel.setLsKind("common");
-			trashLabel.setLabelText("trash");
-			trashLabel.setRecordedBy("acas");
-			trashLabel.setRecordedDate(new Date());
-			trashLabel.setPreferred(true);
-			trashLabels.add(trashLabel);
-			
-			Set<ContainerState> trashStates = new HashSet<ContainerState>();
-			ContainerState trashState = new ContainerState();
-			trashState.setLsType("metadata");
-			trashState.setLsKind("information");
-			trashState.setRecordedBy("acas");
-			trashState.setRecordedDate(new Date());
-			
-			Set<ContainerValue> trashValues = new HashSet<ContainerValue>();
-			
-			ContainerValue trashUserValue = new ContainerValue();
-			trashUserValue.setLsType("stringValue");
-			trashUserValue.setLsKind("created user");
-			trashUserValue.setRecordedBy("acas");
-			trashUserValue.setRecordedDate(new Date());
-			trashUserValue.setStringValue("acas");
-			trashValues.add(trashUserValue);
-			
-			ContainerValue trashDescriptionValue = new ContainerValue();
-			trashDescriptionValue.setLsType("stringValue");
-			trashDescriptionValue.setLsKind("description");
-			trashDescriptionValue.setRecordedBy("acas");
-			trashDescriptionValue.setRecordedDate(new Date());
-			trashDescriptionValue.setStringValue("trash");
-			trashValues.add(trashDescriptionValue);
-			
-			ContainerValue trashDateValue = new ContainerValue();
-			trashDateValue.setLsType("dateValue");
-			trashDateValue.setLsKind("created date");
-			trashDateValue.setRecordedBy("acas");
-			trashDateValue.setRecordedDate(new Date());
-			trashDateValue.setDateValue(new Date());
-			trashValues.add(trashDateValue);
-			
-			trashState.setLsValues(trashValues);
-			trashStates.add(trashState);
-			trash.setLsStates(trashStates);
-			trash.setLsLabels(trashLabels);
-			
-			Container newTrash = saveLsContainer(trash);
-			newTrash.flush();
-			return newTrash;
+	public Container getOrCreateTrash(String recordedBy) throws Exception{
+		String configuredTrashLabel = propertiesUtilService.getTrashLocationLabel();
+		if (configuredTrashLabel == null || configuredTrashLabel.length() < 1)  configuredTrashLabel = "trash";
+		Container trash = getOrCreateLocation(configuredTrashLabel, "autocreated by throwInTrash service", recordedBy, null);
+		String configuredRootLabel = propertiesUtilService.getRootLocationLabel();
+		if (configuredRootLabel != null && configuredRootLabel.length() > 0){
+			if(trash.getSecondContainers().isEmpty()) {
+				try {
+					Container root = getOrCreateLocation(configuredRootLabel, "autocreated by throwInTrash service", recordedBy, null);
+					ContainerLocationDTO moveDTO = new ContainerLocationDTO();
+					moveDTO.setLocationCodeName(root.getCodeName());
+					moveDTO.setContainerCodeName(trash.getCodeName());
+					moveDTO.setModifiedBy(recordedBy);
+					moveDTO.setModifiedDate(new Date());
+					Collection<ContainerLocationDTO> requests = new ArrayList<ContainerLocationDTO>();
+					requests.add(moveDTO);
+					moveToLocation(requests);
+				}catch (Exception e) {
+					logger.error("Caught error putting autocreated trash into root location",e);
+				}
+			}
 		}
+		return trash;
 	}
 
 	@Override
@@ -1364,9 +1322,9 @@ public class ContainerServiceImpl implements ContainerService {
 			throw new Exception("Error creating wells from definition",e);
 		}
 	}
-
-	private Container getOrCreateBench(String recordedBy, LsTransaction lsTransaction) throws SQLException {
-		PreferredNameDTO request = new PreferredNameDTO(recordedBy, null, null);
+	
+	private Container getOrCreateLocation(String labelText, String description, String recordedBy, LsTransaction lsTransaction) throws SQLException {
+		PreferredNameDTO request = new PreferredNameDTO(labelText, null, null);
 		Collection<PreferredNameDTO> requests = new ArrayList<PreferredNameDTO>();
 		requests.add(request);
 		PreferredNameRequestDTO requestDTO = new PreferredNameRequestDTO();
@@ -1377,91 +1335,133 @@ public class ContainerServiceImpl implements ContainerService {
 			Container location = Container.findContainerByCodeNameEquals(locationCodeName);
 			return location;
 		}else{
-			logger.warn("bench location not found for "+recordedBy+". Creating new location.");
-			Container bench = new Container();
-			bench.setCodeName(autoLabelService.getContainerCodeName());
-			bench.setRecordedBy(recordedBy);
-			bench.setRecordedDate(new Date());
-			bench.setLsType("location");
-			bench.setLsKind("default");
-			bench.setLsTransaction(lsTransaction.getId());
-			List<Container> benchList = new ArrayList<Container>();
-			benchList.add(bench);
-			bench.setId(insertContainers(benchList).get(0));
+			logger.warn("location not found: "+labelText+". Creating new location.");
+			Container newLocation = new Container();
+			newLocation.setCodeName(autoLabelService.getContainerCodeName());
+			newLocation.setRecordedBy(recordedBy);
+			newLocation.setRecordedDate(new Date());
+			newLocation.setLsType("location");
+			newLocation.setLsKind("default");
+			if (lsTransaction == null) {
+				lsTransaction = new LsTransaction();
+				lsTransaction.setRecordedBy(recordedBy);
+				lsTransaction.setRecordedDate(new Date());
+				lsTransaction.persist();
+			}
+			newLocation.setLsTransaction(lsTransaction.getId());
+			List<Container> newLocationList = new ArrayList<Container>();
+			newLocationList.add(newLocation);
+			newLocation.setId(insertContainers(newLocationList).get(0));
 
 			
-			ContainerLabel benchName = new ContainerLabel();
-			benchName.setRecordedBy(bench.getRecordedBy());
-			benchName.setRecordedDate(bench.getRecordedDate());
-			benchName.setLsType("name");
-			benchName.setLsKind("common");
-			benchName.setLabelText(recordedBy);
-			benchName.setPreferred(true);
-			benchName.setLsTransaction(bench.getLsTransaction());
-			benchName.setContainer(bench);
-			bench.getLsLabels().add(benchName);
-			List<ContainerLabel> benchNameList = new ArrayList<ContainerLabel>();
-			benchNameList.add(benchName);
-			benchName.setId(insertContainerLabels(benchNameList).get(0));
+			ContainerLabel newLocationName = new ContainerLabel();
+			newLocationName.setRecordedBy(newLocation.getRecordedBy());
+			newLocationName.setRecordedDate(newLocation.getRecordedDate());
+			newLocationName.setLsType("name");
+			newLocationName.setLsKind("common");
+			newLocationName.setLabelText(labelText);
+			newLocationName.setPreferred(true);
+			newLocationName.setLsTransaction(newLocation.getLsTransaction());
+			newLocationName.setContainer(newLocation);
+			newLocation.getLsLabels().add(newLocationName);
+			List<ContainerLabel> newLocationNameList = new ArrayList<ContainerLabel>();
+			newLocationNameList.add(newLocationName);
+			newLocationName.setId(insertContainerLabels(newLocationNameList).get(0));
 			
 			ContainerState metadataState = new ContainerState();
-			metadataState.setRecordedBy(bench.getRecordedBy());
-			metadataState.setRecordedDate(bench.getRecordedDate());
+			metadataState.setRecordedBy(newLocation.getRecordedBy());
+			metadataState.setRecordedDate(newLocation.getRecordedDate());
 			metadataState.setLsType("metadata");
 			metadataState.setLsKind("information");
-			metadataState.setLsTransaction(bench.getLsTransaction());
-			metadataState.setContainer(bench);
-			List<ContainerState> benchStateList = new ArrayList<ContainerState>();
-			benchStateList.add(metadataState);
-			metadataState.setId(insertContainerStates(benchStateList).get(0));
+			metadataState.setLsTransaction(newLocation.getLsTransaction());
+			metadataState.setContainer(newLocation);
+			List<ContainerState> newLocationStateList = new ArrayList<ContainerState>();
+			newLocationStateList.add(metadataState);
+			metadataState.setId(insertContainerStates(newLocationStateList).get(0));
 			
 			Set<ContainerValue> values = new HashSet<ContainerValue>();
-			List<ContainerValue> benchValueList = new ArrayList<ContainerValue>();
+			List<ContainerValue> newLocationValueList = new ArrayList<ContainerValue>();
 			
-			ContainerValue description = new ContainerValue();
-			description.setRecordedBy(bench.getRecordedBy());
-			description.setRecordedDate(bench.getRecordedDate());
-			description.setLsType("stringValue");
-			description.setLsKind("description");
-			description.setStringValue(recordedBy+"'s bench");
-			description.setLsTransaction(bench.getLsTransaction());
-			description.setLsState(metadataState);
-			values.add(description);
-			benchValueList.add(description);
+			ContainerValue descriptionVal = new ContainerValue();
+			descriptionVal.setRecordedBy(newLocation.getRecordedBy());
+			descriptionVal.setRecordedDate(newLocation.getRecordedDate());
+			descriptionVal.setLsType("stringValue");
+			descriptionVal.setLsKind("description");
+			descriptionVal.setStringValue(description);
+			descriptionVal.setLsTransaction(newLocation.getLsTransaction());
+			descriptionVal.setLsState(metadataState);
+			values.add(descriptionVal);
+			newLocationValueList.add(descriptionVal);
 			
 			ContainerValue createdUser = new ContainerValue();
-			createdUser.setRecordedBy(bench.getRecordedBy());
-			createdUser.setRecordedDate(bench.getRecordedDate());
+			createdUser.setRecordedBy(newLocation.getRecordedBy());
+			createdUser.setRecordedDate(newLocation.getRecordedDate());
 			createdUser.setLsType("codeValue");
 			createdUser.setLsKind("created user");
 			createdUser.setCodeValue(recordedBy);
-			createdUser.setLsTransaction(bench.getLsTransaction());
+			createdUser.setLsTransaction(newLocation.getLsTransaction());
 			createdUser.setLsState(metadataState);
 			values.add(createdUser);
-			benchValueList.add(createdUser);
+			newLocationValueList.add(createdUser);
 			
 			ContainerValue createdDate = new ContainerValue();
-			createdDate.setRecordedBy(bench.getRecordedBy());
-			createdDate.setRecordedDate(bench.getRecordedDate());
+			createdDate.setRecordedBy(newLocation.getRecordedBy());
+			createdDate.setRecordedDate(newLocation.getRecordedDate());
 			createdDate.setLsType("dateValue");
 			createdDate.setLsKind("created date");
 			createdDate.setDateValue(new Date());
-			createdDate.setLsTransaction(bench.getLsTransaction());
+			createdDate.setLsTransaction(newLocation.getLsTransaction());
 			createdDate.setLsState(metadataState);
 			values.add(createdDate);
-			benchValueList.add(createdDate);
+			newLocationValueList.add(createdDate);
 			
 			metadataState.setLsValues(values);
-			List<Long> valueIds = insertContainerValues(benchValueList);
-			description.setId(valueIds.get(0));
+			List<Long> valueIds = insertContainerValues(newLocationValueList);
+			descriptionVal.setId(valueIds.get(0));
 			createdUser.setId(valueIds.get(1));
 			createdDate.setId(valueIds.get(2));
 			
-			bench.getLsStates().add(metadataState);
-			bench.getLsLabels().add(benchName);
-			return bench;
+			newLocation.getLsStates().add(metadataState);
+			newLocation.getLsLabels().add(newLocationName);
+			
+			return newLocation;
+		}
+	}
+
+	@Override
+	public Container getOrCreateBench(String recordedBy, LsTransaction lsTransaction) throws SQLException {
+		Container bench = getOrCreateLocation(recordedBy, recordedBy+"'s bench", recordedBy, lsTransaction);
+		String configuredBenchesLabel = propertiesUtilService.getBenchesLocationLabel();
+		if (configuredBenchesLabel == null || configuredBenchesLabel.length() < 1)  configuredBenchesLabel = "Benches";
+		if (bench.getSecondContainers().isEmpty()) {
+			try {
+				//getOrCreate the benches location
+				Container benches = getOrCreateLocation(configuredBenchesLabel, "autocreated by createPlate service", recordedBy, null);
+				ContainerLocationDTO benchMoveDTO = new ContainerLocationDTO();
+				benchMoveDTO.setLocationCodeName(benches.getCodeName());
+				benchMoveDTO.setContainerCodeName(bench.getCodeName());
+				benchMoveDTO.setModifiedBy(recordedBy);
+				benchMoveDTO.setModifiedDate(new Date());
+				Collection<ContainerLocationDTO> requests = new ArrayList<ContainerLocationDTO>();
+				requests.add(benchMoveDTO);
+				String configuredRootLabel = propertiesUtilService.getRootLocationLabel();
+				if (benches.getSecondContainers().isEmpty() && configuredRootLabel != null && configuredRootLabel.length() > 0){
+					//put the benches location into the root location
+					Container root = getOrCreateLocation(configuredRootLabel, "autocreated by createPlate service", recordedBy, null);
+					ContainerLocationDTO benchesMoveDTO = new ContainerLocationDTO();
+					benchesMoveDTO.setLocationCodeName(root.getCodeName());
+					benchesMoveDTO.setContainerCodeName(benches.getCodeName());
+					benchesMoveDTO.setModifiedBy(recordedBy);
+					benchesMoveDTO.setModifiedDate(new Date());
+					requests.add(benchesMoveDTO);
+				}
+				moveToLocation(requests);
+			}catch (Exception e) {
+				logger.error("Caught error putting autocreated trash into root location",e);
+			}	
 		}
 		
+		return bench;
 	}
 
 	private Collection<WellContentDTO> lookUpWellCodesByWellNames(List<Container> wells, List<ContainerLabel> wellNames, Collection<WellContentDTO> wellDTOs) {
