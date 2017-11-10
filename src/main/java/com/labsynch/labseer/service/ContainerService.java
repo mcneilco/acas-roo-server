@@ -12,6 +12,7 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
@@ -161,6 +162,8 @@ public interface ContainerService {
 
 	List<ContainerLocationTreeDTO> getLocationCodeByLabelBreadcrumbByRecursiveQuery(String rootLabel, List<String> breadcrumbList) throws SQLException;
 
-	Container getOrCreateTrash() throws Exception;
+	Container getOrCreateTrash(String recordedBy) throws Exception;
+
+	Container getOrCreateBench(String recordedBy, LsTransaction lsTransaction) throws SQLException;
 	
 }
