@@ -37,7 +37,7 @@ import flexjson.JSONSerializer;
 @RooJson
 @SqlResultSetMapping(name="ContainerLocationTreeDTOResult", classes = {
 		@ConstructorResult(targetClass = ContainerLocationTreeDTO.class,
-		columns = {@ColumnResult(name="code_name"), @ColumnResult(name="parent_code_name"), @ColumnResult(name="label_text"), @ColumnResult(name="code_tree"), @ColumnResult(name="label_tree"), @ColumnResult(name="lvl"), @ColumnResult(name="root_code_name"), @ColumnResult(name="code_name_bread_crumb"),	@ColumnResult(name="label_text_bread_crumb")})})
+		columns = {@ColumnResult(name="code_name"), @ColumnResult(name="parent_code_name"), @ColumnResult(name="label_text"), @ColumnResult(name="code_tree"), @ColumnResult(name="label_tree"), @ColumnResult(name="lvl"), @ColumnResult(name="root_code_name"), @ColumnResult(name="code_name_bread_crumb"),	@ColumnResult(name="label_text_bread_crumb"),@ColumnResult(name="ls_type"),@ColumnResult(name="ls_kind")})})
 public class Container extends AbstractThing {
 
 	private Long locationId;

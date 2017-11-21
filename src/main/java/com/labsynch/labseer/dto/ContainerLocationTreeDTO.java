@@ -18,9 +18,11 @@ public class ContainerLocationTreeDTO {
 	private String rootCodeName;
 	private String codeNameBreadcrumb;
 	private String labelTextBreadcrumb;
+	private String lsType;
+	private String lsKind;
 	
 	public ContainerLocationTreeDTO (String codeName, String parentCodeName, String labelText, String codeTree, String labelTree, 
-			Integer level, String rootCodeName, String codeNameBreadcrumb, String labelTextBreadcrumb) {
+			Integer level, String rootCodeName, String codeNameBreadcrumb, String labelTextBreadcrumb, String lsType, String lsKind) {
 		this.codeName = codeName;
 		this.parentCodeName = parentCodeName;
 		this.labelText = labelText;
@@ -30,6 +32,8 @@ public class ContainerLocationTreeDTO {
 		this.rootCodeName = rootCodeName;
 		this.codeNameBreadcrumb = codeNameBreadcrumb;
 		this.labelTextBreadcrumb = labelTextBreadcrumb;
+		this.lsType = lsType;
+		this.lsKind = lsKind;
 	}
 
 }
