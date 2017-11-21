@@ -46,7 +46,7 @@ import flexjson.JSONSerializer;
 @RooJson
 @RooJpaActiveRecord(sequenceName = "LABEL_SEQUENCE_PKSEQ", finders = { "findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals", 
 		"findLabelSequencesByThingTypeAndKindEquals", "findLabelSequencesByLabelTypeAndKindEquals",
-		"findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals"})
+"findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals"})
 public class LabelSequence {
 
 	@NotNull
@@ -160,7 +160,7 @@ public class LabelSequence {
 		Long maxRecord = em.unwrap(Session.class).doReturningWork(maxReturningWork);
 		return maxRecord;
 	}
-	
+
 	@Transactional
 	public Long decrementSequence() {
 		final String sequenceName = this.getDbSequence();
@@ -169,36 +169,26 @@ public class LabelSequence {
 			public Long execute(Connection connection) throws SQLException {
 				DialectResolver dialectResolver = new StandardDialectResolver();
 				Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
-				PreparedStatement preparedStatement = null;
-				ResultSet resultSet = null;
-				try {
-					String currentValueString = "";
-					if (dialect instanceof PostgreSQLDialect) {
-						currentValueString = "SELECT currval('"+sequenceName+"')";
-						preparedStatement = connection.prepareStatement( currentValueString);
-						resultSet = preparedStatement.executeQuery();
+				String currentValueString = "";
+				if (dialect instanceof PostgreSQLDialect) {
+					currentValueString = "SELECT currval('"+sequenceName+"')";
+					long currentValue;
+					try (PreparedStatement preparedStatement = connection.prepareStatement( currentValueString);
+							ResultSet resultSet = preparedStatement.executeQuery()) {
 						resultSet.next();
-						long currentValue = resultSet.getLong(1);
-						String setValueString = "SELECT setval('"+sequenceName+"', "+currentValue+")";
-						resultSet = preparedStatement.executeQuery();
+						currentValue = resultSet.getLong(1);
+					}
+					String setValueString = "SELECT setval('"+sequenceName+"', "+currentValue+")";
+					try (PreparedStatement preparedStatement = connection.prepareStatement( setValueString);
+							ResultSet resultSet = preparedStatement.executeQuery();){
 						resultSet.next();
 						return resultSet.getLong(1);	
-					}else if (dialect instanceof OracleDialect) {
-						throw new SQLException("Decrement sequence not implemented for Oracle");
-					}else {
-						throw new SQLException("Unsupported Hibernate Dialect:"+dialect.toString());
 					}
-				}catch (SQLException e) {
-					throw e;
-				} finally {
-					if(preparedStatement != null) {
-						preparedStatement.close();
-					}
-					if(resultSet != null) {
-						resultSet.close();
-					}
+				}else if (dialect instanceof OracleDialect) {
+					throw new SQLException("Decrement sequence not implemented for Oracle");
+				}else {
+					throw new SQLException("Unsupported Hibernate Dialect:"+dialect.toString());
 				}
-
 			}
 		};
 		EntityManager em = LabelSequence.entityManager();
@@ -213,8 +203,6 @@ public class LabelSequence {
 			public Long execute(Connection connection) throws SQLException {
 				DialectResolver dialectResolver = new StandardDialectResolver();
 				Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
-				PreparedStatement preparedStatement = null;
-				ResultSet resultSet = null;
 				try {
 					String currentValueString = "";
 					if (dialect instanceof PostgreSQLDialect) {
@@ -222,19 +210,14 @@ public class LabelSequence {
 					}else if (dialect instanceof OracleDialect) {
 						currentValueString = "SELECT last_number FROM all_sequences WHERE sequence_name = '"+sequenceName+"'";
 					}
-					preparedStatement = connection.prepareStatement( currentValueString);
-					resultSet = preparedStatement.executeQuery();
-					resultSet.next();
-					return resultSet.getLong(1);
+					try (
+							PreparedStatement preparedStatement = connection.prepareStatement( currentValueString);
+							ResultSet resultSet = preparedStatement.executeQuery()) {
+						resultSet.next();
+						return resultSet.getLong(1);
+					}
 				}catch (SQLException e) {
 					throw e;
-				} finally {
-					if(preparedStatement != null) {
-						preparedStatement.close();
-					}
-					if(resultSet != null) {
-						resultSet.close();
-					}
 				}
 
 			}
@@ -243,14 +226,14 @@ public class LabelSequence {
 		Long maxRecord = em.unwrap(Session.class).doReturningWork(maxReturningWork);
 		return maxRecord;
 	}
-	
+
 	public String toJson() {
-        return new JSONSerializer().exclude("*.class","labelSequenceRoles.labelSequenceEntry").include("labelSequenceRoles.roleEntry").transform(new ExcludeNulls(), void.class).serialize(this);
-    }
-	
+		return new JSONSerializer().exclude("*.class","labelSequenceRoles.labelSequenceEntry").include("labelSequenceRoles.roleEntry").transform(new ExcludeNulls(), void.class).serialize(this);
+	}
+
 	public static String toJsonArray(Collection<LabelSequence> collection) {
-        return new JSONSerializer().exclude("*.class","labelSequenceRoles.labelSequenceEntry").include("labelSequenceRoles.roleEntry").transform(new ExcludeNulls(), void.class).serialize(collection);
-    }
+		return new JSONSerializer().exclude("*.class","labelSequenceRoles.labelSequenceEntry").include("labelSequenceRoles.roleEntry").transform(new ExcludeNulls(), void.class).serialize(collection);
+	}
 
 
 

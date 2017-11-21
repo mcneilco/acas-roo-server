@@ -1053,20 +1053,23 @@ public class ContainerLSServiceTests {
 		plateRequest.setDefinition(definition.getCodeName());
 		plateRequest.setBarcode("TESTBARCODE-123");
 		plateRequest.setRecordedBy("acas");
-    	PlateStubDTO result = containerService.createPlate(plateRequest);
-    	try{
-    		Container dupeContainer = Container.findContainerByLabelText("container", "plate", "name", "barcode", plateRequest.getBarcode()).getSingleResult();
-    	}catch(NoResultException e){
-    		logger.error("no result",e);
-    	}
-    	logger.info(result.toJson());
-    	Assert.assertEquals(1536, result.getWells().size());
-    	String[][] plateLayout = new String[32][48];
-    	for (WellStubDTO well : result.getWells()){
-    		logger.debug(well.getRowIndex().toString() + ", "+well.getColumnIndex().toString());
-    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
-    	}
-    	logger.info(Arrays.deepToString(plateLayout));
+		long start = System.currentTimeMillis() % 1000;
+	    	PlateStubDTO result = containerService.createPlate(plateRequest);
+	    	long end = System.currentTimeMillis() % 1000;
+	    	logger.info("Create plate time: "+(end-start));
+	    	try{
+	    		Container dupeContainer = Container.findContainerByLabelText("container", "plate", "name", "barcode", plateRequest.getBarcode()).getSingleResult();
+	    	}catch(NoResultException e){
+	    		logger.error("no result",e);
+	    	}
+	    	logger.info(result.toJson());
+	    	Assert.assertEquals(1536, result.getWells().size());
+	    	String[][] plateLayout = new String[32][48];
+	    	for (WellStubDTO well : result.getWells()){
+	    		logger.debug(well.getRowIndex().toString() + ", "+well.getColumnIndex().toString());
+	    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
+	    	}
+	    	logger.info(Arrays.deepToString(plateLayout));
 	}
 	
 	@Test
@@ -1097,41 +1100,41 @@ public class ContainerLSServiceTests {
 		wellC7.setAmountUnits("µL");
 		wellsToPopulate.add(wellC7);
 		plateRequest.setWells(wellsToPopulate);
-    	PlateStubDTO result = containerService.createPlate(plateRequest);
-    	Assert.assertEquals(1536, result.getWells().size());
-    	String[][] plateLayout = new String[32][48];
-    	for (WellStubDTO well : result.getWells()){
-    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
-    		if (well.getWellName().equals("A001")){
-    			List<String> checkWellCodes = new ArrayList<String>();
-    			checkWellCodes.add(well.getCodeName());
-    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
-    			Assert.assertEquals(new BigDecimal(1), checkResult.getAmount());
-    			Assert.assertEquals("µL", checkResult.getAmountUnits());
-    			logger.info("checked well A001");
-    		}
-    		if (well.getWellName().equals("B003")){
-    			List<String> checkWellCodes = new ArrayList<String>();
-    			checkWellCodes.add(well.getCodeName());
-    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
-    			Assert.assertEquals(new BigDecimal(2), checkResult.getAmount());
-    			Assert.assertEquals("µL", checkResult.getAmountUnits());
-    			logger.info("checked well B003");
-
-    		}
-    		if (well.getWellName().equals("AA007")){
-    			List<String> checkWellCodes = new ArrayList<String>();
-    			checkWellCodes.add(well.getCodeName());
-    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
-    			Assert.assertEquals(new BigDecimal(3), checkResult.getAmount());
-    			Assert.assertEquals("µL", checkResult.getAmountUnits());
-    			logger.info("checked well AA007");
-
-    		}
-    	}
-    	logger.info(Arrays.deepToString(plateLayout));
-    	
-    	
+	
+	    	PlateStubDTO result = containerService.createPlate(plateRequest);
+	    	Assert.assertEquals(1536, result.getWells().size());
+	    	String[][] plateLayout = new String[32][48];
+	    	for (WellStubDTO well : result.getWells()){
+	    		plateLayout[well.getRowIndex()][well.getColumnIndex()] = well.getWellName();
+	    		if (well.getWellName().equals("A001")){
+	    			List<String> checkWellCodes = new ArrayList<String>();
+	    			checkWellCodes.add(well.getCodeName());
+	    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
+	    			Assert.assertEquals(new BigDecimal(1), checkResult.getAmount());
+	    			Assert.assertEquals("µL", checkResult.getAmountUnits());
+	    			logger.info("checked well A001");
+	    		}
+	    		if (well.getWellName().equals("B003")){
+	    			List<String> checkWellCodes = new ArrayList<String>();
+	    			checkWellCodes.add(well.getCodeName());
+	    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
+	    			Assert.assertEquals(new BigDecimal(2), checkResult.getAmount());
+	    			Assert.assertEquals("µL", checkResult.getAmountUnits());
+	    			logger.info("checked well B003");
+	
+	    		}
+	    		if (well.getWellName().equals("AA007")){
+	    			List<String> checkWellCodes = new ArrayList<String>();
+	    			checkWellCodes.add(well.getCodeName());
+	    			WellContentDTO checkResult = containerService.getWellContent(checkWellCodes).iterator().next();
+	    			Assert.assertEquals(new BigDecimal(3), checkResult.getAmount());
+	    			Assert.assertEquals("µL", checkResult.getAmountUnits());
+	    			logger.info("checked well AA007");
+	
+	    		}
+	    	}
+	    	logger.info(Arrays.deepToString(plateLayout));
+	    	
 	}
 	
 	@Test
@@ -1384,6 +1387,46 @@ public class ContainerLSServiceTests {
 	@Rollback(value=false)
 	public void getOrCreateBench() throws Exception {
 		containerService.getOrCreateBench("bfrost", null);
+	}
+	
+	@Test
+	@Transactional
+	public void insertContainersSpeedTest() throws Exception {
+		List<Container> containers1 = new ArrayList<Container>();
+		List<Container> containers2 = new ArrayList<Container>();
+		int i = 0;
+		int max = 4000;
+		while (i < max) {
+			Container plate = new Container();
+			plate.setCodeName(autoLabelService.getContainerCodeName());
+			plate.setRecordedBy("test");
+			plate.setRecordedDate(new Date());
+			plate.setLsType("container");
+			plate.setLsKind("plate");
+			plate.setLsTransaction(9999L);
+			if (i< (max/2)) {
+				containers1.add(plate);
+			}else {
+				containers2.add(plate);
+			}
+			i++;
+		}
+		long start = System.currentTimeMillis() % 1000;
+		containerService.insertContainers(containers1);
+		long endInsert = System.currentTimeMillis() % 1000;
+		int batch = 200;
+		int count = 0;
+		for (Container c: containers2) {
+			c.persist();
+			count++;
+			if (count > batch){
+				c.flush();
+				count=0;
+			}
+		}
+		long endPersist = System.currentTimeMillis() % 1000;
+		logger.info("Time with insert: "+(endInsert-start));
+		logger.info("Time with persist: "+(endPersist-endInsert));
 	}
 	
 
