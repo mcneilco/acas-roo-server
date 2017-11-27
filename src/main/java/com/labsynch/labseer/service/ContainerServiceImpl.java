@@ -64,6 +64,7 @@ import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
+import com.labsynch.labseer.dto.ContainerCodeNameStateDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -464,6 +465,66 @@ public class ContainerServiceImpl implements ContainerService {
 			savedContainers.add(savedContainer);
 		}
 		return savedContainers;
+	}
+
+	@Transactional
+	@Override
+	public List<ContainerCodeNameStateDTO> saveContainerCodeNameStateDTOArray(
+			List<ContainerCodeNameStateDTO> stateDTOs) throws SQLException{
+		List<ContainerCodeNameStateDTO> savedDTOs = new ArrayList<ContainerCodeNameStateDTO>();
+		//collect all the states to be saved into a List
+		List<ContainerState> statesToSave = new ArrayList<ContainerState>();
+		for (ContainerCodeNameStateDTO stateDTO : stateDTOs) {
+			statesToSave.add(stateDTO.getLsState());
+		}
+		//save all the states at once
+		List<Long> savedStateIds = insertContainerStates(statesToSave);
+		//fill in the saved state ids
+		int i = 0;
+		for (ContainerState state : statesToSave) {
+			state.setId(savedStateIds.get(i));
+			state.setVersion(0);
+			i++;
+		}
+		//collect all the values to be saved into a List
+		List<ContainerValue> valuesToSave = new ArrayList<ContainerValue>();
+		for (ContainerState savedState : statesToSave) {
+			for (ContainerValue valueToSave : savedState.getLsValues()) {
+				valueToSave.setLsState(savedState);
+				valuesToSave.add(valueToSave);
+			}
+		}
+		//save all the values at once
+		List<Long> savedValueIds = insertContainerValues(valuesToSave);
+		//fill in the saved value ids
+		int j = 0;
+		for (ContainerValue value : valuesToSave) {
+			value.setId(savedValueIds.get(j));
+			value.setVersion(0);
+			j++;
+		}
+		//re-associate the values with the correct states
+		Map<Long, Set<ContainerValue>> stateIdToValuesMap = new HashMap<Long, Set<ContainerValue>>();
+		for (ContainerValue savedValue : valuesToSave) {
+			Long stateId = savedValue.getLsState().getId();
+			if (stateIdToValuesMap.containsKey(stateId)) {
+				Set<ContainerValue> values = stateIdToValuesMap.get(stateId);
+				values.add(savedValue);
+				stateIdToValuesMap.put(stateId, values);
+			}else {
+				Set<ContainerValue> values = new HashSet<ContainerValue>();
+				values.add(savedValue);
+				stateIdToValuesMap.put(stateId, values);
+			}
+		}
+		for (ContainerState savedState : statesToSave) {
+			Set<ContainerValue> savedValues = stateIdToValuesMap.get(savedState.getId());
+			savedState.setLsValues(savedValues);
+			ContainerCodeNameStateDTO savedDTO = new ContainerCodeNameStateDTO(savedState.getContainer().getCodeName(), savedState);
+			savedDTOs.add(savedDTO);
+		}
+		
+		return savedDTOs;
 	}
 
 	@Override
@@ -3459,12 +3520,12 @@ public class ContainerServiceImpl implements ContainerService {
 			List<String> breadcrumbList) throws SQLException {
 		return getLocationTreeDTO(rootLabel, null, breadcrumbList, true);
 	}
-	
+
 	@Override
 	public List<ContainerLocationTreeDTO> getLocationTreeByRootCodeName(String rootCodeName, Boolean withContainers) throws SQLException {
 		return getLocationTreeDTO(null, rootCodeName, null, withContainers);
 	}
-	
+
 	@Override
 	@Transactional
 	public List<ContainerLocationTreeDTO> getLocationTreeDTO(String rootLabel, String rootCodeName, List<String> breadcrumbList, Boolean withContainers) throws SQLException {
@@ -3516,15 +3577,15 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "            cl.deleted = '0' \n"
 					+ "    WHERE \n"
 					+ "            c.deleted = '0' \n";
-					if (withRootLabel) {
-						queryString += "        AND \n"
-								+ "            cl.label_text LIKE :rootLabel ";
-					}
-					if (withRootCodeName) {
-						queryString += "        AND \n"
-								+ "            c.code_name = :rootCodeName ";
-					}
-					queryString += " ) as anchord \n"
+			if (withRootLabel) {
+				queryString += "        AND \n"
+						+ "            cl.label_text LIKE :rootLabel ";
+			}
+			if (withRootCodeName) {
+				queryString += "        AND \n"
+						+ "            c.code_name = :rootCodeName ";
+			}
+			queryString += " ) as anchord \n"
 					+ "    UNION ALL \n"
 					+ "  -- Recursive member. \n"
 					+ "     SELECT \n"
@@ -3573,7 +3634,7 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "            itx.ignored = '0' \n";
 			if (!withContainers) {
 				queryString += "       AND\n"
-					+ "	    c1.ls_type = 'location'";
+						+ "	    c1.ls_type = 'location'";
 			}
 			queryString += "        AND \n"
 					+ "            itx.deleted = '0') as interactions, \n"
@@ -3605,10 +3666,10 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "    ls_kind \n"
 					+ "FROM \n"
 					+ "    t1 ";
-					if (withBreadcrumbList){
-						queryString += "WHERE label_text_bread_crumb IN :breadcrumbList \n";
-					}
-					queryString += ";";
+			if (withBreadcrumbList){
+				queryString += "WHERE label_text_bread_crumb IN :breadcrumbList \n";
+			}
+			queryString += ";";
 		} else if (dialect instanceof Oracle10gDialect) {
 			queryString = "WITH interactions AS ( \n"
 					+ "    SELECT c1.code_name AS code_name, \n"
@@ -3644,7 +3705,7 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "            itx.deleted = 0 \n";
 			if (!withContainers) {
 				queryString += "       AND\n"
-					+ "	    c1.ls_type = 'location'";
+						+ "	    c1.ls_type = 'location'";
 			}
 			queryString += "),anchors AS ( \n"
 					+ "    SELECT \n"
@@ -3663,15 +3724,15 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "    WHERE \n"
 					+ "            c.deleted = 0 \n"
 					;
-					if (withRootLabel) {
-						queryString += "        AND \n"
-								+ "            cl.label_text LIKE :rootLabel ";
-					}
-					if (withRootCodeName) {
-						queryString += "        AND \n"
-								+ "            c.code_name = :rootCodeName ";
-					}
-					queryString += "),t1 ( \n"
+			if (withRootLabel) {
+				queryString += "        AND \n"
+						+ "            cl.label_text LIKE :rootLabel ";
+			}
+			if (withRootCodeName) {
+				queryString += "        AND \n"
+						+ "            c.code_name = :rootCodeName ";
+			}
+			queryString += "),t1 ( \n"
 					+ "    code_name, \n"
 					+ "    parent_code_name, \n"
 					+ "    label_text, \n"
@@ -3744,9 +3805,9 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "    cycle \n"
 					+ "FROM \n"
 					+ "    t1 ";
-					if (withBreadcrumbList){
-						queryString += "WHERE label_text_bread_crumb IN :breadcrumbList \n";
-					}
+			if (withBreadcrumbList){
+				queryString += "WHERE label_text_bread_crumb IN :breadcrumbList \n";
+			}
 		}
 		logger.debug(queryString);
 		Query q = em.createNativeQuery(queryString, "ContainerLocationTreeDTOResult");
@@ -3762,5 +3823,7 @@ public class ContainerServiceImpl implements ContainerService {
 		List<ContainerLocationTreeDTO> results = q.getResultList();
 		return results;
 	}
+
+
 
 }

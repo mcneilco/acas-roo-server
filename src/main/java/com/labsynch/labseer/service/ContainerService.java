@@ -17,6 +17,7 @@ import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
+import com.labsynch.labseer.dto.ContainerCodeNameStateDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -171,5 +172,8 @@ public interface ContainerService {
 
 	List<ContainerLocationTreeDTO> getLocationTreeByRootCodeName(String rootCodeName, Boolean withContainers)
 			throws SQLException;
+
+	List<ContainerCodeNameStateDTO> saveContainerCodeNameStateDTOArray(
+			List<ContainerCodeNameStateDTO> stateDTOs) throws SQLException;
 	
 }
