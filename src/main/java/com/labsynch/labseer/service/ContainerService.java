@@ -165,5 +165,11 @@ public interface ContainerService {
 	Container getOrCreateTrash(String recordedBy) throws Exception;
 
 	Container getOrCreateBench(String recordedBy, LsTransaction lsTransaction) throws SQLException;
+
+	List<ContainerLocationTreeDTO> getLocationTreeDTO(String rootLabel, String rootCodeName,
+			List<String> breadcrumbList, Boolean withContainers) throws SQLException;
+
+	List<ContainerLocationTreeDTO> getLocationTreeByRootCodeName(String rootCodeName, Boolean withContainers)
+			throws SQLException;
 	
 }

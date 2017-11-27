@@ -71,6 +71,7 @@ import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerRequestDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
+import com.labsynch.labseer.dto.ContainerLocationTreeDTO;
 import com.labsynch.labseer.dto.ContainerMiniDTO;
 import com.labsynch.labseer.dto.ContainerStateMiniDTO;
 import com.labsynch.labseer.dto.ContainerValueRequestDTO;
@@ -1429,6 +1430,39 @@ public class ContainerLSServiceTests {
 		logger.info("Time with persist: "+(endPersist-endInsert));
 	}
 	
+	@Test
+	@Transactional
+	public void getLocationTreeDTO() throws Exception {
+		Collection<ContainerLocationTreeDTO> locationTreeDTOs;
+		String rootLabel = "COMPANY";
+		String rootCodeName = "CONT-00000001";
+		List<String> breadcrumbList = new ArrayList<String>();
+		breadcrumbList.add("COMPANY>FREEZER1>SHELF2");
+		locationTreeDTOs = containerService.getLocationTreeDTO(rootLabel, null, breadcrumbList, false);
+		Assert.assertTrue(locationTreeDTOs.size() > 0);
+		logger.info(ContainerLocationTreeDTO.toJsonArray(locationTreeDTOs));
+		locationTreeDTOs = containerService.getLocationTreeDTO(rootLabel, null, breadcrumbList, true);
+		Assert.assertTrue(locationTreeDTOs.size() > 0);
+		logger.info(ContainerLocationTreeDTO.toJsonArray(locationTreeDTOs));
+		locationTreeDTOs = containerService.getLocationTreeDTO(rootLabel, null, null, false);
+		Assert.assertTrue(locationTreeDTOs.size() > 0);
+		logger.info(ContainerLocationTreeDTO.toJsonArray(locationTreeDTOs));
+		locationTreeDTOs = containerService.getLocationTreeDTO(rootLabel, null, null, true);
+		Assert.assertTrue(locationTreeDTOs.size() > 0);
+		logger.info(ContainerLocationTreeDTO.toJsonArray(locationTreeDTOs));
+		locationTreeDTOs = containerService.getLocationTreeDTO(null, rootCodeName, breadcrumbList, false);
+		Assert.assertTrue(locationTreeDTOs.size() > 0);
+		logger.info(ContainerLocationTreeDTO.toJsonArray(locationTreeDTOs));
+		locationTreeDTOs = containerService.getLocationTreeDTO(null, rootCodeName, breadcrumbList, true);
+		Assert.assertTrue(locationTreeDTOs.size() > 0);
+		logger.info(ContainerLocationTreeDTO.toJsonArray(locationTreeDTOs));
+		locationTreeDTOs = containerService.getLocationTreeDTO(null, rootCodeName, null, false);
+		Assert.assertTrue(locationTreeDTOs.size() > 0);
+		logger.info(ContainerLocationTreeDTO.toJsonArray(locationTreeDTOs));
+		locationTreeDTOs = containerService.getLocationTreeDTO(null, rootCodeName, null, true);
+		Assert.assertTrue(locationTreeDTOs.size() > 0);
+		logger.info(ContainerLocationTreeDTO.toJsonArray(locationTreeDTOs));
+	}
 
 	
 }

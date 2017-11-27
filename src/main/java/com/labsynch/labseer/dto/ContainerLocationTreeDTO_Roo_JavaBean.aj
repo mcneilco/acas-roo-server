@@ -79,4 +79,20 @@ privileged aspect ContainerLocationTreeDTO_Roo_JavaBean {
         this.labelTextBreadcrumb = labelTextBreadcrumb;
     }
     
+    public String ContainerLocationTreeDTO.getLsType() {
+        return this.lsType;
+    }
+    
+    public void ContainerLocationTreeDTO.setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+    
+    public String ContainerLocationTreeDTO.getLsKind() {
+        return this.lsKind;
+    }
+    
+    public void ContainerLocationTreeDTO.setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+    
 }
