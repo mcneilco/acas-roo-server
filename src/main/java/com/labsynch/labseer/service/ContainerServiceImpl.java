@@ -3740,14 +3740,13 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "    code_name_bread_crumb, \n"
 					+ "    label_text_bread_crumb, \n"
 					+ "    ls_type, \n"
-					+ "    ls_kind \n"
+					+ "    ls_kind, \n"
 					+ "    cycle \n"
 					+ "FROM \n"
 					+ "    t1 ";
 					if (withBreadcrumbList){
 						queryString += "WHERE label_text_bread_crumb IN :breadcrumbList \n";
 					}
-					queryString += ";";
 		}
 		logger.debug(queryString);
 		Query q = em.createNativeQuery(queryString, "ContainerLocationTreeDTOResult");
