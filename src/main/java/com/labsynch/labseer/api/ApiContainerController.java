@@ -2,7 +2,9 @@ package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,10 +26,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ContainerLabel;
+import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
+import com.labsynch.labseer.dto.ContainerCodeNameStateDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -1052,6 +1056,47 @@ public class ApiContainerController {
 			else return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
 		} catch (Exception e){
 			logger.error("Caught exception getting location tree", e);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@RequestMapping(value = "/saveContainerStatesArray", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<java.lang.String> saveContainerStatesArray(@RequestBody String json) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json; charset=utf-8");
+		try{
+			Collection<ContainerCodeNameStateDTO> stateDTOs = ContainerCodeNameStateDTO.fromJsonArrayToContainerCoes(json);
+			List<String> codeNames = new ArrayList<String>();
+			for (ContainerCodeNameStateDTO dto : stateDTOs) {
+				codeNames.add(dto.getContainerCodeName());
+			}
+			Collection<ContainerErrorMessageDTO> codeNameLookups = containerService.getContainersByCodeNames(codeNames);
+			Collection<ContainerErrorMessageDTO> errors = new ArrayList<ContainerErrorMessageDTO>();
+			for (ContainerErrorMessageDTO containerDTO : codeNameLookups) {
+				if(containerDTO.getLevel() != null && containerDTO.getLevel().equals("error")) {
+					errors.add(containerDTO);
+				}
+			}
+			if (!errors.isEmpty()) {
+				return new ResponseEntity<String>(ContainerErrorMessageDTO.toJsonArray(errors), headers, HttpStatus.BAD_REQUEST);
+			}else {
+				Map<String, Container> containerCodeNameMap = new HashMap<String, Container>();
+				for (ContainerErrorMessageDTO dto : codeNameLookups) {
+					containerCodeNameMap.put(dto.getContainerCodeName(), dto.getContainer());
+				}
+				List<ContainerCodeNameStateDTO> stateDTOsToSave = new ArrayList<ContainerCodeNameStateDTO>();
+				for (ContainerCodeNameStateDTO stateDTO : stateDTOs) {
+					ContainerState state = stateDTO.getLsState();
+					state.setContainer(containerCodeNameMap.get(stateDTO.getContainerCodeName()));
+					ContainerCodeNameStateDTO newDTO = new ContainerCodeNameStateDTO(stateDTO.getContainerCodeName(), state);
+					stateDTOsToSave.add(newDTO);
+				}
+				Collection<ContainerCodeNameStateDTO> savedDTOs = containerService.saveContainerCodeNameStateDTOArray(stateDTOsToSave);
+				return new ResponseEntity<String>(ContainerCodeNameStateDTO.toJsonArray(savedDTOs), headers, HttpStatus.OK);
+			}
+		} catch (Exception e){
+			logger.error("Uncaught error in getContainersByCodeNames",e);
 			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
