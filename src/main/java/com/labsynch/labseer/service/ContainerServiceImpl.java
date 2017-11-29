@@ -3532,6 +3532,9 @@ public class ContainerServiceImpl implements ContainerService {
 		boolean withRootLabel = (rootLabel != null && rootLabel.length() > 0);
 		boolean withRootCodeName = (rootCodeName != null && rootCodeName.length() > 0);
 		boolean withBreadcrumbList = (breadcrumbList != null && breadcrumbList.size() > 0);
+		if (withContainers == null) {
+			withContainers = false;
+		}
 		EntityManager em = Container.entityManager();
 		String queryString = null;
 		Dialect dialect;
@@ -3770,8 +3773,8 @@ public class ContainerServiceImpl implements ContainerService {
 					+ "        t1.label_text_bread_crumb \n"
 					+ "         || '>' \n"
 					+ "         || interactions.label_text AS label_text_bread_crumb, \n"
-					+ "        t1.ls_type, \n"
-					+ "        t1.ls_kind \n"
+					+ "        interactions.ls_type, \n"
+					+ "        interactions.ls_kind \n"
 					+ "    FROM \n"
 					+ "        interactions, \n"
 					+ "        t1 \n"
