@@ -1,0 +1,1 @@
+UPDATE container_value SET ls_type_and_kind = ls_type || '_' || ls_kind WHERE ls_type_and_kind IS NULL;
