@@ -2621,7 +2621,7 @@ public class ContainerServiceImpl implements ContainerService {
 				ps.setString(4, value.getCodeKind());
 				ps.setString(5, value.getCodeOrigin());
 				ps.setString(6, value.getCodeType());
-				ps.setString(7, value.getCodeTypeAndKind());
+				ps.setString(7, value.getCodeType()+"_"+value.getCodeKind());
 				ps.setString(8, value.getCodeValue());
 				ps.setString(9, value.getComments());
 				ps.setString(10, value.getConcUnit());
@@ -2639,7 +2639,7 @@ public class ContainerServiceImpl implements ContainerService {
 				ps.setString(16, value.getLsKind());
 				ps.setLong(17, value.getLsTransaction());
 				ps.setString(18, value.getLsType());
-				ps.setString(19, value.getLsTypeAndKind());
+				ps.setString(19, value.getLsType()+"_"+value.getLsKind());
 				ps.setString(20, value.getModifiedBy());
 				if (value.getModifiedDate() != null)
 					ps.setTimestamp(21, new java.sql.Timestamp(value.getModifiedDate().getTime()));
@@ -2652,7 +2652,7 @@ public class ContainerServiceImpl implements ContainerService {
 				ps.setBigDecimal(23, value.getNumericValue());
 				ps.setString(24, value.getOperatorKind());
 				ps.setString(25, value.getOperatorType());
-				ps.setString(26, value.getOperatorTypeAndKind());
+				ps.setString(26, value.getOperatorType()+"_"+value.getOperatorKind());
 				ps.setBoolean(27, value.getPublicData());
 				ps.setString(28, value.getRecordedBy());
 				if (value.getRecordedDate() != null)
