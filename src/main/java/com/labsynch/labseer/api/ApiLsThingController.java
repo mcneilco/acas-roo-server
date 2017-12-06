@@ -618,6 +618,47 @@ public class ApiLsThingController {
 		return getLsThingByIdCodeName(lsThing.getLsType(), lsThing.getLsKind(), lsThing.getId().toString(), "nestedstub");
 
 	}
+	
+	
+	@RequestMapping(value="/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
+	public ResponseEntity<String> updateFromJsonArray(@RequestParam(value="with", required = false) String with,
+			@RequestBody String json) {
+		//headers and setup
+		logger.debug("----from the LsThing PUT jsonArray controller----");
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		ArrayList<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+		boolean errorsFound = false;
+		Collection<LsThing> lsThings = LsThing.fromJsonArrayToLsThings(json);
+		Collection<LsThing> savedLsThings = new ArrayList<LsThing>();
+		for (LsThing lsThing : lsThings){
+			try {
+				lsThing = lsThingService.updateLsThing(lsThing);
+				savedLsThings.add(lsThing);
+			} catch (Exception e) {
+				logger.error("Error in update LsThings jsonArray",e);
+				ErrorMessage error = new ErrorMessage();
+				error.setErrorLevel("error");
+				error.setMessage("internal error occurred while trying to update lsThing");
+				errors.add(error);
+				errorsFound = true;
+			}
+		}
+		if (errorsFound) {
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.CONFLICT);
+		}else if (with != null) {
+			if (with.equalsIgnoreCase("nestedfull")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(savedLsThings), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("prettyjson")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayPretty(savedLsThings), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("nestedstub")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(savedLsThings), headers, HttpStatus.OK);
+			} else if (with.equalsIgnoreCase("stub")) {
+				return new ResponseEntity<String>(LsThing.toJsonArrayStub(savedLsThings), headers, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<String>(LsThing.toJsonArray(savedLsThings), headers, HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/gene/v1/loadGeneEntities", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> loadGeneEntities(@RequestParam(value = "fileName", required = true) String fileName) {

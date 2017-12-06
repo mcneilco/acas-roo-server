@@ -45,5 +45,11 @@ public interface PropertiesUtilService {
 
 	String getChemistryPackage();
 
+	String getRootLocationLabel();
+
+	String getTrashLocationLabel();
+
+	String getBenchesLocationLabel();
+
 	
 }

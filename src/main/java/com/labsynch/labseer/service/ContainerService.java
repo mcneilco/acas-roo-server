@@ -12,10 +12,12 @@ import com.labsynch.labseer.domain.ContainerLabel;
 import com.labsynch.labseer.domain.ContainerState;
 import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.dto.CodeLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.ContainerBrowserQueryDTO;
+import com.labsynch.labseer.dto.ContainerCodeNameStateDTO;
 import com.labsynch.labseer.dto.ContainerDependencyCheckDTO;
 import com.labsynch.labseer.dto.ContainerErrorMessageDTO;
 import com.labsynch.labseer.dto.ContainerLocationDTO;
@@ -158,5 +160,20 @@ public interface ContainerService {
 
 	List<ContainerLocationTreeDTO> getLocationTreeByRootLabel(String rootLabel, Boolean withContainers)
 			throws SQLException;
+
+	List<ContainerLocationTreeDTO> getLocationCodeByLabelBreadcrumbByRecursiveQuery(String rootLabel, List<String> breadcrumbList) throws SQLException;
+
+	Container getOrCreateTrash(String recordedBy) throws Exception;
+
+	Container getOrCreateBench(String recordedBy, LsTransaction lsTransaction) throws SQLException;
+
+	List<ContainerLocationTreeDTO> getLocationTreeDTO(String rootLabel, String rootCodeName,
+			List<String> breadcrumbList, Boolean withContainers) throws SQLException;
+
+	List<ContainerLocationTreeDTO> getLocationTreeByRootCodeName(String rootCodeName, Boolean withContainers)
+			throws SQLException;
+
+	List<ContainerCodeNameStateDTO> saveContainerCodeNameStateDTOArray(
+			List<ContainerCodeNameStateDTO> stateDTOs) throws SQLException;
 	
 }
