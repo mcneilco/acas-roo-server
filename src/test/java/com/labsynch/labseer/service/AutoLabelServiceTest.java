@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +70,7 @@ public class AutoLabelServiceTest {
 			theSequence.setLabelPrefix("DD");
 			theSequence.setLabelSeparator("-");
 			theSequence.setLabelTypeAndKind("id_codeName");
-			theSequence.setLatestNumber(0L);
+			theSequence.setStartingNumber(0L);
 			theSequence.setModifiedDate((new Date()));
 			theSequence.setThingTypeAndKind("document_test");
 			theSequence.setVersion(0);
@@ -88,5 +89,33 @@ public class AutoLabelServiceTest {
 		Long numberOfLabels = 3L;
 		List<AutoLabelDTO> labels = autoLabelService.getAutoLabels(thingTypeAndKind, labelTypeAndKind, numberOfLabels );
 		logger.debug("label Count: " + labels.size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(value=false)
+	public void createNewSequence() {
+		LabelSequence newSeq = new LabelSequence();
+		newSeq.setLabelPrefix("TEST");
+		newSeq.setDigits(6);
+		newSeq.setLabelSeparator("-");
+		newSeq.setLabelTypeAndKind("id_corpName");
+		newSeq.setThingTypeAndKind("compound_parent");
+		newSeq.setStartingNumber(1L);
+		newSeq.setDbSequence("test_creg_seq");
+		newSeq.save();
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(value=false)
+	public void incrementSequence() {
+		LabelSequence testSeq = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals("compound_parent", "id_corpName").getSingleResult();
+		AutoLabelDTO testLabel = testSeq.generateNextLabel();
+		logger.info(testLabel.getAutoLabel());
+		List<AutoLabelDTO> testLabels = testSeq.generateNextLabels(100L);
+		for (AutoLabelDTO label : testLabels) {
+			logger.info(label.getAutoLabel());
+		}
 	}
 }

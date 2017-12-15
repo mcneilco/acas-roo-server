@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_CronJob" items="${cronjobs}" z="cFbEXsC/Zht35DAYq1XQzgjI4E8=">
+        <table:table data="${cronjobs}" id="l_com_labsynch_labseer_domain_CronJob" path="/cronjobs" z="sjBBGarow9ojbEeMydeJ42qbMGE=">
+            <table:column id="c_com_labsynch_labseer_domain_CronJob_schedule" property="schedule" z="r6j51dcww6d2WWMUQZszlN7Kn0M="/>
+            <table:column id="c_com_labsynch_labseer_domain_CronJob_scriptType" property="scriptType" z="bjQIST0edZ6LPNqXS3vNzzuPTno="/>
+            <table:column id="c_com_labsynch_labseer_domain_CronJob_scriptFile" property="scriptFile" z="PIQnm6cdD8ET9a+MkKfusyf31rY="/>
+            <table:column id="c_com_labsynch_labseer_domain_CronJob_functionName" property="functionName" z="Lil2m4Jtctn738MVagD2NaD+Izk="/>
+            <table:column id="c_com_labsynch_labseer_domain_CronJob_scriptJSONData" property="scriptJSONData" z="1boWl8n/hSA0vyq0gATMAHo5YcU="/>
+            <table:column id="c_com_labsynch_labseer_domain_CronJob_active" property="active" z="7oUpaFfmMUKLhsRgWWZXlK6b7BU="/>
+        </table:table>
+    </page:list>
+</div>

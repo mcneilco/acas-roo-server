@@ -12,6 +12,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 privileged aspect LsRoleController_Roo_Controller_Finder {
     
+    @RequestMapping(params = { "find=ByLsKindEquals", "form" }, method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsKindEqualsForm(Model uiModel) {
+        return "lsroles/findLsRolesByLsKindEquals";
+    }
+    
+    @RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET)
+    public String LsRoleController.findLsRolesByLsKindEquals(@RequestParam("lsKind") String lsKind, Model uiModel) {
+        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsKindEquals(lsKind).getResultList());
+        return "lsroles/list";
+    }
+    
     @RequestMapping(params = { "find=ByLsTypeEquals", "form" }, method = RequestMethod.GET)
     public String LsRoleController.findLsRolesByLsTypeEqualsForm(Model uiModel) {
         return "lsroles/findLsRolesByLsTypeEquals";

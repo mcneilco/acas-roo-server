@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_AuthorState" items="${authorstates}" z="DoVtWKUw2W615UtxkJ7tD9+vxsQ=">
+        <table:table data="${authorstates}" id="l_com_labsynch_labseer_domain_AuthorState" path="/authorstates" z="MjCB6cwKNPK047Y60zpGAEXVI54=">
+            <table:column id="c_com_labsynch_labseer_domain_AuthorState_recordedBy" property="recordedBy" z="c8ZqM6Ww6ZnvJhmoodo83fc8ZxE="/>
+            <table:column date="true" dateTimePattern="${authorState_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_AuthorState_recordedDate" property="recordedDate" z="8h36d+Ahy82SzCEIxzasXzUyaUg="/>
+            <table:column id="c_com_labsynch_labseer_domain_AuthorState_modifiedBy" property="modifiedBy" z="NYYO12pYQJGzD7JF8P2+WmN1JUE="/>
+            <table:column date="true" dateTimePattern="${authorState_modifieddate_date_format}" id="c_com_labsynch_labseer_domain_AuthorState_modifiedDate" property="modifiedDate" z="OUv7/3pg2FwCEVfsHmcYp52vMIM="/>
+            <table:column id="c_com_labsynch_labseer_domain_AuthorState_lsType" property="lsType" z="xFRHqRLgUSJ6tB+8Yo4NwtBw1aI="/>
+            <table:column id="c_com_labsynch_labseer_domain_AuthorState_lsKind" property="lsKind" z="Tffd7oCRXmfbusrBoIUYmx76XXU="/>
+        </table:table>
+    </page:list>
+</div>

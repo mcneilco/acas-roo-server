@@ -246,4 +246,39 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public String getChemistryPackage() {
 	    return this.chemistryPackage;
 	}
+	
+	String rootLocationLabel;
+	@Value("${client.compoundInventory.rootLocationLabel}")
+	public void setRootLocationLabel(String rootLocationLabel) {
+		this.rootLocationLabel = rootLocationLabel;
+		if (this.rootLocationLabel.startsWith("${")) this.rootLocationLabel = null;
+	}
+	
+	@Override
+	public String getRootLocationLabel() {
+	    return this.rootLocationLabel;
+	}
+	
+	String trashLocationLabel;
+	@Value("${client.compoundInventory.trashLocationLabel}")
+	public void setTrashLocationLabel(String trashLocationLabel) {
+		this.trashLocationLabel = trashLocationLabel;
+		if (this.trashLocationLabel.startsWith("${")) this.trashLocationLabel = null;
+	}
+	
+	@Override
+	public String getTrashLocationLabel() {
+	    return this.trashLocationLabel;
+	}
+	String benchesLocationLabel;
+	@Value("${client.compoundInventory.benchesLocationLabel}")
+	public void setBenchesLocationLabel(String benchesLocationLabel) {
+		this.benchesLocationLabel = benchesLocationLabel;
+		if (this.benchesLocationLabel.startsWith("${")) this.benchesLocationLabel = null;
+	}
+	
+	@Override
+	public String getBenchesLocationLabel() {
+	    return this.benchesLocationLabel;
+	}
 }

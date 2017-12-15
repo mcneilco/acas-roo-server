@@ -7,10 +7,11 @@
         <field:display field="labelSeparator" id="s_com_labsynch_labseer_domain_LabelSequence_labelSeparator" object="${labelsequence}" z="7ZLArn2sKOtTJ3lePQO1dLktGfU="/>
         <field:display field="groupDigits" id="s_com_labsynch_labseer_domain_LabelSequence_groupDigits" object="${labelsequence}" z="ESepVZ5TuVC8X8kECey1Ir109Ec="/>
         <field:display field="digits" id="s_com_labsynch_labseer_domain_LabelSequence_digits" object="${labelsequence}" z="qahXAm8NE4rblryYanVwJg/Sarg="/>
-        <field:display field="latestNumber" id="s_com_labsynch_labseer_domain_LabelSequence_latestNumber" object="${labelsequence}" z="2utgWvty0oxca90EDvOm5RxI/eU="/>
         <field:display field="ignored" id="s_com_labsynch_labseer_domain_LabelSequence_ignored" object="${labelsequence}" z="utr0ryzTkBHuXlQBF9ObwOxLY4E="/>
         <field:display date="true" dateTimePattern="${labelSequence_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_LabelSequence_modifiedDate" object="${labelsequence}" z="7+8zlKtMYFAwxls+1Q3Qj7q00z4="/>
         <field:display field="thingTypeAndKind" id="s_com_labsynch_labseer_domain_LabelSequence_thingTypeAndKind" object="${labelsequence}" z="+6pCbCSk25bdZFf+0KzMyUV6UmQ="/>
         <field:display field="labelTypeAndKind" id="s_com_labsynch_labseer_domain_LabelSequence_labelTypeAndKind" object="${labelsequence}" z="pqTXUfJSAsrStcp1Hz00vCtsuWo="/>
+        <field:display field="dbSequence" id="s_com_labsynch_labseer_domain_LabelSequence_dbSequence" object="${labelsequence}" z="cALGZLtsOiAb2D6mes5U2P+ZifY="/>
+        <field:display field="startingNumber" id="s_com_labsynch_labseer_domain_LabelSequence_startingNumber" object="${labelsequence}" z="HF3edMlamBOMLWpv8aj8mrBgsFQ="/>
     </page:show>
 </div>

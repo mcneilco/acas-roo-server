@@ -5,13 +5,10 @@ import com.labsynch.labseer.domain.LsRole;
 import com.labsynch.labseer.domain.RoleKind;
 import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.service.AnalysisGroupServiceImpl;
-
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -39,11 +36,9 @@ import org.springframework.web.util.WebUtils;
 @RooWebFinder
 public class LsRoleController {
 
-	
-	private static final Logger logger = LoggerFactory.getLogger(LsRoleController.class);
+    private static final Logger logger = LoggerFactory.getLogger(LsRoleController.class);
 
-
-	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
+    @RequestMapping(method = RequestMethod.POST, produces = "text/html")
     public String create(@Valid LsRole lsRole, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             populateEditForm(uiModel, lsRole);
@@ -54,7 +49,7 @@ public class LsRoleController {
         return "redirect:/lsroles/" + encodeUrlPathSegment(lsRole.getId().toString(), httpServletRequest);
     }
 
-	@RequestMapping(params = "form", produces = "text/html")
+    @RequestMapping(params = "form", produces = "text/html")
     public String createForm(Model uiModel) {
         populateEditForm(uiModel, new LsRole());
         uiModel.addAttribute("lstypes", RoleType.findAllRoleTypes());
@@ -62,14 +57,14 @@ public class LsRoleController {
         return "lsroles/create";
     }
 
-	@RequestMapping(value = "/{id}", produces = "text/html")
+    @RequestMapping(value = "/{id}", produces = "text/html")
     public String show(@PathVariable("id") Long id, Model uiModel) {
         uiModel.addAttribute("lsrole", LsRole.findLsRole(id));
         uiModel.addAttribute("itemId", id);
         return "lsroles/show";
     }
 
-	@RequestMapping(produces = "text/html")
+    @RequestMapping(produces = "text/html")
     public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
@@ -83,7 +78,7 @@ public class LsRoleController {
         return "lsroles/list";
     }
 
-	@RequestMapping(method = RequestMethod.PUT, produces = "text/html")
+    @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
     public String update(@Valid LsRole lsRole, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {
             populateEditForm(uiModel, lsRole);
@@ -94,13 +89,13 @@ public class LsRoleController {
         return "redirect:/lsroles/" + encodeUrlPathSegment(lsRole.getId().toString(), httpServletRequest);
     }
 
-	@RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    @RequestMapping(value = "/{id}", params = "form", produces = "text/html")
     public String updateForm(@PathVariable("id") Long id, Model uiModel) {
         populateEditForm(uiModel, LsRole.findLsRole(id));
         return "lsroles/update";
     }
 
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
     public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
         LsRole lsRole = LsRole.findLsRole(id);
         lsRole.remove();
@@ -110,22 +105,22 @@ public class LsRoleController {
         return "redirect:/lsroles";
     }
 
-	void populateEditForm(Model uiModel, LsRole lsRole) {
+    void populateEditForm(Model uiModel, LsRole lsRole) {
         uiModel.addAttribute("lsRole", lsRole);
-        uiModel.addAttribute("authorroles", AuthorRole.findAllAuthorRoles());       
+        uiModel.addAttribute("authorroles", AuthorRole.findAllAuthorRoles());
         uiModel.addAttribute("collectiontypes", RoleType.findAllRoleTypes());
         uiModel.addAttribute("collectionkinds", RoleKind.findAllRoleKinds());
-
     }
 
-	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
+    String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
         String enc = httpServletRequest.getCharacterEncoding();
         if (enc == null) {
             enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
         }
         try {
             pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
-        } catch (UnsupportedEncodingException uee) {}
+        } catch (UnsupportedEncodingException uee) {
+        }
         return pathSegment;
     }
 }

@@ -33,6 +33,8 @@ import flexjson.JSONSerializer;
 public class ItxContainerContainerState extends AbstractState {
 
     public ItxContainerContainerState(ItxContainerContainerState itxState) {
+    		super.setLsType(itxState.getLsType());
+    		super.setLsKind(itxState.getLsKind());
 		super.setRecordedBy(itxState.getRecordedBy());
 		super.setRecordedDate(itxState.getRecordedDate());
 		super.setLsTransaction(itxState.getLsTransaction());
