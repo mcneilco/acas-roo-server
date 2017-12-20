@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<groupId>com.labsynch.labseer</groupId>
 	<artifactId>acas</artifactId>
 	<packaging>war</packaging>
-	<version>1.12.1-RC</version>
+	<version>1.13-BUILD-SNAPSHOT</version>
 	<description>ACAS Java persistence layer</description>
 	<properties>
 		<aspectj.version>1.8.10</aspectj.version>
