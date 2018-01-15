@@ -69,7 +69,7 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 		//delete the roles that no longer apply
 		Set<AuthorRole> removedAuthorRoles = new HashSet<AuthorRole>();
 		for (String roleName : roleNamesToDelete){
-			LsRole role = LsRole.findLsRolesByRoleNameEquals(roleName).getSingleResult();
+			LsRole role = LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals("LDAP", roleName).getSingleResult();
 			AuthorRole authorRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(role, author).getSingleResult();
 			author.getAuthorRoles().remove(authorRole);
 			authorRole.remove();
