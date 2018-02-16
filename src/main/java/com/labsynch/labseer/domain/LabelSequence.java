@@ -95,17 +95,24 @@ public class LabelSequence {
 				}
 			}
 		}
-		//first create the database sequence, then persist the object
 		if (this.getDbSequence() == null) {
-			String dbSequence = "labelseq_"+this.getLabelPrefix()+"_"+this.getLabelTypeAndKind()+"_"+this.getThingTypeAndKind();
+			//set to temp sequence first so we can persist, get and id and then use the id to create a unique sequence name
+			this.setDbSequence("tempseq");
+			this.persist();
+			String dbSequence = "labelseq_"+this.getId()+"_"+this.getLabelPrefix()+"_"+this.getLabelTypeAndKind()+"_"+this.getThingTypeAndKind();
 			dbSequence = dbSequence.replaceAll("[^a-zA-Z0-9_]+", "_");
+			//Limit to 30 characters to be compatible with Oracle Version <= 12.1
+			dbSequence = dbSequence.substring(0, 30); 
+			int MAX_CHAR = 30;
+			int maxLength = (dbSequence.length() < MAX_CHAR)?dbSequence.length():MAX_CHAR;
+			dbSequence = dbSequence.substring(0, maxLength);
 			this.setDbSequence(dbSequence);
 		}
 		if (this.getStartingNumber() < 1L) this.setStartingNumber(1L);
 		EntityManager em = LabelSequence.entityManager();
 		Query q = em.createNativeQuery("CREATE SEQUENCE "+this.dbSequence+" START WITH "+this.getStartingNumber());
 		q.executeUpdate();
-		this.persist();
+		this.merge();
 		return this;
 	}
 
