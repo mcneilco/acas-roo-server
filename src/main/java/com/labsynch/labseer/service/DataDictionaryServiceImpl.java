@@ -41,7 +41,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		logger.debug("boolean flag = " + createTypeAndKind);
 		if (dDictVals.size() == 0){
 			if (createTypeAndKind){
-				logger.info("attemp to create type and kind");
+				logger.info("attempting to create type and kind");
 				getOrCreateDDictType(dDict.getLsType());
 				getOrCreateDDictKind(dDict.getLsType(), dDict.getLsKind());
 			}
