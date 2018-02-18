@@ -1,6 +1,7 @@
 package com.labsynch.labseer.domain;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +23,6 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.MySQLDialect;
 import org.hibernate.dialect.OracleDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
@@ -95,21 +95,34 @@ public class LabelSequence {
 				}
 			}
 		}
+		EntityManager em = LabelSequence.entityManager();
 		if (this.getDbSequence() == null) {
 			//set to temp sequence first so we can persist, get and id and then use the id to create a unique sequence name
 			this.setDbSequence("tempseq");
 			this.persist();
 			String dbSequence = "labelseq_"+this.getId()+"_"+this.getLabelPrefix()+"_"+this.getLabelTypeAndKind()+"_"+this.getThingTypeAndKind();
 			dbSequence = dbSequence.replaceAll("[^a-zA-Z0-9_]+", "_");
-			//Limit to 30 characters to be compatible with Oracle Version <= 12.1
-			dbSequence = dbSequence.substring(0, 30); 
-			int MAX_CHAR = 30;
-			int maxLength = (dbSequence.length() < MAX_CHAR)?dbSequence.length():MAX_CHAR;
-			dbSequence = dbSequence.substring(0, maxLength);
-			this.setDbSequence(dbSequence);
+			//Limit to 30 characters to be compatible with Oracle Version <= 12.1 if applicable
+			String databaseType = null;
+			Float databaseVersion = 0.0f;
+			try{
+				org.hibernate.engine.spi.SessionImplementor sessionImp = 
+					     (org.hibernate.engine.spi.SessionImplementor) em.getDelegate();
+				DatabaseMetaData metadata = sessionImp.connection().getMetaData();
+				databaseType = metadata.getDatabaseProductName();
+				databaseVersion = Float.parseFloat(metadata.getDatabaseMajorVersion()+"."+metadata.getDatabaseMinorVersion());
+			}catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(databaseType.equalsIgnoreCase("Oracle") && (databaseVersion < 12.2f)) {
+				int MAX_CHAR = 30;
+				int maxLength = (dbSequence.length() < MAX_CHAR)?dbSequence.length():MAX_CHAR;
+				dbSequence = dbSequence.substring(0, maxLength);
+				this.setDbSequence(dbSequence);
+			}
 		}
 		if (this.getStartingNumber() < 1L) this.setStartingNumber(1L);
-		EntityManager em = LabelSequence.entityManager();
 		Query q = em.createNativeQuery("CREATE SEQUENCE "+this.dbSequence+" START WITH "+this.getStartingNumber());
 		q.executeUpdate();
 		this.merge();
