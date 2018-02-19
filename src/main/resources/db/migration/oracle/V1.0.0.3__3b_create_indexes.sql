@@ -1,8 +1,5 @@
 --more indexes for FKs and other
 
-CREATE UNIQUE INDEX EXPT_LABEL_UNIQ ON EXPERIMENT_LABEL (LS_TYPE_AND_KIND, LABEL_TEXT, IGNORED);
-CREATE UNIQUE INDEX PROT_LABEL_UNIQ ON PROTOCOL_LABEL (LS_TYPE_AND_KIND, LABEL_TEXT, IGNORED);
-
 create index expt_label_txt_idx ON experiment_label(label_text);
 create index prot_label_txt_idx ON protocol_label(label_text);
 create index cont_label_txt_idx ON container_label(label_text);
