@@ -119,8 +119,8 @@ public class LabelSequence {
 				int MAX_CHAR = 30;
 				int maxLength = (dbSequence.length() < MAX_CHAR)?dbSequence.length():MAX_CHAR;
 				dbSequence = dbSequence.substring(0, maxLength);
-				this.setDbSequence(dbSequence);
 			}
+			this.setDbSequence(dbSequence);
 		}
 		if (this.getStartingNumber() < 1L) this.setStartingNumber(1L);
 		Query q = em.createNativeQuery("CREATE SEQUENCE "+this.dbSequence+" START WITH "+this.getStartingNumber());
