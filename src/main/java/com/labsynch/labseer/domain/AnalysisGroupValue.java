@@ -354,7 +354,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
 		+ "JOIN ag.experiments expt with expt.ignored = false " 
 		+ "JOIN expt.protocol prot with prot.ignored = false "
-        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false "
+        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
 		+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 				+ "WHERE ag.ignored = false  "
 				+ "AND agv2.codeValue IN (:batchCodeList) " + "AND expt.codeName IN  (:experimentCodeList) and expt.ignored = false";
@@ -406,7 +406,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		+ "JOIN ag.experiments expt with expt.ignored = false " 
 		+ "LEFT OUTER JOIN expt.protocol prot with prot.ignored = false "
 		+ "JOIN expt.protocol prot with prot.ignored = false "
-        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false "
+        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
 		+ "LEFT OUTER JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 		+ "WHERE ag.ignored = false AND agv.publicData = :publicData ";
 		if (!batchCodeList.isEmpty()) {
@@ -459,7 +459,7 @@ public class AnalysisGroupValue extends AbstractValue {
 		+ "JOIN ag.experiments expt with expt.ignored = false " 
 		+ "LEFT OUTER JOIN expt.protocol prot with prot.ignored = false "
 		+ "JOIN expt.protocol prot with prot.ignored = false "
-        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false "
+        + "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
 		+ "LEFT OUTER JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 //        + "JOIN TempSelectTable tst with tst.lsTransaction = :transactionId "
 		+ "WHERE ag.ignored = false "
@@ -510,7 +510,7 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
 				+ "JOIN ag.experiments expt with expt.ignored = false " 
 				+ "JOIN expt.protocol prot with prot.ignored = false "
-				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false "
+				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
 				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 				+ "WHERE ag.ignored = false  "
 				+ "AND agv2.codeValue IN (:batchCodeList) " + "AND expt.codeName IN  (:experimentCodeList) and expt.ignored = false";
@@ -546,7 +546,7 @@ public class AnalysisGroupValue extends AbstractValue {
 				+ "LEFT OUTER JOIN ags.lsValues agv3 with agv3.lsKind = 'time' and agv3.ignored = false "
 				+ "JOIN ag.experiments expt with expt.ignored = false " 
 				+ "JOIN expt.protocol prot with prot.ignored = false "
-				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false "
+				+ "JOIN prot.lsLabels protLabel with protLabel.ignored = false and protLabel.preferred = true "
 				+ "JOIN expt.lsLabels el with el.lsType = 'name' and el.lsKind = 'experiment name' and el.preferred = true and el.ignored = false " 
 				+ "WHERE ag.ignored = false AND agv.publicData = :publicData "
 				+ "AND expt.codeName IN  (:experimentCodeList) and expt.ignored = false";
