@@ -84,11 +84,16 @@ public class SecurityUtils {
 			int endIndex = dn.indexOf(",");
 			String fullName = dn.substring(beginIndex, endIndex);
 			logger.debug("fullName: " + fullName);
-			String firstName = fullName.split(" ",2)[0];
-			String lastName = fullName.split(" ",2)[1];
+			try {
+				String firstName = fullName.split(" ",2)[0];
+				String lastName = fullName.split(" ",2)[1];
+				author.setFirstName(firstName);
+				author.setLastName(lastName);
+			} catch(Exception e) {
+				author.setFirstName(principalUserName);
+				author.setLastName(principalUserName);
+			}
 			author.setUserName(principalUserName);
-			author.setFirstName(firstName);
-			author.setLastName(lastName);
 			author.setEmailAddress(principalUserName);
 			author.setPassword(principalUserName);
 			author.setRecordedBy("acas");
