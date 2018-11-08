@@ -13,15 +13,23 @@ import java.util.List;
 privileged aspect ContainerDependencyCheckDTO_Roo_Json {
     
     public static ContainerDependencyCheckDTO ContainerDependencyCheckDTO.fromJsonToContainerDependencyCheckDTO(String json) {
-        return new JSONDeserializer<ContainerDependencyCheckDTO>().use(null, ContainerDependencyCheckDTO.class).deserialize(json);
+        return new JSONDeserializer<ContainerDependencyCheckDTO>()
+        .use(null, ContainerDependencyCheckDTO.class).deserialize(json);
     }
     
     public static String ContainerDependencyCheckDTO.toJsonArray(Collection<ContainerDependencyCheckDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ContainerDependencyCheckDTO.toJsonArray(Collection<ContainerDependencyCheckDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ContainerDependencyCheckDTO> ContainerDependencyCheckDTO.fromJsonArrayToCoes(String json) {
-        return new JSONDeserializer<List<ContainerDependencyCheckDTO>>().use(null, ArrayList.class).use("values", ContainerDependencyCheckDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerDependencyCheckDTO>>()
+        .use("values", ContainerDependencyCheckDTO.class).deserialize(json);
     }
     
 }

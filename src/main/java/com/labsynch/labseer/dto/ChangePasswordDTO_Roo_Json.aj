@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ChangePasswordDTO_Roo_Json {
     
     public String ChangePasswordDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ChangePasswordDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ChangePasswordDTO ChangePasswordDTO.fromJsonToChangePasswordDTO(String json) {
-        return new JSONDeserializer<ChangePasswordDTO>().use(null, ChangePasswordDTO.class).deserialize(json);
+        return new JSONDeserializer<ChangePasswordDTO>()
+        .use(null, ChangePasswordDTO.class).deserialize(json);
     }
     
     public static String ChangePasswordDTO.toJsonArray(Collection<ChangePasswordDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ChangePasswordDTO.toJsonArray(Collection<ChangePasswordDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ChangePasswordDTO> ChangePasswordDTO.fromJsonArrayToChangePasswoes(String json) {
-        return new JSONDeserializer<List<ChangePasswordDTO>>().use(null, ArrayList.class).use("values", ChangePasswordDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ChangePasswordDTO>>()
+        .use("values", ChangePasswordDTO.class).deserialize(json);
     }
     
 }

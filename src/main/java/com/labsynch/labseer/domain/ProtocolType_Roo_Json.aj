@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ProtocolType_Roo_Json {
     
     public String ProtocolType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ProtocolType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ProtocolType ProtocolType.fromJsonToProtocolType(String json) {
-        return new JSONDeserializer<ProtocolType>().use(null, ProtocolType.class).deserialize(json);
+        return new JSONDeserializer<ProtocolType>()
+        .use(null, ProtocolType.class).deserialize(json);
     }
     
     public static String ProtocolType.toJsonArray(Collection<ProtocolType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ProtocolType.toJsonArray(Collection<ProtocolType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ProtocolType> ProtocolType.fromJsonArrayToProtocolTypes(String json) {
-        return new JSONDeserializer<List<ProtocolType>>().use(null, ArrayList.class).use("values", ProtocolType.class).deserialize(json);
+        return new JSONDeserializer<List<ProtocolType>>()
+        .use("values", ProtocolType.class).deserialize(json);
     }
     
 }

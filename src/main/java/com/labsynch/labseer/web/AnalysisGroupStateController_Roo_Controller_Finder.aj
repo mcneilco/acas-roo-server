@@ -20,8 +20,17 @@ privileged aspect AnalysisGroupStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByAnalysisGroup", method = RequestMethod.GET)
-    public String AnalysisGroupStateController.findAnalysisGroupStatesByAnalysisGroup(@RequestParam("analysisGroup") AnalysisGroup analysisGroup, Model uiModel) {
-        uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroup(analysisGroup).getResultList());
+    public String AnalysisGroupStateController.findAnalysisGroupStatesByAnalysisGroup(@RequestParam("analysisGroup") AnalysisGroup analysisGroup, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroup(analysisGroup, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AnalysisGroupState.countFindAnalysisGroupStatesByAnalysisGroup(analysisGroup) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroup(analysisGroup, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "analysisgroupstates/list";
     }
     
@@ -32,8 +41,17 @@ privileged aspect AnalysisGroupStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot", method = RequestMethod.GET)
-    public String AnalysisGroupStateController.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(@RequestParam("analysisGroup") AnalysisGroup analysisGroup, @RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(analysisGroup, lsType, lsKind, ignored).getResultList());
+    public String AnalysisGroupStateController.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(@RequestParam("analysisGroup") AnalysisGroup analysisGroup, @RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(analysisGroup, lsType, lsKind, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AnalysisGroupState.countFindAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(analysisGroup, lsType, lsKind, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByAnalysisGroupAndLsTypeEqualsAndLsKindEqualsAndIgnoredNot(analysisGroup, lsType, lsKind, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "analysisgroupstates/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect AnalysisGroupStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String AnalysisGroupStateController.findAnalysisGroupStatesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTransactionEquals(lsTransaction).getResultList());
+    public String AnalysisGroupStateController.findAnalysisGroupStatesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AnalysisGroupState.countFindAnalysisGroupStatesByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "analysisgroupstates/list";
     }
     
@@ -54,8 +81,17 @@ privileged aspect AnalysisGroupStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeAndKindEquals", method = RequestMethod.GET)
-    public String AnalysisGroupStateController.findAnalysisGroupStatesByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind, Model uiModel) {
-        uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTypeAndKindEquals(lsTypeAndKind).getResultList());
+    public String AnalysisGroupStateController.findAnalysisGroupStatesByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTypeAndKindEquals(lsTypeAndKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AnalysisGroupState.countFindAnalysisGroupStatesByLsTypeAndKindEquals(lsTypeAndKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTypeAndKindEquals(lsTypeAndKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "analysisgroupstates/list";
     }
     
@@ -65,8 +101,17 @@ privileged aspect AnalysisGroupStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
-    public String AnalysisGroupStateController.findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+    public String AnalysisGroupStateController.findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AnalysisGroupState.countFindAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals(lsType, lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("analysisgroupstates", AnalysisGroupState.findAnalysisGroupStatesByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "analysisgroupstates/list";
     }
     

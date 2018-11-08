@@ -18,8 +18,16 @@ privileged aspect LsRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET)
-    public String LsRoleController.findLsRolesByLsKindEquals(@RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsKindEquals(lsKind).getResultList());
+    public String LsRoleController.findLsRolesByLsKindEquals(@RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsKindEquals(lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsRole.countFindLsRolesByLsKindEquals(lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsKindEquals(lsKind, sortFieldName, sortOrder).getResultList());
+        }
         return "lsroles/list";
     }
     
@@ -29,8 +37,16 @@ privileged aspect LsRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET)
-    public String LsRoleController.findLsRolesByLsTypeEquals(@RequestParam("lsType") String lsType, Model uiModel) {
-        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEquals(lsType).getResultList());
+    public String LsRoleController.findLsRolesByLsTypeEquals(@RequestParam("lsType") String lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEquals(lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsRole.countFindLsRolesByLsTypeEquals(lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEquals(lsType, sortFieldName, sortOrder).getResultList());
+        }
         return "lsroles/list";
     }
     
@@ -40,8 +56,16 @@ privileged aspect LsRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
-    public String LsRoleController.findLsRolesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsRole.countFindLsRolesByLsTypeEqualsAndLsKindEquals(lsType, lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).getResultList());
+        }
         return "lsroles/list";
     }
     
@@ -51,8 +75,16 @@ privileged aspect LsRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals", method = RequestMethod.GET)
-    public String LsRoleController.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("roleName") String roleName, Model uiModel) {
-        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(lsType, lsKind, roleName).getResultList());
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("roleName") String roleName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(lsType, lsKind, roleName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsRole.countFindLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(lsType, lsKind, roleName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(lsType, lsKind, roleName, sortFieldName, sortOrder).getResultList());
+        }
         return "lsroles/list";
     }
     
@@ -62,8 +94,16 @@ privileged aspect LsRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndRoleNameEquals", method = RequestMethod.GET)
-    public String LsRoleController.findLsRolesByLsTypeEqualsAndRoleNameEquals(@RequestParam("lsType") String lsType, @RequestParam("roleName") String roleName, Model uiModel) {
-        uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals(lsType, roleName).getResultList());
+    public String LsRoleController.findLsRolesByLsTypeEqualsAndRoleNameEquals(@RequestParam("lsType") String lsType, @RequestParam("roleName") String roleName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals(lsType, roleName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsRole.countFindLsRolesByLsTypeEqualsAndRoleNameEquals(lsType, roleName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals(lsType, roleName, sortFieldName, sortOrder).getResultList());
+        }
         return "lsroles/list";
     }
     
@@ -73,8 +113,16 @@ privileged aspect LsRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByRoleNameEquals", method = RequestMethod.GET)
-    public String LsRoleController.findLsRolesByRoleNameEquals(@RequestParam("roleName") String roleName, Model uiModel) {
-        uiModel.addAttribute("lsroles", LsRole.findLsRolesByRoleNameEquals(roleName).getResultList());
+    public String LsRoleController.findLsRolesByRoleNameEquals(@RequestParam("roleName") String roleName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByRoleNameEquals(roleName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsRole.countFindLsRolesByRoleNameEquals(roleName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsroles", LsRole.findLsRolesByRoleNameEquals(roleName, sortFieldName, sortOrder).getResultList());
+        }
         return "lsroles/list";
     }
     

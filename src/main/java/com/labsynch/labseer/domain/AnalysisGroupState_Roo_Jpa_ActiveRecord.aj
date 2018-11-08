@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect AnalysisGroupState_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> AnalysisGroupState.fieldNames4OrderClauseFilter = java.util.Arrays.asList("analysisGroup", "lsValues");
+    
     public static long AnalysisGroupState.countAnalysisGroupStates() {
         return entityManager().createQuery("SELECT COUNT(o) FROM AnalysisGroupState o", Long.class).getSingleResult();
     }
     
     public static List<AnalysisGroupState> AnalysisGroupState.findAllAnalysisGroupStates() {
         return entityManager().createQuery("SELECT o FROM AnalysisGroupState o", AnalysisGroupState.class).getResultList();
+    }
+    
+    public static List<AnalysisGroupState> AnalysisGroupState.findAllAnalysisGroupStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroupState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroupState.class).getResultList();
     }
     
     public static AnalysisGroupState AnalysisGroupState.findAnalysisGroupState(Long id) {
@@ -24,6 +37,17 @@ privileged aspect AnalysisGroupState_Roo_Jpa_ActiveRecord {
     
     public static List<AnalysisGroupState> AnalysisGroupState.findAnalysisGroupStateEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AnalysisGroupState o", AnalysisGroupState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AnalysisGroupState> AnalysisGroupState.findAnalysisGroupStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroupState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroupState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

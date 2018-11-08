@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ValueQueryDTO_Roo_Json {
     
     public String ValueQueryDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ValueQueryDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ValueQueryDTO ValueQueryDTO.fromJsonToValueQueryDTO(String json) {
-        return new JSONDeserializer<ValueQueryDTO>().use(null, ValueQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<ValueQueryDTO>()
+        .use(null, ValueQueryDTO.class).deserialize(json);
     }
     
     public static String ValueQueryDTO.toJsonArray(Collection<ValueQueryDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ValueQueryDTO.toJsonArray(Collection<ValueQueryDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ValueQueryDTO> ValueQueryDTO.fromJsonArrayToValueQueryDTO(String json) {
-        return new JSONDeserializer<List<ValueQueryDTO>>().use(null, ArrayList.class).use("values", ValueQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ValueQueryDTO>>()
+        .use("values", ValueQueryDTO.class).deserialize(json);
     }
     
 }

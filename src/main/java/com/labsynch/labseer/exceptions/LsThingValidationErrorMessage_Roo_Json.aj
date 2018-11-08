@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LsThingValidationErrorMessage_Roo_Json {
     
     public String LsThingValidationErrorMessage.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LsThingValidationErrorMessage.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LsThingValidationErrorMessage LsThingValidationErrorMessage.fromJsonToLsThingValidationErrorMessage(String json) {
-        return new JSONDeserializer<LsThingValidationErrorMessage>().use(null, LsThingValidationErrorMessage.class).deserialize(json);
+        return new JSONDeserializer<LsThingValidationErrorMessage>()
+        .use(null, LsThingValidationErrorMessage.class).deserialize(json);
     }
     
     public static String LsThingValidationErrorMessage.toJsonArray(Collection<LsThingValidationErrorMessage> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LsThingValidationErrorMessage.toJsonArray(Collection<LsThingValidationErrorMessage> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LsThingValidationErrorMessage> LsThingValidationErrorMessage.fromJsonArrayToLsThingValidationErrorMessages(String json) {
-        return new JSONDeserializer<List<LsThingValidationErrorMessage>>().use(null, ArrayList.class).use("values", LsThingValidationErrorMessage.class).deserialize(json);
+        return new JSONDeserializer<List<LsThingValidationErrorMessage>>()
+        .use("values", LsThingValidationErrorMessage.class).deserialize(json);
     }
     
 }

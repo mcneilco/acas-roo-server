@@ -21,8 +21,17 @@ privileged aspect AnalysisGroupController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByExperiments", method = RequestMethod.GET)
-    public String AnalysisGroupController.findAnalysisGroupsByExperiments(@RequestParam("experiments") Set<Experiment> experiments, Model uiModel) {
-        uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperiments(experiments).getResultList());
+    public String AnalysisGroupController.findAnalysisGroupsByExperiments(@RequestParam("experiments") Set<Experiment> experiments, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperiments(experiments, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AnalysisGroup.countFindAnalysisGroupsByExperiments(experiments) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperiments(experiments, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "analysisgroups/list";
     }
     
@@ -33,8 +42,17 @@ privileged aspect AnalysisGroupController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByExperimentsAndIgnoredNot", method = RequestMethod.GET)
-    public String AnalysisGroupController.findAnalysisGroupsByExperimentsAndIgnoredNot(@RequestParam("experiments") Set<Experiment> experiments, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(experiments, ignored).getResultList());
+    public String AnalysisGroupController.findAnalysisGroupsByExperimentsAndIgnoredNot(@RequestParam("experiments") Set<Experiment> experiments, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(experiments, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AnalysisGroup.countFindAnalysisGroupsByExperimentsAndIgnoredNot(experiments, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(experiments, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "analysisgroups/list";
     }
     
@@ -44,8 +62,17 @@ privileged aspect AnalysisGroupController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String AnalysisGroupController.findAnalysisGroupsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(lsTransaction).getResultList());
+    public String AnalysisGroupController.findAnalysisGroupsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AnalysisGroup.countFindAnalysisGroupsByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("analysisgroups", AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "analysisgroups/list";
     }
     

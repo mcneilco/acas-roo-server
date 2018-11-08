@@ -40,7 +40,7 @@ privileged aspect AnalysisGroupLabelController_Roo_Controller {
         populateEditForm(uiModel, new AnalysisGroupLabel());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (AnalysisGroup.countAnalysisGroups() == 0) {
-            dependencies.add(new String[] { "analysisgroup", "analysisgroups" });
+            dependencies.add(new String[] { "analysisGroup", "analysisgroups" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "analysisgrouplabels/create";
@@ -55,15 +55,15 @@ privileged aspect AnalysisGroupLabelController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String AnalysisGroupLabelController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String AnalysisGroupLabelController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("analysisgrouplabels", AnalysisGroupLabel.findAnalysisGroupLabelEntries(firstResult, sizeNo));
+            uiModel.addAttribute("analysisgrouplabels", AnalysisGroupLabel.findAnalysisGroupLabelEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) AnalysisGroupLabel.countAnalysisGroupLabels() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("analysisgrouplabels", AnalysisGroupLabel.findAllAnalysisGroupLabels());
+            uiModel.addAttribute("analysisgrouplabels", AnalysisGroupLabel.findAllAnalysisGroupLabels(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "analysisgrouplabels/list";

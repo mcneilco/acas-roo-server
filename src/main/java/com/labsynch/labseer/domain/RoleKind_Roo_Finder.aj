@@ -10,6 +10,24 @@ import javax.persistence.TypedQuery;
 
 privileged aspect RoleKind_Roo_Finder {
     
+    public static Long RoleKind.countFindRoleKindsByKindNameEqualsAndLsType(String kindName, RoleType lsType) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = RoleKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM RoleKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", Long.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long RoleKind.countFindRoleKindsByLsType(RoleType lsType) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = RoleKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM RoleKind AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<RoleKind> RoleKind.findRoleKindsByKindNameEqualsAndLsType(String kindName, RoleType lsType) {
         if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
@@ -20,10 +38,42 @@ privileged aspect RoleKind_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<RoleKind> RoleKind.findRoleKindsByKindNameEqualsAndLsType(String kindName, RoleType lsType, String sortFieldName, String sortOrder) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = RoleKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM RoleKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<RoleKind> q = em.createQuery(queryBuilder.toString(), RoleKind.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
     public static TypedQuery<RoleKind> RoleKind.findRoleKindsByLsType(RoleType lsType) {
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = RoleKind.entityManager();
         TypedQuery<RoleKind> q = em.createQuery("SELECT o FROM RoleKind AS o WHERE o.lsType = :lsType", RoleKind.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
+    public static TypedQuery<RoleKind> RoleKind.findRoleKindsByLsType(RoleType lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = RoleKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM RoleKind AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<RoleKind> q = em.createQuery(queryBuilder.toString(), RoleKind.class);
         q.setParameter("lsType", lsType);
         return q;
     }

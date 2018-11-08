@@ -15,19 +15,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 privileged aspect DDictKindController_Roo_Controller_Json {
     
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> DDictKindController.showJson(@PathVariable("id") Long id) {
-        DDictKind DDictKind_ = DDictKind.findDDictKind(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (DDictKind_ == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            DDictKind DDictKind_ = DDictKind.findDDictKind(id);
+            if (DDictKind_ == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(DDictKind_.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(DDictKind_.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -35,70 +40,85 @@ privileged aspect DDictKindController_Roo_Controller_Json {
     public ResponseEntity<String> DDictKindController.listJson() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<DDictKind> result = DDictKind.findAllDDictKinds();
-        return new ResponseEntity<String>(DDictKind.toJsonArray(result), headers, HttpStatus.OK);
+        try {
+            List<DDictKind> result = DDictKind.findAllDDictKinds();
+            return new ResponseEntity<String>(DDictKind.toJsonArray(result), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> DDictKindController.createFromJson(@RequestBody String json) {
-        DDictKind DDictKind_ = DDictKind.fromJsonToDDictKind(json);
-        DDictKind_.persist();
+    public ResponseEntity<String> DDictKindController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            DDictKind DDictKind_ = DDictKind.fromJsonToDDictKind(json);
+            DDictKind_.persist();
+            RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
+            headers.add("Location",uriBuilder.path(a.value()[0]+"/"+DDictKind_.getId().toString()).build().toUriString());
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> DDictKindController.createFromJsonArray(@RequestBody String json) {
-        for (DDictKind DDictKind_: DDictKind.fromJsonArrayToDDictKinds(json)) {
-            DDictKind_.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            for (DDictKind DDictKind_: DDictKind.fromJsonArrayToDDictKinds(json)) {
+                DDictKind_.persist();
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
-    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> DDictKindController.updateFromJson(@RequestBody String json) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> DDictKindController.updateFromJson(@RequestBody String json, @PathVariable("id") Long id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        DDictKind DDictKind_ = DDictKind.fromJsonToDDictKind(json);
-        if (DDictKind_.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> DDictKindController.updateFromJsonArray(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        for (DDictKind DDictKind_: DDictKind.fromJsonArrayToDDictKinds(json)) {
+        try {
+            DDictKind DDictKind_ = DDictKind.fromJsonToDDictKind(json);
+            DDictKind_.setId(id);
             if (DDictKind_.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> DDictKindController.deleteFromJson(@PathVariable("id") Long id) {
-        DDictKind DDictKind_ = DDictKind.findDDictKind(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (DDictKind_ == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            DDictKind DDictKind_ = DDictKind.findDDictKind(id);
+            if (DDictKind_ == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            DDictKind_.remove();
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        DDictKind_.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndNameEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> DDictKindController.jsonFindDDictKindsByLsTypeEqualsAndNameEquals(@RequestParam("lsType") String lsType, @RequestParam("name") String name) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(DDictKind.toJsonArray(DDictKind.findDDictKindsByLsTypeEqualsAndNameEquals(lsType, name).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(DDictKind.toJsonArray(DDictKind.findDDictKindsByLsTypeEqualsAndNameEquals(lsType, name).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }

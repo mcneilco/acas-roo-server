@@ -42,10 +42,10 @@ privileged aspect ItxExperimentExperimentController_Roo_Controller {
         populateEditForm(uiModel, new ItxExperimentExperiment());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (Experiment.countExperiments() == 0) {
-            dependencies.add(new String[] { "experiment", "experiments" });
+            dependencies.add(new String[] { "firstExperiment", "experiments" });
         }
         if (Experiment.countExperiments() == 0) {
-            dependencies.add(new String[] { "experiment", "experiments" });
+            dependencies.add(new String[] { "secondExperiment", "experiments" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "itxexperimentexperiments/create";
@@ -60,15 +60,15 @@ privileged aspect ItxExperimentExperimentController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String ItxExperimentExperimentController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String ItxExperimentExperimentController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentEntries(firstResult, sizeNo));
+            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) ItxExperimentExperiment.countItxExperimentExperiments() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findAllItxExperimentExperiments());
+            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findAllItxExperimentExperiments(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "itxexperimentexperiments/list";

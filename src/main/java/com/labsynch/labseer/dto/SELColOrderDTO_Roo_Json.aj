@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect SELColOrderDTO_Roo_Json {
     
     public String SELColOrderDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String SELColOrderDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static SELColOrderDTO SELColOrderDTO.fromJsonToSELColOrderDTO(String json) {
-        return new JSONDeserializer<SELColOrderDTO>().use(null, SELColOrderDTO.class).deserialize(json);
+        return new JSONDeserializer<SELColOrderDTO>()
+        .use(null, SELColOrderDTO.class).deserialize(json);
     }
     
     public static String SELColOrderDTO.toJsonArray(Collection<SELColOrderDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String SELColOrderDTO.toJsonArray(Collection<SELColOrderDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<SELColOrderDTO> SELColOrderDTO.fromJsonArrayToSELCoes(String json) {
-        return new JSONDeserializer<List<SELColOrderDTO>>().use(null, ArrayList.class).use("values", SELColOrderDTO.class).deserialize(json);
+        return new JSONDeserializer<List<SELColOrderDTO>>()
+        .use("values", SELColOrderDTO.class).deserialize(json);
     }
     
 }

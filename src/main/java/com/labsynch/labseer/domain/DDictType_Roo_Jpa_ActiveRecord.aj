@@ -14,6 +14,8 @@ privileged aspect DDictType_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager DDictType.entityManager;
     
+    public static final List<String> DDictType.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "name", "description", "comments", "ignored", "displayOrder");
+    
     public static final EntityManager DDictType.entityManager() {
         EntityManager em = new DDictType().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect DDictType_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM DDictType o", DDictType.class).getResultList();
     }
     
+    public static List<DDictType> DDictType.findAllDDictTypes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM DDictType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, DDictType.class).getResultList();
+    }
+    
     public static DDictType DDictType.findDDictType(Long id) {
         if (id == null) return null;
         return entityManager().find(DDictType.class, id);
@@ -35,6 +48,17 @@ privileged aspect DDictType_Roo_Jpa_ActiveRecord {
     
     public static List<DDictType> DDictType.findDDictTypeEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM DDictType o", DDictType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<DDictType> DDictType.findDDictTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM DDictType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, DDictType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

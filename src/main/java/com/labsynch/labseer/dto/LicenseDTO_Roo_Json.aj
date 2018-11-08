@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LicenseDTO_Roo_Json {
     
     public String LicenseDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LicenseDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LicenseDTO LicenseDTO.fromJsonToLicenseDTO(String json) {
-        return new JSONDeserializer<LicenseDTO>().use(null, LicenseDTO.class).deserialize(json);
+        return new JSONDeserializer<LicenseDTO>()
+        .use(null, LicenseDTO.class).deserialize(json);
     }
     
     public static String LicenseDTO.toJsonArray(Collection<LicenseDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LicenseDTO.toJsonArray(Collection<LicenseDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LicenseDTO> LicenseDTO.fromJsonArrayToLicenseDTO(String json) {
-        return new JSONDeserializer<List<LicenseDTO>>().use(null, ArrayList.class).use("values", LicenseDTO.class).deserialize(json);
+        return new JSONDeserializer<List<LicenseDTO>>()
+        .use("values", LicenseDTO.class).deserialize(json);
     }
     
 }

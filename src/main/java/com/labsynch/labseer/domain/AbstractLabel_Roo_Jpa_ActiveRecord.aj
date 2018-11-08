@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect AbstractLabel_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> AbstractLabel.fieldNames4OrderClauseFilter = java.util.Arrays.asList("labelText", "recordedBy", "recordedDate", "modifiedDate", "physicallyLabled", "imageFile", "lsType", "lsKind", "lsTypeAndKind", "preferred", "ignored", "deleted", "lsTransaction", "id", "entityManager");
+    
     public static long AbstractLabel.countAbstractLabels() {
         return entityManager().createQuery("SELECT COUNT(o) FROM AbstractLabel o", Long.class).getSingleResult();
     }
     
     public static List<AbstractLabel> AbstractLabel.findAllAbstractLabels() {
         return entityManager().createQuery("SELECT o FROM AbstractLabel o", AbstractLabel.class).getResultList();
+    }
+    
+    public static List<AbstractLabel> AbstractLabel.findAllAbstractLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AbstractLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AbstractLabel.class).getResultList();
     }
     
     public static AbstractLabel AbstractLabel.findAbstractLabel(Long id) {
@@ -24,6 +37,17 @@ privileged aspect AbstractLabel_Roo_Jpa_ActiveRecord {
     
     public static List<AbstractLabel> AbstractLabel.findAbstractLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AbstractLabel o", AbstractLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AbstractLabel> AbstractLabel.findAbstractLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AbstractLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AbstractLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

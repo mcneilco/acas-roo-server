@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect AnalysisGroupCsvDTO_Roo_Json {
     
     public String AnalysisGroupCsvDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String AnalysisGroupCsvDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static AnalysisGroupCsvDTO AnalysisGroupCsvDTO.fromJsonToAnalysisGroupCsvDTO(String json) {
-        return new JSONDeserializer<AnalysisGroupCsvDTO>().use(null, AnalysisGroupCsvDTO.class).deserialize(json);
+        return new JSONDeserializer<AnalysisGroupCsvDTO>()
+        .use(null, AnalysisGroupCsvDTO.class).deserialize(json);
     }
     
     public static String AnalysisGroupCsvDTO.toJsonArray(Collection<AnalysisGroupCsvDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String AnalysisGroupCsvDTO.toJsonArray(Collection<AnalysisGroupCsvDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<AnalysisGroupCsvDTO> AnalysisGroupCsvDTO.fromJsonArrayToAnalysisGroes(String json) {
-        return new JSONDeserializer<List<AnalysisGroupCsvDTO>>().use(null, ArrayList.class).use("values", AnalysisGroupCsvDTO.class).deserialize(json);
+        return new JSONDeserializer<List<AnalysisGroupCsvDTO>>()
+        .use("values", AnalysisGroupCsvDTO.class).deserialize(json);
     }
     
 }

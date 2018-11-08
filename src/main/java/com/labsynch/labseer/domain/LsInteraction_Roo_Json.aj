@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LsInteraction_Roo_Json {
     
     public String LsInteraction.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LsInteraction.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LsInteraction LsInteraction.fromJsonToLsInteraction(String json) {
-        return new JSONDeserializer<LsInteraction>().use(null, LsInteraction.class).deserialize(json);
+        return new JSONDeserializer<LsInteraction>()
+        .use(null, LsInteraction.class).deserialize(json);
     }
     
     public static String LsInteraction.toJsonArray(Collection<LsInteraction> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LsInteraction.toJsonArray(Collection<LsInteraction> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LsInteraction> LsInteraction.fromJsonArrayToLsInteractions(String json) {
-        return new JSONDeserializer<List<LsInteraction>>().use(null, ArrayList.class).use("values", LsInteraction.class).deserialize(json);
+        return new JSONDeserializer<List<LsInteraction>>()
+        .use("values", LsInteraction.class).deserialize(json);
     }
     
 }

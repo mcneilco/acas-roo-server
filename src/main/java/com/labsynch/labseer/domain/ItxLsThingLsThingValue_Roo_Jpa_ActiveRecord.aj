@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ItxLsThingLsThingValue_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ItxLsThingLsThingValue.fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
+    
     public static long ItxLsThingLsThingValue.countItxLsThingLsThingValues() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ItxLsThingLsThingValue o", Long.class).getSingleResult();
     }
     
     public static List<ItxLsThingLsThingValue> ItxLsThingLsThingValue.findAllItxLsThingLsThingValues() {
         return entityManager().createQuery("SELECT o FROM ItxLsThingLsThingValue o", ItxLsThingLsThingValue.class).getResultList();
+    }
+    
+    public static List<ItxLsThingLsThingValue> ItxLsThingLsThingValue.findAllItxLsThingLsThingValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxLsThingLsThingValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThingValue.class).getResultList();
     }
     
     public static ItxLsThingLsThingValue ItxLsThingLsThingValue.findItxLsThingLsThingValue(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ItxLsThingLsThingValue_Roo_Jpa_ActiveRecord {
     
     public static List<ItxLsThingLsThingValue> ItxLsThingLsThingValue.findItxLsThingLsThingValueEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ItxLsThingLsThingValue o", ItxLsThingLsThingValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ItxLsThingLsThingValue> ItxLsThingLsThingValue.findItxLsThingLsThingValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxLsThingLsThingValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThingValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

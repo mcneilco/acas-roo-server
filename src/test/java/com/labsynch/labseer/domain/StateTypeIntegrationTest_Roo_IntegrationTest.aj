@@ -6,7 +6,10 @@ package com.labsynch.labseer.domain;
 import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.StateTypeDataOnDemand;
 import com.labsynch.labseer.domain.StateTypeIntegrationTest;
+import java.util.Iterator;
 import java.util.List;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +22,7 @@ privileged aspect StateTypeIntegrationTest_Roo_IntegrationTest {
     
     declare @type: StateTypeIntegrationTest: @RunWith(SpringJUnit4ClassRunner.class);
     
-    declare @type: StateTypeIntegrationTest: @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml");
+    declare @type: StateTypeIntegrationTest: @ContextConfiguration(locations = "classpath*:/META-INF/spring/applicationContext*.xml");
     
     declare @type: StateTypeIntegrationTest: @Transactional;
     
@@ -101,7 +104,16 @@ privileged aspect StateTypeIntegrationTest_Roo_IntegrationTest {
         StateType obj = dod.getNewTransientStateType(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'StateType' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'StateType' identifier to be null", obj.getId());
-        obj.persist();
+        try {
+            obj.persist();
+        } catch (final ConstraintViolationException e) {
+            final StringBuilder msg = new StringBuilder();
+            for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                final ConstraintViolation<?> cv = iter.next();
+                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+            }
+            throw new IllegalStateException(msg.toString(), e);
+        }
         obj.flush();
         Assert.assertNotNull("Expected 'StateType' identifier to no longer be null", obj.getId());
     }

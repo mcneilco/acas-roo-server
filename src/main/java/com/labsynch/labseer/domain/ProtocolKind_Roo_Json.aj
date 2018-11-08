@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ProtocolKind_Roo_Json {
     
     public String ProtocolKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ProtocolKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ProtocolKind ProtocolKind.fromJsonToProtocolKind(String json) {
-        return new JSONDeserializer<ProtocolKind>().use(null, ProtocolKind.class).deserialize(json);
+        return new JSONDeserializer<ProtocolKind>()
+        .use(null, ProtocolKind.class).deserialize(json);
     }
     
     public static String ProtocolKind.toJsonArray(Collection<ProtocolKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ProtocolKind.toJsonArray(Collection<ProtocolKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ProtocolKind> ProtocolKind.fromJsonArrayToProtocolKinds(String json) {
-        return new JSONDeserializer<List<ProtocolKind>>().use(null, ArrayList.class).use("values", ProtocolKind.class).deserialize(json);
+        return new JSONDeserializer<List<ProtocolKind>>()
+        .use("values", ProtocolKind.class).deserialize(json);
     }
     
 }

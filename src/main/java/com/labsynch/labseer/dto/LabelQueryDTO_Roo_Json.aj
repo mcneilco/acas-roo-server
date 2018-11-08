@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LabelQueryDTO_Roo_Json {
     
     public String LabelQueryDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LabelQueryDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LabelQueryDTO LabelQueryDTO.fromJsonToLabelQueryDTO(String json) {
-        return new JSONDeserializer<LabelQueryDTO>().use(null, LabelQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<LabelQueryDTO>()
+        .use(null, LabelQueryDTO.class).deserialize(json);
     }
     
     public static String LabelQueryDTO.toJsonArray(Collection<LabelQueryDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LabelQueryDTO.toJsonArray(Collection<LabelQueryDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LabelQueryDTO> LabelQueryDTO.fromJsonArrayToLabelQueryDTO(String json) {
-        return new JSONDeserializer<List<LabelQueryDTO>>().use(null, ArrayList.class).use("values", LabelQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<List<LabelQueryDTO>>()
+        .use("values", LabelQueryDTO.class).deserialize(json);
     }
     
 }

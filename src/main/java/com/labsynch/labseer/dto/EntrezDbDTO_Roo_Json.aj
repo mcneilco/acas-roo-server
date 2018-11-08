@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect EntrezDbDTO_Roo_Json {
     
     public String EntrezDbDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String EntrezDbDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static EntrezDbDTO EntrezDbDTO.fromJsonToEntrezDbDTO(String json) {
-        return new JSONDeserializer<EntrezDbDTO>().use(null, EntrezDbDTO.class).deserialize(json);
+        return new JSONDeserializer<EntrezDbDTO>()
+        .use(null, EntrezDbDTO.class).deserialize(json);
     }
     
     public static String EntrezDbDTO.toJsonArray(Collection<EntrezDbDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String EntrezDbDTO.toJsonArray(Collection<EntrezDbDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<EntrezDbDTO> EntrezDbDTO.fromJsonArrayToEntrezDbDTO(String json) {
-        return new JSONDeserializer<List<EntrezDbDTO>>().use(null, ArrayList.class).use("values", EntrezDbDTO.class).deserialize(json);
+        return new JSONDeserializer<List<EntrezDbDTO>>()
+        .use("values", EntrezDbDTO.class).deserialize(json);
     }
     
 }

@@ -20,8 +20,17 @@ privileged aspect SubjectController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET)
-    public String SubjectController.findSubjectsByCodeNameEquals(@RequestParam("codeName") String codeName, Model uiModel) {
-        uiModel.addAttribute("subjects", Subject.findSubjectsByCodeNameEquals(codeName).getResultList());
+    public String SubjectController.findSubjectsByCodeNameEquals(@RequestParam("codeName") String codeName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjects", Subject.findSubjectsByCodeNameEquals(codeName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Subject.countFindSubjectsByCodeNameEquals(codeName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjects", Subject.findSubjectsByCodeNameEquals(codeName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjects/list";
     }
     
@@ -31,8 +40,17 @@ privileged aspect SubjectController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String SubjectController.findSubjectsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("subjects", Subject.findSubjectsByLsTransactionEquals(lsTransaction).getResultList());
+    public String SubjectController.findSubjectsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjects", Subject.findSubjectsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Subject.countFindSubjectsByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjects", Subject.findSubjectsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjects/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect SubjectController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByTreatmentGroups", method = RequestMethod.GET)
-    public String SubjectController.findSubjectsByTreatmentGroups(@RequestParam("treatmentGroups") Set<TreatmentGroup> treatmentGroups, Model uiModel) {
-        uiModel.addAttribute("subjects", Subject.findSubjectsByTreatmentGroups(treatmentGroups).getResultList());
+    public String SubjectController.findSubjectsByTreatmentGroups(@RequestParam("treatmentGroups") Set<TreatmentGroup> treatmentGroups, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjects", Subject.findSubjectsByTreatmentGroups(treatmentGroups, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Subject.countFindSubjectsByTreatmentGroups(treatmentGroups) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjects", Subject.findSubjectsByTreatmentGroups(treatmentGroups, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjects/list";
     }
     

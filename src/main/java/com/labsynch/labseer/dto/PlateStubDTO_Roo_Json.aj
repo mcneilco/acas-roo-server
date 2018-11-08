@@ -13,15 +13,23 @@ import java.util.List;
 privileged aspect PlateStubDTO_Roo_Json {
     
     public static PlateStubDTO PlateStubDTO.fromJsonToPlateStubDTO(String json) {
-        return new JSONDeserializer<PlateStubDTO>().use(null, PlateStubDTO.class).deserialize(json);
+        return new JSONDeserializer<PlateStubDTO>()
+        .use(null, PlateStubDTO.class).deserialize(json);
     }
     
     public static String PlateStubDTO.toJsonArray(Collection<PlateStubDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String PlateStubDTO.toJsonArray(Collection<PlateStubDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<PlateStubDTO> PlateStubDTO.fromJsonArrayToPlateStubDTO(String json) {
-        return new JSONDeserializer<List<PlateStubDTO>>().use(null, ArrayList.class).use("values", PlateStubDTO.class).deserialize(json);
+        return new JSONDeserializer<List<PlateStubDTO>>()
+        .use("values", PlateStubDTO.class).deserialize(json);
     }
     
 }

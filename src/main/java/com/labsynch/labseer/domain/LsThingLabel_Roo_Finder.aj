@@ -10,6 +10,54 @@ import javax.persistence.TypedQuery;
 
 privileged aspect LsThingLabel_Roo_Finder {
     
+    public static Long LsThingLabel.countFindLsThingLabelsByLabelTextEquals(String labelText) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = LsThingLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingLabel AS o WHERE o.labelText = :labelText", Long.class);
+        q.setParameter("labelText", labelText);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LsThingLabel.countFindLsThingLabelsByLabelTextEqualsAndIgnoredNot(String labelText, boolean ignored) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = LsThingLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LsThingLabel.countFindLsThingLabelsByLabelTextLike(String labelText) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = LsThingLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)", Long.class);
+        q.setParameter("labelText", labelText);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LsThingLabel.countFindLsThingLabelsByLsThing(LsThing lsThing) {
+        if (lsThing == null) throw new IllegalArgumentException("The lsThing argument is required");
+        EntityManager em = LsThingLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingLabel AS o WHERE o.lsThing = :lsThing", Long.class);
+        q.setParameter("lsThing", lsThing);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LsThingLabel.countFindLsThingLabelsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = LsThingLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingLabel AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLabelTextEquals(String labelText) {
         if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = LsThingLabel.entityManager();
@@ -18,10 +66,41 @@ privileged aspect LsThingLabel_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLabelTextEquals(String labelText, String sortFieldName, String sortOrder) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = LsThingLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingLabel AS o WHERE o.labelText = :labelText");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingLabel> q = em.createQuery(queryBuilder.toString(), LsThingLabel.class);
+        q.setParameter("labelText", labelText);
+        return q;
+    }
+    
     public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot(String labelText, boolean ignored) {
         if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
         EntityManager em = LsThingLabel.entityManager();
         TypedQuery<LsThingLabel> q = em.createQuery("SELECT o FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored", LsThingLabel.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot(String labelText, boolean ignored, String sortFieldName, String sortOrder) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = LsThingLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingLabel> q = em.createQuery(queryBuilder.toString(), LsThingLabel.class);
         q.setParameter("labelText", labelText);
         q.setParameter("ignored", ignored);
         return q;
@@ -42,6 +121,28 @@ privileged aspect LsThingLabel_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLabelTextLike(String labelText, String sortFieldName, String sortOrder) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = LsThingLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingLabel AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingLabel> q = em.createQuery(queryBuilder.toString(), LsThingLabel.class);
+        q.setParameter("labelText", labelText);
+        return q;
+    }
+    
     public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLsThing(LsThing lsThing) {
         if (lsThing == null) throw new IllegalArgumentException("The lsThing argument is required");
         EntityManager em = LsThingLabel.entityManager();
@@ -50,10 +151,40 @@ privileged aspect LsThingLabel_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLsThing(LsThing lsThing, String sortFieldName, String sortOrder) {
+        if (lsThing == null) throw new IllegalArgumentException("The lsThing argument is required");
+        EntityManager em = LsThingLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingLabel AS o WHERE o.lsThing = :lsThing");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingLabel> q = em.createQuery(queryBuilder.toString(), LsThingLabel.class);
+        q.setParameter("lsThing", lsThing);
+        return q;
+    }
+    
     public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = LsThingLabel.entityManager();
         TypedQuery<LsThingLabel> q = em.createQuery("SELECT o FROM LsThingLabel AS o WHERE o.lsTransaction = :lsTransaction", LsThingLabel.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingLabel> LsThingLabel.findLsThingLabelsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = LsThingLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingLabel AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingLabel> q = em.createQuery(queryBuilder.toString(), LsThingLabel.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }

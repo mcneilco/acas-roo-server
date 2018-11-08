@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LsThingBrowserQueryDTO_Roo_Json {
     
     public String LsThingBrowserQueryDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LsThingBrowserQueryDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LsThingBrowserQueryDTO LsThingBrowserQueryDTO.fromJsonToLsThingBrowserQueryDTO(String json) {
-        return new JSONDeserializer<LsThingBrowserQueryDTO>().use(null, LsThingBrowserQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<LsThingBrowserQueryDTO>()
+        .use(null, LsThingBrowserQueryDTO.class).deserialize(json);
     }
     
     public static String LsThingBrowserQueryDTO.toJsonArray(Collection<LsThingBrowserQueryDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LsThingBrowserQueryDTO.toJsonArray(Collection<LsThingBrowserQueryDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LsThingBrowserQueryDTO> LsThingBrowserQueryDTO.fromJsonArrayToLsThingBroes(String json) {
-        return new JSONDeserializer<List<LsThingBrowserQueryDTO>>().use(null, ArrayList.class).use("values", LsThingBrowserQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<List<LsThingBrowserQueryDTO>>()
+        .use("values", LsThingBrowserQueryDTO.class).deserialize(json);
     }
     
 }

@@ -10,10 +10,49 @@ import javax.persistence.TypedQuery;
 
 privileged aspect ItxExperimentExperiment_Roo_Finder {
     
+    public static Long ItxExperimentExperiment.countFindItxExperimentExperimentsByFirstExperiment(Experiment firstExperiment) {
+        if (firstExperiment == null) throw new IllegalArgumentException("The firstExperiment argument is required");
+        EntityManager em = ItxExperimentExperiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxExperimentExperiment AS o WHERE o.firstExperiment = :firstExperiment", Long.class);
+        q.setParameter("firstExperiment", firstExperiment);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long ItxExperimentExperiment.countFindItxExperimentExperimentsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ItxExperimentExperiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxExperimentExperiment AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long ItxExperimentExperiment.countFindItxExperimentExperimentsBySecondExperiment(Experiment secondExperiment) {
+        if (secondExperiment == null) throw new IllegalArgumentException("The secondExperiment argument is required");
+        EntityManager em = ItxExperimentExperiment.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxExperimentExperiment AS o WHERE o.secondExperiment = :secondExperiment", Long.class);
+        q.setParameter("secondExperiment", secondExperiment);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<ItxExperimentExperiment> ItxExperimentExperiment.findItxExperimentExperimentsByFirstExperiment(Experiment firstExperiment) {
         if (firstExperiment == null) throw new IllegalArgumentException("The firstExperiment argument is required");
         EntityManager em = ItxExperimentExperiment.entityManager();
         TypedQuery<ItxExperimentExperiment> q = em.createQuery("SELECT o FROM ItxExperimentExperiment AS o WHERE o.firstExperiment = :firstExperiment", ItxExperimentExperiment.class);
+        q.setParameter("firstExperiment", firstExperiment);
+        return q;
+    }
+    
+    public static TypedQuery<ItxExperimentExperiment> ItxExperimentExperiment.findItxExperimentExperimentsByFirstExperiment(Experiment firstExperiment, String sortFieldName, String sortOrder) {
+        if (firstExperiment == null) throw new IllegalArgumentException("The firstExperiment argument is required");
+        EntityManager em = ItxExperimentExperiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxExperimentExperiment AS o WHERE o.firstExperiment = :firstExperiment");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxExperimentExperiment> q = em.createQuery(queryBuilder.toString(), ItxExperimentExperiment.class);
         q.setParameter("firstExperiment", firstExperiment);
         return q;
     }
@@ -26,10 +65,40 @@ privileged aspect ItxExperimentExperiment_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<ItxExperimentExperiment> ItxExperimentExperiment.findItxExperimentExperimentsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ItxExperimentExperiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxExperimentExperiment AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxExperimentExperiment> q = em.createQuery(queryBuilder.toString(), ItxExperimentExperiment.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
     public static TypedQuery<ItxExperimentExperiment> ItxExperimentExperiment.findItxExperimentExperimentsBySecondExperiment(Experiment secondExperiment) {
         if (secondExperiment == null) throw new IllegalArgumentException("The secondExperiment argument is required");
         EntityManager em = ItxExperimentExperiment.entityManager();
         TypedQuery<ItxExperimentExperiment> q = em.createQuery("SELECT o FROM ItxExperimentExperiment AS o WHERE o.secondExperiment = :secondExperiment", ItxExperimentExperiment.class);
+        q.setParameter("secondExperiment", secondExperiment);
+        return q;
+    }
+    
+    public static TypedQuery<ItxExperimentExperiment> ItxExperimentExperiment.findItxExperimentExperimentsBySecondExperiment(Experiment secondExperiment, String sortFieldName, String sortOrder) {
+        if (secondExperiment == null) throw new IllegalArgumentException("The secondExperiment argument is required");
+        EntityManager em = ItxExperimentExperiment.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxExperimentExperiment AS o WHERE o.secondExperiment = :secondExperiment");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxExperimentExperiment> q = em.createQuery(queryBuilder.toString(), ItxExperimentExperiment.class);
         q.setParameter("secondExperiment", secondExperiment);
         return q;
     }

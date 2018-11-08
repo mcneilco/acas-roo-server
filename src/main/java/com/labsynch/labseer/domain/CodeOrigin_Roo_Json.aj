@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect CodeOrigin_Roo_Json {
     
     public String CodeOrigin.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String CodeOrigin.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static CodeOrigin CodeOrigin.fromJsonToCodeOrigin(String json) {
-        return new JSONDeserializer<CodeOrigin>().use(null, CodeOrigin.class).deserialize(json);
+        return new JSONDeserializer<CodeOrigin>()
+        .use(null, CodeOrigin.class).deserialize(json);
     }
     
     public static String CodeOrigin.toJsonArray(Collection<CodeOrigin> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String CodeOrigin.toJsonArray(Collection<CodeOrigin> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<CodeOrigin> CodeOrigin.fromJsonArrayToCodeOrigins(String json) {
-        return new JSONDeserializer<List<CodeOrigin>>().use(null, ArrayList.class).use("values", CodeOrigin.class).deserialize(json);
+        return new JSONDeserializer<List<CodeOrigin>>()
+        .use("values", CodeOrigin.class).deserialize(json);
     }
     
 }

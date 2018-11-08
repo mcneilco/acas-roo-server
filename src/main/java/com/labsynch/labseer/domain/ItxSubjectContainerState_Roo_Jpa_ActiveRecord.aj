@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ItxSubjectContainerState_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ItxSubjectContainerState.fieldNames4OrderClauseFilter = java.util.Arrays.asList("itxSubjectContainer", "lsValues");
+    
     public static long ItxSubjectContainerState.countItxSubjectContainerStates() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ItxSubjectContainerState o", Long.class).getSingleResult();
     }
     
     public static List<ItxSubjectContainerState> ItxSubjectContainerState.findAllItxSubjectContainerStates() {
         return entityManager().createQuery("SELECT o FROM ItxSubjectContainerState o", ItxSubjectContainerState.class).getResultList();
+    }
+    
+    public static List<ItxSubjectContainerState> ItxSubjectContainerState.findAllItxSubjectContainerStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxSubjectContainerState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainerState.class).getResultList();
     }
     
     public static ItxSubjectContainerState ItxSubjectContainerState.findItxSubjectContainerState(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ItxSubjectContainerState_Roo_Jpa_ActiveRecord {
     
     public static List<ItxSubjectContainerState> ItxSubjectContainerState.findItxSubjectContainerStateEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ItxSubjectContainerState o", ItxSubjectContainerState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ItxSubjectContainerState> ItxSubjectContainerState.findItxSubjectContainerStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxSubjectContainerState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxSubjectContainerState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -14,6 +14,8 @@ privileged aspect ThingPageArchive_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager ThingPageArchive.entityManager;
     
+    public static final List<String> ThingPageArchive.fieldNames4OrderClauseFilter = java.util.Arrays.asList("pageName", "recordedBy", "recordedDate", "pageContent", "modifiedBy", "modifiedDate", "currentEditor", "ignored", "archived", "lsTransaction", "thing", "pageVersion");
+    
     public static final EntityManager ThingPageArchive.entityManager() {
         EntityManager em = new ThingPageArchive().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect ThingPageArchive_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ThingPageArchive o", ThingPageArchive.class).getResultList();
     }
     
+    public static List<ThingPageArchive> ThingPageArchive.findAllThingPageArchives(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ThingPageArchive o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ThingPageArchive.class).getResultList();
+    }
+    
     public static ThingPageArchive ThingPageArchive.findThingPageArchive(Long id) {
         if (id == null) return null;
         return entityManager().find(ThingPageArchive.class, id);
@@ -35,6 +48,17 @@ privileged aspect ThingPageArchive_Roo_Jpa_ActiveRecord {
     
     public static List<ThingPageArchive> ThingPageArchive.findThingPageArchiveEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ThingPageArchive o", ThingPageArchive.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ThingPageArchive> ThingPageArchive.findThingPageArchiveEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ThingPageArchive o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ThingPageArchive.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LsThingValidationDTO_Roo_Json {
     
     public String LsThingValidationDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LsThingValidationDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LsThingValidationDTO LsThingValidationDTO.fromJsonToLsThingValidationDTO(String json) {
-        return new JSONDeserializer<LsThingValidationDTO>().use(null, LsThingValidationDTO.class).deserialize(json);
+        return new JSONDeserializer<LsThingValidationDTO>()
+        .use(null, LsThingValidationDTO.class).deserialize(json);
     }
     
     public static String LsThingValidationDTO.toJsonArray(Collection<LsThingValidationDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LsThingValidationDTO.toJsonArray(Collection<LsThingValidationDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LsThingValidationDTO> LsThingValidationDTO.fromJsonArrayToLsThingValidatioes(String json) {
-        return new JSONDeserializer<List<LsThingValidationDTO>>().use(null, ArrayList.class).use("values", LsThingValidationDTO.class).deserialize(json);
+        return new JSONDeserializer<List<LsThingValidationDTO>>()
+        .use("values", LsThingValidationDTO.class).deserialize(json);
     }
     
 }

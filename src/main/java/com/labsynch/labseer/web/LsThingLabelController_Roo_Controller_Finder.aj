@@ -19,8 +19,17 @@ privileged aspect LsThingLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLabelTextEquals", method = RequestMethod.GET)
-    public String LsThingLabelController.findLsThingLabelsByLabelTextEquals(@RequestParam("labelText") String labelText, Model uiModel) {
-        uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextEquals(labelText).getResultList());
+    public String LsThingLabelController.findLsThingLabelsByLabelTextEquals(@RequestParam("labelText") String labelText, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextEquals(labelText, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsThingLabel.countFindLsThingLabelsByLabelTextEquals(labelText) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextEquals(labelText, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "lsthinglabels/list";
     }
     
@@ -30,8 +39,17 @@ privileged aspect LsThingLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLabelTextEqualsAndIgnoredNot", method = RequestMethod.GET)
-    public String LsThingLabelController.findLsThingLabelsByLabelTextEqualsAndIgnoredNot(@RequestParam("labelText") String labelText, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot(labelText, ignored).getResultList());
+    public String LsThingLabelController.findLsThingLabelsByLabelTextEqualsAndIgnoredNot(@RequestParam("labelText") String labelText, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot(labelText, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsThingLabel.countFindLsThingLabelsByLabelTextEqualsAndIgnoredNot(labelText, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextEqualsAndIgnoredNot(labelText, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "lsthinglabels/list";
     }
     
@@ -41,8 +59,17 @@ privileged aspect LsThingLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLabelTextLike", method = RequestMethod.GET)
-    public String LsThingLabelController.findLsThingLabelsByLabelTextLike(@RequestParam("labelText") String labelText, Model uiModel) {
-        uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextLike(labelText).getResultList());
+    public String LsThingLabelController.findLsThingLabelsByLabelTextLike(@RequestParam("labelText") String labelText, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextLike(labelText, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsThingLabel.countFindLsThingLabelsByLabelTextLike(labelText) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLabelTextLike(labelText, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "lsthinglabels/list";
     }
     
@@ -53,8 +80,17 @@ privileged aspect LsThingLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsThing", method = RequestMethod.GET)
-    public String LsThingLabelController.findLsThingLabelsByLsThing(@RequestParam("lsThing") LsThing lsThing, Model uiModel) {
-        uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLsThing(lsThing).getResultList());
+    public String LsThingLabelController.findLsThingLabelsByLsThing(@RequestParam("lsThing") LsThing lsThing, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLsThing(lsThing, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsThingLabel.countFindLsThingLabelsByLsThing(lsThing) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLsThing(lsThing, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "lsthinglabels/list";
     }
     
@@ -64,8 +100,17 @@ privileged aspect LsThingLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String LsThingLabelController.findLsThingLabelsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLsTransactionEquals(lsTransaction).getResultList());
+    public String LsThingLabelController.findLsThingLabelsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) LsThingLabel.countFindLsThingLabelsByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("lsthinglabels", LsThingLabel.findLsThingLabelsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "lsthinglabels/list";
     }
     

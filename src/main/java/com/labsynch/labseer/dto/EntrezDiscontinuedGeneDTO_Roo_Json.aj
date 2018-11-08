@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect EntrezDiscontinuedGeneDTO_Roo_Json {
     
     public String EntrezDiscontinuedGeneDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String EntrezDiscontinuedGeneDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static EntrezDiscontinuedGeneDTO EntrezDiscontinuedGeneDTO.fromJsonToEntrezDiscontinuedGeneDTO(String json) {
-        return new JSONDeserializer<EntrezDiscontinuedGeneDTO>().use(null, EntrezDiscontinuedGeneDTO.class).deserialize(json);
+        return new JSONDeserializer<EntrezDiscontinuedGeneDTO>()
+        .use(null, EntrezDiscontinuedGeneDTO.class).deserialize(json);
     }
     
     public static String EntrezDiscontinuedGeneDTO.toJsonArray(Collection<EntrezDiscontinuedGeneDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String EntrezDiscontinuedGeneDTO.toJsonArray(Collection<EntrezDiscontinuedGeneDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<EntrezDiscontinuedGeneDTO> EntrezDiscontinuedGeneDTO.fromJsonArrayToEntrezDiscoes(String json) {
-        return new JSONDeserializer<List<EntrezDiscontinuedGeneDTO>>().use(null, ArrayList.class).use("values", EntrezDiscontinuedGeneDTO.class).deserialize(json);
+        return new JSONDeserializer<List<EntrezDiscontinuedGeneDTO>>()
+        .use("values", EntrezDiscontinuedGeneDTO.class).deserialize(json);
     }
     
 }

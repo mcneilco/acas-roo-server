@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect SubjectSearchRequest_Roo_Json {
     
     public String SubjectSearchRequest.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String SubjectSearchRequest.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static SubjectSearchRequest SubjectSearchRequest.fromJsonToSubjectSearchRequest(String json) {
-        return new JSONDeserializer<SubjectSearchRequest>().use(null, SubjectSearchRequest.class).deserialize(json);
+        return new JSONDeserializer<SubjectSearchRequest>()
+        .use(null, SubjectSearchRequest.class).deserialize(json);
     }
     
     public static String SubjectSearchRequest.toJsonArray(Collection<SubjectSearchRequest> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String SubjectSearchRequest.toJsonArray(Collection<SubjectSearchRequest> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<SubjectSearchRequest> SubjectSearchRequest.fromJsonArrayToSubjectSearchRequests(String json) {
-        return new JSONDeserializer<List<SubjectSearchRequest>>().use(null, ArrayList.class).use("values", SubjectSearchRequest.class).deserialize(json);
+        return new JSONDeserializer<List<SubjectSearchRequest>>()
+        .use("values", SubjectSearchRequest.class).deserialize(json);
     }
     
 }

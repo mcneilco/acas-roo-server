@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect MolPropertiesDTO_Roo_Json {
     
     public String MolPropertiesDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String MolPropertiesDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static MolPropertiesDTO MolPropertiesDTO.fromJsonToMolPropertiesDTO(String json) {
-        return new JSONDeserializer<MolPropertiesDTO>().use(null, MolPropertiesDTO.class).deserialize(json);
+        return new JSONDeserializer<MolPropertiesDTO>()
+        .use(null, MolPropertiesDTO.class).deserialize(json);
     }
     
     public static String MolPropertiesDTO.toJsonArray(Collection<MolPropertiesDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String MolPropertiesDTO.toJsonArray(Collection<MolPropertiesDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<MolPropertiesDTO> MolPropertiesDTO.fromJsonArrayToMolProes(String json) {
-        return new JSONDeserializer<List<MolPropertiesDTO>>().use(null, ArrayList.class).use("values", MolPropertiesDTO.class).deserialize(json);
+        return new JSONDeserializer<List<MolPropertiesDTO>>()
+        .use("values", MolPropertiesDTO.class).deserialize(json);
     }
     
 }

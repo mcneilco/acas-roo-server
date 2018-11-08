@@ -14,6 +14,8 @@ privileged aspect AuthorRole_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager AuthorRole.entityManager;
     
+    public static final List<String> AuthorRole.fieldNames4OrderClauseFilter = java.util.Arrays.asList("userEntry", "roleEntry", "id", "version");
+    
     public static final EntityManager AuthorRole.entityManager() {
         EntityManager em = new AuthorRole().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect AuthorRole_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM AuthorRole o", AuthorRole.class).getResultList();
     }
     
+    public static List<AuthorRole> AuthorRole.findAllAuthorRoles(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AuthorRole o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AuthorRole.class).getResultList();
+    }
+    
     public static AuthorRole AuthorRole.findAuthorRole(Long id) {
         if (id == null) return null;
         return entityManager().find(AuthorRole.class, id);
@@ -35,6 +48,17 @@ privileged aspect AuthorRole_Roo_Jpa_ActiveRecord {
     
     public static List<AuthorRole> AuthorRole.findAuthorRoleEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AuthorRole o", AuthorRole.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AuthorRole> AuthorRole.findAuthorRoleEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AuthorRole o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AuthorRole.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -10,6 +10,22 @@ import javax.persistence.TypedQuery;
 
 privileged aspect LsThingState_Roo_Finder {
     
+    public static Long LsThingState.countFindLsThingStatesByLsThing(LsThing lsThing) {
+        if (lsThing == null) throw new IllegalArgumentException("The lsThing argument is required");
+        EntityManager em = LsThingState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingState AS o WHERE o.lsThing = :lsThing", Long.class);
+        q.setParameter("lsThing", lsThing);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LsThingState.countFindLsThingStatesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = LsThingState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingState AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<LsThingState> LsThingState.findLsThingStatesByLsThing(LsThing lsThing) {
         if (lsThing == null) throw new IllegalArgumentException("The lsThing argument is required");
         EntityManager em = LsThingState.entityManager();
@@ -18,10 +34,40 @@ privileged aspect LsThingState_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LsThingState> LsThingState.findLsThingStatesByLsThing(LsThing lsThing, String sortFieldName, String sortOrder) {
+        if (lsThing == null) throw new IllegalArgumentException("The lsThing argument is required");
+        EntityManager em = LsThingState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingState AS o WHERE o.lsThing = :lsThing");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingState> q = em.createQuery(queryBuilder.toString(), LsThingState.class);
+        q.setParameter("lsThing", lsThing);
+        return q;
+    }
+    
     public static TypedQuery<LsThingState> LsThingState.findLsThingStatesByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = LsThingState.entityManager();
         TypedQuery<LsThingState> q = em.createQuery("SELECT o FROM LsThingState AS o WHERE o.lsTransaction = :lsTransaction", LsThingState.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
+    public static TypedQuery<LsThingState> LsThingState.findLsThingStatesByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = LsThingState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingState AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingState> q = em.createQuery(queryBuilder.toString(), LsThingState.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }

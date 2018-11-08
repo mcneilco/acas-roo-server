@@ -14,6 +14,8 @@ privileged aspect LsSeqTrtGrp_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LsSeqTrtGrp.entityManager;
     
+    public static final List<String> LsSeqTrtGrp.fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
+    
     public static final EntityManager LsSeqTrtGrp.entityManager() {
         EntityManager em = new LsSeqTrtGrp().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LsSeqTrtGrp_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LsSeqTrtGrp o", LsSeqTrtGrp.class).getResultList();
     }
     
+    public static List<LsSeqTrtGrp> LsSeqTrtGrp.findAllLsSeqTrtGrps(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqTrtGrp o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqTrtGrp.class).getResultList();
+    }
+    
     public static LsSeqTrtGrp LsSeqTrtGrp.findLsSeqTrtGrp(Long id) {
         if (id == null) return null;
         return entityManager().find(LsSeqTrtGrp.class, id);
@@ -35,6 +48,17 @@ privileged aspect LsSeqTrtGrp_Roo_Jpa_ActiveRecord {
     
     public static List<LsSeqTrtGrp> LsSeqTrtGrp.findLsSeqTrtGrpEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsSeqTrtGrp o", LsSeqTrtGrp.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsSeqTrtGrp> LsSeqTrtGrp.findLsSeqTrtGrpEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqTrtGrp o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqTrtGrp.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

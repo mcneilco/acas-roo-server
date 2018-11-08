@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect WellContentDTO_Roo_Json {
     
     public String WellContentDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String WellContentDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static WellContentDTO WellContentDTO.fromJsonToWellContentDTO(String json) {
-        return new JSONDeserializer<WellContentDTO>().use(null, WellContentDTO.class).deserialize(json);
+        return new JSONDeserializer<WellContentDTO>()
+        .use(null, WellContentDTO.class).deserialize(json);
     }
     
     public static String WellContentDTO.toJsonArray(Collection<WellContentDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String WellContentDTO.toJsonArray(Collection<WellContentDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<WellContentDTO> WellContentDTO.fromJsonArrayToWellCoes(String json) {
-        return new JSONDeserializer<List<WellContentDTO>>().use(null, ArrayList.class).use("values", WellContentDTO.class).deserialize(json);
+        return new JSONDeserializer<List<WellContentDTO>>()
+        .use("values", WellContentDTO.class).deserialize(json);
     }
     
 }

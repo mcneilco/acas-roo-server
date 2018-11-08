@@ -10,6 +10,22 @@ import javax.persistence.TypedQuery;
 
 privileged aspect AuthorLabel_Roo_Finder {
     
+    public static Long AuthorLabel.countFindAuthorLabelsByAuthor(Author author) {
+        if (author == null) throw new IllegalArgumentException("The author argument is required");
+        EntityManager em = AuthorLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AuthorLabel AS o WHERE o.author = :author", Long.class);
+        q.setParameter("author", author);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long AuthorLabel.countFindAuthorLabelsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AuthorLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AuthorLabel AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<AuthorLabel> AuthorLabel.findAuthorLabelsByAuthor(Author author) {
         if (author == null) throw new IllegalArgumentException("The author argument is required");
         EntityManager em = AuthorLabel.entityManager();
@@ -18,10 +34,40 @@ privileged aspect AuthorLabel_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<AuthorLabel> AuthorLabel.findAuthorLabelsByAuthor(Author author, String sortFieldName, String sortOrder) {
+        if (author == null) throw new IllegalArgumentException("The author argument is required");
+        EntityManager em = AuthorLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AuthorLabel AS o WHERE o.author = :author");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AuthorLabel> q = em.createQuery(queryBuilder.toString(), AuthorLabel.class);
+        q.setParameter("author", author);
+        return q;
+    }
+    
     public static TypedQuery<AuthorLabel> AuthorLabel.findAuthorLabelsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = AuthorLabel.entityManager();
         TypedQuery<AuthorLabel> q = em.createQuery("SELECT o FROM AuthorLabel AS o WHERE o.lsTransaction = :lsTransaction", AuthorLabel.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
+    public static TypedQuery<AuthorLabel> AuthorLabel.findAuthorLabelsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AuthorLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AuthorLabel AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AuthorLabel> q = em.createQuery(queryBuilder.toString(), AuthorLabel.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }

@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect LsTransactionQueryDTO_Roo_Json {
     
     public static LsTransactionQueryDTO LsTransactionQueryDTO.fromJsonToLsTransactionQueryDTO(String json) {
-        return new JSONDeserializer<LsTransactionQueryDTO>().use(null, LsTransactionQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<LsTransactionQueryDTO>()
+        .use(null, LsTransactionQueryDTO.class).deserialize(json);
     }
     
     public static Collection<LsTransactionQueryDTO> LsTransactionQueryDTO.fromJsonArrayToLsTransactioes(String json) {
-        return new JSONDeserializer<List<LsTransactionQueryDTO>>().use(null, ArrayList.class).use("values", LsTransactionQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<List<LsTransactionQueryDTO>>()
+        .use("values", LsTransactionQueryDTO.class).deserialize(json);
     }
     
 }

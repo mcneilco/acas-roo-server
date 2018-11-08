@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect StoichiometryPropertiesDTO_Roo_Json {
     
     public static StoichiometryPropertiesDTO StoichiometryPropertiesDTO.fromJsonToStoichiometryPropertiesDTO(String json) {
-        return new JSONDeserializer<StoichiometryPropertiesDTO>().use(null, StoichiometryPropertiesDTO.class).deserialize(json);
+        return new JSONDeserializer<StoichiometryPropertiesDTO>()
+        .use(null, StoichiometryPropertiesDTO.class).deserialize(json);
     }
     
     public static Collection<StoichiometryPropertiesDTO> StoichiometryPropertiesDTO.fromJsonArrayToStoichiometryProes(String json) {
-        return new JSONDeserializer<List<StoichiometryPropertiesDTO>>().use(null, ArrayList.class).use("values", StoichiometryPropertiesDTO.class).deserialize(json);
+        return new JSONDeserializer<List<StoichiometryPropertiesDTO>>()
+        .use("values", StoichiometryPropertiesDTO.class).deserialize(json);
     }
     
 }

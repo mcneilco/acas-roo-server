@@ -20,8 +20,17 @@ privileged aspect ContainerStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByContainer", method = RequestMethod.GET)
-    public String ContainerStateController.findContainerStatesByContainer(@RequestParam("container") Container container, Model uiModel) {
-        uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByContainer(container).getResultList());
+    public String ContainerStateController.findContainerStatesByContainer(@RequestParam("container") Container container, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByContainer(container, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ContainerState.countFindContainerStatesByContainer(container) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByContainer(container, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "containerstates/list";
     }
     
@@ -32,8 +41,17 @@ privileged aspect ContainerStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByContainerAndLsKindEqualsAndIgnoredNot", method = RequestMethod.GET)
-    public String ContainerStateController.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(@RequestParam("container") Container container, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(container, lsKind, ignored).getResultList());
+    public String ContainerStateController.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(@RequestParam("container") Container container, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(container, lsKind, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ContainerState.countFindContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(container, lsKind, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(container, lsKind, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "containerstates/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect ContainerStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET)
-    public String ContainerStateController.findContainerStatesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByIgnoredNot(ignored).getResultList());
+    public String ContainerStateController.findContainerStatesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByIgnoredNot(ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ContainerState.countFindContainerStatesByIgnoredNot(ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("containerstates", ContainerState.findContainerStatesByIgnoredNot(ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "containerstates/list";
     }
     

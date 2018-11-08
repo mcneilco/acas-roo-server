@@ -14,6 +14,8 @@ privileged aspect ValueType_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager ValueType.entityManager;
     
+    public static final List<String> ValueType.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "typeName", "id", "version");
+    
     public static final EntityManager ValueType.entityManager() {
         EntityManager em = new ValueType().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect ValueType_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ValueType o", ValueType.class).getResultList();
     }
     
+    public static List<ValueType> ValueType.findAllValueTypes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ValueType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ValueType.class).getResultList();
+    }
+    
     public static ValueType ValueType.findValueType(Long id) {
         if (id == null) return null;
         return entityManager().find(ValueType.class, id);
@@ -35,6 +48,17 @@ privileged aspect ValueType_Roo_Jpa_ActiveRecord {
     
     public static List<ValueType> ValueType.findValueTypeEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ValueType o", ValueType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ValueType> ValueType.findValueTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ValueType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ValueType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

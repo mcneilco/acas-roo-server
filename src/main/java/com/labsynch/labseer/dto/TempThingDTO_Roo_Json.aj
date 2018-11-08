@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect TempThingDTO_Roo_Json {
     
     public String TempThingDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String TempThingDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static TempThingDTO TempThingDTO.fromJsonToTempThingDTO(String json) {
-        return new JSONDeserializer<TempThingDTO>().use(null, TempThingDTO.class).deserialize(json);
+        return new JSONDeserializer<TempThingDTO>()
+        .use(null, TempThingDTO.class).deserialize(json);
     }
     
     public static String TempThingDTO.toJsonArray(Collection<TempThingDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String TempThingDTO.toJsonArray(Collection<TempThingDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<TempThingDTO> TempThingDTO.fromJsonArrayToTempThingDTO(String json) {
-        return new JSONDeserializer<List<TempThingDTO>>().use(null, ArrayList.class).use("values", TempThingDTO.class).deserialize(json);
+        return new JSONDeserializer<List<TempThingDTO>>()
+        .use("values", TempThingDTO.class).deserialize(json);
     }
     
 }

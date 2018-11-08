@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect TgDataDTO_Roo_Json {
     
     public String TgDataDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String TgDataDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static TgDataDTO TgDataDTO.fromJsonToTgDataDTO(String json) {
-        return new JSONDeserializer<TgDataDTO>().use(null, TgDataDTO.class).deserialize(json);
+        return new JSONDeserializer<TgDataDTO>()
+        .use(null, TgDataDTO.class).deserialize(json);
     }
     
     public static String TgDataDTO.toJsonArray(Collection<TgDataDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String TgDataDTO.toJsonArray(Collection<TgDataDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<TgDataDTO> TgDataDTO.fromJsonArrayToTgDataDTO(String json) {
-        return new JSONDeserializer<List<TgDataDTO>>().use(null, ArrayList.class).use("values", TgDataDTO.class).deserialize(json);
+        return new JSONDeserializer<List<TgDataDTO>>()
+        .use("values", TgDataDTO.class).deserialize(json);
     }
     
 }

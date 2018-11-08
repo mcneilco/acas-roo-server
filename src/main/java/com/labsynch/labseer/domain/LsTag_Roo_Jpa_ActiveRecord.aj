@@ -14,6 +14,8 @@ privileged aspect LsTag_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LsTag.entityManager;
     
+    public static final List<String> LsTag.fieldNames4OrderClauseFilter = java.util.Arrays.asList("tagText", "recordedDate", "experiments", "protocols", "lsThings");
+    
     public static final EntityManager LsTag.entityManager() {
         EntityManager em = new LsTag().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LsTag_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LsTag o", LsTag.class).getResultList();
     }
     
+    public static List<LsTag> LsTag.findAllLsTags(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsTag o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsTag.class).getResultList();
+    }
+    
     public static LsTag LsTag.findLsTag(Long id) {
         if (id == null) return null;
         return entityManager().find(LsTag.class, id);
@@ -35,6 +48,17 @@ privileged aspect LsTag_Roo_Jpa_ActiveRecord {
     
     public static List<LsTag> LsTag.findLsTagEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsTag o", LsTag.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsTag> LsTag.findLsTagEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsTag o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsTag.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

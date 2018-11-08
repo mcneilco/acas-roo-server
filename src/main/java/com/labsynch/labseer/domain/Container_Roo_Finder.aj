@@ -9,10 +9,51 @@ import javax.persistence.TypedQuery;
 
 privileged aspect Container_Roo_Finder {
     
+    public static Long Container.countFindContainersByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Container.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Container AS o WHERE o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long Container.countFindContainersByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Container.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Container AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long Container.countFindContainersByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Container.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Container AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<Container> Container.findContainersByLsKindEquals(String lsKind) {
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = Container.entityManager();
         TypedQuery<Container> q = em.createQuery("SELECT o FROM Container AS o WHERE o.lsKind = :lsKind", Container.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
+    public static TypedQuery<Container> Container.findContainersByLsKindEquals(String lsKind, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Container.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Container AS o WHERE o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Container> q = em.createQuery(queryBuilder.toString(), Container.class);
         q.setParameter("lsKind", lsKind);
         return q;
     }
@@ -25,11 +66,43 @@ privileged aspect Container_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<Container> Container.findContainersByLsTypeEquals(String lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Container.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Container AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Container> q = em.createQuery(queryBuilder.toString(), Container.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
     public static TypedQuery<Container> Container.findContainersByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
         if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
         if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
         EntityManager em = Container.entityManager();
         TypedQuery<Container> q = em.createQuery("SELECT o FROM Container AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Container.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+    
+    public static TypedQuery<Container> Container.findContainersByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Container.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Container AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Container> q = em.createQuery(queryBuilder.toString(), Container.class);
         q.setParameter("lsType", lsType);
         q.setParameter("lsKind", lsKind);
         return q;

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect DateValueComparisonRequest_Roo_Json {
     
     public String DateValueComparisonRequest.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String DateValueComparisonRequest.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static DateValueComparisonRequest DateValueComparisonRequest.fromJsonToDateValueComparisonRequest(String json) {
-        return new JSONDeserializer<DateValueComparisonRequest>().use(null, DateValueComparisonRequest.class).deserialize(json);
+        return new JSONDeserializer<DateValueComparisonRequest>()
+        .use(null, DateValueComparisonRequest.class).deserialize(json);
     }
     
     public static String DateValueComparisonRequest.toJsonArray(Collection<DateValueComparisonRequest> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String DateValueComparisonRequest.toJsonArray(Collection<DateValueComparisonRequest> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<DateValueComparisonRequest> DateValueComparisonRequest.fromJsonArrayToDateValueComparisonRequests(String json) {
-        return new JSONDeserializer<List<DateValueComparisonRequest>>().use(null, ArrayList.class).use("values", DateValueComparisonRequest.class).deserialize(json);
+        return new JSONDeserializer<List<DateValueComparisonRequest>>()
+        .use("values", DateValueComparisonRequest.class).deserialize(json);
     }
     
 }

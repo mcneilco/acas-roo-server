@@ -16,19 +16,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 privileged aspect ExperimentStateController_Roo_Controller_Json {
     
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ExperimentStateController.showJson(@PathVariable("id") Long id) {
-        ExperimentState experimentState = ExperimentState.findExperimentState(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (experimentState == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            ExperimentState experimentState = ExperimentState.findExperimentState(id);
+            if (experimentState == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(experimentState.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(experimentState.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -36,70 +41,85 @@ privileged aspect ExperimentStateController_Roo_Controller_Json {
     public ResponseEntity<String> ExperimentStateController.listJson() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<ExperimentState> result = ExperimentState.findAllExperimentStates();
-        return new ResponseEntity<String>(ExperimentState.toJsonArray(result), headers, HttpStatus.OK);
+        try {
+            List<ExperimentState> result = ExperimentState.findAllExperimentStates();
+            return new ResponseEntity<String>(ExperimentState.toJsonArray(result), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> ExperimentStateController.createFromJson(@RequestBody String json) {
-        ExperimentState experimentState = ExperimentState.fromJsonToExperimentState(json);
-        experimentState.persist();
+    public ResponseEntity<String> ExperimentStateController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            ExperimentState experimentState = ExperimentState.fromJsonToExperimentState(json);
+            experimentState.persist();
+            RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
+            headers.add("Location",uriBuilder.path(a.value()[0]+"/"+experimentState.getId().toString()).build().toUriString());
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ExperimentStateController.createFromJsonArray(@RequestBody String json) {
-        for (ExperimentState experimentState: ExperimentState.fromJsonArrayToExperimentStates(json)) {
-            experimentState.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            for (ExperimentState experimentState: ExperimentState.fromJsonArrayToExperimentStates(json)) {
+                experimentState.persist();
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
-    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> ExperimentStateController.updateFromJson(@RequestBody String json) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> ExperimentStateController.updateFromJson(@RequestBody String json, @PathVariable("id") Long id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        ExperimentState experimentState = ExperimentState.fromJsonToExperimentState(json);
-        if (experimentState.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> ExperimentStateController.updateFromJsonArray(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        for (ExperimentState experimentState: ExperimentState.fromJsonArrayToExperimentStates(json)) {
+        try {
+            ExperimentState experimentState = ExperimentState.fromJsonToExperimentState(json);
+            experimentState.setId(id);
             if (experimentState.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> ExperimentStateController.deleteFromJson(@PathVariable("id") Long id) {
-        ExperimentState experimentState = ExperimentState.findExperimentState(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (experimentState == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            ExperimentState experimentState = ExperimentState.findExperimentState(id);
+            if (experimentState == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            experimentState.remove();
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        experimentState.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByExperiment", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ExperimentStateController.jsonFindExperimentStatesByExperiment(@RequestParam("experiment") Experiment experiment) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ExperimentState.toJsonArray(ExperimentState.findExperimentStatesByExperiment(experiment).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(ExperimentState.toJsonArray(ExperimentState.findExperimentStatesByExperiment(experiment).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }

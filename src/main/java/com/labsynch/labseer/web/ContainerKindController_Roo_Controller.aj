@@ -38,7 +38,7 @@ privileged aspect ContainerKindController_Roo_Controller {
         populateEditForm(uiModel, new ContainerKind());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (ContainerType.countContainerTypes() == 0) {
-            dependencies.add(new String[] { "containertype", "containertypes" });
+            dependencies.add(new String[] { "lsType", "containertypes" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "containerkinds/create";
@@ -52,15 +52,15 @@ privileged aspect ContainerKindController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String ContainerKindController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String ContainerKindController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("containerkinds", ContainerKind.findContainerKindEntries(firstResult, sizeNo));
+            uiModel.addAttribute("containerkinds", ContainerKind.findContainerKindEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) ContainerKind.countContainerKinds() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("containerkinds", ContainerKind.findAllContainerKinds());
+            uiModel.addAttribute("containerkinds", ContainerKind.findAllContainerKinds(sortFieldName, sortOrder));
         }
         return "containerkinds/list";
     }

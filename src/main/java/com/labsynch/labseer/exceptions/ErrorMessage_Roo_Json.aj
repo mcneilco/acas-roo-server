@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ErrorMessage_Roo_Json {
     
     public String ErrorMessage.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ErrorMessage.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ErrorMessage ErrorMessage.fromJsonToErrorMessage(String json) {
-        return new JSONDeserializer<ErrorMessage>().use(null, ErrorMessage.class).deserialize(json);
+        return new JSONDeserializer<ErrorMessage>()
+        .use(null, ErrorMessage.class).deserialize(json);
     }
     
     public static String ErrorMessage.toJsonArray(Collection<ErrorMessage> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ErrorMessage.toJsonArray(Collection<ErrorMessage> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ErrorMessage> ErrorMessage.fromJsonArrayToErrorMessages(String json) {
-        return new JSONDeserializer<List<ErrorMessage>>().use(null, ArrayList.class).use("values", ErrorMessage.class).deserialize(json);
+        return new JSONDeserializer<List<ErrorMessage>>()
+        .use("values", ErrorMessage.class).deserialize(json);
     }
     
 }

@@ -16,19 +16,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 privileged aspect ContainerStateController_Roo_Controller_Json {
     
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ContainerStateController.showJson(@PathVariable("id") Long id) {
-        ContainerState containerState = ContainerState.findContainerState(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (containerState == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            ContainerState containerState = ContainerState.findContainerState(id);
+            if (containerState == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(containerState.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(containerState.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -36,86 +41,109 @@ privileged aspect ContainerStateController_Roo_Controller_Json {
     public ResponseEntity<String> ContainerStateController.listJson() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<ContainerState> result = ContainerState.findAllContainerStates();
-        return new ResponseEntity<String>(ContainerState.toJsonArray(result), headers, HttpStatus.OK);
+        try {
+            List<ContainerState> result = ContainerState.findAllContainerStates();
+            return new ResponseEntity<String>(ContainerState.toJsonArray(result), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> ContainerStateController.createFromJson(@RequestBody String json) {
-        ContainerState containerState = ContainerState.fromJsonToContainerState(json);
-        containerState.persist();
+    public ResponseEntity<String> ContainerStateController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            ContainerState containerState = ContainerState.fromJsonToContainerState(json);
+            containerState.persist();
+            RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
+            headers.add("Location",uriBuilder.path(a.value()[0]+"/"+containerState.getId().toString()).build().toUriString());
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ContainerStateController.createFromJsonArray(@RequestBody String json) {
-        for (ContainerState containerState: ContainerState.fromJsonArrayToContainerStates(json)) {
-            containerState.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            for (ContainerState containerState: ContainerState.fromJsonArrayToContainerStates(json)) {
+                containerState.persist();
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
-    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> ContainerStateController.updateFromJson(@RequestBody String json) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> ContainerStateController.updateFromJson(@RequestBody String json, @PathVariable("id") Long id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        ContainerState containerState = ContainerState.fromJsonToContainerState(json);
-        if (containerState.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> ContainerStateController.updateFromJsonArray(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        for (ContainerState containerState: ContainerState.fromJsonArrayToContainerStates(json)) {
+        try {
+            ContainerState containerState = ContainerState.fromJsonToContainerState(json);
+            containerState.setId(id);
             if (containerState.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> ContainerStateController.deleteFromJson(@PathVariable("id") Long id) {
-        ContainerState containerState = ContainerState.findContainerState(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (containerState == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            ContainerState containerState = ContainerState.findContainerState(id);
+            if (containerState == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            containerState.remove();
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        containerState.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByContainer", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ContainerStateController.jsonFindContainerStatesByContainer(@RequestParam("container") Container container) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByContainer(container).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByContainer(container).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByContainerAndLsKindEqualsAndIgnoredNot", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ContainerStateController.jsonFindContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(@RequestParam("container") Container container, @RequestParam("lsKind") String lsKind, @RequestParam(value = "ignored", required = false) boolean ignored) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(container, lsKind, ignored).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(container, lsKind, ignored).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByIgnoredNot", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ContainerStateController.jsonFindContainerStatesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByIgnoredNot(ignored).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(ContainerState.toJsonArray(ContainerState.findContainerStatesByIgnoredNot(ignored).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }

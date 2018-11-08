@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect ContainerWellCodeDTO_Roo_Json {
     
     public static ContainerWellCodeDTO ContainerWellCodeDTO.fromJsonToContainerWellCodeDTO(String json) {
-        return new JSONDeserializer<ContainerWellCodeDTO>().use(null, ContainerWellCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<ContainerWellCodeDTO>()
+        .use(null, ContainerWellCodeDTO.class).deserialize(json);
     }
     
     public static Collection<ContainerWellCodeDTO> ContainerWellCodeDTO.fromJsonArrayToContainerWellCoes(String json) {
-        return new JSONDeserializer<List<ContainerWellCodeDTO>>().use(null, ArrayList.class).use("values", ContainerWellCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerWellCodeDTO>>()
+        .use("values", ContainerWellCodeDTO.class).deserialize(json);
     }
     
 }

@@ -14,6 +14,8 @@ privileged aspect RoleKind_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager RoleKind.entityManager;
     
+    public static final List<String> RoleKind.fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsType", "kindName", "lsTypeAndKind");
+    
     public static final EntityManager RoleKind.entityManager() {
         EntityManager em = new RoleKind().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect RoleKind_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM RoleKind o", RoleKind.class).getResultList();
     }
     
+    public static List<RoleKind> RoleKind.findAllRoleKinds(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM RoleKind o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, RoleKind.class).getResultList();
+    }
+    
     public static RoleKind RoleKind.findRoleKind(Long id) {
         if (id == null) return null;
         return entityManager().find(RoleKind.class, id);
@@ -35,6 +48,17 @@ privileged aspect RoleKind_Roo_Jpa_ActiveRecord {
     
     public static List<RoleKind> RoleKind.findRoleKindEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM RoleKind o", RoleKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<RoleKind> RoleKind.findRoleKindEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM RoleKind o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, RoleKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

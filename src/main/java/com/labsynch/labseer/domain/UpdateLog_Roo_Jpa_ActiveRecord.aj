@@ -14,6 +14,8 @@ privileged aspect UpdateLog_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager UpdateLog.entityManager;
     
+    public static final List<String> UpdateLog.fieldNames4OrderClauseFilter = java.util.Arrays.asList("thing", "updateAction", "comments", "lsTransaction", "recordedDate", "recordedBy");
+    
     public static final EntityManager UpdateLog.entityManager() {
         EntityManager em = new UpdateLog().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect UpdateLog_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM UpdateLog o", UpdateLog.class).getResultList();
     }
     
+    public static List<UpdateLog> UpdateLog.findAllUpdateLogs(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM UpdateLog o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, UpdateLog.class).getResultList();
+    }
+    
     public static UpdateLog UpdateLog.findUpdateLog(Long id) {
         if (id == null) return null;
         return entityManager().find(UpdateLog.class, id);
@@ -35,6 +48,17 @@ privileged aspect UpdateLog_Roo_Jpa_ActiveRecord {
     
     public static List<UpdateLog> UpdateLog.findUpdateLogEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM UpdateLog o", UpdateLog.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<UpdateLog> UpdateLog.findUpdateLogEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM UpdateLog o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, UpdateLog.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

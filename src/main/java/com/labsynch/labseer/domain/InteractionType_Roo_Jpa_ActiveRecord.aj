@@ -14,6 +14,8 @@ privileged aspect InteractionType_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager InteractionType.entityManager;
     
+    public static final List<String> InteractionType.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "typeName", "typeVerb");
+    
     public static final EntityManager InteractionType.entityManager() {
         EntityManager em = new InteractionType().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect InteractionType_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM InteractionType o", InteractionType.class).getResultList();
     }
     
+    public static List<InteractionType> InteractionType.findAllInteractionTypes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM InteractionType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, InteractionType.class).getResultList();
+    }
+    
     public static InteractionType InteractionType.findInteractionType(Long id) {
         if (id == null) return null;
         return entityManager().find(InteractionType.class, id);
@@ -35,6 +48,17 @@ privileged aspect InteractionType_Roo_Jpa_ActiveRecord {
     
     public static List<InteractionType> InteractionType.findInteractionTypeEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM InteractionType o", InteractionType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<InteractionType> InteractionType.findInteractionTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM InteractionType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, InteractionType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

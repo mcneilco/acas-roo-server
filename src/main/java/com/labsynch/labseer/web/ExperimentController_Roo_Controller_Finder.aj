@@ -19,8 +19,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByCodeNameEquals(@RequestParam("codeName") String codeName, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByCodeNameEquals(codeName).getResultList());
+    public String ExperimentController.findExperimentsByCodeNameEquals(@RequestParam("codeName") String codeName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByCodeNameEquals(codeName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByCodeNameEquals(codeName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByCodeNameEquals(codeName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -30,8 +39,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameLike", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByCodeNameLike(@RequestParam("codeName") String codeName, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByCodeNameLike(codeName).getResultList());
+    public String ExperimentController.findExperimentsByCodeNameLike(@RequestParam("codeName") String codeName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByCodeNameLike(codeName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByCodeNameLike(codeName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByCodeNameLike(codeName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -41,8 +59,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByLsKindEquals(@RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsKindEquals(lsKind).getResultList());
+    public String ExperimentController.findExperimentsByLsKindEquals(@RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsKindEquals(lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByLsKindEquals(lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsKindEquals(lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -52,8 +79,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsKindLike", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByLsKindLike(@RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsKindLike(lsKind).getResultList());
+    public String ExperimentController.findExperimentsByLsKindLike(@RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsKindLike(lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByLsKindLike(lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsKindLike(lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -63,8 +99,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransaction", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByLsTransaction(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTransaction(lsTransaction).getResultList());
+    public String ExperimentController.findExperimentsByLsTransaction(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTransaction(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByLsTransaction(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTransaction(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -74,8 +119,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByLsTypeEquals(@RequestParam("lsType") String lsType, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeEquals(lsType).getResultList());
+    public String ExperimentController.findExperimentsByLsTypeEquals(@RequestParam("lsType") String lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeEquals(lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByLsTypeEquals(lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeEquals(lsType, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -85,8 +139,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+    public String ExperimentController.findExperimentsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -96,8 +159,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeLike", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByLsTypeLike(@RequestParam("lsType") String lsType, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeLike(lsType).getResultList());
+    public String ExperimentController.findExperimentsByLsTypeLike(@RequestParam("lsType") String lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeLike(lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByLsTypeLike(lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByLsTypeLike(lsType, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -108,8 +180,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByProtocol", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByProtocol(@RequestParam("protocol") Protocol protocol, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByProtocol(protocol).getResultList());
+    public String ExperimentController.findExperimentsByProtocol(@RequestParam("protocol") Protocol protocol, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByProtocol(protocol, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByProtocol(protocol) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByProtocol(protocol, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     
@@ -119,8 +200,17 @@ privileged aspect ExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByRecordedByLike", method = RequestMethod.GET)
-    public String ExperimentController.findExperimentsByRecordedByLike(@RequestParam("recordedBy") String recordedBy, Model uiModel) {
-        uiModel.addAttribute("experiments", Experiment.findExperimentsByRecordedByLike(recordedBy).getResultList());
+    public String ExperimentController.findExperimentsByRecordedByLike(@RequestParam("recordedBy") String recordedBy, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByRecordedByLike(recordedBy, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Experiment.countFindExperimentsByRecordedByLike(recordedBy) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experiments", Experiment.findExperimentsByRecordedByLike(recordedBy, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experiments/list";
     }
     

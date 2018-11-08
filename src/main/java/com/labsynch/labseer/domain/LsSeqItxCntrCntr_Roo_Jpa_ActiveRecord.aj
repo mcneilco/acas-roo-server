@@ -14,6 +14,8 @@ privileged aspect LsSeqItxCntrCntr_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LsSeqItxCntrCntr.entityManager;
     
+    public static final List<String> LsSeqItxCntrCntr.fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
+    
     public static final EntityManager LsSeqItxCntrCntr.entityManager() {
         EntityManager em = new LsSeqItxCntrCntr().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LsSeqItxCntrCntr_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LsSeqItxCntrCntr o", LsSeqItxCntrCntr.class).getResultList();
     }
     
+    public static List<LsSeqItxCntrCntr> LsSeqItxCntrCntr.findAllLsSeqItxCntrCntrs(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqItxCntrCntr o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqItxCntrCntr.class).getResultList();
+    }
+    
     public static LsSeqItxCntrCntr LsSeqItxCntrCntr.findLsSeqItxCntrCntr(Long id) {
         if (id == null) return null;
         return entityManager().find(LsSeqItxCntrCntr.class, id);
@@ -35,6 +48,17 @@ privileged aspect LsSeqItxCntrCntr_Roo_Jpa_ActiveRecord {
     
     public static List<LsSeqItxCntrCntr> LsSeqItxCntrCntr.findLsSeqItxCntrCntrEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsSeqItxCntrCntr o", LsSeqItxCntrCntr.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsSeqItxCntrCntr> LsSeqItxCntrCntr.findLsSeqItxCntrCntrEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqItxCntrCntr o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqItxCntrCntr.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

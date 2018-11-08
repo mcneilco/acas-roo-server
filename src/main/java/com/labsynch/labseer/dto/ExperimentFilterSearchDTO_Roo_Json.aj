@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ExperimentFilterSearchDTO_Roo_Json {
     
     public String ExperimentFilterSearchDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ExperimentFilterSearchDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ExperimentFilterSearchDTO ExperimentFilterSearchDTO.fromJsonToExperimentFilterSearchDTO(String json) {
-        return new JSONDeserializer<ExperimentFilterSearchDTO>().use(null, ExperimentFilterSearchDTO.class).deserialize(json);
+        return new JSONDeserializer<ExperimentFilterSearchDTO>()
+        .use(null, ExperimentFilterSearchDTO.class).deserialize(json);
     }
     
     public static String ExperimentFilterSearchDTO.toJsonArray(Collection<ExperimentFilterSearchDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ExperimentFilterSearchDTO.toJsonArray(Collection<ExperimentFilterSearchDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ExperimentFilterSearchDTO> ExperimentFilterSearchDTO.fromJsonArrayToExperimentFilterSearchDTO(String json) {
-        return new JSONDeserializer<List<ExperimentFilterSearchDTO>>().use(null, ArrayList.class).use("values", ExperimentFilterSearchDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ExperimentFilterSearchDTO>>()
+        .use("values", ExperimentFilterSearchDTO.class).deserialize(json);
     }
     
 }

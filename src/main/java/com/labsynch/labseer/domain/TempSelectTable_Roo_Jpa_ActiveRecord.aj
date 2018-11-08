@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect TempSelectTable_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> TempSelectTable.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "numberVar", "stringVar", "lsTransaction", "recordedDate", "recordedBy", "entityManager");
+    
     public static long TempSelectTable.countTempSelectTables() {
         return entityManager().createQuery("SELECT COUNT(o) FROM TempSelectTable o", Long.class).getSingleResult();
     }
     
     public static List<TempSelectTable> TempSelectTable.findAllTempSelectTables() {
         return entityManager().createQuery("SELECT o FROM TempSelectTable o", TempSelectTable.class).getResultList();
+    }
+    
+    public static List<TempSelectTable> TempSelectTable.findAllTempSelectTables(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM TempSelectTable o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, TempSelectTable.class).getResultList();
     }
     
     public static TempSelectTable TempSelectTable.findTempSelectTable(Long id) {
@@ -24,6 +37,17 @@ privileged aspect TempSelectTable_Roo_Jpa_ActiveRecord {
     
     public static List<TempSelectTable> TempSelectTable.findTempSelectTableEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM TempSelectTable o", TempSelectTable.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<TempSelectTable> TempSelectTable.findTempSelectTableEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM TempSelectTable o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, TempSelectTable.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

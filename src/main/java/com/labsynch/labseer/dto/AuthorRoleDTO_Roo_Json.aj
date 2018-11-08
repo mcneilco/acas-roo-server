@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect AuthorRoleDTO_Roo_Json {
     
     public String AuthorRoleDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String AuthorRoleDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static AuthorRoleDTO AuthorRoleDTO.fromJsonToAuthorRoleDTO(String json) {
-        return new JSONDeserializer<AuthorRoleDTO>().use(null, AuthorRoleDTO.class).deserialize(json);
+        return new JSONDeserializer<AuthorRoleDTO>()
+        .use(null, AuthorRoleDTO.class).deserialize(json);
     }
     
     public static String AuthorRoleDTO.toJsonArray(Collection<AuthorRoleDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String AuthorRoleDTO.toJsonArray(Collection<AuthorRoleDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<AuthorRoleDTO> AuthorRoleDTO.fromJsonArrayToAuthorRoes(String json) {
-        return new JSONDeserializer<List<AuthorRoleDTO>>().use(null, ArrayList.class).use("values", AuthorRoleDTO.class).deserialize(json);
+        return new JSONDeserializer<List<AuthorRoleDTO>>()
+        .use("values", AuthorRoleDTO.class).deserialize(json);
     }
     
 }

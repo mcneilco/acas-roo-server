@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect InteractionKind_Roo_Json {
     
     public String InteractionKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String InteractionKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static InteractionKind InteractionKind.fromJsonToInteractionKind(String json) {
-        return new JSONDeserializer<InteractionKind>().use(null, InteractionKind.class).deserialize(json);
+        return new JSONDeserializer<InteractionKind>()
+        .use(null, InteractionKind.class).deserialize(json);
     }
     
     public static String InteractionKind.toJsonArray(Collection<InteractionKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String InteractionKind.toJsonArray(Collection<InteractionKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<InteractionKind> InteractionKind.fromJsonArrayToInteractionKinds(String json) {
-        return new JSONDeserializer<List<InteractionKind>>().use(null, ArrayList.class).use("values", InteractionKind.class).deserialize(json);
+        return new JSONDeserializer<List<InteractionKind>>()
+        .use("values", InteractionKind.class).deserialize(json);
     }
     
 }

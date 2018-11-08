@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ItxLsThingLsThing_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ItxLsThingLsThing.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "firstLsThing", "secondLsThing", "lsStates");
+    
     public static long ItxLsThingLsThing.countItxLsThingLsThings() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ItxLsThingLsThing o", Long.class).getSingleResult();
     }
     
     public static List<ItxLsThingLsThing> ItxLsThingLsThing.findAllItxLsThingLsThings() {
         return entityManager().createQuery("SELECT o FROM ItxLsThingLsThing o", ItxLsThingLsThing.class).getResultList();
+    }
+    
+    public static List<ItxLsThingLsThing> ItxLsThingLsThing.findAllItxLsThingLsThings(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxLsThingLsThing o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThing.class).getResultList();
     }
     
     public static ItxLsThingLsThing ItxLsThingLsThing.findItxLsThingLsThing(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ItxLsThingLsThing_Roo_Jpa_ActiveRecord {
     
     public static List<ItxLsThingLsThing> ItxLsThingLsThing.findItxLsThingLsThingEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ItxLsThingLsThing o", ItxLsThingLsThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ItxLsThingLsThing> ItxLsThingLsThing.findItxLsThingLsThingEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxLsThingLsThing o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxLsThingLsThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

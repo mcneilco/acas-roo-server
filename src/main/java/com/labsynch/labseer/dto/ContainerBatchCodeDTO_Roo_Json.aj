@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect ContainerBatchCodeDTO_Roo_Json {
     
     public static ContainerBatchCodeDTO ContainerBatchCodeDTO.fromJsonToContainerBatchCodeDTO(String json) {
-        return new JSONDeserializer<ContainerBatchCodeDTO>().use(null, ContainerBatchCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<ContainerBatchCodeDTO>()
+        .use(null, ContainerBatchCodeDTO.class).deserialize(json);
     }
     
     public static Collection<ContainerBatchCodeDTO> ContainerBatchCodeDTO.fromJsonArrayToContainerBatchCoes(String json) {
-        return new JSONDeserializer<List<ContainerBatchCodeDTO>>().use(null, ArrayList.class).use("values", ContainerBatchCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerBatchCodeDTO>>()
+        .use("values", ContainerBatchCodeDTO.class).deserialize(json);
     }
     
 }

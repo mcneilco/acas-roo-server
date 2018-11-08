@@ -55,15 +55,15 @@ privileged aspect AuthorLabelController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String AuthorLabelController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String AuthorLabelController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("authorlabels", AuthorLabel.findAuthorLabelEntries(firstResult, sizeNo));
+            uiModel.addAttribute("authorlabels", AuthorLabel.findAuthorLabelEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) AuthorLabel.countAuthorLabels() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("authorlabels", AuthorLabel.findAllAuthorLabels());
+            uiModel.addAttribute("authorlabels", AuthorLabel.findAllAuthorLabels(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "authorlabels/list";

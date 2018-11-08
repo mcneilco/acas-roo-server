@@ -9,10 +9,48 @@ import javax.persistence.TypedQuery;
 
 privileged aspect LsTag_Roo_Finder {
     
+    public static Long LsTag.countFindLsTagsByTagTextEquals(String tagText) {
+        if (tagText == null || tagText.length() == 0) throw new IllegalArgumentException("The tagText argument is required");
+        EntityManager em = LsTag.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsTag AS o WHERE o.tagText = :tagText", Long.class);
+        q.setParameter("tagText", tagText);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LsTag.countFindLsTagsByTagTextLike(String tagText) {
+        if (tagText == null || tagText.length() == 0) throw new IllegalArgumentException("The tagText argument is required");
+        tagText = tagText.replace('*', '%');
+        if (tagText.charAt(0) != '%') {
+            tagText = "%" + tagText;
+        }
+        if (tagText.charAt(tagText.length() - 1) != '%') {
+            tagText = tagText + "%";
+        }
+        EntityManager em = LsTag.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsTag AS o WHERE LOWER(o.tagText) LIKE LOWER(:tagText)", Long.class);
+        q.setParameter("tagText", tagText);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<LsTag> LsTag.findLsTagsByTagTextEquals(String tagText) {
         if (tagText == null || tagText.length() == 0) throw new IllegalArgumentException("The tagText argument is required");
         EntityManager em = LsTag.entityManager();
         TypedQuery<LsTag> q = em.createQuery("SELECT o FROM LsTag AS o WHERE o.tagText = :tagText", LsTag.class);
+        q.setParameter("tagText", tagText);
+        return q;
+    }
+    
+    public static TypedQuery<LsTag> LsTag.findLsTagsByTagTextEquals(String tagText, String sortFieldName, String sortOrder) {
+        if (tagText == null || tagText.length() == 0) throw new IllegalArgumentException("The tagText argument is required");
+        EntityManager em = LsTag.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsTag AS o WHERE o.tagText = :tagText");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsTag> q = em.createQuery(queryBuilder.toString(), LsTag.class);
         q.setParameter("tagText", tagText);
         return q;
     }
@@ -28,6 +66,28 @@ privileged aspect LsTag_Roo_Finder {
         }
         EntityManager em = LsTag.entityManager();
         TypedQuery<LsTag> q = em.createQuery("SELECT o FROM LsTag AS o WHERE LOWER(o.tagText) LIKE LOWER(:tagText)", LsTag.class);
+        q.setParameter("tagText", tagText);
+        return q;
+    }
+    
+    public static TypedQuery<LsTag> LsTag.findLsTagsByTagTextLike(String tagText, String sortFieldName, String sortOrder) {
+        if (tagText == null || tagText.length() == 0) throw new IllegalArgumentException("The tagText argument is required");
+        tagText = tagText.replace('*', '%');
+        if (tagText.charAt(0) != '%') {
+            tagText = "%" + tagText;
+        }
+        if (tagText.charAt(tagText.length() - 1) != '%') {
+            tagText = tagText + "%";
+        }
+        EntityManager em = LsTag.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsTag AS o WHERE LOWER(o.tagText) LIKE LOWER(:tagText)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsTag> q = em.createQuery(queryBuilder.toString(), LsTag.class);
         q.setParameter("tagText", tagText);
         return q;
     }

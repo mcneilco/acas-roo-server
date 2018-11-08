@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect LsThing_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> LsThing.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsStates", "lsLabels", "lsTags", "firstLsThings", "secondLsThings");
+    
     public static long LsThing.countLsThings() {
         return entityManager().createQuery("SELECT COUNT(o) FROM LsThing o", Long.class).getSingleResult();
     }
     
     public static List<LsThing> LsThing.findAllLsThings() {
         return entityManager().createQuery("SELECT o FROM LsThing o", LsThing.class).getResultList();
+    }
+    
+    public static List<LsThing> LsThing.findAllLsThings(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsThing o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsThing.class).getResultList();
     }
     
     public static LsThing LsThing.findLsThing(Long id) {
@@ -24,6 +37,17 @@ privileged aspect LsThing_Roo_Jpa_ActiveRecord {
     
     public static List<LsThing> LsThing.findLsThingEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsThing o", LsThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsThing> LsThing.findLsThingEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsThing o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

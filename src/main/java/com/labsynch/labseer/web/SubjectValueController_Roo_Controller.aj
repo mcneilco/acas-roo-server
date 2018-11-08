@@ -40,7 +40,7 @@ privileged aspect SubjectValueController_Roo_Controller {
         populateEditForm(uiModel, new SubjectValue());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (SubjectState.countSubjectStates() == 0) {
-            dependencies.add(new String[] { "subjectstate", "subjectstates" });
+            dependencies.add(new String[] { "lsState", "subjectstates" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "subjectvalues/create";
@@ -55,15 +55,15 @@ privileged aspect SubjectValueController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String SubjectValueController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String SubjectValueController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValueEntries(firstResult, sizeNo));
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValueEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) SubjectValue.countSubjectValues() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("subjectvalues", SubjectValue.findAllSubjectValues());
+            uiModel.addAttribute("subjectvalues", SubjectValue.findAllSubjectValues(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "subjectvalues/list";

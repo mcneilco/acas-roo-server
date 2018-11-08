@@ -14,6 +14,8 @@ privileged aspect LsTransaction_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LsTransaction.entityManager;
     
+    public static final List<String> LsTransaction.fieldNames4OrderClauseFilter = java.util.Arrays.asList("comments", "recordedDate", "recordedBy", "status", "type");
+    
     public static final EntityManager LsTransaction.entityManager() {
         EntityManager em = new LsTransaction().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LsTransaction_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LsTransaction o", LsTransaction.class).getResultList();
     }
     
+    public static List<LsTransaction> LsTransaction.findAllLsTransactions(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsTransaction o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsTransaction.class).getResultList();
+    }
+    
     public static LsTransaction LsTransaction.findLsTransaction(Long id) {
         if (id == null) return null;
         return entityManager().find(LsTransaction.class, id);
@@ -35,6 +48,17 @@ privileged aspect LsTransaction_Roo_Jpa_ActiveRecord {
     
     public static List<LsTransaction> LsTransaction.findLsTransactionEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsTransaction o", LsTransaction.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsTransaction> LsTransaction.findLsTransactionEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsTransaction o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsTransaction.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ErrorMessageDTO_Roo_Json {
     
     public String ErrorMessageDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ErrorMessageDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ErrorMessageDTO ErrorMessageDTO.fromJsonToErrorMessageDTO(String json) {
-        return new JSONDeserializer<ErrorMessageDTO>().use(null, ErrorMessageDTO.class).deserialize(json);
+        return new JSONDeserializer<ErrorMessageDTO>()
+        .use(null, ErrorMessageDTO.class).deserialize(json);
     }
     
     public static String ErrorMessageDTO.toJsonArray(Collection<ErrorMessageDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ErrorMessageDTO.toJsonArray(Collection<ErrorMessageDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ErrorMessageDTO> ErrorMessageDTO.fromJsonArrayToErroes(String json) {
-        return new JSONDeserializer<List<ErrorMessageDTO>>().use(null, ArrayList.class).use("values", ErrorMessageDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ErrorMessageDTO>>()
+        .use("values", ErrorMessageDTO.class).deserialize(json);
     }
     
 }

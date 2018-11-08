@@ -20,8 +20,17 @@ privileged aspect SubjectStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndSubject", method = RequestMethod.GET)
-    public String SubjectStateController.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("subject") Subject subject, Model uiModel) {
-        uiModel.addAttribute("subjectstates", SubjectState.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(lsType, lsKind, subject).getResultList());
+    public String SubjectStateController.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("subject") Subject subject, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjectstates", SubjectState.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(lsType, lsKind, subject, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SubjectState.countFindSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(lsType, lsKind, subject) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjectstates", SubjectState.findSubjectStatesByLsTypeEqualsAndLsKindEqualsAndSubject(lsType, lsKind, subject, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjectstates/list";
     }
     
@@ -32,8 +41,17 @@ privileged aspect SubjectStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=BySubject", method = RequestMethod.GET)
-    public String SubjectStateController.findSubjectStatesBySubject(@RequestParam("subject") Subject subject, Model uiModel) {
-        uiModel.addAttribute("subjectstates", SubjectState.findSubjectStatesBySubject(subject).getResultList());
+    public String SubjectStateController.findSubjectStatesBySubject(@RequestParam("subject") Subject subject, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjectstates", SubjectState.findSubjectStatesBySubject(subject, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SubjectState.countFindSubjectStatesBySubject(subject) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjectstates", SubjectState.findSubjectStatesBySubject(subject, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjectstates/list";
     }
     

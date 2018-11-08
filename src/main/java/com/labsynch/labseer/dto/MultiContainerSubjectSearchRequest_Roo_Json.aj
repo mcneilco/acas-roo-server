@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect MultiContainerSubjectSearchRequest_Roo_Json {
     
     public String MultiContainerSubjectSearchRequest.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String MultiContainerSubjectSearchRequest.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static MultiContainerSubjectSearchRequest MultiContainerSubjectSearchRequest.fromJsonToMultiContainerSubjectSearchRequest(String json) {
-        return new JSONDeserializer<MultiContainerSubjectSearchRequest>().use(null, MultiContainerSubjectSearchRequest.class).deserialize(json);
+        return new JSONDeserializer<MultiContainerSubjectSearchRequest>()
+        .use(null, MultiContainerSubjectSearchRequest.class).deserialize(json);
     }
     
     public static String MultiContainerSubjectSearchRequest.toJsonArray(Collection<MultiContainerSubjectSearchRequest> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String MultiContainerSubjectSearchRequest.toJsonArray(Collection<MultiContainerSubjectSearchRequest> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<MultiContainerSubjectSearchRequest> MultiContainerSubjectSearchRequest.fromJsonArrayToMultiContainerSubjectSearchRequests(String json) {
-        return new JSONDeserializer<List<MultiContainerSubjectSearchRequest>>().use(null, ArrayList.class).use("values", MultiContainerSubjectSearchRequest.class).deserialize(json);
+        return new JSONDeserializer<List<MultiContainerSubjectSearchRequest>>()
+        .use("values", MultiContainerSubjectSearchRequest.class).deserialize(json);
     }
     
 }

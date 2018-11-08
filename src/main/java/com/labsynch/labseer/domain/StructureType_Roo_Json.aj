@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect StructureType_Roo_Json {
     
     public String StructureType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String StructureType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static StructureType StructureType.fromJsonToStructureType(String json) {
-        return new JSONDeserializer<StructureType>().use(null, StructureType.class).deserialize(json);
+        return new JSONDeserializer<StructureType>()
+        .use(null, StructureType.class).deserialize(json);
     }
     
     public static String StructureType.toJsonArray(Collection<StructureType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String StructureType.toJsonArray(Collection<StructureType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<StructureType> StructureType.fromJsonArrayToStructureTypes(String json) {
-        return new JSONDeserializer<List<StructureType>>().use(null, ArrayList.class).use("values", StructureType.class).deserialize(json);
+        return new JSONDeserializer<List<StructureType>>()
+        .use("values", StructureType.class).deserialize(json);
     }
     
 }

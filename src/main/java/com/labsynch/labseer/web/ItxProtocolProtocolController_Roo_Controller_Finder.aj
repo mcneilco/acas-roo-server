@@ -20,8 +20,17 @@ privileged aspect ItxProtocolProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByFirstProtocol", method = RequestMethod.GET)
-    public String ItxProtocolProtocolController.findItxProtocolProtocolsByFirstProtocol(@RequestParam("firstProtocol") Protocol firstProtocol, Model uiModel) {
-        uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsByFirstProtocol(firstProtocol).getResultList());
+    public String ItxProtocolProtocolController.findItxProtocolProtocolsByFirstProtocol(@RequestParam("firstProtocol") Protocol firstProtocol, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsByFirstProtocol(firstProtocol, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxProtocolProtocol.countFindItxProtocolProtocolsByFirstProtocol(firstProtocol) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsByFirstProtocol(firstProtocol, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxprotocolprotocols/list";
     }
     
@@ -31,8 +40,17 @@ privileged aspect ItxProtocolProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String ItxProtocolProtocolController.findItxProtocolProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction).getResultList());
+    public String ItxProtocolProtocolController.findItxProtocolProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxProtocolProtocol.countFindItxProtocolProtocolsByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxprotocolprotocols/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect ItxProtocolProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=BySecondProtocol", method = RequestMethod.GET)
-    public String ItxProtocolProtocolController.findItxProtocolProtocolsBySecondProtocol(@RequestParam("secondProtocol") Protocol secondProtocol, Model uiModel) {
-        uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol).getResultList());
+    public String ItxProtocolProtocolController.findItxProtocolProtocolsBySecondProtocol(@RequestParam("secondProtocol") Protocol secondProtocol, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxProtocolProtocol.countFindItxProtocolProtocolsBySecondProtocol(secondProtocol) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxprotocolprotocols", ItxProtocolProtocol.findItxProtocolProtocolsBySecondProtocol(secondProtocol, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxprotocolprotocols/list";
     }
     

@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect FileThing_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> FileThing.fieldNames4OrderClauseFilter = java.util.Arrays.asList("name", "description", "fileExtension", "applicationType", "mimeType", "fileURL", "fileSize");
+    
     public static long FileThing.countFileThings() {
         return entityManager().createQuery("SELECT COUNT(o) FROM FileThing o", Long.class).getSingleResult();
     }
     
     public static List<FileThing> FileThing.findAllFileThings() {
         return entityManager().createQuery("SELECT o FROM FileThing o", FileThing.class).getResultList();
+    }
+    
+    public static List<FileThing> FileThing.findAllFileThings(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM FileThing o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, FileThing.class).getResultList();
     }
     
     public static FileThing FileThing.findFileThing(Long id) {
@@ -24,6 +37,17 @@ privileged aspect FileThing_Roo_Jpa_ActiveRecord {
     
     public static List<FileThing> FileThing.findFileThingEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM FileThing o", FileThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<FileThing> FileThing.findFileThingEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM FileThing o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, FileThing.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

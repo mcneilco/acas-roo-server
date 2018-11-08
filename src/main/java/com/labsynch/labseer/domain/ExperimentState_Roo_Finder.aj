@@ -10,10 +10,33 @@ import javax.persistence.TypedQuery;
 
 privileged aspect ExperimentState_Roo_Finder {
     
+    public static Long ExperimentState.countFindExperimentStatesByExperiment(Experiment experiment) {
+        if (experiment == null) throw new IllegalArgumentException("The experiment argument is required");
+        EntityManager em = ExperimentState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ExperimentState AS o WHERE o.experiment = :experiment", Long.class);
+        q.setParameter("experiment", experiment);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<ExperimentState> ExperimentState.findExperimentStatesByExperiment(Experiment experiment) {
         if (experiment == null) throw new IllegalArgumentException("The experiment argument is required");
         EntityManager em = ExperimentState.entityManager();
         TypedQuery<ExperimentState> q = em.createQuery("SELECT o FROM ExperimentState AS o WHERE o.experiment = :experiment", ExperimentState.class);
+        q.setParameter("experiment", experiment);
+        return q;
+    }
+    
+    public static TypedQuery<ExperimentState> ExperimentState.findExperimentStatesByExperiment(Experiment experiment, String sortFieldName, String sortOrder) {
+        if (experiment == null) throw new IllegalArgumentException("The experiment argument is required");
+        EntityManager em = ExperimentState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ExperimentState AS o WHERE o.experiment = :experiment");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ExperimentState> q = em.createQuery(queryBuilder.toString(), ExperimentState.class);
         q.setParameter("experiment", experiment);
         return q;
     }

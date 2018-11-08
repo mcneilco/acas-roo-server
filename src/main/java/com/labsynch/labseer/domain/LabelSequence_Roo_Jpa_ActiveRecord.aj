@@ -14,6 +14,8 @@ privileged aspect LabelSequence_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LabelSequence.entityManager;
     
+    public static final List<String> LabelSequence.fieldNames4OrderClauseFilter = java.util.Arrays.asList("thingTypeAndKind", "labelTypeAndKind", "labelPrefix", "labelSeparator", "groupDigits", "digits", "startingNumber", "ignored", "modifiedDate", "dbSequence", "labelSequenceRoles");
+    
     public static final EntityManager LabelSequence.entityManager() {
         EntityManager em = new LabelSequence().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LabelSequence_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LabelSequence o", LabelSequence.class).getResultList();
     }
     
+    public static List<LabelSequence> LabelSequence.findAllLabelSequences(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LabelSequence o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LabelSequence.class).getResultList();
+    }
+    
     public static LabelSequence LabelSequence.findLabelSequence(Long id) {
         if (id == null) return null;
         return entityManager().find(LabelSequence.class, id);
@@ -35,6 +48,17 @@ privileged aspect LabelSequence_Roo_Jpa_ActiveRecord {
     
     public static List<LabelSequence> LabelSequence.findLabelSequenceEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LabelSequence o", LabelSequence.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LabelSequence> LabelSequence.findLabelSequenceEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LabelSequence o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LabelSequence.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

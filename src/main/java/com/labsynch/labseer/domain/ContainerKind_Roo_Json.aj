@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ContainerKind_Roo_Json {
     
     public String ContainerKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ContainerKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ContainerKind ContainerKind.fromJsonToContainerKind(String json) {
-        return new JSONDeserializer<ContainerKind>().use(null, ContainerKind.class).deserialize(json);
+        return new JSONDeserializer<ContainerKind>()
+        .use(null, ContainerKind.class).deserialize(json);
     }
     
     public static String ContainerKind.toJsonArray(Collection<ContainerKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ContainerKind.toJsonArray(Collection<ContainerKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ContainerKind> ContainerKind.fromJsonArrayToContainerKinds(String json) {
-        return new JSONDeserializer<List<ContainerKind>>().use(null, ArrayList.class).use("values", ContainerKind.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerKind>>()
+        .use("values", ContainerKind.class).deserialize(json);
     }
     
 }

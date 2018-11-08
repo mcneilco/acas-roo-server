@@ -14,6 +14,8 @@ privileged aspect CronJob_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager CronJob.entityManager;
     
+    public static final List<String> CronJob.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "schedule", "scriptType", "scriptFile", "functionName", "scriptJSONData", "active", "ignored", "runUser", "codeName", "lastStartTime", "lastDuration", "lastResultJSON", "numberOfExecutions", "id", "version");
+    
     public static final EntityManager CronJob.entityManager() {
         EntityManager em = new CronJob().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect CronJob_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM CronJob o", CronJob.class).getResultList();
     }
     
+    public static List<CronJob> CronJob.findAllCronJobs(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM CronJob o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, CronJob.class).getResultList();
+    }
+    
     public static CronJob CronJob.findCronJob(Long id) {
         if (id == null) return null;
         return entityManager().find(CronJob.class, id);
@@ -35,6 +48,17 @@ privileged aspect CronJob_Roo_Jpa_ActiveRecord {
     
     public static List<CronJob> CronJob.findCronJobEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM CronJob o", CronJob.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<CronJob> CronJob.findCronJobEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM CronJob o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, CronJob.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

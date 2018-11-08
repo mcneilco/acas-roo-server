@@ -13,15 +13,23 @@ import java.util.List;
 privileged aspect CmpdRegBatchCodeDTO_Roo_Json {
     
     public static CmpdRegBatchCodeDTO CmpdRegBatchCodeDTO.fromJsonToCmpdRegBatchCodeDTO(String json) {
-        return new JSONDeserializer<CmpdRegBatchCodeDTO>().use(null, CmpdRegBatchCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<CmpdRegBatchCodeDTO>()
+        .use(null, CmpdRegBatchCodeDTO.class).deserialize(json);
     }
     
     public static String CmpdRegBatchCodeDTO.toJsonArray(Collection<CmpdRegBatchCodeDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String CmpdRegBatchCodeDTO.toJsonArray(Collection<CmpdRegBatchCodeDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<CmpdRegBatchCodeDTO> CmpdRegBatchCodeDTO.fromJsonArrayToCmpdRegBatchCoes(String json) {
-        return new JSONDeserializer<List<CmpdRegBatchCodeDTO>>().use(null, ArrayList.class).use("values", CmpdRegBatchCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<List<CmpdRegBatchCodeDTO>>()
+        .use("values", CmpdRegBatchCodeDTO.class).deserialize(json);
     }
     
 }

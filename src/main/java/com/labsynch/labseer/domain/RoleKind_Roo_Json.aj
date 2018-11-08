@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect RoleKind_Roo_Json {
     
     public String RoleKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String RoleKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static RoleKind RoleKind.fromJsonToRoleKind(String json) {
-        return new JSONDeserializer<RoleKind>().use(null, RoleKind.class).deserialize(json);
+        return new JSONDeserializer<RoleKind>()
+        .use(null, RoleKind.class).deserialize(json);
     }
     
     public static String RoleKind.toJsonArray(Collection<RoleKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String RoleKind.toJsonArray(Collection<RoleKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<RoleKind> RoleKind.fromJsonArrayToRoleKinds(String json) {
-        return new JSONDeserializer<List<RoleKind>>().use(null, ArrayList.class).use("values", RoleKind.class).deserialize(json);
+        return new JSONDeserializer<List<RoleKind>>()
+        .use("values", RoleKind.class).deserialize(json);
     }
     
 }

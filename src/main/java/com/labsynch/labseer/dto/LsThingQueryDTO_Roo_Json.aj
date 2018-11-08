@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LsThingQueryDTO_Roo_Json {
     
     public String LsThingQueryDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LsThingQueryDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LsThingQueryDTO LsThingQueryDTO.fromJsonToLsThingQueryDTO(String json) {
-        return new JSONDeserializer<LsThingQueryDTO>().use(null, LsThingQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<LsThingQueryDTO>()
+        .use(null, LsThingQueryDTO.class).deserialize(json);
     }
     
     public static String LsThingQueryDTO.toJsonArray(Collection<LsThingQueryDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LsThingQueryDTO.toJsonArray(Collection<LsThingQueryDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LsThingQueryDTO> LsThingQueryDTO.fromJsonArrayToLsThingQueryDTO(String json) {
-        return new JSONDeserializer<List<LsThingQueryDTO>>().use(null, ArrayList.class).use("values", LsThingQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<List<LsThingQueryDTO>>()
+        .use("values", LsThingQueryDTO.class).deserialize(json);
     }
     
 }

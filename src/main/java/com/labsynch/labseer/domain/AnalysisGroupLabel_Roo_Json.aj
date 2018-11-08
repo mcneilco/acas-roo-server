@@ -11,15 +11,28 @@ import java.util.Collection;
 privileged aspect AnalysisGroupLabel_Roo_Json {
     
     public String AnalysisGroupLabel.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String AnalysisGroupLabel.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static AnalysisGroupLabel AnalysisGroupLabel.fromJsonToAnalysisGroupLabel(String json) {
-        return new JSONDeserializer<AnalysisGroupLabel>().use(null, AnalysisGroupLabel.class).deserialize(json);
+        return new JSONDeserializer<AnalysisGroupLabel>()
+        .use(null, AnalysisGroupLabel.class).deserialize(json);
     }
     
     public static String AnalysisGroupLabel.toJsonArray(Collection<AnalysisGroupLabel> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String AnalysisGroupLabel.toJsonArray(Collection<AnalysisGroupLabel> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
 }

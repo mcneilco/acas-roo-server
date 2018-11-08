@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect CodeTypeKindDTO_Roo_Json {
     
     public static CodeTypeKindDTO CodeTypeKindDTO.fromJsonToCodeTypeKindDTO(String json) {
-        return new JSONDeserializer<CodeTypeKindDTO>().use(null, CodeTypeKindDTO.class).deserialize(json);
+        return new JSONDeserializer<CodeTypeKindDTO>()
+        .use(null, CodeTypeKindDTO.class).deserialize(json);
     }
     
     public static Collection<CodeTypeKindDTO> CodeTypeKindDTO.fromJsonArrayToCoes(String json) {
-        return new JSONDeserializer<List<CodeTypeKindDTO>>().use(null, ArrayList.class).use("values", CodeTypeKindDTO.class).deserialize(json);
+        return new JSONDeserializer<List<CodeTypeKindDTO>>()
+        .use("values", CodeTypeKindDTO.class).deserialize(json);
     }
     
 }

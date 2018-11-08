@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ItxProtocolProtocol_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ItxProtocolProtocol.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "firstProtocol", "secondProtocol", "lsStates");
+    
     public static long ItxProtocolProtocol.countItxProtocolProtocols() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ItxProtocolProtocol o", Long.class).getSingleResult();
     }
     
     public static List<ItxProtocolProtocol> ItxProtocolProtocol.findAllItxProtocolProtocols() {
         return entityManager().createQuery("SELECT o FROM ItxProtocolProtocol o", ItxProtocolProtocol.class).getResultList();
+    }
+    
+    public static List<ItxProtocolProtocol> ItxProtocolProtocol.findAllItxProtocolProtocols(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxProtocolProtocol o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxProtocolProtocol.class).getResultList();
     }
     
     public static ItxProtocolProtocol ItxProtocolProtocol.findItxProtocolProtocol(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ItxProtocolProtocol_Roo_Jpa_ActiveRecord {
     
     public static List<ItxProtocolProtocol> ItxProtocolProtocol.findItxProtocolProtocolEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ItxProtocolProtocol o", ItxProtocolProtocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ItxProtocolProtocol> ItxProtocolProtocol.findItxProtocolProtocolEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxProtocolProtocol o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxProtocolProtocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

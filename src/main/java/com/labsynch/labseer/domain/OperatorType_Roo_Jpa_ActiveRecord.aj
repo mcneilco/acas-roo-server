@@ -14,6 +14,8 @@ privileged aspect OperatorType_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager OperatorType.entityManager;
     
+    public static final List<String> OperatorType.fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName", "id", "version");
+    
     public static final EntityManager OperatorType.entityManager() {
         EntityManager em = new OperatorType().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect OperatorType_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM OperatorType o", OperatorType.class).getResultList();
     }
     
+    public static List<OperatorType> OperatorType.findAllOperatorTypes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM OperatorType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, OperatorType.class).getResultList();
+    }
+    
     public static OperatorType OperatorType.findOperatorType(Long id) {
         if (id == null) return null;
         return entityManager().find(OperatorType.class, id);
@@ -35,6 +48,17 @@ privileged aspect OperatorType_Roo_Jpa_ActiveRecord {
     
     public static List<OperatorType> OperatorType.findOperatorTypeEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM OperatorType o", OperatorType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<OperatorType> OperatorType.findOperatorTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM OperatorType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, OperatorType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ValueTypeKindDTO_Roo_Json {
     
     public String ValueTypeKindDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ValueTypeKindDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ValueTypeKindDTO ValueTypeKindDTO.fromJsonToValueTypeKindDTO(String json) {
-        return new JSONDeserializer<ValueTypeKindDTO>().use(null, ValueTypeKindDTO.class).deserialize(json);
+        return new JSONDeserializer<ValueTypeKindDTO>()
+        .use(null, ValueTypeKindDTO.class).deserialize(json);
     }
     
     public static String ValueTypeKindDTO.toJsonArray(Collection<ValueTypeKindDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ValueTypeKindDTO.toJsonArray(Collection<ValueTypeKindDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ValueTypeKindDTO> ValueTypeKindDTO.fromJsonArrayToValueTypeKindDTO(String json) {
-        return new JSONDeserializer<List<ValueTypeKindDTO>>().use(null, ArrayList.class).use("values", ValueTypeKindDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ValueTypeKindDTO>>()
+        .use("values", ValueTypeKindDTO.class).deserialize(json);
     }
     
 }

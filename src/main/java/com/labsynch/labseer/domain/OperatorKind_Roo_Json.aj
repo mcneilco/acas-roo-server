@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect OperatorKind_Roo_Json {
     
     public String OperatorKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String OperatorKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static OperatorKind OperatorKind.fromJsonToOperatorKind(String json) {
-        return new JSONDeserializer<OperatorKind>().use(null, OperatorKind.class).deserialize(json);
+        return new JSONDeserializer<OperatorKind>()
+        .use(null, OperatorKind.class).deserialize(json);
     }
     
     public static String OperatorKind.toJsonArray(Collection<OperatorKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String OperatorKind.toJsonArray(Collection<OperatorKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<OperatorKind> OperatorKind.fromJsonArrayToOperatorKinds(String json) {
-        return new JSONDeserializer<List<OperatorKind>>().use(null, ArrayList.class).use("values", OperatorKind.class).deserialize(json);
+        return new JSONDeserializer<List<OperatorKind>>()
+        .use("values", OperatorKind.class).deserialize(json);
     }
     
 }

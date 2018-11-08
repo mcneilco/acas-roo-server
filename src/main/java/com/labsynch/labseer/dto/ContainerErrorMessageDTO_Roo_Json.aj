@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect ContainerErrorMessageDTO_Roo_Json {
     
     public static ContainerErrorMessageDTO ContainerErrorMessageDTO.fromJsonToContainerErrorMessageDTO(String json) {
-        return new JSONDeserializer<ContainerErrorMessageDTO>().use(null, ContainerErrorMessageDTO.class).deserialize(json);
+        return new JSONDeserializer<ContainerErrorMessageDTO>()
+        .use(null, ContainerErrorMessageDTO.class).deserialize(json);
     }
     
     public static Collection<ContainerErrorMessageDTO> ContainerErrorMessageDTO.fromJsonArrayToContainerErroes(String json) {
-        return new JSONDeserializer<List<ContainerErrorMessageDTO>>().use(null, ArrayList.class).use("values", ContainerErrorMessageDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerErrorMessageDTO>>()
+        .use("values", ContainerErrorMessageDTO.class).deserialize(json);
     }
     
 }

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect OperatorType_Roo_Json {
     
     public String OperatorType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String OperatorType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static OperatorType OperatorType.fromJsonToOperatorType(String json) {
-        return new JSONDeserializer<OperatorType>().use(null, OperatorType.class).deserialize(json);
+        return new JSONDeserializer<OperatorType>()
+        .use(null, OperatorType.class).deserialize(json);
     }
     
     public static String OperatorType.toJsonArray(Collection<OperatorType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String OperatorType.toJsonArray(Collection<OperatorType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<OperatorType> OperatorType.fromJsonArrayToOperatorTypes(String json) {
-        return new JSONDeserializer<List<OperatorType>>().use(null, ArrayList.class).use("values", OperatorType.class).deserialize(json);
+        return new JSONDeserializer<List<OperatorType>>()
+        .use("values", OperatorType.class).deserialize(json);
     }
     
 }

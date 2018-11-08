@@ -40,7 +40,7 @@ privileged aspect ExperimentValueController_Roo_Controller {
         populateEditForm(uiModel, new ExperimentValue());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (ExperimentState.countExperimentStates() == 0) {
-            dependencies.add(new String[] { "experimentstate", "experimentstates" });
+            dependencies.add(new String[] { "lsState", "experimentstates" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "experimentvalues/create";
@@ -55,15 +55,15 @@ privileged aspect ExperimentValueController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String ExperimentValueController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String ExperimentValueController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("experimentvalues", ExperimentValue.findExperimentValueEntries(firstResult, sizeNo));
+            uiModel.addAttribute("experimentvalues", ExperimentValue.findExperimentValueEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) ExperimentValue.countExperimentValues() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("experimentvalues", ExperimentValue.findAllExperimentValues());
+            uiModel.addAttribute("experimentvalues", ExperimentValue.findAllExperimentValues(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "experimentvalues/list";

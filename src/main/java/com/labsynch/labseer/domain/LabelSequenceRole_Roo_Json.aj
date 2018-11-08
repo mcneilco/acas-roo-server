@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LabelSequenceRole_Roo_Json {
     
     public String LabelSequenceRole.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LabelSequenceRole.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LabelSequenceRole LabelSequenceRole.fromJsonToLabelSequenceRole(String json) {
-        return new JSONDeserializer<LabelSequenceRole>().use(null, LabelSequenceRole.class).deserialize(json);
+        return new JSONDeserializer<LabelSequenceRole>()
+        .use(null, LabelSequenceRole.class).deserialize(json);
     }
     
     public static String LabelSequenceRole.toJsonArray(Collection<LabelSequenceRole> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LabelSequenceRole.toJsonArray(Collection<LabelSequenceRole> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LabelSequenceRole> LabelSequenceRole.fromJsonArrayToLabelSequenceRoles(String json) {
-        return new JSONDeserializer<List<LabelSequenceRole>>().use(null, ArrayList.class).use("values", LabelSequenceRole.class).deserialize(json);
+        return new JSONDeserializer<List<LabelSequenceRole>>()
+        .use("values", LabelSequenceRole.class).deserialize(json);
     }
     
 }

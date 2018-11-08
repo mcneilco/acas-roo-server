@@ -10,10 +10,53 @@ import javax.persistence.TypedQuery;
 
 privileged aspect ItxContainerContainer_Roo_Finder {
     
+    public static Long ItxContainerContainer.countFindItxContainerContainersByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ItxContainerContainer.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxContainerContainer AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long ItxContainerContainer.countFindItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(String lsType, Container firstContainer) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (firstContainer == null) throw new IllegalArgumentException("The firstContainer argument is required");
+        EntityManager em = ItxContainerContainer.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxContainerContainer AS o WHERE o.lsType = :lsType  AND o.firstContainer = :firstContainer", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("firstContainer", firstContainer);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long ItxContainerContainer.countFindItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(String lsType, Container secondContainer) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (secondContainer == null) throw new IllegalArgumentException("The secondContainer argument is required");
+        EntityManager em = ItxContainerContainer.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ItxContainerContainer AS o WHERE o.lsType = :lsType  AND o.secondContainer = :secondContainer", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("secondContainer", secondContainer);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<ItxContainerContainer> ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = ItxContainerContainer.entityManager();
         TypedQuery<ItxContainerContainer> q = em.createQuery("SELECT o FROM ItxContainerContainer AS o WHERE o.lsTransaction = :lsTransaction", ItxContainerContainer.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
+    public static TypedQuery<ItxContainerContainer> ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ItxContainerContainer.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxContainerContainer AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxContainerContainer> q = em.createQuery(queryBuilder.toString(), ItxContainerContainer.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }
@@ -28,11 +71,45 @@ privileged aspect ItxContainerContainer_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<ItxContainerContainer> ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(String lsType, Container firstContainer, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (firstContainer == null) throw new IllegalArgumentException("The firstContainer argument is required");
+        EntityManager em = ItxContainerContainer.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxContainerContainer AS o WHERE o.lsType = :lsType  AND o.firstContainer = :firstContainer");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxContainerContainer> q = em.createQuery(queryBuilder.toString(), ItxContainerContainer.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("firstContainer", firstContainer);
+        return q;
+    }
+    
     public static TypedQuery<ItxContainerContainer> ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(String lsType, Container secondContainer) {
         if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
         if (secondContainer == null) throw new IllegalArgumentException("The secondContainer argument is required");
         EntityManager em = ItxContainerContainer.entityManager();
         TypedQuery<ItxContainerContainer> q = em.createQuery("SELECT o FROM ItxContainerContainer AS o WHERE o.lsType = :lsType  AND o.secondContainer = :secondContainer", ItxContainerContainer.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("secondContainer", secondContainer);
+        return q;
+    }
+    
+    public static TypedQuery<ItxContainerContainer> ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(String lsType, Container secondContainer, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (secondContainer == null) throw new IllegalArgumentException("The secondContainer argument is required");
+        EntityManager em = ItxContainerContainer.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ItxContainerContainer AS o WHERE o.lsType = :lsType  AND o.secondContainer = :secondContainer");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ItxContainerContainer> q = em.createQuery(queryBuilder.toString(), ItxContainerContainer.class);
         q.setParameter("lsType", lsType);
         q.setParameter("secondContainer", secondContainer);
         return q;

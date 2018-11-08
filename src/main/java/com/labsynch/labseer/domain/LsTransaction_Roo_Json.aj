@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LsTransaction_Roo_Json {
     
     public String LsTransaction.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LsTransaction.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LsTransaction LsTransaction.fromJsonToLsTransaction(String json) {
-        return new JSONDeserializer<LsTransaction>().use(null, LsTransaction.class).deserialize(json);
+        return new JSONDeserializer<LsTransaction>()
+        .use(null, LsTransaction.class).deserialize(json);
     }
     
     public static String LsTransaction.toJsonArray(Collection<LsTransaction> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LsTransaction.toJsonArray(Collection<LsTransaction> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LsTransaction> LsTransaction.fromJsonArrayToLsTransactions(String json) {
-        return new JSONDeserializer<List<LsTransaction>>().use(null, ArrayList.class).use("values", LsTransaction.class).deserialize(json);
+        return new JSONDeserializer<List<LsTransaction>>()
+        .use("values", LsTransaction.class).deserialize(json);
     }
     
 }

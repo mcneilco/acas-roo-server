@@ -19,8 +19,17 @@ privileged aspect ItxLsThingLsThingController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET)
-    public String ItxLsThingLsThingController.findItxLsThingLsThingsByCodeNameEquals(@RequestParam("codeName") String codeName, Model uiModel) {
-        uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsByCodeNameEquals(codeName).getResultList());
+    public String ItxLsThingLsThingController.findItxLsThingLsThingsByCodeNameEquals(@RequestParam("codeName") String codeName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsByCodeNameEquals(codeName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxLsThingLsThing.countFindItxLsThingLsThingsByCodeNameEquals(codeName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsByCodeNameEquals(codeName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxlsthinglsthings/list";
     }
     
@@ -31,8 +40,17 @@ privileged aspect ItxLsThingLsThingController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByFirstLsThing", method = RequestMethod.GET)
-    public String ItxLsThingLsThingController.findItxLsThingLsThingsByFirstLsThing(@RequestParam("firstLsThing") LsThing firstLsThing, Model uiModel) {
-        uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsByFirstLsThing(firstLsThing).getResultList());
+    public String ItxLsThingLsThingController.findItxLsThingLsThingsByFirstLsThing(@RequestParam("firstLsThing") LsThing firstLsThing, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsByFirstLsThing(firstLsThing, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxLsThingLsThing.countFindItxLsThingLsThingsByFirstLsThing(firstLsThing) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsByFirstLsThing(firstLsThing, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxlsthinglsthings/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect ItxLsThingLsThingController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=BySecondLsThing", method = RequestMethod.GET)
-    public String ItxLsThingLsThingController.findItxLsThingLsThingsBySecondLsThing(@RequestParam("secondLsThing") LsThing secondLsThing, Model uiModel) {
-        uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(secondLsThing).getResultList());
+    public String ItxLsThingLsThingController.findItxLsThingLsThingsBySecondLsThing(@RequestParam("secondLsThing") LsThing secondLsThing, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(secondLsThing, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxLsThingLsThing.countFindItxLsThingLsThingsBySecondLsThing(secondLsThing) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxlsthinglsthings", ItxLsThingLsThing.findItxLsThingLsThingsBySecondLsThing(secondLsThing, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxlsthinglsthings/list";
     }
     

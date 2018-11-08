@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect ProtocolValuePathDTO_Roo_Json {
     
     public static ProtocolValuePathDTO ProtocolValuePathDTO.fromJsonToProtocolValuePathDTO(String json) {
-        return new JSONDeserializer<ProtocolValuePathDTO>().use(null, ProtocolValuePathDTO.class).deserialize(json);
+        return new JSONDeserializer<ProtocolValuePathDTO>()
+        .use(null, ProtocolValuePathDTO.class).deserialize(json);
     }
     
     public static Collection<ProtocolValuePathDTO> ProtocolValuePathDTO.fromJsonArrayToProtocoes(String json) {
-        return new JSONDeserializer<List<ProtocolValuePathDTO>>().use(null, ArrayList.class).use("values", ProtocolValuePathDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ProtocolValuePathDTO>>()
+        .use("values", ProtocolValuePathDTO.class).deserialize(json);
     }
     
 }

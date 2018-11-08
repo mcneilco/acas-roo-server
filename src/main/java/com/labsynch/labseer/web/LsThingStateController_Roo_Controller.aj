@@ -41,7 +41,7 @@ privileged aspect LsThingStateController_Roo_Controller {
         populateEditForm(uiModel, new LsThingState());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (LsThing.countLsThings() == 0) {
-            dependencies.add(new String[] { "lsthing", "lsthings" });
+            dependencies.add(new String[] { "lsThing", "lsthings" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "lsthingstates/create";
@@ -56,15 +56,15 @@ privileged aspect LsThingStateController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String LsThingStateController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String LsThingStateController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("lsthingstates", LsThingState.findLsThingStateEntries(firstResult, sizeNo));
+            uiModel.addAttribute("lsthingstates", LsThingState.findLsThingStateEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) LsThingState.countLsThingStates() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("lsthingstates", LsThingState.findAllLsThingStates());
+            uiModel.addAttribute("lsthingstates", LsThingState.findAllLsThingStates(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "lsthingstates/list";

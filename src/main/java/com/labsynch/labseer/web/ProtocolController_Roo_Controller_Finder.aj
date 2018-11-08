@@ -18,8 +18,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByCodeNameEquals(@RequestParam("codeName") String codeName, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameEquals(codeName).getResultList());
+    public String ProtocolController.findProtocolsByCodeNameEquals(@RequestParam("codeName") String codeName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameEquals(codeName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByCodeNameEquals(codeName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameEquals(codeName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -29,8 +38,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameEqualsAndIgnoredNot", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByCodeNameEqualsAndIgnoredNot(@RequestParam("codeName") String codeName, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, ignored).getResultList());
+    public String ProtocolController.findProtocolsByCodeNameEqualsAndIgnoredNot(@RequestParam("codeName") String codeName, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByCodeNameEqualsAndIgnoredNot(codeName, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameEqualsAndIgnoredNot(codeName, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -40,8 +58,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameLike", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByCodeNameLike(@RequestParam("codeName") String codeName, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameLike(codeName).getResultList());
+    public String ProtocolController.findProtocolsByCodeNameLike(@RequestParam("codeName") String codeName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameLike(codeName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByCodeNameLike(codeName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByCodeNameLike(codeName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -51,8 +78,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByIgnoredNot(ignored).getResultList());
+    public String ProtocolController.findProtocolsByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByIgnoredNot(ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByIgnoredNot(ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByIgnoredNot(ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -62,8 +98,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByLsKindEquals(@RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsKindEquals(lsKind).getResultList());
+    public String ProtocolController.findProtocolsByLsKindEquals(@RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsKindEquals(lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByLsKindEquals(lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsKindEquals(lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -73,8 +118,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsKindLike", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByLsKindLike(@RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsKindLike(lsKind).getResultList());
+    public String ProtocolController.findProtocolsByLsKindLike(@RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsKindLike(lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByLsKindLike(lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsKindLike(lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -84,8 +138,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTransactionEquals(lsTransaction).getResultList());
+    public String ProtocolController.findProtocolsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -95,8 +158,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeAndKindEquals", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeAndKindEquals(lsTypeAndKind).getResultList());
+    public String ProtocolController.findProtocolsByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeAndKindEquals(lsTypeAndKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByLsTypeAndKindEquals(lsTypeAndKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeAndKindEquals(lsTypeAndKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -106,8 +178,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByLsTypeEquals(@RequestParam("lsType") String lsType, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeEquals(lsType).getResultList());
+    public String ProtocolController.findProtocolsByLsTypeEquals(@RequestParam("lsType") String lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeEquals(lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByLsTypeEquals(lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeEquals(lsType, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -117,8 +198,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+    public String ProtocolController.findProtocolsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -128,8 +218,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeLike", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByLsTypeLike(@RequestParam("lsType") String lsType, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeLike(lsType).getResultList());
+    public String ProtocolController.findProtocolsByLsTypeLike(@RequestParam("lsType") String lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeLike(lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByLsTypeLike(lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByLsTypeLike(lsType, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     
@@ -139,8 +238,17 @@ privileged aspect ProtocolController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByRecordedByLike", method = RequestMethod.GET)
-    public String ProtocolController.findProtocolsByRecordedByLike(@RequestParam("recordedBy") String recordedBy, Model uiModel) {
-        uiModel.addAttribute("protocols", Protocol.findProtocolsByRecordedByLike(recordedBy).getResultList());
+    public String ProtocolController.findProtocolsByRecordedByLike(@RequestParam("recordedBy") String recordedBy, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByRecordedByLike(recordedBy, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Protocol.countFindProtocolsByRecordedByLike(recordedBy) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocols", Protocol.findProtocolsByRecordedByLike(recordedBy, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocols/list";
     }
     

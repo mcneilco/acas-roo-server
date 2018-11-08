@@ -18,8 +18,17 @@ privileged aspect AuthorController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByActivationKeyAndEmailAddress", method = RequestMethod.GET)
-    public String AuthorController.findAuthorsByActivationKeyAndEmailAddress(@RequestParam("activationKey") String activationKey, @RequestParam("emailAddress") String emailAddress, Model uiModel) {
-        uiModel.addAttribute("authors", Author.findAuthorsByActivationKeyAndEmailAddress(activationKey, emailAddress).getResultList());
+    public String AuthorController.findAuthorsByActivationKeyAndEmailAddress(@RequestParam("activationKey") String activationKey, @RequestParam("emailAddress") String emailAddress, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("authors", Author.findAuthorsByActivationKeyAndEmailAddress(activationKey, emailAddress, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Author.countFindAuthorsByActivationKeyAndEmailAddress(activationKey, emailAddress) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("authors", Author.findAuthorsByActivationKeyAndEmailAddress(activationKey, emailAddress, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "authors/list";
     }
     
@@ -29,8 +38,17 @@ privileged aspect AuthorController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByEmailAddress", method = RequestMethod.GET)
-    public String AuthorController.findAuthorsByEmailAddress(@RequestParam("emailAddress") String emailAddress, Model uiModel) {
-        uiModel.addAttribute("authors", Author.findAuthorsByEmailAddress(emailAddress).getResultList());
+    public String AuthorController.findAuthorsByEmailAddress(@RequestParam("emailAddress") String emailAddress, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("authors", Author.findAuthorsByEmailAddress(emailAddress, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Author.countFindAuthorsByEmailAddress(emailAddress) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("authors", Author.findAuthorsByEmailAddress(emailAddress, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "authors/list";
     }
     
@@ -40,8 +58,17 @@ privileged aspect AuthorController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByUserName", method = RequestMethod.GET)
-    public String AuthorController.findAuthorsByUserName(@RequestParam("userName") String userName, Model uiModel) {
-        uiModel.addAttribute("authors", Author.findAuthorsByUserName(userName).getResultList());
+    public String AuthorController.findAuthorsByUserName(@RequestParam("userName") String userName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("authors", Author.findAuthorsByUserName(userName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Author.countFindAuthorsByUserName(userName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("authors", Author.findAuthorsByUserName(userName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "authors/list";
     }
     

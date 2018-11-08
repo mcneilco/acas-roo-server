@@ -38,7 +38,7 @@ privileged aspect ValueKindController_Roo_Controller {
         populateEditForm(uiModel, new ValueKind());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (ValueType.countValueTypes() == 0) {
-            dependencies.add(new String[] { "valuetype", "valuetypes" });
+            dependencies.add(new String[] { "lsType", "valuetypes" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "valuekinds/create";
@@ -52,15 +52,15 @@ privileged aspect ValueKindController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String ValueKindController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String ValueKindController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("valuekinds", ValueKind.findValueKindEntries(firstResult, sizeNo));
+            uiModel.addAttribute("valuekinds", ValueKind.findValueKindEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) ValueKind.countValueKinds() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("valuekinds", ValueKind.findAllValueKinds());
+            uiModel.addAttribute("valuekinds", ValueKind.findAllValueKinds(sortFieldName, sortOrder));
         }
         return "valuekinds/list";
     }

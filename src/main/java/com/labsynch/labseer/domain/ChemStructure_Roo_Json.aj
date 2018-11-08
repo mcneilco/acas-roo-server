@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ChemStructure_Roo_Json {
     
     public String ChemStructure.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ChemStructure.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ChemStructure ChemStructure.fromJsonToChemStructure(String json) {
-        return new JSONDeserializer<ChemStructure>().use(null, ChemStructure.class).deserialize(json);
+        return new JSONDeserializer<ChemStructure>()
+        .use(null, ChemStructure.class).deserialize(json);
     }
     
     public static String ChemStructure.toJsonArray(Collection<ChemStructure> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ChemStructure.toJsonArray(Collection<ChemStructure> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ChemStructure> ChemStructure.fromJsonArrayToChemStructures(String json) {
-        return new JSONDeserializer<List<ChemStructure>>().use(null, ArrayList.class).use("values", ChemStructure.class).deserialize(json);
+        return new JSONDeserializer<List<ChemStructure>>()
+        .use("values", ChemStructure.class).deserialize(json);
     }
     
 }

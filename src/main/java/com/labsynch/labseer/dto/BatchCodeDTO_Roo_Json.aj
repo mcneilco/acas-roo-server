@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect BatchCodeDTO_Roo_Json {
     
     public String BatchCodeDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String BatchCodeDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static BatchCodeDTO BatchCodeDTO.fromJsonToBatchCodeDTO(String json) {
-        return new JSONDeserializer<BatchCodeDTO>().use(null, BatchCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<BatchCodeDTO>()
+        .use(null, BatchCodeDTO.class).deserialize(json);
     }
     
     public static String BatchCodeDTO.toJsonArray(Collection<BatchCodeDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String BatchCodeDTO.toJsonArray(Collection<BatchCodeDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<BatchCodeDTO> BatchCodeDTO.fromJsonArrayToBatchCoes(String json) {
-        return new JSONDeserializer<List<BatchCodeDTO>>().use(null, ArrayList.class).use("values", BatchCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<List<BatchCodeDTO>>()
+        .use("values", BatchCodeDTO.class).deserialize(json);
     }
     
 }

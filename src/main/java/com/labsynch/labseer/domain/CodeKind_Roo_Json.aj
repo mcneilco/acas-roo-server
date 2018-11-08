@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect CodeKind_Roo_Json {
     
     public String CodeKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String CodeKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static CodeKind CodeKind.fromJsonToCodeKind(String json) {
-        return new JSONDeserializer<CodeKind>().use(null, CodeKind.class).deserialize(json);
+        return new JSONDeserializer<CodeKind>()
+        .use(null, CodeKind.class).deserialize(json);
     }
     
     public static String CodeKind.toJsonArray(Collection<CodeKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String CodeKind.toJsonArray(Collection<CodeKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<CodeKind> CodeKind.fromJsonArrayToCodeKinds(String json) {
-        return new JSONDeserializer<List<CodeKind>>().use(null, ArrayList.class).use("values", CodeKind.class).deserialize(json);
+        return new JSONDeserializer<List<CodeKind>>()
+        .use("values", CodeKind.class).deserialize(json);
     }
     
 }

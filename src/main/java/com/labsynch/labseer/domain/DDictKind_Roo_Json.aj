@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect DDictKind_Roo_Json {
     
     public String DDictKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String DDictKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static DDictKind DDictKind.fromJsonToDDictKind(String json) {
-        return new JSONDeserializer<DDictKind>().use(null, DDictKind.class).deserialize(json);
+        return new JSONDeserializer<DDictKind>()
+        .use(null, DDictKind.class).deserialize(json);
     }
     
     public static String DDictKind.toJsonArray(Collection<DDictKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String DDictKind.toJsonArray(Collection<DDictKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<DDictKind> DDictKind.fromJsonArrayToDDictKinds(String json) {
-        return new JSONDeserializer<List<DDictKind>>().use(null, ArrayList.class).use("values", DDictKind.class).deserialize(json);
+        return new JSONDeserializer<List<DDictKind>>()
+        .use("values", DDictKind.class).deserialize(json);
     }
     
 }

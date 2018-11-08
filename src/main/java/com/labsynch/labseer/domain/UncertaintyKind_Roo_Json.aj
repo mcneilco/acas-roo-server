@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect UncertaintyKind_Roo_Json {
     
     public String UncertaintyKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String UncertaintyKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static UncertaintyKind UncertaintyKind.fromJsonToUncertaintyKind(String json) {
-        return new JSONDeserializer<UncertaintyKind>().use(null, UncertaintyKind.class).deserialize(json);
+        return new JSONDeserializer<UncertaintyKind>()
+        .use(null, UncertaintyKind.class).deserialize(json);
     }
     
     public static String UncertaintyKind.toJsonArray(Collection<UncertaintyKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String UncertaintyKind.toJsonArray(Collection<UncertaintyKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<UncertaintyKind> UncertaintyKind.fromJsonArrayToUncertaintyKinds(String json) {
-        return new JSONDeserializer<List<UncertaintyKind>>().use(null, ArrayList.class).use("values", UncertaintyKind.class).deserialize(json);
+        return new JSONDeserializer<List<UncertaintyKind>>()
+        .use("values", UncertaintyKind.class).deserialize(json);
     }
     
 }

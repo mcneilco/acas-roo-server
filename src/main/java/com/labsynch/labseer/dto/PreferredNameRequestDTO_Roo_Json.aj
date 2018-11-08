@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect PreferredNameRequestDTO_Roo_Json {
     
     public static PreferredNameRequestDTO PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(String json) {
-        return new JSONDeserializer<PreferredNameRequestDTO>().use(null, PreferredNameRequestDTO.class).deserialize(json);
+        return new JSONDeserializer<PreferredNameRequestDTO>()
+        .use(null, PreferredNameRequestDTO.class).deserialize(json);
     }
     
     public static Collection<PreferredNameRequestDTO> PreferredNameRequestDTO.fromJsonArrayToPreferredNameRequestDTO(String json) {
-        return new JSONDeserializer<List<PreferredNameRequestDTO>>().use(null, ArrayList.class).use("values", PreferredNameRequestDTO.class).deserialize(json);
+        return new JSONDeserializer<List<PreferredNameRequestDTO>>()
+        .use("values", PreferredNameRequestDTO.class).deserialize(json);
     }
     
 }

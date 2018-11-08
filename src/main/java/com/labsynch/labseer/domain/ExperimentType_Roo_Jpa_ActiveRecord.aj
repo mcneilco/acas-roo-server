@@ -14,6 +14,8 @@ privileged aspect ExperimentType_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager ExperimentType.entityManager;
     
+    public static final List<String> ExperimentType.fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName");
+    
     public static final EntityManager ExperimentType.entityManager() {
         EntityManager em = new ExperimentType().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect ExperimentType_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ExperimentType o", ExperimentType.class).getResultList();
     }
     
+    public static List<ExperimentType> ExperimentType.findAllExperimentTypes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ExperimentType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ExperimentType.class).getResultList();
+    }
+    
     public static ExperimentType ExperimentType.findExperimentType(Long id) {
         if (id == null) return null;
         return entityManager().find(ExperimentType.class, id);
@@ -35,6 +48,17 @@ privileged aspect ExperimentType_Roo_Jpa_ActiveRecord {
     
     public static List<ExperimentType> ExperimentType.findExperimentTypeEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ExperimentType o", ExperimentType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ExperimentType> ExperimentType.findExperimentTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ExperimentType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ExperimentType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

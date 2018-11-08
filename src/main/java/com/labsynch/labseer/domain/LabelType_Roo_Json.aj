@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect LabelType_Roo_Json {
     
     public String LabelType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String LabelType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static LabelType LabelType.fromJsonToLabelType(String json) {
-        return new JSONDeserializer<LabelType>().use(null, LabelType.class).deserialize(json);
+        return new JSONDeserializer<LabelType>()
+        .use(null, LabelType.class).deserialize(json);
     }
     
     public static String LabelType.toJsonArray(Collection<LabelType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String LabelType.toJsonArray(Collection<LabelType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<LabelType> LabelType.fromJsonArrayToLabelTypes(String json) {
-        return new JSONDeserializer<List<LabelType>>().use(null, ArrayList.class).use("values", LabelType.class).deserialize(json);
+        return new JSONDeserializer<List<LabelType>>()
+        .use("values", LabelType.class).deserialize(json);
     }
     
 }

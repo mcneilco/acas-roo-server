@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect GenericValuePathRequest_Roo_Json {
     
     public static GenericValuePathRequest GenericValuePathRequest.fromJsonToGenericValuePathRequest(String json) {
-        return new JSONDeserializer<GenericValuePathRequest>().use(null, GenericValuePathRequest.class).deserialize(json);
+        return new JSONDeserializer<GenericValuePathRequest>()
+        .use(null, GenericValuePathRequest.class).deserialize(json);
     }
     
     public static Collection<GenericValuePathRequest> GenericValuePathRequest.fromJsonArrayToGenericValuePathRequests(String json) {
-        return new JSONDeserializer<List<GenericValuePathRequest>>().use(null, ArrayList.class).use("values", GenericValuePathRequest.class).deserialize(json);
+        return new JSONDeserializer<List<GenericValuePathRequest>>()
+        .use("values", GenericValuePathRequest.class).deserialize(json);
     }
     
 }

@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ProtocolValue_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ProtocolValue.fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
+    
     public static long ProtocolValue.countProtocolValues() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ProtocolValue o", Long.class).getSingleResult();
     }
     
     public static List<ProtocolValue> ProtocolValue.findAllProtocolValues() {
         return entityManager().createQuery("SELECT o FROM ProtocolValue o", ProtocolValue.class).getResultList();
+    }
+    
+    public static List<ProtocolValue> ProtocolValue.findAllProtocolValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ProtocolValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ProtocolValue.class).getResultList();
     }
     
     public static ProtocolValue ProtocolValue.findProtocolValue(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ProtocolValue_Roo_Jpa_ActiveRecord {
     
     public static List<ProtocolValue> ProtocolValue.findProtocolValueEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ProtocolValue o", ProtocolValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ProtocolValue> ProtocolValue.findProtocolValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ProtocolValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ProtocolValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

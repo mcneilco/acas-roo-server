@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ExperimentCodeDTO_Roo_Json {
     
     public String ExperimentCodeDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ExperimentCodeDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ExperimentCodeDTO ExperimentCodeDTO.fromJsonToExperimentCodeDTO(String json) {
-        return new JSONDeserializer<ExperimentCodeDTO>().use(null, ExperimentCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<ExperimentCodeDTO>()
+        .use(null, ExperimentCodeDTO.class).deserialize(json);
     }
     
     public static String ExperimentCodeDTO.toJsonArray(Collection<ExperimentCodeDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ExperimentCodeDTO.toJsonArray(Collection<ExperimentCodeDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ExperimentCodeDTO> ExperimentCodeDTO.fromJsonArrayToExperimentCoes(String json) {
-        return new JSONDeserializer<List<ExperimentCodeDTO>>().use(null, ArrayList.class).use("values", ExperimentCodeDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ExperimentCodeDTO>>()
+        .use("values", ExperimentCodeDTO.class).deserialize(json);
     }
     
 }

@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ProtocolLabel_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ProtocolLabel.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "protocol");
+    
     public static long ProtocolLabel.countProtocolLabels() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ProtocolLabel o", Long.class).getSingleResult();
     }
@@ -17,8 +19,30 @@ privileged aspect ProtocolLabel_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ProtocolLabel o", ProtocolLabel.class).getResultList();
     }
     
+    public static List<ProtocolLabel> ProtocolLabel.findAllProtocolLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ProtocolLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ProtocolLabel.class).getResultList();
+    }
+    
     public static List<ProtocolLabel> ProtocolLabel.findProtocolLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ProtocolLabel o", ProtocolLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ProtocolLabel> ProtocolLabel.findProtocolLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ProtocolLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ProtocolLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

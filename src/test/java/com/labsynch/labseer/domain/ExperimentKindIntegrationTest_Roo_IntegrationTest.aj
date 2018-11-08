@@ -6,7 +6,10 @@ package com.labsynch.labseer.domain;
 import com.labsynch.labseer.domain.ExperimentKind;
 import com.labsynch.labseer.domain.ExperimentKindDataOnDemand;
 import com.labsynch.labseer.domain.ExperimentKindIntegrationTest;
+import java.util.Iterator;
 import java.util.List;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +22,7 @@ privileged aspect ExperimentKindIntegrationTest_Roo_IntegrationTest {
     
     declare @type: ExperimentKindIntegrationTest: @RunWith(SpringJUnit4ClassRunner.class);
     
-    declare @type: ExperimentKindIntegrationTest: @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml");
+    declare @type: ExperimentKindIntegrationTest: @ContextConfiguration(locations = "classpath*:/META-INF/spring/applicationContext*.xml");
     
     declare @type: ExperimentKindIntegrationTest: @Transactional;
     
@@ -101,7 +104,16 @@ privileged aspect ExperimentKindIntegrationTest_Roo_IntegrationTest {
         ExperimentKind obj = dod.getNewTransientExperimentKind(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'ExperimentKind' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'ExperimentKind' identifier to be null", obj.getId());
-        obj.persist();
+        try {
+            obj.persist();
+        } catch (final ConstraintViolationException e) {
+            final StringBuilder msg = new StringBuilder();
+            for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                final ConstraintViolation<?> cv = iter.next();
+                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+            }
+            throw new IllegalStateException(msg.toString(), e);
+        }
         obj.flush();
         Assert.assertNotNull("Expected 'ExperimentKind' identifier to no longer be null", obj.getId());
     }

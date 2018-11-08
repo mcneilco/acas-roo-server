@@ -14,6 +14,8 @@ privileged aspect LsSeqProtocol_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LsSeqProtocol.entityManager;
     
+    public static final List<String> LsSeqProtocol.fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
+    
     public static final EntityManager LsSeqProtocol.entityManager() {
         EntityManager em = new LsSeqProtocol().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LsSeqProtocol_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LsSeqProtocol o", LsSeqProtocol.class).getResultList();
     }
     
+    public static List<LsSeqProtocol> LsSeqProtocol.findAllLsSeqProtocols(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqProtocol o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqProtocol.class).getResultList();
+    }
+    
     public static LsSeqProtocol LsSeqProtocol.findLsSeqProtocol(Long id) {
         if (id == null) return null;
         return entityManager().find(LsSeqProtocol.class, id);
@@ -35,6 +48,17 @@ privileged aspect LsSeqProtocol_Roo_Jpa_ActiveRecord {
     
     public static List<LsSeqProtocol> LsSeqProtocol.findLsSeqProtocolEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsSeqProtocol o", LsSeqProtocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsSeqProtocol> LsSeqProtocol.findLsSeqProtocolEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqProtocol o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqProtocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

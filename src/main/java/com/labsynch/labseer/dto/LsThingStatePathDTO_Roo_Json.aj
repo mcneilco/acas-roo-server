@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect LsThingStatePathDTO_Roo_Json {
     
     public static LsThingStatePathDTO LsThingStatePathDTO.fromJsonToLsThingStatePathDTO(String json) {
-        return new JSONDeserializer<LsThingStatePathDTO>().use(null, LsThingStatePathDTO.class).deserialize(json);
+        return new JSONDeserializer<LsThingStatePathDTO>()
+        .use(null, LsThingStatePathDTO.class).deserialize(json);
     }
     
     public static Collection<LsThingStatePathDTO> LsThingStatePathDTO.fromJsonArrayToLsThingStatePathDTO(String json) {
-        return new JSONDeserializer<List<LsThingStatePathDTO>>().use(null, ArrayList.class).use("values", LsThingStatePathDTO.class).deserialize(json);
+        return new JSONDeserializer<List<LsThingStatePathDTO>>()
+        .use("values", LsThingStatePathDTO.class).deserialize(json);
     }
     
 }

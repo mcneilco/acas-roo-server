@@ -9,10 +9,33 @@ import javax.persistence.TypedQuery;
 
 privileged aspect RoleType_Roo_Finder {
     
+    public static Long RoleType.countFindRoleTypesByTypeNameEquals(String typeName) {
+        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+        EntityManager em = RoleType.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM RoleType AS o WHERE o.typeName = :typeName", Long.class);
+        q.setParameter("typeName", typeName);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<RoleType> RoleType.findRoleTypesByTypeNameEquals(String typeName) {
         if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
         EntityManager em = RoleType.entityManager();
         TypedQuery<RoleType> q = em.createQuery("SELECT o FROM RoleType AS o WHERE o.typeName = :typeName", RoleType.class);
+        q.setParameter("typeName", typeName);
+        return q;
+    }
+    
+    public static TypedQuery<RoleType> RoleType.findRoleTypesByTypeNameEquals(String typeName, String sortFieldName, String sortOrder) {
+        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+        EntityManager em = RoleType.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM RoleType AS o WHERE o.typeName = :typeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<RoleType> q = em.createQuery(queryBuilder.toString(), RoleType.class);
         q.setParameter("typeName", typeName);
         return q;
     }

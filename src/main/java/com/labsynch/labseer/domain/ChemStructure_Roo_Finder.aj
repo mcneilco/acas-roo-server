@@ -9,10 +9,33 @@ import javax.persistence.TypedQuery;
 
 privileged aspect ChemStructure_Roo_Finder {
     
+    public static Long ChemStructure.countFindChemStructuresByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = ChemStructure.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ChemStructure AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<ChemStructure> ChemStructure.findChemStructuresByCodeNameEquals(String codeName) {
         if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = ChemStructure.entityManager();
         TypedQuery<ChemStructure> q = em.createQuery("SELECT o FROM ChemStructure AS o WHERE o.codeName = :codeName", ChemStructure.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+    
+    public static TypedQuery<ChemStructure> ChemStructure.findChemStructuresByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = ChemStructure.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ChemStructure AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ChemStructure> q = em.createQuery(queryBuilder.toString(), ChemStructure.class);
         q.setParameter("codeName", codeName);
         return q;
     }

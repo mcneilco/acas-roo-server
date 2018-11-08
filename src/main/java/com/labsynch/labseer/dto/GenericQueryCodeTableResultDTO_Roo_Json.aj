@@ -13,15 +13,23 @@ import java.util.List;
 privileged aspect GenericQueryCodeTableResultDTO_Roo_Json {
     
     public static GenericQueryCodeTableResultDTO GenericQueryCodeTableResultDTO.fromJsonToGenericQueryCodeTableResultDTO(String json) {
-        return new JSONDeserializer<GenericQueryCodeTableResultDTO>().use(null, GenericQueryCodeTableResultDTO.class).deserialize(json);
+        return new JSONDeserializer<GenericQueryCodeTableResultDTO>()
+        .use(null, GenericQueryCodeTableResultDTO.class).deserialize(json);
     }
     
     public static String GenericQueryCodeTableResultDTO.toJsonArray(Collection<GenericQueryCodeTableResultDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String GenericQueryCodeTableResultDTO.toJsonArray(Collection<GenericQueryCodeTableResultDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<GenericQueryCodeTableResultDTO> GenericQueryCodeTableResultDTO.fromJsonArrayToGenericQueryCoes(String json) {
-        return new JSONDeserializer<List<GenericQueryCodeTableResultDTO>>().use(null, ArrayList.class).use("values", GenericQueryCodeTableResultDTO.class).deserialize(json);
+        return new JSONDeserializer<List<GenericQueryCodeTableResultDTO>>()
+        .use("values", GenericQueryCodeTableResultDTO.class).deserialize(json);
     }
     
 }

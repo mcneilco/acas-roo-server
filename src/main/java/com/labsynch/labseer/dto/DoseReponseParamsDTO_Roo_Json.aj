@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect DoseReponseParamsDTO_Roo_Json {
     
     public String DoseReponseParamsDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String DoseReponseParamsDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static DoseReponseParamsDTO DoseReponseParamsDTO.fromJsonToDoseReponseParamsDTO(String json) {
-        return new JSONDeserializer<DoseReponseParamsDTO>().use(null, DoseReponseParamsDTO.class).deserialize(json);
+        return new JSONDeserializer<DoseReponseParamsDTO>()
+        .use(null, DoseReponseParamsDTO.class).deserialize(json);
     }
     
     public static String DoseReponseParamsDTO.toJsonArray(Collection<DoseReponseParamsDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String DoseReponseParamsDTO.toJsonArray(Collection<DoseReponseParamsDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<DoseReponseParamsDTO> DoseReponseParamsDTO.fromJsonArrayToDoseRepoes(String json) {
-        return new JSONDeserializer<List<DoseReponseParamsDTO>>().use(null, ArrayList.class).use("values", DoseReponseParamsDTO.class).deserialize(json);
+        return new JSONDeserializer<List<DoseReponseParamsDTO>>()
+        .use("values", DoseReponseParamsDTO.class).deserialize(json);
     }
     
 }

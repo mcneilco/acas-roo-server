@@ -10,11 +10,23 @@ import java.util.Collection;
 privileged aspect ExperimentValue_Roo_Json {
     
     public String ExperimentValue.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ExperimentValue.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static String ExperimentValue.toJsonArray(Collection<ExperimentValue> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ExperimentValue.toJsonArray(Collection<ExperimentValue> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
 }

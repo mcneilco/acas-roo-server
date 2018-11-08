@@ -13,15 +13,23 @@ import java.util.List;
 privileged aspect MultiContainerSubjectSearchResultDTO_Roo_Json {
     
     public static MultiContainerSubjectSearchResultDTO MultiContainerSubjectSearchResultDTO.fromJsonToMultiContainerSubjectSearchResultDTO(String json) {
-        return new JSONDeserializer<MultiContainerSubjectSearchResultDTO>().use(null, MultiContainerSubjectSearchResultDTO.class).deserialize(json);
+        return new JSONDeserializer<MultiContainerSubjectSearchResultDTO>()
+        .use(null, MultiContainerSubjectSearchResultDTO.class).deserialize(json);
     }
     
     public static String MultiContainerSubjectSearchResultDTO.toJsonArray(Collection<MultiContainerSubjectSearchResultDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String MultiContainerSubjectSearchResultDTO.toJsonArray(Collection<MultiContainerSubjectSearchResultDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<MultiContainerSubjectSearchResultDTO> MultiContainerSubjectSearchResultDTO.fromJsonArrayToMultiCoes(String json) {
-        return new JSONDeserializer<List<MultiContainerSubjectSearchResultDTO>>().use(null, ArrayList.class).use("values", MultiContainerSubjectSearchResultDTO.class).deserialize(json);
+        return new JSONDeserializer<List<MultiContainerSubjectSearchResultDTO>>()
+        .use("values", MultiContainerSubjectSearchResultDTO.class).deserialize(json);
     }
     
 }

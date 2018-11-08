@@ -14,6 +14,8 @@ privileged aspect ThingPage_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager ThingPage.entityManager;
     
+    public static final List<String> ThingPage.fieldNames4OrderClauseFilter = java.util.Arrays.asList("pageName", "recordedBy", "recordedDate", "pageContent", "modifiedBy", "modifiedDate", "currentEditor", "ignored", "archived", "lsTransaction", "thing");
+    
     public static final EntityManager ThingPage.entityManager() {
         EntityManager em = new ThingPage().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect ThingPage_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ThingPage o", ThingPage.class).getResultList();
     }
     
+    public static List<ThingPage> ThingPage.findAllThingPages(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ThingPage o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ThingPage.class).getResultList();
+    }
+    
     public static ThingPage ThingPage.findThingPage(Long id) {
         if (id == null) return null;
         return entityManager().find(ThingPage.class, id);
@@ -35,6 +48,17 @@ privileged aspect ThingPage_Roo_Jpa_ActiveRecord {
     
     public static List<ThingPage> ThingPage.findThingPageEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ThingPage o", ThingPage.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ThingPage> ThingPage.findThingPageEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ThingPage o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ThingPage.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ExperimentType_Roo_Json {
     
     public String ExperimentType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ExperimentType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ExperimentType ExperimentType.fromJsonToExperimentType(String json) {
-        return new JSONDeserializer<ExperimentType>().use(null, ExperimentType.class).deserialize(json);
+        return new JSONDeserializer<ExperimentType>()
+        .use(null, ExperimentType.class).deserialize(json);
     }
     
     public static String ExperimentType.toJsonArray(Collection<ExperimentType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ExperimentType.toJsonArray(Collection<ExperimentType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ExperimentType> ExperimentType.fromJsonArrayToExperimentTypes(String json) {
-        return new JSONDeserializer<List<ExperimentType>>().use(null, ArrayList.class).use("values", ExperimentType.class).deserialize(json);
+        return new JSONDeserializer<List<ExperimentType>>()
+        .use("values", ExperimentType.class).deserialize(json);
     }
     
 }

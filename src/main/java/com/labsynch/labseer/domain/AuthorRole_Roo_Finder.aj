@@ -11,10 +11,51 @@ import javax.persistence.TypedQuery;
 
 privileged aspect AuthorRole_Roo_Finder {
     
+    public static Long AuthorRole.countFindAuthorRolesByRoleEntry(LsRole roleEntry) {
+        if (roleEntry == null) throw new IllegalArgumentException("The roleEntry argument is required");
+        EntityManager em = AuthorRole.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AuthorRole AS o WHERE o.roleEntry = :roleEntry", Long.class);
+        q.setParameter("roleEntry", roleEntry);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long AuthorRole.countFindAuthorRolesByRoleEntryAndUserEntry(LsRole roleEntry, Author userEntry) {
+        if (roleEntry == null) throw new IllegalArgumentException("The roleEntry argument is required");
+        if (userEntry == null) throw new IllegalArgumentException("The userEntry argument is required");
+        EntityManager em = AuthorRole.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AuthorRole AS o WHERE o.roleEntry = :roleEntry AND o.userEntry = :userEntry", Long.class);
+        q.setParameter("roleEntry", roleEntry);
+        q.setParameter("userEntry", userEntry);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long AuthorRole.countFindAuthorRolesByUserEntry(Author userEntry) {
+        if (userEntry == null) throw new IllegalArgumentException("The userEntry argument is required");
+        EntityManager em = AuthorRole.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AuthorRole AS o WHERE o.userEntry = :userEntry", Long.class);
+        q.setParameter("userEntry", userEntry);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<AuthorRole> AuthorRole.findAuthorRolesByRoleEntry(LsRole roleEntry) {
         if (roleEntry == null) throw new IllegalArgumentException("The roleEntry argument is required");
         EntityManager em = AuthorRole.entityManager();
         TypedQuery<AuthorRole> q = em.createQuery("SELECT o FROM AuthorRole AS o WHERE o.roleEntry = :roleEntry", AuthorRole.class);
+        q.setParameter("roleEntry", roleEntry);
+        return q;
+    }
+    
+    public static TypedQuery<AuthorRole> AuthorRole.findAuthorRolesByRoleEntry(LsRole roleEntry, String sortFieldName, String sortOrder) {
+        if (roleEntry == null) throw new IllegalArgumentException("The roleEntry argument is required");
+        EntityManager em = AuthorRole.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AuthorRole AS o WHERE o.roleEntry = :roleEntry");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AuthorRole> q = em.createQuery(queryBuilder.toString(), AuthorRole.class);
         q.setParameter("roleEntry", roleEntry);
         return q;
     }
@@ -29,10 +70,42 @@ privileged aspect AuthorRole_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<AuthorRole> AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(LsRole roleEntry, Author userEntry, String sortFieldName, String sortOrder) {
+        if (roleEntry == null) throw new IllegalArgumentException("The roleEntry argument is required");
+        if (userEntry == null) throw new IllegalArgumentException("The userEntry argument is required");
+        EntityManager em = AuthorRole.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AuthorRole AS o WHERE o.roleEntry = :roleEntry AND o.userEntry = :userEntry");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AuthorRole> q = em.createQuery(queryBuilder.toString(), AuthorRole.class);
+        q.setParameter("roleEntry", roleEntry);
+        q.setParameter("userEntry", userEntry);
+        return q;
+    }
+    
     public static TypedQuery<AuthorRole> AuthorRole.findAuthorRolesByUserEntry(Author userEntry) {
         if (userEntry == null) throw new IllegalArgumentException("The userEntry argument is required");
         EntityManager em = AuthorRole.entityManager();
         TypedQuery<AuthorRole> q = em.createQuery("SELECT o FROM AuthorRole AS o WHERE o.userEntry = :userEntry", AuthorRole.class);
+        q.setParameter("userEntry", userEntry);
+        return q;
+    }
+    
+    public static TypedQuery<AuthorRole> AuthorRole.findAuthorRolesByUserEntry(Author userEntry, String sortFieldName, String sortOrder) {
+        if (userEntry == null) throw new IllegalArgumentException("The userEntry argument is required");
+        EntityManager em = AuthorRole.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AuthorRole AS o WHERE o.userEntry = :userEntry");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AuthorRole> q = em.createQuery(queryBuilder.toString(), AuthorRole.class);
         q.setParameter("userEntry", userEntry);
         return q;
     }

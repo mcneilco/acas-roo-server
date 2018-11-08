@@ -44,15 +44,15 @@ privileged aspect UncertaintyKindController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String UncertaintyKindController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String UncertaintyKindController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("uncertaintykinds", UncertaintyKind.findUncertaintyKindEntries(firstResult, sizeNo));
+            uiModel.addAttribute("uncertaintykinds", UncertaintyKind.findUncertaintyKindEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) UncertaintyKind.countUncertaintyKinds() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("uncertaintykinds", UncertaintyKind.findAllUncertaintyKinds());
+            uiModel.addAttribute("uncertaintykinds", UncertaintyKind.findAllUncertaintyKinds(sortFieldName, sortOrder));
         }
         return "uncertaintykinds/list";
     }

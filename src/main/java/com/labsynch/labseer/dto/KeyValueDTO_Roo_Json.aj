@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect KeyValueDTO_Roo_Json {
     
     public String KeyValueDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String KeyValueDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static KeyValueDTO KeyValueDTO.fromJsonToKeyValueDTO(String json) {
-        return new JSONDeserializer<KeyValueDTO>().use(null, KeyValueDTO.class).deserialize(json);
+        return new JSONDeserializer<KeyValueDTO>()
+        .use(null, KeyValueDTO.class).deserialize(json);
     }
     
     public static String KeyValueDTO.toJsonArray(Collection<KeyValueDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String KeyValueDTO.toJsonArray(Collection<KeyValueDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<KeyValueDTO> KeyValueDTO.fromJsonArrayToKeyValueDTO(String json) {
-        return new JSONDeserializer<List<KeyValueDTO>>().use(null, ArrayList.class).use("values", KeyValueDTO.class).deserialize(json);
+        return new JSONDeserializer<List<KeyValueDTO>>()
+        .use("values", KeyValueDTO.class).deserialize(json);
     }
     
 }

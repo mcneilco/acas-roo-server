@@ -6,7 +6,10 @@ package com.labsynch.labseer.domain;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.SubjectValueDataOnDemand;
 import com.labsynch.labseer.domain.SubjectValueIntegrationTest;
+import java.util.Iterator;
 import java.util.List;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +22,7 @@ privileged aspect SubjectValueIntegrationTest_Roo_IntegrationTest {
     
     declare @type: SubjectValueIntegrationTest: @RunWith(SpringJUnit4ClassRunner.class);
     
-    declare @type: SubjectValueIntegrationTest: @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml");
+    declare @type: SubjectValueIntegrationTest: @ContextConfiguration(locations = "classpath*:/META-INF/spring/applicationContext*.xml");
     
     declare @type: SubjectValueIntegrationTest: @Transactional;
     
@@ -101,7 +104,16 @@ privileged aspect SubjectValueIntegrationTest_Roo_IntegrationTest {
         SubjectValue obj = dod.getNewTransientSubjectValue(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'SubjectValue' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'SubjectValue' identifier to be null", obj.getId());
-        obj.persist();
+        try {
+            obj.persist();
+        } catch (final ConstraintViolationException e) {
+            final StringBuilder msg = new StringBuilder();
+            for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                final ConstraintViolation<?> cv = iter.next();
+                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+            }
+            throw new IllegalStateException(msg.toString(), e);
+        }
         obj.flush();
         Assert.assertNotNull("Expected 'SubjectValue' identifier to no longer be null", obj.getId());
     }

@@ -9,7 +9,8 @@ import flexjson.JSONDeserializer;
 privileged aspect ItxProtocolProtocolState_Roo_Json {
     
     public static ItxProtocolProtocolState ItxProtocolProtocolState.fromJsonToItxProtocolProtocolState(String json) {
-        return new JSONDeserializer<ItxProtocolProtocolState>().use(null, ItxProtocolProtocolState.class).deserialize(json);
+        return new JSONDeserializer<ItxProtocolProtocolState>()
+        .use(null, ItxProtocolProtocolState.class).deserialize(json);
     }
     
 }

@@ -17,19 +17,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 privileged aspect LsThingController_Roo_Controller_Json {
     
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.showJson(@PathVariable("id") Long id) {
-        LsThing lsThing = LsThing.findLsThing(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (lsThing == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            LsThing lsThing = LsThing.findLsThing(id);
+            if (lsThing == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(lsThing.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -37,150 +42,205 @@ privileged aspect LsThingController_Roo_Controller_Json {
     public ResponseEntity<String> LsThingController.listJson() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<LsThing> result = LsThing.findAllLsThings();
-        return new ResponseEntity<String>(LsThing.toJsonArray(result), headers, HttpStatus.OK);
+        try {
+            List<LsThing> result = LsThing.findAllLsThings();
+            return new ResponseEntity<String>(LsThing.toJsonArray(result), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> LsThingController.createFromJson(@RequestBody String json) {
-        LsThing lsThing = LsThing.fromJsonToLsThing(json);
-        lsThing.persist();
+    public ResponseEntity<String> LsThingController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            LsThing lsThing = LsThing.fromJsonToLsThing(json);
+            lsThing.persist();
+            RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
+            headers.add("Location",uriBuilder.path(a.value()[0]+"/"+lsThing.getId().toString()).build().toUriString());
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> LsThingController.createFromJsonArray(@RequestBody String json) {
-        for (LsThing lsThing: LsThing.fromJsonArrayToLsThings(json)) {
-            lsThing.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            for (LsThing lsThing: LsThing.fromJsonArrayToLsThings(json)) {
+                lsThing.persist();
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
-    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> LsThingController.updateFromJson(@RequestBody String json) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> LsThingController.updateFromJson(@RequestBody String json, @PathVariable("id") Long id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        LsThing lsThing = LsThing.fromJsonToLsThing(json);
-        if (lsThing.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> LsThingController.updateFromJsonArray(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        for (LsThing lsThing: LsThing.fromJsonArrayToLsThings(json)) {
+        try {
+            LsThing lsThing = LsThing.fromJsonToLsThing(json);
+            lsThing.setId(id);
             if (lsThing.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> LsThingController.deleteFromJson(@PathVariable("id") Long id) {
-        LsThing lsThing = LsThing.findLsThing(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (lsThing == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            LsThing lsThing = LsThing.findLsThing(id);
+            if (lsThing == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            lsThing.remove();
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        lsThing.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByCodeNameEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByCodeNameEquals(@RequestParam("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByCodeNameEquals(codeName).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByCodeNameLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByCodeNameLike(@RequestParam("codeName") String codeName) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByCodeNameLike(codeName).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByCodeNameLike(codeName).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByLsKindEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByLsKindEquals(@RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsKindEquals(lsKind).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByLsKindLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByLsKindLike(@RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsKindLike(lsKind).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsKindLike(lsKind).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByLsTypeAndKindEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeAndKindEquals(lsTypeAndKind).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeAndKindEquals(lsTypeAndKind).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByLsTypeEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByLsTypeEquals(@RequestParam("lsType") String lsType) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeEquals(lsType).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByRecordedByLike", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByRecordedByLike(@RequestParam("recordedBy") String recordedBy) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedByLike(recordedBy).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedByLike(recordedBy).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByRecordedDateGreaterThan", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByRecordedDateGreaterThan(@RequestParam("recordedDate") @DateTimeFormat(style = "MM") Date recordedDate) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedDateGreaterThan(recordedDate).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedDateGreaterThan(recordedDate).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByRecordedDateLessThan", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> LsThingController.jsonFindLsThingsByRecordedDateLessThan(@RequestParam("recordedDate") @DateTimeFormat(style = "MM") Date recordedDate) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedDateLessThan(recordedDate).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(LsThing.toJsonArray(LsThing.findLsThingsByRecordedDateLessThan(recordedDate).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }

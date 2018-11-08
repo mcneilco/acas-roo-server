@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ValueType_Roo_Json {
     
     public String ValueType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ValueType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ValueType ValueType.fromJsonToValueType(String json) {
-        return new JSONDeserializer<ValueType>().use(null, ValueType.class).deserialize(json);
+        return new JSONDeserializer<ValueType>()
+        .use(null, ValueType.class).deserialize(json);
     }
     
     public static String ValueType.toJsonArray(Collection<ValueType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ValueType.toJsonArray(Collection<ValueType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ValueType> ValueType.fromJsonArrayToValueTypes(String json) {
-        return new JSONDeserializer<List<ValueType>>().use(null, ArrayList.class).use("values", ValueType.class).deserialize(json);
+        return new JSONDeserializer<List<ValueType>>()
+        .use("values", ValueType.class).deserialize(json);
     }
     
 }

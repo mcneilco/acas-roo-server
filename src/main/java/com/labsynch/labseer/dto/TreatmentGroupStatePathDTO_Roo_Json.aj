@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect TreatmentGroupStatePathDTO_Roo_Json {
     
     public static TreatmentGroupStatePathDTO TreatmentGroupStatePathDTO.fromJsonToTreatmentGroupStatePathDTO(String json) {
-        return new JSONDeserializer<TreatmentGroupStatePathDTO>().use(null, TreatmentGroupStatePathDTO.class).deserialize(json);
+        return new JSONDeserializer<TreatmentGroupStatePathDTO>()
+        .use(null, TreatmentGroupStatePathDTO.class).deserialize(json);
     }
     
     public static Collection<TreatmentGroupStatePathDTO> TreatmentGroupStatePathDTO.fromJsonArrayToTreatmentGroes(String json) {
-        return new JSONDeserializer<List<TreatmentGroupStatePathDTO>>().use(null, ArrayList.class).use("values", TreatmentGroupStatePathDTO.class).deserialize(json);
+        return new JSONDeserializer<List<TreatmentGroupStatePathDTO>>()
+        .use("values", TreatmentGroupStatePathDTO.class).deserialize(json);
     }
     
 }

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect StateKind_Roo_Json {
     
     public String StateKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String StateKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static StateKind StateKind.fromJsonToStateKind(String json) {
-        return new JSONDeserializer<StateKind>().use(null, StateKind.class).deserialize(json);
+        return new JSONDeserializer<StateKind>()
+        .use(null, StateKind.class).deserialize(json);
     }
     
     public static String StateKind.toJsonArray(Collection<StateKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String StateKind.toJsonArray(Collection<StateKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<StateKind> StateKind.fromJsonArrayToStateKinds(String json) {
-        return new JSONDeserializer<List<StateKind>>().use(null, ArrayList.class).use("values", StateKind.class).deserialize(json);
+        return new JSONDeserializer<List<StateKind>>()
+        .use("values", StateKind.class).deserialize(json);
     }
     
 }

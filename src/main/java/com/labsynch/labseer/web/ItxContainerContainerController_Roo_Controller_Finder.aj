@@ -19,8 +19,17 @@ privileged aspect ItxContainerContainerController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String ItxContainerContainerController.findItxContainerContainersByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(lsTransaction).getResultList());
+    public String ItxContainerContainerController.findItxContainerContainersByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxContainerContainer.countFindItxContainerContainersByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxcontainercontainers/list";
     }
     
@@ -31,8 +40,17 @@ privileged aspect ItxContainerContainerController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndFirstContainerEquals", method = RequestMethod.GET)
-    public String ItxContainerContainerController.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("firstContainer") Container firstContainer, Model uiModel) {
-        uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(lsType, firstContainer).getResultList());
+    public String ItxContainerContainerController.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("firstContainer") Container firstContainer, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(lsType, firstContainer, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxContainerContainer.countFindItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(lsType, firstContainer) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(lsType, firstContainer, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxcontainercontainers/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect ItxContainerContainerController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndSecondContainerEquals", method = RequestMethod.GET)
-    public String ItxContainerContainerController.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("secondContainer") Container secondContainer, Model uiModel) {
-        uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(lsType, secondContainer).getResultList());
+    public String ItxContainerContainerController.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("secondContainer") Container secondContainer, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(lsType, secondContainer, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxContainerContainer.countFindItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(lsType, secondContainer) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxcontainercontainers", ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(lsType, secondContainer, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxcontainercontainers/list";
     }
     

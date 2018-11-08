@@ -16,19 +16,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.util.UriComponentsBuilder;
 
 privileged aspect ItxContainerContainerController_Roo_Controller_Json {
     
-    @RequestMapping(value = "/{id}", headers = "Accept=application/json")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ItxContainerContainerController.showJson(@PathVariable("id") Long id) {
-        ItxContainerContainer itxContainerContainer = ItxContainerContainer.findItxContainerContainer(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        if (itxContainerContainer == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            ItxContainerContainer itxContainerContainer = ItxContainerContainer.findItxContainerContainer(id);
+            if (itxContainerContainer == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<String>(itxContainerContainer.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(itxContainerContainer.toJson(), headers, HttpStatus.OK);
     }
     
     @RequestMapping(headers = "Accept=application/json")
@@ -36,86 +41,109 @@ privileged aspect ItxContainerContainerController_Roo_Controller_Json {
     public ResponseEntity<String> ItxContainerContainerController.listJson() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json; charset=utf-8");
-        List<ItxContainerContainer> result = ItxContainerContainer.findAllItxContainerContainers();
-        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(result), headers, HttpStatus.OK);
+        try {
+            List<ItxContainerContainer> result = ItxContainerContainer.findAllItxContainerContainers();
+            return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(result), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(method = RequestMethod.POST, headers = "Accept=application/json")
-    public ResponseEntity<String> ItxContainerContainerController.createFromJson(@RequestBody String json) {
-        ItxContainerContainer itxContainerContainer = ItxContainerContainer.fromJsonToItxContainerContainer(json);
-        itxContainerContainer.persist();
+    public ResponseEntity<String> ItxContainerContainerController.createFromJson(@RequestBody String json, UriComponentsBuilder uriBuilder) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            ItxContainerContainer itxContainerContainer = ItxContainerContainer.fromJsonToItxContainerContainer(json);
+            itxContainerContainer.persist();
+            RequestMapping a = (RequestMapping) getClass().getAnnotation(RequestMapping.class);
+            headers.add("Location",uriBuilder.path(a.value()[0]+"/"+itxContainerContainer.getId().toString()).build().toUriString());
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(value = "/jsonArray", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> ItxContainerContainerController.createFromJsonArray(@RequestBody String json) {
-        for (ItxContainerContainer itxContainerContainer: ItxContainerContainer.fromJsonArrayToItxContainerContainers(json)) {
-            itxContainerContainer.persist();
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        try {
+            for (ItxContainerContainer itxContainerContainer: ItxContainerContainer.fromJsonArrayToItxContainerContainers(json)) {
+                itxContainerContainer.persist();
+            }
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
-    @RequestMapping(method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> ItxContainerContainerController.updateFromJson(@RequestBody String json) {
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, headers = "Accept=application/json")
+    public ResponseEntity<String> ItxContainerContainerController.updateFromJson(@RequestBody String json, @PathVariable("id") Long id) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        ItxContainerContainer itxContainerContainer = ItxContainerContainer.fromJsonToItxContainerContainer(json);
-        if (itxContainerContainer.merge() == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(value = "/jsonArray", method = RequestMethod.PUT, headers = "Accept=application/json")
-    public ResponseEntity<String> ItxContainerContainerController.updateFromJsonArray(@RequestBody String json) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json");
-        for (ItxContainerContainer itxContainerContainer: ItxContainerContainer.fromJsonArrayToItxContainerContainers(json)) {
+        try {
+            ItxContainerContainer itxContainerContainer = ItxContainerContainer.fromJsonToItxContainerContainer(json);
+            itxContainerContainer.setId(id);
             if (itxContainerContainer.merge() == null) {
                 return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
             }
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
     public ResponseEntity<String> ItxContainerContainerController.deleteFromJson(@PathVariable("id") Long id) {
-        ItxContainerContainer itxContainerContainer = ItxContainerContainer.findItxContainerContainer(id);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
-        if (itxContainerContainer == null) {
-            return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+        try {
+            ItxContainerContainer itxContainerContainer = ItxContainerContainer.findItxContainerContainer(id);
+            if (itxContainerContainer == null) {
+                return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+            }
+            itxContainerContainer.remove();
+            return new ResponseEntity<String>(headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        itxContainerContainer.remove();
-        return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ItxContainerContainerController.jsonFindItxContainerContainersByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTransactionEquals(lsTransaction).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndFirstContainerEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ItxContainerContainerController.jsonFindItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("firstContainer") Container firstContainer) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(lsType, firstContainer).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndFirstContainerEquals(lsType, firstContainer).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndSecondContainerEquals", headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> ItxContainerContainerController.jsonFindItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(@RequestParam("lsType") String lsType, @RequestParam("secondContainer") Container secondContainer) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type", "application/json; charset=utf-8");
-        return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(lsType, secondContainer).getResultList()), headers, HttpStatus.OK);
+        try {
+            headers.add("Content-Type", "application/json; charset=utf-8");
+            return new ResponseEntity<String>(ItxContainerContainer.toJsonArray(ItxContainerContainer.findItxContainerContainersByLsTypeEqualsAndSecondContainerEquals(lsType, secondContainer).getResultList()), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("{\"ERROR\":"+e.getMessage()+"\"}", headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }

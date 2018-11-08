@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect CodeType_Roo_Json {
     
     public String CodeType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String CodeType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static CodeType CodeType.fromJsonToCodeType(String json) {
-        return new JSONDeserializer<CodeType>().use(null, CodeType.class).deserialize(json);
+        return new JSONDeserializer<CodeType>()
+        .use(null, CodeType.class).deserialize(json);
     }
     
     public static String CodeType.toJsonArray(Collection<CodeType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String CodeType.toJsonArray(Collection<CodeType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<CodeType> CodeType.fromJsonArrayToCodeTypes(String json) {
-        return new JSONDeserializer<List<CodeType>>().use(null, ArrayList.class).use("values", CodeType.class).deserialize(json);
+        return new JSONDeserializer<List<CodeType>>()
+        .use("values", CodeType.class).deserialize(json);
     }
     
 }

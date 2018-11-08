@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect LsThingLabel_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> LsThingLabel.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsThing", "lsThingTypeAndKind");
+    
     public static long LsThingLabel.countLsThingLabels() {
         return entityManager().createQuery("SELECT COUNT(o) FROM LsThingLabel o", Long.class).getSingleResult();
     }
     
     public static List<LsThingLabel> LsThingLabel.findAllLsThingLabels() {
         return entityManager().createQuery("SELECT o FROM LsThingLabel o", LsThingLabel.class).getResultList();
+    }
+    
+    public static List<LsThingLabel> LsThingLabel.findAllLsThingLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsThingLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsThingLabel.class).getResultList();
     }
     
     public static LsThingLabel LsThingLabel.findLsThingLabel(Long id) {
@@ -24,6 +37,17 @@ privileged aspect LsThingLabel_Roo_Jpa_ActiveRecord {
     
     public static List<LsThingLabel> LsThingLabel.findLsThingLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsThingLabel o", LsThingLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsThingLabel> LsThingLabel.findLsThingLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsThingLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsThingLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional
