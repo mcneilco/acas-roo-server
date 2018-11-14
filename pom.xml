@@ -8,7 +8,7 @@
 			<distribution>repo</distribution>
 			<comments>
 <![CDATA[
-Copyright 2011-2017 John McNeil & Co., Inc.
+Copyright 2011-2018 John McNeil & Co., Inc.
 http://www.mcneilco.com
 info@mcneilco.com
 
@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 </comments>
 		</license>
 	</licenses>
-	<groupId>com.labsynch.labseer</groupId>
+	<groupId>com.labsynch</groupId>
 	<artifactId>acas</artifactId>
 	<packaging>war</packaging>
 	<version>1.13-BUILD-SNAPSHOT</version>
@@ -38,10 +38,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
 		<roo.version>1.3.1.RELEASE</roo.version>
-		<slf4j.version>1.6.4</slf4j.version>
+		<slf4j.version>1.7.5</slf4j.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
+		<gvnix.version>1.5.0.RELEASE</gvnix.version>
+		<querydsl.version>3.4.3</querydsl.version>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
+		<jchem.version>16.4.25.0</jchem.version>
+		<indigo.version>1.2.3.r0</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
 	</properties>
@@ -57,6 +61,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<url>http://maven.springframework.org/release</url>
 		</repository>
 		<repository>
+			<id>gvNIX External Libraries repo</id>
+			<url>http://repository.gvnix.org</url>
+			<name>gvNIX External Libraries repo</name>
+		</repository>
+		<repository>
 			<id>spring-maven-milestone</id>
 			<name>Spring Maven Milestone Repository</name>
 			<url>http://maven.springframework.org/milestone</url>
@@ -70,6 +79,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<id>jcenter-release</id>
 			<name>jcenter</name>
 			<url>http://oss.jfrog.org/artifactory/oss-release-local/</url>
+		</repository>
+		<repository>
+			<id>OSGEO GeoTools repo</id>
+			<url>http://download.osgeo.org/webdav/geotools</url>
 		</repository>
 		<repository>
 			<id>codehaus</id>
@@ -93,6 +106,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<url>http://spring-roo-repository.springsource.org/release</url>
 		</pluginRepository>
 	</pluginRepositories>
+	<!-- Maven Build profile controls whether to use JChem or Indigo -->
+	<profiles>
+		<profile>
+			<id>default</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.chemaxon</groupId>
+					<artifactId>jchem</artifactId>
+					<version>${jchem.version}</version>
+				</dependency>
+			</dependencies>	
+			<properties>
+				<exclude.chemistry.package>com/labsynch/cmpdreg/chemclasses/indigo/**</exclude.chemistry.package>
+				<exclude.chemistry.migrations>com/labsynch/cmpdreg/db/migration/*/indigo/**</exclude.chemistry.migrations>
+			</properties>
+		</profile>
+		<profile>
+			<id>indigo</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.epam.indigo</groupId>
+					<artifactId>indigo</artifactId>
+					<version>${indigo.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.epam.indigo</groupId>
+					<artifactId>indigo-renderer</artifactId>
+					<version>${indigo.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.epam.indigo</groupId>
+					<artifactId>indigo-inchi</artifactId>
+					<version>${indigo.version}</version>
+				</dependency>
+			</dependencies>	
+			<properties>
+				<exclude.chemistry.package>com/labsynch/cmpdreg/chemclasses/jchem/**</exclude.chemistry.package>
+				<exclude.chemistry.migrations>com/labsynch/cmpdreg/db/migration/*/jchem/**</exclude.chemistry.migrations>
+			</properties>
+		</profile>
+	</profiles>
 	<dependencies>
 		<!-- General dependencies for standard applications -->
 		<dependency>
@@ -118,13 +172,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.10</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
+			<version>1.2.17</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -192,7 +246,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<artifactId>flyway-core</artifactId>
 			<version>3.2.1</version>
 		</dependency>
-
 		<!-- ROO dependencies -->
 		<dependency>
 			<groupId>org.springframework.roo</groupId>
@@ -304,6 +357,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 			<version>1.5.6</version>
@@ -322,6 +380,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					<artifactId>xml-apis</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.gvnix</groupId>
+			<artifactId>org.gvnix.occ.roo.addon.annotations</artifactId>
+			<version>${gvnix.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -362,7 +426,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>javax.el</groupId>
 			<artifactId>el-api</artifactId>
-			<version>1.0</version>
+			<version>2.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -385,6 +449,61 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-jsp</artifactId>
 			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.gvnix</groupId>
+			<artifactId>org.gvnix.addon.web.mvc.annotations</artifactId>
+			<version>${gvnix.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.gvnix</groupId>
+			<artifactId>org.gvnix.web.json.binding</artifactId>
+			<version>${gvnix.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.gvnix</groupId>
+			<artifactId>org.gvnix.addon.datatables.annotations</artifactId>
+			<version>${gvnix.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.gvnix</groupId>
+			<artifactId>org.gvnix.datatables.tags</artifactId>
+			<version>${gvnix.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.gvnix</groupId>
+			<artifactId>org.gvnix.web.datatables</artifactId>
+			<version>${gvnix.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.gvnix</groupId>
+			<artifactId>org.gvnix.service.roo.addon.annotations</artifactId>
+			<version>${gvnix.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-spatial</artifactId>
+			<version>${querydsl.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.geolatte</groupId>
+					<artifactId>geolatte-geom</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>${querydsl.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mysema.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<version>${querydsl.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.tanesha.recaptcha4j</groupId>
@@ -457,6 +576,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.4.1212.jre7</version>
+		</dependency>
+		<!-- http://mvnrepository.com/artifact/net.sourceforge.jtds/jtds -->
+		<dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.beust</groupId>
+			<artifactId>jcommander</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.trove4j/trove4j -->
+		<dependency>
+			<groupId>net.sf.trove4j</groupId>
+			<artifactId>trove4j</artifactId>
+			<version>3.0.3</version>
 		</dependency>
 		<dependency>
     		<groupId>com.github.javadev</groupId>
@@ -575,12 +711,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					<complianceLevel>${java.version}</complianceLevel>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<!-- Aspects in src/main/java and src/main/aspects are added as default 
+						in the compile goal. Aspects in src/test/java and src/test/aspects are added 
+						as default in the test-compile goal. Aspects in src/main/java are added in 
+						the test-compile goal if weaveWithAspectsInMainSourceFolder is set to true -->
+					<weaveWithAspectsInMainSourceFolder>false</weaveWithAspectsInMainSourceFolder>
+					<excludes>
+								<exclude>${exclude.chemistry.package}</exclude>
+								<exclude>${exclude.chemistry.migrations}</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.5</version>
+				<version>2.6</version>
 				<configuration>
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
@@ -654,6 +799,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tomcat-maven-plugin</artifactId>
 				<version>1.1</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<excludes>
+								<exclude>${exclude.chemistry.package}</exclude>
+								<exclude>${exclude.chemistry.migrations}</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
