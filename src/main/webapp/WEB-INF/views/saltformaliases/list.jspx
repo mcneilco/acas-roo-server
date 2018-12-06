@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_SaltFormAlias" items="${saltformaliases}" z="H92h45K1qz5A2X7A0K3PFMLJuFk=">
+        <table:table data="${saltformaliases}" id="l_com_labsynch_labseer_domain_SaltFormAlias" path="/saltformaliases" z="zjckjcnsPqOzSQzwoIYKNiGiguQ=">
+            <table:column id="c_com_labsynch_labseer_domain_SaltFormAlias_saltForm" property="saltForm" z="azEL7McXBOVn8OGOB0G0+pteN0M="/>
+            <table:column id="c_com_labsynch_labseer_domain_SaltFormAlias_lsType" property="lsType" z="E6N/k5a90HtPB9Ll88lhjvnz5oM="/>
+            <table:column id="c_com_labsynch_labseer_domain_SaltFormAlias_lsKind" property="lsKind" z="c//IPPOdFrmGE/OAMKxKx5TPu74="/>
+            <table:column id="c_com_labsynch_labseer_domain_SaltFormAlias_aliasName" property="aliasName" z="om65oFZP30n6pJNlYYGefVzASR0="/>
+            <table:column id="c_com_labsynch_labseer_domain_SaltFormAlias_preferred" property="preferred" z="mKpu+4FZK63yGSiTvNsBvQZ+CQo="/>
+            <table:column id="c_com_labsynch_labseer_domain_SaltFormAlias_ignored" property="ignored" z="yU9zZp2/HbBUZT86e3sodA9MAJ4="/>
+        </table:table>
+    </page:list>
+</div>

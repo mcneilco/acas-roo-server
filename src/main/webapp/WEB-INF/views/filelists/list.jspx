@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_FileList" items="${filelists}" z="s5fARp+59ZaSlePmvw0f27cpDmg=">
+        <table:table data="${filelists}" id="l_com_labsynch_labseer_domain_FileList" path="/filelists" z="2YeXt8sdVbkpi2get00eE29z1xw=">
+            <table:column id="c_com_labsynch_labseer_domain_FileList_file" property="file" z="I81ZetTMxxQuRLxdNvjDPDrnm9A="/>
+            <table:column id="c_com_labsynch_labseer_domain_FileList_lot" property="lot" z="sYT6FauVX5w74F5fE0BEdo1d9to="/>
+            <table:column id="c_com_labsynch_labseer_domain_FileList_description" property="description" z="iEEP9uh8KY0EV2BfeUOuAjPSNpw="/>
+            <table:column id="c_com_labsynch_labseer_domain_FileList_name" property="name" z="FNZjiA3wIKwQKabohWWe1Wj0zzc="/>
+            <table:column id="c_com_labsynch_labseer_domain_FileList_type" property="type" z="oCFgpuyB31VYDVyPZki1DNwnnD0="/>
+            <table:column id="c_com_labsynch_labseer_domain_FileList_size" property="size" z="KuPM0JZhGrjksvbixFQHtyYh8X0="/>
+        </table:table>
+    </page:list>
+</div>

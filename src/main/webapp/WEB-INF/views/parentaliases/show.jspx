@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ParentAlias" object="${parentalias}" path="/parentaliases" z="lvIDJks0FUz5BL595mIZXF8MS5w=">
+        <field:display field="parent" id="s_com_labsynch_labseer_domain_ParentAlias_parent" object="${parentalias}" z="FPwk6mfYmusUSm9cemWETYZAMCQ="/>
+        <field:display field="lsType" id="s_com_labsynch_labseer_domain_ParentAlias_lsType" object="${parentalias}" z="/pX8w+QKDa6i0H+RfHzJevctCjQ="/>
+        <field:display field="lsKind" id="s_com_labsynch_labseer_domain_ParentAlias_lsKind" object="${parentalias}" z="SZtZ9DtG0CYZZezuqzwXO1Z0oZY="/>
+        <field:display field="aliasName" id="s_com_labsynch_labseer_domain_ParentAlias_aliasName" object="${parentalias}" z="cBtx63Kz4+5cP+UUod436UsmDqk="/>
+        <field:display field="preferred" id="s_com_labsynch_labseer_domain_ParentAlias_preferred" object="${parentalias}" z="YSzDcxPS5e+2JphHHW7I+SYCeaM="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_ParentAlias_ignored" object="${parentalias}" z="T3EQ0UMcEK8cf6q+D2rpoKhJspw="/>
+        <field:display field="deleted" id="s_com_labsynch_labseer_domain_ParentAlias_deleted" object="${parentalias}" z="sSpwvqT4wn0o3GFwE+7yCU3CQRY="/>
+        <field:display field="sortId" id="s_com_labsynch_labseer_domain_ParentAlias_sortId" object="${parentalias}" z="DTFKI3mnMFng8StRIl1wmFbIDDI="/>
+    </page:show>
+</div>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_Lot" object="${lot}" path="/lots" z="FzMXfFVoDkhhoZElkdp5wERMFng=">
+        <field:display field="storageLocation" id="s_com_labsynch_labseer_domain_Lot_storageLocation" object="${lot}" z="7cs2kTPMHYobUX0e0JpKgHg3+m8="/>
+        <field:display field="buid" id="s_com_labsynch_labseer_domain_Lot_buid" object="${lot}" z="SIHApvurhVDjjrnZsiAGSWgosvw="/>
+        <field:display field="parent" id="s_com_labsynch_labseer_domain_Lot_parent" object="${lot}" z="5YsNTE7mMqR3gtZztT+7bQf163U="/>
+        <field:display field="saltForm" id="s_com_labsynch_labseer_domain_Lot_saltForm" object="${lot}" z="5iTG3Vk0YeS5dlQMhOOFTgTpen8="/>
+        <field:display field="asDrawnStruct" id="s_com_labsynch_labseer_domain_Lot_asDrawnStruct" object="${lot}" z="MmbRBClqOEz4dfysh6oVK8xtRYE="/>
+        <field:display field="lotAsDrawnCdId" id="s_com_labsynch_labseer_domain_Lot_lotAsDrawnCdId" object="${lot}" z="N/pOaHt1FICIAM4MTzRIBokSa1I="/>
+        <field:display field="corpName" id="s_com_labsynch_labseer_domain_Lot_corpName" object="${lot}" z="1nd5lVZoOAPWvN9X7eDMzV7X6tY="/>
+        <field:display field="lotNumber" id="s_com_labsynch_labseer_domain_Lot_lotNumber" object="${lot}" z="j144BQy1++EaSVAjKeWIzmZcIsQ="/>
+        <field:display field="lotMolWeight" id="s_com_labsynch_labseer_domain_Lot_lotMolWeight" object="${lot}" z="O98tEB9F0SXl47x6IveLxsejR9w="/>
+        <field:display date="true" dateTimePattern="${lot_synthesisdate_date_format}" field="synthesisDate" id="s_com_labsynch_labseer_domain_Lot_synthesisDate" object="${lot}" z="rcUdcHHWTQNyHdP6IPZ/pjSOpOo="/>
+        <field:display date="true" dateTimePattern="${lot_registrationdate_date_format}" field="registrationDate" id="s_com_labsynch_labseer_domain_Lot_registrationDate" object="${lot}" z="ziKcgGaWE8Se5oPhXWqOUxH7M/o="/>
+        <field:display field="registeredBy" id="s_com_labsynch_labseer_domain_Lot_registeredBy" object="${lot}" z="+qAwMR7/j/Bu38nCQlpSlLxvI24="/>
+        <field:display date="true" dateTimePattern="${lot_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_Lot_modifiedDate" object="${lot}" z="1OF3uQakxe6enRECGJBDbyPF6mQ="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_Lot_modifiedBy" object="${lot}" z="vHQ8qgwX/YHox07aCzSSohvFfWo="/>
+        <field:display field="barcode" id="s_com_labsynch_labseer_domain_Lot_barcode" object="${lot}" z="qnYciG8pm8BVVP1d1Wthr92ju6E="/>
+        <field:display field="color" id="s_com_labsynch_labseer_domain_Lot_color" object="${lot}" z="yAAddsYfaShSY5k9upKJ5D8e3jc="/>
+        <field:display field="notebookPage" id="s_com_labsynch_labseer_domain_Lot_notebookPage" object="${lot}" z="GJqmlxJB2wvCwR0kpzu7lu+BfSc="/>
+        <field:display field="amount" id="s_com_labsynch_labseer_domain_Lot_amount" object="${lot}" z="3JmLQyoQTSNFTgWQ+VMQcJPSnmo="/>
+        <field:display field="amountUnits" id="s_com_labsynch_labseer_domain_Lot_amountUnits" object="${lot}" z="EQcfKiZbB2qH5nIOCa5Kg5WTx5c="/>
+        <field:display field="solutionAmount" id="s_com_labsynch_labseer_domain_Lot_solutionAmount" object="${lot}" z="wLiS7MkvqyeVcrxpkbUpgy5wQjI="/>
+        <field:display field="solutionAmountUnits" id="s_com_labsynch_labseer_domain_Lot_solutionAmountUnits" object="${lot}" z="QTw9KgmKiOQdowO8qAwBgXA2fVc="/>
+        <field:display field="supplier" id="s_com_labsynch_labseer_domain_Lot_supplier" object="${lot}" z="FMbwV3iLA5bZzajxA7n1VoVUzhk="/>
+        <field:display field="supplierID" id="s_com_labsynch_labseer_domain_Lot_supplierID" object="${lot}" z="NlM2/drR1dkWhjHQesx2xhkbRwQ="/>
+        <field:display field="purity" id="s_com_labsynch_labseer_domain_Lot_purity" object="${lot}" z="Qq6Ff6Hc+0yHqHsIuMNyX9N36qE="/>
+        <field:display field="purityOperator" id="s_com_labsynch_labseer_domain_Lot_purityOperator" object="${lot}" z="035H18r5s6w3IYeqBBmMD7dq4AY="/>
+        <field:display field="purityMeasuredBy" id="s_com_labsynch_labseer_domain_Lot_purityMeasuredBy" object="${lot}" z="EUkDiWwj71uCRsisB4nBJSTgIok="/>
+        <field:display field="chemist" id="s_com_labsynch_labseer_domain_Lot_chemist" object="${lot}" z="a7zh9XLADb9UuLZ56uCg1KcP/PA="/>
+        <field:display field="percentEE" id="s_com_labsynch_labseer_domain_Lot_percentEE" object="${lot}" z="VMUTwuA4EH1Rz/Ui66nXItiIyPM="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_Lot_comments" object="${lot}" z="oE5YA/kPRGujfAXBJKz1LMdCFko="/>
+        <field:display field="isVirtual" id="s_com_labsynch_labseer_domain_Lot_isVirtual" object="${lot}" z="XLxmw5E3L0DOIwoz+Hoj/GpBIkY="/>
+        <field:display field="ignore" id="s_com_labsynch_labseer_domain_Lot_ignore" object="${lot}" z="Qh7yLCzpODAKnsls0NqCdRYHttY="/>
+        <field:display field="physicalState" id="s_com_labsynch_labseer_domain_Lot_physicalState" object="${lot}" z="cwhh+0WbiVcP8O83E3+hUAEnvu4="/>
+        <field:display field="vendor" id="s_com_labsynch_labseer_domain_Lot_vendor" object="${lot}" z="jnKMmngcCnjVVZLlGhHBsLr9uRc="/>
+        <field:display field="vendorID" id="s_com_labsynch_labseer_domain_Lot_vendorID" object="${lot}" z="70pfq8uoh1pUHHJLtAe//QgcibM="/>
+        <field:display field="retain" id="s_com_labsynch_labseer_domain_Lot_retain" object="${lot}" z="UfZVL6I/Z/XShV1JGFzIQZowyOE="/>
+        <field:display field="retainUnits" id="s_com_labsynch_labseer_domain_Lot_retainUnits" object="${lot}" z="2XOyXZUN4QyAf74NHN015CI2S5U="/>
+        <field:display field="retainLocation" id="s_com_labsynch_labseer_domain_Lot_retainLocation" object="${lot}" z="TQ/vHgGpJbqiGKXgNDANLZVldAU="/>
+        <field:display field="meltingPoint" id="s_com_labsynch_labseer_domain_Lot_meltingPoint" object="${lot}" z="4NLRlyCjB6DRRryGCe31YGU5h3E="/>
+        <field:display field="boilingPoint" id="s_com_labsynch_labseer_domain_Lot_boilingPoint" object="${lot}" z="vA5+sg3lPt8wC+DbQNR1nv7B6FI="/>
+        <field:display field="supplierLot" id="s_com_labsynch_labseer_domain_Lot_supplierLot" object="${lot}" z="svhCxo4RhEY2lrWdkrULS2eUgwI="/>
+        <field:display field="project" id="s_com_labsynch_labseer_domain_Lot_project" object="${lot}" z="m87eZPEgA3XdD5KQGFnMrBAhd7k="/>
+        <field:display field="bulkLoadFile" id="s_com_labsynch_labseer_domain_Lot_bulkLoadFile" object="${lot}" z="YX0Oy+DB466vLcxWrnSEYnyqdcA="/>
+        <field:display field="lambda" id="s_com_labsynch_labseer_domain_Lot_lambda" object="${lot}" z="KWp3N16L1XA4cpk4Y136sVnW78I="/>
+        <field:display field="absorbance" id="s_com_labsynch_labseer_domain_Lot_absorbance" object="${lot}" z="vhD/1Ok8Rs+y/D7Giwr9sZeoCj0="/>
+        <field:display field="stockSolvent" id="s_com_labsynch_labseer_domain_Lot_stockSolvent" object="${lot}" z="hBSKb3Kh/hGMBP91uc0wYqcnR/4="/>
+        <field:display field="stockLocation" id="s_com_labsynch_labseer_domain_Lot_stockLocation" object="${lot}" z="F9RnKqmx/OPAkLNBXxnYkAryss0="/>
+        <field:display field="observedMassOne" id="s_com_labsynch_labseer_domain_Lot_observedMassOne" object="${lot}" z="xJyVemxQ2441CilHgjiK5TpPF9g="/>
+        <field:display field="observedMassTwo" id="s_com_labsynch_labseer_domain_Lot_observedMassTwo" object="${lot}" z="zn9FKSn6zol3m9qH+3ye8TkZd74="/>
+        <field:display field="tareWeight" id="s_com_labsynch_labseer_domain_Lot_tareWeight" object="${lot}" z="ZpknzRB7M2zX8LJUK+4jItjSLlc="/>
+        <field:display field="tareWeightUnits" id="s_com_labsynch_labseer_domain_Lot_tareWeightUnits" object="${lot}" z="3MmsWnT8T9PnrxEyVWAzxeLSMjk="/>
+        <field:display field="totalAmountStored" id="s_com_labsynch_labseer_domain_Lot_totalAmountStored" object="${lot}" z="6ZYR5XFR6s30m5iy6ywgQRqGQ4I="/>
+        <field:display field="totalAmountStoredUnits" id="s_com_labsynch_labseer_domain_Lot_totalAmountStoredUnits" object="${lot}" z="2N+sWafKzI5ORTxSYeBoeSOCjPQ="/>
+    </page:show>
+</div>

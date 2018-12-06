@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 </comments>
 		</license>
 	</licenses>
-	<groupId>com.labsynch</groupId>
-	<artifactId>acas</artifactId>
+	<groupId>com.labsynch.labseer</groupId>
+<artifactId>acas</artifactId>
 	<packaging>war</packaging>
 	<version>1.13-BUILD-SNAPSHOT</version>
 	<description>ACAS Java persistence layer</description>
@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd_HHmm</maven.build.timestamp.format>
 		<date>${maven.build.timestamp}</date>
-		<roo.version>1.3.1.RELEASE</roo.version>
+		<roo.version>1.3.2.RELEASE</roo.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<gvnix.version>1.5.0.RELEASE</gvnix.version>
@@ -48,7 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<indigo.version>1.2.3.r0</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
-	</properties>
+	<tomcat.version>7.0.63</tomcat.version>
+    </properties>
 	<scm>
 		<connection>scm:git:git://github.com/mcneilco/acas-roo-server.git</connection>
 		<developerConnection>scm:git:git:@github.com:mcneilco/acas-roo-server.git</developerConnection>
@@ -110,6 +111,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<profiles>
 		<profile>
 			<id>default</id>
+			<activation>
+            	<activeByDefault>true</activeByDefault>
+        	</activation>	
 			<dependencies>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
@@ -118,8 +122,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				</dependency>
 			</dependencies>	
 			<properties>
-				<exclude.chemistry.package>com/labsynch/cmpdreg/chemclasses/indigo/**</exclude.chemistry.package>
-				<exclude.chemistry.migrations>com/labsynch/cmpdreg/db/migration/*/indigo/**</exclude.chemistry.migrations>
+				<exclude.chemistry.package>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.package>
+				<exclude.chemistry.migrations>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrations>
 			</properties>
 		</profile>
 		<profile>
@@ -142,8 +146,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				</dependency>
 			</dependencies>	
 			<properties>
-				<exclude.chemistry.package>com/labsynch/cmpdreg/chemclasses/jchem/**</exclude.chemistry.package>
-				<exclude.chemistry.migrations>com/labsynch/cmpdreg/db/migration/*/jchem/**</exclude.chemistry.migrations>
+				<exclude.chemistry.package>com/labsynch/labseer/chemclasses/jchem/**</exclude.chemistry.package>
+				<exclude.chemistry.migrations>com/labsynch/labseer/db/migration/*/jchem/**</exclude.chemistry.migrations>
 			</properties>
 		</profile>
 	</profiles>
@@ -214,7 +218,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>net.sf.flexjson</groupId>
 			<artifactId>flexjson</artifactId>
-			<version>3.1</version>
+			<version>3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.jackson</groupId>
@@ -479,6 +483,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		</dependency>
 		<dependency>
 			<groupId>org.gvnix</groupId>
+			<artifactId>org.gvnix.addon.jpa.annotations</artifactId>
+			<version>${gvnix.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.gvnix</groupId>
 			<artifactId>org.gvnix.service.roo.addon.annotations</artifactId>
 			<version>${gvnix.version}</version>
 			<scope>provided</scope>
@@ -636,6 +645,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					<target>${java.version}</target>
 					<useIncrementalCompilation>false</useIncrementalCompilation>
 					<encoding>${project.build.sourceEncoding}</encoding>
+					<excludes>
+						<exclude>${exclude.chemistry.package}</exclude>
+						<exclude>${exclude.chemistry.migrations}</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -717,8 +730,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 						the test-compile goal if weaveWithAspectsInMainSourceFolder is set to true -->
 					<weaveWithAspectsInMainSourceFolder>false</weaveWithAspectsInMainSourceFolder>
 					<excludes>
-								<exclude>${exclude.chemistry.package}</exclude>
-								<exclude>${exclude.chemistry.migrations}</exclude>
+							<exclude>${exclude.chemistry.package}</exclude>
+							<exclude>${exclude.chemistry.migrations}</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -801,26 +814,112 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				<version>1.1</version>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.tomcat.maven</groupId>
-				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>2.2</version>
-				<configuration>
-					<excludes>
-								<exclude>${exclude.chemistry.package}</exclude>
-								<exclude>${exclude.chemistry.migrations}</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                        <artifactId>tomcat-embed-core</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-util</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-coyote</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-api</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-jdbc</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-dbcp</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-servlet-api</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-jsp-api</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-jasper</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-jasper-el</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-el-api</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-catalina</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-tribes</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-catalina-ha</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-annotations-api</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat</groupId>
+                        <artifactId>tomcat-juli</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                        <artifactId>tomcat-embed-logging-juli</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                        <artifactId>tomcat-embed-logging-log4j</artifactId>
+                        <version>${tomcat.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
 			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.4.v20120524</version>
-				<configuration>
-					<webAppConfig>
-						<contextPath>/${project.name}</contextPath>
-					</webAppConfig>
-				</configuration>
-			</plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.4.v20120524</version>
+                <configuration>
+				<webAppConfig>
+					<contextPath>/${project.name}</contextPath>
+				</webAppConfig>
+			</configuration>
+            </plugin>
 		</plugins>
 		<resources>
 			<resource>

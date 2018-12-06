@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_ParentAnnotation" object="${parentannotation}" path="/parentAnnotations" z="76lP44H8bS/ELDVHwca+IdYQMIQ=">
+        <field:display field="code" id="s_com_labsynch_labseer_domain_ParentAnnotation_code" object="${parentannotation}" z="/HaGYYmoq7sVZ5p7l6gKbcs5azk="/>
+        <field:display field="name" id="s_com_labsynch_labseer_domain_ParentAnnotation_name" object="${parentannotation}" z="gfxJvq+EBY1AXGPX0wjYmkRdbQw="/>
+        <field:display field="displayOrder" id="s_com_labsynch_labseer_domain_ParentAnnotation_displayOrder" object="${parentannotation}" z="asw2lH5e/AL75Qv5p4PU3C855Mg="/>
+        <field:display field="comment" id="s_com_labsynch_labseer_domain_ParentAnnotation_comment" object="${parentannotation}" z="y1599wsxFAzwZOy2SecKzIfrIbQ="/>
+    </page:show>
+</div>

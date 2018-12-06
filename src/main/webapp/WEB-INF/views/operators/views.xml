@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="operators/list">
+        <put-attribute name="body" value="/WEB-INF/views/operators/list.jspx"/>
+    </definition>
+<definition extends="default" name="operators/show">
+        <put-attribute name="body" value="/WEB-INF/views/operators/show.jspx"/>
+    </definition>
+<definition extends="default" name="operators/create">
+        <put-attribute name="body" value="/WEB-INF/views/operators/create.jspx"/>
+    </definition>
+<definition extends="default" name="operators/update">
+        <put-attribute name="body" value="/WEB-INF/views/operators/update.jspx"/>
+    </definition>
+<definition extends="default" name="operators/findOperatorsByCodeEquals">
+        <put-attribute name="body" value="/WEB-INF/views/operators/findOperatorsByCodeEquals.jspx"/>
+    </definition>
+<definition extends="default" name="operators/findOperatorsByNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/operators/findOperatorsByNameEquals.jspx"/>
+    </definition>
+</tiles-definitions>

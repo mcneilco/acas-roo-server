@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_Vendor" items="${vendors}" z="DYHa3AYYOjq23yb9fct32Swq8kI=">
+        <table:table data="${vendors}" id="l_com_labsynch_labseer_domain_Vendor" path="/vendors" z="FX9FHeGUzQMFkwkB7gS1pvt0Hm8=">
+            <table:column id="c_com_labsynch_labseer_domain_Vendor_name" property="name" z="2PnF4O3SrNhNynqr3d+1fMTV9LQ="/>
+            <table:column id="c_com_labsynch_labseer_domain_Vendor_code" property="code" z="2EEt4qSHBHw2G3v6SvbShOTI2L8="/>
+        </table:table>
+    </page:list>
+</div>

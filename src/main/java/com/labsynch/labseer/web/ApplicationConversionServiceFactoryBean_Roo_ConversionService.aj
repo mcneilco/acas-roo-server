@@ -6,8 +6,18 @@ package com.labsynch.labseer.web;
 import com.labsynch.labseer.domain.AuthorLabel;
 import com.labsynch.labseer.domain.AuthorState;
 import com.labsynch.labseer.domain.AuthorValue;
+import com.labsynch.labseer.domain.BulkLoadFile;
+import com.labsynch.labseer.domain.BulkLoadTemplate;
+import com.labsynch.labseer.domain.CmpdRegAppSetting;
 import com.labsynch.labseer.domain.CodeOrigin;
+import com.labsynch.labseer.domain.Compound;
+import com.labsynch.labseer.domain.CompoundType;
+import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.CronJob;
+import com.labsynch.labseer.domain.FileList;
+import com.labsynch.labseer.domain.FileType;
+import com.labsynch.labseer.domain.IsoSalt;
+import com.labsynch.labseer.domain.Isotope;
 import com.labsynch.labseer.domain.ItxExperimentExperiment;
 import com.labsynch.labseer.domain.ItxExperimentExperimentState;
 import com.labsynch.labseer.domain.ItxExperimentExperimentValue;
@@ -15,6 +25,10 @@ import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
 import com.labsynch.labseer.domain.LabelSequenceRole;
+import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.domain.LotAlias;
+import com.labsynch.labseer.domain.LotAliasKind;
+import com.labsynch.labseer.domain.LotAliasType;
 import com.labsynch.labseer.domain.LsSeqAnlGrp;
 import com.labsynch.labseer.domain.LsSeqContainer;
 import com.labsynch.labseer.domain.LsSeqExpt;
@@ -26,9 +40,31 @@ import com.labsynch.labseer.domain.LsSeqItxSubjCntr;
 import com.labsynch.labseer.domain.LsSeqProtocol;
 import com.labsynch.labseer.domain.LsSeqSubject;
 import com.labsynch.labseer.domain.LsSeqTrtGrp;
+import com.labsynch.labseer.domain.Operator;
+import com.labsynch.labseer.domain.Parent;
+import com.labsynch.labseer.domain.ParentAlias;
+import com.labsynch.labseer.domain.ParentAliasKind;
+import com.labsynch.labseer.domain.ParentAliasType;
+import com.labsynch.labseer.domain.ParentAnnotation;
+import com.labsynch.labseer.domain.PhysicalState;
+import com.labsynch.labseer.domain.PreDef_CorpName;
+import com.labsynch.labseer.domain.Project;
+import com.labsynch.labseer.domain.PurityMeasuredBy;
+import com.labsynch.labseer.domain.QcCompound;
 import com.labsynch.labseer.domain.RoleKind;
 import com.labsynch.labseer.domain.RoleType;
+import com.labsynch.labseer.domain.Salt;
+import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.domain.SaltFormAlias;
+import com.labsynch.labseer.domain.SaltFormAliasKind;
+import com.labsynch.labseer.domain.SaltFormAliasType;
+import com.labsynch.labseer.domain.Scientist;
+import com.labsynch.labseer.domain.SolutionUnit;
+import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.TempSelectTable;
+import com.labsynch.labseer.domain.Unit;
+import com.labsynch.labseer.domain.Vendor;
+import com.labsynch.labseer.service.SaltLoader;
 import com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
 
@@ -106,6 +142,78 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<BulkLoadFile, String> ApplicationConversionServiceFactoryBean.getBulkLoadFileToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.BulkLoadFile, java.lang.String>() {
+            public String convert(BulkLoadFile bulkLoadFile) {
+                return new StringBuilder().append(bulkLoadFile.getFileName()).append(' ').append(bulkLoadFile.getNumberOfMols()).append(' ').append(bulkLoadFile.getFileSize()).append(' ').append(bulkLoadFile.getJsonTemplate()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, BulkLoadFile> ApplicationConversionServiceFactoryBean.getIdToBulkLoadFileConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.BulkLoadFile>() {
+            public com.labsynch.labseer.domain.BulkLoadFile convert(java.lang.Long id) {
+                return BulkLoadFile.findBulkLoadFile(id);
+            }
+        };
+    }
+    
+    public Converter<String, BulkLoadFile> ApplicationConversionServiceFactoryBean.getStringToBulkLoadFileConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.BulkLoadFile>() {
+            public com.labsynch.labseer.domain.BulkLoadFile convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), BulkLoadFile.class);
+            }
+        };
+    }
+    
+    public Converter<BulkLoadTemplate, String> ApplicationConversionServiceFactoryBean.getBulkLoadTemplateToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.BulkLoadTemplate, java.lang.String>() {
+            public String convert(BulkLoadTemplate bulkLoadTemplate) {
+                return new StringBuilder().append(bulkLoadTemplate.getTemplateName()).append(' ').append(bulkLoadTemplate.getJsonTemplate()).append(' ').append(bulkLoadTemplate.getRecordedBy()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, BulkLoadTemplate> ApplicationConversionServiceFactoryBean.getIdToBulkLoadTemplateConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.BulkLoadTemplate>() {
+            public com.labsynch.labseer.domain.BulkLoadTemplate convert(java.lang.Long id) {
+                return BulkLoadTemplate.findBulkLoadTemplate(id);
+            }
+        };
+    }
+    
+    public Converter<String, BulkLoadTemplate> ApplicationConversionServiceFactoryBean.getStringToBulkLoadTemplateConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.BulkLoadTemplate>() {
+            public com.labsynch.labseer.domain.BulkLoadTemplate convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), BulkLoadTemplate.class);
+            }
+        };
+    }
+    
+    public Converter<CmpdRegAppSetting, String> ApplicationConversionServiceFactoryBean.getCmpdRegAppSettingToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.CmpdRegAppSetting, java.lang.String>() {
+            public String convert(CmpdRegAppSetting cmpdRegAppSetting) {
+                return new StringBuilder().append(cmpdRegAppSetting.getPropName()).append(' ').append(cmpdRegAppSetting.getPropValue()).append(' ').append(cmpdRegAppSetting.getComments()).append(' ').append(cmpdRegAppSetting.getRecordedDate()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, CmpdRegAppSetting> ApplicationConversionServiceFactoryBean.getIdToCmpdRegAppSettingConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.CmpdRegAppSetting>() {
+            public com.labsynch.labseer.domain.CmpdRegAppSetting convert(java.lang.Long id) {
+                return CmpdRegAppSetting.findCmpdRegAppSetting(id);
+            }
+        };
+    }
+    
+    public Converter<String, CmpdRegAppSetting> ApplicationConversionServiceFactoryBean.getStringToCmpdRegAppSettingConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.CmpdRegAppSetting>() {
+            public com.labsynch.labseer.domain.CmpdRegAppSetting convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), CmpdRegAppSetting.class);
+            }
+        };
+    }
+    
     public Converter<CodeOrigin, String> ApplicationConversionServiceFactoryBean.getCodeOriginToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.CodeOrigin, java.lang.String>() {
             public String convert(CodeOrigin codeOrigin) {
@@ -130,6 +238,78 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<Compound, String> ApplicationConversionServiceFactoryBean.getCompoundToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Compound, java.lang.String>() {
+            public String convert(Compound compound) {
+                return new StringBuilder().append(compound.getCorpName()).append(' ').append(compound.getExternal_id()).append(' ').append(compound.getCdId()).append(' ').append(compound.getCreatedDate()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Compound> ApplicationConversionServiceFactoryBean.getIdToCompoundConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Compound>() {
+            public com.labsynch.labseer.domain.Compound convert(java.lang.Long id) {
+                return Compound.findCompound(id);
+            }
+        };
+    }
+    
+    public Converter<String, Compound> ApplicationConversionServiceFactoryBean.getStringToCompoundConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Compound>() {
+            public com.labsynch.labseer.domain.Compound convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Compound.class);
+            }
+        };
+    }
+    
+    public Converter<CompoundType, String> ApplicationConversionServiceFactoryBean.getCompoundTypeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.CompoundType, java.lang.String>() {
+            public String convert(CompoundType compoundType) {
+                return new StringBuilder().append(compoundType.getCode()).append(' ').append(compoundType.getName()).append(' ').append(compoundType.getDisplayOrder()).append(' ').append(compoundType.getComment()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, CompoundType> ApplicationConversionServiceFactoryBean.getIdToCompoundTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.CompoundType>() {
+            public com.labsynch.labseer.domain.CompoundType convert(java.lang.Long id) {
+                return CompoundType.findCompoundType(id);
+            }
+        };
+    }
+    
+    public Converter<String, CompoundType> ApplicationConversionServiceFactoryBean.getStringToCompoundTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.CompoundType>() {
+            public com.labsynch.labseer.domain.CompoundType convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), CompoundType.class);
+            }
+        };
+    }
+    
+    public Converter<CorpName, String> ApplicationConversionServiceFactoryBean.getCorpNameToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.CorpName, java.lang.String>() {
+            public String convert(CorpName corpName) {
+                return new StringBuilder().append(corpName.getParentCorpName()).append(' ').append(corpName.getComment()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, CorpName> ApplicationConversionServiceFactoryBean.getIdToCorpNameConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.CorpName>() {
+            public com.labsynch.labseer.domain.CorpName convert(java.lang.Long id) {
+                return CorpName.findCorpName(id);
+            }
+        };
+    }
+    
+    public Converter<String, CorpName> ApplicationConversionServiceFactoryBean.getStringToCorpNameConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.CorpName>() {
+            public com.labsynch.labseer.domain.CorpName convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), CorpName.class);
+            }
+        };
+    }
+    
     public Converter<CronJob, String> ApplicationConversionServiceFactoryBean.getCronJobToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.CronJob, java.lang.String>() {
             public String convert(CronJob cronJob) {
@@ -150,6 +330,102 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.CronJob>() {
             public com.labsynch.labseer.domain.CronJob convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), CronJob.class);
+            }
+        };
+    }
+    
+    public Converter<FileList, String> ApplicationConversionServiceFactoryBean.getFileListToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.FileList, java.lang.String>() {
+            public String convert(FileList fileList) {
+                return new StringBuilder().append(fileList.getFile()).append(' ').append(fileList.getDescription()).append(' ').append(fileList.getName()).append(' ').append(fileList.getType()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, FileList> ApplicationConversionServiceFactoryBean.getIdToFileListConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.FileList>() {
+            public com.labsynch.labseer.domain.FileList convert(java.lang.Long id) {
+                return FileList.findFileList(id);
+            }
+        };
+    }
+    
+    public Converter<String, FileList> ApplicationConversionServiceFactoryBean.getStringToFileListConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.FileList>() {
+            public com.labsynch.labseer.domain.FileList convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), FileList.class);
+            }
+        };
+    }
+    
+    public Converter<FileType, String> ApplicationConversionServiceFactoryBean.getFileTypeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.FileType, java.lang.String>() {
+            public String convert(FileType fileType) {
+                return new StringBuilder().append(fileType.getName()).append(' ').append(fileType.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, FileType> ApplicationConversionServiceFactoryBean.getIdToFileTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.FileType>() {
+            public com.labsynch.labseer.domain.FileType convert(java.lang.Long id) {
+                return FileType.findFileType(id);
+            }
+        };
+    }
+    
+    public Converter<String, FileType> ApplicationConversionServiceFactoryBean.getStringToFileTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.FileType>() {
+            public com.labsynch.labseer.domain.FileType convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), FileType.class);
+            }
+        };
+    }
+    
+    public Converter<IsoSalt, String> ApplicationConversionServiceFactoryBean.getIsoSaltToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.IsoSalt, java.lang.String>() {
+            public String convert(IsoSalt isoSalt) {
+                return new StringBuilder().append(isoSalt.getType()).append(' ').append(isoSalt.getEquivalents()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, IsoSalt> ApplicationConversionServiceFactoryBean.getIdToIsoSaltConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.IsoSalt>() {
+            public com.labsynch.labseer.domain.IsoSalt convert(java.lang.Long id) {
+                return IsoSalt.findIsoSalt(id);
+            }
+        };
+    }
+    
+    public Converter<String, IsoSalt> ApplicationConversionServiceFactoryBean.getStringToIsoSaltConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.IsoSalt>() {
+            public com.labsynch.labseer.domain.IsoSalt convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), IsoSalt.class);
+            }
+        };
+    }
+    
+    public Converter<Isotope, String> ApplicationConversionServiceFactoryBean.getIsotopeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Isotope, java.lang.String>() {
+            public String convert(Isotope isotope) {
+                return new StringBuilder().append(isotope.getName()).append(' ').append(isotope.getAbbrev()).append(' ').append(isotope.getMassChange()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Isotope> ApplicationConversionServiceFactoryBean.getIdToIsotopeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Isotope>() {
+            public com.labsynch.labseer.domain.Isotope convert(java.lang.Long id) {
+                return Isotope.findIsotope(id);
+            }
+        };
+    }
+    
+    public Converter<String, Isotope> ApplicationConversionServiceFactoryBean.getStringToIsotopeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Isotope>() {
+            public com.labsynch.labseer.domain.Isotope convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Isotope.class);
             }
         };
     }
@@ -318,6 +594,102 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.LabelSequenceRole>() {
             public com.labsynch.labseer.domain.LabelSequenceRole convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), LabelSequenceRole.class);
+            }
+        };
+    }
+    
+    public Converter<Lot, String> ApplicationConversionServiceFactoryBean.getLotToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Lot, java.lang.String>() {
+            public String convert(Lot lot) {
+                return new StringBuilder().append(lot.getStorageLocation()).append(' ').append(lot.getBuid()).append(' ').append(lot.getAsDrawnStruct()).append(' ').append(lot.getLotAsDrawnCdId()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Lot> ApplicationConversionServiceFactoryBean.getIdToLotConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Lot>() {
+            public com.labsynch.labseer.domain.Lot convert(java.lang.Long id) {
+                return Lot.findLot(id);
+            }
+        };
+    }
+    
+    public Converter<String, Lot> ApplicationConversionServiceFactoryBean.getStringToLotConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Lot>() {
+            public com.labsynch.labseer.domain.Lot convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Lot.class);
+            }
+        };
+    }
+    
+    public Converter<LotAlias, String> ApplicationConversionServiceFactoryBean.getLotAliasToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.LotAlias, java.lang.String>() {
+            public String convert(LotAlias lotAlias) {
+                return new StringBuilder().append(lotAlias.getLsType()).append(' ').append(lotAlias.getLsKind()).append(' ').append(lotAlias.getAliasName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, LotAlias> ApplicationConversionServiceFactoryBean.getIdToLotAliasConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.LotAlias>() {
+            public com.labsynch.labseer.domain.LotAlias convert(java.lang.Long id) {
+                return LotAlias.findLotAlias(id);
+            }
+        };
+    }
+    
+    public Converter<String, LotAlias> ApplicationConversionServiceFactoryBean.getStringToLotAliasConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.LotAlias>() {
+            public com.labsynch.labseer.domain.LotAlias convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), LotAlias.class);
+            }
+        };
+    }
+    
+    public Converter<LotAliasKind, String> ApplicationConversionServiceFactoryBean.getLotAliasKindToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.LotAliasKind, java.lang.String>() {
+            public String convert(LotAliasKind lotAliasKind) {
+                return new StringBuilder().append(lotAliasKind.getKindName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, LotAliasKind> ApplicationConversionServiceFactoryBean.getIdToLotAliasKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.LotAliasKind>() {
+            public com.labsynch.labseer.domain.LotAliasKind convert(java.lang.Long id) {
+                return LotAliasKind.findLotAliasKind(id);
+            }
+        };
+    }
+    
+    public Converter<String, LotAliasKind> ApplicationConversionServiceFactoryBean.getStringToLotAliasKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.LotAliasKind>() {
+            public com.labsynch.labseer.domain.LotAliasKind convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), LotAliasKind.class);
+            }
+        };
+    }
+    
+    public Converter<LotAliasType, String> ApplicationConversionServiceFactoryBean.getLotAliasTypeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.LotAliasType, java.lang.String>() {
+            public String convert(LotAliasType lotAliasType) {
+                return new StringBuilder().append(lotAliasType.getTypeName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, LotAliasType> ApplicationConversionServiceFactoryBean.getIdToLotAliasTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.LotAliasType>() {
+            public com.labsynch.labseer.domain.LotAliasType convert(java.lang.Long id) {
+                return LotAliasType.findLotAliasType(id);
+            }
+        };
+    }
+    
+    public Converter<String, LotAliasType> ApplicationConversionServiceFactoryBean.getStringToLotAliasTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.LotAliasType>() {
+            public com.labsynch.labseer.domain.LotAliasType convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), LotAliasType.class);
             }
         };
     }
@@ -586,6 +958,270 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<Operator, String> ApplicationConversionServiceFactoryBean.getOperatorToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Operator, java.lang.String>() {
+            public String convert(Operator operator) {
+                return new StringBuilder().append(operator.getName()).append(' ').append(operator.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Operator> ApplicationConversionServiceFactoryBean.getIdToOperatorConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Operator>() {
+            public com.labsynch.labseer.domain.Operator convert(java.lang.Long id) {
+                return Operator.findOperator(id);
+            }
+        };
+    }
+    
+    public Converter<String, Operator> ApplicationConversionServiceFactoryBean.getStringToOperatorConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Operator>() {
+            public com.labsynch.labseer.domain.Operator convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Operator.class);
+            }
+        };
+    }
+    
+    public Converter<Parent, String> ApplicationConversionServiceFactoryBean.getParentToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Parent, java.lang.String>() {
+            public String convert(Parent parent) {
+                return new StringBuilder().append(parent.getCorpName()).append(' ').append(parent.getParentNumber()).append(' ').append(parent.getCommonName()).append(' ').append(parent.getStereoComment()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Parent> ApplicationConversionServiceFactoryBean.getIdToParentConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Parent>() {
+            public com.labsynch.labseer.domain.Parent convert(java.lang.Long id) {
+                return Parent.findParent(id);
+            }
+        };
+    }
+    
+    public Converter<String, Parent> ApplicationConversionServiceFactoryBean.getStringToParentConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Parent>() {
+            public com.labsynch.labseer.domain.Parent convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Parent.class);
+            }
+        };
+    }
+    
+    public Converter<ParentAlias, String> ApplicationConversionServiceFactoryBean.getParentAliasToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.ParentAlias, java.lang.String>() {
+            public String convert(ParentAlias parentAlias) {
+                return new StringBuilder().append(parentAlias.getLsType()).append(' ').append(parentAlias.getLsKind()).append(' ').append(parentAlias.getAliasName()).append(' ').append(parentAlias.getSortId()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, ParentAlias> ApplicationConversionServiceFactoryBean.getIdToParentAliasConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.ParentAlias>() {
+            public com.labsynch.labseer.domain.ParentAlias convert(java.lang.Long id) {
+                return ParentAlias.findParentAlias(id);
+            }
+        };
+    }
+    
+    public Converter<String, ParentAlias> ApplicationConversionServiceFactoryBean.getStringToParentAliasConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ParentAlias>() {
+            public com.labsynch.labseer.domain.ParentAlias convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), ParentAlias.class);
+            }
+        };
+    }
+    
+    public Converter<ParentAliasKind, String> ApplicationConversionServiceFactoryBean.getParentAliasKindToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.ParentAliasKind, java.lang.String>() {
+            public String convert(ParentAliasKind parentAliasKind) {
+                return new StringBuilder().append(parentAliasKind.getKindName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, ParentAliasKind> ApplicationConversionServiceFactoryBean.getIdToParentAliasKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.ParentAliasKind>() {
+            public com.labsynch.labseer.domain.ParentAliasKind convert(java.lang.Long id) {
+                return ParentAliasKind.findParentAliasKind(id);
+            }
+        };
+    }
+    
+    public Converter<String, ParentAliasKind> ApplicationConversionServiceFactoryBean.getStringToParentAliasKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ParentAliasKind>() {
+            public com.labsynch.labseer.domain.ParentAliasKind convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), ParentAliasKind.class);
+            }
+        };
+    }
+    
+    public Converter<ParentAliasType, String> ApplicationConversionServiceFactoryBean.getParentAliasTypeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.ParentAliasType, java.lang.String>() {
+            public String convert(ParentAliasType parentAliasType) {
+                return new StringBuilder().append(parentAliasType.getTypeName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, ParentAliasType> ApplicationConversionServiceFactoryBean.getIdToParentAliasTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.ParentAliasType>() {
+            public com.labsynch.labseer.domain.ParentAliasType convert(java.lang.Long id) {
+                return ParentAliasType.findParentAliasType(id);
+            }
+        };
+    }
+    
+    public Converter<String, ParentAliasType> ApplicationConversionServiceFactoryBean.getStringToParentAliasTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ParentAliasType>() {
+            public com.labsynch.labseer.domain.ParentAliasType convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), ParentAliasType.class);
+            }
+        };
+    }
+    
+    public Converter<ParentAnnotation, String> ApplicationConversionServiceFactoryBean.getParentAnnotationToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.ParentAnnotation, java.lang.String>() {
+            public String convert(ParentAnnotation parentAnnotation) {
+                return new StringBuilder().append(parentAnnotation.getCode()).append(' ').append(parentAnnotation.getName()).append(' ').append(parentAnnotation.getDisplayOrder()).append(' ').append(parentAnnotation.getComment()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, ParentAnnotation> ApplicationConversionServiceFactoryBean.getIdToParentAnnotationConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.ParentAnnotation>() {
+            public com.labsynch.labseer.domain.ParentAnnotation convert(java.lang.Long id) {
+                return ParentAnnotation.findParentAnnotation(id);
+            }
+        };
+    }
+    
+    public Converter<String, ParentAnnotation> ApplicationConversionServiceFactoryBean.getStringToParentAnnotationConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.ParentAnnotation>() {
+            public com.labsynch.labseer.domain.ParentAnnotation convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), ParentAnnotation.class);
+            }
+        };
+    }
+    
+    public Converter<PhysicalState, String> ApplicationConversionServiceFactoryBean.getPhysicalStateToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.PhysicalState, java.lang.String>() {
+            public String convert(PhysicalState physicalState) {
+                return new StringBuilder().append(physicalState.getName()).append(' ').append(physicalState.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, PhysicalState> ApplicationConversionServiceFactoryBean.getIdToPhysicalStateConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.PhysicalState>() {
+            public com.labsynch.labseer.domain.PhysicalState convert(java.lang.Long id) {
+                return PhysicalState.findPhysicalState(id);
+            }
+        };
+    }
+    
+    public Converter<String, PhysicalState> ApplicationConversionServiceFactoryBean.getStringToPhysicalStateConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.PhysicalState>() {
+            public com.labsynch.labseer.domain.PhysicalState convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), PhysicalState.class);
+            }
+        };
+    }
+    
+    public Converter<PreDef_CorpName, String> ApplicationConversionServiceFactoryBean.getPreDef_CorpNameToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.PreDef_CorpName, java.lang.String>() {
+            public String convert(PreDef_CorpName preDef_CorpName) {
+                return new StringBuilder().append(preDef_CorpName.getCorpNumber()).append(' ').append(preDef_CorpName.getCorpName()).append(' ').append(preDef_CorpName.getComment()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, PreDef_CorpName> ApplicationConversionServiceFactoryBean.getIdToPreDef_CorpNameConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.PreDef_CorpName>() {
+            public com.labsynch.labseer.domain.PreDef_CorpName convert(java.lang.Long id) {
+                return PreDef_CorpName.findPreDef_CorpName(id);
+            }
+        };
+    }
+    
+    public Converter<String, PreDef_CorpName> ApplicationConversionServiceFactoryBean.getStringToPreDef_CorpNameConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.PreDef_CorpName>() {
+            public com.labsynch.labseer.domain.PreDef_CorpName convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), PreDef_CorpName.class);
+            }
+        };
+    }
+    
+    public Converter<Project, String> ApplicationConversionServiceFactoryBean.getProjectToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Project, java.lang.String>() {
+            public String convert(Project project) {
+                return new StringBuilder().append(project.getName()).append(' ').append(project.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Project> ApplicationConversionServiceFactoryBean.getIdToProjectConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Project>() {
+            public com.labsynch.labseer.domain.Project convert(java.lang.Long id) {
+                return Project.findProject(id);
+            }
+        };
+    }
+    
+    public Converter<String, Project> ApplicationConversionServiceFactoryBean.getStringToProjectConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Project>() {
+            public com.labsynch.labseer.domain.Project convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Project.class);
+            }
+        };
+    }
+    
+    public Converter<PurityMeasuredBy, String> ApplicationConversionServiceFactoryBean.getPurityMeasuredByToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.PurityMeasuredBy, java.lang.String>() {
+            public String convert(PurityMeasuredBy purityMeasuredBy) {
+                return new StringBuilder().append(purityMeasuredBy.getName()).append(' ').append(purityMeasuredBy.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, PurityMeasuredBy> ApplicationConversionServiceFactoryBean.getIdToPurityMeasuredByConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.PurityMeasuredBy>() {
+            public com.labsynch.labseer.domain.PurityMeasuredBy convert(java.lang.Long id) {
+                return PurityMeasuredBy.findPurityMeasuredBy(id);
+            }
+        };
+    }
+    
+    public Converter<String, PurityMeasuredBy> ApplicationConversionServiceFactoryBean.getStringToPurityMeasuredByConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.PurityMeasuredBy>() {
+            public com.labsynch.labseer.domain.PurityMeasuredBy convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), PurityMeasuredBy.class);
+            }
+        };
+    }
+    
+    public Converter<QcCompound, String> ApplicationConversionServiceFactoryBean.getQcCompoundToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.QcCompound, java.lang.String>() {
+            public String convert(QcCompound qcCompound) {
+                return new StringBuilder().append(qcCompound.getRunNumber()).append(' ').append(qcCompound.getQcDate()).append(' ').append(qcCompound.getParentId()).append(' ').append(qcCompound.getCorpName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, QcCompound> ApplicationConversionServiceFactoryBean.getIdToQcCompoundConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.QcCompound>() {
+            public com.labsynch.labseer.domain.QcCompound convert(java.lang.Long id) {
+                return QcCompound.findQcCompound(id);
+            }
+        };
+    }
+    
+    public Converter<String, QcCompound> ApplicationConversionServiceFactoryBean.getStringToQcCompoundConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.QcCompound>() {
+            public com.labsynch.labseer.domain.QcCompound convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), QcCompound.class);
+            }
+        };
+    }
+    
     public Converter<Long, RoleKind> ApplicationConversionServiceFactoryBean.getIdToRoleKindConverter() {
         return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.RoleKind>() {
             public com.labsynch.labseer.domain.RoleKind convert(java.lang.Long id) {
@@ -626,6 +1262,198 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         };
     }
     
+    public Converter<Salt, String> ApplicationConversionServiceFactoryBean.getSaltToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Salt, java.lang.String>() {
+            public String convert(Salt salt) {
+                return new StringBuilder().append(salt.getMolStructure()).append(' ').append(salt.getName()).append(' ').append(salt.getOriginalStructure()).append(' ').append(salt.getAbbrev()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Salt> ApplicationConversionServiceFactoryBean.getIdToSaltConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Salt>() {
+            public com.labsynch.labseer.domain.Salt convert(java.lang.Long id) {
+                return Salt.findSalt(id);
+            }
+        };
+    }
+    
+    public Converter<String, Salt> ApplicationConversionServiceFactoryBean.getStringToSaltConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Salt>() {
+            public com.labsynch.labseer.domain.Salt convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Salt.class);
+            }
+        };
+    }
+    
+    public Converter<SaltForm, String> ApplicationConversionServiceFactoryBean.getSaltFormToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.SaltForm, java.lang.String>() {
+            public String convert(SaltForm saltForm) {
+                return new StringBuilder().append(saltForm.getMolStructure()).append(' ').append(saltForm.getCorpName()).append(' ').append(saltForm.getCasNumber()).append(' ').append(saltForm.getRegistrationDate()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, SaltForm> ApplicationConversionServiceFactoryBean.getIdToSaltFormConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.SaltForm>() {
+            public com.labsynch.labseer.domain.SaltForm convert(java.lang.Long id) {
+                return SaltForm.findSaltForm(id);
+            }
+        };
+    }
+    
+    public Converter<String, SaltForm> ApplicationConversionServiceFactoryBean.getStringToSaltFormConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.SaltForm>() {
+            public com.labsynch.labseer.domain.SaltForm convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), SaltForm.class);
+            }
+        };
+    }
+    
+    public Converter<SaltFormAlias, String> ApplicationConversionServiceFactoryBean.getSaltFormAliasToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.SaltFormAlias, java.lang.String>() {
+            public String convert(SaltFormAlias saltFormAlias) {
+                return new StringBuilder().append(saltFormAlias.getLsType()).append(' ').append(saltFormAlias.getLsKind()).append(' ').append(saltFormAlias.getAliasName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, SaltFormAlias> ApplicationConversionServiceFactoryBean.getIdToSaltFormAliasConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.SaltFormAlias>() {
+            public com.labsynch.labseer.domain.SaltFormAlias convert(java.lang.Long id) {
+                return SaltFormAlias.findSaltFormAlias(id);
+            }
+        };
+    }
+    
+    public Converter<String, SaltFormAlias> ApplicationConversionServiceFactoryBean.getStringToSaltFormAliasConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.SaltFormAlias>() {
+            public com.labsynch.labseer.domain.SaltFormAlias convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), SaltFormAlias.class);
+            }
+        };
+    }
+    
+    public Converter<SaltFormAliasKind, String> ApplicationConversionServiceFactoryBean.getSaltFormAliasKindToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.SaltFormAliasKind, java.lang.String>() {
+            public String convert(SaltFormAliasKind saltFormAliasKind) {
+                return new StringBuilder().append(saltFormAliasKind.getKindName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, SaltFormAliasKind> ApplicationConversionServiceFactoryBean.getIdToSaltFormAliasKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.SaltFormAliasKind>() {
+            public com.labsynch.labseer.domain.SaltFormAliasKind convert(java.lang.Long id) {
+                return SaltFormAliasKind.findSaltFormAliasKind(id);
+            }
+        };
+    }
+    
+    public Converter<String, SaltFormAliasKind> ApplicationConversionServiceFactoryBean.getStringToSaltFormAliasKindConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.SaltFormAliasKind>() {
+            public com.labsynch.labseer.domain.SaltFormAliasKind convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), SaltFormAliasKind.class);
+            }
+        };
+    }
+    
+    public Converter<SaltFormAliasType, String> ApplicationConversionServiceFactoryBean.getSaltFormAliasTypeToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.SaltFormAliasType, java.lang.String>() {
+            public String convert(SaltFormAliasType saltFormAliasType) {
+                return new StringBuilder().append(saltFormAliasType.getTypeName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, SaltFormAliasType> ApplicationConversionServiceFactoryBean.getIdToSaltFormAliasTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.SaltFormAliasType>() {
+            public com.labsynch.labseer.domain.SaltFormAliasType convert(java.lang.Long id) {
+                return SaltFormAliasType.findSaltFormAliasType(id);
+            }
+        };
+    }
+    
+    public Converter<String, SaltFormAliasType> ApplicationConversionServiceFactoryBean.getStringToSaltFormAliasTypeConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.SaltFormAliasType>() {
+            public com.labsynch.labseer.domain.SaltFormAliasType convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), SaltFormAliasType.class);
+            }
+        };
+    }
+    
+    public Converter<Scientist, String> ApplicationConversionServiceFactoryBean.getScientistToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Scientist, java.lang.String>() {
+            public String convert(Scientist scientist) {
+                return new StringBuilder().append(scientist.getCode()).append(' ').append(scientist.getName()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Scientist> ApplicationConversionServiceFactoryBean.getIdToScientistConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Scientist>() {
+            public com.labsynch.labseer.domain.Scientist convert(java.lang.Long id) {
+                return Scientist.findScientist(id);
+            }
+        };
+    }
+    
+    public Converter<String, Scientist> ApplicationConversionServiceFactoryBean.getStringToScientistConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Scientist>() {
+            public com.labsynch.labseer.domain.Scientist convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Scientist.class);
+            }
+        };
+    }
+    
+    public Converter<SolutionUnit, String> ApplicationConversionServiceFactoryBean.getSolutionUnitToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.SolutionUnit, java.lang.String>() {
+            public String convert(SolutionUnit solutionUnit) {
+                return new StringBuilder().append(solutionUnit.getName()).append(' ').append(solutionUnit.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, SolutionUnit> ApplicationConversionServiceFactoryBean.getIdToSolutionUnitConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.SolutionUnit>() {
+            public com.labsynch.labseer.domain.SolutionUnit convert(java.lang.Long id) {
+                return SolutionUnit.findSolutionUnit(id);
+            }
+        };
+    }
+    
+    public Converter<String, SolutionUnit> ApplicationConversionServiceFactoryBean.getStringToSolutionUnitConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.SolutionUnit>() {
+            public com.labsynch.labseer.domain.SolutionUnit convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), SolutionUnit.class);
+            }
+        };
+    }
+    
+    public Converter<StereoCategory, String> ApplicationConversionServiceFactoryBean.getStereoCategoryToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.StereoCategory, java.lang.String>() {
+            public String convert(StereoCategory stereoCategory) {
+                return new StringBuilder().append(stereoCategory.getName()).append(' ').append(stereoCategory.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, StereoCategory> ApplicationConversionServiceFactoryBean.getIdToStereoCategoryConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.StereoCategory>() {
+            public com.labsynch.labseer.domain.StereoCategory convert(java.lang.Long id) {
+                return StereoCategory.findStereoCategory(id);
+            }
+        };
+    }
+    
+    public Converter<String, StereoCategory> ApplicationConversionServiceFactoryBean.getStringToStereoCategoryConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.StereoCategory>() {
+            public com.labsynch.labseer.domain.StereoCategory convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), StereoCategory.class);
+            }
+        };
+    }
+    
     public Converter<TempSelectTable, String> ApplicationConversionServiceFactoryBean.getTempSelectTableToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.TempSelectTable, java.lang.String>() {
             public String convert(TempSelectTable tempSelectTable) {
@@ -646,6 +1474,78 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.TempSelectTable>() {
             public com.labsynch.labseer.domain.TempSelectTable convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), TempSelectTable.class);
+            }
+        };
+    }
+    
+    public Converter<Unit, String> ApplicationConversionServiceFactoryBean.getUnitToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Unit, java.lang.String>() {
+            public String convert(Unit unit) {
+                return new StringBuilder().append(unit.getName()).append(' ').append(unit.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Unit> ApplicationConversionServiceFactoryBean.getIdToUnitConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Unit>() {
+            public com.labsynch.labseer.domain.Unit convert(java.lang.Long id) {
+                return Unit.findUnit(id);
+            }
+        };
+    }
+    
+    public Converter<String, Unit> ApplicationConversionServiceFactoryBean.getStringToUnitConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Unit>() {
+            public com.labsynch.labseer.domain.Unit convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Unit.class);
+            }
+        };
+    }
+    
+    public Converter<Vendor, String> ApplicationConversionServiceFactoryBean.getVendorToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Vendor, java.lang.String>() {
+            public String convert(Vendor vendor) {
+                return new StringBuilder().append(vendor.getName()).append(' ').append(vendor.getCode()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, Vendor> ApplicationConversionServiceFactoryBean.getIdToVendorConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Vendor>() {
+            public com.labsynch.labseer.domain.Vendor convert(java.lang.Long id) {
+                return Vendor.findVendor(id);
+            }
+        };
+    }
+    
+    public Converter<String, Vendor> ApplicationConversionServiceFactoryBean.getStringToVendorConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Vendor>() {
+            public com.labsynch.labseer.domain.Vendor convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), Vendor.class);
+            }
+        };
+    }
+    
+    public Converter<SaltLoader, String> ApplicationConversionServiceFactoryBean.getSaltLoaderToStringConverter() {
+        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.service.SaltLoader, java.lang.String>() {
+            public String convert(SaltLoader saltLoader) {
+                return new StringBuilder().append(saltLoader.getName()).append(' ').append(saltLoader.getDescription()).append(' ').append(saltLoader.getNumberOfSalts()).append(' ').append(saltLoader.getSize()).toString();
+            }
+        };
+    }
+    
+    public Converter<Long, SaltLoader> ApplicationConversionServiceFactoryBean.getIdToSaltLoaderConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.service.SaltLoader>() {
+            public com.labsynch.labseer.service.SaltLoader convert(java.lang.Long id) {
+                return SaltLoader.findSaltLoader(id);
+            }
+        };
+    }
+    
+    public Converter<String, SaltLoader> ApplicationConversionServiceFactoryBean.getStringToSaltLoaderConverter() {
+        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.service.SaltLoader>() {
+            public com.labsynch.labseer.service.SaltLoader convert(String id) {
+                return getObject().convert(getObject().convert(id, Long.class), SaltLoader.class);
             }
         };
     }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="salts/list">
+        <put-attribute name="body" value="/WEB-INF/views/salts/list.jspx"/>
+    </definition>
+<definition extends="default" name="salts/show">
+        <put-attribute name="body" value="/WEB-INF/views/salts/show.jspx"/>
+    </definition>
+<definition extends="default" name="salts/create">
+        <put-attribute name="body" value="/WEB-INF/views/salts/create.jspx"/>
+    </definition>
+<definition extends="default" name="salts/update">
+        <put-attribute name="body" value="/WEB-INF/views/salts/update.jspx"/>
+    </definition>
+<definition extends="default" name="salts/findSaltsByAbbrevEquals">
+        <put-attribute name="body" value="/WEB-INF/views/salts/findSaltsByAbbrevEquals.jspx"/>
+    </definition>
+<definition extends="default" name="salts/findSaltsByAbbrevEqualsAndNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/salts/findSaltsByAbbrevEqualsAndNameEquals.jspx"/>
+    </definition>
+<definition extends="default" name="salts/findSaltsByAbbrevLike">
+        <put-attribute name="body" value="/WEB-INF/views/salts/findSaltsByAbbrevLike.jspx"/>
+    </definition>
+<definition extends="default" name="salts/findSaltsByCdId">
+        <put-attribute name="body" value="/WEB-INF/views/salts/findSaltsByCdId.jspx"/>
+    </definition>
+<definition extends="default" name="salts/findSaltsByNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/salts/findSaltsByNameEquals.jspx"/>
+    </definition>
+</tiles-definitions>

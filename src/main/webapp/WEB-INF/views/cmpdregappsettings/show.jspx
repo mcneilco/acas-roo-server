@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_CmpdRegAppSetting" object="${cmpdregappsetting}" path="/cmpdregappsettings" z="VPBBvUAiCTctCKGc0r6NXMCH1F0=">
+        <field:display field="propName" id="s_com_labsynch_labseer_domain_CmpdRegAppSetting_propName" object="${cmpdregappsetting}" z="dja6huQlSz5tt16HzdZLgsk+4QQ="/>
+        <field:display field="propValue" id="s_com_labsynch_labseer_domain_CmpdRegAppSetting_propValue" object="${cmpdregappsetting}" z="SZQii8HOcOeX1DYG+6UHsTgiOjw="/>
+        <field:display field="comments" id="s_com_labsynch_labseer_domain_CmpdRegAppSetting_comments" object="${cmpdregappsetting}" z="ebPsqrjwpBYJUK1jXrjc6N46+wg="/>
+        <field:display field="ignored" id="s_com_labsynch_labseer_domain_CmpdRegAppSetting_ignored" object="${cmpdregappsetting}" z="pata3RRdv/EjaNN5Llt2E9WkTao="/>
+        <field:display date="true" dateTimePattern="${cmpdRegAppSetting_recordeddate_date_format}" field="recordedDate" id="s_com_labsynch_labseer_domain_CmpdRegAppSetting_recordedDate" object="${cmpdregappsetting}" z="SRC5bG83xGRkEouZyRBvCu9dWng="/>
+    </page:show>
+</div>
