@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
@@ -449,10 +448,6 @@ public class MetalotServiceImpl implements MetalotService {
 					logger.info("number of lot aliases: " + numberOfLotAliases);
 
 					logger.debug("this is a new lot");
-					if (lot.getRegisteredBy() != null){
-						Author registeredBy = Author.findAuthorsByUserName(lot.getRegisteredBy()).getSingleResult();
-						lot.setRegisteredBy(registeredBy.getUserName());
-					}
 					lot.setSaltForm(saltForm);
 					//lot.setParent(parent);
 					if(lot.getCorpName() == null || lot.getCorpName().trim().equalsIgnoreCase("")){
