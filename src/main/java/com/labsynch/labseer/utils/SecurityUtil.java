@@ -10,17 +10,18 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
 
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.Scientist;
 
 public class SecurityUtil {
 
 	static Logger logger = LoggerFactory.getLogger(SecurityUtil.class);
 
-	public static Scientist getLoginUser(){
+	public static Author getLoginUser(){
 
 		String chemistName = "BLANK";
 		String userJson = null;
-		Scientist chemist;
+		Author chemist;
 
 		try {
 			//			SecurityContext context = SecurityContextHolder.getContext();
@@ -61,14 +62,14 @@ public class SecurityUtil {
 
 			}
 
-			chemist = Scientist.findScientistsByCodeEquals(chemistName).getSingleResult();
+			chemist = Author.findAuthorsByUserName(chemistName).getSingleResult();
 			userJson = chemist.toJson();
 
 		} catch (EmptyResultDataAccessException e){
 			logger.error("unable to find the user: " + chemistName);
 			try {
 				chemistName = "adminUser";
-				chemist = Scientist.findScientistsByCodeEquals(chemistName).getSingleResult();
+				chemist = Author.findAuthorsByUserName(chemistName).getSingleResult();
 				logger.debug("using the admin user");
 			} catch (EmptyResultDataAccessException e2){
 				logger.error("creating the user adminUser");
@@ -85,9 +86,9 @@ public class SecurityUtil {
 		loginName = loginName.toLowerCase();
 		logger.debug("in the security update class. User name = " + loginName);
 		String userJson = null;
-		Scientist chemist;
+		Author chemist;
 		try {
-			chemist = Scientist.findScientistsByCodeEquals(loginName).getSingleResult();
+			chemist = Author.findAuthorsByUserName(loginName).getSingleResult();
 			userJson = chemist.toJson();
 			logger.debug(userJson);
 		} catch (EmptyResultDataAccessException e){
@@ -100,9 +101,9 @@ public class SecurityUtil {
 		loginName = loginName.toLowerCase();
 		logger.debug("in the security update class. User name = " + loginName);
 		String userJson = null;
-		Scientist chemist;
+		Author chemist;
 		try {
-			chemist = Scientist.findScientistsByCodeEquals(loginName).getSingleResult();
+			chemist = Author.findAuthorsByUserName(loginName).getSingleResult();
 			userJson = chemist.toJson();
 			logger.debug(userJson);
 		} catch (EmptyResultDataAccessException e){
@@ -111,31 +112,31 @@ public class SecurityUtil {
 		}
 	}
 
-	public static Scientist createUser(String loginName) {
+	public static Author createUser(String loginName) {
 		logger.debug("in the security update class. Creating new user name = " + loginName);
-		Scientist chemist = new Scientist();
-		chemist.setCode(loginName);
-		chemist.setName(loginName);
-		if (Configuration.getConfigInfo().getServerSettings().isNewUserIsChemist()){
-			chemist.setIsChemist(true);
-		}else{
-			chemist.setIsChemist(false);
-		}
+		Author chemist = new Author();
+		chemist.setUserName(loginName);
+		chemist.setFirstName(loginName);
+//		if (Configuration.getConfigInfo().getServerSettings().isNewUserIsChemist()){
+//			chemist.setIsChemist(true);
+//		}else{
+//			chemist.setIsChemist(false);
+//		}
 		chemist.persist();
 		return chemist;
 
 	}
 
-	public static Scientist createUser(String loginName, String fullName) {
+	public static Author createUser(String loginName, String fullName) {
 		logger.debug("in the security update class. Creating new user name = " + loginName);
-		Scientist chemist = new Scientist();
-		chemist.setCode(loginName);
-		chemist.setName(fullName);
-		if (Configuration.getConfigInfo().getServerSettings().isNewUserIsChemist()){
-			chemist.setIsChemist(true);
-		}else{
-			chemist.setIsChemist(false);
-		}
+		Author chemist = new Author();
+		chemist.setUserName(loginName);
+		chemist.setFirstName(fullName);
+//		if (Configuration.getConfigInfo().getServerSettings().isNewUserIsChemist()){
+//			chemist.setIsChemist(true);
+//		}else{
+//			chemist.setIsChemist(false);
+//		}
 		chemist.persist();
 		return chemist;
 

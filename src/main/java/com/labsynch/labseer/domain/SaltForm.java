@@ -57,9 +57,7 @@ public class SaltForm implements Comparable {
 	@org.hibernate.annotations.Index(name="SaltForm_casNumber_IDX")
 	private String casNumber;
 
-	@ManyToOne
-    @org.hibernate.annotations.Index(name="SaltForm_Chemist_IDX")
-	private Scientist chemist;
+	private String chemist;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(style = "S-")
@@ -120,7 +118,7 @@ public class SaltForm implements Comparable {
 
 		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
-			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Scientist>get("chemist"), searchParams.getChemist());
+			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
 		}
 		if (searchParams.getBuidNumber() != null) {
@@ -225,7 +223,7 @@ public class SaltForm implements Comparable {
 		
 		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
-			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Scientist>get("chemist"), searchParams.getChemist());
+			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
 		}
 		if (searchParams.getBuidNumber() != null) {
@@ -350,7 +348,7 @@ public class SaltForm implements Comparable {
 
 		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
-			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Scientist>get("chemist"), searchParams.getChemist());
+			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
 		}
 		if (searchParams.getBuidNumber() != null) {
@@ -442,7 +440,7 @@ public class SaltForm implements Comparable {
 
 		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
-			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Scientist>get("chemist"), searchParams.getChemist());
+			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
 		}
 		if (searchParams.getBuidNumber() != null) {

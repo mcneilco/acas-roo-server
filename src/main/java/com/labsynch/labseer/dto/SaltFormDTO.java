@@ -13,7 +13,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 
 @RooJavaBean
 @RooToString
@@ -33,7 +32,7 @@ public class SaltFormDTO{
 	@Size(max = 255)
 	private String casNumber;
 
-	private Scientist chemist;
+	private String chemist;
 
 	private int CdId;
 
@@ -85,12 +84,8 @@ public class SaltFormDTO{
         this.casNumber = casNumber;
     }
     
-    public Scientist getChemist() {
+    public String getChemist() {
         return this.chemist;
-    }
-    
-    public void setChemist(Scientist chemist) {
-        this.chemist = chemist;
     }
     
     public int getCdId() {

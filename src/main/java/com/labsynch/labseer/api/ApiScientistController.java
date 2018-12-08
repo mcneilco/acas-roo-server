@@ -238,7 +238,7 @@ public class ApiScientistController {
 			scientist.remove();
 		} catch (Exception e){
 			logger.info("Hit an exception: " + e);
-			Long lotCount = Lot.countLotsByRegisteredBy(scientist);
+			Long lotCount = 1L;
 			logger.info("Unable to delete the registered by scientists. " + lotCount + " lots associated with the scientist " + scientist.getName());
 			ErrorMessage error = new ErrorMessage();
 			error.setLevel("ERROR");

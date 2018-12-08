@@ -70,7 +70,7 @@ public class ParentEditDTO{
 	
 	public void setParent(Parent parent) {
 		
-		this.setChemistCode(parent.getChemist().getCode());
+		this.setChemistCode(parent.getChemist());
 		this.setCommonName(parent.getCommonName());
 		this.setCorpName(parent.getCorpName());
 		this.setIgnore(parent.getIgnore());

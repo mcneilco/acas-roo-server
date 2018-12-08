@@ -11,7 +11,6 @@ import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
@@ -80,11 +79,11 @@ privileged aspect Lot_Roo_JavaBean {
         this.registrationDate = registrationDate;
     }
     
-    public Scientist Lot.getRegisteredBy() {
+    public String Lot.getRegisteredBy() {
         return this.registeredBy;
     }
     
-    public void Lot.setRegisteredBy(Scientist registeredBy) {
+    public void Lot.setRegisteredBy(String registeredBy) {
         this.registeredBy = registeredBy;
     }
     
@@ -96,11 +95,11 @@ privileged aspect Lot_Roo_JavaBean {
         this.modifiedDate = modifiedDate;
     }
     
-    public Scientist Lot.getModifiedBy() {
+    public String Lot.getModifiedBy() {
         return this.modifiedBy;
     }
     
-    public void Lot.setModifiedBy(Scientist modifiedBy) {
+    public void Lot.setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
     
@@ -200,11 +199,11 @@ privileged aspect Lot_Roo_JavaBean {
         this.purityMeasuredBy = purityMeasuredBy;
     }
     
-    public Scientist Lot.getChemist() {
+    public String Lot.getChemist() {
         return this.chemist;
     }
     
-    public void Lot.setChemist(Scientist chemist) {
+    public void Lot.setChemist(String chemist) {
         this.chemist = chemist;
     }
     

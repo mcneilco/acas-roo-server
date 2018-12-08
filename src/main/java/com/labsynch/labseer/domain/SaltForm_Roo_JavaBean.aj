@@ -8,7 +8,6 @@ import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import java.util.Date;
 import java.util.Set;
 
@@ -38,11 +37,11 @@ privileged aspect SaltForm_Roo_JavaBean {
         this.casNumber = casNumber;
     }
     
-    public Scientist SaltForm.getChemist() {
+    public String SaltForm.getChemist() {
         return this.chemist;
     }
     
-    public void SaltForm.setChemist(Scientist chemist) {
+    public void SaltForm.setChemist(String chemist) {
         this.chemist = chemist;
     }
     

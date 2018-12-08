@@ -6,7 +6,6 @@ package com.labsynch.labseer.domain;
 import com.labsynch.labseer.domain.BulkLoadFile;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import java.util.Date;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -29,8 +28,8 @@ privileged aspect Lot_Roo_Finder {
         return ((Long) q.getSingleResult());
     }
     
-    public static Long Lot.countFindLotsByChemistAndSynthesisDateBetween(Scientist chemist, Date minSynthesisDate, Date maxSynthesisDate) {
-        if (chemist == null) throw new IllegalArgumentException("The chemist argument is required");
+    public static Long Lot.countFindLotsByChemistAndSynthesisDateBetween(String chemist, Date minSynthesisDate, Date maxSynthesisDate) {
+        if (chemist == null || chemist.length() == 0) throw new IllegalArgumentException("The chemist argument is required");
         if (minSynthesisDate == null) throw new IllegalArgumentException("The minSynthesisDate argument is required");
         if (maxSynthesisDate == null) throw new IllegalArgumentException("The maxSynthesisDate argument is required");
         EntityManager em = Lot.entityManager();
@@ -170,8 +169,8 @@ privileged aspect Lot_Roo_Finder {
         return q;
     }
     
-    public static TypedQuery<Lot> Lot.findLotsByChemistAndSynthesisDateBetween(Scientist chemist, Date minSynthesisDate, Date maxSynthesisDate) {
-        if (chemist == null) throw new IllegalArgumentException("The chemist argument is required");
+    public static TypedQuery<Lot> Lot.findLotsByChemistAndSynthesisDateBetween(String chemist, Date minSynthesisDate, Date maxSynthesisDate) {
+        if (chemist == null || chemist.length() == 0) throw new IllegalArgumentException("The chemist argument is required");
         if (minSynthesisDate == null) throw new IllegalArgumentException("The minSynthesisDate argument is required");
         if (maxSynthesisDate == null) throw new IllegalArgumentException("The maxSynthesisDate argument is required");
         EntityManager em = Lot.entityManager();
@@ -182,8 +181,8 @@ privileged aspect Lot_Roo_Finder {
         return q;
     }
     
-    public static TypedQuery<Lot> Lot.findLotsByChemistAndSynthesisDateBetween(Scientist chemist, Date minSynthesisDate, Date maxSynthesisDate, String sortFieldName, String sortOrder) {
-        if (chemist == null) throw new IllegalArgumentException("The chemist argument is required");
+    public static TypedQuery<Lot> Lot.findLotsByChemistAndSynthesisDateBetween(String chemist, Date minSynthesisDate, Date maxSynthesisDate, String sortFieldName, String sortOrder) {
+        if (chemist == null || chemist.length() == 0) throw new IllegalArgumentException("The chemist argument is required");
         if (minSynthesisDate == null) throw new IllegalArgumentException("The minSynthesisDate argument is required");
         if (maxSynthesisDate == null) throw new IllegalArgumentException("The maxSynthesisDate argument is required");
         EntityManager em = Lot.entityManager();

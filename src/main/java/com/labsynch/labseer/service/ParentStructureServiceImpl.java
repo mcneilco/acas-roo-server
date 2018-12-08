@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.domain.Scientist;
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.MoleculeUtil;
@@ -65,8 +65,8 @@ public class ParentStructureServiceImpl implements ParentStructureService {
 
 		logger.debug("parent structure for " + parent.getCorpName() + "  was updated: " + updateFlag);
 		parent.setModifiedDate(new Date());
-		Scientist modifyScientist = SecurityUtil.getLoginUser();
-		parent.setModifiedBy(modifyScientist);
+		Author modifyScientist = SecurityUtil.getLoginUser();
+		parent.setModifiedBy(modifyScientist.getUserName());
 		parent.setExactMass(chemService.getExactMass(inputParent.getMolStructure()));
 		parent.setMolWeight(chemService.getMolWeight(inputParent.getMolStructure()));
 		
@@ -80,7 +80,7 @@ public class ParentStructureServiceImpl implements ParentStructureService {
 			updatedLot = lotService.updateLotWeight(lot);
 			updatedLot.setAsDrawnStruct(parent.getMolStructure());
 			updatedLot.setModifiedDate(new Date());
-			updatedLot.setModifiedBy(modifyScientist);
+			updatedLot.setModifiedBy(modifyScientist.getUserName());
 			updatedLot.merge();
 		}		
 

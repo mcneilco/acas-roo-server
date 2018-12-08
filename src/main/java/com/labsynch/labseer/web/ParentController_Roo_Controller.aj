@@ -9,7 +9,6 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.ParentAnnotation;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.web.ParentController;
 import org.springframework.ui.Model;
@@ -24,7 +23,6 @@ privileged aspect ParentController_Roo_Controller {
         uiModel.addAttribute("parentaliases", ParentAlias.findAllParentAliases());
         uiModel.addAttribute("parentannotations", ParentAnnotation.findAllParentAnnotations());
         uiModel.addAttribute("saltforms", SaltForm.findAllSaltForms());
-        uiModel.addAttribute("scientists", Scientist.findAllScientists());
         uiModel.addAttribute("stereocategorys", StereoCategory.findAllStereoCategorys());
     }
     

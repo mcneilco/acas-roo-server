@@ -15,7 +15,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 import com.labsynch.labseer.domain.CompoundType;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAnnotation;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
@@ -30,7 +29,7 @@ public class ParentDTO{
 	
 	private String corpName;
 
-	private Scientist chemist;
+	private String chemist;
 
 	private String commonName;
 

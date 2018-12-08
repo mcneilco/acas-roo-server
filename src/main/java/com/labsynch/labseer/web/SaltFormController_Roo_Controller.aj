@@ -8,7 +8,6 @@ import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.web.SaltFormController;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -27,7 +26,6 @@ privileged aspect SaltFormController_Roo_Controller {
         uiModel.addAttribute("isosalts", IsoSalt.findAllIsoSalts());
         uiModel.addAttribute("lots", Lot.findAllLots());
         uiModel.addAttribute("parents", Parent.findAllParents());
-        uiModel.addAttribute("scientists", Scientist.findAllScientists());
     }
     
 }

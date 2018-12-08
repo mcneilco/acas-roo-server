@@ -12,7 +12,6 @@ import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
@@ -32,7 +31,6 @@ privileged aspect LotController_Roo_Controller {
         uiModel.addAttribute("projects", Project.findAllProjects());
         uiModel.addAttribute("puritymeasuredbys", PurityMeasuredBy.findAllPurityMeasuredBys());
         uiModel.addAttribute("saltforms", SaltForm.findAllSaltForms());
-        uiModel.addAttribute("scientists", Scientist.findAllScientists());
         uiModel.addAttribute("solutionunits", SolutionUnit.findAllSolutionUnits());
         uiModel.addAttribute("units", Unit.findAllUnits());
         uiModel.addAttribute("vendors", Vendor.findAllVendors());

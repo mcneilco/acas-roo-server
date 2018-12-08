@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/datatables" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <form:update id="fu_com_labsynch_labseer_domain_Lot" modelAttribute="lot" path="/lots" versionField="Version" z="dN5HNPC0FYi6DSAcTvaybMyFiBM=">
@@ -14,9 +14,7 @@
         <field:input field="lotMolWeight" id="c_com_labsynch_labseer_domain_Lot_lotMolWeight" validationMessageCode="field_invalid_number" z="pLfwU6E3LQ/AlaU+DFnrb6Cq57k="/>
         <field:datetime dateTimePattern="${lot_synthesisdate_date_format}" field="synthesisDate" id="c_com_labsynch_labseer_domain_Lot_synthesisDate" z="Q1zsFcWQHvIY03gjSvFMYv6R8XE="/>
         <field:datetime dateTimePattern="${lot_registrationdate_date_format}" field="registrationDate" id="c_com_labsynch_labseer_domain_Lot_registrationDate" z="Q/c9LxEDOhPxW8RuL9K8DC6SyTU="/>
-        <field:select field="registeredBy" id="c_com_labsynch_labseer_domain_Lot_registeredBy" itemValue="id" items="${scientists}" path="/scientists" z="pYjctJRkDe0PD4cUq0BTqIE6IOo="/>
         <field:datetime dateTimePattern="${lot_modifieddate_date_format}" field="modifiedDate" id="c_com_labsynch_labseer_domain_Lot_modifiedDate" z="OpzbrcY0fLbfLYogv6N6NGKQlwQ="/>
-        <field:select field="modifiedBy" id="c_com_labsynch_labseer_domain_Lot_modifiedBy" itemValue="id" items="${scientists}" path="/scientists" z="e37xp1P3RDYJ3fZ6n2Vj7Rn6/p4="/>
         <field:textarea field="barcode" id="c_com_labsynch_labseer_domain_Lot_barcode" z="pToUW00CZAsg3nYhIcb/UUsHsoA="/>
         <field:textarea field="color" id="c_com_labsynch_labseer_domain_Lot_color" z="E4ogXGwPdFoWC4hCBP8hrOn1oF0="/>
         <field:textarea field="notebookPage" id="c_com_labsynch_labseer_domain_Lot_notebookPage" z="xSEby3jF/ppiGNp9ZsFVla+DL9Q="/>
@@ -29,7 +27,6 @@
         <field:input field="purity" id="c_com_labsynch_labseer_domain_Lot_purity" validationMessageCode="field_invalid_number" z="BP8ScRMCwv15O0HjL68VFTorGGY="/>
         <field:select field="purityOperator" id="c_com_labsynch_labseer_domain_Lot_purityOperator" itemValue="id" items="${operators}" path="/operators" z="3ChI0quzzW1rm4YSPDg2XOoIOqo="/>
         <field:select field="purityMeasuredBy" id="c_com_labsynch_labseer_domain_Lot_purityMeasuredBy" itemValue="id" items="${puritymeasuredbys}" path="/puritymeasuredbys" z="5fSUFFHjfIM23yR50PXcM4XpMBM="/>
-        <field:select field="chemist" id="c_com_labsynch_labseer_domain_Lot_chemist" itemValue="id" items="${scientists}" path="/scientists" z="mF4uBB0NV4dJ1Pexn4DU1gY1N6c="/>
         <field:input field="percentEE" id="c_com_labsynch_labseer_domain_Lot_percentEE" validationMessageCode="field_invalid_number" z="EfE4ltNOYoNSfOlVMLv4XiQTe7U="/>
         <field:input field="comments" id="c_com_labsynch_labseer_domain_Lot_comments" z="clsmBilQ6yPwTkJzR/WlUwZnwtA="/>
         <field:checkbox field="isVirtual" id="c_com_labsynch_labseer_domain_Lot_isVirtual" z="FDKWBuReksLrqk0C+pfSXVohZ/M="/>
@@ -57,5 +54,8 @@
         <field:input field="totalAmountStored" id="c_com_labsynch_labseer_domain_Lot_totalAmountStored" validationMessageCode="field_invalid_number" z="Abd56w6gu6LyAR6/VXCP8Duaxno="/>
         <field:select field="totalAmountStoredUnits" id="c_com_labsynch_labseer_domain_Lot_totalAmountStoredUnits" itemValue="id" items="${units}" path="/units" z="bOLONKdTS9SbC07iksiipbES/3Y="/>
         <field:simple field="lotAliases" id="c_com_labsynch_labseer_domain_Lot_lotAliases" messageCode="entity_reference_not_managed" messageCodeAttribute="Lot Alias" z="MLByumWqoN/kW/W+xBh1K7jgTzs="/>
+        <field:input field="registeredBy" id="c_com_labsynch_labseer_domain_Lot_registeredBy" z="f5OMuER31yhh1y56+8lmaCDuZlw="/>
+        <field:input field="chemist" id="c_com_labsynch_labseer_domain_Lot_chemist" z="DRAQZMcV0UaOYgEDGEN2k4FQEj4="/>
+        <field:input field="modifiedBy" id="c_com_labsynch_labseer_domain_Lot_modifiedBy" z="PWV7CSEQO0gy8QCQQqG3Eklh1O8="/>
     </form:update>
 </div>

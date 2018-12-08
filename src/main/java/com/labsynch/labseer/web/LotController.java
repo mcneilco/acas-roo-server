@@ -36,7 +36,7 @@ import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
@@ -283,8 +283,8 @@ public class LotController {
     //        return SaltForm.findAllSaltForms();
     //    }
     @ModelAttribute("scientists")
-    public Collection<Scientist> populateScientists() {
-        return Scientist.findAllScientists();
+    public Collection<Author> populateScientists() {
+        return Author.findAllAuthors();
     }
 
     @ModelAttribute("solutionunits")
@@ -315,14 +315,14 @@ public class LotController {
 
     @RequestMapping(params = { "find=ByChemistAndSynthesisDateBetween", "form" }, method = RequestMethod.GET)
     public String findLotsByChemistAndSynthesisDateBetweenForm(Model uiModel) {
-        uiModel.addAttribute("scientists", Scientist.findAllScientists());
+        uiModel.addAttribute("scientists", Author.findAllAuthors());
         addDateTimeFormatPatterns(uiModel);
         return "lots/findLotsByChemistAndSynthesisDateBetween";
     }
 
     @RequestMapping(params = "find=ByChemistAndSynthesisDateBetween", method = RequestMethod.GET)
-    public String findLotsByChemistAndSynthesisDateBetween(@RequestParam("chemist") Scientist chemist, @RequestParam("minSynthesisDate") Date minSynthesisDate, @RequestParam("maxSynthesisDate") Date maxSynthesisDate, Model uiModel) {
-        uiModel.addAttribute("lots", Lot.findLotsByChemistAndSynthesisDateBetween(chemist, minSynthesisDate, maxSynthesisDate).getResultList());
+    public String findLotsByChemistAndSynthesisDateBetween(@RequestParam("chemist") Author chemist, @RequestParam("minSynthesisDate") Date minSynthesisDate, @RequestParam("maxSynthesisDate") Date maxSynthesisDate, Model uiModel) {
+        uiModel.addAttribute("lots", Lot.findLotsByChemistAndSynthesisDateBetween(chemist.getUserName(), minSynthesisDate, maxSynthesisDate).getResultList());
         addDateTimeFormatPatterns(uiModel);
         return "lots/list";
     }

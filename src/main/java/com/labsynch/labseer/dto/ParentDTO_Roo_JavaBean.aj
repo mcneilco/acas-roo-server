@@ -5,7 +5,6 @@ package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.domain.CompoundType;
 import com.labsynch.labseer.domain.ParentAnnotation;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.dto.ParentAliasDTO;
 import com.labsynch.labseer.dto.ParentDTO;
@@ -30,11 +29,11 @@ privileged aspect ParentDTO_Roo_JavaBean {
         this.corpName = corpName;
     }
     
-    public Scientist ParentDTO.getChemist() {
+    public String ParentDTO.getChemist() {
         return this.chemist;
     }
     
-    public void ParentDTO.setChemist(Scientist chemist) {
+    public void ParentDTO.setChemist(String chemist) {
         this.chemist = chemist;
     }
     

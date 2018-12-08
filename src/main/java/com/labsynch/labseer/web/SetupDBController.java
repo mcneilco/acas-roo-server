@@ -22,7 +22,7 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFReaderFactory;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.dto.Metalot;
 import com.labsynch.labseer.dto.MetalotReturn;
@@ -90,19 +90,19 @@ public class SetupDBController {
 
 //			    	mol.clearExtraLabels();
 			    	parent.setMolStructure(mol.getMolStructure());
-			    	Scientist chemist = Scientist.findScientistsByCodeEquals("cchemist").getSingleResult();
+			    	Author chemist = Author.findAuthorsByUserName("cchemist").getSingleResult();
 			    	String noteBookInfo = "1234-123";
 			    	StereoCategory stereoCategory = StereoCategory.findStereoCategorysByCodeEquals("achiral").getSingleResult();
 			    	
-			    	parent.setChemist(chemist);
+			    	parent.setChemist(chemist.getUserName());
 			    	parent.setStereoCategory(stereoCategory);
 			    	
 			    	saltForm.setParent(parent);
-			    	saltForm.setChemist(chemist);
+			    	saltForm.setChemist(chemist.getUserName());
 			    	saltForm.setMolStructure("");
 
 			    	lot.setSynthesisDate(new Date());
-			    	lot.setChemist(chemist);
+			    	lot.setChemist(chemist.getUserName());
 			    	lot.setNotebookPage(noteBookInfo);
 			    	lot.setSaltForm(saltForm);
 			    	lot.setLotMolWeight(mol.getMass());

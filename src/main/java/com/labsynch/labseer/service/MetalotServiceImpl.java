@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
@@ -449,8 +450,8 @@ public class MetalotServiceImpl implements MetalotService {
 
 					logger.debug("this is a new lot");
 					if (lot.getRegisteredBy() != null){
-						Scientist registeredBy = Scientist.findScientistsByCodeEquals(lot.getRegisteredBy().getCode()).getSingleResult();
-						lot.setRegisteredBy(registeredBy);
+						Author registeredBy = Author.findAuthorsByUserName(lot.getRegisteredBy()).getSingleResult();
+						lot.setRegisteredBy(registeredBy.getUserName());
 					}
 					lot.setSaltForm(saltForm);
 					//lot.setParent(parent);
@@ -700,9 +701,9 @@ public class MetalotServiceImpl implements MetalotService {
 		tubeRequest.setBarcode(lot.getBarcode());
 		if (tubeRequest.getBarcode() == null || tubeRequest.getBarcode().length() < 1) tubeRequest.setBarcode(lot.getCorpName());
 		tubeRequest.setCreatedDate(recordedDate);
-		tubeRequest.setCreatedUser(lot.getRegisteredBy().getCode());
+		tubeRequest.setCreatedUser(lot.getRegisteredBy());
 		tubeRequest.setDefinition(definitionContainer.getCode());
-		tubeRequest.setRecordedBy(lot.getRegisteredBy().getCode());
+		tubeRequest.setRecordedBy(lot.getRegisteredBy());
 		Collection<WellContentDTO> wells = new ArrayList<WellContentDTO>();
 		WellContentDTO well = new WellContentDTO();
 		well.setWellName(wellName);
@@ -710,7 +711,7 @@ public class MetalotServiceImpl implements MetalotService {
 		if (lot.getAmountUnits() != null) well.setAmountUnits(lot.getAmountUnits().getCode());
 		well.setPhysicalState("solid");
 		well.setBatchCode(lot.getCorpName());
-		well.setRecordedBy(lot.getRegisteredBy().getCode());
+		well.setRecordedBy(lot.getRegisteredBy());
 		well.setRecordedDate(recordedDate);
 		wells.add(well);
 		tubeRequest.setWells(wells);
@@ -733,7 +734,7 @@ public class MetalotServiceImpl implements MetalotService {
 			SetTubeLocationDTO moveDTO = new SetTubeLocationDTO();
 			moveDTO.setBarcode(tubeRequest.getBarcode());
 			moveDTO.setLocationBreadCrumb(lot.getStorageLocation());
-			moveDTO.setUser(lot.getRegisteredBy().getCode());
+			moveDTO.setUser(lot.getRegisteredBy());
 			moveDTO.setDate(recordedDate);
 			try {
 				String rootLabel = lot.getStorageLocation().split(">")[0];

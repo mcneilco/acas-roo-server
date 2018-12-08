@@ -101,7 +101,7 @@ public class ApiParentLotController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getCode();
+			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			LotDTO lotDTO = LotDTO.fromJsonToLotDTO(json);
 			Lot lot = lotService.updateLotMeta(lotDTO, modifiedByUser);
 			return new ResponseEntity<String>(lot.toJsonIncludeAliases(), headers, HttpStatus.OK);
@@ -118,7 +118,7 @@ public class ApiParentLotController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getCode();
+			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			String results = lotService.updateLotMetaArray(json, modifiedByUser);
 			return new ResponseEntity<String>(results, headers, HttpStatus.OK);
 		}catch(Exception e){
@@ -134,7 +134,7 @@ public class ApiParentLotController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getCode();
+			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			ReparentLotDTO lotDTO = ReparentLotDTO.fromJsonToReparentLotDTO(json);
 			Lot lot = lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), modifiedByUser);
 			return new ResponseEntity<String>(lot.toJsonIncludeAliases(), headers, HttpStatus.OK);
@@ -152,7 +152,7 @@ public class ApiParentLotController {
 		headers.add("Content-Type", "application/json");
 		int lotCount = 0;
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getCode();
+			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			Collection<ReparentLotDTO> lotDTOs = ReparentLotDTO.fromJsonArrayToReparentLoes(json);
 			for (ReparentLotDTO lotDTO : lotDTOs){
 				lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), modifiedByUser);

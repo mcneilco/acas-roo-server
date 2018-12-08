@@ -22,7 +22,7 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.Metalot;
@@ -58,7 +58,7 @@ public class LoadFullCompoundsUtil {
 		// PROJECT --> lot.project (Project --> findByCode)
 		
 		// vendor --> lot.supplier (String 255)
-		// chemist --> lot.chemist (Scientist --> findByCode)
+		// chemist --> lot.chemist (Author --> findByUserName)
 
 		try {
 			CmpdRegSDFReader mi = sdfReaderFactory.getCmpdRegSDFReader(inputFileName);
@@ -100,7 +100,7 @@ public class LoadFullCompoundsUtil {
 
 		//look for cmpd scientist. Create a new one if absent.
 		String chemistCodeName = null;
-		Scientist cmpdChemist = null;
+		Author cmpdChemist = null;
 		if (MoleculeUtil.validateMolProperty(mol, propertiesMap.get("compound_chemist"))){
 			chemistCodeName = MoleculeUtil.getMolProperty(mol, propertiesMap.get("compound_chemist")).toLowerCase();
 			logger.debug("query chemist = " + chemistCodeName);
@@ -112,23 +112,22 @@ public class LoadFullCompoundsUtil {
 			chemistCodeName = "cchemist"; //defaul value
 		}
 		try{
-			cmpdChemist = Scientist.findScientistsByCodeEquals(chemistCodeName).getSingleResult();
+			cmpdChemist = Author.findAuthorsByUserName(chemistCodeName).getSingleResult();
 		} catch (EmptyResultDataAccessException e){
 			if (chemistCodeName.trim().equalsIgnoreCase("")){
 				//default set cchemist as the chemist
 				chemistCodeName = "cchemist";
-				cmpdChemist = Scientist.findScientistsByCodeEquals(chemistCodeName).getSingleResult();
+				cmpdChemist = Author.findAuthorsByUserName(chemistCodeName).getSingleResult();
 			} else {
 				logger.debug("create the new chemist" + chemistCodeName);
-				cmpdChemist = new Scientist();
-				cmpdChemist.setCode(chemistCodeName);
-				cmpdChemist.setName(chemistCodeName);
-				cmpdChemist.setIsChemist(true);
+				cmpdChemist = new Author();
+				cmpdChemist.setUserName(chemistCodeName);
+				cmpdChemist.setFirstName(chemistCodeName);
 				cmpdChemist.persist();							
 			}
 		}
 		
-		Scientist lotChemist = cmpdChemist;
+		Author lotChemist = cmpdChemist;
 
 		
     	Metalot metaLot = new Metalot();
@@ -140,7 +139,7 @@ public class LoadFullCompoundsUtil {
 
 //    	mol.clearExtraLabels();
     	parent.setMolStructure(mol.getMolStructure());
-    	parent.setChemist(cmpdChemist);
+    	parent.setChemist(cmpdChemist.getUserName());
     	
 		if (MoleculeUtil.validateMolProperty(mol,  propertiesMap.get("compound_alias"))){
 			String cmpdAlias = MoleculeUtil.getMolProperty(mol,  propertiesMap.get("compound_alias"));
@@ -162,11 +161,11 @@ public class LoadFullCompoundsUtil {
 		}
 		
     	saltForm.setParent(parent);
-    	saltForm.setChemist(cmpdChemist);
+    	saltForm.setChemist(cmpdChemist.getUserName());
     	saltForm.setMolStructure("");
 
     	lot.setSynthesisDate(new Date());
-    	lot.setChemist(lotChemist);
+    	lot.setChemist(lotChemist.getUserName());
     	lot.setSaltForm(saltForm);
     	lot.setLotMolWeight(mol.getMass());
     	lot.setIsVirtual(false);

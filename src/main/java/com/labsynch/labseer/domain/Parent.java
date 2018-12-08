@@ -62,9 +62,7 @@ public class Parent {
 	@org.hibernate.annotations.Index(name="Parent_parentNumber_IDX")
 	private long parentNumber;
 
-	@ManyToOne
-	@org.hibernate.annotations.Index(name="Parent_chemist_IDX")
-	private Scientist chemist;
+	private String chemist;
 
 	@Size(max = 1000)
 	@org.hibernate.annotations.Index(name="Parent_commonName_IDX")
@@ -96,15 +94,13 @@ public class Parent {
 	@org.hibernate.annotations.Index(name="Parent_RegDate_IDX")
 	private Date registrationDate;
 	
-	@ManyToOne
-	private Scientist registeredBy;
+	private String registeredBy;
 	
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(style = "S-")
 	private Date modifiedDate;
 	
-	@ManyToOne
-	private Scientist modifiedBy;
+	private String modifiedBy;
 
 	private Boolean ignore;
 
@@ -194,7 +190,7 @@ public class Parent {
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
-			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Scientist>get("chemist"), searchParams.getChemist());
+			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
 		}
 		if (searchParams.getBuidNumber() != null) {

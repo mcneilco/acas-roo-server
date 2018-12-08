@@ -160,7 +160,7 @@ public class ApiParentController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getCode();
+			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			String results = parentService.updateParentMetaArray(json, modifiedByUser);
 			return new ResponseEntity<String>(results, headers, HttpStatus.OK);
 		}catch(Exception e){
@@ -176,7 +176,7 @@ public class ApiParentController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getCode();
+			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			ParentEditDTO parentDTO = ParentEditDTO.fromJsonToParentEditDTO(json);
 			Parent parent = parentService.updateParentMeta(parentDTO, modifiedByUser);
 			return new ResponseEntity<String>(parent.toJson(), headers, HttpStatus.OK);

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Operator;
@@ -49,7 +50,7 @@ public class LotServiceImpl implements LotService {
 	@Override
 	public Lot updateLotWeight(Lot lot) {
 		saltFormService.updateSaltWeight(lot.getSaltForm());
-		lot.setModifiedBy(SecurityUtil.getLoginUser());
+		lot.setModifiedBy(SecurityUtil.getLoginUser().getUserName());
 		lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));
 		lot.setModifiedDate(new Date());
 		lot.merge();
@@ -67,7 +68,7 @@ public class LotServiceImpl implements LotService {
 		// logic to deal with lot numbering  -- just increment existing lot number of adoptive parent
 		// note -- need to refactor to deal with more complicated parent/SaltForm/lot setups versus simpler parent/lot
 
-		Scientist modifiedUser = Scientist.checkValidUser(modifiedByUser);		
+		Author modifiedUser = Author.findAuthorsByUserName(modifiedByUser).getSingleResult();		
 
 		Parent adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
 		//renumber lot -- just increment to next number
@@ -99,7 +100,7 @@ public class LotServiceImpl implements LotService {
 		logger.info("new lot corp name: " + queryLot.getCorpName());		
 		// recalculate lot weight
 		queryLot.setLotMolWeight(Lot.calculateLotMolWeight(queryLot));
-		queryLot.setModifiedBy(modifiedUser);
+		queryLot.setModifiedBy(modifiedUser.getUserName());
 		queryLot.setModifiedDate(new Date());
 		queryLot.merge();
 
@@ -148,7 +149,7 @@ public class LotServiceImpl implements LotService {
 			}
 		}
 
-		Scientist modifiedUser = Scientist.checkValidUser(modifiedByUser);		
+		Author modifiedUser = Author.findAuthorsByUserName(modifiedByUser).getSingleResult();	
 
 		try{
 
@@ -181,8 +182,8 @@ public class LotServiceImpl implements LotService {
 			if (lotDTO.getRegistrationDate() != null) lot.setRegistrationDate(lotDTO.getRegistrationDate());
 
 			if (lotDTO.getProject() != null && lotDTO.getProject().length() > 0) lot.setProject(Project.findProjectsByCodeEquals(lotDTO.getProject()).getSingleResult());
-			if (lotDTO.getChemist() != null && lotDTO.getChemist().length() > 0) lot.setChemist(Scientist.findScientistsByCodeEquals(lotDTO.getChemist()).getSingleResult());
-			if (lotDTO.getLotRegisteredBy() != null && lotDTO.getLotRegisteredBy().length() > 0) lot.setRegisteredBy(Scientist.findScientistsByCodeEquals(lotDTO.getLotRegisteredBy()).getSingleResult());
+			if (lotDTO.getChemist() != null && lotDTO.getChemist().length() > 0) lot.setChemist(Author.findAuthorsByUserName(lotDTO.getChemist()).getSingleResult().getUserName());
+			if (lotDTO.getLotRegisteredBy() != null && lotDTO.getLotRegisteredBy().length() > 0) lot.setRegisteredBy(Author.findAuthorsByUserName(lotDTO.getLotRegisteredBy()).getSingleResult().getUserName());
 			if (lotDTO.getPurityMeasuredByCode() != null && lotDTO.getPurityMeasuredByCode().length() > 0) lot.setPurityMeasuredBy(PurityMeasuredBy.findPurityMeasuredBysByNameEquals(lotDTO.getPurityMeasuredByCode()).getSingleResult());
 			if (lotDTO.getPhysicalStateCode() != null && lotDTO.getPhysicalStateCode().length() > 0) lot.setPhysicalState(PhysicalState.findPhysicalStatesByNameEquals(lotDTO.getPhysicalStateCode()).getSingleResult());
 			if (lotDTO.getVendorCode() != null && lotDTO.getVendorCode().length() > 0)  lot.setVendor(Vendor.findVendorsByCodeEquals(lotDTO.getVendorCode()).getSingleResult());
@@ -201,7 +202,7 @@ public class LotServiceImpl implements LotService {
 		}
 
 		lot.setModifiedDate(new Date());
-		lot.setModifiedBy(modifiedUser );
+		lot.setModifiedBy(modifiedUser.getUserName());
 		lot.merge();
 
 		return Lot.findLot(lot.getId());

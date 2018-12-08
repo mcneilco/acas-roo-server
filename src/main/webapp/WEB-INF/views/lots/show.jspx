@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/datatables" version="2.0">
     <jsp:directive.page contentType="text/html;charset=UTF-8"/>
     <jsp:output omit-xml-declaration="yes"/>
     <page:show id="ps_com_labsynch_labseer_domain_Lot" object="${lot}" path="/lots" z="FzMXfFVoDkhhoZElkdp5wERMFng=">
@@ -14,9 +14,7 @@
         <field:display field="lotMolWeight" id="s_com_labsynch_labseer_domain_Lot_lotMolWeight" object="${lot}" z="O98tEB9F0SXl47x6IveLxsejR9w="/>
         <field:display date="true" dateTimePattern="${lot_synthesisdate_date_format}" field="synthesisDate" id="s_com_labsynch_labseer_domain_Lot_synthesisDate" object="${lot}" z="rcUdcHHWTQNyHdP6IPZ/pjSOpOo="/>
         <field:display date="true" dateTimePattern="${lot_registrationdate_date_format}" field="registrationDate" id="s_com_labsynch_labseer_domain_Lot_registrationDate" object="${lot}" z="ziKcgGaWE8Se5oPhXWqOUxH7M/o="/>
-        <field:display field="registeredBy" id="s_com_labsynch_labseer_domain_Lot_registeredBy" object="${lot}" z="+qAwMR7/j/Bu38nCQlpSlLxvI24="/>
         <field:display date="true" dateTimePattern="${lot_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_Lot_modifiedDate" object="${lot}" z="1OF3uQakxe6enRECGJBDbyPF6mQ="/>
-        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_Lot_modifiedBy" object="${lot}" z="vHQ8qgwX/YHox07aCzSSohvFfWo="/>
         <field:display field="barcode" id="s_com_labsynch_labseer_domain_Lot_barcode" object="${lot}" z="qnYciG8pm8BVVP1d1Wthr92ju6E="/>
         <field:display field="color" id="s_com_labsynch_labseer_domain_Lot_color" object="${lot}" z="yAAddsYfaShSY5k9upKJ5D8e3jc="/>
         <field:display field="notebookPage" id="s_com_labsynch_labseer_domain_Lot_notebookPage" object="${lot}" z="GJqmlxJB2wvCwR0kpzu7lu+BfSc="/>
@@ -29,7 +27,6 @@
         <field:display field="purity" id="s_com_labsynch_labseer_domain_Lot_purity" object="${lot}" z="Qq6Ff6Hc+0yHqHsIuMNyX9N36qE="/>
         <field:display field="purityOperator" id="s_com_labsynch_labseer_domain_Lot_purityOperator" object="${lot}" z="035H18r5s6w3IYeqBBmMD7dq4AY="/>
         <field:display field="purityMeasuredBy" id="s_com_labsynch_labseer_domain_Lot_purityMeasuredBy" object="${lot}" z="EUkDiWwj71uCRsisB4nBJSTgIok="/>
-        <field:display field="chemist" id="s_com_labsynch_labseer_domain_Lot_chemist" object="${lot}" z="a7zh9XLADb9UuLZ56uCg1KcP/PA="/>
         <field:display field="percentEE" id="s_com_labsynch_labseer_domain_Lot_percentEE" object="${lot}" z="VMUTwuA4EH1Rz/Ui66nXItiIyPM="/>
         <field:display field="comments" id="s_com_labsynch_labseer_domain_Lot_comments" object="${lot}" z="oE5YA/kPRGujfAXBJKz1LMdCFko="/>
         <field:display field="isVirtual" id="s_com_labsynch_labseer_domain_Lot_isVirtual" object="${lot}" z="XLxmw5E3L0DOIwoz+Hoj/GpBIkY="/>
@@ -55,5 +52,8 @@
         <field:display field="tareWeightUnits" id="s_com_labsynch_labseer_domain_Lot_tareWeightUnits" object="${lot}" z="3MmsWnT8T9PnrxEyVWAzxeLSMjk="/>
         <field:display field="totalAmountStored" id="s_com_labsynch_labseer_domain_Lot_totalAmountStored" object="${lot}" z="6ZYR5XFR6s30m5iy6ywgQRqGQ4I="/>
         <field:display field="totalAmountStoredUnits" id="s_com_labsynch_labseer_domain_Lot_totalAmountStoredUnits" object="${lot}" z="2N+sWafKzI5ORTxSYeBoeSOCjPQ="/>
+        <field:display field="registeredBy" id="s_com_labsynch_labseer_domain_Lot_registeredBy" object="${lot}" z="+qAwMR7/j/Bu38nCQlpSlLxvI24="/>
+        <field:display field="chemist" id="s_com_labsynch_labseer_domain_Lot_chemist" object="${lot}" z="a7zh9XLADb9UuLZ56uCg1KcP/PA="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_Lot_modifiedBy" object="${lot}" z="vHQ8qgwX/YHox07aCzSSohvFfWo="/>
     </page:show>
 </div>

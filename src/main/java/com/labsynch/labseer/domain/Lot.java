@@ -99,15 +99,13 @@ public class Lot {
     @org.hibernate.annotations.Index(name = "Lot_RegDate_IDX")
     private Date registrationDate;
     
-    @ManyToOne
-	private Scientist registeredBy;
+	private String registeredBy;
     
 	@Temporal(TemporalType.TIMESTAMP)
 	@DateTimeFormat(style = "S-")
 	private Date modifiedDate;
 	
-	@ManyToOne
-	private Scientist modifiedBy;
+	private String modifiedBy;
 
     @Size(max = 255)
     @org.hibernate.annotations.Index(name = "Lot_Barcode_IDX")
@@ -144,9 +142,7 @@ public class Lot {
     @ManyToOne
     private PurityMeasuredBy purityMeasuredBy;
 
-    @ManyToOne
-    @org.hibernate.annotations.Index(name = "Lot_Chemist_IDX")
-    private Scientist chemist;
+    private String chemist;
 
     private Double percentEE;
 
@@ -505,7 +501,7 @@ public class Lot {
         return q;
     }
 
-    public static TypedQuery<Lot> findLotsByMetaQuery(Scientist chemist, Date minSynthesisDate, Date maxSynthesisDate) {
+    public static TypedQuery<Lot> findLotsByMetaQuery(Author chemist, Date minSynthesisDate, Date maxSynthesisDate) {
         EntityManager em = Lot.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Lot> criteria = criteriaBuilder.createQuery(Lot.class);
@@ -517,7 +513,7 @@ public class Lot {
         List<Predicate> predicateList = new ArrayList<Predicate>();
         if (chemist != null && chemist.getId() != 0) {
             logger.debug("incoming chemist :" + chemist.toString());
-            Predicate predicate1 = criteriaBuilder.equal(lotRoot.<Scientist>get("chemist"), chemist);
+            Predicate predicate1 = criteriaBuilder.equal(lotRoot.<Author>get("chemist"), chemist);
             predicateList.add(predicate1);
         }
         if (minSynthesisDate != null) {
@@ -607,7 +603,7 @@ public class Lot {
         return q.getSingleResult();
     }
 
-    public static Long countLotsByRegisteredBy(Scientist registeredBy) {
+    public static Long countLotsByRegisteredBy(Author registeredBy) {
         if (registeredBy == null) throw new IllegalArgumentException("The registeredBy argument is required");
         EntityManager em = Lot.entityManager();
         TypedQuery<Long> q = em.createQuery("SELECT COUNT(l) FROM Lot l WHERE l.registeredBy = :registeredBy ", Long.class);
@@ -694,7 +690,7 @@ public class Lot {
         predicateList.add(saltFormPredicate);
         if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
             logger.debug("incoming chemist :" + searchParams.getChemist().toString());
-            Predicate predicate = criteriaBuilder.equal(lotRoot.<Scientist>get("chemist"), searchParams.getChemist());
+            Predicate predicate = criteriaBuilder.equal(lotRoot.<Author>get("chemist"), searchParams.getChemist());
             predicateList.add(predicate);
         }
         if (searchParams.getBuidNumber() != null) {
@@ -766,5 +762,6 @@ public class Lot {
         		.include("lotAliases")
         .exclude("*.class").serialize(this);
     }
+
     
 }

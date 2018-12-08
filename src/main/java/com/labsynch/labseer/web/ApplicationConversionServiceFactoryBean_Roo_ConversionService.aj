@@ -985,7 +985,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<Parent, String> ApplicationConversionServiceFactoryBean.getParentToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Parent, java.lang.String>() {
             public String convert(Parent parent) {
-                return new StringBuilder().append(parent.getCorpName()).append(' ').append(parent.getParentNumber()).append(' ').append(parent.getCommonName()).append(' ').append(parent.getStereoComment()).toString();
+                return new StringBuilder().append(parent.getCorpName()).append(' ').append(parent.getParentNumber()).append(' ').append(parent.getChemist()).append(' ').append(parent.getCommonName()).toString();
             }
         };
     }
@@ -1289,7 +1289,7 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
     public Converter<SaltForm, String> ApplicationConversionServiceFactoryBean.getSaltFormToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.SaltForm, java.lang.String>() {
             public String convert(SaltForm saltForm) {
-                return new StringBuilder().append(saltForm.getMolStructure()).append(' ').append(saltForm.getCorpName()).append(' ').append(saltForm.getCasNumber()).append(' ').append(saltForm.getRegistrationDate()).toString();
+                return new StringBuilder().append(saltForm.getMolStructure()).append(' ').append(saltForm.getCorpName()).append(' ').append(saltForm.getCasNumber()).append(' ').append(saltForm.getChemist()).toString();
             }
         };
     }

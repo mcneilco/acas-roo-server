@@ -112,7 +112,7 @@ public class LotDTO {
 		this.boilingPoint = lot.getBoilingPoint();
 		this.buid = lot.getBuid();
 		if (lot.getBulkLoadFile() != null) this.bulkLoadFile = lot.getBulkLoadFile().getFileName();
-		if (lot.getChemist() != null) this.chemist = lot.getChemist().getCode();
+		if (lot.getChemist() != null) this.chemist = lot.getChemist();
 		this.color = lot.getColor();
 		this.comments = lot.getComments();
 		if (lot.getCorpName() != null) this.lotCorpName = lot.getCorpName();
@@ -121,7 +121,7 @@ public class LotDTO {
 		this.lotMolWeight = lot.getLotMolWeight();
 		this.lotNumber = lot.getLotNumber();
 		this.meltingPoint = lot.getMeltingPoint();
-		if (lot.getModifiedBy() != null) this.modifiedBy = lot.getModifiedBy().getCode();
+		if (lot.getModifiedBy() != null) this.modifiedBy = lot.getModifiedBy();
 		this.modifiedDate = lot.getModifiedDate();
 		this.observedMassOne = lot.getObservedMassOne();
 		this.observedMassTwo = lot.getObservedMassTwo();
@@ -136,7 +136,7 @@ public class LotDTO {
 		this.retain = lot.getRetain();
 		this.retainLocation = lot.getRetainLocation();
 		if (lot.getRetainUnits() != null) this.retainUnitsCode = lot.getRetainUnits().getCode();
-		if (lot.getRegisteredBy() != null) this.lotRegisteredBy = lot.getRegisteredBy().getCode();
+		if (lot.getRegisteredBy() != null) this.lotRegisteredBy = lot.getRegisteredBy();
 		this.solutionAmount = lot.getSolutionAmount();
 		if (lot.getSolutionAmountUnits() != null) this.solutionAmountUnitsCode = lot.getSolutionAmountUnits().getCode();
 		this.stockLocation = lot.getStockLocation();
@@ -189,9 +189,9 @@ public class LotDTO {
 			//leave mol formula blank
 		}
 		this.parentRegistrationDate = parent.getRegistrationDate();
-		if (parent.getRegisteredBy() != null) this.parentRegisteredBy = parent.getRegisteredBy().getCode();
+		if (parent.getRegisteredBy() != null) this.parentRegisteredBy = parent.getRegisteredBy();
 		this.parentModifiedDate = parent.getModifiedDate();
-		if (parent.getModifiedBy() != null) this.parentModifiedBy = parent.getModifiedBy().getCode();
+		if (parent.getModifiedBy() != null) this.parentModifiedBy = parent.getModifiedBy();
 		if (!parent.getParentAliases().isEmpty()){
 			String parentAliases = "";
 			for (ParentAlias parentAlias : parent.getParentAliases()){

@@ -9,7 +9,6 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.ParentAnnotation;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.StereoCategory;
 import java.util.Date;
 import java.util.Set;
@@ -32,11 +31,11 @@ privileged aspect Parent_Roo_JavaBean {
         this.parentNumber = parentNumber;
     }
     
-    public Scientist Parent.getChemist() {
+    public String Parent.getChemist() {
         return this.chemist;
     }
     
-    public void Parent.setChemist(Scientist chemist) {
+    public void Parent.setChemist(String chemist) {
         this.chemist = chemist;
     }
     
@@ -112,11 +111,11 @@ privileged aspect Parent_Roo_JavaBean {
         this.registrationDate = registrationDate;
     }
     
-    public Scientist Parent.getRegisteredBy() {
+    public String Parent.getRegisteredBy() {
         return this.registeredBy;
     }
     
-    public void Parent.setRegisteredBy(Scientist registeredBy) {
+    public void Parent.setRegisteredBy(String registeredBy) {
         this.registeredBy = registeredBy;
     }
     
@@ -128,11 +127,11 @@ privileged aspect Parent_Roo_JavaBean {
         this.modifiedDate = modifiedDate;
     }
     
-    public Scientist Parent.getModifiedBy() {
+    public String Parent.getModifiedBy() {
         return this.modifiedBy;
     }
     
-    public void Parent.setModifiedBy(Scientist modifiedBy) {
+    public void Parent.setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
     }
     

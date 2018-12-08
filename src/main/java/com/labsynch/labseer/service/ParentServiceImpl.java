@@ -23,6 +23,7 @@ import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.CompoundType;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
@@ -458,7 +459,7 @@ public class ParentServiceImpl implements ParentService {
 		//		private int CdId;
 		//	    private Double molWeight;
 		
-		Scientist modifiedUser = Scientist.checkValidUser(modifiedByUser);		
+		Author modifiedUser = Author.findAuthorsByUserName(modifiedByUser).getSingleResult();
 		Parent parent = null;
 		if (parentDTO.getId() != null){
 			parent = Parent.findParent(parentDTO.getId());
@@ -499,7 +500,7 @@ public class ParentServiceImpl implements ParentService {
 		
 		
 		if (parentDTO.getChemistCode() != null && parentDTO.getChemistCode().length() > 0){
-			parent.setChemist(Scientist.findScientistsByCodeEquals(parentDTO.getChemistCode()).getSingleResult());
+			parent.setChemist(Author.findAuthorsByUserName(parentDTO.getChemistCode()).getSingleResult().getUserName());
 		}
 		if (parentDTO.getCommonName() != null && parentDTO.getCommonName().length() > 0) parent.setCommonName(parentDTO.getCommonName());
 		if (parentDTO.getIgnore() != null) parent.setIgnore(parentDTO.getIgnore());
@@ -531,7 +532,7 @@ public class ParentServiceImpl implements ParentService {
 
 		if (parentValidationDTO.isParentUnique()){
 			parent.setModifiedDate(new Date());
-			parent.setModifiedBy(modifiedUser);
+			parent.setModifiedBy(modifiedUser.getUserName());
 			parent.merge();
 		}
 
