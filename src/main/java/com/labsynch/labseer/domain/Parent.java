@@ -188,7 +188,7 @@ public class Parent {
 		ParameterExpression<Date> lastDate = criteriaBuilder.parameter(Date.class);
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
-		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
+		if (searchParams.getChemist() != null) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
 			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);

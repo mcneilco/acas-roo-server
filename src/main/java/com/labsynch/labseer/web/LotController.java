@@ -278,15 +278,6 @@ public class LotController {
         return PurityMeasuredBy.findAllPurityMeasuredBys();
     }
 
-    //	@ModelAttribute("saltforms")
-    //    public Collection<SaltForm> populateSaltForms() {
-    //        return SaltForm.findAllSaltForms();
-    //    }
-    @ModelAttribute("scientists")
-    public Collection<Author> populateScientists() {
-        return Author.findAllAuthors();
-    }
-
     @ModelAttribute("solutionunits")
     public Collection<SolutionUnit> populateSolutionUnits() {
         return SolutionUnit.findAllSolutionUnits();

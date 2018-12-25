@@ -29,7 +29,6 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.QcCompound;
 import com.labsynch.labseer.domain.ParentAnnotation;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ParentAliasDTO;

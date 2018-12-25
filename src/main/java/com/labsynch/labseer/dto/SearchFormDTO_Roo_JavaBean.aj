@@ -3,7 +3,6 @@
 
 package com.labsynch.labseer.dto;
 
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.dto.SearchFormDTO;
 import java.util.Date;
 import java.util.List;
@@ -106,11 +105,11 @@ privileged aspect SearchFormDTO_Roo_JavaBean {
         this.percentSimilarity = percentSimilarity;
     }
     
-    public Scientist SearchFormDTO.getChemist() {
+    public String SearchFormDTO.getChemist() {
         return this.chemist;
     }
     
-    public void SearchFormDTO.setChemist(Scientist chemist) {
+    public void SearchFormDTO.setChemist(String chemist) {
         this.chemist = chemist;
     }
     

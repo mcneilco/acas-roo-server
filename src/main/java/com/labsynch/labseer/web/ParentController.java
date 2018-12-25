@@ -40,7 +40,6 @@ import com.github.dandelion.datatables.core.ajax.DatatablesResponse;
 import com.github.dandelion.datatables.extras.spring3.ajax.DatatablesParams;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
@@ -271,11 +270,6 @@ public class ParentController {
 	@ModelAttribute("saltforms")
 	public Collection<SaltForm> populateSaltForms() {
 		return SaltForm.findSaltFormEntries(0, 2);
-	}
-
-	@ModelAttribute("scientists")
-	public Collection<Scientist> populateScientists() {
-		return Scientist.findAllScientists();
 	}
 
 	@ModelAttribute("stereocategorys")

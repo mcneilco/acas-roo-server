@@ -33,7 +33,6 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.PreDef_CorpName;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CorpNameDTO;

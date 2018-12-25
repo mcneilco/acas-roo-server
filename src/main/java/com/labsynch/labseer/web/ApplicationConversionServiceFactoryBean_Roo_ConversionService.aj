@@ -58,7 +58,6 @@ import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.SaltFormAlias;
 import com.labsynch.labseer.domain.SaltFormAliasKind;
 import com.labsynch.labseer.domain.SaltFormAliasType;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.TempSelectTable;
@@ -1378,30 +1377,6 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.SaltFormAliasType>() {
             public com.labsynch.labseer.domain.SaltFormAliasType convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), SaltFormAliasType.class);
-            }
-        };
-    }
-    
-    public Converter<Scientist, String> ApplicationConversionServiceFactoryBean.getScientistToStringConverter() {
-        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Scientist, java.lang.String>() {
-            public String convert(Scientist scientist) {
-                return new StringBuilder().append(scientist.getCode()).append(' ').append(scientist.getName()).toString();
-            }
-        };
-    }
-    
-    public Converter<Long, Scientist> ApplicationConversionServiceFactoryBean.getIdToScientistConverter() {
-        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Scientist>() {
-            public com.labsynch.labseer.domain.Scientist convert(java.lang.Long id) {
-                return Scientist.findScientist(id);
-            }
-        };
-    }
-    
-    public Converter<String, Scientist> ApplicationConversionServiceFactoryBean.getStringToScientistConverter() {
-        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Scientist>() {
-            public com.labsynch.labseer.domain.Scientist convert(String id) {
-                return getObject().convert(getObject().convert(id, Long.class), Scientist.class);
             }
         };
     }

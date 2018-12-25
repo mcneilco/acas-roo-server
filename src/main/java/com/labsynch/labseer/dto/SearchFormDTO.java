@@ -9,7 +9,6 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
-import com.labsynch.labseer.domain.Scientist;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -44,7 +43,7 @@ public class SearchFormDTO{
 
 	private Float percentSimilarity;
 
-	private Scientist chemist;
+	private String chemist;
 	
 	private String molStructure;
 	

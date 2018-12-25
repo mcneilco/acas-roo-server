@@ -158,7 +158,7 @@ CREATE TABLE lot (
     synthesis_date timestamp without time zone,
     version integer,
     amount_units bigint,
-    chemist bigint,
+    chemist character varying(255),
     physical_state bigint,
     project bigint,
     purity_measured_by bigint,
@@ -203,7 +203,7 @@ CREATE TABLE parent (
     registration_date timestamp without time zone,
     stereo_comment character varying(1000),
     version integer,
-    chemist bigint,
+    chemist character varying(255),
     stereo_category bigint
 );
 
@@ -303,7 +303,7 @@ CREATE TABLE salt_form (
     registration_date timestamp without time zone,
     salt_weight double precision,
     version integer,
-    chemist bigint,
+    chemist character varying(255),
     parent bigint
 );
 
@@ -325,24 +325,6 @@ CREATE TABLE salt_loader (
     uploaded boolean,
     version integer
 );
-
-
-
---
--- TOC entry 187 (class 1259 OID 878377)
--- Name: scientist; Type: TABLE; Schema: ; Owner: ; Tablespace: 
---
-
-CREATE TABLE scientist (
-    id bigint NOT NULL,
-    code character varying(255),
-    ignore boolean,
-    is_admin boolean,
-    is_chemist boolean,
-    name character varying(255),
-    version integer
-);
-
 
 
 --
@@ -552,15 +534,6 @@ ALTER TABLE ONLY salt_loader
 
 ALTER TABLE ONLY salt
     ADD CONSTRAINT salt_pkey PRIMARY KEY (id);
-
-
---
--- TOC entry 2844 (class 2606 OID 878384)
--- Name: scientist_pkey; Type: CONSTRAINT; Schema: ; Owner: ; Tablespace: 
---
-
-ALTER TABLE ONLY scientist
-    ADD CONSTRAINT scientist_pkey PRIMARY KEY (id);
 
 
 --
@@ -830,16 +803,6 @@ CREATE INDEX saltform_parent_idx ON salt_form USING btree (parent);
 
 CREATE INDEX saltform_regdate_idx ON salt_form USING btree (registration_date);
 
-
---
--- TOC entry 2871 (class 2606 OID 878530)
--- Name: fk138dcb0d99c37a24; Type: FK CONSTRAINT; Schema: ; Owner: 
---
-
-ALTER TABLE ONLY salt_form
-    ADD CONSTRAINT fk138dcb0d99c37a24 FOREIGN KEY (chemist) REFERENCES scientist(id);
-
-
 --
 -- TOC entry 2872 (class 2606 OID 878535)
 -- Name: fk138dcb0dea40a445; Type: FK CONSTRAINT; Schema: ; Owner: 
@@ -891,15 +854,6 @@ ALTER TABLE ONLY lot
 
 ALTER TABLE ONLY lot
     ADD CONSTRAINT fk1a35197886161 FOREIGN KEY (project) REFERENCES project(id);
-
-
---
--- TOC entry 2867 (class 2606 OID 878487)
--- Name: fk1a35199c37a24; Type: FK CONSTRAINT; Schema: ; Owner: 
---
-
-ALTER TABLE ONLY lot
-    ADD CONSTRAINT fk1a35199c37a24 FOREIGN KEY (chemist) REFERENCES scientist(id);
 
 
 --
@@ -972,15 +926,6 @@ ALTER TABLE ONLY iso_salt
 
 ALTER TABLE ONLY file_list
     ADD CONSTRAINT fkb18781811eb60151 FOREIGN KEY (lot) REFERENCES lot(id);
-
---
--- TOC entry 2870 (class 2606 OID 878514)
--- Name: fkc4ab08aa99c37a24; Type: FK CONSTRAINT; Schema: ; Owner: 
---
-
-ALTER TABLE ONLY parent
-    ADD CONSTRAINT fkc4ab08aa99c37a24 FOREIGN KEY (chemist) REFERENCES scientist(id);
-
 
 --
 -- TOC entry 2868 (class 2606 OID 878504)

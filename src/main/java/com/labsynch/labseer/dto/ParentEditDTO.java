@@ -14,7 +14,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 import com.labsynch.labseer.domain.CompoundType;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAnnotation;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.StereoCategory;
 
 @RooJavaBean

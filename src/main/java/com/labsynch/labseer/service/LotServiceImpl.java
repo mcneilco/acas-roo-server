@@ -19,7 +19,6 @@ import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Scientist;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;

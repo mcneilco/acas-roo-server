@@ -688,7 +688,7 @@ public class Lot {
         List<Predicate> predicateList = new ArrayList<Predicate>();
         Predicate saltFormPredicate = criteriaBuilder.equal(lotRoot.get("saltForm"), saltForm);
         predicateList.add(saltFormPredicate);
-        if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
+        if (searchParams.getChemist() != null) {
             logger.debug("incoming chemist :" + searchParams.getChemist().toString());
             Predicate predicate = criteriaBuilder.equal(lotRoot.<Author>get("chemist"), searchParams.getChemist());
             predicateList.add(predicate);

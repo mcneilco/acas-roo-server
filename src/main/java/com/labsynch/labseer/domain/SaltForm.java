@@ -116,7 +116,7 @@ public class SaltForm implements Comparable {
 		Predicate predicateCdId = criteriaBuilder.notEqual(saltFormRoot.get("CdId"), 0);
 		predicateList.add(predicateCdId);
 
-		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
+		if (searchParams.getChemist() != null) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
 			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
@@ -221,7 +221,7 @@ public class SaltForm implements Comparable {
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		
-		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
+		if (searchParams.getChemist() != null) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
 			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
@@ -346,7 +346,7 @@ public class SaltForm implements Comparable {
 		Predicate parentPredicate = criteriaBuilder.equal(saltFormRoot.get("parent"), parent);
 		predicateList.add(parentPredicate);
 
-		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
+		if (searchParams.getChemist() != null) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
 			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
@@ -438,7 +438,7 @@ public class SaltForm implements Comparable {
 		Predicate parentPredicate = criteriaBuilder.equal(saltFormRoot.get("parent"), parent);
 		predicateList.add(parentPredicate);
 
-		if (searchParams.getChemist() != null && searchParams.getChemist().getId() != 0) {
+		if (searchParams.getChemist() != null) {
 			logger.debug("incoming chemist :" + searchParams.getChemist().toString());
 			Predicate predicate = criteriaBuilder.equal(saltFormLot.<Author>get("chemist"), searchParams.getChemist());
 			predicateList.add(predicate);
