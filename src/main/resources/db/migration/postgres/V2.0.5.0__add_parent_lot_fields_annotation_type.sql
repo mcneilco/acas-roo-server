@@ -47,6 +47,12 @@ ALTER TABLE lot ADD COLUMN lambda double precision,
                 ADD COLUMN retain_location character varying(255);
 
 --registered by
-ALTER TABLE parent ADD COLUMN registered_by character varying;
-   
-ALTER TABLE lot ADD COLUMN registered_by character varying ;
+ALTER TABLE parent ADD COLUMN registered_by bigint;
+ALTER TABLE parent ADD CONSTRAINT parent_registered_by_fk FOREIGN KEY (registered_by)
+      REFERENCES scientist (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+      
+ALTER TABLE lot ADD COLUMN registered_by bigint;
+ALTER TABLE lot ADD CONSTRAINT lot_registered_by_fk FOREIGN KEY (registered_by)
+      REFERENCES scientist (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;

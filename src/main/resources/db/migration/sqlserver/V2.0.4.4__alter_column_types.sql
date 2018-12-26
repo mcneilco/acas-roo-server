@@ -91,6 +91,15 @@ ALTER TABLE dbo.salt_form_alias
 ALTER TABLE dbo.salt_loader
    ALTER COLUMN uploaded BIT;  
 
+ALTER TABLE dbo.scientist
+   ALTER COLUMN ignore BIT;  
+   
+ALTER TABLE dbo.scientist
+   ALTER COLUMN is_chemist BIT;  
+   
+ALTER TABLE dbo.scientist
+   ALTER COLUMN is_admin BIT;
+
 IF EXISTS (SELECT name FROM sys.indexes WHERE name = 'Lot_RegDate_IDX')
     DROP INDEX Lot_RegDate_IDX ON lot;
 
