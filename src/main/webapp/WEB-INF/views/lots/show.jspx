@@ -40,7 +40,6 @@
         <field:display field="meltingPoint" id="s_com_labsynch_labseer_domain_Lot_meltingPoint" object="${lot}" z="4NLRlyCjB6DRRryGCe31YGU5h3E="/>
         <field:display field="boilingPoint" id="s_com_labsynch_labseer_domain_Lot_boilingPoint" object="${lot}" z="vA5+sg3lPt8wC+DbQNR1nv7B6FI="/>
         <field:display field="supplierLot" id="s_com_labsynch_labseer_domain_Lot_supplierLot" object="${lot}" z="svhCxo4RhEY2lrWdkrULS2eUgwI="/>
-        <field:display field="project" id="s_com_labsynch_labseer_domain_Lot_project" object="${lot}" z="m87eZPEgA3XdD5KQGFnMrBAhd7k="/>
         <field:display field="bulkLoadFile" id="s_com_labsynch_labseer_domain_Lot_bulkLoadFile" object="${lot}" z="YX0Oy+DB466vLcxWrnSEYnyqdcA="/>
         <field:display field="lambda" id="s_com_labsynch_labseer_domain_Lot_lambda" object="${lot}" z="KWp3N16L1XA4cpk4Y136sVnW78I="/>
         <field:display field="absorbance" id="s_com_labsynch_labseer_domain_Lot_absorbance" object="${lot}" z="vhD/1Ok8Rs+y/D7Giwr9sZeoCj0="/>
@@ -55,5 +54,6 @@
         <field:display field="registeredBy" id="s_com_labsynch_labseer_domain_Lot_registeredBy" object="${lot}" z="+qAwMR7/j/Bu38nCQlpSlLxvI24="/>
         <field:display field="chemist" id="s_com_labsynch_labseer_domain_Lot_chemist" object="${lot}" z="a7zh9XLADb9UuLZ56uCg1KcP/PA="/>
         <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_Lot_modifiedBy" object="${lot}" z="vHQ8qgwX/YHox07aCzSSohvFfWo="/>
+        <field:display field="project" id="s_com_labsynch_labseer_domain_Lot_project" object="${lot}" z="m87eZPEgA3XdD5KQGFnMrBAhd7k="/>
     </page:show>
 </div>

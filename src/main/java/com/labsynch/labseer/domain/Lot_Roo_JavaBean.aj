@@ -9,7 +9,6 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.LotAlias;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
@@ -319,11 +318,11 @@ privileged aspect Lot_Roo_JavaBean {
         this.supplierLot = supplierLot;
     }
     
-    public Project Lot.getProject() {
+    public String Lot.getProject() {
         return this.project;
     }
     
-    public void Lot.setProject(Project project) {
+    public void Lot.setProject(String project) {
         this.project = project;
     }
     

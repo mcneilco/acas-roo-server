@@ -90,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
 			for (SearchCompoundReturnDTO foundCompound : searchResults.getFoundCompounds()){
 				List<SearchLotDTO> filteredFoundLots = new ArrayList<SearchLotDTO>();
 				for (SearchLotDTO foundLot : foundCompound.getLotIDs()){
-					Project lotProject = Lot.findLotsByCorpNameEquals(foundLot.getCorpName()).getSingleResult().getProject();
+					String lotProject = Lot.findLotsByCorpNameEquals(foundLot.getCorpName()).getSingleResult().getProject();
 					if(authorizedProjects.contains(lotProject)) filteredFoundLots.add(foundLot);
 				}
 				if (!filteredFoundLots.isEmpty()){

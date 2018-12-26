@@ -186,44 +186,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			logger.error("Author: "+registerRequestDTO.getUserName()+" could not be found. Please register this user in Compound Registration.");
 			return new BulkLoadRegisterSDFResponseDTO("Author: "+registerRequestDTO.getUserName()+" could not be found. Please register this user in Compound Registration.", null);
 		}
-		//fetch allowed projects list for user. useProjectRoles config controls whether this list is populated from ACAS user-project ACLs
-		Collection<Project> allowedProjects = new HashSet<Project>();
-		if (mainConfig.getBulkLoadSettings().getUseProjectRoles()!=null && mainConfig.getBulkLoadSettings().getUseProjectRoles()){
-			try{
-				String url = mainConfig.getServerConnection().getAcasURL()+"authorization/projects?find=ByUserName&format=codeTable&userName="+registerRequestDTO.getUserName();
-				String charset = "UTF-8";
-				HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-				connection.setRequestMethod("GET");
-				connection.setDoOutput(true);
-				connection.setRequestProperty("Accept-Charset", charset);
-				connection.setRequestProperty("Content-Type", "application/json");
-				connection.setRequestProperty("Accept", "application/json");
-	
-				logger.info("Sending request to: "+url);
-				
-				InputStream input = connection.getInputStream();
-				byte[] bytes = IOUtils.toByteArray(input);
-				String responseJson = new String(bytes);
-				if (logger.isDebugEnabled()) logger.debug(responseJson);
-				Collection<CodeTableDTO> responseDTOs = CodeTableDTO.fromJsonArrayToCoes(responseJson);
-				for (CodeTableDTO projectDTO : responseDTOs){
-					Project foundProject = Project.findProjectsByCodeEquals(projectDTO.getCode()).getSingleResult();
-					allowedProjects.add(foundProject);
-				}
-			}catch(Exception e){
-				logger.error("Error occurred looking up allowed projects from ACAS", e);
-				return new BulkLoadRegisterSDFResponseDTO("An error has occurred looking up allowed projects from ACAS. Please consult your system administrator.", null);
-			}
-		}else{
-			//if no project role restrictions are applied, then all projects are allowed.
-			allowedProjects.addAll(Project.findAllProjects());
-		}
-		Collection<String> allowedProjectCodes = new HashSet<String>();
-		for (Project allowedProject : allowedProjects){
-			allowedProjectCodes.add(allowedProject.getCode());
-		}
-		if (logger.isDebugEnabled()) logger.debug("Found allowed projects: ");
-		if (logger.isDebugEnabled()) logger.debug(allowedProjectCodes.toString());
 		
 		Collection<BulkLoadPropertyMappingDTO> mappings = registerRequestDTO.getMappings();
 		//instantiate input and output streams
@@ -370,7 +332,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				if (parent.getId() == null) parent.setBulkLoadFile(bulkLoadFile);
 
 				try{
-					lot = validateLot(lot, mappings, allowedProjectCodes);
+					lot = validateLot(lot, mappings);
 				}catch (Exception e){
 					logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
 					continue;
@@ -700,7 +662,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return saltForm;
 	}
 
-	public Lot validateLot(Lot lot, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<String> allowedProjectCodes) throws MissingPropertyException, DupeLotException {
+	public Lot validateLot(Lot lot, Collection<BulkLoadPropertyMappingDTO> mappings) throws MissingPropertyException, DupeLotException {
 		//check for required fields
 		HashSet<String> requiredDbProperties = new HashSet<String>();
 		for (BulkLoadPropertyMappingDTO mapping : mappings){
@@ -734,11 +696,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			//check project is assigned and is in allowed list
 			if (lot.getProject() == null){
 				throw new MissingPropertyException("Project not specified. Please specify a valid project.");
-			}
-			else if(!allowedProjectCodes.contains(lot.getProject().getCode())){
-				if (logger.isDebugEnabled()) logger.debug("Project is: "+lot.getProject().getCode());
-				if (logger.isDebugEnabled()) logger.debug("AllowedProjects are: "+allowedProjectCodes.toString());
-				throw new MissingPropertyException("You are not authorized to register a lot against project "+lot.getProject().getCode() +". Please consult your administrator.");
 			}
 		}
 		if (lot.getParent().getId() != null){
@@ -834,13 +791,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			lookUpProperty = "Project";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
 			logger.info("Project lookup: " + lookUpString);
-			if (lookUpString != null && !lookUpString.equalsIgnoreCase("false") && lookUpString.length() > 0){
-				try {
-					lot.setProject(Project.findProjectsByNameEquals(lookUpString).getSingleResult());
-				}catch (Exception e) {
-					lot.setProject(Project.findProjectsByCodeEquals(lookUpString).getSingleResult());
-				}		
-			}
+			lot.setProject(lookUpString);
 			lookUpProperty = "Lot Purity Measured By";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
 			if (lookUpString != null && lookUpString.length() > 0){

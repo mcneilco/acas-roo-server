@@ -204,7 +204,7 @@ public class LoadFullCompoundsUtil {
 			} catch (EmptyResultDataAccessException e){
 				logger.error("Did not find the query Project: " + projectCode);
 			}
-			lot.setProject(project);
+			lot.setProject(project.getCode());
 		}
     	
     	metaLot.setLot(lot);

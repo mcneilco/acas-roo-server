@@ -41,7 +41,6 @@
         <field:input field="meltingPoint" id="c_com_labsynch_labseer_domain_Lot_meltingPoint" validationMessageCode="field_invalid_number" z="F9815rzNwrC+D2CCypvEBDzy1TQ="/>
         <field:input field="boilingPoint" id="c_com_labsynch_labseer_domain_Lot_boilingPoint" validationMessageCode="field_invalid_number" z="cp6fBNW/8scF+kTxbZRryup2Fwo="/>
         <field:textarea field="supplierLot" id="c_com_labsynch_labseer_domain_Lot_supplierLot" z="mQJLXraY+BBe+JIGsNx8jGzKqgs="/>
-        <field:select field="project" id="c_com_labsynch_labseer_domain_Lot_project" itemValue="id" items="${projects}" path="/projects" z="kzuTZobDJ/p9RAsGfSmXpQExF5o="/>
         <field:select field="bulkLoadFile" id="c_com_labsynch_labseer_domain_Lot_bulkLoadFile" itemValue="id" items="${bulkloadfiles}" path="/bulkloadfiles" z="UIQ5kQSA1VWE47dwdGQyOCg/+8s="/>
         <field:input field="lambda" id="c_com_labsynch_labseer_domain_Lot_lambda" validationMessageCode="field_invalid_number" z="L85qXflCaFfLBV1xaHcJqvsfBjE="/>
         <field:input field="absorbance" id="c_com_labsynch_labseer_domain_Lot_absorbance" validationMessageCode="field_invalid_number" z="9bnlxv/1NROkvWY9wX1QLb3dnlA="/>
@@ -57,6 +56,7 @@
         <field:input field="registeredBy" id="c_com_labsynch_labseer_domain_Lot_registeredBy" z="f5OMuER31yhh1y56+8lmaCDuZlw="/>
         <field:input field="chemist" id="c_com_labsynch_labseer_domain_Lot_chemist" z="DRAQZMcV0UaOYgEDGEN2k4FQEj4="/>
         <field:input field="modifiedBy" id="c_com_labsynch_labseer_domain_Lot_modifiedBy" z="PWV7CSEQO0gy8QCQQqG3Eklh1O8="/>
+        <field:input field="project" id="c_com_labsynch_labseer_domain_Lot_project" z="Gjddcra97cmk2zI9lbzA3Am2YoU="/>
     </form:create>
     <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_Lot" render="${not empty dependencies}" z="qji9jvSHTBAX3dmGV+UFKk3uci0="/>
 </div>

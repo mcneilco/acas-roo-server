@@ -16,7 +16,6 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.SolutionUnit;
@@ -180,7 +179,7 @@ public class LotServiceImpl implements LotService {
 			if (lotDTO.getSynthesisDate() != null) lot.setSynthesisDate(lotDTO.getSynthesisDate());
 			if (lotDTO.getRegistrationDate() != null) lot.setRegistrationDate(lotDTO.getRegistrationDate());
 
-			if (lotDTO.getProject() != null && lotDTO.getProject().length() > 0) lot.setProject(Project.findProjectsByCodeEquals(lotDTO.getProject()).getSingleResult());
+			if (lotDTO.getProject() != null && lotDTO.getProject().length() > 0) lot.setProject(lotDTO.getProject());
 			if (lotDTO.getChemist() != null && lotDTO.getChemist().length() > 0) lot.setChemist(Author.findAuthorsByUserName(lotDTO.getChemist()).getSingleResult().getUserName());
 			if (lotDTO.getLotRegisteredBy() != null && lotDTO.getLotRegisteredBy().length() > 0) lot.setRegisteredBy(Author.findAuthorsByUserName(lotDTO.getLotRegisteredBy()).getSingleResult().getUserName());
 			if (lotDTO.getPurityMeasuredByCode() != null && lotDTO.getPurityMeasuredByCode().length() > 0) lot.setPurityMeasuredBy(PurityMeasuredBy.findPurityMeasuredBysByNameEquals(lotDTO.getPurityMeasuredByCode()).getSingleResult());

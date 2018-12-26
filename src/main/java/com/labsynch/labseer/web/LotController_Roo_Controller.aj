@@ -9,7 +9,6 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.LotAlias;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.SolutionUnit;
@@ -28,7 +27,6 @@ privileged aspect LotController_Roo_Controller {
         uiModel.addAttribute("lotaliases", LotAlias.findAllLotAliases());
         uiModel.addAttribute("operators", Operator.findAllOperators());
         uiModel.addAttribute("physicalstates", PhysicalState.findAllPhysicalStates());
-        uiModel.addAttribute("projects", Project.findAllProjects());
         uiModel.addAttribute("puritymeasuredbys", PurityMeasuredBy.findAllPurityMeasuredBys());
         uiModel.addAttribute("saltforms", SaltForm.findAllSaltForms());
         uiModel.addAttribute("solutionunits", SolutionUnit.findAllSolutionUnits());

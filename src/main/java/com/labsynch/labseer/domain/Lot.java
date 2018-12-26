@@ -187,9 +187,7 @@ public class Lot {
     @Size(max = 255)
     private String supplierLot;
 
-    @ManyToOne
-    @org.hibernate.annotations.Index(name = "Lot_Project_IDX")
-    private Project project;
+    private String project;
 
     @Transient
     private Parent parent;

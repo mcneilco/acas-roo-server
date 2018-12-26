@@ -128,7 +128,7 @@ public class LotDTO {
 		this.notebookPage = lot.getNotebookPage();
 		this.percentEE = lot.getPercentEE();
 		if (lot.getPhysicalState() != null) this.physicalStateCode = lot.getPhysicalState().getCode();
-		if (lot.getProject() != null) this.project = lot.getProject().getCode();
+		if (lot.getProject() != null) this.project = lot.getProject();
 		this.purity = lot.getPurity();
 		if (lot.getPurityMeasuredBy() != null) this.purityMeasuredByCode = lot.getPurityMeasuredBy().getCode();
 		if (lot.getPurityOperator() != null) this.purityOperatorCode = lot.getPurityOperator().getCode();
