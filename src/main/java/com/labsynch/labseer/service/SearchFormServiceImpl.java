@@ -290,7 +290,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 			searchParams.setValuesSet(true);
 		}
 
-		if (searchParams.getChemist() != null){
+		if (searchParams.getChemist() != null && !searchParams.getChemist().equals("anyone")){
 			searchParams.setValuesSet(true);
 		}
 
