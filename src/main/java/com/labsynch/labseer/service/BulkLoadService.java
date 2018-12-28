@@ -11,6 +11,7 @@ import com.labsynch.labseer.dto.BulkLoadPropertiesDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFRequestDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFResponseDTO;
 import com.labsynch.labseer.dto.BulkLoadSDFPropertyRequestDTO;
+import com.labsynch.labseer.dto.BulkLoadSDFValidationPropertiesResponseDTO;
 import com.labsynch.labseer.dto.PurgeFileDependencyCheckResponseDTO;
 import com.labsynch.labseer.dto.PurgeFileResponseDTO;
 
@@ -23,6 +24,8 @@ public interface BulkLoadService {
 	BulkLoadTemplate saveBulkLoadTemplate(BulkLoadTemplate templateToSave);
 
 	BulkLoadRegisterSDFResponseDTO registerSdf(BulkLoadRegisterSDFRequestDTO registerRequestDTO);
+
+	BulkLoadSDFValidationPropertiesResponseDTO validationProperties(BulkLoadRegisterSDFRequestDTO requestDTO);
 
 	public PurgeFileDependencyCheckResponseDTO checkPurgeFileDependencies(BulkLoadFile bulkLoadFile);
 

@@ -38,7 +38,6 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReaderFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
-import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.BulkLoadFile;
 import com.labsynch.labseer.domain.BulkLoadTemplate;
 import com.labsynch.labseer.domain.CompoundType;
@@ -55,7 +54,6 @@ import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.Unit;
@@ -65,6 +63,7 @@ import com.labsynch.labseer.dto.BulkLoadPropertiesDTO;
 import com.labsynch.labseer.dto.BulkLoadPropertyMappingDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFRequestDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFResponseDTO;
+import com.labsynch.labseer.dto.BulkLoadSDFValidationPropertiesResponseDTO;
 import com.labsynch.labseer.dto.BulkLoadSDFPropertyRequestDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
@@ -172,20 +171,69 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	@Override
 //	@Transactional
+	public BulkLoadSDFValidationPropertiesResponseDTO validationProperties(BulkLoadRegisterSDFRequestDTO requestDTO){
+		//get properties out the request
+		String inputFileName = requestDTO.getFilePath();
+		Long startTime = new Date().getTime();
+		Long currentTime = new Date().getTime();
+		String chemist = requestDTO.getUserName();
+		Collection<BulkLoadPropertyMappingDTO> mappings = requestDTO.getMappings();
+
+		
+		try {
+			//create our record of the BulkLoadFile that will be updated with the number of molecules later
+			logger.info("inputFileName: " + inputFileName);
+			String[] splitString;
+			if(File.separator.equalsIgnoreCase("\\")){
+				logger.info("file sep is \\");
+				inputFileName = inputFileName.replace("\\", "\\\\");
+				logger.info("modified inputFileName: " + inputFileName);
+				splitString = inputFileName.split("\\\\");
+			} else {
+				splitString = inputFileName.split(File.separator);
+			}
+			String shortFileName = splitString[splitString.length - 1];			
+			logger.info("shortFileName: " + shortFileName);
+
+			int fileSizeInBytes = (int) (new File(inputFileName)).length();
+
+			CmpdRegSDFReader molReader = sdfReaderFactory.getCmpdRegSDFReader(inputFileName);
+			List<String> chemists = new ArrayList<String>();
+			CmpdRegMolecule mol = null;
+			int numRecordsRead = 0;
+
+			while ((mol = molReader.readNextMol()) != null){
+				numRecordsRead++;
+				String lotChemist = getStringValueFromMappings(mol, "Lot Chemist", mappings);
+				if (!chemists.contains(lotChemist)) {
+					chemists.add(lotChemist);
+				}
+
+				currentTime = new Date().getTime();
+				if (currentTime > startTime){
+					logger.info("SPEED REPORT:");
+					logger.info("Time Elapsed:"+ (currentTime - startTime));
+					logger.info("Rows Handled:"+ numRecordsRead);
+					logger.info("Average speed (rows/min):"+ (numRecordsRead/((currentTime - startTime) / 60.0 / 1000.0)));
+				}
+			}
+			return new BulkLoadSDFValidationPropertiesResponseDTO(chemists);
+		} catch (Exception e){
+			logger.error("Caught an error in the big loop",e);
+			return new BulkLoadSDFValidationPropertiesResponseDTO(null);
+		}
+	}
+
+	@Override
+//	@Transactional
 	public BulkLoadRegisterSDFResponseDTO registerSdf(BulkLoadRegisterSDFRequestDTO registerRequestDTO){
 		//get properties out the request
 		String inputFileName = registerRequestDTO.getFilePath();
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
-		Author chemist = null;
+		String chemist = registerRequestDTO.getUserName();
 		Session session = Parent.entityManager().unwrap(Session.class);
-		try{
-			chemist = Author.findAuthorsByUserName(registerRequestDTO.getUserName()).getSingleResult();
 
-		}catch(EmptyResultDataAccessException e){
-			logger.error("Author: "+registerRequestDTO.getUserName()+" could not be found. Please register this user in Compound Registration.");
-			return new BulkLoadRegisterSDFResponseDTO("Author: "+registerRequestDTO.getUserName()+" could not be found. Please register this user in Compound Registration.", null);
-		}
 		
 		Collection<BulkLoadPropertyMappingDTO> mappings = registerRequestDTO.getMappings();
 		//instantiate input and output streams
@@ -209,7 +257,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			logger.info("shortFileName: " + shortFileName);
 
 			int fileSizeInBytes = (int) (new File(inputFileName)).length();
-			BulkLoadFile bulkLoadFile = new BulkLoadFile(shortFileName, 0, fileSizeInBytes, BulkLoadPropertyMappingDTO.toJsonArray(mappings), chemist.getUserName(), new Date());
+			BulkLoadFile bulkLoadFile = new BulkLoadFile(shortFileName, 0, fileSizeInBytes, BulkLoadPropertyMappingDTO.toJsonArray(mappings), chemist, new Date());
 			if (registerRequestDTO.getFileDate() != null) bulkLoadFile.setFileDate(registerRequestDTO.getFileDate());
 			else bulkLoadFile.setFileDate(new Date());
 			bulkLoadFile.persist();
@@ -719,13 +767,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 
-	public Lot createLot(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, Date registrationDate, Author chemist) throws Exception{
+	public Lot createLot(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, Date registrationDate, String chemist) throws Exception{
 		//Here we try to fetch all of the possible Lot database properties from the sdf, according to the mappings
 		Lot lot = new Lot();
 		//set a couple properties that do not come in from mappings
 		lot.setAsDrawnStruct(mol.getMolStructure());
 		lot.setRegistrationDate(registrationDate);
-		lot.setRegisteredBy(chemist.getUserName());
+		lot.setRegisteredBy(chemist);
 
 		//regular fields that do not require lookups or conversions
 		lot.setSynthesisDate(getDateValueFromMappings(mol, "Lot Synthesis Date", mappings));
@@ -754,7 +802,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		lot.setObservedMassTwo(getNumericValueFromMappings(mol, "Lot Observed Mass #2", mappings));
 		lot.setTareWeight(getNumericValueFromMappings(mol, "Lot Tare Weight", mappings));
 		lot.setTotalAmountStored(getNumericValueFromMappings(mol, "Lot Total Amount Stored", mappings));
-		
+		lot.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
+
 		//special field for Lot Inventory - not saved in Lot table
 		lot.setStorageLocation(getStringValueFromMappings(mol, "Lot Storage Location", mappings));
 
@@ -784,10 +833,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 		
 		try{
-			lookUpProperty = "Lot Chemist";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
-			if (lookUpString != null && lookUpString.length() > 0) lot.setChemist(Author.findAuthorsByUserName(lookUpString).getSingleResult().getUserName());
-			
 			lookUpProperty = "Project";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
 			logger.info("Project lookup: " + lookUpString);
@@ -895,9 +940,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String lookUpString = null;
 		String lookUpProperty = null;
 		try{
-			lookUpProperty = "Lot Chemist";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
-			if (lookUpString != null && lookUpString.length() > 0) saltForm.setChemist(Author.findAuthorsByUserName(lookUpString).getSingleResult().getUserName());
+			saltForm.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
 			lookUpProperty = "Lot Salt Abbrev";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
 			if (lookUpString != null && lookUpString.length() > 0){
@@ -969,18 +1012,19 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 
 	@Transactional
-	public Parent createParent(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, Author chemist, LabelPrefixDTO labelPrefix) throws Exception{
+	public Parent createParent(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist, LabelPrefixDTO labelPrefix) throws Exception{
 		//Here we try to fetch all of the possible Lot database properties from the sdf, according to the mappings
 		Parent parent = new Parent();
 		parent.setMolStructure(mol.getMolStructure());
 		parent.setRegistrationDate(new Date());
-		parent.setRegisteredBy(chemist.getUserName());
+		parent.setRegisteredBy(chemist);
 
 		//regular fields that do not require lookups or conversions
 		parent.setCorpName(getStringValueFromMappings(mol, "Parent Corp Name", mappings));
 		parent.setCommonName(getStringValueFromMappings(mol, "Parent Common Name", mappings));
 		parent.setStereoComment(getStringValueFromMappings(mol, "Parent Stereo Comment", mappings));
 		parent.setComment(getStringValueFromMappings(mol, "Parent Comment", mappings));
+		parent.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
 
 		//conversion
 		parent.setIsMixture(Boolean.valueOf(getStringValueFromMappings(mol, "Parent Is Mixture", mappings)));
@@ -1033,9 +1077,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		//lookups
 		try{
-			lookUpProperty = "Lot Chemist";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
-			if (lookUpString != null && lookUpString.length() > 0) parent.setChemist(Author.findAuthorsByUserName(lookUpString).getSingleResult().getUserName());
 			lookUpProperty = "Parent Stereo Category";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
 			if (lookUpString != null && lookUpString.length() > 0) parent.setStereoCategory(StereoCategory.findStereoCategorysByCodeEquals(lookUpString).getSingleResult());

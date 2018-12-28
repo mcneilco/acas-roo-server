@@ -21,6 +21,7 @@ import com.labsynch.labseer.dto.BulkLoadPropertiesDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFResponseDTO;
 import com.labsynch.labseer.dto.BulkLoadSDFPropertyRequestDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFRequestDTO;
+import com.labsynch.labseer.dto.BulkLoadSDFValidationPropertiesResponseDTO;
 import com.labsynch.labseer.dto.PurgeFileDependencyCheckResponseDTO;
 import com.labsynch.labseer.dto.PurgeFileResponseDTO;
 import com.labsynch.labseer.service.BulkLoadService;
@@ -85,6 +86,20 @@ public class ApiBulkLoadController {
         headers.add("Access-Control-Allow-Headers", "Content-Type");
 		try{
         	BulkLoadRegisterSDFResponseDTO result = bulkLoadService.registerSdf(requestDTO);
+            return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+	}
+	
+	@RequestMapping(value = "/validationProperties", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> validationProperties(@RequestBody BulkLoadRegisterSDFRequestDTO requestDTO){
+		HttpHeaders headers= new HttpHeaders();
+        headers.add("Content-Type", "application/text");
+        headers.add("Access-Control-Allow-Origin", "*");
+        headers.add("Access-Control-Allow-Headers", "Content-Type");
+		try{
+        	BulkLoadSDFValidationPropertiesResponseDTO result = bulkLoadService.validationProperties(requestDTO);
             return new ResponseEntity<String>(result.toJson(), headers, HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<String>(e.toString(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
