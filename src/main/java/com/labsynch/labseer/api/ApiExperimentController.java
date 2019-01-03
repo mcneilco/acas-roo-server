@@ -1562,7 +1562,7 @@ public class ApiExperimentController {
     @Transactional
     @RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<String> experimentBrowserSearch(@RequestParam(value="userName", required = false) String userName, @RequestParam(value="q", required = true) String searchQuery) {
+	public ResponseEntity<String> experimentBrowserSearch(@RequestParam(value="userName", required = false) String userName, @RequestParam(value="projects", required = false) List<String> projects, @RequestParam(value="q", required = true) String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		
@@ -1570,12 +1570,15 @@ public class ApiExperimentController {
 		
 		try {
 			String result;
-			if (userName == null){
+			if (userName == null && projects == null){
 				logger.info("--------- accesing experiment search without userName ---------------");
 				result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery));
 				return new ResponseEntity<String>(result, headers, HttpStatus.OK);				
-			} else {
+			} else if (projects == null) {
 				result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, userName));
+				return new ResponseEntity<String>(result, headers, HttpStatus.OK);
+			} else {
+				result = Experiment.toJsonArrayStubWithProt(experimentService.findExperimentsByGenericMetaDataSearch(searchQuery, projects));
 				return new ResponseEntity<String>(result, headers, HttpStatus.OK);
 			}
 		} catch(Exception e){

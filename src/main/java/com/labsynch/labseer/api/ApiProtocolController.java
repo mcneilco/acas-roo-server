@@ -441,12 +441,21 @@ public class ApiProtocolController {
 	
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<String> protocolBrowserSearch(@RequestParam(value="userName", required = true) String userName, @RequestParam("q") String searchQuery) {
+	public ResponseEntity<String> protocolBrowserSearch(@RequestParam(value="userName", required = false) String userName, @RequestParam(value="projects", required = false) List<String> projects, @RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-		Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery, userName));
-		return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);
+			if (userName == null && projects == null){
+				logger.info("--------- accesing protocol search without userName ---------------");
+                Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery));
+				return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);				
+			} else if (projects == null) {
+                Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery, userName));
+				return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);
+			} else {
+                Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery, projects));
+				return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);
+			}
 		}catch(Exception e){
 			String error = e.getMessage() + e.getStackTrace();
 			return new ResponseEntity<String>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
