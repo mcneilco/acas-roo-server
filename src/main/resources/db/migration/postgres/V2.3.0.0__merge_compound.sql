@@ -1,10 +1,19 @@
-/* Run the following as superuser
+-- Run the following as superuser
 
-
---If using bingo
-grant usage on schema bingo to acas;
-grant select on all tables in schema bingo to acas;
-grant execute on all functions in schema bingo to acas;
+RAISE NOTICE 'ATTEMPTING MIGRATION WHICH REQUIRES SUPERUSER.  Please run: "ALTER USER acas SUPERUSER;" you can revoke this later using ("ALTER USER acas WITH NOSUPERUSER;")';
+DO $$ 
+BEGIN
+IF EXISTS (
+  SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'bingo';
+  ) THEN
+  RAISE NOTICE 'FOUND BINGO SCHEMA, ATTEMPTING MIGRATION';
+    GRANT usage on schema bingo to acas;
+    GRANT select on all tables in schema bingo to acas;
+    GRANT execute on all functions in schema bingo to acas;
+ ELSE
+   RAISE NOTICE 'BINGO SCHEMA NOT FOUND, NOT ATTEMPTING MIGRATION';
+END IF;
+END $$;
 
 --Move Compound tables to acas schema and set ownership
 UPDATE pg_catalog.pg_class
@@ -22,8 +31,6 @@ where relowner = (SELECT oid FROM pg_roles
      
 update compound.schema_version set version_rank=version_rank+45, installed_rank=installed_rank+45, version=regexp_replace(version, '^.', '2'), script=regexp_replace(script, 'V1','V2');
 insert into acas.schema_version select * from compound.schema_version;
-*/
-
 
 -- drop foreign keys to scientist
 ALTER TABLE parent drop constraint "fkc4ab08aa99c37a24"; --chemist foreign key';
