@@ -1,10 +1,11 @@
 -- Run the following as superuser
-
-RAISE NOTICE 'ATTEMPTING MIGRATION WHICH REQUIRES SUPERUSER.  Please run: "ALTER USER acas SUPERUSER;" you can revoke this later using ("ALTER USER acas WITH NOSUPERUSER;")';
+/*
 DO $$ 
 BEGIN
+RAISE NOTICE 'ATTEMPTING MIGRATION WHICH REQUIRES SUPERUSER.  Please run: "ALTER USER acas SUPERUSER;" you can revoke this later using ("ALTER USER acas WITH NOSUPERUSER;")';
+
 IF EXISTS (
-  SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'bingo';
+  SELECT schema_name FROM information_schema.schemata WHERE schema_name = 'bingo'
   ) THEN
   RAISE NOTICE 'FOUND BINGO SCHEMA, ATTEMPTING MIGRATION';
     GRANT usage on schema bingo to acas;
@@ -32,6 +33,8 @@ where relowner = (SELECT oid FROM pg_roles
 update compound.schema_version set version_rank=version_rank+45, installed_rank=installed_rank+45, version=regexp_replace(version, '^.', '2'), script=regexp_replace(script, 'V1','V2');
 insert into acas.schema_version select * from compound.schema_version;
 
+*/
+
 -- drop foreign keys to scientist
 ALTER TABLE parent drop constraint "fkc4ab08aa99c37a24"; --chemist foreign key';
 ALTER TABLE parent drop constraint "parent_modified_by_fk"; --modified_by foreign key';
@@ -42,8 +45,8 @@ ALTER TABLE lot drop constraint "lot_modified_by_fk"; --lot modified_by foreign 
 ALTER TABLE lot drop constraint "lot_registered_by_fk"; --lot modified_by foreign key';
 
 --change column types of chemist
+DROP VIEW IF EXISTS api_lot_properties;
 CREATE FUNCTION get_chemist_code(bigint) RETURNS character varying(255) AS $$ SELECT code FROM scientist WHERE id = $1 $$ LANGUAGE SQL;
-
 ALTER TABLE parent ALTER COLUMN chemist type character varying using get_chemist_code(chemist);
 ALTER TABLE parent ALTER COLUMN modified_by type character varying using get_chemist_code(modified_by);
 ALTER TABLE parent ALTER COLUMN registered_by type character varying using get_chemist_code(registered_by);
@@ -51,6 +54,7 @@ ALTER TABLE salt_form ALTER COLUMN chemist type character varying using get_chem
 ALTER TABLE lot ALTER COLUMN chemist type character varying using get_chemist_code(chemist);
 ALTER TABLE lot ALTER COLUMN modified_by type character varying using get_chemist_code(modified_by);
 ALTER TABLE lot ALTER COLUMN registered_by type character varying using get_chemist_code(registered_by);
+DROP FUNCTION get_chemist_code(bigint);
 
 -- drop scientist table
 DROP TABLE scientist;

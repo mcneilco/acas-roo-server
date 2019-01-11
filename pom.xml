@@ -817,6 +817,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.2</version>
+                <configuration>
+                    <excludes>
+                        <exclude>${exclude.chemistry.package}</exclude>
+                        <exclude>${exclude.chemistry.migrations}</exclude>
+                    </excludes>
+                </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.tomcat.embed</groupId>
