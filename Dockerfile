@@ -1,12 +1,11 @@
 FROM mcneilco/tomcat-maven:openjdk8
 WORKDIR /src
-COPY  .m2 /root/.m2
 ENV CATALINA_HOME /usr/local/tomcat
 ENV PATH $CATALINA_HOME/bin:$PATH
 ADD 	pom.xml /src/pom.xml
 ADD    lib/jchem-16.4.25.0.jar /lib/jchem-16.4.25.0.jar
 RUN    ["mvn", "install:install-file","-Dfile=/lib/jchem-16.4.25.0.jar","-DartifactId=jchem","-DgroupId=com.chemaxon","-Dversion=16.4.25.0","-Dpackaging=jar","-DgeneratePom=true","-DcreateChecksum=true"]
-# RUN    ["mvn", "dependency:resolve", "-P", "default"]
+RUN    ["mvn", "dependency:resolve", "-P", "default"]
 RUN		["mvn", "clean"]
 ADD		. /src
 RUN		mvn compile war:war -P default
