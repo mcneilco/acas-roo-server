@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<querydsl.version>3.4.3</querydsl.version>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
-		<jchem.version>16.4.25.0</jchem.version>
+		<jchem.version>18.8.1-13</jchem.version>
 		<indigo.version>1.2.3.r0</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
@@ -117,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<dependencies>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
-					<artifactId>jchem</artifactId>
+					<artifactId>jchem-main</artifactId>
 					<version>${jchem.version}</version>
 				</dependency>
 			</dependencies>	
