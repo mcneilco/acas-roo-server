@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<indigo.version>1.2.3.r0</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
-	<tomcat.version>7.0.63</tomcat.version>
+		<tomcat.version>7.0.63</tomcat.version>
     </properties>
 	<scm>
 		<connection>scm:git:git://github.com/mcneilco/acas-roo-server.git</connection>
