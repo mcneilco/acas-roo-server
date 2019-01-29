@@ -14,8 +14,7 @@ from cmpd_reg_app_setting
 ) cmpd_reg_app_setting_pivot
 ) cmpd_reg_app_setting_pivot_full_path, cmpd_reg_app_setting
 where cmpd_reg_app_setting.prop_name like '%_path';
-GRANT ALL ON TABLE application_paths
-   TO compound;
+
   
 CREATE OR REPLACE VIEW api_file_list AS 
  SELECT file_list.id AS file_id, 
@@ -27,15 +26,13 @@ CREATE OR REPLACE VIEW api_file_list AS
 	lot
    JOIN file_list ON lot.id = file_list.lot
    where application_paths.prop_name = 'file_path';
-GRANT ALL ON TABLE application_paths
-   TO compound;
+
 
 CREATE OR REPLACE VIEW api_salt_iso_salt AS 
  SELECT iso_salt.id, iso_salt.equivalents, iso_salt.ignore, iso_salt.type, iso_salt.version, iso_salt.isotope, iso_salt.salt, iso_salt.salt_form, salt.id AS salt_id, salt.abbrev AS salt_abbrev, salt.cd_id AS salt_cd_id, salt.formula AS salt_formula, salt.ignore AS salt_ignore, salt.mol_structure AS salt_mol_structure, salt.mol_weight AS salt_molweight, salt.name AS salt_name, salt.original_structure AS salt_original_structure, salt.version AS salt_version
    FROM salt
    JOIN iso_salt ON salt.id = iso_salt.salt;
-GRANT ALL ON TABLE application_paths
-   TO compound;
+
 
 CREATE OR REPLACE VIEW api_isotope_iso_salt AS 
  SELECT iso_salt.id, iso_salt.equivalents, iso_salt.ignore, iso_salt.type, 
@@ -48,8 +45,7 @@ CREATE OR REPLACE VIEW api_isotope_iso_salt AS
     isotope.version as isotope_version
    FROM isotope
    JOIN iso_salt ON isotope.id = iso_salt.isotope;
-GRANT ALL ON TABLE application_paths
-   TO compound;
+
 
 CREATE OR REPLACE VIEW api_batch_cmpd_reg_links AS 
  SELECT lot.corp_name AS lot_corp_name, 
@@ -59,5 +55,4 @@ CREATE OR REPLACE VIEW api_batch_cmpd_reg_links AS
    FROM lot,
 	application_paths
 	where application_paths.prop_name = 'lot_path';
-GRANT ALL ON TABLE application_paths
-   TO compound;
+
