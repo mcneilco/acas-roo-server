@@ -50,7 +50,6 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.ParentAnnotation;
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;

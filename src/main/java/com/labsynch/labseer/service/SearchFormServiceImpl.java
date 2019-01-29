@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -47,10 +48,6 @@ public class SearchFormServiceImpl implements SearchFormService {
 	@Autowired
 	private ChemStructureService structureService;
 	
-	@Autowired
-	private ProjectService projectService;
-
-
 	@Override
 	@Transactional
 	public String findParentIds(String molStructure,
@@ -139,7 +136,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 
 	@Override
 	@Transactional
-	public SearchFormReturnDTO  findQuerySaltForms(SearchFormDTO searchParams) throws CmpdRegMolFormatException {
+	public SearchFormReturnDTO findQuerySaltForms(SearchFormDTO searchParams) throws CmpdRegMolFormatException {
 
 		logger.debug("incoming search params: " + searchParams);
 
@@ -598,10 +595,32 @@ public class SearchFormServiceImpl implements SearchFormService {
 		//Construct wrapper object and filter out results by project
 		SearchFormReturnDTO results = new SearchFormReturnDTO();
 		results.setFoundCompounds(foundCompounds);
-		if(Configuration.getConfigInfo().getServerSettings().isProjectRestrictions()) results = projectService.filterSearchResultsByProject(results, searchParams.getLoggedInUser());
+		if(Configuration.getConfigInfo().getServerSettings().isProjectRestrictions()) results = filterSearchResultsByProject(results, searchParams.getProjects());
+		
 		return results;
 
 	}
+	
+	private SearchFormReturnDTO filterSearchResultsByProject(SearchFormReturnDTO searchResults, List<String> projects){
+		if (!searchResults.getFoundCompounds().isEmpty()){
+			Collection<SearchCompoundReturnDTO> filteredFoundCompounds = new HashSet<SearchCompoundReturnDTO>();
+			for (SearchCompoundReturnDTO foundCompound : searchResults.getFoundCompounds()){
+				List<SearchLotDTO> filteredFoundLots = new ArrayList<SearchLotDTO>();
+				for (SearchLotDTO foundLot : foundCompound.getLotIDs()){
+					String lotProject = Lot.findLotsByCorpNameEquals(foundLot.getCorpName()).getSingleResult().getProject();
+					if(projects.contains(lotProject)) filteredFoundLots.add(foundLot);
+				}
+				if (!filteredFoundLots.isEmpty()){
+					foundCompound.setLotIDs(filteredFoundLots);
+					filteredFoundCompounds.add(foundCompound);
+				}
+			}
+			if (filteredFoundCompounds.isEmpty()) searchResults.setLotsWithheld(true);
+			searchResults.setFoundCompounds(filteredFoundCompounds);
+		}
+		return searchResults;
+	}
+
 
 	private boolean isNumber(String corpNameFrom) {
 		try {

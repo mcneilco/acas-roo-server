@@ -33,7 +33,6 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.Author;
@@ -266,11 +265,6 @@ public class LotController {
     @ModelAttribute("physicalstates")
     public Collection<PhysicalState> populatePhysicalStates() {
         return PhysicalState.findAllPhysicalStates();
-    }
-
-    @ModelAttribute("projects")
-    public Collection<Project> populateProjects() {
-        return Project.findAllProjects();
     }
 
     @ModelAttribute("puritymeasuredbys")

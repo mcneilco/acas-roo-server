@@ -20,7 +20,6 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.StereoCategory;
@@ -194,17 +193,6 @@ public class LoadFullCompoundsUtil {
 		if (MoleculeUtil.validateMolProperty(mol, propertiesMap.get("supplier_id"))){
 			String supplierId = MoleculeUtil.getMolProperty(mol,  propertiesMap.get("supplier_id"));
 			lot.setSupplierID(supplierId);
-		}
-
-		if (MoleculeUtil.validateMolProperty(mol, propertiesMap.get("project"))){
-			String projectCode = MoleculeUtil.getMolProperty(mol,  propertiesMap.get("project"));
-			Project project = null;
-			try {
-				project = Project.findProjectsByCodeEquals(projectCode).getSingleResult();
-			} catch (EmptyResultDataAccessException e){
-				logger.error("Did not find the query Project: " + projectCode);
-			}
-			lot.setProject(project.getCode());
 		}
     	
     	metaLot.setLot(lot);

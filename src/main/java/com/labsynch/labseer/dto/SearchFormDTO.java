@@ -20,6 +20,8 @@ import flexjson.transformer.DateTransformer;
 public class SearchFormDTO{
 
 	private String corpNameList;
+	
+	private List<String> projects;
 
 	private List<String> formattedCorpNameList;
 

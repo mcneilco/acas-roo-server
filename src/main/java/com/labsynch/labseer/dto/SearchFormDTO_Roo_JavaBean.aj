@@ -17,6 +17,14 @@ privileged aspect SearchFormDTO_Roo_JavaBean {
         this.corpNameList = corpNameList;
     }
     
+    public List<String> SearchFormDTO.getProjects() {
+        return this.projects;
+    }
+    
+    public void SearchFormDTO.setProjects(List<String> projects) {
+        this.projects = projects;
+    }
+    
     public List<String> SearchFormDTO.getFormattedCorpNameList() {
         return this.formattedCorpNameList;
     }

@@ -48,7 +48,6 @@ import com.labsynch.labseer.domain.ParentAliasType;
 import com.labsynch.labseer.domain.ParentAnnotation;
 import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.domain.PreDef_CorpName;
-import com.labsynch.labseer.domain.Project;
 import com.labsynch.labseer.domain.PurityMeasuredBy;
 import com.labsynch.labseer.domain.QcCompound;
 import com.labsynch.labseer.domain.RoleKind;
@@ -1145,30 +1144,6 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.PreDef_CorpName>() {
             public com.labsynch.labseer.domain.PreDef_CorpName convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), PreDef_CorpName.class);
-            }
-        };
-    }
-    
-    public Converter<Project, String> ApplicationConversionServiceFactoryBean.getProjectToStringConverter() {
-        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.Project, java.lang.String>() {
-            public String convert(Project project) {
-                return new StringBuilder().append(project.getName()).append(' ').append(project.getCode()).toString();
-            }
-        };
-    }
-    
-    public Converter<Long, Project> ApplicationConversionServiceFactoryBean.getIdToProjectConverter() {
-        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.Project>() {
-            public com.labsynch.labseer.domain.Project convert(java.lang.Long id) {
-                return Project.findProject(id);
-            }
-        };
-    }
-    
-    public Converter<String, Project> ApplicationConversionServiceFactoryBean.getStringToProjectConverter() {
-        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.Project>() {
-            public com.labsynch.labseer.domain.Project convert(String id) {
-                return getObject().convert(getObject().convert(id, Long.class), Project.class);
             }
         };
     }
