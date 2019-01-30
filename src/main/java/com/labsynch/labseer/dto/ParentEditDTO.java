@@ -27,6 +27,8 @@ public class ParentEditDTO{
 
 	private String chemistCode;
 
+	private String modifiedBy;
+
 	private String commonName;
 
 	private String stereoCategoryCode;

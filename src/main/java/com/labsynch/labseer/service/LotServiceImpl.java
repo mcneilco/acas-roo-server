@@ -48,7 +48,6 @@ public class LotServiceImpl implements LotService {
 	@Override
 	public Lot updateLotWeight(Lot lot) {
 		saltFormService.updateSaltWeight(lot.getSaltForm());
-		lot.setModifiedBy(SecurityUtil.getLoginUser().getUserName());
 		lot.setLotMolWeight(Lot.calculateLotMolWeight(lot));
 		lot.setModifiedDate(new Date());
 		lot.merge();
@@ -65,8 +64,6 @@ public class LotServiceImpl implements LotService {
 		// name of new adoptive parent
 		// logic to deal with lot numbering  -- just increment existing lot number of adoptive parent
 		// note -- need to refactor to deal with more complicated parent/SaltForm/lot setups versus simpler parent/lot
-
-		Author modifiedUser = Author.findAuthorsByUserName(modifiedByUser).getSingleResult();		
 
 		Parent adoptiveParent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
 		//renumber lot -- just increment to next number
@@ -98,7 +95,7 @@ public class LotServiceImpl implements LotService {
 		logger.info("new lot corp name: " + queryLot.getCorpName());		
 		// recalculate lot weight
 		queryLot.setLotMolWeight(Lot.calculateLotMolWeight(queryLot));
-		queryLot.setModifiedBy(modifiedUser.getUserName());
+		queryLot.setModifiedBy(modifiedByUser);
 		queryLot.setModifiedDate(new Date());
 		queryLot.merge();
 
@@ -106,11 +103,11 @@ public class LotServiceImpl implements LotService {
 	}
 
 	@Override
-	public String updateLotMetaArray(String jsonArray, String modifiedByUser) {
+	public String updateLotMetaArray(String jsonArray) {
 		Collection<LotDTO> lotDTOCollection = LotDTO.fromJsonArrayToLoes(jsonArray);
 		int lotCounter = 0;
 		for (LotDTO lotDTO : lotDTOCollection){
-			updateLotMeta(lotDTO, modifiedByUser);
+			updateLotMeta(lotDTO);
 			lotCounter++;
 		}
 
@@ -118,7 +115,7 @@ public class LotServiceImpl implements LotService {
 	}
 
 	@Override
-	public Lot updateLotMeta(LotDTO lotDTO, String modifiedByUser) {
+	public Lot updateLotMeta(LotDTO lotDTO) {
 
 		// Fields not to edit
 		//	    private String asDrawnStruct;
@@ -146,8 +143,6 @@ public class LotServiceImpl implements LotService {
 				lot = lots.get(0);
 			}
 		}
-
-		Author modifiedUser = Author.findAuthorsByUserName(modifiedByUser).getSingleResult();	
 
 		try{
 
@@ -189,6 +184,7 @@ public class LotServiceImpl implements LotService {
 			if (lotDTO.getAmountUnitsCode() != null && lotDTO.getAmountUnitsCode().length() > 0) lot.setAmountUnits(Unit.findUnitsByCodeEquals(lotDTO.getAmountUnitsCode()).getSingleResult());
 			if (lotDTO.getRetainUnitsCode() != null && lotDTO.getRetainUnitsCode().length() > 0) lot.setRetainUnits(Unit.findUnitsByCodeEquals(lotDTO.getRetainUnitsCode()).getSingleResult());
 			if (lotDTO.getSolutionAmountUnitsCode() != null && lotDTO.getSolutionAmountUnitsCode().length() > 0) lot.setSolutionAmountUnits(SolutionUnit.findSolutionUnitsByCodeEquals(lotDTO.getSolutionAmountUnitsCode()).getSingleResult());
+			if (lotDTO.getModifiedBy() != null && lotDTO.getModifiedBy().length() > 0) lot.setModifiedBy(lotDTO.getModifiedBy());
 
 			if (lotDTO.getLotAliases() != null && lotDTO.getLotAliases().length() > 0){
 				lot = lotAliasService.updateLotDefaultAlias(lot, lotDTO.getLotAliases());
@@ -200,7 +196,6 @@ public class LotServiceImpl implements LotService {
 		}
 
 		lot.setModifiedDate(new Date());
-		lot.setModifiedBy(modifiedUser.getUserName());
 		lot.merge();
 
 		return Lot.findLot(lot.getId());

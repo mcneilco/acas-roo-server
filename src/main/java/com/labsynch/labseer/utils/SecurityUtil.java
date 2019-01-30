@@ -66,15 +66,7 @@ public class SecurityUtil {
 
 		} catch (EmptyResultDataAccessException e){
 			logger.error("unable to find the user: " + chemistName);
-			try {
-				chemistName = "adminUser";
-				chemist = Author.findAuthorsByUserName(chemistName).getSingleResult();
-				logger.debug("using the admin user");
-			} catch (EmptyResultDataAccessException e2){
-				logger.error("creating the user adminUser");
-				chemistName = "adminUser";
-				chemist = createUser(chemistName);
-			}
+			chemist = new Author();
 		}
 
 		return chemist;

@@ -20,7 +20,7 @@ public interface ParentService {
 	Collection<CodeTableDTO> updateParent(Parent parent);
 
 	public int restandardizeAllParentStructures() throws CmpdRegMolFormatException, IOException;
-	Parent updateParentMeta(ParentEditDTO parentDTO, String modifiedByUser);
+	Parent updateParentMeta(ParentEditDTO parentDTO);
 
 	void qcCheckParentStructures() throws CmpdRegMolFormatException, IOException;
 
@@ -35,7 +35,7 @@ public interface ParentService {
 	int restandardizeParentStructsWithDisplayChanges() throws CmpdRegMolFormatException, IOException;
 
 
-	String updateParentMetaArray(String jsonInput, String modifiedByUser);
+	String updateParentMetaArray(String jsonInput);
 
 
 }

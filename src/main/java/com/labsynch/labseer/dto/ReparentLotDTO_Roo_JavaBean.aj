@@ -23,4 +23,12 @@ privileged aspect ReparentLotDTO_Roo_JavaBean {
         this.lotCorpName = lotCorpName;
     }
     
+    public String ReparentLotDTO.getModifiedBy() {
+        return this.modifiedBy;
+    }
+    
+    public void ReparentLotDTO.setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+    
 }

@@ -33,6 +33,14 @@ privileged aspect ParentEditDTO_Roo_JavaBean {
         this.chemistCode = chemistCode;
     }
     
+    public String ParentEditDTO.getModifiedBy() {
+        return this.modifiedBy;
+    }
+    
+    public void ParentEditDTO.setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+    
     public String ParentEditDTO.getCommonName() {
         return this.commonName;
     }

@@ -434,11 +434,11 @@ public class ParentServiceImpl implements ParentService {
 
 	
 	@Override
-	public String updateParentMetaArray(String jsonInput, String modifiedByUser){
+	public String updateParentMetaArray(String jsonInput){
 		int parentCounter = 0;
 		Collection<ParentEditDTO> parentDTOs = ParentEditDTO.fromJsonArrayToParentEditDTO(jsonInput);
 		for (ParentEditDTO parentDTO : parentDTOs){
-			updateParentMeta(parentDTO, modifiedByUser);
+			updateParentMeta(parentDTO);
 			parentCounter++;
 		}
 		String returnMessage = "Number of parents updated: " + parentCounter;
@@ -448,7 +448,7 @@ public class ParentServiceImpl implements ParentService {
 		
 	
 	@Override
-	public Parent updateParentMeta(ParentEditDTO parentDTO, String modifiedByUser){
+	public Parent updateParentMeta(ParentEditDTO parentDTO){
 
 		// NON-EDITABLE fields via this service
 		//		private Set<SaltFormDTO> saltForms = new HashSet<SaltFormDTO>();
@@ -458,7 +458,6 @@ public class ParentServiceImpl implements ParentService {
 		//		private int CdId;
 		//	    private Double molWeight;
 		
-		Author modifiedUser = Author.findAuthorsByUserName(modifiedByUser).getSingleResult();
 		Parent parent = null;
 		if (parentDTO.getId() != null){
 			parent = Parent.findParent(parentDTO.getId());
@@ -531,7 +530,7 @@ public class ParentServiceImpl implements ParentService {
 
 		if (parentValidationDTO.isParentUnique()){
 			parent.setModifiedDate(new Date());
-			parent.setModifiedBy(modifiedUser.getUserName());
+			if (parentDTO.getModifiedBy() != null && parentDTO.getModifiedBy().length() > 0) parent.setModifiedBy(parentDTO.getModifiedBy());
 			parent.merge();
 		}
 

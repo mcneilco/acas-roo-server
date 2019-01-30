@@ -8,9 +8,9 @@ public interface LotService {
 
 	public Lot updateLotWeight(Lot lot);
 
-	Lot updateLotMeta(LotDTO lotDTO, String modifiedByUser);
+	Lot updateLotMeta(LotDTO lotDTO);
 
-	String updateLotMetaArray(String jsonArray, String modifiedByUser);
+	String updateLotMetaArray(String jsonArray);
 
 	Lot reparentLot(String lotCorpName, String parentCorpName, String modifiedByUser);
 

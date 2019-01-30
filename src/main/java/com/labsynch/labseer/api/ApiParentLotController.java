@@ -101,9 +101,8 @@ public class ApiParentLotController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			LotDTO lotDTO = LotDTO.fromJsonToLotDTO(json);
-			Lot lot = lotService.updateLotMeta(lotDTO, modifiedByUser);
+			Lot lot = lotService.updateLotMeta(lotDTO);
 			return new ResponseEntity<String>(lot.toJsonIncludeAliases(), headers, HttpStatus.OK);
 		}catch(Exception e){
 			logger.error("Caught exception updating lot metadata",e);
@@ -118,8 +117,7 @@ public class ApiParentLotController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
-			String results = lotService.updateLotMetaArray(json, modifiedByUser);
+			String results = lotService.updateLotMetaArray(json);
 			return new ResponseEntity<String>(results, headers, HttpStatus.OK);
 		}catch(Exception e){
 			logger.error("Caught error trying to update lot metadata",e);
@@ -134,9 +132,8 @@ public class ApiParentLotController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			ReparentLotDTO lotDTO = ReparentLotDTO.fromJsonToReparentLotDTO(json);
-			Lot lot = lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), modifiedByUser);
+			Lot lot = lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), lotDTO.getModifiedBy());
 			return new ResponseEntity<String>(lot.toJsonIncludeAliases(), headers, HttpStatus.OK);
 		}catch(Exception e){
 			logger.error("Caught exception updating lot metadata",e);
@@ -152,10 +149,9 @@ public class ApiParentLotController {
 		headers.add("Content-Type", "application/json");
 		int lotCount = 0;
 		try{
-			String modifiedByUser = SecurityUtil.getLoginUser().getUserName();
 			Collection<ReparentLotDTO> lotDTOs = ReparentLotDTO.fromJsonArrayToReparentLoes(json);
 			for (ReparentLotDTO lotDTO : lotDTOs){
-				lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), modifiedByUser);
+				lotService.reparentLot(lotDTO.getLotCorpName(), lotDTO.getParentCorpName(), lotDTO.getModifiedBy());
 				lotCount++;
 			}
 			return new ResponseEntity<String>("number of lots reparented: " + lotCount, headers, HttpStatus.OK);

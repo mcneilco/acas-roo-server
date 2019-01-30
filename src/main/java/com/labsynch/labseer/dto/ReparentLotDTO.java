@@ -12,5 +12,7 @@ public class ReparentLotDTO {
 	private String parentCorpName;
 	
 	private String lotCorpName;
+
+	private String modifiedBy;
 	
 }
