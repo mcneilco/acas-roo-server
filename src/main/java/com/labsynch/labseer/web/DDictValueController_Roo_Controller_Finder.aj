@@ -18,8 +18,16 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET)
-    public String DDictValueController.findDDictValuesByCodeNameEquals(@RequestParam("codeName") String codeName, Model uiModel) {
-        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByCodeNameEquals(codeName).getResultList());
+    public String DDictValueController.findDDictValuesByCodeNameEquals(@RequestParam("codeName") String codeName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByCodeNameEquals(codeName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) DDictValue.countFindDDictValuesByCodeNameEquals(codeName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByCodeNameEquals(codeName, sortFieldName, sortOrder).getResultList());
+        }
         return "ddictvalues/list";
     }
     
@@ -29,8 +37,16 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByIgnoredNot", method = RequestMethod.GET)
-    public String DDictValueController.findDDictValuesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByIgnoredNot(ignored).getResultList());
+    public String DDictValueController.findDDictValuesByIgnoredNot(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByIgnoredNot(ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) DDictValue.countFindDDictValuesByIgnoredNot(ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByIgnoredNot(ignored, sortFieldName, sortOrder).getResultList());
+        }
         return "ddictvalues/list";
     }
     
@@ -40,8 +56,16 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLabelTextLike", method = RequestMethod.GET)
-    public String DDictValueController.findDDictValuesByLabelTextLike(@RequestParam("labelText") String labelText, Model uiModel) {
-        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLabelTextLike(labelText).getResultList());
+    public String DDictValueController.findDDictValuesByLabelTextLike(@RequestParam("labelText") String labelText, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLabelTextLike(labelText, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) DDictValue.countFindDDictValuesByLabelTextLike(labelText) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLabelTextLike(labelText, sortFieldName, sortOrder).getResultList());
+        }
         return "ddictvalues/list";
     }
     
@@ -51,8 +75,16 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsKindEquals", method = RequestMethod.GET)
-    public String DDictValueController.findDDictValuesByLsKindEquals(@RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsKindEquals(lsKind).getResultList());
+    public String DDictValueController.findDDictValuesByLsKindEquals(@RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsKindEquals(lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) DDictValue.countFindDDictValuesByLsKindEquals(lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsKindEquals(lsKind, sortFieldName, sortOrder).getResultList());
+        }
         return "ddictvalues/list";
     }
     
@@ -62,8 +94,16 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEquals", method = RequestMethod.GET)
-    public String DDictValueController.findDDictValuesByLsTypeEquals(@RequestParam("lsType") String lsType, Model uiModel) {
-        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEquals(lsType).getResultList());
+    public String DDictValueController.findDDictValuesByLsTypeEquals(@RequestParam("lsType") String lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEquals(lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) DDictValue.countFindDDictValuesByLsTypeEquals(lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEquals(lsType, sortFieldName, sortOrder).getResultList());
+        }
         return "ddictvalues/list";
     }
     
@@ -73,8 +113,16 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
-    public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+    public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) DDictValue.countFindDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).getResultList());
+        }
         return "ddictvalues/list";
     }
     
@@ -84,8 +132,16 @@ privileged aspect DDictValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEqualsAndShortNameEquals", method = RequestMethod.GET)
-    public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("shortName") String shortName, Model uiModel) {
-        uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName).getResultList());
+    public String DDictValueController.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam("shortName") String shortName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) DDictValue.countFindDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("ddictvalues", DDictValue.findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(lsType, lsKind, shortName, sortFieldName, sortOrder).getResultList());
+        }
         return "ddictvalues/list";
     }
     

@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect LabelSequence_Roo_Json {
     
     public static LabelSequence LabelSequence.fromJsonToLabelSequence(String json) {
-        return new JSONDeserializer<LabelSequence>().use(null, LabelSequence.class).deserialize(json);
+        return new JSONDeserializer<LabelSequence>()
+        .use(null, LabelSequence.class).deserialize(json);
     }
     
     public static Collection<LabelSequence> LabelSequence.fromJsonArrayToLabelSequences(String json) {
-        return new JSONDeserializer<List<LabelSequence>>().use(null, ArrayList.class).use("values", LabelSequence.class).deserialize(json);
+        return new JSONDeserializer<List<LabelSequence>>()
+        .use("values", LabelSequence.class).deserialize(json);
     }
     
 }

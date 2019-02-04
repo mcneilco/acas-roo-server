@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ContainerRequestDTO_Roo_Json {
     
     public String ContainerRequestDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ContainerRequestDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ContainerRequestDTO ContainerRequestDTO.fromJsonToContainerRequestDTO(String json) {
-        return new JSONDeserializer<ContainerRequestDTO>().use(null, ContainerRequestDTO.class).deserialize(json);
+        return new JSONDeserializer<ContainerRequestDTO>()
+        .use(null, ContainerRequestDTO.class).deserialize(json);
     }
     
     public static String ContainerRequestDTO.toJsonArray(Collection<ContainerRequestDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ContainerRequestDTO.toJsonArray(Collection<ContainerRequestDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ContainerRequestDTO> ContainerRequestDTO.fromJsonArrayToCoes(String json) {
-        return new JSONDeserializer<List<ContainerRequestDTO>>().use(null, ArrayList.class).use("values", ContainerRequestDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerRequestDTO>>()
+        .use("values", ContainerRequestDTO.class).deserialize(json);
     }
     
 }

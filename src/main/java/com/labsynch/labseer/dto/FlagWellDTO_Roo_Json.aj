@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect FlagWellDTO_Roo_Json {
     
     public String FlagWellDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String FlagWellDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static FlagWellDTO FlagWellDTO.fromJsonToFlagWellDTO(String json) {
-        return new JSONDeserializer<FlagWellDTO>().use(null, FlagWellDTO.class).deserialize(json);
+        return new JSONDeserializer<FlagWellDTO>()
+        .use(null, FlagWellDTO.class).deserialize(json);
     }
     
     public static String FlagWellDTO.toJsonArray(Collection<FlagWellDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String FlagWellDTO.toJsonArray(Collection<FlagWellDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<FlagWellDTO> FlagWellDTO.fromJsonArrayToFlagWellDTO(String json) {
-        return new JSONDeserializer<List<FlagWellDTO>>().use(null, ArrayList.class).use("values", FlagWellDTO.class).deserialize(json);
+        return new JSONDeserializer<List<FlagWellDTO>>()
+        .use("values", FlagWellDTO.class).deserialize(json);
     }
     
 }

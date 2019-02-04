@@ -10,11 +10,54 @@ import javax.persistence.TypedQuery;
 
 privileged aspect CodeKind_Roo_Finder {
     
+    public static Long CodeKind.countFindCodeKindsByKindNameEqualsAndLsType(String kindName, CodeType lsType) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CodeKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", Long.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long CodeKind.countFindCodeKindsByLsType(CodeType lsType) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CodeKind AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long CodeKind.countFindCodeKindsByLsTypeAndKindEquals(String lsTypeAndKind) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CodeKind AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", Long.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<CodeKind> CodeKind.findCodeKindsByKindNameEqualsAndLsType(String kindName, CodeType lsType) {
         if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = CodeKind.entityManager();
         TypedQuery<CodeKind> q = em.createQuery("SELECT o FROM CodeKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", CodeKind.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
+    public static TypedQuery<CodeKind> CodeKind.findCodeKindsByKindNameEqualsAndLsType(String kindName, CodeType lsType, String sortFieldName, String sortOrder) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CodeKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<CodeKind> q = em.createQuery(queryBuilder.toString(), CodeKind.class);
         q.setParameter("kindName", kindName);
         q.setParameter("lsType", lsType);
         return q;
@@ -28,10 +71,40 @@ privileged aspect CodeKind_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<CodeKind> CodeKind.findCodeKindsByLsType(CodeType lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CodeKind AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<CodeKind> q = em.createQuery(queryBuilder.toString(), CodeKind.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
     public static TypedQuery<CodeKind> CodeKind.findCodeKindsByLsTypeAndKindEquals(String lsTypeAndKind) {
         if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
         EntityManager em = CodeKind.entityManager();
         TypedQuery<CodeKind> q = em.createQuery("SELECT o FROM CodeKind AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", CodeKind.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+    
+    public static TypedQuery<CodeKind> CodeKind.findCodeKindsByLsTypeAndKindEquals(String lsTypeAndKind, String sortFieldName, String sortOrder) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = CodeKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CodeKind AS o WHERE o.lsTypeAndKind = :lsTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<CodeKind> q = em.createQuery(queryBuilder.toString(), CodeKind.class);
         q.setParameter("lsTypeAndKind", lsTypeAndKind);
         return q;
     }

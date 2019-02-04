@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ContainerLabel_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ContainerLabel.fieldNames4OrderClauseFilter = java.util.Arrays.asList("container");
+    
     public static long ContainerLabel.countContainerLabels() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ContainerLabel o", Long.class).getSingleResult();
     }
     
     public static List<ContainerLabel> ContainerLabel.findAllContainerLabels() {
         return entityManager().createQuery("SELECT o FROM ContainerLabel o", ContainerLabel.class).getResultList();
+    }
+    
+    public static List<ContainerLabel> ContainerLabel.findAllContainerLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerLabel.class).getResultList();
     }
     
     public static ContainerLabel ContainerLabel.findContainerLabel(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ContainerLabel_Roo_Jpa_ActiveRecord {
     
     public static List<ContainerLabel> ContainerLabel.findContainerLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ContainerLabel o", ContainerLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ContainerLabel> ContainerLabel.findContainerLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

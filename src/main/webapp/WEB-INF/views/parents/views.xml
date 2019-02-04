@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="parents/list">
+        <put-attribute name="body" value="/WEB-INF/views/parents/list.jspx"/>
+    </definition>
+<definition extends="default" name="parents/show">
+        <put-attribute name="body" value="/WEB-INF/views/parents/show.jspx"/>
+    </definition>
+<definition extends="default" name="parents/create">
+        <put-attribute name="body" value="/WEB-INF/views/parents/create.jspx"/>
+    </definition>
+<definition extends="default" name="parents/update">
+        <put-attribute name="body" value="/WEB-INF/views/parents/update.jspx"/>
+    </definition>
+<definition extends="default" name="parents/findParentsByBulkLoadFileEquals">
+        <put-attribute name="body" value="/WEB-INF/views/parents/findParentsByBulkLoadFileEquals.jspx"/>
+    </definition>
+<definition extends="default" name="parents/findParentsByCdId">
+        <put-attribute name="body" value="/WEB-INF/views/parents/findParentsByCdId.jspx"/>
+    </definition>
+<definition extends="default" name="parents/findParentsByCommonNameLike">
+        <put-attribute name="body" value="/WEB-INF/views/parents/findParentsByCommonNameLike.jspx"/>
+    </definition>
+<definition extends="default" name="parents/findParentsByCorpNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/parents/findParentsByCorpNameEquals.jspx"/>
+    </definition>
+<definition extends="default" name="parents/findParentsByCorpNameLike">
+        <put-attribute name="body" value="/WEB-INF/views/parents/findParentsByCorpNameLike.jspx"/>
+    </definition>
+<definition extends="default" name="parents/findParentsBySaltForms">
+        <put-attribute name="body" value="/WEB-INF/views/parents/findParentsBySaltForms.jspx"/>
+    </definition>
+</tiles-definitions>

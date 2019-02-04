@@ -9,8 +9,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect AuthorValue_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> AuthorValue.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsState");
+    
     public static List<AuthorValue> AuthorValue.findAllAuthorValues() {
         return entityManager().createQuery("SELECT o FROM AuthorValue o", AuthorValue.class).getResultList();
+    }
+    
+    public static List<AuthorValue> AuthorValue.findAllAuthorValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AuthorValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AuthorValue.class).getResultList();
     }
     
     public static AuthorValue AuthorValue.findAuthorValue(Long id) {
@@ -20,6 +33,17 @@ privileged aspect AuthorValue_Roo_Jpa_ActiveRecord {
     
     public static List<AuthorValue> AuthorValue.findAuthorValueEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AuthorValue o", AuthorValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AuthorValue> AuthorValue.findAuthorValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AuthorValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AuthorValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

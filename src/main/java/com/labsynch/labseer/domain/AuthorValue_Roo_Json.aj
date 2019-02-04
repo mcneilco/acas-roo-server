@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect AuthorValue_Roo_Json {
     
     public String AuthorValue.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String AuthorValue.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static AuthorValue AuthorValue.fromJsonToAuthorValue(String json) {
-        return new JSONDeserializer<AuthorValue>().use(null, AuthorValue.class).deserialize(json);
+        return new JSONDeserializer<AuthorValue>()
+        .use(null, AuthorValue.class).deserialize(json);
     }
     
     public static String AuthorValue.toJsonArray(Collection<AuthorValue> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String AuthorValue.toJsonArray(Collection<AuthorValue> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<AuthorValue> AuthorValue.fromJsonArrayToAuthorValues(String json) {
-        return new JSONDeserializer<List<AuthorValue>>().use(null, ArrayList.class).use("values", AuthorValue.class).deserialize(json);
+        return new JSONDeserializer<List<AuthorValue>>()
+        .use("values", AuthorValue.class).deserialize(json);
     }
     
 }

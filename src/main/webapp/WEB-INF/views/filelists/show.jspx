@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_FileList" object="${filelist}" path="/filelists" z="YQCtXMZUmySsplG9zDvtyWhdi+k=">
+        <field:display field="file" id="s_com_labsynch_labseer_domain_FileList_file" object="${filelist}" z="hfx/pjDhlV9R3ca3ic8lxqnWU1s="/>
+        <field:display field="lot" id="s_com_labsynch_labseer_domain_FileList_lot" object="${filelist}" z="ysxDigAvjRtgGjJgYU6bGUfFV3c="/>
+        <field:display field="description" id="s_com_labsynch_labseer_domain_FileList_description" object="${filelist}" z="ylnk6CH784lw1Q0sFpirwaX1I2I="/>
+        <field:display field="name" id="s_com_labsynch_labseer_domain_FileList_name" object="${filelist}" z="X29svql3R1usw4RucNG87Zee6oE="/>
+        <field:display field="type" id="s_com_labsynch_labseer_domain_FileList_type" object="${filelist}" z="7DnFcnDh8jB2xkkVgaIErstiisM="/>
+        <field:display field="size" id="s_com_labsynch_labseer_domain_FileList_size" object="${filelist}" z="1gi9H1ba0as+hVyrcqJtaWXwIUY="/>
+        <field:display field="url" id="s_com_labsynch_labseer_domain_FileList_url" object="${filelist}" z="s0/jqeQew8DuTCxh3hyMZkpdGzE="/>
+        <field:display field="ie" id="s_com_labsynch_labseer_domain_FileList_ie" object="${filelist}" z="ihryhVKp6Yp8TCxpLc4GTPQmQ5o="/>
+        <field:display field="uploaded" id="s_com_labsynch_labseer_domain_FileList_uploaded" object="${filelist}" z="4nwU6Ijjp1d5PKtoW9XUcd7OrEs="/>
+        <field:display field="fileName" id="s_com_labsynch_labseer_domain_FileList_fileName" object="${filelist}" z="wj6FgxrxFf6A8Wbgc9VvtB9tvp4="/>
+        <field:display field="subdir" id="s_com_labsynch_labseer_domain_FileList_subdir" object="${filelist}" z="SAkwCzGloCV5BANV12KqX7Vmr2c="/>
+        <field:display field="filePath" id="s_com_labsynch_labseer_domain_FileList_filePath" object="${filelist}" z="BBWGQtHiZ8uV74HRpk4v/JorCd8="/>
+    </page:show>
+</div>

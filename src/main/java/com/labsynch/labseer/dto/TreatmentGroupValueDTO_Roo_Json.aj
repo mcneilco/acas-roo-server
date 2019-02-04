@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect TreatmentGroupValueDTO_Roo_Json {
     
     public String TreatmentGroupValueDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String TreatmentGroupValueDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static TreatmentGroupValueDTO TreatmentGroupValueDTO.fromJsonToTreatmentGroupValueDTO(String json) {
-        return new JSONDeserializer<TreatmentGroupValueDTO>().use(null, TreatmentGroupValueDTO.class).deserialize(json);
+        return new JSONDeserializer<TreatmentGroupValueDTO>()
+        .use(null, TreatmentGroupValueDTO.class).deserialize(json);
     }
     
     public static String TreatmentGroupValueDTO.toJsonArray(Collection<TreatmentGroupValueDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String TreatmentGroupValueDTO.toJsonArray(Collection<TreatmentGroupValueDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<TreatmentGroupValueDTO> TreatmentGroupValueDTO.fromJsonArrayToTreatmentGroes(String json) {
-        return new JSONDeserializer<List<TreatmentGroupValueDTO>>().use(null, ArrayList.class).use("values", TreatmentGroupValueDTO.class).deserialize(json);
+        return new JSONDeserializer<List<TreatmentGroupValueDTO>>()
+        .use("values", TreatmentGroupValueDTO.class).deserialize(json);
     }
     
 }

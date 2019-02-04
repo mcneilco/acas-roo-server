@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/datatables" xmlns:table="urn:jsptagdir:/WEB-INF/tags/datatables" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_CompoundType" items="${compoundtypes}" z="q/AYJwxzQb5t6RQ0GeqiloIVoz0=">
+        <table:table data="${compoundtypes}" id="l_com_labsynch_labseer_domain_CompoundType" path="/compoundTypes" z="vSFaCJrypI/b6XEJXOD/JTKgEfQ=">
+            <table:column id="c_com_labsynch_labseer_domain_CompoundType_code" property="code" z="dd0Tj6jbE6Z6VCT3gXfHYSUBLyM="/>
+            <table:column id="c_com_labsynch_labseer_domain_CompoundType_name" property="name" z="CduMKHez1ZtETMV/BDBwv9Adjl4="/>
+            <table:column id="c_com_labsynch_labseer_domain_CompoundType_displayOrder" property="displayOrder" z="uzyZpVizpS5c42UnWbH1KLKkW0M="/>
+            <table:column id="c_com_labsynch_labseer_domain_CompoundType_comment" property="comment" z="g+9PkxfpBaKYl7+aWAUCQ7lcP/0="/>
+        </table:table>
+    </page:list>
+</div>

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ThingPage_Roo_Json {
     
     public String ThingPage.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ThingPage.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ThingPage ThingPage.fromJsonToThingPage(String json) {
-        return new JSONDeserializer<ThingPage>().use(null, ThingPage.class).deserialize(json);
+        return new JSONDeserializer<ThingPage>()
+        .use(null, ThingPage.class).deserialize(json);
     }
     
     public static String ThingPage.toJsonArray(Collection<ThingPage> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ThingPage.toJsonArray(Collection<ThingPage> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ThingPage> ThingPage.fromJsonArrayToThingPages(String json) {
-        return new JSONDeserializer<List<ThingPage>>().use(null, ArrayList.class).use("values", ThingPage.class).deserialize(json);
+        return new JSONDeserializer<List<ThingPage>>()
+        .use("values", ThingPage.class).deserialize(json);
     }
     
 }

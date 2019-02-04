@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="parentaliases/list">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/list.jspx"/>
+    </definition>
+<definition extends="default" name="parentaliases/show">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/show.jspx"/>
+    </definition>
+<definition extends="default" name="parentaliases/create">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/create.jspx"/>
+    </definition>
+<definition extends="default" name="parentaliases/update">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/update.jspx"/>
+    </definition>
+<definition extends="default" name="parentaliases/findParentAliasesByAliasNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/findParentAliasesByAliasNameEquals.jspx"/>
+    </definition>
+<definition extends="default" name="parentaliases/findParentAliasesByAliasNameEqualsAndLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/findParentAliasesByAliasNameEqualsAndLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="parentaliases/findParentAliasesByParent">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/findParentAliasesByParent.jspx"/>
+    </definition>
+<definition extends="default" name="parentaliases/findParentAliasesByParentAndLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/findParentAliasesByParentAndLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="parentaliases/findParentAliasesByParentAndLsTypeEqualsAndLsKindEqualsAndAliasNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/parentaliases/findParentAliasesByParentAndLsTypeEqualsAndLsKindEqualsAndAliasNameEquals.jspx"/>
+    </definition>
+</tiles-definitions>

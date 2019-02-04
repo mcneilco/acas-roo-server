@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/datatables" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_Scientist" object="${scientist}" path="/scientists" z="p8PG/qT8XN8BCfHOr63gwAI4sLA=">
+        <field:display field="code" id="s_com_labsynch_labseer_domain_Scientist_code" object="${scientist}" z="xwb1ol0DCd39wuBUSnG7y8+tyFM="/>
+        <field:display field="name" id="s_com_labsynch_labseer_domain_Scientist_name" object="${scientist}" z="eOQ6Vtq+ganfxGJFs8zW0zp54nE="/>
+        <field:display field="isChemist" id="s_com_labsynch_labseer_domain_Scientist_isChemist" object="${scientist}" z="gRsDUGpHdKBFduYwCV4ssu7E1pk="/>
+        <field:display field="isAdmin" id="s_com_labsynch_labseer_domain_Scientist_isAdmin" object="${scientist}" z="MtMRQnHy2ik2Ao7QT0OxhTPnPhQ="/>
+        <field:display field="ignore" id="s_com_labsynch_labseer_domain_Scientist_ignore" object="${scientist}" z="ZznooRgdLlJFDLsw1rnraJdhSCQ="/>
+    </page:show>
+</div>

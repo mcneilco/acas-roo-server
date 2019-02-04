@@ -14,6 +14,8 @@ privileged aspect CodeOrigin_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager CodeOrigin.entityManager;
     
+    public static final List<String> CodeOrigin.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "name");
+    
     public static final EntityManager CodeOrigin.entityManager() {
         EntityManager em = new CodeOrigin().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect CodeOrigin_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM CodeOrigin o", CodeOrigin.class).getResultList();
     }
     
+    public static List<CodeOrigin> CodeOrigin.findAllCodeOrigins(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM CodeOrigin o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, CodeOrigin.class).getResultList();
+    }
+    
     public static CodeOrigin CodeOrigin.findCodeOrigin(Long id) {
         if (id == null) return null;
         return entityManager().find(CodeOrigin.class, id);
@@ -35,6 +48,17 @@ privileged aspect CodeOrigin_Roo_Jpa_ActiveRecord {
     
     public static List<CodeOrigin> CodeOrigin.findCodeOriginEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM CodeOrigin o", CodeOrigin.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<CodeOrigin> CodeOrigin.findCodeOriginEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM CodeOrigin o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, CodeOrigin.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

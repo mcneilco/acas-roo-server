@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ContainerMiniDTO_Roo_Json {
     
     public String ContainerMiniDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ContainerMiniDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ContainerMiniDTO ContainerMiniDTO.fromJsonToContainerMiniDTO(String json) {
-        return new JSONDeserializer<ContainerMiniDTO>().use(null, ContainerMiniDTO.class).deserialize(json);
+        return new JSONDeserializer<ContainerMiniDTO>()
+        .use(null, ContainerMiniDTO.class).deserialize(json);
     }
     
     public static String ContainerMiniDTO.toJsonArray(Collection<ContainerMiniDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ContainerMiniDTO.toJsonArray(Collection<ContainerMiniDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ContainerMiniDTO> ContainerMiniDTO.fromJsonArrayToCoes(String json) {
-        return new JSONDeserializer<List<ContainerMiniDTO>>().use(null, ArrayList.class).use("values", ContainerMiniDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerMiniDTO>>()
+        .use("values", ContainerMiniDTO.class).deserialize(json);
     }
     
 }

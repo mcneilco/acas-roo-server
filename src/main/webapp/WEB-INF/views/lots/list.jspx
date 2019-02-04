@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/datatables" xmlns:table="urn:jsptagdir:/WEB-INF/tags/datatables" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_Lot" items="${lots}" z="L97cYm6DsOfgYw6KtLXFZwrIPoM=">
+        <table:table data="${lots}" id="l_com_labsynch_labseer_domain_Lot" path="/lots" z="47wbE71LaSnjHHNxohixXpt4aq8=">
+            <table:column id="c_com_labsynch_labseer_domain_Lot_storageLocation" property="storageLocation" z="H+zcEkEfhh4TfmmeuUkRh2/9EAk="/>
+            <table:column id="c_com_labsynch_labseer_domain_Lot_buid" property="buid" z="nbEIjDAeh6wSW2jy/c0n4fa8Y3U="/>
+            <table:column id="c_com_labsynch_labseer_domain_Lot_parent" property="parent" z="du6zSjOnwo028Uldfa8v25JTin4="/>
+            <table:column id="c_com_labsynch_labseer_domain_Lot_saltForm" property="saltForm" z="SSyvp5rTU61lX5mJnhq6hGOjJzA="/>
+            <table:column id="c_com_labsynch_labseer_domain_Lot_asDrawnStruct" property="asDrawnStruct" z="3q3Bh4OJfbd/vD02yhJXfUpobaI="/>
+            <table:column id="c_com_labsynch_labseer_domain_Lot_lotAsDrawnCdId" property="lotAsDrawnCdId" z="4b1tF8n/oUEsZ3Fqsn+Cc6RP9DA="/>
+        </table:table>
+    </page:list>
+</div>

@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect TsvLoaderResponseDTO_Roo_Json {
     
     public static TsvLoaderResponseDTO TsvLoaderResponseDTO.fromJsonToTsvLoaderResponseDTO(String json) {
-        return new JSONDeserializer<TsvLoaderResponseDTO>().use(null, TsvLoaderResponseDTO.class).deserialize(json);
+        return new JSONDeserializer<TsvLoaderResponseDTO>()
+        .use(null, TsvLoaderResponseDTO.class).deserialize(json);
     }
     
     public static Collection<TsvLoaderResponseDTO> TsvLoaderResponseDTO.fromJsonArrayToTsvLoaderRespoes(String json) {
-        return new JSONDeserializer<List<TsvLoaderResponseDTO>>().use(null, ArrayList.class).use("values", TsvLoaderResponseDTO.class).deserialize(json);
+        return new JSONDeserializer<List<TsvLoaderResponseDTO>>()
+        .use("values", TsvLoaderResponseDTO.class).deserialize(json);
     }
     
 }

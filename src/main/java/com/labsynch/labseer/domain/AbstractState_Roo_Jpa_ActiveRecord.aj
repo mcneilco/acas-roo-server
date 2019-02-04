@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect AbstractState_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> AbstractState.fieldNames4OrderClauseFilter = java.util.Arrays.asList("recordedBy", "recordedDate", "modifiedBy", "modifiedDate", "lsType", "lsKind", "lsTypeAndKind", "comments", "ignored", "deleted", "lsTransaction", "id", "entityManager");
+    
     public static long AbstractState.countAbstractStates() {
         return entityManager().createQuery("SELECT COUNT(o) FROM AbstractState o", Long.class).getSingleResult();
     }
     
     public static List<AbstractState> AbstractState.findAllAbstractStates() {
         return entityManager().createQuery("SELECT o FROM AbstractState o", AbstractState.class).getResultList();
+    }
+    
+    public static List<AbstractState> AbstractState.findAllAbstractStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AbstractState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AbstractState.class).getResultList();
     }
     
     public static AbstractState AbstractState.findAbstractState(Long id) {
@@ -24,6 +37,17 @@ privileged aspect AbstractState_Roo_Jpa_ActiveRecord {
     
     public static List<AbstractState> AbstractState.findAbstractStateEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AbstractState o", AbstractState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AbstractState> AbstractState.findAbstractStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AbstractState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AbstractState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

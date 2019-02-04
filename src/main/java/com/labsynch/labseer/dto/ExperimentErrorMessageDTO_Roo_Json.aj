@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect ExperimentErrorMessageDTO_Roo_Json {
     
     public static ExperimentErrorMessageDTO ExperimentErrorMessageDTO.fromJsonToExperimentErrorMessageDTO(String json) {
-        return new JSONDeserializer<ExperimentErrorMessageDTO>().use(null, ExperimentErrorMessageDTO.class).deserialize(json);
+        return new JSONDeserializer<ExperimentErrorMessageDTO>()
+        .use(null, ExperimentErrorMessageDTO.class).deserialize(json);
     }
     
     public static Collection<ExperimentErrorMessageDTO> ExperimentErrorMessageDTO.fromJsonArrayToExperimentErroes(String json) {
-        return new JSONDeserializer<List<ExperimentErrorMessageDTO>>().use(null, ArrayList.class).use("values", ExperimentErrorMessageDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ExperimentErrorMessageDTO>>()
+        .use("values", ExperimentErrorMessageDTO.class).deserialize(json);
     }
     
 }

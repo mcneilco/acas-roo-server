@@ -11,15 +11,28 @@ import java.util.Collection;
 privileged aspect SubjectLabel_Roo_Json {
     
     public String SubjectLabel.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String SubjectLabel.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static SubjectLabel SubjectLabel.fromJsonToSubjectLabel(String json) {
-        return new JSONDeserializer<SubjectLabel>().use(null, SubjectLabel.class).deserialize(json);
+        return new JSONDeserializer<SubjectLabel>()
+        .use(null, SubjectLabel.class).deserialize(json);
     }
     
     public static String SubjectLabel.toJsonArray(Collection<SubjectLabel> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String SubjectLabel.toJsonArray(Collection<SubjectLabel> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
 }

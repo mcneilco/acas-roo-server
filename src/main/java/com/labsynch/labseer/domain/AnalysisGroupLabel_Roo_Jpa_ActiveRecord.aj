@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect AnalysisGroupLabel_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> AnalysisGroupLabel.fieldNames4OrderClauseFilter = java.util.Arrays.asList("analysisGroup");
+    
     public static long AnalysisGroupLabel.countAnalysisGroupLabels() {
         return entityManager().createQuery("SELECT COUNT(o) FROM AnalysisGroupLabel o", Long.class).getSingleResult();
     }
     
     public static List<AnalysisGroupLabel> AnalysisGroupLabel.findAllAnalysisGroupLabels() {
         return entityManager().createQuery("SELECT o FROM AnalysisGroupLabel o", AnalysisGroupLabel.class).getResultList();
+    }
+    
+    public static List<AnalysisGroupLabel> AnalysisGroupLabel.findAllAnalysisGroupLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroupLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroupLabel.class).getResultList();
     }
     
     public static AnalysisGroupLabel AnalysisGroupLabel.findAnalysisGroupLabel(Long id) {
@@ -24,6 +37,17 @@ privileged aspect AnalysisGroupLabel_Roo_Jpa_ActiveRecord {
     
     public static List<AnalysisGroupLabel> AnalysisGroupLabel.findAnalysisGroupLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AnalysisGroupLabel o", AnalysisGroupLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AnalysisGroupLabel> AnalysisGroupLabel.findAnalysisGroupLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroupLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroupLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

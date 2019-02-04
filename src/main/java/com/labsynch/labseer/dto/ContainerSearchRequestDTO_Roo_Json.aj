@@ -13,15 +13,23 @@ import java.util.List;
 privileged aspect ContainerSearchRequestDTO_Roo_Json {
     
     public static ContainerSearchRequestDTO ContainerSearchRequestDTO.fromJsonToContainerSearchRequestDTO(String json) {
-        return new JSONDeserializer<ContainerSearchRequestDTO>().use(null, ContainerSearchRequestDTO.class).deserialize(json);
+        return new JSONDeserializer<ContainerSearchRequestDTO>()
+        .use(null, ContainerSearchRequestDTO.class).deserialize(json);
     }
     
     public static String ContainerSearchRequestDTO.toJsonArray(Collection<ContainerSearchRequestDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ContainerSearchRequestDTO.toJsonArray(Collection<ContainerSearchRequestDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ContainerSearchRequestDTO> ContainerSearchRequestDTO.fromJsonArrayToCoes(String json) {
-        return new JSONDeserializer<List<ContainerSearchRequestDTO>>().use(null, ArrayList.class).use("values", ContainerSearchRequestDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerSearchRequestDTO>>()
+        .use("values", ContainerSearchRequestDTO.class).deserialize(json);
     }
     
 }

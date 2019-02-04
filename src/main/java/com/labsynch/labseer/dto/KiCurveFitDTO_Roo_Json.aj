@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect KiCurveFitDTO_Roo_Json {
     
     public String KiCurveFitDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String KiCurveFitDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static KiCurveFitDTO KiCurveFitDTO.fromJsonToKiCurveFitDTO(String json) {
-        return new JSONDeserializer<KiCurveFitDTO>().use(null, KiCurveFitDTO.class).deserialize(json);
+        return new JSONDeserializer<KiCurveFitDTO>()
+        .use(null, KiCurveFitDTO.class).deserialize(json);
     }
     
     public static String KiCurveFitDTO.toJsonArray(Collection<KiCurveFitDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String KiCurveFitDTO.toJsonArray(Collection<KiCurveFitDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<KiCurveFitDTO> KiCurveFitDTO.fromJsonArrayToKiCurveFitDTO(String json) {
-        return new JSONDeserializer<List<KiCurveFitDTO>>().use(null, ArrayList.class).use("values", KiCurveFitDTO.class).deserialize(json);
+        return new JSONDeserializer<List<KiCurveFitDTO>>()
+        .use("values", KiCurveFitDTO.class).deserialize(json);
     }
     
 }

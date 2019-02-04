@@ -21,8 +21,16 @@ privileged aspect AuthorRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByRoleEntry", method = RequestMethod.GET)
-    public String AuthorRoleController.findAuthorRolesByRoleEntry(@RequestParam("roleEntry") LsRole roleEntry, Model uiModel) {
-        uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByRoleEntry(roleEntry).getResultList());
+    public String AuthorRoleController.findAuthorRolesByRoleEntry(@RequestParam("roleEntry") LsRole roleEntry, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByRoleEntry(roleEntry, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AuthorRole.countFindAuthorRolesByRoleEntry(roleEntry) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByRoleEntry(roleEntry, sortFieldName, sortOrder).getResultList());
+        }
         return "authorroles/list";
     }
     
@@ -34,8 +42,16 @@ privileged aspect AuthorRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByRoleEntryAndUserEntry", method = RequestMethod.GET)
-    public String AuthorRoleController.findAuthorRolesByRoleEntryAndUserEntry(@RequestParam("roleEntry") LsRole roleEntry, @RequestParam("userEntry") Author userEntry, Model uiModel) {
-        uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(roleEntry, userEntry).getResultList());
+    public String AuthorRoleController.findAuthorRolesByRoleEntryAndUserEntry(@RequestParam("roleEntry") LsRole roleEntry, @RequestParam("userEntry") Author userEntry, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(roleEntry, userEntry, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AuthorRole.countFindAuthorRolesByRoleEntryAndUserEntry(roleEntry, userEntry) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(roleEntry, userEntry, sortFieldName, sortOrder).getResultList());
+        }
         return "authorroles/list";
     }
     
@@ -46,8 +62,16 @@ privileged aspect AuthorRoleController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByUserEntry", method = RequestMethod.GET)
-    public String AuthorRoleController.findAuthorRolesByUserEntry(@RequestParam("userEntry") Author userEntry, Model uiModel) {
-        uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByUserEntry(userEntry).getResultList());
+    public String AuthorRoleController.findAuthorRolesByUserEntry(@RequestParam("userEntry") Author userEntry, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByUserEntry(userEntry, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) AuthorRole.countFindAuthorRolesByUserEntry(userEntry) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("authorroles", AuthorRole.findAuthorRolesByUserEntry(userEntry, sortFieldName, sortOrder).getResultList());
+        }
         return "authorroles/list";
     }
     

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect StringCollectionDTO_Roo_Json {
     
     public String StringCollectionDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String StringCollectionDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static StringCollectionDTO StringCollectionDTO.fromJsonToStringCollectionDTO(String json) {
-        return new JSONDeserializer<StringCollectionDTO>().use(null, StringCollectionDTO.class).deserialize(json);
+        return new JSONDeserializer<StringCollectionDTO>()
+        .use(null, StringCollectionDTO.class).deserialize(json);
     }
     
     public static String StringCollectionDTO.toJsonArray(Collection<StringCollectionDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String StringCollectionDTO.toJsonArray(Collection<StringCollectionDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<StringCollectionDTO> StringCollectionDTO.fromJsonArrayToStringCollectioes(String json) {
-        return new JSONDeserializer<List<StringCollectionDTO>>().use(null, ArrayList.class).use("values", StringCollectionDTO.class).deserialize(json);
+        return new JSONDeserializer<List<StringCollectionDTO>>()
+        .use("values", StringCollectionDTO.class).deserialize(json);
     }
     
 }

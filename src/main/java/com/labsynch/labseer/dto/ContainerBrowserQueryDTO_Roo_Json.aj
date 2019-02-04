@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ContainerBrowserQueryDTO_Roo_Json {
     
     public String ContainerBrowserQueryDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ContainerBrowserQueryDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ContainerBrowserQueryDTO ContainerBrowserQueryDTO.fromJsonToContainerBrowserQueryDTO(String json) {
-        return new JSONDeserializer<ContainerBrowserQueryDTO>().use(null, ContainerBrowserQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<ContainerBrowserQueryDTO>()
+        .use(null, ContainerBrowserQueryDTO.class).deserialize(json);
     }
     
     public static String ContainerBrowserQueryDTO.toJsonArray(Collection<ContainerBrowserQueryDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ContainerBrowserQueryDTO.toJsonArray(Collection<ContainerBrowserQueryDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ContainerBrowserQueryDTO> ContainerBrowserQueryDTO.fromJsonArrayToContainerBroes(String json) {
-        return new JSONDeserializer<List<ContainerBrowserQueryDTO>>().use(null, ArrayList.class).use("values", ContainerBrowserQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ContainerBrowserQueryDTO>>()
+        .use("values", ContainerBrowserQueryDTO.class).deserialize(json);
     }
     
 }

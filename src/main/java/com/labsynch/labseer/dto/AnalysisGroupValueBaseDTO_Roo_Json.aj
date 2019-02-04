@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect AnalysisGroupValueBaseDTO_Roo_Json {
     
     public String AnalysisGroupValueBaseDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String AnalysisGroupValueBaseDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static AnalysisGroupValueBaseDTO AnalysisGroupValueBaseDTO.fromJsonToAnalysisGroupValueBaseDTO(String json) {
-        return new JSONDeserializer<AnalysisGroupValueBaseDTO>().use(null, AnalysisGroupValueBaseDTO.class).deserialize(json);
+        return new JSONDeserializer<AnalysisGroupValueBaseDTO>()
+        .use(null, AnalysisGroupValueBaseDTO.class).deserialize(json);
     }
     
     public static String AnalysisGroupValueBaseDTO.toJsonArray(Collection<AnalysisGroupValueBaseDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String AnalysisGroupValueBaseDTO.toJsonArray(Collection<AnalysisGroupValueBaseDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<AnalysisGroupValueBaseDTO> AnalysisGroupValueBaseDTO.fromJsonArrayToAnalysisGroes(String json) {
-        return new JSONDeserializer<List<AnalysisGroupValueBaseDTO>>().use(null, ArrayList.class).use("values", AnalysisGroupValueBaseDTO.class).deserialize(json);
+        return new JSONDeserializer<List<AnalysisGroupValueBaseDTO>>()
+        .use("values", AnalysisGroupValueBaseDTO.class).deserialize(json);
     }
     
 }

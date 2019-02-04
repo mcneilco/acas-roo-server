@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/datatables" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_IsoSalt" object="${isosalt}" path="/isosalts" z="CmimEQw9Ehx13MKxn/cPjQSy8kc=">
+        <field:display field="isotope" id="s_com_labsynch_labseer_domain_IsoSalt_isotope" object="${isosalt}" z="ylmnP0b+gj5z7TexLdQByHZB/mk="/>
+        <field:display field="salt" id="s_com_labsynch_labseer_domain_IsoSalt_salt" object="${isosalt}" z="jWhcGI+vEm6pf4PCr3F1tgejJNc="/>
+        <field:display field="type" id="s_com_labsynch_labseer_domain_IsoSalt_type" object="${isosalt}" z="nu8edr3/WHV5m9057D9MAqdz8To="/>
+        <field:display field="equivalents" id="s_com_labsynch_labseer_domain_IsoSalt_equivalents" object="${isosalt}" z="dufiSl0KQ/TBBU0ReQQQbXrEQkc="/>
+        <field:display field="ignore" id="s_com_labsynch_labseer_domain_IsoSalt_ignore" object="${isosalt}" z="yh2spjJQd+9xhHF2NOlyLb0PzYA="/>
+        <field:display field="saltForm" id="s_com_labsynch_labseer_domain_IsoSalt_saltForm" object="${isosalt}" z="Rnky6j7hu3QzPC4hAzaoGb1fQ8M="/>
+    </page:show>
+</div>

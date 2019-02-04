@@ -14,6 +14,8 @@ privileged aspect ChemStructure_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager ChemStructure.entityManager;
     
+    public static final List<String> ChemStructure.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "id", "codeName", "version", "molStructure", "smiles", "lsType", "lsKind", "lsTypeAndKind", "ignored", "deleted", "recordedBy", "recordedDate", "modifiedBy", "modifiedDate", "lsTransaction");
+    
     public static final EntityManager ChemStructure.entityManager() {
         EntityManager em = new ChemStructure().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect ChemStructure_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ChemStructure o", ChemStructure.class).getResultList();
     }
     
+    public static List<ChemStructure> ChemStructure.findAllChemStructures(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ChemStructure o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ChemStructure.class).getResultList();
+    }
+    
     public static ChemStructure ChemStructure.findChemStructure(Long id) {
         if (id == null) return null;
         return entityManager().find(ChemStructure.class, id);
@@ -35,6 +48,17 @@ privileged aspect ChemStructure_Roo_Jpa_ActiveRecord {
     
     public static List<ChemStructure> ChemStructure.findChemStructureEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ChemStructure o", ChemStructure.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ChemStructure> ChemStructure.findChemStructureEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ChemStructure o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ChemStructure.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

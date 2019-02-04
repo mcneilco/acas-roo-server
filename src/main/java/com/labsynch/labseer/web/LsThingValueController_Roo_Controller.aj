@@ -40,7 +40,7 @@ privileged aspect LsThingValueController_Roo_Controller {
         populateEditForm(uiModel, new LsThingValue());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (LsThingState.countLsThingStates() == 0) {
-            dependencies.add(new String[] { "lsthingstate", "lsthingstates" });
+            dependencies.add(new String[] { "lsState", "lsthingstates" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "lsthingvalues/create";
@@ -55,15 +55,15 @@ privileged aspect LsThingValueController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String LsThingValueController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String LsThingValueController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValueEntries(firstResult, sizeNo));
+            uiModel.addAttribute("lsthingvalues", LsThingValue.findLsThingValueEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) LsThingValue.countLsThingValues() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("lsthingvalues", LsThingValue.findAllLsThingValues());
+            uiModel.addAttribute("lsthingvalues", LsThingValue.findAllLsThingValues(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "lsthingvalues/list";

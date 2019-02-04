@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect GenericStatePathRequest_Roo_Json {
     
     public static GenericStatePathRequest GenericStatePathRequest.fromJsonToGenericStatePathRequest(String json) {
-        return new JSONDeserializer<GenericStatePathRequest>().use(null, GenericStatePathRequest.class).deserialize(json);
+        return new JSONDeserializer<GenericStatePathRequest>()
+        .use(null, GenericStatePathRequest.class).deserialize(json);
     }
     
     public static Collection<GenericStatePathRequest> GenericStatePathRequest.fromJsonArrayToGenericStatePathRequests(String json) {
-        return new JSONDeserializer<List<GenericStatePathRequest>>().use(null, ArrayList.class).use("values", GenericStatePathRequest.class).deserialize(json);
+        return new JSONDeserializer<List<GenericStatePathRequest>>()
+        .use("values", GenericStatePathRequest.class).deserialize(json);
     }
     
 }

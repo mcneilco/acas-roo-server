@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/datatables" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_SaltForm" modelAttribute="saltForm" path="/saltforms" render="${empty dependencies}" z="isZLytqiQm0Ib+55Gz1KYX8P6vM=">
+        <field:input field="molStructure" id="c_com_labsynch_labseer_domain_SaltForm_molStructure" z="Q1NA0s1q1IYL5E/5ZXvyyWX4bsU="/>
+        <field:textarea field="corpName" id="c_com_labsynch_labseer_domain_SaltForm_corpName" z="0UD/r5u0saZr2CyDQ4SZKNyZRrY="/>
+        <field:textarea field="casNumber" id="c_com_labsynch_labseer_domain_SaltForm_casNumber" z="hLSxVDuLLrWTUoDy2F7UhV5I5Wo="/>
+        <field:datetime dateTimePattern="${saltForm_registrationdate_date_format}" field="registrationDate" id="c_com_labsynch_labseer_domain_SaltForm_registrationDate" z="aOjHpsFkRGoWIQXJqgcD2lXMwno="/>
+        <field:input field="CdId" id="c_com_labsynch_labseer_domain_SaltForm_CdId" z="CoYKeR3raFvzOUBdpyK7dhoL3ws="/>
+        <field:checkbox field="ignore" id="c_com_labsynch_labseer_domain_SaltForm_ignore" z="XJSa7lhkVUrWhxl4aggsO+TKGNk="/>
+        <field:input field="saltWeight" id="c_com_labsynch_labseer_domain_SaltForm_saltWeight" validationMessageCode="field_invalid_number" z="r+8alJhdE4EaWAN6bCiNY+AltX0="/>
+        <field:select field="parent" id="c_com_labsynch_labseer_domain_SaltForm_parent" itemValue="id" items="${parents}" path="/parents" z="qvLiGjZYXKM2TzFrGFLbjtLBqR0="/>
+        <field:simple field="lots" id="c_com_labsynch_labseer_domain_SaltForm_lots" messageCode="entity_reference_not_managed" messageCodeAttribute="Lot" z="gzsQYHo7YLFBb4yb1QLlc70//0s="/>
+        <field:simple field="isoSalts" id="c_com_labsynch_labseer_domain_SaltForm_isoSalts" messageCode="entity_reference_not_managed" messageCodeAttribute="Iso Salt" z="+Ii5Tuzkk7uJoRcIqMwfy69LJME="/>
+        <field:select field="bulkLoadFile" id="c_com_labsynch_labseer_domain_SaltForm_bulkLoadFile" itemValue="id" items="${bulkloadfiles}" path="/bulkloadfiles" z="bNvCWiy6f63jZ9vzW9nWexbdQfg="/>
+        <field:input field="chemist" id="c_com_labsynch_labseer_domain_SaltForm_chemist" z="XO/lYAmrklB94mES7H0/xyOMaYI="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_SaltForm" render="${not empty dependencies}" z="INC/yNIf5uL6MX/TkHdad4kEF8w="/>
+</div>

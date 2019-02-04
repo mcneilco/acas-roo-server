@@ -20,8 +20,17 @@ privileged aspect ItxExperimentExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByFirstExperiment", method = RequestMethod.GET)
-    public String ItxExperimentExperimentController.findItxExperimentExperimentsByFirstExperiment(@RequestParam("firstExperiment") Experiment firstExperiment, Model uiModel) {
-        uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsByFirstExperiment(firstExperiment).getResultList());
+    public String ItxExperimentExperimentController.findItxExperimentExperimentsByFirstExperiment(@RequestParam("firstExperiment") Experiment firstExperiment, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsByFirstExperiment(firstExperiment, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxExperimentExperiment.countFindItxExperimentExperimentsByFirstExperiment(firstExperiment) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsByFirstExperiment(firstExperiment, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxexperimentexperiments/list";
     }
     
@@ -31,8 +40,17 @@ privileged aspect ItxExperimentExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String ItxExperimentExperimentController.findItxExperimentExperimentsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsByLsTransactionEquals(lsTransaction).getResultList());
+    public String ItxExperimentExperimentController.findItxExperimentExperimentsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxExperimentExperiment.countFindItxExperimentExperimentsByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxexperimentexperiments/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect ItxExperimentExperimentController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=BySecondExperiment", method = RequestMethod.GET)
-    public String ItxExperimentExperimentController.findItxExperimentExperimentsBySecondExperiment(@RequestParam("secondExperiment") Experiment secondExperiment, Model uiModel) {
-        uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsBySecondExperiment(secondExperiment).getResultList());
+    public String ItxExperimentExperimentController.findItxExperimentExperimentsBySecondExperiment(@RequestParam("secondExperiment") Experiment secondExperiment, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsBySecondExperiment(secondExperiment, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ItxExperimentExperiment.countFindItxExperimentExperimentsBySecondExperiment(secondExperiment) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("itxexperimentexperiments", ItxExperimentExperiment.findItxExperimentExperimentsBySecondExperiment(secondExperiment, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "itxexperimentexperiments/list";
     }
     

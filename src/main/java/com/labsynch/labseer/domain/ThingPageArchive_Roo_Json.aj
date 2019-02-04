@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ThingPageArchive_Roo_Json {
     
     public String ThingPageArchive.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ThingPageArchive.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ThingPageArchive ThingPageArchive.fromJsonToThingPageArchive(String json) {
-        return new JSONDeserializer<ThingPageArchive>().use(null, ThingPageArchive.class).deserialize(json);
+        return new JSONDeserializer<ThingPageArchive>()
+        .use(null, ThingPageArchive.class).deserialize(json);
     }
     
     public static String ThingPageArchive.toJsonArray(Collection<ThingPageArchive> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ThingPageArchive.toJsonArray(Collection<ThingPageArchive> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ThingPageArchive> ThingPageArchive.fromJsonArrayToThingPageArchives(String json) {
-        return new JSONDeserializer<List<ThingPageArchive>>().use(null, ArrayList.class).use("values", ThingPageArchive.class).deserialize(json);
+        return new JSONDeserializer<List<ThingPageArchive>>()
+        .use("values", ThingPageArchive.class).deserialize(json);
     }
     
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="solutionunits/list">
+        <put-attribute name="body" value="/WEB-INF/views/solutionunits/list.jspx"/>
+    </definition>
+<definition extends="default" name="solutionunits/show">
+        <put-attribute name="body" value="/WEB-INF/views/solutionunits/show.jspx"/>
+    </definition>
+<definition extends="default" name="solutionunits/create">
+        <put-attribute name="body" value="/WEB-INF/views/solutionunits/create.jspx"/>
+    </definition>
+<definition extends="default" name="solutionunits/update">
+        <put-attribute name="body" value="/WEB-INF/views/solutionunits/update.jspx"/>
+    </definition>
+<definition extends="default" name="solutionunits/findSolutionUnitsByCodeEquals">
+        <put-attribute name="body" value="/WEB-INF/views/solutionunits/findSolutionUnitsByCodeEquals.jspx"/>
+    </definition>
+<definition extends="default" name="solutionunits/findSolutionUnitsByCodeLike">
+        <put-attribute name="body" value="/WEB-INF/views/solutionunits/findSolutionUnitsByCodeLike.jspx"/>
+    </definition>
+<definition extends="default" name="solutionunits/findSolutionUnitsByNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/solutionunits/findSolutionUnitsByNameEquals.jspx"/>
+    </definition>
+</tiles-definitions>

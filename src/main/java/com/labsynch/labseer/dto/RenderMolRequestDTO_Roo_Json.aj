@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect RenderMolRequestDTO_Roo_Json {
     
     public String RenderMolRequestDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String RenderMolRequestDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static RenderMolRequestDTO RenderMolRequestDTO.fromJsonToRenderMolRequestDTO(String json) {
-        return new JSONDeserializer<RenderMolRequestDTO>().use(null, RenderMolRequestDTO.class).deserialize(json);
+        return new JSONDeserializer<RenderMolRequestDTO>()
+        .use(null, RenderMolRequestDTO.class).deserialize(json);
     }
     
     public static String RenderMolRequestDTO.toJsonArray(Collection<RenderMolRequestDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String RenderMolRequestDTO.toJsonArray(Collection<RenderMolRequestDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<RenderMolRequestDTO> RenderMolRequestDTO.fromJsonArrayToRenderMoes(String json) {
-        return new JSONDeserializer<List<RenderMolRequestDTO>>().use(null, ArrayList.class).use("values", RenderMolRequestDTO.class).deserialize(json);
+        return new JSONDeserializer<List<RenderMolRequestDTO>>()
+        .use("values", RenderMolRequestDTO.class).deserialize(json);
     }
     
 }

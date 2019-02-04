@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="filelists/list">
+        <put-attribute name="body" value="/WEB-INF/views/filelists/list.jspx"/>
+    </definition>
+<definition extends="default" name="filelists/show">
+        <put-attribute name="body" value="/WEB-INF/views/filelists/show.jspx"/>
+    </definition>
+<definition extends="default" name="filelists/create">
+        <put-attribute name="body" value="/WEB-INF/views/filelists/create.jspx"/>
+    </definition>
+<definition extends="default" name="filelists/update">
+        <put-attribute name="body" value="/WEB-INF/views/filelists/update.jspx"/>
+    </definition>
+<definition extends="default" name="filelists/findFileListsByLot">
+        <put-attribute name="body" value="/WEB-INF/views/filelists/findFileListsByLot.jspx"/>
+    </definition>
+<definition extends="default" name="filelists/findFileListsByUrlEquals">
+        <put-attribute name="body" value="/WEB-INF/views/filelists/findFileListsByUrlEquals.jspx"/>
+    </definition>
+</tiles-definitions>

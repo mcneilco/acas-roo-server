@@ -1,0 +1,1 @@
+ALTER TABLE parent ADD COLUMN is_mixture boolean;

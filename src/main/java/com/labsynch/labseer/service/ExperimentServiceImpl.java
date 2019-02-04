@@ -1039,6 +1039,34 @@ public class ExperimentServiceImpl implements ExperimentService {
 		
 	}
 
+	@Override
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString, List<String> projects) throws TooManyResultsException {
+		Collection<Experiment> rawResults = findExperimentsByGenericMetaDataSearch(queryString);
+		if (propertiesUtilService.getRestrictExperiments()){
+			projects.add("unassigned");
+			Collection<Experiment> results = new HashSet<Experiment>();
+			for (Experiment rawResult : rawResults){
+				String experimentProject = null;
+				for (ExperimentState state : rawResult.getLsStates()){
+					if(!state.isIgnored() && !state.isDeleted()) {
+						for (ExperimentValue value : state.getLsValues()) {
+							if (value.getLsKind().equals("project") && !value.getDeleted() && !value.getIgnored()){
+								experimentProject = value.getCodeValue();
+								break;
+							}
+						}
+					}
+				}
+				if (projects.contains(experimentProject)){
+					results.add(rawResult);
+				}
+			}
+			return results;
+		}else{
+			return rawResults;
+		}
+	}
+
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String queryString) throws TooManyResultsException {
 		//make our HashSets: experimentIdList will be filled/cleared/refilled for each term
 		//experimentList is the final search result

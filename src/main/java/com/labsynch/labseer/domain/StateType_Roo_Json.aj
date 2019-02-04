@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect StateType_Roo_Json {
     
     public String StateType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String StateType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static StateType StateType.fromJsonToStateType(String json) {
-        return new JSONDeserializer<StateType>().use(null, StateType.class).deserialize(json);
+        return new JSONDeserializer<StateType>()
+        .use(null, StateType.class).deserialize(json);
     }
     
     public static String StateType.toJsonArray(Collection<StateType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String StateType.toJsonArray(Collection<StateType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<StateType> StateType.fromJsonArrayToStateTypes(String json) {
-        return new JSONDeserializer<List<StateType>>().use(null, ArrayList.class).use("values", StateType.class).deserialize(json);
+        return new JSONDeserializer<List<StateType>>()
+        .use("values", StateType.class).deserialize(json);
     }
     
 }

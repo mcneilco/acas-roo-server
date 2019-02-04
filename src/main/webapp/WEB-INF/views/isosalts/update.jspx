@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/datatables" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_IsoSalt" modelAttribute="isoSalt" path="/isosalts" versionField="Version" z="EAkXi/GVY509aXMMcLI4s22Re4E=">
+        <field:select field="isotope" id="c_com_labsynch_labseer_domain_IsoSalt_isotope" itemValue="id" items="${isotopes}" path="/isotopes" z="ev+D3WWx2gpc5AmNnM8VT+xI8dg="/>
+        <field:select field="salt" id="c_com_labsynch_labseer_domain_IsoSalt_salt" itemValue="id" items="${salts}" path="/salts" z="3bskW87y2QIpRR7guOAMr+v3r2I="/>
+        <field:input field="type" id="c_com_labsynch_labseer_domain_IsoSalt_type" max="25" z="WHmgCsGD162A5/KH/wixjLQ20II="/>
+        <field:input field="equivalents" id="c_com_labsynch_labseer_domain_IsoSalt_equivalents" validationMessageCode="field_invalid_number" z="njQUKeHJknJA1DWm+eTvyxZ0t0o="/>
+        <field:checkbox field="ignore" id="c_com_labsynch_labseer_domain_IsoSalt_ignore" z="/0RAmNGIIphWMSfEVLbiBMCd8mk="/>
+        <field:select field="saltForm" id="c_com_labsynch_labseer_domain_IsoSalt_saltForm" itemValue="id" items="${saltforms}" path="/saltforms" z="mWnfD21/7RVOaH0Be/dqg2+sGcI="/>
+    </form:update>
+</div>

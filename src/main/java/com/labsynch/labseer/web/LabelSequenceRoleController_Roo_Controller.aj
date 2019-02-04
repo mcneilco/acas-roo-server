@@ -39,10 +39,10 @@ privileged aspect LabelSequenceRoleController_Roo_Controller {
         populateEditForm(uiModel, new LabelSequenceRole());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (LabelSequence.countLabelSequences() == 0) {
-            dependencies.add(new String[] { "labelsequence", "labelsequences" });
+            dependencies.add(new String[] { "labelSequenceEntry", "labelsequences" });
         }
         if (LsRole.countLsRoles() == 0) {
-            dependencies.add(new String[] { "lsrole", "lsroles" });
+            dependencies.add(new String[] { "roleEntry", "lsroles" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "labelsequenceroles/create";
@@ -56,15 +56,15 @@ privileged aspect LabelSequenceRoleController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String LabelSequenceRoleController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String LabelSequenceRoleController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("labelsequenceroles", LabelSequenceRole.findLabelSequenceRoleEntries(firstResult, sizeNo));
+            uiModel.addAttribute("labelsequenceroles", LabelSequenceRole.findLabelSequenceRoleEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) LabelSequenceRole.countLabelSequenceRoles() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("labelsequenceroles", LabelSequenceRole.findAllLabelSequenceRoles());
+            uiModel.addAttribute("labelsequenceroles", LabelSequenceRole.findAllLabelSequenceRoles(sortFieldName, sortOrder));
         }
         return "labelsequenceroles/list";
     }

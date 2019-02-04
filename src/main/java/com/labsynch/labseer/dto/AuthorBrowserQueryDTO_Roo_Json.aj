@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect AuthorBrowserQueryDTO_Roo_Json {
     
     public String AuthorBrowserQueryDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String AuthorBrowserQueryDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static AuthorBrowserQueryDTO AuthorBrowserQueryDTO.fromJsonToAuthorBrowserQueryDTO(String json) {
-        return new JSONDeserializer<AuthorBrowserQueryDTO>().use(null, AuthorBrowserQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<AuthorBrowserQueryDTO>()
+        .use(null, AuthorBrowserQueryDTO.class).deserialize(json);
     }
     
     public static String AuthorBrowserQueryDTO.toJsonArray(Collection<AuthorBrowserQueryDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String AuthorBrowserQueryDTO.toJsonArray(Collection<AuthorBrowserQueryDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<AuthorBrowserQueryDTO> AuthorBrowserQueryDTO.fromJsonArrayToAuthorBroes(String json) {
-        return new JSONDeserializer<List<AuthorBrowserQueryDTO>>().use(null, ArrayList.class).use("values", AuthorBrowserQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<List<AuthorBrowserQueryDTO>>()
+        .use("values", AuthorBrowserQueryDTO.class).deserialize(json);
     }
     
 }

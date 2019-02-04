@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect AnalysisGroup_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> AnalysisGroup.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "experiments", "lsLabels", "lsStates", "treatmentGroups");
+    
     public static long AnalysisGroup.countAnalysisGroups() {
         return entityManager().createQuery("SELECT COUNT(o) FROM AnalysisGroup o", Long.class).getSingleResult();
     }
     
     public static List<AnalysisGroup> AnalysisGroup.findAllAnalysisGroups() {
         return entityManager().createQuery("SELECT o FROM AnalysisGroup o", AnalysisGroup.class).getResultList();
+    }
+    
+    public static List<AnalysisGroup> AnalysisGroup.findAllAnalysisGroups(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroup o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroup.class).getResultList();
     }
     
     public static AnalysisGroup AnalysisGroup.findAnalysisGroup(Long id) {
@@ -24,6 +37,17 @@ privileged aspect AnalysisGroup_Roo_Jpa_ActiveRecord {
     
     public static List<AnalysisGroup> AnalysisGroup.findAnalysisGroupEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AnalysisGroup o", AnalysisGroup.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AnalysisGroup> AnalysisGroup.findAnalysisGroupEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroup o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroup.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="saltformaliases/list">
+        <put-attribute name="body" value="/WEB-INF/views/saltformaliases/list.jspx"/>
+    </definition>
+<definition extends="default" name="saltformaliases/show">
+        <put-attribute name="body" value="/WEB-INF/views/saltformaliases/show.jspx"/>
+    </definition>
+<definition extends="default" name="saltformaliases/create">
+        <put-attribute name="body" value="/WEB-INF/views/saltformaliases/create.jspx"/>
+    </definition>
+<definition extends="default" name="saltformaliases/update">
+        <put-attribute name="body" value="/WEB-INF/views/saltformaliases/update.jspx"/>
+    </definition>
+<definition extends="default" name="saltformaliases/findSaltFormAliasesByAliasNameEqualsAndLsTypeEqualsAndLsKindEquals">
+        <put-attribute name="body" value="/WEB-INF/views/saltformaliases/findSaltFormAliasesByAliasNameEqualsAndLsTypeEqualsAndLsKindEquals.jspx"/>
+    </definition>
+<definition extends="default" name="saltformaliases/findSaltFormAliasesBySaltForm">
+        <put-attribute name="body" value="/WEB-INF/views/saltformaliases/findSaltFormAliasesBySaltForm.jspx"/>
+    </definition>
+</tiles-definitions>

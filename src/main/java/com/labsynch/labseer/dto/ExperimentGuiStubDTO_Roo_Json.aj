@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ExperimentGuiStubDTO_Roo_Json {
     
     public String ExperimentGuiStubDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ExperimentGuiStubDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ExperimentGuiStubDTO ExperimentGuiStubDTO.fromJsonToExperimentGuiStubDTO(String json) {
-        return new JSONDeserializer<ExperimentGuiStubDTO>().use(null, ExperimentGuiStubDTO.class).deserialize(json);
+        return new JSONDeserializer<ExperimentGuiStubDTO>()
+        .use(null, ExperimentGuiStubDTO.class).deserialize(json);
     }
     
     public static String ExperimentGuiStubDTO.toJsonArray(Collection<ExperimentGuiStubDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ExperimentGuiStubDTO.toJsonArray(Collection<ExperimentGuiStubDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ExperimentGuiStubDTO> ExperimentGuiStubDTO.fromJsonArrayToExperimentGuiStubDTO(String json) {
-        return new JSONDeserializer<List<ExperimentGuiStubDTO>>().use(null, ArrayList.class).use("values", ExperimentGuiStubDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ExperimentGuiStubDTO>>()
+        .use("values", ExperimentGuiStubDTO.class).deserialize(json);
     }
     
 }

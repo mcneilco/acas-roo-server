@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect StructureSearchDTO_Roo_Json {
     
     public String StructureSearchDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String StructureSearchDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static StructureSearchDTO StructureSearchDTO.fromJsonToStructureSearchDTO(String json) {
-        return new JSONDeserializer<StructureSearchDTO>().use(null, StructureSearchDTO.class).deserialize(json);
+        return new JSONDeserializer<StructureSearchDTO>()
+        .use(null, StructureSearchDTO.class).deserialize(json);
     }
     
     public static String StructureSearchDTO.toJsonArray(Collection<StructureSearchDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String StructureSearchDTO.toJsonArray(Collection<StructureSearchDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<StructureSearchDTO> StructureSearchDTO.fromJsonArrayToStructureSearchDTO(String json) {
-        return new JSONDeserializer<List<StructureSearchDTO>>().use(null, ArrayList.class).use("values", StructureSearchDTO.class).deserialize(json);
+        return new JSONDeserializer<List<StructureSearchDTO>>()
+        .use("values", StructureSearchDTO.class).deserialize(json);
     }
     
 }

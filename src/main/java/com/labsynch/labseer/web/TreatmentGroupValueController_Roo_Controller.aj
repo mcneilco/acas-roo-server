@@ -40,7 +40,7 @@ privileged aspect TreatmentGroupValueController_Roo_Controller {
         populateEditForm(uiModel, new TreatmentGroupValue());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (TreatmentGroupState.countTreatmentGroupStates() == 0) {
-            dependencies.add(new String[] { "treatmentgroupstate", "treatmentgroupstates" });
+            dependencies.add(new String[] { "lsState", "treatmentgroupstates" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "treatmentgroupvalues/create";
@@ -55,15 +55,15 @@ privileged aspect TreatmentGroupValueController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String TreatmentGroupValueController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String TreatmentGroupValueController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValueEntries(firstResult, sizeNo));
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValueEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) TreatmentGroupValue.countTreatmentGroupValues() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findAllTreatmentGroupValues());
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findAllTreatmentGroupValues(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "treatmentgroupvalues/list";

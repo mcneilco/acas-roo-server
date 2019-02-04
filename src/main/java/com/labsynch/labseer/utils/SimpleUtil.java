@@ -34,6 +34,18 @@ import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import org.apache.commons.io.IOUtils;
+import org.springframework.web.util.UriComponentsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SimpleUtil {
 	
 	@Autowired
@@ -303,5 +315,55 @@ public class SimpleUtil {
 		List<LsThingValue> filteredValues = $.flatten($.map($.filter(new ArrayList<LsThingState>(lsThing.getLsStates()), statePredicate), filterValues));
 
 		return filteredValues;
+	}
+
+	public static String postRequestToExternalServer(String url, String jsonContent, Logger logger) throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		connection.setRequestProperty("Content-Type", "application/json");		
+		logger.info("Sending request to: "+url);
+		logger.info("with data: "+jsonContent);
+		try{
+			OutputStream output = connection.getOutputStream();
+			output.write(jsonContent.getBytes());
+		}catch (Exception e){
+			logger.error("Error occurred in making HTTP Request to external server",e);
+		}
+		InputStream input = connection.getInputStream();
+		byte[] bytes = IOUtils.toByteArray(input);
+		String responseJson = new String(bytes);
+		return responseJson;
+	}
+	
+	public static String getFromExternalServer(String url, Map<String, String> queryParams, Logger logger) throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		UriComponentsBuilder ub = UriComponentsBuilder.fromHttpUrl(url);
+		if (queryParams != null){
+			for (String param : queryParams.keySet()) {
+				ub.queryParam(param, URLEncoder.encode(queryParams.get(param), charset));
+			}
+		}
+		String fullUrl = ub.build().toUriString();
+		HttpURLConnection connection = (HttpURLConnection) new URL(fullUrl).openConnection();
+		connection.setRequestMethod("GET");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		logger.info("Sending request to: "+fullUrl);
+		int responseCode = connection.getResponseCode();
+		logger.info("Response Code: "+responseCode);
+		BufferedReader inStream = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+		
+		while ((inputLine = inStream.readLine()) != null) {
+			response.append(inputLine);
+		}
+		inStream.close();
+		return response.toString();
 	}
 }

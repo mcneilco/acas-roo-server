@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect SubjectMiniDTO_Roo_Json {
     
     public String SubjectMiniDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String SubjectMiniDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static SubjectMiniDTO SubjectMiniDTO.fromJsonToSubjectMiniDTO(String json) {
-        return new JSONDeserializer<SubjectMiniDTO>().use(null, SubjectMiniDTO.class).deserialize(json);
+        return new JSONDeserializer<SubjectMiniDTO>()
+        .use(null, SubjectMiniDTO.class).deserialize(json);
     }
     
     public static String SubjectMiniDTO.toJsonArray(Collection<SubjectMiniDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String SubjectMiniDTO.toJsonArray(Collection<SubjectMiniDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<SubjectMiniDTO> SubjectMiniDTO.fromJsonArrayToSubjectMiniDTO(String json) {
-        return new JSONDeserializer<List<SubjectMiniDTO>>().use(null, ArrayList.class).use("values", SubjectMiniDTO.class).deserialize(json);
+        return new JSONDeserializer<List<SubjectMiniDTO>>()
+        .use("values", SubjectMiniDTO.class).deserialize(json);
     }
     
 }

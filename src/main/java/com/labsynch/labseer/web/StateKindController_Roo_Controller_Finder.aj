@@ -19,8 +19,16 @@ privileged aspect StateKindController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByKindNameEquals", method = RequestMethod.GET)
-    public String StateKindController.findStateKindsByKindNameEquals(@RequestParam("kindName") String kindName, Model uiModel) {
-        uiModel.addAttribute("statekinds", StateKind.findStateKindsByKindNameEquals(kindName).getResultList());
+    public String StateKindController.findStateKindsByKindNameEquals(@RequestParam("kindName") String kindName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("statekinds", StateKind.findStateKindsByKindNameEquals(kindName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) StateKind.countFindStateKindsByKindNameEquals(kindName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("statekinds", StateKind.findStateKindsByKindNameEquals(kindName, sortFieldName, sortOrder).getResultList());
+        }
         return "statekinds/list";
     }
     
@@ -31,8 +39,16 @@ privileged aspect StateKindController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByKindNameEqualsAndLsType", method = RequestMethod.GET)
-    public String StateKindController.findStateKindsByKindNameEqualsAndLsType(@RequestParam("kindName") String kindName, @RequestParam("lsType") StateType lsType, Model uiModel) {
-        uiModel.addAttribute("statekinds", StateKind.findStateKindsByKindNameEqualsAndLsType(kindName, lsType).getResultList());
+    public String StateKindController.findStateKindsByKindNameEqualsAndLsType(@RequestParam("kindName") String kindName, @RequestParam("lsType") StateType lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("statekinds", StateKind.findStateKindsByKindNameEqualsAndLsType(kindName, lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) StateKind.countFindStateKindsByKindNameEqualsAndLsType(kindName, lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("statekinds", StateKind.findStateKindsByKindNameEqualsAndLsType(kindName, lsType, sortFieldName, sortOrder).getResultList());
+        }
         return "statekinds/list";
     }
     
@@ -43,8 +59,16 @@ privileged aspect StateKindController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsType", method = RequestMethod.GET)
-    public String StateKindController.findStateKindsByLsType(@RequestParam("lsType") StateType lsType, Model uiModel) {
-        uiModel.addAttribute("statekinds", StateKind.findStateKindsByLsType(lsType).getResultList());
+    public String StateKindController.findStateKindsByLsType(@RequestParam("lsType") StateType lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("statekinds", StateKind.findStateKindsByLsType(lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) StateKind.countFindStateKindsByLsType(lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("statekinds", StateKind.findStateKindsByLsType(lsType, sortFieldName, sortOrder).getResultList());
+        }
         return "statekinds/list";
     }
     

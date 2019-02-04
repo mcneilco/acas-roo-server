@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ItxContainerContainerValue_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ItxContainerContainerValue.fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
+    
     public static long ItxContainerContainerValue.countItxContainerContainerValues() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ItxContainerContainerValue o", Long.class).getSingleResult();
     }
     
     public static List<ItxContainerContainerValue> ItxContainerContainerValue.findAllItxContainerContainerValues() {
         return entityManager().createQuery("SELECT o FROM ItxContainerContainerValue o", ItxContainerContainerValue.class).getResultList();
+    }
+    
+    public static List<ItxContainerContainerValue> ItxContainerContainerValue.findAllItxContainerContainerValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxContainerContainerValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxContainerContainerValue.class).getResultList();
     }
     
     public static ItxContainerContainerValue ItxContainerContainerValue.findItxContainerContainerValue(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ItxContainerContainerValue_Roo_Jpa_ActiveRecord {
     
     public static List<ItxContainerContainerValue> ItxContainerContainerValue.findItxContainerContainerValueEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ItxContainerContainerValue o", ItxContainerContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ItxContainerContainerValue> ItxContainerContainerValue.findItxContainerContainerValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxContainerContainerValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxContainerContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

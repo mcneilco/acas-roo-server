@@ -19,8 +19,17 @@ privileged aspect SubjectValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeValueEquals", method = RequestMethod.GET)
-    public String SubjectValueController.findSubjectValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue, Model uiModel) {
-        uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByCodeValueEquals(codeValue).getResultList());
+    public String SubjectValueController.findSubjectValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByCodeValueEquals(codeValue, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SubjectValue.countFindSubjectValuesByCodeValueEquals(codeValue) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByCodeValueEquals(codeValue, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjectvalues/list";
     }
     
@@ -30,8 +39,17 @@ privileged aspect SubjectValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", method = RequestMethod.GET)
-    public String SubjectValueController.findSubjectValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue, Model uiModel) {
-        uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList());
+    public String SubjectValueController.findSubjectValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SubjectValue.countFindSubjectValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjectvalues/list";
     }
     
@@ -42,8 +60,17 @@ privileged aspect SubjectValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsState", method = RequestMethod.GET)
-    public String SubjectValueController.findSubjectValuesByLsState(@RequestParam("lsState") SubjectState lsState, Model uiModel) {
-        uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsState(lsState).getResultList());
+    public String SubjectValueController.findSubjectValuesByLsState(@RequestParam("lsState") SubjectState lsState, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsState(lsState, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SubjectValue.countFindSubjectValuesByLsState(lsState) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsState(lsState, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjectvalues/list";
     }
     
@@ -54,8 +81,17 @@ privileged aspect SubjectValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsStateAndLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
-    public String SubjectValueController.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(@RequestParam("lsState") SubjectState lsState, @RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(lsState, lsType, lsKind).getResultList());
+    public String SubjectValueController.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(@RequestParam("lsState") SubjectState lsState, @RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(lsState, lsType, lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SubjectValue.countFindSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(lsState, lsType, lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsStateAndLsTypeEqualsAndLsKindEquals(lsState, lsType, lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjectvalues/list";
     }
     
@@ -65,8 +101,17 @@ privileged aspect SubjectValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeEqualsAndLsKindEquals", method = RequestMethod.GET)
-    public String SubjectValueController.findSubjectValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, Model uiModel) {
-        uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind).getResultList());
+    public String SubjectValueController.findSubjectValuesByLsTypeEqualsAndLsKindEquals(@RequestParam("lsType") String lsType, @RequestParam("lsKind") String lsKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SubjectValue.countFindSubjectValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("subjectvalues", SubjectValue.findSubjectValuesByLsTypeEqualsAndLsKindEquals(lsType, lsKind, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "subjectvalues/list";
     }
     

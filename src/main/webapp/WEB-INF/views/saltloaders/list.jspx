@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/form" xmlns:table="urn:jsptagdir:/WEB-INF/tags/form/fields" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_service_SaltLoader" items="${saltloaders}" z="mVqI/bSQHMVuh8+J5UCR6e1i1ks=">
+        <table:table data="${saltloaders}" id="l_com_labsynch_labseer_service_SaltLoader" path="/saltloaders" z="WD4PPoreS+IGlRo1AUwq6xYgtgc=">
+            <table:column id="c_com_labsynch_labseer_service_SaltLoader_name" property="name" z="d0Sv9oQzbuSdfvA503nH+7Gn2ek="/>
+            <table:column id="c_com_labsynch_labseer_service_SaltLoader_description" property="description" z="Xg5qUNo+OBOWgsjL6rxNOD2NXcY="/>
+            <table:column id="c_com_labsynch_labseer_service_SaltLoader_numberOfSalts" property="numberOfSalts" z="GQxquuq0HoMYxNrxOJ6rCgY0Z/U="/>
+            <table:column id="c_com_labsynch_labseer_service_SaltLoader_size" property="size" z="1Ibvmk3S7OidfazhE2rr6kyesKw="/>
+            <table:column id="c_com_labsynch_labseer_service_SaltLoader_uploaded" property="uploaded" z="YAKyPz8EZe5glMJif4kOgYvI+po="/>
+            <table:column id="c_com_labsynch_labseer_service_SaltLoader_file" property="file" z="kUJ3rY34dP4itKOfSp23XTWHQNc="/>
+        </table:table>
+    </page:list>
+</div>

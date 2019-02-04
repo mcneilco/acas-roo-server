@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/datatables" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:update id="fu_com_labsynch_labseer_domain_ParentAnnotation" modelAttribute="parentAnnotation" path="/parentAnnotations" versionField="Version" z="N2RNIA/fmmb1lr6F8VttKVo/vpc=">
+        <field:input field="code" id="c_com_labsynch_labseer_domain_ParentAnnotation_code" required="true" z="0ic/xratxYAJFqP4Cm/OQVDpQv0="/>
+        <field:input field="name" id="c_com_labsynch_labseer_domain_ParentAnnotation_name" required="true" z="/+QpYdiUBK8zS8i72UwASuySIL8="/>
+        <field:input field="displayOrder" id="c_com_labsynch_labseer_domain_ParentAnnotation_displayOrder" validationMessageCode="field_invalid_integer" z="FN/ubFw1xjp/KBWWmv5PimJ+Yco="/>
+        <field:input field="comment" id="c_com_labsynch_labseer_domain_ParentAnnotation_comment" z="TQhgip8+BwB5fmBhWa9hjwtcJJA="/>
+    </form:update>
+</div>

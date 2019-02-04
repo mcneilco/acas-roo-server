@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect RoleType_Roo_Json {
     
     public String RoleType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String RoleType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static RoleType RoleType.fromJsonToRoleType(String json) {
-        return new JSONDeserializer<RoleType>().use(null, RoleType.class).deserialize(json);
+        return new JSONDeserializer<RoleType>()
+        .use(null, RoleType.class).deserialize(json);
     }
     
     public static String RoleType.toJsonArray(Collection<RoleType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String RoleType.toJsonArray(Collection<RoleType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<RoleType> RoleType.fromJsonArrayToRoleTypes(String json) {
-        return new JSONDeserializer<List<RoleType>>().use(null, ArrayList.class).use("values", RoleType.class).deserialize(json);
+        return new JSONDeserializer<List<RoleType>>()
+        .use("values", RoleType.class).deserialize(json);
     }
     
 }

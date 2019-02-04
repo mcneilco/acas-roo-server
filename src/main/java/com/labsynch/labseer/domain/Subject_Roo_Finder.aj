@@ -11,10 +11,57 @@ import javax.persistence.TypedQuery;
 
 privileged aspect Subject_Roo_Finder {
     
+    public static Long Subject.countFindSubjectsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Subject.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Subject AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long Subject.countFindSubjectsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Subject.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Subject AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long Subject.countFindSubjectsByTreatmentGroups(Set<TreatmentGroup> treatmentGroups) {
+        if (treatmentGroups == null) throw new IllegalArgumentException("The treatmentGroups argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT COUNT(o) FROM Subject AS o WHERE");
+        for (int i = 0; i < treatmentGroups.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :treatmentGroups_item").append(i).append(" MEMBER OF o.treatmentGroups");
+        }
+        TypedQuery q = em.createQuery(queryBuilder.toString(), Long.class);
+        int treatmentGroupsIndex = 0;
+        for (TreatmentGroup _treatmentgroup: treatmentGroups) {
+            q.setParameter("treatmentGroups_item" + treatmentGroupsIndex++, _treatmentgroup);
+        }
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<Subject> Subject.findSubjectsByCodeNameEquals(String codeName) {
         if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
         EntityManager em = Subject.entityManager();
         TypedQuery<Subject> q = em.createQuery("SELECT o FROM Subject AS o WHERE o.codeName = :codeName", Subject.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+    
+    public static TypedQuery<Subject> Subject.findSubjectsByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Subject AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
         q.setParameter("codeName", codeName);
         return q;
     }
@@ -27,6 +74,21 @@ privileged aspect Subject_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<Subject> Subject.findSubjectsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Subject AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
     public static TypedQuery<Subject> Subject.findSubjectsByTreatmentGroups(Set<TreatmentGroup> treatmentGroups) {
         if (treatmentGroups == null) throw new IllegalArgumentException("The treatmentGroups argument is required");
         EntityManager em = Subject.entityManager();
@@ -34,6 +96,28 @@ privileged aspect Subject_Roo_Finder {
         for (int i = 0; i < treatmentGroups.size(); i++) {
             if (i > 0) queryBuilder.append(" AND");
             queryBuilder.append(" :treatmentGroups_item").append(i).append(" MEMBER OF o.treatmentGroups");
+        }
+        TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
+        int treatmentGroupsIndex = 0;
+        for (TreatmentGroup _treatmentgroup: treatmentGroups) {
+            q.setParameter("treatmentGroups_item" + treatmentGroupsIndex++, _treatmentgroup);
+        }
+        return q;
+    }
+    
+    public static TypedQuery<Subject> Subject.findSubjectsByTreatmentGroups(Set<TreatmentGroup> treatmentGroups, String sortFieldName, String sortOrder) {
+        if (treatmentGroups == null) throw new IllegalArgumentException("The treatmentGroups argument is required");
+        EntityManager em = Subject.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Subject AS o WHERE");
+        for (int i = 0; i < treatmentGroups.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :treatmentGroups_item").append(i).append(" MEMBER OF o.treatmentGroups");
+        }
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" " + sortOrder);
+            }
         }
         TypedQuery<Subject> q = em.createQuery(queryBuilder.toString(), Subject.class);
         int treatmentGroupsIndex = 0;

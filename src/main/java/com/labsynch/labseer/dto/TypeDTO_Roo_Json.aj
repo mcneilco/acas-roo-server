@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect TypeDTO_Roo_Json {
     
     public String TypeDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String TypeDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static TypeDTO TypeDTO.fromJsonToTypeDTO(String json) {
-        return new JSONDeserializer<TypeDTO>().use(null, TypeDTO.class).deserialize(json);
+        return new JSONDeserializer<TypeDTO>()
+        .use(null, TypeDTO.class).deserialize(json);
     }
     
     public static String TypeDTO.toJsonArray(Collection<TypeDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String TypeDTO.toJsonArray(Collection<TypeDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<TypeDTO> TypeDTO.fromJsonArrayToTypeDTO(String json) {
-        return new JSONDeserializer<List<TypeDTO>>().use(null, ArrayList.class).use("values", TypeDTO.class).deserialize(json);
+        return new JSONDeserializer<List<TypeDTO>>()
+        .use("values", TypeDTO.class).deserialize(json);
     }
     
 }

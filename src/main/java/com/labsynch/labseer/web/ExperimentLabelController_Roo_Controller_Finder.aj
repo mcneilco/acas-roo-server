@@ -20,8 +20,17 @@ privileged aspect ExperimentLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByExperiment", method = RequestMethod.GET)
-    public String ExperimentLabelController.findExperimentLabelsByExperiment(@RequestParam("experiment") Experiment experiment, Model uiModel) {
-        uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByExperiment(experiment).getResultList());
+    public String ExperimentLabelController.findExperimentLabelsByExperiment(@RequestParam("experiment") Experiment experiment, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByExperiment(experiment, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ExperimentLabel.countFindExperimentLabelsByExperiment(experiment) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByExperiment(experiment, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experimentlabels/list";
     }
     
@@ -32,8 +41,17 @@ privileged aspect ExperimentLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByExperimentAndIgnoredNot", method = RequestMethod.GET)
-    public String ExperimentLabelController.findExperimentLabelsByExperimentAndIgnoredNot(@RequestParam("experiment") Experiment experiment, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByExperimentAndIgnoredNot(experiment, ignored).getResultList());
+    public String ExperimentLabelController.findExperimentLabelsByExperimentAndIgnoredNot(@RequestParam("experiment") Experiment experiment, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByExperimentAndIgnoredNot(experiment, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ExperimentLabel.countFindExperimentLabelsByExperimentAndIgnoredNot(experiment, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByExperimentAndIgnoredNot(experiment, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experimentlabels/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect ExperimentLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLabelTextLike", method = RequestMethod.GET)
-    public String ExperimentLabelController.findExperimentLabelsByLabelTextLike(@RequestParam("labelText") String labelText, Model uiModel) {
-        uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLabelTextLike(labelText).getResultList());
+    public String ExperimentLabelController.findExperimentLabelsByLabelTextLike(@RequestParam("labelText") String labelText, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLabelTextLike(labelText, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ExperimentLabel.countFindExperimentLabelsByLabelTextLike(labelText) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLabelTextLike(labelText, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experimentlabels/list";
     }
     
@@ -54,8 +81,17 @@ privileged aspect ExperimentLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot", method = RequestMethod.GET)
-    public String ExperimentLabelController.findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(@RequestParam("labelText") String labelText, @RequestParam("lsTypeAndKind") String lsTypeAndKind, @RequestParam(value = "preferred", required = false) boolean preferred, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(labelText, lsTypeAndKind, preferred, ignored).getResultList());
+    public String ExperimentLabelController.findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(@RequestParam("labelText") String labelText, @RequestParam("lsTypeAndKind") String lsTypeAndKind, @RequestParam(value = "preferred", required = false) boolean preferred, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(labelText, lsTypeAndKind, preferred, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ExperimentLabel.countFindExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(labelText, lsTypeAndKind, preferred, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLabelTextLikeAndLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(labelText, lsTypeAndKind, preferred, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experimentlabels/list";
     }
     
@@ -65,8 +101,17 @@ privileged aspect ExperimentLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot", method = RequestMethod.GET)
-    public String ExperimentLabelController.findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(@RequestParam("lsTypeAndKind") String lsTypeAndKind, @RequestParam(value = "preferred", required = false) boolean preferred, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(lsTypeAndKind, preferred, ignored).getResultList());
+    public String ExperimentLabelController.findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(@RequestParam("lsTypeAndKind") String lsTypeAndKind, @RequestParam(value = "preferred", required = false) boolean preferred, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(lsTypeAndKind, preferred, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ExperimentLabel.countFindExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(lsTypeAndKind, preferred, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("experimentlabels", ExperimentLabel.findExperimentLabelsByLsTypeAndKindEqualsAndPreferredNotAndIgnoredNot(lsTypeAndKind, preferred, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "experimentlabels/list";
     }
     

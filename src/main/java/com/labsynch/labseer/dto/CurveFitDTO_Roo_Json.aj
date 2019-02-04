@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect CurveFitDTO_Roo_Json {
     
     public String CurveFitDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String CurveFitDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static CurveFitDTO CurveFitDTO.fromJsonToCurveFitDTO(String json) {
-        return new JSONDeserializer<CurveFitDTO>().use(null, CurveFitDTO.class).deserialize(json);
+        return new JSONDeserializer<CurveFitDTO>()
+        .use(null, CurveFitDTO.class).deserialize(json);
     }
     
     public static String CurveFitDTO.toJsonArray(Collection<CurveFitDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String CurveFitDTO.toJsonArray(Collection<CurveFitDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<CurveFitDTO> CurveFitDTO.fromJsonArrayToCurveFitDTO(String json) {
-        return new JSONDeserializer<List<CurveFitDTO>>().use(null, ArrayList.class).use("values", CurveFitDTO.class).deserialize(json);
+        return new JSONDeserializer<List<CurveFitDTO>>()
+        .use("values", CurveFitDTO.class).deserialize(json);
     }
     
 }

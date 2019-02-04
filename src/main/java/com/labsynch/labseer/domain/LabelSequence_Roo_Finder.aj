@@ -9,6 +9,44 @@ import javax.persistence.TypedQuery;
 
 privileged aspect LabelSequence_Roo_Finder {
     
+    public static Long LabelSequence.countFindLabelSequencesByLabelTypeAndKindEquals(String labelTypeAndKind) {
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelSequence AS o WHERE o.labelTypeAndKind = :labelTypeAndKind", Long.class);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LabelSequence.countFindLabelSequencesByThingTypeAndKindEquals(String thingTypeAndKind) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind", Long.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LabelSequence.countFindLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(String thingTypeAndKind, String labelTypeAndKind) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind", Long.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LabelSequence.countFindLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        if (labelPrefix == null || labelPrefix.length() == 0) throw new IllegalArgumentException("The labelPrefix argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind  AND o.labelPrefix = :labelPrefix", Long.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        q.setParameter("labelPrefix", labelPrefix);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByLabelTypeAndKindEquals(String labelTypeAndKind) {
         if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
         EntityManager em = LabelSequence.entityManager();
@@ -17,10 +55,40 @@ privileged aspect LabelSequence_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByLabelTypeAndKindEquals(String labelTypeAndKind, String sortFieldName, String sortOrder) {
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelSequence AS o WHERE o.labelTypeAndKind = :labelTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelSequence> q = em.createQuery(queryBuilder.toString(), LabelSequence.class);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return q;
+    }
+    
     public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByThingTypeAndKindEquals(String thingTypeAndKind) {
         if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
         EntityManager em = LabelSequence.entityManager();
         TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind", LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        return q;
+    }
+    
+    public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByThingTypeAndKindEquals(String thingTypeAndKind, String sortFieldName, String sortOrder) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelSequence> q = em.createQuery(queryBuilder.toString(), LabelSequence.class);
         q.setParameter("thingTypeAndKind", thingTypeAndKind);
         return q;
     }
@@ -35,12 +103,48 @@ privileged aspect LabelSequence_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(String thingTypeAndKind, String labelTypeAndKind, String sortFieldName, String sortOrder) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelSequence> q = em.createQuery(queryBuilder.toString(), LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        return q;
+    }
+    
     public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix) {
         if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
         if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
         if (labelPrefix == null || labelPrefix.length() == 0) throw new IllegalArgumentException("The labelPrefix argument is required");
         EntityManager em = LabelSequence.entityManager();
         TypedQuery<LabelSequence> q = em.createQuery("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind  AND o.labelPrefix = :labelPrefix", LabelSequence.class);
+        q.setParameter("thingTypeAndKind", thingTypeAndKind);
+        q.setParameter("labelTypeAndKind", labelTypeAndKind);
+        q.setParameter("labelPrefix", labelPrefix);
+        return q;
+    }
+    
+    public static TypedQuery<LabelSequence> LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEqualsAndLabelPrefixEquals(String thingTypeAndKind, String labelTypeAndKind, String labelPrefix, String sortFieldName, String sortOrder) {
+        if (thingTypeAndKind == null || thingTypeAndKind.length() == 0) throw new IllegalArgumentException("The thingTypeAndKind argument is required");
+        if (labelTypeAndKind == null || labelTypeAndKind.length() == 0) throw new IllegalArgumentException("The labelTypeAndKind argument is required");
+        if (labelPrefix == null || labelPrefix.length() == 0) throw new IllegalArgumentException("The labelPrefix argument is required");
+        EntityManager em = LabelSequence.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelSequence AS o WHERE o.thingTypeAndKind = :thingTypeAndKind  AND o.labelTypeAndKind = :labelTypeAndKind  AND o.labelPrefix = :labelPrefix");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelSequence> q = em.createQuery(queryBuilder.toString(), LabelSequence.class);
         q.setParameter("thingTypeAndKind", thingTypeAndKind);
         q.setParameter("labelTypeAndKind", labelTypeAndKind);
         q.setParameter("labelPrefix", labelPrefix);

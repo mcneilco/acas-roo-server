@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect SubjectStateValueDTO_Roo_Json {
     
     public String SubjectStateValueDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String SubjectStateValueDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static SubjectStateValueDTO SubjectStateValueDTO.fromJsonToSubjectStateValueDTO(String json) {
-        return new JSONDeserializer<SubjectStateValueDTO>().use(null, SubjectStateValueDTO.class).deserialize(json);
+        return new JSONDeserializer<SubjectStateValueDTO>()
+        .use(null, SubjectStateValueDTO.class).deserialize(json);
     }
     
     public static String SubjectStateValueDTO.toJsonArray(Collection<SubjectStateValueDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String SubjectStateValueDTO.toJsonArray(Collection<SubjectStateValueDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<SubjectStateValueDTO> SubjectStateValueDTO.fromJsonArrayToSubjectStateValueDTO(String json) {
-        return new JSONDeserializer<List<SubjectStateValueDTO>>().use(null, ArrayList.class).use("values", SubjectStateValueDTO.class).deserialize(json);
+        return new JSONDeserializer<List<SubjectStateValueDTO>>()
+        .use("values", SubjectStateValueDTO.class).deserialize(json);
     }
     
 }

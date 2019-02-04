@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect ProtocolErrorMessageDTO_Roo_Json {
     
     public static ProtocolErrorMessageDTO ProtocolErrorMessageDTO.fromJsonToProtocolErrorMessageDTO(String json) {
-        return new JSONDeserializer<ProtocolErrorMessageDTO>().use(null, ProtocolErrorMessageDTO.class).deserialize(json);
+        return new JSONDeserializer<ProtocolErrorMessageDTO>()
+        .use(null, ProtocolErrorMessageDTO.class).deserialize(json);
     }
     
     public static Collection<ProtocolErrorMessageDTO> ProtocolErrorMessageDTO.fromJsonArrayToProtocolErroes(String json) {
-        return new JSONDeserializer<List<ProtocolErrorMessageDTO>>().use(null, ArrayList.class).use("values", ProtocolErrorMessageDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ProtocolErrorMessageDTO>>()
+        .use("values", ProtocolErrorMessageDTO.class).deserialize(json);
     }
     
 }

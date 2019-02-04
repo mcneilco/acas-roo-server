@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/datatables" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_LotAliasType" object="${lotaliastype}" path="/lotaliastypes" z="F6JQ9HrCHR9KgO659q6Ah86h/Ac=">
+        <field:display field="typeName" id="s_com_labsynch_labseer_domain_LotAliasType_typeName" object="${lotaliastype}" z="0Lg0ns173OryKV+IvKH2V0YJRFE="/>
+    </page:show>
+</div>

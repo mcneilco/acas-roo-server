@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ItxQueryDTO_Roo_Json {
     
     public String ItxQueryDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ItxQueryDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ItxQueryDTO ItxQueryDTO.fromJsonToItxQueryDTO(String json) {
-        return new JSONDeserializer<ItxQueryDTO>().use(null, ItxQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<ItxQueryDTO>()
+        .use(null, ItxQueryDTO.class).deserialize(json);
     }
     
     public static String ItxQueryDTO.toJsonArray(Collection<ItxQueryDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ItxQueryDTO.toJsonArray(Collection<ItxQueryDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ItxQueryDTO> ItxQueryDTO.fromJsonArrayToItxQueryDTO(String json) {
-        return new JSONDeserializer<List<ItxQueryDTO>>().use(null, ArrayList.class).use("values", ItxQueryDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ItxQueryDTO>>()
+        .use("values", ItxQueryDTO.class).deserialize(json);
     }
     
 }

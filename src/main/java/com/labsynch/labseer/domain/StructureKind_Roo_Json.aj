@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect StructureKind_Roo_Json {
     
     public String StructureKind.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String StructureKind.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static StructureKind StructureKind.fromJsonToStructureKind(String json) {
-        return new JSONDeserializer<StructureKind>().use(null, StructureKind.class).deserialize(json);
+        return new JSONDeserializer<StructureKind>()
+        .use(null, StructureKind.class).deserialize(json);
     }
     
     public static String StructureKind.toJsonArray(Collection<StructureKind> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String StructureKind.toJsonArray(Collection<StructureKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<StructureKind> StructureKind.fromJsonArrayToStructureKinds(String json) {
-        return new JSONDeserializer<List<StructureKind>>().use(null, ArrayList.class).use("values", StructureKind.class).deserialize(json);
+        return new JSONDeserializer<List<StructureKind>>()
+        .use("values", StructureKind.class).deserialize(json);
     }
     
 }

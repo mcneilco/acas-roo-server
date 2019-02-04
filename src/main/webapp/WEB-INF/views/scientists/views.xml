@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="scientists/list">
+        <put-attribute name="body" value="/WEB-INF/views/scientists/list.jspx"/>
+    </definition>
+<definition extends="default" name="scientists/show">
+        <put-attribute name="body" value="/WEB-INF/views/scientists/show.jspx"/>
+    </definition>
+<definition extends="default" name="scientists/create">
+        <put-attribute name="body" value="/WEB-INF/views/scientists/create.jspx"/>
+    </definition>
+<definition extends="default" name="scientists/update">
+        <put-attribute name="body" value="/WEB-INF/views/scientists/update.jspx"/>
+    </definition>
+<definition extends="default" name="scientists/findScientistsByCodeEquals">
+        <put-attribute name="body" value="/WEB-INF/views/scientists/findScientistsByCodeEquals.jspx"/>
+    </definition>
+<definition extends="default" name="scientists/findScientistsByCodeLike">
+        <put-attribute name="body" value="/WEB-INF/views/scientists/findScientistsByCodeLike.jspx"/>
+    </definition>
+</tiles-definitions>

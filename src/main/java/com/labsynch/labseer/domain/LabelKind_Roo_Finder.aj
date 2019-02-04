@@ -10,10 +10,51 @@ import javax.persistence.TypedQuery;
 
 privileged aspect LabelKind_Roo_Finder {
     
+    public static Long LabelKind.countFindLabelKindsByKindNameEquals(String kindName) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        EntityManager em = LabelKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelKind AS o WHERE o.kindName = :kindName", Long.class);
+        q.setParameter("kindName", kindName);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LabelKind.countFindLabelKindsByKindNameEqualsAndLsType(String kindName, LabelType lsType) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = LabelKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", Long.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long LabelKind.countFindLabelKindsByLsType(LabelType lsType) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = LabelKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LabelKind AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<LabelKind> LabelKind.findLabelKindsByKindNameEquals(String kindName) {
         if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
         EntityManager em = LabelKind.entityManager();
         TypedQuery<LabelKind> q = em.createQuery("SELECT o FROM LabelKind AS o WHERE o.kindName = :kindName", LabelKind.class);
+        q.setParameter("kindName", kindName);
+        return q;
+    }
+    
+    public static TypedQuery<LabelKind> LabelKind.findLabelKindsByKindNameEquals(String kindName, String sortFieldName, String sortOrder) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        EntityManager em = LabelKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelKind AS o WHERE o.kindName = :kindName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelKind> q = em.createQuery(queryBuilder.toString(), LabelKind.class);
         q.setParameter("kindName", kindName);
         return q;
     }
@@ -28,10 +69,42 @@ privileged aspect LabelKind_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<LabelKind> LabelKind.findLabelKindsByKindNameEqualsAndLsType(String kindName, LabelType lsType, String sortFieldName, String sortOrder) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = LabelKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelKind> q = em.createQuery(queryBuilder.toString(), LabelKind.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
     public static TypedQuery<LabelKind> LabelKind.findLabelKindsByLsType(LabelType lsType) {
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = LabelKind.entityManager();
         TypedQuery<LabelKind> q = em.createQuery("SELECT o FROM LabelKind AS o WHERE o.lsType = :lsType", LabelKind.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
+    public static TypedQuery<LabelKind> LabelKind.findLabelKindsByLsType(LabelType lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = LabelKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LabelKind AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LabelKind> q = em.createQuery(queryBuilder.toString(), LabelKind.class);
         q.setParameter("lsType", lsType);
         return q;
     }

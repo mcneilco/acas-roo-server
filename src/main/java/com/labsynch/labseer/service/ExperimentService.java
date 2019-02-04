@@ -52,6 +52,8 @@ public interface ExperimentService {
 	
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, String userName) throws TooManyResultsException;
 
+	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query, List<String> projects) throws TooManyResultsException;
+
 	public Collection<Experiment> findExperimentsByGenericMetaDataSearch(String query)  throws TooManyResultsException;
 	
 	public Collection<Experiment> findExperimentsByMetadata(String queryString, String searchBy);

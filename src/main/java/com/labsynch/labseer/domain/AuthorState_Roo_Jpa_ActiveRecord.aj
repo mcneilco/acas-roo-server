@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect AuthorState_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> AuthorState.fieldNames4OrderClauseFilter = java.util.Arrays.asList("author", "lsValues");
+    
     public static long AuthorState.countAuthorStates() {
         return entityManager().createQuery("SELECT COUNT(o) FROM AuthorState o", Long.class).getSingleResult();
     }
     
     public static List<AuthorState> AuthorState.findAllAuthorStates() {
         return entityManager().createQuery("SELECT o FROM AuthorState o", AuthorState.class).getResultList();
+    }
+    
+    public static List<AuthorState> AuthorState.findAllAuthorStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AuthorState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AuthorState.class).getResultList();
     }
     
     public static AuthorState AuthorState.findAuthorState(Long id) {
@@ -24,6 +37,17 @@ privileged aspect AuthorState_Roo_Jpa_ActiveRecord {
     
     public static List<AuthorState> AuthorState.findAuthorStateEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AuthorState o", AuthorState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AuthorState> AuthorState.findAuthorStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AuthorState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AuthorState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -41,7 +41,7 @@ privileged aspect ThingPageController_Roo_Controller {
         populateEditForm(uiModel, new ThingPage());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (AbstractThing.countAbstractThings() == 0) {
-            dependencies.add(new String[] { "abstractthing", "abstractthings" });
+            dependencies.add(new String[] { "lsTransaction", "abstractthings" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "thingpages/create";
@@ -56,15 +56,15 @@ privileged aspect ThingPageController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String ThingPageController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String ThingPageController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("thingpages", ThingPage.findThingPageEntries(firstResult, sizeNo));
+            uiModel.addAttribute("thingpages", ThingPage.findThingPageEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) ThingPage.countThingPages() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("thingpages", ThingPage.findAllThingPages());
+            uiModel.addAttribute("thingpages", ThingPage.findAllThingPages(sortFieldName, sortOrder));
         }
         addDateTimeFormatPatterns(uiModel);
         return "thingpages/list";

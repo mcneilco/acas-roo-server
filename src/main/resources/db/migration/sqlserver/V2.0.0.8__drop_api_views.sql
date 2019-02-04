@@ -1,0 +1,21 @@
+--DROP
+IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS
+         WHERE TABLE_NAME = 'api_batch_cmpd_reg_links')
+   DROP VIEW api_batch_cmpd_reg_links
+GO
+IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS
+         WHERE TABLE_NAME = 'api_file_list')
+   DROP VIEW api_file_list
+GO
+IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS
+         WHERE TABLE_NAME = 'api_isotope_iso_salt')
+   DROP VIEW api_isotope_iso_salt
+GO
+IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS
+         WHERE TABLE_NAME = 'api_salt_iso_salt')
+   DROP VIEW api_salt_iso_salt
+GO
+IF EXISTS (SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS
+         WHERE TABLE_NAME = 'application_paths')
+   DROP VIEW application_paths
+GO

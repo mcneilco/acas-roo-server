@@ -19,8 +19,17 @@ privileged aspect ProtocolStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String ProtocolStateController.findProtocolStatesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("protocolstates", ProtocolState.findProtocolStatesByLsTransactionEquals(lsTransaction).getResultList());
+    public String ProtocolStateController.findProtocolStatesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocolstates", ProtocolState.findProtocolStatesByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ProtocolState.countFindProtocolStatesByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocolstates", ProtocolState.findProtocolStatesByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocolstates/list";
     }
     
@@ -31,8 +40,17 @@ privileged aspect ProtocolStateController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByProtocol", method = RequestMethod.GET)
-    public String ProtocolStateController.findProtocolStatesByProtocol(@RequestParam("protocol") Protocol protocol, Model uiModel) {
-        uiModel.addAttribute("protocolstates", ProtocolState.findProtocolStatesByProtocol(protocol).getResultList());
+    public String ProtocolStateController.findProtocolStatesByProtocol(@RequestParam("protocol") Protocol protocol, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocolstates", ProtocolState.findProtocolStatesByProtocol(protocol, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ProtocolState.countFindProtocolStatesByProtocol(protocol) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocolstates", ProtocolState.findProtocolStatesByProtocol(protocol, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocolstates/list";
     }
     

@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ValuePathDTO_Roo_Json {
     
     public String ValuePathDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ValuePathDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ValuePathDTO ValuePathDTO.fromJsonToValuePathDTO(String json) {
-        return new JSONDeserializer<ValuePathDTO>().use(null, ValuePathDTO.class).deserialize(json);
+        return new JSONDeserializer<ValuePathDTO>()
+        .use(null, ValuePathDTO.class).deserialize(json);
     }
     
     public static String ValuePathDTO.toJsonArray(Collection<ValuePathDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ValuePathDTO.toJsonArray(Collection<ValuePathDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ValuePathDTO> ValuePathDTO.fromJsonArrayToValuePathDTO(String json) {
-        return new JSONDeserializer<List<ValuePathDTO>>().use(null, ArrayList.class).use("values", ValuePathDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ValuePathDTO>>()
+        .use("values", ValuePathDTO.class).deserialize(json);
     }
     
 }

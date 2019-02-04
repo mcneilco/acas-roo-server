@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/jquery/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:find finderName="ByParent" id="ff_com_labsynch_labseer_domain_SaltForm" path="/saltforms" z="4leDvFxQAc9dhObctwJskgPEq9s=">
+        <field:select disableFormBinding="true" field="parent" id="f_com_labsynch_labseer_domain_SaltForm_parent" itemValue="id" items="${parents}" path="/parents" required="true" z="u0VlSv569QZZoYMsE2gB4NDWGUc="/>
+    </form:find>
+</div>

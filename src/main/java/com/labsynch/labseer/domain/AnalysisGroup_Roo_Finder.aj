@@ -11,6 +11,48 @@ import javax.persistence.TypedQuery;
 
 privileged aspect AnalysisGroup_Roo_Finder {
     
+    public static Long AnalysisGroup.countFindAnalysisGroupsByExperiments(Set<Experiment> experiments) {
+        if (experiments == null) throw new IllegalArgumentException("The experiments argument is required");
+        EntityManager em = AnalysisGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT COUNT(o) FROM AnalysisGroup AS o WHERE");
+        for (int i = 0; i < experiments.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :experiments_item").append(i).append(" MEMBER OF o.experiments");
+        }
+        TypedQuery q = em.createQuery(queryBuilder.toString(), Long.class);
+        int experimentsIndex = 0;
+        for (Experiment _experiment: experiments) {
+            q.setParameter("experiments_item" + experimentsIndex++, _experiment);
+        }
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long AnalysisGroup.countFindAnalysisGroupsByExperimentsAndIgnoredNot(Set<Experiment> experiments, boolean ignored) {
+        if (experiments == null) throw new IllegalArgumentException("The experiments argument is required");
+        EntityManager em = AnalysisGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT COUNT(o) FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+        queryBuilder.append(" AND");
+        for (int i = 0; i < experiments.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :experiments_item").append(i).append(" MEMBER OF o.experiments");
+        }
+        TypedQuery q = em.createQuery(queryBuilder.toString(), Long.class);
+        int experimentsIndex = 0;
+        for (Experiment _experiment: experiments) {
+            q.setParameter("experiments_item" + experimentsIndex++, _experiment);
+        }
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long AnalysisGroup.countFindAnalysisGroupsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AnalysisGroup.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroup AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByExperiments(Set<Experiment> experiments) {
         if (experiments == null) throw new IllegalArgumentException("The experiments argument is required");
         EntityManager em = AnalysisGroup.entityManager();
@@ -18,6 +60,28 @@ privileged aspect AnalysisGroup_Roo_Finder {
         for (int i = 0; i < experiments.size(); i++) {
             if (i > 0) queryBuilder.append(" AND");
             queryBuilder.append(" :experiments_item").append(i).append(" MEMBER OF o.experiments");
+        }
+        TypedQuery<AnalysisGroup> q = em.createQuery(queryBuilder.toString(), AnalysisGroup.class);
+        int experimentsIndex = 0;
+        for (Experiment _experiment: experiments) {
+            q.setParameter("experiments_item" + experimentsIndex++, _experiment);
+        }
+        return q;
+    }
+    
+    public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByExperiments(Set<Experiment> experiments, String sortFieldName, String sortOrder) {
+        if (experiments == null) throw new IllegalArgumentException("The experiments argument is required");
+        EntityManager em = AnalysisGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroup AS o WHERE");
+        for (int i = 0; i < experiments.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :experiments_item").append(i).append(" MEMBER OF o.experiments");
+        }
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" " + sortOrder);
+            }
         }
         TypedQuery<AnalysisGroup> q = em.createQuery(queryBuilder.toString(), AnalysisGroup.class);
         int experimentsIndex = 0;
@@ -45,10 +109,49 @@ privileged aspect AnalysisGroup_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByExperimentsAndIgnoredNot(Set<Experiment> experiments, boolean ignored, String sortFieldName, String sortOrder) {
+        if (experiments == null) throw new IllegalArgumentException("The experiments argument is required");
+        EntityManager em = AnalysisGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroup AS o WHERE o.ignored IS NOT :ignored");
+        queryBuilder.append(" AND");
+        for (int i = 0; i < experiments.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :experiments_item").append(i).append(" MEMBER OF o.experiments");
+        }
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" " + sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroup> q = em.createQuery(queryBuilder.toString(), AnalysisGroup.class);
+        int experimentsIndex = 0;
+        for (Experiment _experiment: experiments) {
+            q.setParameter("experiments_item" + experimentsIndex++, _experiment);
+        }
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
     public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = AnalysisGroup.entityManager();
         TypedQuery<AnalysisGroup> q = em.createQuery("SELECT o FROM AnalysisGroup AS o WHERE o.lsTransaction = :lsTransaction", AnalysisGroup.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
+    public static TypedQuery<AnalysisGroup> AnalysisGroup.findAnalysisGroupsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AnalysisGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroup AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroup> q = em.createQuery(queryBuilder.toString(), AnalysisGroup.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }

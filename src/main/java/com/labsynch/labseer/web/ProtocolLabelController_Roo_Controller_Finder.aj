@@ -19,8 +19,17 @@ privileged aspect ProtocolLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLabelTextEqualsAndIgnoredNot", method = RequestMethod.GET)
-    public String ProtocolLabelController.findProtocolLabelsByLabelTextEqualsAndIgnoredNot(@RequestParam("labelText") String labelText, @RequestParam(value = "ignored", required = false) boolean ignored, Model uiModel) {
-        uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLabelTextEqualsAndIgnoredNot(labelText, ignored).getResultList());
+    public String ProtocolLabelController.findProtocolLabelsByLabelTextEqualsAndIgnoredNot(@RequestParam("labelText") String labelText, @RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLabelTextEqualsAndIgnoredNot(labelText, ignored, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ProtocolLabel.countFindProtocolLabelsByLabelTextEqualsAndIgnoredNot(labelText, ignored) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLabelTextEqualsAndIgnoredNot(labelText, ignored, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocollabels/list";
     }
     
@@ -30,8 +39,17 @@ privileged aspect ProtocolLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLabelTextLike", method = RequestMethod.GET)
-    public String ProtocolLabelController.findProtocolLabelsByLabelTextLike(@RequestParam("labelText") String labelText, Model uiModel) {
-        uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLabelTextLike(labelText).getResultList());
+    public String ProtocolLabelController.findProtocolLabelsByLabelTextLike(@RequestParam("labelText") String labelText, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLabelTextLike(labelText, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ProtocolLabel.countFindProtocolLabelsByLabelTextLike(labelText) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLabelTextLike(labelText, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocollabels/list";
     }
     
@@ -41,8 +59,17 @@ privileged aspect ProtocolLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String ProtocolLabelController.findProtocolLabelsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLsTransactionEquals(lsTransaction).getResultList());
+    public String ProtocolLabelController.findProtocolLabelsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ProtocolLabel.countFindProtocolLabelsByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocollabels/list";
     }
     
@@ -53,8 +80,17 @@ privileged aspect ProtocolLabelController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByProtocol", method = RequestMethod.GET)
-    public String ProtocolLabelController.findProtocolLabelsByProtocol(@RequestParam("protocol") Protocol protocol, Model uiModel) {
-        uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByProtocol(protocol).getResultList());
+    public String ProtocolLabelController.findProtocolLabelsByProtocol(@RequestParam("protocol") Protocol protocol, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByProtocol(protocol, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ProtocolLabel.countFindProtocolLabelsByProtocol(protocol) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("protocollabels", ProtocolLabel.findProtocolLabelsByProtocol(protocol, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "protocollabels/list";
     }
     

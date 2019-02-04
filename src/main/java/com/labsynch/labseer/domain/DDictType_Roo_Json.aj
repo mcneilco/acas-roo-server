@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect DDictType_Roo_Json {
     
     public String DDictType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String DDictType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static DDictType DDictType.fromJsonToDDictType(String json) {
-        return new JSONDeserializer<DDictType>().use(null, DDictType.class).deserialize(json);
+        return new JSONDeserializer<DDictType>()
+        .use(null, DDictType.class).deserialize(json);
     }
     
     public static String DDictType.toJsonArray(Collection<DDictType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String DDictType.toJsonArray(Collection<DDictType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<DDictType> DDictType.fromJsonArrayToDDictTypes(String json) {
-        return new JSONDeserializer<List<DDictType>>().use(null, ArrayList.class).use("values", DDictType.class).deserialize(json);
+        return new JSONDeserializer<List<DDictType>>()
+        .use("values", DDictType.class).deserialize(json);
     }
     
 }

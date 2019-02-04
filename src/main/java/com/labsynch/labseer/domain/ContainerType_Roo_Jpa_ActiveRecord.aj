@@ -14,6 +14,8 @@ privileged aspect ContainerType_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager ContainerType.entityManager;
     
+    public static final List<String> ContainerType.fieldNames4OrderClauseFilter = java.util.Arrays.asList("typeName");
+    
     public static final EntityManager ContainerType.entityManager() {
         EntityManager em = new ContainerType().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect ContainerType_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ContainerType o", ContainerType.class).getResultList();
     }
     
+    public static List<ContainerType> ContainerType.findAllContainerTypes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerType.class).getResultList();
+    }
+    
     public static ContainerType ContainerType.findContainerType(Long id) {
         if (id == null) return null;
         return entityManager().find(ContainerType.class, id);
@@ -35,6 +48,17 @@ privileged aspect ContainerType_Roo_Jpa_ActiveRecord {
     
     public static List<ContainerType> ContainerType.findContainerTypeEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ContainerType o", ContainerType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ContainerType> ContainerType.findContainerTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -13,15 +13,23 @@ import java.util.List;
 privileged aspect SubjectSearchResultDTO_Roo_Json {
     
     public static SubjectSearchResultDTO SubjectSearchResultDTO.fromJsonToSubjectSearchResultDTO(String json) {
-        return new JSONDeserializer<SubjectSearchResultDTO>().use(null, SubjectSearchResultDTO.class).deserialize(json);
+        return new JSONDeserializer<SubjectSearchResultDTO>()
+        .use(null, SubjectSearchResultDTO.class).deserialize(json);
     }
     
     public static String SubjectSearchResultDTO.toJsonArray(Collection<SubjectSearchResultDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String SubjectSearchResultDTO.toJsonArray(Collection<SubjectSearchResultDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<SubjectSearchResultDTO> SubjectSearchResultDTO.fromJsonArrayToSubjectSearchResultDTO(String json) {
-        return new JSONDeserializer<List<SubjectSearchResultDTO>>().use(null, ArrayList.class).use("values", SubjectSearchResultDTO.class).deserialize(json);
+        return new JSONDeserializer<List<SubjectSearchResultDTO>>()
+        .use("values", SubjectSearchResultDTO.class).deserialize(json);
     }
     
 }

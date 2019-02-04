@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ExperimentLabel_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ExperimentLabel.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "experiment");
+    
     public static long ExperimentLabel.countExperimentLabels() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ExperimentLabel o", Long.class).getSingleResult();
     }
     
     public static List<ExperimentLabel> ExperimentLabel.findAllExperimentLabels() {
         return entityManager().createQuery("SELECT o FROM ExperimentLabel o", ExperimentLabel.class).getResultList();
+    }
+    
+    public static List<ExperimentLabel> ExperimentLabel.findAllExperimentLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ExperimentLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ExperimentLabel.class).getResultList();
     }
     
     public static ExperimentLabel ExperimentLabel.findExperimentLabel(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ExperimentLabel_Roo_Jpa_ActiveRecord {
     
     public static List<ExperimentLabel> ExperimentLabel.findExperimentLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ExperimentLabel o", ExperimentLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ExperimentLabel> ExperimentLabel.findExperimentLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ExperimentLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ExperimentLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

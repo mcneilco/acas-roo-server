@@ -10,11 +10,38 @@ import javax.persistence.TypedQuery;
 
 privileged aspect ProtocolKind_Roo_Finder {
     
+    public static Long ProtocolKind.countFindProtocolKindsByLsTypeEqualsAndKindNameEquals(ProtocolType lsType, String kindName) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        EntityManager em = ProtocolKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ProtocolKind AS o WHERE o.lsType = :lsType  AND o.kindName = :kindName", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("kindName", kindName);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<ProtocolKind> ProtocolKind.findProtocolKindsByLsTypeEqualsAndKindNameEquals(ProtocolType lsType, String kindName) {
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
         if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
         EntityManager em = ProtocolKind.entityManager();
         TypedQuery<ProtocolKind> q = em.createQuery("SELECT o FROM ProtocolKind AS o WHERE o.lsType = :lsType  AND o.kindName = :kindName", ProtocolKind.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("kindName", kindName);
+        return q;
+    }
+    
+    public static TypedQuery<ProtocolKind> ProtocolKind.findProtocolKindsByLsTypeEqualsAndKindNameEquals(ProtocolType lsType, String kindName, String sortFieldName, String sortOrder) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        EntityManager em = ProtocolKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ProtocolKind AS o WHERE o.lsType = :lsType  AND o.kindName = :kindName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ProtocolKind> q = em.createQuery(queryBuilder.toString(), ProtocolKind.class);
         q.setParameter("lsType", lsType);
         q.setParameter("kindName", kindName);
         return q;

@@ -14,6 +14,8 @@ privileged aspect UncertaintyKind_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager UncertaintyKind.entityManager;
     
+    public static final List<String> UncertaintyKind.fieldNames4OrderClauseFilter = java.util.Arrays.asList("kindName");
+    
     public static final EntityManager UncertaintyKind.entityManager() {
         EntityManager em = new UncertaintyKind().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect UncertaintyKind_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM UncertaintyKind o", UncertaintyKind.class).getResultList();
     }
     
+    public static List<UncertaintyKind> UncertaintyKind.findAllUncertaintyKinds(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM UncertaintyKind o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, UncertaintyKind.class).getResultList();
+    }
+    
     public static UncertaintyKind UncertaintyKind.findUncertaintyKind(Long id) {
         if (id == null) return null;
         return entityManager().find(UncertaintyKind.class, id);
@@ -35,6 +48,17 @@ privileged aspect UncertaintyKind_Roo_Jpa_ActiveRecord {
     
     public static List<UncertaintyKind> UncertaintyKind.findUncertaintyKindEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM UncertaintyKind o", UncertaintyKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<UncertaintyKind> UncertaintyKind.findUncertaintyKindEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM UncertaintyKind o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, UncertaintyKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

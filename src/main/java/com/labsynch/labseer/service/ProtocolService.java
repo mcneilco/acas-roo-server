@@ -33,6 +33,9 @@ public interface ProtocolService {
 	Collection<Protocol> findProtocolsByGenericMetaDataSearch(
 			String queryString, String userName);
 
+	Collection<Protocol> findProtocolsByGenericMetaDataSearch(
+		String queryString, List<String> projects);
+		
 	Collection<ProtocolErrorMessageDTO> findProtocolsByCodeNames(
 			List<String> codeNames);
 	

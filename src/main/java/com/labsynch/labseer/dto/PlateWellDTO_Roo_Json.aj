@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect PlateWellDTO_Roo_Json {
     
     public String PlateWellDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String PlateWellDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static PlateWellDTO PlateWellDTO.fromJsonToPlateWellDTO(String json) {
-        return new JSONDeserializer<PlateWellDTO>().use(null, PlateWellDTO.class).deserialize(json);
+        return new JSONDeserializer<PlateWellDTO>()
+        .use(null, PlateWellDTO.class).deserialize(json);
     }
     
     public static String PlateWellDTO.toJsonArray(Collection<PlateWellDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String PlateWellDTO.toJsonArray(Collection<PlateWellDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<PlateWellDTO> PlateWellDTO.fromJsonArrayToPlateWellDTO(String json) {
-        return new JSONDeserializer<List<PlateWellDTO>>().use(null, ArrayList.class).use("values", PlateWellDTO.class).deserialize(json);
+        return new JSONDeserializer<List<PlateWellDTO>>()
+        .use("values", PlateWellDTO.class).deserialize(json);
     }
     
 }

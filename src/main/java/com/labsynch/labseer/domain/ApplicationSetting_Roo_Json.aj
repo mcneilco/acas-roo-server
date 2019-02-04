@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ApplicationSetting_Roo_Json {
     
     public String ApplicationSetting.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ApplicationSetting.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ApplicationSetting ApplicationSetting.fromJsonToApplicationSetting(String json) {
-        return new JSONDeserializer<ApplicationSetting>().use(null, ApplicationSetting.class).deserialize(json);
+        return new JSONDeserializer<ApplicationSetting>()
+        .use(null, ApplicationSetting.class).deserialize(json);
     }
     
     public static String ApplicationSetting.toJsonArray(Collection<ApplicationSetting> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ApplicationSetting.toJsonArray(Collection<ApplicationSetting> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ApplicationSetting> ApplicationSetting.fromJsonArrayToApplicationSettings(String json) {
-        return new JSONDeserializer<List<ApplicationSetting>>().use(null, ArrayList.class).use("values", ApplicationSetting.class).deserialize(json);
+        return new JSONDeserializer<List<ApplicationSetting>>()
+        .use("values", ApplicationSetting.class).deserialize(json);
     }
     
 }

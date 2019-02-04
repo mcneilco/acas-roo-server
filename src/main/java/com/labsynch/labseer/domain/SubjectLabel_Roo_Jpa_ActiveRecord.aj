@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect SubjectLabel_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> SubjectLabel.fieldNames4OrderClauseFilter = java.util.Arrays.asList("subject");
+    
     public static long SubjectLabel.countSubjectLabels() {
         return entityManager().createQuery("SELECT COUNT(o) FROM SubjectLabel o", Long.class).getSingleResult();
     }
     
     public static List<SubjectLabel> SubjectLabel.findAllSubjectLabels() {
         return entityManager().createQuery("SELECT o FROM SubjectLabel o", SubjectLabel.class).getResultList();
+    }
+    
+    public static List<SubjectLabel> SubjectLabel.findAllSubjectLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM SubjectLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, SubjectLabel.class).getResultList();
     }
     
     public static SubjectLabel SubjectLabel.findSubjectLabel(Long id) {
@@ -24,6 +37,17 @@ privileged aspect SubjectLabel_Roo_Jpa_ActiveRecord {
     
     public static List<SubjectLabel> SubjectLabel.findSubjectLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM SubjectLabel o", SubjectLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<SubjectLabel> SubjectLabel.findSubjectLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM SubjectLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, SubjectLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

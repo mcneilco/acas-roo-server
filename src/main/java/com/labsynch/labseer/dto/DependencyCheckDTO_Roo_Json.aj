@@ -13,15 +13,23 @@ import java.util.List;
 privileged aspect DependencyCheckDTO_Roo_Json {
     
     public static DependencyCheckDTO DependencyCheckDTO.fromJsonToDependencyCheckDTO(String json) {
-        return new JSONDeserializer<DependencyCheckDTO>().use(null, DependencyCheckDTO.class).deserialize(json);
+        return new JSONDeserializer<DependencyCheckDTO>()
+        .use(null, DependencyCheckDTO.class).deserialize(json);
     }
     
     public static String DependencyCheckDTO.toJsonArray(Collection<DependencyCheckDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String DependencyCheckDTO.toJsonArray(Collection<DependencyCheckDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<DependencyCheckDTO> DependencyCheckDTO.fromJsonArrayToDependencyCheckDTO(String json) {
-        return new JSONDeserializer<List<DependencyCheckDTO>>().use(null, ArrayList.class).use("values", DependencyCheckDTO.class).deserialize(json);
+        return new JSONDeserializer<List<DependencyCheckDTO>>()
+        .use("values", DependencyCheckDTO.class).deserialize(json);
     }
     
 }

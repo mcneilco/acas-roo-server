@@ -9,10 +9,33 @@ import javax.persistence.TypedQuery;
 
 privileged aspect CodeOrigin_Roo_Finder {
     
+    public static Long CodeOrigin.countFindCodeOriginsByNameEquals(String name) {
+        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+        EntityManager em = CodeOrigin.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CodeOrigin AS o WHERE o.name = :name", Long.class);
+        q.setParameter("name", name);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<CodeOrigin> CodeOrigin.findCodeOriginsByNameEquals(String name) {
         if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
         EntityManager em = CodeOrigin.entityManager();
         TypedQuery<CodeOrigin> q = em.createQuery("SELECT o FROM CodeOrigin AS o WHERE o.name = :name", CodeOrigin.class);
+        q.setParameter("name", name);
+        return q;
+    }
+    
+    public static TypedQuery<CodeOrigin> CodeOrigin.findCodeOriginsByNameEquals(String name, String sortFieldName, String sortOrder) {
+        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+        EntityManager em = CodeOrigin.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CodeOrigin AS o WHERE o.name = :name");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<CodeOrigin> q = em.createQuery(queryBuilder.toString(), CodeOrigin.class);
         q.setParameter("name", name);
         return q;
     }

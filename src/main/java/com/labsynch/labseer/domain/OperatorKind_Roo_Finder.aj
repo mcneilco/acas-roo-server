@@ -10,11 +10,38 @@ import javax.persistence.TypedQuery;
 
 privileged aspect OperatorKind_Roo_Finder {
     
+    public static Long OperatorKind.countFindOperatorKindsByKindNameEqualsAndLsType(String kindName, OperatorType lsType) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = OperatorKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM OperatorKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", Long.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<OperatorKind> OperatorKind.findOperatorKindsByKindNameEqualsAndLsType(String kindName, OperatorType lsType) {
         if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = OperatorKind.entityManager();
         TypedQuery<OperatorKind> q = em.createQuery("SELECT o FROM OperatorKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", OperatorKind.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
+    public static TypedQuery<OperatorKind> OperatorKind.findOperatorKindsByKindNameEqualsAndLsType(String kindName, OperatorType lsType, String sortFieldName, String sortOrder) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = OperatorKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM OperatorKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<OperatorKind> q = em.createQuery(queryBuilder.toString(), OperatorKind.class);
         q.setParameter("kindName", kindName);
         q.setParameter("lsType", lsType);
         return q;

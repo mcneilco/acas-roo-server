@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="isosalts/list">
+        <put-attribute name="body" value="/WEB-INF/views/isosalts/list.jspx"/>
+    </definition>
+<definition extends="default" name="isosalts/show">
+        <put-attribute name="body" value="/WEB-INF/views/isosalts/show.jspx"/>
+    </definition>
+<definition extends="default" name="isosalts/create">
+        <put-attribute name="body" value="/WEB-INF/views/isosalts/create.jspx"/>
+    </definition>
+<definition extends="default" name="isosalts/update">
+        <put-attribute name="body" value="/WEB-INF/views/isosalts/update.jspx"/>
+    </definition>
+<definition extends="default" name="isosalts/findIsoSaltsBySaltForm">
+        <put-attribute name="body" value="/WEB-INF/views/isosalts/findIsoSaltsBySaltForm.jspx"/>
+    </definition>
+<definition extends="default" name="isosalts/findIsoSaltsBySaltFormAndType">
+        <put-attribute name="body" value="/WEB-INF/views/isosalts/findIsoSaltsBySaltFormAndType.jspx"/>
+    </definition>
+</tiles-definitions>

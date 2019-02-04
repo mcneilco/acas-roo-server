@@ -14,6 +14,8 @@ privileged aspect LabelType_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LabelType.entityManager;
     
+    public static final List<String> LabelType.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "typeName", "id", "version");
+    
     public static final EntityManager LabelType.entityManager() {
         EntityManager em = new LabelType().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LabelType_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LabelType o", LabelType.class).getResultList();
     }
     
+    public static List<LabelType> LabelType.findAllLabelTypes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LabelType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LabelType.class).getResultList();
+    }
+    
     public static LabelType LabelType.findLabelType(Long id) {
         if (id == null) return null;
         return entityManager().find(LabelType.class, id);
@@ -35,6 +48,17 @@ privileged aspect LabelType_Roo_Jpa_ActiveRecord {
     
     public static List<LabelType> LabelType.findLabelTypeEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LabelType o", LabelType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LabelType> LabelType.findLabelTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LabelType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LabelType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

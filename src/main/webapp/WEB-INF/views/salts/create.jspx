@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/datatables" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:spring="http://www.springframework.org/tags" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:create id="fc_com_labsynch_labseer_domain_Salt" modelAttribute="salt" path="/salts" render="${empty dependencies}" z="ZSJOkUU0JDxiuZ4Ew1q+/LYGUMc=">
+        <field:input field="molStructure" id="c_com_labsynch_labseer_domain_Salt_molStructure" z="OMahxMvBw3JYG2DEL5TBInrQlaY="/>
+        <field:textarea field="name" id="c_com_labsynch_labseer_domain_Salt_name" z="QMe9CVnzMY7ad0h2tUT53phaECs="/>
+        <field:input field="originalStructure" id="c_com_labsynch_labseer_domain_Salt_originalStructure" z="qwBsre0Z9RzR+p9Fa8DB+2opBPQ="/>
+        <field:textarea field="abbrev" id="c_com_labsynch_labseer_domain_Salt_abbrev" z="o7YMhwiKlyakUZorlk5NHcoMIlI="/>
+        <field:input field="molWeight" id="c_com_labsynch_labseer_domain_Salt_molWeight" validationMessageCode="field_invalid_number" z="0/qYMvluuLLqP2NVPzYLVHVLZmA="/>
+        <field:textarea field="formula" id="c_com_labsynch_labseer_domain_Salt_formula" z="W3iCvtdhrBI9BvVxtMC5PYe6Ceo="/>
+        <field:input field="cdId" id="c_com_labsynch_labseer_domain_Salt_cdId" z="IG1+XtkO/ZGbs87M0YLvVPZ6N18="/>
+        <field:checkbox field="ignore" id="c_com_labsynch_labseer_domain_Salt_ignore" z="4zhmT8cp5gEHFNcCiiRHZbZlCQM="/>
+        <field:input field="charge" id="c_com_labsynch_labseer_domain_Salt_charge" z="UW/TjicZUvTcUDgbWK9viNoOxKM="/>
+    </form:create>
+    <form:dependency dependencies="${dependencies}" id="d_com_labsynch_labseer_domain_Salt" render="${not empty dependencies}" z="gHu6jLbpuKU3NkceTtx3Q4flXfs="/>
+</div>

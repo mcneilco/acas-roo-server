@@ -9,7 +9,8 @@ import flexjson.JSONDeserializer;
 privileged aspect ItxExperimentExperimentState_Roo_Json {
     
     public static ItxExperimentExperimentState ItxExperimentExperimentState.fromJsonToItxExperimentExperimentState(String json) {
-        return new JSONDeserializer<ItxExperimentExperimentState>().use(null, ItxExperimentExperimentState.class).deserialize(json);
+        return new JSONDeserializer<ItxExperimentExperimentState>()
+        .use(null, ItxExperimentExperimentState.class).deserialize(json);
     }
     
 }

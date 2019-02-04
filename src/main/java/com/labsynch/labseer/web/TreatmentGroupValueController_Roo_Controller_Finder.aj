@@ -19,8 +19,17 @@ privileged aspect TreatmentGroupValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeValueEquals", method = RequestMethod.GET)
-    public String TreatmentGroupValueController.findTreatmentGroupValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue, Model uiModel) {
-        uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByCodeValueEquals(codeValue).getResultList());
+    public String TreatmentGroupValueController.findTreatmentGroupValuesByCodeValueEquals(@RequestParam("codeValue") String codeValue, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByCodeValueEquals(codeValue, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) TreatmentGroupValue.countFindTreatmentGroupValuesByCodeValueEquals(codeValue) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByCodeValueEquals(codeValue, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "treatmentgroupvalues/list";
     }
     
@@ -30,8 +39,17 @@ privileged aspect TreatmentGroupValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByIgnoredNotAndCodeValueEquals", method = RequestMethod.GET)
-    public String TreatmentGroupValueController.findTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue, Model uiModel) {
-        uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue).getResultList());
+    public String TreatmentGroupValueController.findTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(@RequestParam(value = "ignored", required = false) boolean ignored, @RequestParam("codeValue") String codeValue, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) TreatmentGroupValue.countFindTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByIgnoredNotAndCodeValueEquals(ignored, codeValue, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "treatmentgroupvalues/list";
     }
     
@@ -42,8 +60,17 @@ privileged aspect TreatmentGroupValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsState", method = RequestMethod.GET)
-    public String TreatmentGroupValueController.findTreatmentGroupValuesByLsState(@RequestParam("lsState") TreatmentGroupState lsState, Model uiModel) {
-        uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByLsState(lsState).getResultList());
+    public String TreatmentGroupValueController.findTreatmentGroupValuesByLsState(@RequestParam("lsState") TreatmentGroupState lsState, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByLsState(lsState, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) TreatmentGroupValue.countFindTreatmentGroupValuesByLsState(lsState) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByLsState(lsState, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "treatmentgroupvalues/list";
     }
     
@@ -53,8 +80,17 @@ privileged aspect TreatmentGroupValueController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String TreatmentGroupValueController.findTreatmentGroupValuesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByLsTransactionEquals(lsTransaction).getResultList());
+    public String TreatmentGroupValueController.findTreatmentGroupValuesByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) TreatmentGroupValue.countFindTreatmentGroupValuesByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("treatmentgroupvalues", TreatmentGroupValue.findTreatmentGroupValuesByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "treatmentgroupvalues/list";
     }
     

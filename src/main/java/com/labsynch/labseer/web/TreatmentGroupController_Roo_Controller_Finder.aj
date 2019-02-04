@@ -21,8 +21,17 @@ privileged aspect TreatmentGroupController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByAnalysisGroups", method = RequestMethod.GET)
-    public String TreatmentGroupController.findTreatmentGroupsByAnalysisGroups(@RequestParam("analysisGroups") Set<AnalysisGroup> analysisGroups, Model uiModel) {
-        uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByAnalysisGroups(analysisGroups).getResultList());
+    public String TreatmentGroupController.findTreatmentGroupsByAnalysisGroups(@RequestParam("analysisGroups") Set<AnalysisGroup> analysisGroups, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByAnalysisGroups(analysisGroups, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) TreatmentGroup.countFindTreatmentGroupsByAnalysisGroups(analysisGroups) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByAnalysisGroups(analysisGroups, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "treatmentgroups/list";
     }
     
@@ -32,8 +41,17 @@ privileged aspect TreatmentGroupController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByCodeNameEquals", method = RequestMethod.GET)
-    public String TreatmentGroupController.findTreatmentGroupsByCodeNameEquals(@RequestParam("codeName") String codeName, Model uiModel) {
-        uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByCodeNameEquals(codeName).getResultList());
+    public String TreatmentGroupController.findTreatmentGroupsByCodeNameEquals(@RequestParam("codeName") String codeName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByCodeNameEquals(codeName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) TreatmentGroup.countFindTreatmentGroupsByCodeNameEquals(codeName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByCodeNameEquals(codeName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "treatmentgroups/list";
     }
     
@@ -43,8 +61,17 @@ privileged aspect TreatmentGroupController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTransactionEquals", method = RequestMethod.GET)
-    public String TreatmentGroupController.findTreatmentGroupsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, Model uiModel) {
-        uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(lsTransaction).getResultList());
+    public String TreatmentGroupController.findTreatmentGroupsByLsTransactionEquals(@RequestParam("lsTransaction") Long lsTransaction, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) TreatmentGroup.countFindTreatmentGroupsByLsTransactionEquals(lsTransaction) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("treatmentgroups", TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(lsTransaction, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
         return "treatmentgroups/list";
     }
     

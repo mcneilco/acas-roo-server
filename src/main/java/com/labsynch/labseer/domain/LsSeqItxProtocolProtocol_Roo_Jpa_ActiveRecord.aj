@@ -14,6 +14,8 @@ privileged aspect LsSeqItxProtocolProtocol_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LsSeqItxProtocolProtocol.entityManager;
     
+    public static final List<String> LsSeqItxProtocolProtocol.fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
+    
     public static final EntityManager LsSeqItxProtocolProtocol.entityManager() {
         EntityManager em = new LsSeqItxProtocolProtocol().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LsSeqItxProtocolProtocol_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LsSeqItxProtocolProtocol o", LsSeqItxProtocolProtocol.class).getResultList();
     }
     
+    public static List<LsSeqItxProtocolProtocol> LsSeqItxProtocolProtocol.findAllLsSeqItxProtocolProtocols(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqItxProtocolProtocol o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqItxProtocolProtocol.class).getResultList();
+    }
+    
     public static LsSeqItxProtocolProtocol LsSeqItxProtocolProtocol.findLsSeqItxProtocolProtocol(Long id) {
         if (id == null) return null;
         return entityManager().find(LsSeqItxProtocolProtocol.class, id);
@@ -35,6 +48,17 @@ privileged aspect LsSeqItxProtocolProtocol_Roo_Jpa_ActiveRecord {
     
     public static List<LsSeqItxProtocolProtocol> LsSeqItxProtocolProtocol.findLsSeqItxProtocolProtocolEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsSeqItxProtocolProtocol o", LsSeqItxProtocolProtocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsSeqItxProtocolProtocol> LsSeqItxProtocolProtocol.findLsSeqItxProtocolProtocolEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqItxProtocolProtocol o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqItxProtocolProtocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

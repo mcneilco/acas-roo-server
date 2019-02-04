@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect AbstractValue_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> AbstractValue.fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsType", "lsKind", "lsTypeAndKind", "codeOrigin", "codeType", "codeKind", "codeTypeAndKind", "stringValue", "codeValue", "fileValue", "urlValue", "dateValue", "clobValue", "blobValue", "operatorType", "operatorKind", "operatorTypeAndKind", "numericValue", "sigFigs", "uncertainty", "numberOfReplicates", "uncertaintyType", "unitType", "unitKind", "unitTypeAndKind", "concentration", "concUnit", "comments", "ignored", "deleted", "lsTransaction", "recordedDate", "recordedBy", "modifiedDate", "modifiedBy", "publicData", "id", "entityManager");
+    
     public static long AbstractValue.countAbstractValues() {
         return entityManager().createQuery("SELECT COUNT(o) FROM AbstractValue o", Long.class).getSingleResult();
     }
     
     public static List<AbstractValue> AbstractValue.findAllAbstractValues() {
         return entityManager().createQuery("SELECT o FROM AbstractValue o", AbstractValue.class).getResultList();
+    }
+    
+    public static List<AbstractValue> AbstractValue.findAllAbstractValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AbstractValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AbstractValue.class).getResultList();
     }
     
     public static AbstractValue AbstractValue.findAbstractValue(Long id) {
@@ -24,6 +37,17 @@ privileged aspect AbstractValue_Roo_Jpa_ActiveRecord {
     
     public static List<AbstractValue> AbstractValue.findAbstractValueEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM AbstractValue o", AbstractValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<AbstractValue> AbstractValue.findAbstractValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AbstractValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AbstractValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

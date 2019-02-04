@@ -10,9 +10,38 @@ import javax.persistence.TypedQuery;
 
 privileged aspect ContainerValue_Roo_Finder {
     
+    public static Long ContainerValue.countFindContainerValuesByIgnoredNot(boolean ignored) {
+        EntityManager em = ContainerValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long ContainerValue.countFindContainerValuesByLsState(ContainerState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = ContainerValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerValue AS o WHERE o.lsState = :lsState", Long.class);
+        q.setParameter("lsState", lsState);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<ContainerValue> ContainerValue.findContainerValuesByIgnoredNot(boolean ignored) {
         EntityManager em = ContainerValue.entityManager();
         TypedQuery<ContainerValue> q = em.createQuery("SELECT o FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored", ContainerValue.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+    
+    public static TypedQuery<ContainerValue> ContainerValue.findContainerValuesByIgnoredNot(boolean ignored, String sortFieldName, String sortOrder) {
+        EntityManager em = ContainerValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerValue> q = em.createQuery(queryBuilder.toString(), ContainerValue.class);
         q.setParameter("ignored", ignored);
         return q;
     }
@@ -21,6 +50,21 @@ privileged aspect ContainerValue_Roo_Finder {
         if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
         EntityManager em = ContainerValue.entityManager();
         TypedQuery<ContainerValue> q = em.createQuery("SELECT o FROM ContainerValue AS o WHERE o.lsState = :lsState", ContainerValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+    
+    public static TypedQuery<ContainerValue> ContainerValue.findContainerValuesByLsState(ContainerState lsState, String sortFieldName, String sortOrder) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = ContainerValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerValue AS o WHERE o.lsState = :lsState");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerValue> q = em.createQuery(queryBuilder.toString(), ContainerValue.class);
         q.setParameter("lsState", lsState);
         return q;
     }

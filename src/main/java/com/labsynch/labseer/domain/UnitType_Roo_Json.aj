@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect UnitType_Roo_Json {
     
     public String UnitType.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String UnitType.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static UnitType UnitType.fromJsonToUnitType(String json) {
-        return new JSONDeserializer<UnitType>().use(null, UnitType.class).deserialize(json);
+        return new JSONDeserializer<UnitType>()
+        .use(null, UnitType.class).deserialize(json);
     }
     
     public static String UnitType.toJsonArray(Collection<UnitType> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String UnitType.toJsonArray(Collection<UnitType> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<UnitType> UnitType.fromJsonArrayToUnitTypes(String json) {
-        return new JSONDeserializer<List<UnitType>>().use(null, ArrayList.class).use("values", UnitType.class).deserialize(json);
+        return new JSONDeserializer<List<UnitType>>()
+        .use("values", UnitType.class).deserialize(json);
     }
     
 }

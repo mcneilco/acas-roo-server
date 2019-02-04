@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect AnalysisGroupStatePathDTO_Roo_Json {
     
     public static AnalysisGroupStatePathDTO AnalysisGroupStatePathDTO.fromJsonToAnalysisGroupStatePathDTO(String json) {
-        return new JSONDeserializer<AnalysisGroupStatePathDTO>().use(null, AnalysisGroupStatePathDTO.class).deserialize(json);
+        return new JSONDeserializer<AnalysisGroupStatePathDTO>()
+        .use(null, AnalysisGroupStatePathDTO.class).deserialize(json);
     }
     
     public static Collection<AnalysisGroupStatePathDTO> AnalysisGroupStatePathDTO.fromJsonArrayToAnalysisGroes(String json) {
-        return new JSONDeserializer<List<AnalysisGroupStatePathDTO>>().use(null, ArrayList.class).use("values", AnalysisGroupStatePathDTO.class).deserialize(json);
+        return new JSONDeserializer<List<AnalysisGroupStatePathDTO>>()
+        .use("values", AnalysisGroupStatePathDTO.class).deserialize(json);
     }
     
 }

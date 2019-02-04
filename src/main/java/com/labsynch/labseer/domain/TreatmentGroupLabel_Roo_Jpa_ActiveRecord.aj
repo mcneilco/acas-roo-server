@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect TreatmentGroupLabel_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> TreatmentGroupLabel.fieldNames4OrderClauseFilter = java.util.Arrays.asList("treatmentGroup");
+    
     public static long TreatmentGroupLabel.countTreatmentGroupLabels() {
         return entityManager().createQuery("SELECT COUNT(o) FROM TreatmentGroupLabel o", Long.class).getSingleResult();
     }
     
     public static List<TreatmentGroupLabel> TreatmentGroupLabel.findAllTreatmentGroupLabels() {
         return entityManager().createQuery("SELECT o FROM TreatmentGroupLabel o", TreatmentGroupLabel.class).getResultList();
+    }
+    
+    public static List<TreatmentGroupLabel> TreatmentGroupLabel.findAllTreatmentGroupLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM TreatmentGroupLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, TreatmentGroupLabel.class).getResultList();
     }
     
     public static TreatmentGroupLabel TreatmentGroupLabel.findTreatmentGroupLabel(Long id) {
@@ -24,6 +37,17 @@ privileged aspect TreatmentGroupLabel_Roo_Jpa_ActiveRecord {
     
     public static List<TreatmentGroupLabel> TreatmentGroupLabel.findTreatmentGroupLabelEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM TreatmentGroupLabel o", TreatmentGroupLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<TreatmentGroupLabel> TreatmentGroupLabel.findTreatmentGroupLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM TreatmentGroupLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, TreatmentGroupLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

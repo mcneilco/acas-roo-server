@@ -305,6 +305,38 @@ public class ProtocolServiceImpl implements ProtocolService {
 			return rawResults;
 		}
 	}
+
+	@Override
+	public Collection<Protocol> findProtocolsByGenericMetaDataSearch(String queryString, List<String> projects) {
+		Collection<Protocol> rawResults = findProtocolsByGenericMetaDataSearch(queryString);
+		if (propertiesUtilService.getRestrictExperiments()){
+			projects.add("unassigned");
+			Collection<Protocol> results = new HashSet<Protocol>();
+			for (Protocol rawResult : rawResults){
+				String protocolProject = null;
+				for (ProtocolState state : rawResult.getLsStates()){
+					if(!state.isIgnored() && !state.isDeleted()) {
+						for (ProtocolValue value : state.getLsValues()){
+							if (value.getLsKind().equals("project") && !value.getDeleted() && !value.getIgnored()){
+								protocolProject = value.getCodeValue();
+								break;
+							}
+						}
+					}
+				}
+				if (protocolProject == null){
+					//no project associated with protocol, pass it through
+					results.add(rawResult);
+				}
+				else if (projects.contains(protocolProject)){
+					results.add(rawResult);
+				}
+			}
+			return results;
+		}else{
+			return rawResults;
+		}
+	}
 	
 	public Collection<Protocol> findProtocolsByGenericMetaDataSearch(String queryString) {
 		//make our HashSets: protocolIdList will be filled/cleared/refilled for each term

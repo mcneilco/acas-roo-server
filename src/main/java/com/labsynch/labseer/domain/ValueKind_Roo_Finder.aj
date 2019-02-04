@@ -10,6 +10,24 @@ import javax.persistence.TypedQuery;
 
 privileged aspect ValueKind_Roo_Finder {
     
+    public static Long ValueKind.countFindValueKindsByKindNameEqualsAndLsType(String kindName, ValueType lsType) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = ValueKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ValueKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", Long.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long ValueKind.countFindValueKindsByLsType(ValueType lsType) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = ValueKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ValueKind AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<ValueKind> ValueKind.findValueKindsByKindNameEqualsAndLsType(String kindName, ValueType lsType) {
         if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
@@ -20,10 +38,42 @@ privileged aspect ValueKind_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<ValueKind> ValueKind.findValueKindsByKindNameEqualsAndLsType(String kindName, ValueType lsType, String sortFieldName, String sortOrder) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = ValueKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ValueKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ValueKind> q = em.createQuery(queryBuilder.toString(), ValueKind.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
     public static TypedQuery<ValueKind> ValueKind.findValueKindsByLsType(ValueType lsType) {
         if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
         EntityManager em = ValueKind.entityManager();
         TypedQuery<ValueKind> q = em.createQuery("SELECT o FROM ValueKind AS o WHERE o.lsType = :lsType", ValueKind.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+    
+    public static TypedQuery<ValueKind> ValueKind.findValueKindsByLsType(ValueType lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = ValueKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ValueKind AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ValueKind> q = em.createQuery(queryBuilder.toString(), ValueKind.class);
         q.setParameter("lsType", lsType);
         return q;
     }

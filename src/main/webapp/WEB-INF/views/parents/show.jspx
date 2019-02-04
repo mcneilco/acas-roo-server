@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/jquery/form/fields" xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/datatables" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:show id="ps_com_labsynch_labseer_domain_Parent" object="${parent}" path="/parents" z="kHc77vQtMcHkMgk+VSgDx6M+kPw=">
+        <field:display field="labelPrefix" id="s_com_labsynch_labseer_domain_Parent_labelPrefix" object="${parent}" z="qvhE4tzIvHAXRAQtM6/CWI06e18="/>
+        <field:display field="corpName" id="s_com_labsynch_labseer_domain_Parent_corpName" object="${parent}" z="24IPRhMpP83BUwyVVTV06hddwjE="/>
+        <field:display field="parentNumber" id="s_com_labsynch_labseer_domain_Parent_parentNumber" object="${parent}" z="FDBDjLgW4UYz4Xitj4lGhlXe5Bg="/>
+        <field:display field="commonName" id="s_com_labsynch_labseer_domain_Parent_commonName" object="${parent}" z="+CYWbGmJq0sg9L1vN6DdFPlI/RY="/>
+        <field:display field="stereoCategory" id="s_com_labsynch_labseer_domain_Parent_stereoCategory" object="${parent}" z="eG+ZAW9QoGLkOaop1vOs2pefIAA="/>
+        <field:display field="stereoComment" id="s_com_labsynch_labseer_domain_Parent_stereoComment" object="${parent}" z="XA42nEkNGuFxRrBFP9HqE52W3hU="/>
+        <field:display field="molStructure" id="s_com_labsynch_labseer_domain_Parent_molStructure" object="${parent}" z="vvKt8l0h3okgSai3NdYUSU6q9Lg="/>
+        <field:display field="molWeight" id="s_com_labsynch_labseer_domain_Parent_molWeight" object="${parent}" z="xztcy+Eobmq8RnnLb6fFuibiIf0="/>
+        <field:display field="exactMass" id="s_com_labsynch_labseer_domain_Parent_exactMass" object="${parent}" z="zkW1tHOe9ZRnmDxPbM7Ic+LS0k8="/>
+        <field:display field="molFormula" id="s_com_labsynch_labseer_domain_Parent_molFormula" object="${parent}" z="U42fGTzWmLUvnn8t+aya7/whDlc="/>
+        <field:display field="cdId" id="s_com_labsynch_labseer_domain_Parent_CdId" object="${parent}" z="3nYsxx44w05xTg/UZB7lHxpyCUQ="/>
+        <field:display date="true" dateTimePattern="${parent_registrationdate_date_format}" field="registrationDate" id="s_com_labsynch_labseer_domain_Parent_registrationDate" object="${parent}" z="y8vz+qFaJs8E130A1EzFgj9lcw0="/>
+        <field:display date="true" dateTimePattern="${parent_modifieddate_date_format}" field="modifiedDate" id="s_com_labsynch_labseer_domain_Parent_modifiedDate" object="${parent}" z="mo+4cq0xVwoEcBuYLPzcB8F0Lvo="/>
+        <field:display field="ignore" id="s_com_labsynch_labseer_domain_Parent_ignore" object="${parent}" z="kEKX218VAEGO+GcYQGaRtj+IEdM="/>
+        <field:display field="bulkLoadFile" id="s_com_labsynch_labseer_domain_Parent_bulkLoadFile" object="${parent}" z="KPwzm0cU4MplS4aVr88fd7zM26w="/>
+        <field:display field="parentAnnotation" id="s_com_labsynch_labseer_domain_Parent_parentAnnotation" object="${parent}" z="edZVnMhKxlM/sxbpkf/4TTqn8yE="/>
+        <field:display field="compoundType" id="s_com_labsynch_labseer_domain_Parent_compoundType" object="${parent}" z="TXESJsKiUl1kyFjd53G7zWgtjVY="/>
+        <field:display field="comment" id="s_com_labsynch_labseer_domain_Parent_comment" object="${parent}" z="ydKkSnmrTPX86ovLO1sCvt1r5pI="/>
+        <field:display field="isMixture" id="s_com_labsynch_labseer_domain_Parent_isMixture" object="${parent}" z="yog4nEXqm2sB/ZekWqmSD/ihRi0="/>
+        <field:display field="chemist" id="s_com_labsynch_labseer_domain_Parent_chemist" object="${parent}" z="PZFiJ0FNsgrAkF8WZrXj3FgTnp8="/>
+        <field:display field="registeredBy" id="s_com_labsynch_labseer_domain_Parent_registeredBy" object="${parent}" z="Ky81k12O9ocUAKOHtPRxCOJEM2U="/>
+        <field:display field="modifiedBy" id="s_com_labsynch_labseer_domain_Parent_modifiedBy" object="${parent}" z="h9QYymeorYrRL+IUimoKybivE0s="/>
+    </page:show>
+</div>

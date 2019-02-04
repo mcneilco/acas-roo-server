@@ -38,7 +38,7 @@ privileged aspect StateKindController_Roo_Controller {
         populateEditForm(uiModel, new StateKind());
         List<String[]> dependencies = new ArrayList<String[]>();
         if (StateType.countStateTypes() == 0) {
-            dependencies.add(new String[] { "statetype", "statetypes" });
+            dependencies.add(new String[] { "lsType", "statetypes" });
         }
         uiModel.addAttribute("dependencies", dependencies);
         return "statekinds/create";
@@ -52,15 +52,15 @@ privileged aspect StateKindController_Roo_Controller {
     }
     
     @RequestMapping(produces = "text/html")
-    public String StateKindController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+    public String StateKindController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
         if (page != null || size != null) {
             int sizeNo = size == null ? 10 : size.intValue();
             final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
-            uiModel.addAttribute("statekinds", StateKind.findStateKindEntries(firstResult, sizeNo));
+            uiModel.addAttribute("statekinds", StateKind.findStateKindEntries(firstResult, sizeNo, sortFieldName, sortOrder));
             float nrOfPages = (float) StateKind.countStateKinds() / sizeNo;
             uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
         } else {
-            uiModel.addAttribute("statekinds", StateKind.findAllStateKinds());
+            uiModel.addAttribute("statekinds", StateKind.findAllStateKinds(sortFieldName, sortOrder));
         }
         return "statekinds/list";
     }

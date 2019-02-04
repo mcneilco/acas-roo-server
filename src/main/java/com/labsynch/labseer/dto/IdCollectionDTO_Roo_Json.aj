@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect IdCollectionDTO_Roo_Json {
     
     public String IdCollectionDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String IdCollectionDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static IdCollectionDTO IdCollectionDTO.fromJsonToIdCollectionDTO(String json) {
-        return new JSONDeserializer<IdCollectionDTO>().use(null, IdCollectionDTO.class).deserialize(json);
+        return new JSONDeserializer<IdCollectionDTO>()
+        .use(null, IdCollectionDTO.class).deserialize(json);
     }
     
     public static String IdCollectionDTO.toJsonArray(Collection<IdCollectionDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String IdCollectionDTO.toJsonArray(Collection<IdCollectionDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<IdCollectionDTO> IdCollectionDTO.fromJsonArrayToIdCollectioes(String json) {
-        return new JSONDeserializer<List<IdCollectionDTO>>().use(null, ArrayList.class).use("values", IdCollectionDTO.class).deserialize(json);
+        return new JSONDeserializer<List<IdCollectionDTO>>()
+        .use("values", IdCollectionDTO.class).deserialize(json);
     }
     
 }

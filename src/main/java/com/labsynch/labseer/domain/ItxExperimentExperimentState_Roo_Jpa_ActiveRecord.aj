@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ItxExperimentExperimentState_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ItxExperimentExperimentState.fieldNames4OrderClauseFilter = java.util.Arrays.asList("itxExperimentExperiment", "lsValues");
+    
     public static long ItxExperimentExperimentState.countItxExperimentExperimentStates() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ItxExperimentExperimentState o", Long.class).getSingleResult();
     }
     
     public static List<ItxExperimentExperimentState> ItxExperimentExperimentState.findAllItxExperimentExperimentStates() {
         return entityManager().createQuery("SELECT o FROM ItxExperimentExperimentState o", ItxExperimentExperimentState.class).getResultList();
+    }
+    
+    public static List<ItxExperimentExperimentState> ItxExperimentExperimentState.findAllItxExperimentExperimentStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxExperimentExperimentState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxExperimentExperimentState.class).getResultList();
     }
     
     public static ItxExperimentExperimentState ItxExperimentExperimentState.findItxExperimentExperimentState(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ItxExperimentExperimentState_Roo_Jpa_ActiveRecord {
     
     public static List<ItxExperimentExperimentState> ItxExperimentExperimentState.findItxExperimentExperimentStateEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ItxExperimentExperimentState o", ItxExperimentExperimentState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ItxExperimentExperimentState> ItxExperimentExperimentState.findItxExperimentExperimentStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxExperimentExperimentState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxExperimentExperimentState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

@@ -12,11 +12,13 @@ import java.util.List;
 privileged aspect AuthGroupsAndProjectsDTO_Roo_Json {
     
     public static AuthGroupsAndProjectsDTO AuthGroupsAndProjectsDTO.fromJsonToAuthGroupsAndProjectsDTO(String json) {
-        return new JSONDeserializer<AuthGroupsAndProjectsDTO>().use(null, AuthGroupsAndProjectsDTO.class).deserialize(json);
+        return new JSONDeserializer<AuthGroupsAndProjectsDTO>()
+        .use(null, AuthGroupsAndProjectsDTO.class).deserialize(json);
     }
     
     public static Collection<AuthGroupsAndProjectsDTO> AuthGroupsAndProjectsDTO.fromJsonArrayToAuthGroupsAndProes(String json) {
-        return new JSONDeserializer<List<AuthGroupsAndProjectsDTO>>().use(null, ArrayList.class).use("values", AuthGroupsAndProjectsDTO.class).deserialize(json);
+        return new JSONDeserializer<List<AuthGroupsAndProjectsDTO>>()
+        .use("values", AuthGroupsAndProjectsDTO.class).deserialize(json);
     }
     
 }

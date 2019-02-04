@@ -9,10 +9,33 @@ import javax.persistence.TypedQuery;
 
 privileged aspect DDictType_Roo_Finder {
     
+    public static Long DDictType.countFindDDictTypesByNameEquals(String name) {
+        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+        EntityManager em = DDictType.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictType AS o WHERE o.name = :name", Long.class);
+        q.setParameter("name", name);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<DDictType> DDictType.findDDictTypesByNameEquals(String name) {
         if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
         EntityManager em = DDictType.entityManager();
         TypedQuery<DDictType> q = em.createQuery("SELECT o FROM DDictType AS o WHERE o.name = :name", DDictType.class);
+        q.setParameter("name", name);
+        return q;
+    }
+    
+    public static TypedQuery<DDictType> DDictType.findDDictTypesByNameEquals(String name, String sortFieldName, String sortOrder) {
+        if (name == null || name.length() == 0) throw new IllegalArgumentException("The name argument is required");
+        EntityManager em = DDictType.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictType AS o WHERE o.name = :name");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<DDictType> q = em.createQuery(queryBuilder.toString(), DDictType.class);
         q.setParameter("name", name);
         return q;
     }

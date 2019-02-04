@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:jsp="http://java.sun.com/JSP/Page" xmlns:page="urn:jsptagdir:/WEB-INF/tags/datatables" xmlns:table="urn:jsptagdir:/WEB-INF/tags/datatables" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <page:list id="pl_com_labsynch_labseer_domain_CmpdRegAppSetting" items="${cmpdregappsettings}" z="5lWNPYV/FwNd0OOksWi7wyTA+XE=">
+        <table:table data="${cmpdregappsettings}" id="l_com_labsynch_labseer_domain_CmpdRegAppSetting" path="/cmpdregappsettings" z="AHLAV1bO9gqy7tcKLP8+b4vFvLk=">
+            <table:column id="c_com_labsynch_labseer_domain_CmpdRegAppSetting_propName" property="propName" z="NLyy6160lArQ/xpi1+pWI1McTLQ="/>
+            <table:column id="c_com_labsynch_labseer_domain_CmpdRegAppSetting_propValue" property="propValue" z="7L2Jzv3okbqUOpT1iMoBsDNUvWU="/>
+            <table:column id="c_com_labsynch_labseer_domain_CmpdRegAppSetting_comments" property="comments" z="/dFDbuOmK0XAL4KLuH2hN+01fjs="/>
+            <table:column id="c_com_labsynch_labseer_domain_CmpdRegAppSetting_ignored" property="ignored" z="TXTxcEOXQPPvxQ4sp/An5Rlih5E="/>
+            <table:column date="true" dateTimePattern="${cmpdRegAppSetting_recordeddate_date_format}" id="c_com_labsynch_labseer_domain_CmpdRegAppSetting_recordedDate" property="recordedDate" z="Tw1vR3mwPt/93TL2RKsrafMrQ8o="/>
+        </table:table>
+    </page:list>
+</div>

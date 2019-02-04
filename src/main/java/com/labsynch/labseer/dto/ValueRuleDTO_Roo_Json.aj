@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect ValueRuleDTO_Roo_Json {
     
     public String ValueRuleDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String ValueRuleDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static ValueRuleDTO ValueRuleDTO.fromJsonToValueRuleDTO(String json) {
-        return new JSONDeserializer<ValueRuleDTO>().use(null, ValueRuleDTO.class).deserialize(json);
+        return new JSONDeserializer<ValueRuleDTO>()
+        .use(null, ValueRuleDTO.class).deserialize(json);
     }
     
     public static String ValueRuleDTO.toJsonArray(Collection<ValueRuleDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String ValueRuleDTO.toJsonArray(Collection<ValueRuleDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<ValueRuleDTO> ValueRuleDTO.fromJsonArrayToValueRuleDTO(String json) {
-        return new JSONDeserializer<List<ValueRuleDTO>>().use(null, ArrayList.class).use("values", ValueRuleDTO.class).deserialize(json);
+        return new JSONDeserializer<List<ValueRuleDTO>>()
+        .use("values", ValueRuleDTO.class).deserialize(json);
     }
     
 }

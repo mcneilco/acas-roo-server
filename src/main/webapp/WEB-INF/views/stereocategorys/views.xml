@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN" "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+<tiles-definitions>
+    <definition extends="default" name="stereocategorys/list">
+        <put-attribute name="body" value="/WEB-INF/views/stereocategorys/list.jspx"/>
+    </definition>
+<definition extends="default" name="stereocategorys/show">
+        <put-attribute name="body" value="/WEB-INF/views/stereocategorys/show.jspx"/>
+    </definition>
+<definition extends="default" name="stereocategorys/create">
+        <put-attribute name="body" value="/WEB-INF/views/stereocategorys/create.jspx"/>
+    </definition>
+<definition extends="default" name="stereocategorys/update">
+        <put-attribute name="body" value="/WEB-INF/views/stereocategorys/update.jspx"/>
+    </definition>
+<definition extends="default" name="stereocategorys/findStereoCategorysByCodeEquals">
+        <put-attribute name="body" value="/WEB-INF/views/stereocategorys/findStereoCategorysByCodeEquals.jspx"/>
+    </definition>
+<definition extends="default" name="stereocategorys/findStereoCategorysByCodeLike">
+        <put-attribute name="body" value="/WEB-INF/views/stereocategorys/findStereoCategorysByCodeLike.jspx"/>
+    </definition>
+</tiles-definitions>

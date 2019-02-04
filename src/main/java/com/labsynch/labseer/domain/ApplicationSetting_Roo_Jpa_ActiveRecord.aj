@@ -14,6 +14,8 @@ privileged aspect ApplicationSetting_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager ApplicationSetting.entityManager;
     
+    public static final List<String> ApplicationSetting.fieldNames4OrderClauseFilter = java.util.Arrays.asList("propName", "propValue", "comments", "ignored", "recordedDate");
+    
     public static final EntityManager ApplicationSetting.entityManager() {
         EntityManager em = new ApplicationSetting().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect ApplicationSetting_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM ApplicationSetting o", ApplicationSetting.class).getResultList();
     }
     
+    public static List<ApplicationSetting> ApplicationSetting.findAllApplicationSettings(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ApplicationSetting o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ApplicationSetting.class).getResultList();
+    }
+    
     public static ApplicationSetting ApplicationSetting.findApplicationSetting(Long id) {
         if (id == null) return null;
         return entityManager().find(ApplicationSetting.class, id);
@@ -35,6 +48,17 @@ privileged aspect ApplicationSetting_Roo_Jpa_ActiveRecord {
     
     public static List<ApplicationSetting> ApplicationSetting.findApplicationSettingEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ApplicationSetting o", ApplicationSetting.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ApplicationSetting> ApplicationSetting.findApplicationSettingEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ApplicationSetting o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ApplicationSetting.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

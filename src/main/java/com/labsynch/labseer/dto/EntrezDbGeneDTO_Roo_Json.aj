@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect EntrezDbGeneDTO_Roo_Json {
     
     public String EntrezDbGeneDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String EntrezDbGeneDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static EntrezDbGeneDTO EntrezDbGeneDTO.fromJsonToEntrezDbGeneDTO(String json) {
-        return new JSONDeserializer<EntrezDbGeneDTO>().use(null, EntrezDbGeneDTO.class).deserialize(json);
+        return new JSONDeserializer<EntrezDbGeneDTO>()
+        .use(null, EntrezDbGeneDTO.class).deserialize(json);
     }
     
     public static String EntrezDbGeneDTO.toJsonArray(Collection<EntrezDbGeneDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String EntrezDbGeneDTO.toJsonArray(Collection<EntrezDbGeneDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<EntrezDbGeneDTO> EntrezDbGeneDTO.fromJsonArrayToEntrezDbGeneDTO(String json) {
-        return new JSONDeserializer<List<EntrezDbGeneDTO>>().use(null, ArrayList.class).use("values", EntrezDbGeneDTO.class).deserialize(json);
+        return new JSONDeserializer<List<EntrezDbGeneDTO>>()
+        .use("values", EntrezDbGeneDTO.class).deserialize(json);
     }
     
 }

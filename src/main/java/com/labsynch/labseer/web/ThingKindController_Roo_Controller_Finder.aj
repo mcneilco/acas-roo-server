@@ -20,8 +20,16 @@ privileged aspect ThingKindController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByKindNameEqualsAndLsType", method = RequestMethod.GET)
-    public String ThingKindController.findThingKindsByKindNameEqualsAndLsType(@RequestParam("kindName") String kindName, @RequestParam("lsType") ThingType lsType, Model uiModel) {
-        uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByKindNameEqualsAndLsType(kindName, lsType).getResultList());
+    public String ThingKindController.findThingKindsByKindNameEqualsAndLsType(@RequestParam("kindName") String kindName, @RequestParam("lsType") ThingType lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByKindNameEqualsAndLsType(kindName, lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ThingKind.countFindThingKindsByKindNameEqualsAndLsType(kindName, lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByKindNameEqualsAndLsType(kindName, lsType, sortFieldName, sortOrder).getResultList());
+        }
         return "thingkinds/list";
     }
     
@@ -32,8 +40,16 @@ privileged aspect ThingKindController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsType", method = RequestMethod.GET)
-    public String ThingKindController.findThingKindsByLsType(@RequestParam("lsType") ThingType lsType, Model uiModel) {
-        uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByLsType(lsType).getResultList());
+    public String ThingKindController.findThingKindsByLsType(@RequestParam("lsType") ThingType lsType, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByLsType(lsType, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ThingKind.countFindThingKindsByLsType(lsType) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByLsType(lsType, sortFieldName, sortOrder).getResultList());
+        }
         return "thingkinds/list";
     }
     
@@ -43,8 +59,16 @@ privileged aspect ThingKindController_Roo_Controller_Finder {
     }
     
     @RequestMapping(params = "find=ByLsTypeAndKindEquals", method = RequestMethod.GET)
-    public String ThingKindController.findThingKindsByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind, Model uiModel) {
-        uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByLsTypeAndKindEquals(lsTypeAndKind).getResultList());
+    public String ThingKindController.findThingKindsByLsTypeAndKindEquals(@RequestParam("lsTypeAndKind") String lsTypeAndKind, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByLsTypeAndKindEquals(lsTypeAndKind, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) ThingKind.countFindThingKindsByLsTypeAndKindEquals(lsTypeAndKind) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("thingkinds", ThingKind.findThingKindsByLsTypeAndKindEquals(lsTypeAndKind, sortFieldName, sortOrder).getResultList());
+        }
         return "thingkinds/list";
     }
     

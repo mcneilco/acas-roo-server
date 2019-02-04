@@ -9,10 +9,33 @@ import javax.persistence.TypedQuery;
 
 privileged aspect ExperimentType_Roo_Finder {
     
+    public static Long ExperimentType.countFindExperimentTypesByTypeNameEquals(String typeName) {
+        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+        EntityManager em = ExperimentType.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ExperimentType AS o WHERE o.typeName = :typeName", Long.class);
+        q.setParameter("typeName", typeName);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<ExperimentType> ExperimentType.findExperimentTypesByTypeNameEquals(String typeName) {
         if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
         EntityManager em = ExperimentType.entityManager();
         TypedQuery<ExperimentType> q = em.createQuery("SELECT o FROM ExperimentType AS o WHERE o.typeName = :typeName", ExperimentType.class);
+        q.setParameter("typeName", typeName);
+        return q;
+    }
+    
+    public static TypedQuery<ExperimentType> ExperimentType.findExperimentTypesByTypeNameEquals(String typeName, String sortFieldName, String sortOrder) {
+        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+        EntityManager em = ExperimentType.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ExperimentType AS o WHERE o.typeName = :typeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ExperimentType> q = em.createQuery(queryBuilder.toString(), ExperimentType.class);
         q.setParameter("typeName", typeName);
         return q;
     }

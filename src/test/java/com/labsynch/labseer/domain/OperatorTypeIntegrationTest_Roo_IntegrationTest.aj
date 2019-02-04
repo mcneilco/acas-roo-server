@@ -6,7 +6,10 @@ package com.labsynch.labseer.domain;
 import com.labsynch.labseer.domain.OperatorType;
 import com.labsynch.labseer.domain.OperatorTypeDataOnDemand;
 import com.labsynch.labseer.domain.OperatorTypeIntegrationTest;
+import java.util.Iterator;
 import java.util.List;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +22,7 @@ privileged aspect OperatorTypeIntegrationTest_Roo_IntegrationTest {
     
     declare @type: OperatorTypeIntegrationTest: @RunWith(SpringJUnit4ClassRunner.class);
     
-    declare @type: OperatorTypeIntegrationTest: @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml");
+    declare @type: OperatorTypeIntegrationTest: @ContextConfiguration(locations = "classpath*:/META-INF/spring/applicationContext*.xml");
     
     declare @type: OperatorTypeIntegrationTest: @Transactional;
     
@@ -101,7 +104,16 @@ privileged aspect OperatorTypeIntegrationTest_Roo_IntegrationTest {
         OperatorType obj = dod.getNewTransientOperatorType(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'OperatorType' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'OperatorType' identifier to be null", obj.getId());
-        obj.persist();
+        try {
+            obj.persist();
+        } catch (final ConstraintViolationException e) {
+            final StringBuilder msg = new StringBuilder();
+            for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                final ConstraintViolation<?> cv = iter.next();
+                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+            }
+            throw new IllegalStateException(msg.toString(), e);
+        }
         obj.flush();
         Assert.assertNotNull("Expected 'OperatorType' identifier to no longer be null", obj.getId());
     }

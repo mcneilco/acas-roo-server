@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect SubjectCodeStateDTO_Roo_Json {
     
     public String SubjectCodeStateDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String SubjectCodeStateDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static SubjectCodeStateDTO SubjectCodeStateDTO.fromJsonToSubjectCodeStateDTO(String json) {
-        return new JSONDeserializer<SubjectCodeStateDTO>().use(null, SubjectCodeStateDTO.class).deserialize(json);
+        return new JSONDeserializer<SubjectCodeStateDTO>()
+        .use(null, SubjectCodeStateDTO.class).deserialize(json);
     }
     
     public static String SubjectCodeStateDTO.toJsonArray(Collection<SubjectCodeStateDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String SubjectCodeStateDTO.toJsonArray(Collection<SubjectCodeStateDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<SubjectCodeStateDTO> SubjectCodeStateDTO.fromJsonArrayToSubjectCoes(String json) {
-        return new JSONDeserializer<List<SubjectCodeStateDTO>>().use(null, ArrayList.class).use("values", SubjectCodeStateDTO.class).deserialize(json);
+        return new JSONDeserializer<List<SubjectCodeStateDTO>>()
+        .use("values", SubjectCodeStateDTO.class).deserialize(json);
     }
     
 }

@@ -14,6 +14,8 @@ privileged aspect StructureType_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager StructureType.entityManager;
     
+    public static final List<String> StructureType.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "typeName", "id", "version");
+    
     public static final EntityManager StructureType.entityManager() {
         EntityManager em = new StructureType().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect StructureType_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM StructureType o", StructureType.class).getResultList();
     }
     
+    public static List<StructureType> StructureType.findAllStructureTypes(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM StructureType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, StructureType.class).getResultList();
+    }
+    
     public static StructureType StructureType.findStructureType(Long id) {
         if (id == null) return null;
         return entityManager().find(StructureType.class, id);
@@ -35,6 +48,17 @@ privileged aspect StructureType_Roo_Jpa_ActiveRecord {
     
     public static List<StructureType> StructureType.findStructureTypeEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM StructureType o", StructureType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<StructureType> StructureType.findStructureTypeEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM StructureType o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, StructureType.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

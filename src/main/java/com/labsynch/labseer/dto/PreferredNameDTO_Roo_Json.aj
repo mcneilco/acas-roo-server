@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect PreferredNameDTO_Roo_Json {
     
     public String PreferredNameDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String PreferredNameDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static PreferredNameDTO PreferredNameDTO.fromJsonToPreferredNameDTO(String json) {
-        return new JSONDeserializer<PreferredNameDTO>().use(null, PreferredNameDTO.class).deserialize(json);
+        return new JSONDeserializer<PreferredNameDTO>()
+        .use(null, PreferredNameDTO.class).deserialize(json);
     }
     
     public static String PreferredNameDTO.toJsonArray(Collection<PreferredNameDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String PreferredNameDTO.toJsonArray(Collection<PreferredNameDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<PreferredNameDTO> PreferredNameDTO.fromJsonArrayToPreferredNameDTO(String json) {
-        return new JSONDeserializer<List<PreferredNameDTO>>().use(null, ArrayList.class).use("values", PreferredNameDTO.class).deserialize(json);
+        return new JSONDeserializer<List<PreferredNameDTO>>()
+        .use("values", PreferredNameDTO.class).deserialize(json);
     }
     
 }

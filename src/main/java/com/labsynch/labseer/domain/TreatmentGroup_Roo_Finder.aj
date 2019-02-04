@@ -11,6 +11,38 @@ import javax.persistence.TypedQuery;
 
 privileged aspect TreatmentGroup_Roo_Finder {
     
+    public static Long TreatmentGroup.countFindTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
+        if (analysisGroups == null) throw new IllegalArgumentException("The analysisGroups argument is required");
+        EntityManager em = TreatmentGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT COUNT(o) FROM TreatmentGroup AS o WHERE");
+        for (int i = 0; i < analysisGroups.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :analysisGroups_item").append(i).append(" MEMBER OF o.analysisGroups");
+        }
+        TypedQuery q = em.createQuery(queryBuilder.toString(), Long.class);
+        int analysisGroupsIndex = 0;
+        for (AnalysisGroup _analysisgroup: analysisGroups) {
+            q.setParameter("analysisGroups_item" + analysisGroupsIndex++, _analysisgroup);
+        }
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long TreatmentGroup.countFindTreatmentGroupsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = TreatmentGroup.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroup AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+    
+    public static Long TreatmentGroup.countFindTreatmentGroupsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = TreatmentGroup.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups) {
         if (analysisGroups == null) throw new IllegalArgumentException("The analysisGroups argument is required");
         EntityManager em = TreatmentGroup.entityManager();
@@ -18,6 +50,28 @@ privileged aspect TreatmentGroup_Roo_Finder {
         for (int i = 0; i < analysisGroups.size(); i++) {
             if (i > 0) queryBuilder.append(" AND");
             queryBuilder.append(" :analysisGroups_item").append(i).append(" MEMBER OF o.analysisGroups");
+        }
+        TypedQuery<TreatmentGroup> q = em.createQuery(queryBuilder.toString(), TreatmentGroup.class);
+        int analysisGroupsIndex = 0;
+        for (AnalysisGroup _analysisgroup: analysisGroups) {
+            q.setParameter("analysisGroups_item" + analysisGroupsIndex++, _analysisgroup);
+        }
+        return q;
+    }
+    
+    public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByAnalysisGroups(Set<AnalysisGroup> analysisGroups, String sortFieldName, String sortOrder) {
+        if (analysisGroups == null) throw new IllegalArgumentException("The analysisGroups argument is required");
+        EntityManager em = TreatmentGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroup AS o WHERE");
+        for (int i = 0; i < analysisGroups.size(); i++) {
+            if (i > 0) queryBuilder.append(" AND");
+            queryBuilder.append(" :analysisGroups_item").append(i).append(" MEMBER OF o.analysisGroups");
+        }
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" " + sortOrder);
+            }
         }
         TypedQuery<TreatmentGroup> q = em.createQuery(queryBuilder.toString(), TreatmentGroup.class);
         int analysisGroupsIndex = 0;
@@ -35,10 +89,40 @@ privileged aspect TreatmentGroup_Roo_Finder {
         return q;
     }
     
+    public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = TreatmentGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroup AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroup> q = em.createQuery(queryBuilder.toString(), TreatmentGroup.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+    
     public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(Long lsTransaction) {
         if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
         EntityManager em = TreatmentGroup.entityManager();
         TypedQuery<TreatmentGroup> q = em.createQuery("SELECT o FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction", TreatmentGroup.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+    
+    public static TypedQuery<TreatmentGroup> TreatmentGroup.findTreatmentGroupsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = TreatmentGroup.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM TreatmentGroup AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<TreatmentGroup> q = em.createQuery(queryBuilder.toString(), TreatmentGroup.class);
         q.setParameter("lsTransaction", lsTransaction);
         return q;
     }

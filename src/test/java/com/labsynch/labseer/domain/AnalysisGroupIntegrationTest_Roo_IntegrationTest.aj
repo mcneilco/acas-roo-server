@@ -6,7 +6,10 @@ package com.labsynch.labseer.domain;
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.domain.AnalysisGroupDataOnDemand;
 import com.labsynch.labseer.domain.AnalysisGroupIntegrationTest;
+import java.util.Iterator;
 import java.util.List;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +22,7 @@ privileged aspect AnalysisGroupIntegrationTest_Roo_IntegrationTest {
     
     declare @type: AnalysisGroupIntegrationTest: @RunWith(SpringJUnit4ClassRunner.class);
     
-    declare @type: AnalysisGroupIntegrationTest: @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml");
+    declare @type: AnalysisGroupIntegrationTest: @ContextConfiguration(locations = "classpath*:/META-INF/spring/applicationContext*.xml");
     
     declare @type: AnalysisGroupIntegrationTest: @Transactional;
     
@@ -101,7 +104,16 @@ privileged aspect AnalysisGroupIntegrationTest_Roo_IntegrationTest {
         AnalysisGroup obj = dod.getNewTransientAnalysisGroup(Integer.MAX_VALUE);
         Assert.assertNotNull("Data on demand for 'AnalysisGroup' failed to provide a new transient entity", obj);
         Assert.assertNull("Expected 'AnalysisGroup' identifier to be null", obj.getId());
-        obj.persist();
+        try {
+            obj.persist();
+        } catch (final ConstraintViolationException e) {
+            final StringBuilder msg = new StringBuilder();
+            for (Iterator<ConstraintViolation<?>> iter = e.getConstraintViolations().iterator(); iter.hasNext();) {
+                final ConstraintViolation<?> cv = iter.next();
+                msg.append("[").append(cv.getRootBean().getClass().getName()).append(".").append(cv.getPropertyPath()).append(": ").append(cv.getMessage()).append(" (invalid value = ").append(cv.getInvalidValue()).append(")").append("]");
+            }
+            throw new IllegalStateException(msg.toString(), e);
+        }
         obj.flush();
         Assert.assertNotNull("Expected 'AnalysisGroup' identifier to no longer be null", obj.getId());
     }

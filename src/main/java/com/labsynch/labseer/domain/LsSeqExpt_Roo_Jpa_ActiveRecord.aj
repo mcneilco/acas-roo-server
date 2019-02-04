@@ -14,6 +14,8 @@ privileged aspect LsSeqExpt_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager LsSeqExpt.entityManager;
     
+    public static final List<String> LsSeqExpt.fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
+    
     public static final EntityManager LsSeqExpt.entityManager() {
         EntityManager em = new LsSeqExpt().entityManager;
         if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
@@ -28,6 +30,17 @@ privileged aspect LsSeqExpt_Roo_Jpa_ActiveRecord {
         return entityManager().createQuery("SELECT o FROM LsSeqExpt o", LsSeqExpt.class).getResultList();
     }
     
+    public static List<LsSeqExpt> LsSeqExpt.findAllLsSeqExpts(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqExpt o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqExpt.class).getResultList();
+    }
+    
     public static LsSeqExpt LsSeqExpt.findLsSeqExpt(Long id) {
         if (id == null) return null;
         return entityManager().find(LsSeqExpt.class, id);
@@ -35,6 +48,17 @@ privileged aspect LsSeqExpt_Roo_Jpa_ActiveRecord {
     
     public static List<LsSeqExpt> LsSeqExpt.findLsSeqExptEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM LsSeqExpt o", LsSeqExpt.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<LsSeqExpt> LsSeqExpt.findLsSeqExptEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsSeqExpt o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsSeqExpt.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional

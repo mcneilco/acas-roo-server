@@ -13,19 +13,33 @@ import java.util.List;
 privileged aspect GeneIdDTO_Roo_Json {
     
     public String GeneIdDTO.toJson() {
-        return new JSONSerializer().exclude("*.class").serialize(this);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+    
+    public String GeneIdDTO.toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
     }
     
     public static GeneIdDTO GeneIdDTO.fromJsonToGeneIdDTO(String json) {
-        return new JSONDeserializer<GeneIdDTO>().use(null, GeneIdDTO.class).deserialize(json);
+        return new JSONDeserializer<GeneIdDTO>()
+        .use(null, GeneIdDTO.class).deserialize(json);
     }
     
     public static String GeneIdDTO.toJsonArray(Collection<GeneIdDTO> collection) {
-        return new JSONSerializer().exclude("*.class").serialize(collection);
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+    
+    public static String GeneIdDTO.toJsonArray(Collection<GeneIdDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
     }
     
     public static Collection<GeneIdDTO> GeneIdDTO.fromJsonArrayToGeneIdDTO(String json) {
-        return new JSONDeserializer<List<GeneIdDTO>>().use(null, ArrayList.class).use("values", GeneIdDTO.class).deserialize(json);
+        return new JSONDeserializer<List<GeneIdDTO>>()
+        .use("values", GeneIdDTO.class).deserialize(json);
     }
     
 }

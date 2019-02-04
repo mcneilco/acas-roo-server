@@ -9,12 +9,25 @@ import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect ItxContainerContainer_Roo_Jpa_ActiveRecord {
     
+    public static final List<String> ItxContainerContainer.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "firstContainer", "secondContainer", "lsStates");
+    
     public static long ItxContainerContainer.countItxContainerContainers() {
         return entityManager().createQuery("SELECT COUNT(o) FROM ItxContainerContainer o", Long.class).getSingleResult();
     }
     
     public static List<ItxContainerContainer> ItxContainerContainer.findAllItxContainerContainers() {
         return entityManager().createQuery("SELECT o FROM ItxContainerContainer o", ItxContainerContainer.class).getResultList();
+    }
+    
+    public static List<ItxContainerContainer> ItxContainerContainer.findAllItxContainerContainers(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxContainerContainer o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxContainerContainer.class).getResultList();
     }
     
     public static ItxContainerContainer ItxContainerContainer.findItxContainerContainer(Long id) {
@@ -24,6 +37,17 @@ privileged aspect ItxContainerContainer_Roo_Jpa_ActiveRecord {
     
     public static List<ItxContainerContainer> ItxContainerContainer.findItxContainerContainerEntries(int firstResult, int maxResults) {
         return entityManager().createQuery("SELECT o FROM ItxContainerContainer o", ItxContainerContainer.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+    
+    public static List<ItxContainerContainer> ItxContainerContainer.findItxContainerContainerEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxContainerContainer o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxContainerContainer.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
     
     @Transactional
