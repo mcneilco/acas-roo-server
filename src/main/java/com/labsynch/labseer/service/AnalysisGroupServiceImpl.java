@@ -288,7 +288,7 @@ public class AnalysisGroupServiceImpl implements AnalysisGroupService {
 				logger.info("read csv delimited file");
 				//InputStream is = CreateAnalysisGroupsFromCSVFileTests.class.getClassLoader().getResourceAsStream(inputFileName);
 				InputStream is = new FileInputStream(absoluteFilePath);  
-				InputStreamReader isr = new InputStreamReader(is);  
+				InputStreamReader isr = new InputStreamReader(is, "UTF-8");  
 				BufferedReader br = new BufferedReader(isr);
 
 				beanReader = new CsvBeanReader(br, CsvPreference.TAB_PREFERENCE);

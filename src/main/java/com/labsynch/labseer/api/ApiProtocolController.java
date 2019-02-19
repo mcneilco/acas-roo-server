@@ -443,7 +443,7 @@ public class ApiProtocolController {
 	@ResponseBody
 	public ResponseEntity<String> protocolBrowserSearch(@RequestParam(value="userName", required = true) String userName, @RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 		Collection<ProtocolDTO> result = ProtocolDTO.convertCollectionToProtocolDTO(protocolService.findProtocolsByGenericMetaDataSearch(searchQuery, userName));
 		return new ResponseEntity<String>(ProtocolDTO.toJsonArrayStub(result), headers, HttpStatus.OK);

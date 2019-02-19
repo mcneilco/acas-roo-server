@@ -1564,7 +1564,7 @@ public class ApiExperimentController {
 	@ResponseBody
 	public ResponseEntity<String> experimentBrowserSearch(@RequestParam(value="userName", required = false) String userName, @RequestParam(value="q", required = true) String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		
 		logger.debug("############# the search query string is: " + searchQuery);
 		
