@@ -443,7 +443,7 @@ public class ApiProtocolController {
 	@ResponseBody
 	public ResponseEntity<String> protocolBrowserSearch(@RequestParam(value="userName", required = false) String userName, @RequestParam(value="projects", required = false) List<String> projects, @RequestParam("q") String searchQuery) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/json");
+		headers.add("Content-Type", "application/json; charset=utf-8");
 		try {
 			if (userName == null && projects == null){
 				logger.info("--------- accesing protocol search without userName ---------------");
