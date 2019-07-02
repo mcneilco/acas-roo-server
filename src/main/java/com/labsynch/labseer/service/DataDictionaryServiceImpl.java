@@ -247,6 +247,7 @@ public class DataDictionaryServiceImpl implements DataDictionaryService {
 		} else  {
 			oldDDictValue.setShortName(codeTableValue.getCode());
 			oldDDictValue.setLabelText(codeTableValue.getName());
+			oldDDictValue.setIgnored(codeTableValue.isIgnored());
 			oldDDictValue.merge();
 			return new CodeTableDTO(oldDDictValue);			
 		} 
