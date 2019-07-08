@@ -338,7 +338,13 @@ public class AuthorServiceImpl implements AuthorService {
 		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your ACAS account: " + propertiesUtilService.getClientPath()+"/activateUser?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +""
 				+ "\n Your username is: "+author.getUserName()
 				+ "\n Your temporary password is: "+randomPassword );
-		mailSender.send(mail);
+		
+		try{
+			mailSender.send(mail);
+		}catch (Exception e){
+			logger.error("Caught exception trying to send email. ",e);
+		}
+
 		return author;
 	}
 
