@@ -56,12 +56,20 @@ public class ApiAuthorController {
 
 	@RequestMapping(value = "/findByRoleName", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<java.lang.String> listAuthorsByRoleName(@RequestParam("authorRoleName") String authorRoleName) {
+	public ResponseEntity<java.lang.String> listAuthorsByRoleName(@RequestParam("authorRoleName") String authorRoleName,
+			@RequestParam(value="format", required = false) String format) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		try{
 			Collection<Author> authors = authorService.findAuthorsByAuthorRoleName(authorRoleName);
-			return new ResponseEntity<String>(Author.toJsonArray(authors), headers, HttpStatus.OK);
+			if(format != null && format.equalsIgnoreCase("codeTable")) {
+				List<Author> authorList = new ArrayList<Author>();
+				authorList.addAll(authors);
+				List<CodeTableDTO> results = authorService.convertToCodeTables(authorList); 
+				results = CodeTableDTO.sortCodeTables(results);
+				return new ResponseEntity<String>(CodeTableDTO.toJsonArray(results), headers, HttpStatus.OK);
+			}
+			else return new ResponseEntity<String>(Author.toJsonArray(authors), headers, HttpStatus.OK);
 		}catch (Exception e){
 			logger.error("Caught exception looking up authors with role: "+authorRoleName, e);
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
