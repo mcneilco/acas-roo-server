@@ -193,6 +193,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 			List<String> formattedCorpNameList = new ArrayList<String>();
 			for (String corpName : inputListArray){
 				logger.info(CorpName.formatCorpName(CorpName.parseParentNumber(corpName)));
+				formattedCorpNameList.add(corpName);
 				formattedCorpNameList.add(CorpName.formatCorpName(CorpName.parseParentNumber(corpName)));
 
 			}
