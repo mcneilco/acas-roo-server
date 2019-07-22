@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.domain.ContainerValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
@@ -31,6 +32,7 @@ public class DependencyCheckDTO {
 		this.queryCodeNames = new HashSet<String>();
 		this.dependentCorpNames = new HashSet<String>();
 		this.linkedExperiments = new HashSet<CodeTableDTO>();
+		this.linkedContainers = new HashSet<CodeTableDTO>();
 	}
 	
 	public DependencyCheckDTO(Collection<String> queryCodeNames) {
@@ -47,11 +49,13 @@ public class DependencyCheckDTO {
 	
 	private Collection<CodeTableDTO> linkedExperiments;
 	
+	private Collection<CodeTableDTO> linkedContainers;
+
 	private Collection<ErrorMessageDTO> errors;
 	
 	@Transactional
 	public String toJson() {
-	        return new JSONSerializer().exclude("*.class").include("linkedExperiments.*", "queryCodeNames.*", "dependentCorpNames.*").transform(new ExcludeNulls(), void.class).serialize(this);
+	        return new JSONSerializer().exclude("*.class").include("linkedExperiments.*", "linkedContainers.*", "queryCodeNames.*", "dependentCorpNames.*").transform(new ExcludeNulls(), void.class).serialize(this);
 	    }
 	@Transactional
 	public void checkForDependentData(){
@@ -84,15 +88,47 @@ public class DependencyCheckDTO {
 			linkedExperiments.addAll(findExperimentCodeTableDTOsFromSubjectValueBatchCodes());
 		}
 		if(countProtocolValueBatchCodes() > 0){
+			logger.debug("Found Protocol values referencing provided batch codes.");
 			linkedDataExists = true;
 		}
 		if(countLsThingValueBatchCodes() > 0){
+			logger.debug("Found LsThing values referencing provided batch codes.");
 			linkedDataExists = true;
 		}
 		if(countContainerValueBatchCodes() > 0){
+			logger.debug("Found Container values referencing provided batch codes. Retrieving container info.");
 			linkedDataExists = true;
+			linkedContainers.addAll(findContainerCodeTableDTOsFromContainerValueBatchCodes());
 		}
 		dedupeLinkedExperiments();
+	}
+
+	private Collection<CodeTableDTO> findContainerCodeTableDTOsFromContainerValueBatchCodes() {
+		EntityManager em = ContainerValue.entityManager();
+		String sql = "SELECT DISTINCT NEW MAP(c.codeName as code, cl.labelText as name, cv.codeValue as comments) "
+				+ "FROM ContainerValue cv "
+				+ "JOIN cv.lsState as cs "
+				+ "JOIN cs.container c "
+				+ "LEFT OUTER JOIN c.lsLabels as cl "
+				+ "WHERE cv.lsKind = 'batch code' "
+				+ "AND cv.ignored = false "
+				+ "AND cs.ignored = false "
+				+ "AND c.ignored = false "
+				+ "AND cl.ignored = false "
+				+ "AND cv.codeValue IN :batchCodes";
+		
+		TypedQuery<Map> q = em.createQuery(sql, Map.class);
+		q.setParameter("batchCodes", this.queryCodeNames);
+		
+		Collection<CodeTableDTO> containerCodeTableDTOs = new HashSet<CodeTableDTO>();
+		for (Map<String,String> map : q.getResultList()){
+			CodeTableDTO codeTable = new CodeTableDTO();
+			codeTable.setCode(map.get("code"));
+			codeTable.setName(map.get("name"));
+			codeTable.setComments(map.get("comments"));
+			containerCodeTableDTOs.add(codeTable);
+		}
+		return containerCodeTableDTOs;
 	}
 
 	private Collection<CodeTableDTO> findExperimentCodeTableDTOsFromExperimentValueBatchCodes() {
