@@ -25,6 +25,7 @@ import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.OracleDialect;
 import org.hibernate.dialect.PostgreSQLDialect;
+import org.hibernate.dialect.PostgreSQL9Dialect;
 import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
 import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
@@ -190,7 +191,7 @@ public class LabelSequence {
 				DialectResolver dialectResolver = new StandardDialectResolver();
 				Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
 				String currentValueString = "";
-				if (dialect instanceof PostgreSQLDialect) {
+				if (dialect instanceof PostgreSQLDialect || dialect instanceof PostgreSQL9Dialect) {
 					currentValueString = "SELECT currval('"+sequenceName+"')";
 					long currentValue;
 					try (PreparedStatement preparedStatement = connection.prepareStatement( currentValueString);
@@ -225,8 +226,8 @@ public class LabelSequence {
 				Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
 				try {
 					String currentValueString = "";
-					if (dialect instanceof PostgreSQLDialect) {
-						currentValueString = "SELECT currval('"+sequenceName+"')";
+					if (dialect instanceof PostgreSQLDialect || dialect instanceof PostgreSQL9Dialect) {
+						currentValueString = "SELECT last_value FROM "+sequenceName;
 					}else if (dialect instanceof OracleDialect) {
 						currentValueString = "SELECT last_number FROM all_sequences WHERE sequence_name = '"+sequenceName+"'";
 					}
