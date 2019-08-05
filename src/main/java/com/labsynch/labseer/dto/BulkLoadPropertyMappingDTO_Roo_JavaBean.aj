@@ -4,6 +4,7 @@
 package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.BulkLoadPropertyMappingDTO;
+import java.util.Collection;
 
 privileged aspect BulkLoadPropertyMappingDTO_Roo_JavaBean {
     
@@ -29,6 +30,14 @@ privileged aspect BulkLoadPropertyMappingDTO_Roo_JavaBean {
     
     public void BulkLoadPropertyMappingDTO.setRequired(boolean required) {
         this.required = required;
+    }
+    
+    public Collection<String> BulkLoadPropertyMappingDTO.getInvalidValues() {
+        return this.invalidValues;
+    }
+    
+    public void BulkLoadPropertyMappingDTO.setInvalidValues(Collection<String> invalidValues) {
+        this.invalidValues = invalidValues;
     }
     
     public String BulkLoadPropertyMappingDTO.getDefaultVal() {

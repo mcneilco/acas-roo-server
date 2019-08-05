@@ -38,12 +38,15 @@ public class BulkLoadSDFValidationPropertiesResponseDTO {
 		
     private Collection<String> chemists;
     
-    public BulkLoadSDFValidationPropertiesResponseDTO(Collection<String> chemists){
+    private Collection<String> projects;
+    
+    public BulkLoadSDFValidationPropertiesResponseDTO(Collection<String> chemists, Collection<String> projects){
     	this.chemists = chemists;
+    	this.projects = projects;
     }
 
     public String toJson() {
         return new JSONSerializer()
-        .include("chemists").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+        .include("chemists","projects").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
     }
 }

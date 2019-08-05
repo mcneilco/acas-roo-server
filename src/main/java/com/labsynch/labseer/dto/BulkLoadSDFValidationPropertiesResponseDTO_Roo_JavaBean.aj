@@ -16,4 +16,12 @@ privileged aspect BulkLoadSDFValidationPropertiesResponseDTO_Roo_JavaBean {
         this.chemists = chemists;
     }
     
+    public Collection<String> BulkLoadSDFValidationPropertiesResponseDTO.getProjects() {
+        return this.projects;
+    }
+    
+    public void BulkLoadSDFValidationPropertiesResponseDTO.setProjects(Collection<String> projects) {
+        this.projects = projects;
+    }
+    
 }

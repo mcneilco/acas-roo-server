@@ -26,18 +26,21 @@ public class BulkLoadPropertyMappingDTO {
     private String sdfProperty;
     
     private boolean required;
-    
+
+	private Collection<String> invalidValues;
+
     private String defaultVal;
     
     public BulkLoadPropertyMappingDTO(){
     	
     }
     
-    public BulkLoadPropertyMappingDTO(String dbProperty, String sdfProperty, boolean required, String defaultVal){
+    public BulkLoadPropertyMappingDTO(String dbProperty, String sdfProperty, boolean required, String defaultVal, Collection<String> invalidValues){
     	this.dbProperty = dbProperty;
     	this.sdfProperty = sdfProperty;
     	this.required = required;
     	this.defaultVal = defaultVal;
+    	this.invalidValues = invalidValues;
     }
     
     public String toJson() {
