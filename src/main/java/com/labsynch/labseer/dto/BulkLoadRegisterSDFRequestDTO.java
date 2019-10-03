@@ -23,23 +23,26 @@ public class BulkLoadRegisterSDFRequestDTO {
     private Date fileDate;
     
     private LabelPrefixDTO labelPrefix;
-    
+
+    private Boolean validate;
+
     private Collection<BulkLoadPropertyMappingDTO> mappings;
     
     public BulkLoadRegisterSDFRequestDTO(){
     	
     }
     
-    public BulkLoadRegisterSDFRequestDTO(String filePath, String userName, Date fileDate, Collection<BulkLoadPropertyMappingDTO> mappings){
+    public BulkLoadRegisterSDFRequestDTO(String filePath, String userName, Date fileDate, Boolean validate, Collection<BulkLoadPropertyMappingDTO> mappings){
     	this.filePath = filePath;
     	this.userName = userName;
     	this.fileDate = fileDate;
+    	this.validate = validate;
     	this.mappings = mappings;
     }
     
     public String toJson() {
         return new JSONSerializer()
-        .include("filePath", "userName", "mappings").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+        .include("filePath", "fileDate", "userName",  "validate", "mappings").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
 }

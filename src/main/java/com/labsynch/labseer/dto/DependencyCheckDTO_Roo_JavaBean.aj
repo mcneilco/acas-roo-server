@@ -41,7 +41,7 @@ privileged aspect DependencyCheckDTO_Roo_JavaBean {
     public void DependencyCheckDTO.setLinkedExperiments(Collection<CodeTableDTO> linkedExperiments) {
         this.linkedExperiments = linkedExperiments;
     }
-
+    
     public Collection<CodeTableDTO> DependencyCheckDTO.getLinkedContainers() {
         return this.linkedContainers;
     }
@@ -49,7 +49,7 @@ privileged aspect DependencyCheckDTO_Roo_JavaBean {
     public void DependencyCheckDTO.setLinkedContainers(Collection<CodeTableDTO> linkedContainers) {
         this.linkedContainers = linkedContainers;
     }
-
+    
     public Collection<ErrorMessageDTO> DependencyCheckDTO.getErrors() {
         return this.errors;
     }

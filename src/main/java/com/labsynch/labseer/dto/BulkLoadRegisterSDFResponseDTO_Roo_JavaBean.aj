@@ -4,6 +4,7 @@
 package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFResponseDTO;
+import com.labsynch.labseer.dto.ValidationResponseDTO;
 import java.util.Collection;
 
 privileged aspect BulkLoadRegisterSDFResponseDTO_Roo_JavaBean {
@@ -14,6 +15,14 @@ privileged aspect BulkLoadRegisterSDFResponseDTO_Roo_JavaBean {
     
     public void BulkLoadRegisterSDFResponseDTO.setSummary(String summary) {
         this.summary = summary;
+    }
+    
+    public Collection<ValidationResponseDTO> BulkLoadRegisterSDFResponseDTO.getResults() {
+        return this.results;
+    }
+    
+    public void BulkLoadRegisterSDFResponseDTO.setResults(Collection<ValidationResponseDTO> results) {
+        this.results = results;
     }
     
     public Collection<String> BulkLoadRegisterSDFResponseDTO.getReportFiles() {
