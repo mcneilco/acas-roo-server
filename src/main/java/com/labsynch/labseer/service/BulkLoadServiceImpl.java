@@ -748,7 +748,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 		} else {
-			//At this point we know the structured doesn't already exist in the file so check to see if Corp neame already exists
+			//At this point we know the structured doesn't already exist in the file so check to see if Corp name already exists
 			//  if the corp name does exist, that is an error because it's a different structure
 			List<DryRunCompound> dryRunCmpds = DryRunCompound.findDryRunCompoundsByCorpNameEquals(parent.getCorpName()).getResultList();
 			if(dryRunCmpds.size() > 0) {
