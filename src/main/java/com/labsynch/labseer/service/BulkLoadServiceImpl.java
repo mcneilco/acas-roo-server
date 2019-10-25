@@ -201,6 +201,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 			CmpdRegSDFReader molReader = sdfReaderFactory.getCmpdRegSDFReader(inputFileName);
 			List<String> chemists = new ArrayList<String>();
+			List<String> projects = new ArrayList<String>();
 			CmpdRegMolecule mol = null;
 			int numRecordsRead = 0;
 
@@ -209,6 +210,10 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				String lotChemist = getStringValueFromMappings(mol, "Lot Chemist", mappings);
 				if (!chemists.contains(lotChemist)) {
 					chemists.add(lotChemist);
+				}
+				String lotProject = getStringValueFromMappings(mol, "Project", mappings);
+				if (lotProject != null && !projects.contains(lotProject)) {
+					projects.add(lotProject);
 				}
 
 				currentTime = new Date().getTime();
@@ -219,10 +224,10 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					logger.info("Average speed (rows/min):"+ (numRecordsRead/((currentTime - startTime) / 60.0 / 1000.0)));
 				}
 			}
-			return new BulkLoadSDFValidationPropertiesResponseDTO(chemists);
+			return new BulkLoadSDFValidationPropertiesResponseDTO(chemists, projects);
 		} catch (Exception e){
 			logger.error("Caught an error in the big loop",e);
-			return new BulkLoadSDFValidationPropertiesResponseDTO(null);
+			return new BulkLoadSDFValidationPropertiesResponseDTO(null, null);
 		}
 	}
 
@@ -1135,6 +1140,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String lookUpString = null;
 		String lookUpProperty = null;
 		Collection<String> lookUpStringList = null;
+		Collection<String> invalidValues = null;
 
 		//add parent aliases
 		lookUpProperty = "Parent LiveDesign Corp Name";
@@ -1180,6 +1186,18 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		//lookups
 		try{
+			//Currently this section of invalid values passed in will only work for string values
+			for (BulkLoadPropertyMappingDTO mapping : mappings){
+				if(mapping.getInvalidValues() != null) {
+					lookUpProperty = mapping.getDbProperty();
+					lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+					invalidValues = mapping.getInvalidValues();
+					if(invalidValues.contains(lookUpString)) {
+						logger.error("Found invalid "+lookUpProperty+" with code "+lookUpString+" in list of invalid values passed to service");
+						throw new Exception("Invalid property");
+					}
+				}
+			}
 			lookUpProperty = "Parent Stereo Category";
 			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
 			if (lookUpString != null && lookUpString.length() > 0) parent.setStereoCategory(StereoCategory.findStereoCategorysByCodeEquals(lookUpString).getSingleResult());
@@ -1779,7 +1797,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				String sdfProperty = dbProperty;
 				if (BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty) == null){
 					//no mapping found - add a new one with dbProperty = sdfProperty
-					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty, false, null);
+					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty, false, null, null);
 					mappings.add(newMapping);
 				}else{
 					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty).getSdfProperty();					
@@ -1790,7 +1808,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				sdfProperty = dbProperty;
 				if (BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty) == null){
 					//no mapping found - add a new one with dbProperty = sdfProperty
-					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty, false, null);
+					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty, false, null, null);
 					mappings.add(newMapping);
 				}else{
 					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty).getSdfProperty();					
