@@ -103,8 +103,10 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 		for (AuthorRoleDTO authorRoleDTO : authorRoleDTOs){
 			Author author = Author.findAuthorsByUserName(authorRoleDTO.getUserName()).getSingleResult();
 			LsRole role = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals(authorRoleDTO.getRoleType(), authorRoleDTO.getRoleKind(), authorRoleDTO.getRoleName()).getSingleResult();
-			AuthorRole foundAuthorRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(role, author).getSingleResult();
-			foundAuthorRole.remove();
+			Collection<AuthorRole> foundAuthorRoles = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(role, author).getResultList();
+			for (AuthorRole foundAuthorRole : foundAuthorRoles){
+				foundAuthorRole.remove();
+			}
 		}
 	}
 
