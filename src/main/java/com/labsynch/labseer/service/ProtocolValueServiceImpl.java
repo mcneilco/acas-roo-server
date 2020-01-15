@@ -160,6 +160,7 @@ public class ProtocolValueServiceImpl implements ProtocolValueService {
 		if (valueType.equals("numericValue")) protocolValue.setNumericValue(new BigDecimal(value));
 		if (valueType.equals("dateValue")) protocolValue.setDateValue(new Date(Long.parseLong(value)));
 		if (valueType.equals("codeValue")) protocolValue.setCodeValue(value);
+		if (valueType.equals("urlValue")) protocolValue.setUrlValue(value);
 		protocolValue.setRecordedBy("default");
 		protocolValue.persist();
 		return protocolValue;

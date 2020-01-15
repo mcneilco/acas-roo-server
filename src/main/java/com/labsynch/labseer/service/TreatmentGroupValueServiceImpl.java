@@ -197,6 +197,7 @@ public class TreatmentGroupValueServiceImpl implements TreatmentGroupValueServic
 		if (valueType.equals("numericValue")) treatmentGroupValue.setNumericValue(new BigDecimal(value));
 		if (valueType.equals("dateValue")) treatmentGroupValue.setDateValue(new Date(Long.parseLong(value)));
 		if (valueType.equals("codeValue")) treatmentGroupValue.setCodeValue(value);
+		if (valueType.equals("urlValue")) treatmentGroupValue.setUrlValue(value);
 		treatmentGroupValue.setRecordedBy("default");
 		treatmentGroupValue.persist();
 		return treatmentGroupValue;

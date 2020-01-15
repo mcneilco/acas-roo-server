@@ -233,6 +233,7 @@ public class SubjectValueServiceImpl implements SubjectValueService {
 		if (valueType.equals("numericValue")) subjectValue.setNumericValue(new BigDecimal(value));
 		if (valueType.equals("dateValue")) subjectValue.setDateValue(new Date(Long.parseLong(value)));
 		if (valueType.equals("codeValue")) subjectValue.setCodeValue(value);
+		if (valueType.equals("urlValue")) subjectValue.setUrlValue(value);
 		subjectValue.setRecordedBy("default");
 		subjectValue.persist();
 		return subjectValue;
