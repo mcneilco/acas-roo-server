@@ -160,6 +160,7 @@ public class LsThingValueServiceImpl implements LsThingValueService {
 		if (valueType.equals("numericValue")) lsThingValue.setNumericValue(new BigDecimal(value));
 		if (valueType.equals("dateValue")) lsThingValue.setDateValue(new Date(Long.parseLong(value)));
 		if (valueType.equals("codeValue")) lsThingValue.setCodeValue(value);
+		if (valueType.equals("urlValue")) lsThingValue.setUrlValue(value);
 		lsThingValue.setRecordedBy("default");
 		lsThingValue.persist();
 		return lsThingValue;

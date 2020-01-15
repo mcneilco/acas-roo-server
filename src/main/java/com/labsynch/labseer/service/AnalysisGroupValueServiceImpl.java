@@ -200,6 +200,7 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		if (valueType.equals("numericValue")) analysisGroupValue.setNumericValue(new BigDecimal(value));
 		if (valueType.equals("dateValue")) analysisGroupValue.setDateValue(new Date(Long.parseLong(value)));
 		if (valueType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
+		if (valueType.equals("urlValue")) analysisGroupValue.setUrlValue(value);
 		analysisGroupValue.setRecordedBy("default");
 		analysisGroupValue.persist();
 		return analysisGroupValue;
@@ -229,6 +230,7 @@ public class AnalysisGroupValueServiceImpl implements AnalysisGroupValueService 
 		if (lsType.equals("numericValue")) analysisGroupValue.setNumericValue(new BigDecimal(value));
 		if (lsType.equals("dateValue")) analysisGroupValue.setDateValue(new Date(Long.parseLong(value)));
 		if (lsType.equals("codeValue")) analysisGroupValue.setCodeValue(value);
+		if (lsType.equals("urlValue")) analysisGroupValue.setUrlValue(value);
 		analysisGroupValue.setRecordedBy(recordedBy);
 		analysisGroupValue.persist();
 		return analysisGroupValue;

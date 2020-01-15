@@ -147,6 +147,7 @@ public class ContainerValueServiceImpl implements ContainerValueService {
 				if (valueType.equals("numericValue")) containerValue.setNumericValue(new BigDecimal(value));
 				if (valueType.equals("dateValue")) containerValue.setDateValue(new Date(Long.parseLong(value)));
 				if (valueType.equals("codeValue")) containerValue.setCodeValue(value);
+				if (valueType.equals("urlValue")) containerValue.setUrlValue(value);
 				containerValue.merge();
 				logger.debug("Updated the container value: " + containerValue.toJson());
 			}
@@ -173,6 +174,7 @@ public class ContainerValueServiceImpl implements ContainerValueService {
 		if (lsType.equals("numericValue")) containerValue.setNumericValue(new BigDecimal(value));
 		if (lsType.equals("dateValue")) containerValue.setDateValue(new Date(Long.parseLong(value)));
 		if (lsType.equals("codeValue")) containerValue.setCodeValue(value);
+		if (lsType.equals("urlValue")) containerValue.setUrlValue(value);
 		containerValue.setRecordedBy(recordedBy);
 		containerValue.persist();
 		return containerValue;
@@ -204,6 +206,7 @@ public class ContainerValueServiceImpl implements ContainerValueService {
 		if (valueType.equals("numericValue")) containerValue.setNumericValue(new BigDecimal(value));
 		if (valueType.equals("dateValue")) containerValue.setDateValue(new Date(Long.parseLong(value)));
 		if (valueType.equals("codeValue")) containerValue.setCodeValue(value);
+		if (valueType.equals("urlValue")) containerValue.setUrlValue(value);
 		containerValue.setRecordedBy("default");
 		containerValue.persist();
 		return containerValue;
