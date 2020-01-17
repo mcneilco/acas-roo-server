@@ -476,11 +476,11 @@ public class ParentServiceImpl implements ParentService {
 			}
 		}
 
-		if (parentDTO.getComment() != null && parentDTO.getComment().length() > 0) parent.setComment(parentDTO.getComment());
+		if (parentDTO.getComment() != null) parent.setComment(parentDTO.getComment());
 		if (parentDTO.getStereoCategoryCode() != null && parentDTO.getStereoCategoryCode().length() > 0){
 			parent.setStereoCategory(StereoCategory.findStereoCategorysByCodeEquals(parentDTO.getStereoCategoryCode()).getSingleResult());
 		}
-		if (parentDTO.getStereoComment() != null && parentDTO.getStereoComment().length() > 0) parent.setStereoComment(parentDTO.getStereoComment());
+		if (parentDTO.getStereoComment() != null) parent.setStereoComment(parentDTO.getStereoComment());
 
 		ParentValidationDTO parentValidationDTO = null;
 		try {
