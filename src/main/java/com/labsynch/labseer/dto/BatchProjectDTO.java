@@ -42,9 +42,8 @@ public class BatchProjectDTO {
     	for (BatchProjectDTO requestDTO : requestDTOs){
     		batchCodes.add(requestDTO.getRequestName());
     	}
-    	String queryString = "Select new com.labsynch.labseer.dto.BatchProjectDTO(lot.corpName, project.code) "
+    	String queryString = "Select new com.labsynch.labseer.dto.BatchProjectDTO(lot.corpName, lot.project) "
     			+ "FROM Lot lot "
-    			+ "LEFT OUTER JOIN lot.project as project "
     			+ "WHERE ";
     	Collection<Query> queries = SimpleUtil.splitHqlInClause(em, queryString, "lot.corpName", batchCodes);
     	Collection<BatchProjectDTO> results = new ArrayList<BatchProjectDTO>();

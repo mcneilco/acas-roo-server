@@ -264,6 +264,7 @@ public class ExperimentValueServiceImpl implements ExperimentValueService {
 		if (valueType.equals("numericValue")) experimentValue.setNumericValue(new BigDecimal(value));
 		if (valueType.equals("dateValue")) experimentValue.setDateValue(new Date(Long.parseLong(value)));
 		if (valueType.equals("codeValue")) experimentValue.setCodeValue(value);
+		if (valueType.equals("urlValue")) experimentValue.setUrlValue(value);
 		experimentValue.setRecordedBy("default");
 		//TODO: figure out who to record as RecordedBy
 		experimentValue.persist();
