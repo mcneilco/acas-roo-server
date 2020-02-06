@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<gvnix.version>1.5.0.RELEASE</gvnix.version>
 		<querydsl.version>3.4.3</querydsl.version>
-		<spring-security.version>3.2.5.RELEASE</spring-security.version>
+		<spring-security.version>5.2.2.RELEASE</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>16.4.25.0</jchem.version>
 		<indigo.version>1.2.3.r0</indigo.version>
