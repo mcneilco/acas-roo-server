@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:find finderName="ByBuid" id="ff_com_labsynch_labseer_domain_Lot" path="/lots" z="X8T3kg4VYXf1N45KZRTOOleoEkE=">
+        <field:input disableFormBinding="true" field="buid" id="f_com_labsynch_labseer_domain_Lot_buid" required="true" validationMessageCode="field_invalid_integer" z="Fe0EzgpqAn/aS0eZs+iSv6/3wmA="/>
+    </form:find>
+</div>

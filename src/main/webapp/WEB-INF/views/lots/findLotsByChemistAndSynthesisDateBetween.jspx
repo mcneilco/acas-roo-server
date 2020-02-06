@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
+    <jsp:output omit-xml-declaration="yes"/>
+    <form:find finderName="ByChemistAndSynthesisDateBetween" id="ff_com_labsynch_labseer_domain_Lot" path="/lots" z="Gyeovs42OhJqAtFXBVB21Mdp8kk=">
+        <field:input disableFormBinding="true" field="chemist" id="f_com_labsynch_labseer_domain_Lot_chemist" required="true" z="TKqyksr0GRE68NgHvStmYd9E/X8="/>
+        <field:datetime dateTimePattern="${lot_synthesisdate_date_format}" disableFormBinding="true" field="minSynthesisDate" id="f_com_labsynch_labseer_domain_Lot_minSynthesisDate" required="true" z="eDV73R7dqMTv3PWz0ZEdDvAGESw="/>
+        <field:datetime dateTimePattern="${lot_synthesisdate_date_format}" disableFormBinding="true" field="maxSynthesisDate" id="f_com_labsynch_labseer_domain_Lot_maxSynthesisDate" required="true" z="apqj4kku9BTKsgHMzbk3zewhINI="/>
+    </form:find>
+</div>

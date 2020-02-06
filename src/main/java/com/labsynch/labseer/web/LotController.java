@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,20 +40,17 @@ import com.labsynch.labseer.domain.Vendor;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 
-
 //import org.joda.time.DateTime;
 //import org.springframework.format.annotation.DateTimeFormat;
 //@RooWebScaffold(path = "lots", formBackingObject = Lot.class)
 @RequestMapping("/lots")
 @Controller
 @Transactional
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
 @RooWebScaffold(path = "lots", formBackingObject = Lot.class)
+@RooWebFinder
 //@RooWebFinder
 public class LotController {
 
-	
     Logger logger = LoggerFactory.getLogger(LotController.class);
 
     @RequestMapping(method = RequestMethod.POST)
@@ -417,6 +412,4 @@ public class LotController {
         addDateTimeFormatPatterns(uiModel);
         return "lots/list";
     }
-
-
 }
