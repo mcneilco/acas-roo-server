@@ -620,6 +620,18 @@
 <menu-item id="c_lot" labelCode="menu_category_lot_label" name="Lot">
         <menu-item hidden="false" id="i_lot_new" labelCode="menu_item_lot_new_label" messageCode="global_menu_new" roles="" url="/lots?form"/>
     <menu-item hidden="false" id="i_lot_list" labelCode="menu_item_lot_list_label" messageCode="global_menu_list" roles="" url="/lots?page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_buid" labelCode="menu_item_lot_buid_label" messageCode="global_menu_find" roles="" url="/lots?find=ByBuid&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_bulkloadfileequals" labelCode="menu_item_lot_bulkloadfileequals_label" messageCode="global_menu_find" roles="" url="/lots?find=ByBulkLoadFileEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_chemistandsynthesisdatebetween" labelCode="menu_item_lot_chemistandsynthesisdatebetween_label" messageCode="global_menu_find" roles="" url="/lots?find=ByChemistAndSynthesisDateBetween&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_corpnameequals" labelCode="menu_item_lot_corpnameequals_label" messageCode="global_menu_find" roles="" url="/lots?find=ByCorpNameEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_corpnamelike" labelCode="menu_item_lot_corpnamelike_label" messageCode="global_menu_find" roles="" url="/lots?find=ByCorpNameLike&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_isvirtualnot" labelCode="menu_item_lot_isvirtualnot_label" messageCode="global_menu_find" roles="" url="/lots?find=ByIsVirtualNot&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_notebookpageequals" labelCode="menu_item_lot_notebookpageequals_label" messageCode="global_menu_find" roles="" url="/lots?find=ByNotebookPageEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_notebookpageequalsandignorenot" labelCode="menu_item_lot_notebookpageequalsandignorenot_label" messageCode="global_menu_find" roles="" url="/lots?find=ByNotebookPageEqualsAndIgnoreNot&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_saltform" labelCode="menu_item_lot_saltform_label" messageCode="global_menu_find" roles="" url="/lots?find=BySaltForm&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_synthesisdatebetween" labelCode="menu_item_lot_synthesisdatebetween_label" messageCode="global_menu_find" roles="" url="/lots?find=BySynthesisDateBetween&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_synthesisdategreaterthan" labelCode="menu_item_lot_synthesisdategreaterthan_label" messageCode="global_menu_find" roles="" url="/lots?find=BySynthesisDateGreaterThan&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    <menu-item hidden="false" id="fi_lot_synthesisdatelessthan" labelCode="menu_item_lot_synthesisdatelessthan_label" messageCode="global_menu_find" roles="" url="/lots?find=BySynthesisDateLessThan&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
     </menu-item>
 <menu-item id="c_stereocategory" labelCode="menu_category_stereocategory_label" name="Stereocategory">
         <menu-item hidden="false" id="i_stereocategory_new" labelCode="menu_item_stereocategory_new_label" messageCode="global_menu_new" roles="" url="/stereocategorys?form"/>
@@ -765,5 +777,8 @@
     <menu-item hidden="false" id="fi_puritymeasuredby_codeequals" labelCode="menu_item_puritymeasuredby_codeequals_label" messageCode="global_menu_find" roles="" url="/puritymeasuredbys?find=ByCodeEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
     <menu-item hidden="false" id="fi_puritymeasuredby_nameequals" labelCode="menu_item_puritymeasuredby_nameequals_label" messageCode="global_menu_find" roles="" url="/puritymeasuredbys?find=ByNameEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
     <menu-item hidden="false" id="fi_puritymeasuredby_namelike" labelCode="menu_item_puritymeasuredby_namelike_label" messageCode="global_menu_find" roles="" url="/puritymeasuredbys?find=ByNameLike&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}"/>
+    </menu-item>
+<menu-item id="c_controller" labelCode="menu_category_controller_label" name="Controller">
+        <menu-item hidden="false" id="i_controller__lotindex_id" labelCode="menu_item_controller__lotindex_id_label" messageCode="global_generic" roles="" url="/lot/index"/>
     </menu-item>
 </gvnix-menu>
