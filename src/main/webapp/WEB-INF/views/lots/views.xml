@@ -13,4 +13,40 @@
 <definition extends="default" name="lots/update">
         <put-attribute name="body" value="/WEB-INF/views/lots/update.jspx"/>
     </definition>
+<definition extends="default" name="lots/findLotsByBuid">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsByBuid.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsByBulkLoadFileEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsByBulkLoadFileEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsByChemistAndSynthesisDateBetween">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsByChemistAndSynthesisDateBetween.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsByCorpNameEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsByCorpNameEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsByCorpNameLike">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsByCorpNameLike.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsByIsVirtualNot">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsByIsVirtualNot.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsByNotebookPageEquals">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsByNotebookPageEquals.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsByNotebookPageEqualsAndIgnoreNot">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsByNotebookPageEqualsAndIgnoreNot.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsBySaltForm">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsBySaltForm.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsBySynthesisDateBetween">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsBySynthesisDateBetween.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsBySynthesisDateGreaterThan">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsBySynthesisDateGreaterThan.jspx"/>
+    </definition>
+<definition extends="default" name="lots/findLotsBySynthesisDateLessThan">
+        <put-attribute name="body" value="/WEB-INF/views/lots/findLotsBySynthesisDateLessThan.jspx"/>
+    </definition>
 </tiles-definitions>
