@@ -1580,6 +1580,12 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					fileList.remove();
 				}
 			}
+			Set<LotAlias>  lotAliases = lot.getLotAliases();
+			if (lotAliases != null){
+				for (LotAlias lotAlias : lotAliases){
+					lotAlias.remove();
+				}
+			}
 			lot.remove();
 		}
 		Collection<SaltForm> saltForms = SaltForm.findSaltFormsByBulkLoadFileEquals(bulkLoadFile).getResultList();
