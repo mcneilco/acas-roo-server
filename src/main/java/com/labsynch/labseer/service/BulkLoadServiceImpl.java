@@ -524,7 +524,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String dbCorpName = "";
 		String aliasCorpNames = "";
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, "Lot Corp Name");
-		if (mapping!=null) sdfCorpName = mol.getProperty(mapping.getSdfProperty());
+		if (mapping!=null && mapping.getSdfProperty() != null && mapping.getSdfProperty() != "") sdfCorpName = mol.getProperty(mapping.getSdfProperty());
 		if (e.getClass() == DupeLotException.class){
 			DupeLotException dupeLotError = (DupeLotException) e;
 			dbCorpName = dupeLotError.getLotCorpName();
