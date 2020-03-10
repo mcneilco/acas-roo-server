@@ -617,7 +617,15 @@ public class LsThingServiceImpl implements LsThingService {
 				if (itxLsThingLsThing.getId() == null){
 					//need to save a new itx
 					if (logger.isDebugEnabled()) logger.debug("saving new itxLsThingLsThing: " + itxLsThingLsThing.toJson());
-					updateNestedSecondLsThing(itxLsThingLsThing);
+
+					// We don't generally save an ignored interaction with an updated ls thing nested
+					// because of an issue with sending in two interactions with the same nested ls thing and updating them in this
+					// route, we will only update nested ls things from non-ignored interactions here.
+					if(itxLsThingLsThing.isIgnored()) {
+						logger.debug("not updating nested ls thing because interaction is ignored");
+					} else {
+						updateNestedSecondLsThing(itxLsThingLsThing);
+					}
 					itxLsThingLsThing.setFirstLsThing(updatedLsThing);
 					updatedItxLsThingLsThing = saveItxLsThingLsThing(itxLsThingLsThing);
 					secondLsThings.add(updatedItxLsThingLsThing);
