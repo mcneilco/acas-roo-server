@@ -567,7 +567,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String dbCorpName = "";
 		String aliasCorpNames = "";
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, "Lot Corp Name");
-		if (mapping!=null) sdfCorpName = mol.getProperty(mapping.getSdfProperty());
+		if (mapping!=null && mapping.getSdfProperty() != null && mapping.getSdfProperty() != "") sdfCorpName = mol.getProperty(mapping.getSdfProperty());
 		if (e.getClass() == DupeLotException.class){
 			DupeLotException dupeLotError = (DupeLotException) e;
 			dbCorpName = dupeLotError.getLotCorpName();
@@ -871,6 +871,20 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 		}
+		//Check if the lot corp name already exists in the database
+		try{
+			Lot previousLot = Lot.findLotsByCorpNameEquals(lot.getCorpName()).getSingleResult();
+			logger.error("Cannot register duplicate of lot: " + previousLot.getCorpName());
+			//check if this duplicate lot came from the same/current BulkLoadFile, or whether it was pre-existing
+			if (previousLot.getBulkLoadFile() != null && previousLot.getBulkLoadFile().getId() == lot.getBulkLoadFile().getId()){
+				throw new DupeLotException("Duplicate lot cannot be registered due to duplicate in same bulk load file.", previousLot.getCorpName());
+			}else{
+				throw new DupeLotException("Duplicate lot cannot be registered due to previously existing lot in database.", previousLot.getCorpName());
+			}
+		} catch(EmptyResultDataAccessException e){
+			logger.debug("Not a duplicate lot corp name");
+		}
+
 		return lot;
 	}
 
@@ -1718,6 +1732,12 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			if (fileLists != null){
 				for (FileList fileList : fileLists){
 					fileList.remove();
+				}
+			}
+			Set<LotAlias>  lotAliases = lot.getLotAliases();
+			if (lotAliases != null){
+				for (LotAlias lotAlias : lotAliases){
+					lotAlias.remove();
 				}
 			}
 			lot.remove();
