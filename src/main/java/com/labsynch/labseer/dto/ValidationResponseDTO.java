@@ -16,15 +16,22 @@ import flexjson.JSONSerializer;
 public class ValidationResponseDTO {
 		
     private String level;
+    private int record;
+    private String categoryCode;
+    private String categoryDescription;
     private String message;
     
-    public ValidationResponseDTO(String level, String message){
+    public ValidationResponseDTO(String level, int record, String categoryCode, String categoryDescription, String message){
     	this.level = level;
+    	this.record = record;
+    	this.categoryCode = categoryCode;
+    	this.categoryDescription = categoryDescription;
     	this.message = message;
     }
 
     public String toJson() {
         return new JSONSerializer()
-        .include("level", "message").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
+        .include("level", "record", "categoryCode", "categoryDescription", "message").exclude("*.class").transform(new ExcludeNulls(), void.class).serialize(this);
     }
+
 }

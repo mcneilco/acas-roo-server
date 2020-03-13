@@ -15,6 +15,30 @@ privileged aspect ValidationResponseDTO_Roo_JavaBean {
         this.level = level;
     }
     
+    public int ValidationResponseDTO.getRecord() {
+        return this.record;
+    }
+    
+    public void ValidationResponseDTO.setRecord(int record) {
+        this.record = record;
+    }
+    
+    public String ValidationResponseDTO.getCategoryCode() {
+        return this.categoryCode;
+    }
+    
+    public void ValidationResponseDTO.setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
+    }
+    
+    public String ValidationResponseDTO.getCategoryDescription() {
+        return this.categoryDescription;
+    }
+    
+    public void ValidationResponseDTO.setCategoryDescription(String categoryDescription) {
+        this.categoryDescription = categoryDescription;
+    }
+    
     public String ValidationResponseDTO.getMessage() {
         return this.message;
     }
