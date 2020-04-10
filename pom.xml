@@ -40,7 +40,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<roo.version>1.3.2.RELEASE</roo.version>
 		<slf4j.version>1.7.5</slf4j.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
-		<gvnix.version>1.5.0.RELEASE</gvnix.version>
 		<querydsl.version>3.4.3</querydsl.version>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
@@ -60,11 +59,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<id>spring-maven-release</id>
 			<name>Spring Maven Release Repository</name>
 			<url>http://maven.springframework.org/release</url>
-		</repository>
-		<repository>
-			<id>gvNIX External Libraries repo</id>
-			<url>http://repository.gvnix.org</url>
-			<name>gvNIX External Libraries repo</name>
 		</repository>
 		<repository>
 			<id>spring-maven-milestone</id>
@@ -386,12 +380,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>org.gvnix</groupId>
-			<artifactId>org.gvnix.occ.roo.addon.annotations</artifactId>
-			<version>${gvnix.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
@@ -453,44 +441,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-jsp</artifactId>
 			<version>2.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.gvnix</groupId>
-			<artifactId>org.gvnix.addon.web.mvc.annotations</artifactId>
-			<version>${gvnix.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gvnix</groupId>
-			<artifactId>org.gvnix.web.json.binding</artifactId>
-			<version>${gvnix.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.gvnix</groupId>
-			<artifactId>org.gvnix.addon.datatables.annotations</artifactId>
-			<version>${gvnix.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.gvnix</groupId>
-			<artifactId>org.gvnix.datatables.tags</artifactId>
-			<version>${gvnix.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.gvnix</groupId>
-			<artifactId>org.gvnix.web.datatables</artifactId>
-			<version>${gvnix.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.gvnix</groupId>
-			<artifactId>org.gvnix.addon.jpa.annotations</artifactId>
-			<version>${gvnix.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.gvnix</groupId>
-			<artifactId>org.gvnix.service.roo.addon.annotations</artifactId>
-			<version>${gvnix.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>

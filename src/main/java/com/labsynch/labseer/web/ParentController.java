@@ -5,10 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
-import org.gvnix.web.datatables.query.SearchResults;
-import org.gvnix.web.datatables.util.DatatablesUtils;
+
 import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +31,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
-import com.github.dandelion.datatables.core.ajax.DataSet;
-import com.github.dandelion.datatables.core.ajax.DatatablesCriterias;
-import com.github.dandelion.datatables.core.ajax.DatatablesResponse;
-import com.github.dandelion.datatables.extras.spring3.ajax.DatatablesParams;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.StereoCategory;
@@ -53,8 +46,7 @@ import com.mysema.query.types.path.PathBuilder;
 @RequestMapping("/parents")
 @Controller
 @Transactional
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 public class ParentController {
 
@@ -299,75 +291,6 @@ public class ParentController {
 		headers.add("Pragma", "no-cache"); //HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 		return new ResponseEntity<String>(headers, HttpStatus.OK);
-	}
-
-	//	  @Transactional
-	//	  @RequestMapping(headers = "Accept=application/json", value = "/datatables/ajax", produces = "application/json")
-	//	  @ResponseBody
-	//	  public DatatablesResponse<Map<String, String>> findAllParents(@DatatablesParams DatatablesCriterias criterias, @ModelAttribute Parent parent, HttpServletRequest request) {
-	//		  // URL parameters are used as base search filters
-	//		  Map<String, Object> baseSearchValuesMap = getPropertyMap(parent, request);
-	//		  setDatatablesBaseFilter(baseSearchValuesMap);
-	//		  SearchResults<Parent> searchResult = DatatablesUtils.findByCriteria(Parent.class, Parent.entityManager(), criterias, baseSearchValuesMap, conversionService_dtt, messageSource_dtt);
-	//		  // Get datatables required counts
-	//		  long totalRecords = searchResult.getTotalCount();
-	//		  long recordsFound = searchResult.getResultsCount();
-	//		  // Entity pk field name
-	//		  String pkFieldName = "id";
-	//		  org.springframework.ui.Model uiModel = new org.springframework.ui.ExtendedModelMap();
-	//		  addDateTimeFormatPatterns(uiModel);
-	//		  Map<String, Object> datePattern = uiModel.asMap();
-	//		  DataSet<Map<String, String>> dataSet = DatatablesUtils.populateDataSet(searchResult.getResults(), pkFieldName, totalRecords, recordsFound, criterias.getColumnDefs(), datePattern, conversionService_dtt);
-	//		  return DatatablesResponse.build(dataSet, criterias);
-	//	  }
-	@RequestMapping(headers = "Accept=application/json", value = "/datatables/ajax", params = "ajax_find=BySaltForms", produces = "application/json")
-	@ResponseBody
-	public DatatablesResponse<Map<String, String>> findParentsBySaltForms(@DatatablesParams DatatablesCriterias criterias, @RequestParam("saltForms") Set<SaltForm> saltForms) {
-		BooleanBuilder baseSearch = new BooleanBuilder();
-		// Base Search. Using BooleanBuilder, a cascading builder for
-		// Predicate expressions
-		PathBuilder<Parent> entity = new PathBuilder<Parent>(Parent.class, "entity");
-		if (saltForms != null) {
-			baseSearch.and(entity.get("saltForms").eq(saltForms));
-		} else {
-			baseSearch.and(entity.get("saltForms").isNull());
-		}
-		SearchResults<Parent> searchResult = DatatablesUtils.findByCriteria(entity, Parent.entityManager(), criterias, baseSearch);
-		// Get datatables required counts
-		long totalRecords = searchResult.getTotalCount();
-		long recordsFound = searchResult.getResultsCount();
-		// Entity pk field name
-		String pkFieldName = "id";
-		org.springframework.ui.Model uiModel = new org.springframework.ui.ExtendedModelMap();
-		addDateTimeFormatPatterns(uiModel);
-		Map<String, Object> datePattern = uiModel.asMap();
-		DataSet<Map<String, String>> dataSet = DatatablesUtils.populateDataSet(searchResult.getResults(), pkFieldName, totalRecords, recordsFound, criterias.getColumnDefs(), datePattern, conversionService_dtt);
-		return DatatablesResponse.build(dataSet, criterias);
-	}
-
-	@RequestMapping(headers = "Accept=application/json", value = "/datatables/ajax", params = "ajax_find=ByCdId", produces = "application/json")
-	@ResponseBody
-	public DatatablesResponse<Map<String, String>> findParentsByCdId(@DatatablesParams DatatablesCriterias criterias, @RequestParam("CdId") int CdId) {
-		BooleanBuilder baseSearch = new BooleanBuilder();
-		// Base Search. Using BooleanBuilder, a cascading builder for
-		// Predicate expressions
-		PathBuilder<Parent> entity = new PathBuilder<Parent>(Parent.class, "entity");
-		if (CdId > 0) {
-			baseSearch.and(entity.getNumber("CdId", int.class).eq(CdId));
-		} else {
-			baseSearch.and(entity.getNumber("CdId", int.class).isNull());
-		}
-		SearchResults<Parent> searchResult = DatatablesUtils.findByCriteria(entity, Parent.entityManager(), criterias, baseSearch);
-		// Get datatables required counts
-		long totalRecords = searchResult.getTotalCount();
-		long recordsFound = searchResult.getResultsCount();
-		// Entity pk field name
-		String pkFieldName = "id";
-		org.springframework.ui.Model uiModel = new org.springframework.ui.ExtendedModelMap();
-		addDateTimeFormatPatterns(uiModel);
-		Map<String, Object> datePattern = uiModel.asMap();
-		DataSet<Map<String, String>> dataSet = DatatablesUtils.populateDataSet(searchResult.getResults(), pkFieldName, totalRecords, recordsFound, criterias.getColumnDefs(), datePattern, conversionService_dtt);
-		return DatatablesResponse.build(dataSet, criterias);
 	}
 
 	void addDateTimeFormatPatterns(Model uiModel) {

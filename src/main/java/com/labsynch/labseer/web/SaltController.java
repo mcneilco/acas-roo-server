@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
-import org.gvnix.web.datatables.query.SearchResults;
-import org.gvnix.web.datatables.util.DatatablesUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
-import com.github.dandelion.datatables.core.ajax.DataSet;
-import com.github.dandelion.datatables.core.ajax.DatatablesCriterias;
-import com.github.dandelion.datatables.core.ajax.DatatablesResponse;
-import com.github.dandelion.datatables.extras.spring3.ajax.DatatablesParams;
+
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
@@ -48,8 +42,7 @@ import com.mysema.query.types.path.PathBuilder;
 @RequestMapping("/salts")
 @Controller
 @Transactional
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 public class SaltController {
 
@@ -234,52 +227,4 @@ public class SaltController {
 		}
 	}
 
-	@RequestMapping(headers = "Accept=application/json", value = "/datatables/ajax", params = "ajax_find=ByAbbrevEqualsAndNameEquals", produces = "application/json")
-	@ResponseBody
-	public DatatablesResponse<Map<String, String>> findSaltsByAbbrevEqualsAndNameEquals(@DatatablesParams DatatablesCriterias criterias, @RequestParam("abbrev") String abbrev, @RequestParam("name") String name) {
-		BooleanBuilder baseSearch = new BooleanBuilder();
-		// Base Search. Using BooleanBuilder, a cascading builder for
-		// Predicate expressions
-		PathBuilder<Salt> entity = new PathBuilder<Salt>(Salt.class, "entity");
-		if (abbrev != null) {
-			baseSearch.and(entity.getString("abbrev").equalsIgnoreCase(abbrev));
-		} else {
-			baseSearch.and(entity.getString("abbrev").isNull());
-		}
-		if (name != null) {
-			baseSearch.and(entity.getString("name").eq(name));
-		} else {
-			baseSearch.and(entity.getString("name").isNull());
-		}
-		SearchResults<Salt> searchResult = DatatablesUtils.findByCriteria(entity, Salt.entityManager(), criterias, baseSearch);
-		// Get datatables required counts
-		long totalRecords = searchResult.getTotalCount();
-		long recordsFound = searchResult.getResultsCount();
-		// Entity pk field name
-		String pkFieldName = "id";
-		DataSet<Map<String, String>> dataSet = DatatablesUtils.populateDataSet(searchResult.getResults(), pkFieldName, totalRecords, recordsFound, criterias.getColumnDefs(), null, conversionService_dtt);
-		return DatatablesResponse.build(dataSet, criterias);
-	}
-
-	@RequestMapping(headers = "Accept=application/json", value = "/datatables/ajax", params = "ajax_find=ByCdId", produces = "application/json")
-	@ResponseBody
-	public DatatablesResponse<Map<String, String>> findSaltsByCdId(@DatatablesParams DatatablesCriterias criterias, @RequestParam("cdId") int cdId) {
-		BooleanBuilder baseSearch = new BooleanBuilder();
-		// Base Search. Using BooleanBuilder, a cascading builder for
-		// Predicate expressions
-		PathBuilder<Salt> entity = new PathBuilder<Salt>(Salt.class, "entity");
-		if (cdId > 0) {
-			baseSearch.and(entity.getNumber("cdId", int.class).eq(cdId));
-		} else {
-			baseSearch.and(entity.getNumber("cdId", int.class).isNull());
-		}
-		SearchResults<Salt> searchResult = DatatablesUtils.findByCriteria(entity, Salt.entityManager(), criterias, baseSearch);
-		// Get datatables required counts
-		long totalRecords = searchResult.getTotalCount();
-		long recordsFound = searchResult.getResultsCount();
-		// Entity pk field name
-		String pkFieldName = "id";
-		DataSet<Map<String, String>> dataSet = DatatablesUtils.populateDataSet(searchResult.getResults(), pkFieldName, totalRecords, recordsFound, criterias.getColumnDefs(), null, conversionService_dtt);
-		return DatatablesResponse.build(dataSet, criterias);
-	}
 }

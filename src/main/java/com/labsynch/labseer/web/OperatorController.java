@@ -1,6 +1,5 @@
 package com.labsynch.labseer.web;
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +18,7 @@ import com.labsynch.labseer.domain.Operator;
 @RequestMapping("/operators")
 @Transactional
 @Controller
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 public class OperatorController {
 
