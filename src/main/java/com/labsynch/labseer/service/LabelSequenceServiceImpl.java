@@ -50,7 +50,7 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 	}
 
 	@Override
-	public List<LabelSequence> getAuthorizedLabelSequences(String userName, String thingTypeAndKind,
+	public List<LabelSequence> getAuthorizedLabelSequences(Collection<AuthorRole> authorRoles, String thingTypeAndKind,
 			String labelTypeAndKind) {
 		List<LabelSequence> allLabelSequences;
 		List<LabelSequence> authorizedLabelSequences = new ArrayList<LabelSequence>();
@@ -63,10 +63,10 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 		}else {
 			allLabelSequences = LabelSequence.findAllLabelSequences();
 		}
-		Author author = Author.findAuthorsByUserName(userName).getSingleResult();
-		List<LsRole> authorRoles = new ArrayList<LsRole>();
-		for (AuthorRole authorRole : author.getAuthorRoles()) {
-			authorRoles.add(authorRole.getRoleEntry());
+		List<LsRole> authorLsRoles = new ArrayList<LsRole>();
+
+		for (AuthorRole authorRole : authorRoles) {
+			authorLsRoles.add(authorRole.getRoleEntry());
 		}
 		for (LabelSequence labelSequence : allLabelSequences) {
 			List<LsRole> labelSeqRoles = new ArrayList<LsRole>();
@@ -74,7 +74,7 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 				for (LabelSequenceRole labelSeqRole : labelSequence.getLabelSequenceRoles()) {
 					labelSeqRoles.add(labelSeqRole.getRoleEntry());
 				}
-				if (anyRolesMatch(authorRoles, labelSeqRoles)){
+				if (anyRolesMatch(authorLsRoles, labelSeqRoles)){
 					authorizedLabelSequences.add(labelSequence);
 				}
 			}else {
@@ -87,7 +87,7 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 	
 	public static boolean containsLsRole(Collection<LsRole> list, LsRole queryRole) {
 		for (LsRole role : list) {
-			if (role != null && queryRole != null && role.getId().equals(queryRole.getId())) return true;
+			if (role != null && queryRole != null && role.getLsType().equals(queryRole.getLsType()) && role.getLsKind().equals(queryRole.getLsKind()) && role.getRoleName().equals(queryRole.getRoleName())) return true;
 		}
 		return false;
 	}
