@@ -214,7 +214,13 @@ public class MetalotServiceImpl implements MetalotService {
 			}
 			int dupeParentCount = 0;			
 			if (!metaLot.isSkipParentDupeCheck()){
-				int[] dupeParentList = chemService.checkDupeMol(parent.getMolStructure(), "Parent_Structure", "Parent");
+				int[] dupeParentList = {};
+				if(mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemService.getMolWeight(parent.getMolStructure()) == 0.0) {
+					//if true then we are no checking this one for hits
+					logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
+				} else {
+					dupeParentList = chemService.checkDupeMol(parent.getMolStructure(), "Parent_Structure", "Parent");
+				}
 				if(dupeParentList.length > 0 && !metaLot.isSkipParentDupeCheck()){
 					for (int parentCdId : dupeParentList){
 						List<Parent> queryParents = Parent.findParentsByCdId(parentCdId).getResultList();

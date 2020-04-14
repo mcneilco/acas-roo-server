@@ -49,6 +49,7 @@ public class ParentServiceImpl implements ParentService {
 
 	public static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
 
+	private static Boolean registerNoStructureCompoundsAsUniqueParents = mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents();
 	@Autowired
 	public ChemStructureService chemStructureService;
 
@@ -93,7 +94,12 @@ public class ParentServiceImpl implements ParentService {
 			return validationDTO;
 		}
 		Collection<ParentDTO> dupeParents = new HashSet<ParentDTO>();
-		int[] dupeParentList = chemStructureService.checkDupeMol(queryParent.getMolStructure(), "Parent_Structure", "Parent");
+		int[] dupeParentList = {};
+		if (mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.getMolWeight(queryParent.getMolStructure()) == 0) {
+			logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
+		} {
+			dupeParentList = chemStructureService.checkDupeMol(queryParent.getMolStructure(), "Parent_Structure", "Parent");
+		}
 		if (dupeParentList.length > 0){
 			searchResultLoop:
 				for (int foundParentCdId : dupeParentList){
@@ -231,7 +237,13 @@ public class ParentServiceImpl implements ParentService {
 			CmpdRegSDFWriter dupeMolExporter = cmpdRegSDFWriterFactory.getCmpdRegSDFWriter(dupeCheckFile);
 			for  (Long parentId : parentIds){
 				parent = Parent.findParent(parentId);
-				hits = chemStructureService.searchMolStructures(parent.getMolStructure(), "Parent_Structure", "DUPLICATE_TAUTOMER");
+				if(registerNoStructureCompoundsAsUniqueParents && chemStructureService.getMolWeight(parent.getMolStructure()) == 0) {
+					//if true then we are no checking this one for hits
+					logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents is true so not checking for dupe parent");
+					hits = new int[0];
+				} else {
+					hits = chemStructureService.searchMolStructures(parent.getMolStructure(), "Parent_Structure", "DUPLICATE_TAUTOMER");
+				}
 				if (hits.length == 0){
 					logger.error("did not find a match for parentId: " + parentId + "   parent: " + parent.getCorpName());
 				} 
