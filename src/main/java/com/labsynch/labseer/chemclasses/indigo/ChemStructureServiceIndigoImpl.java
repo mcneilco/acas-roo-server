@@ -298,7 +298,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			//if we are searching in DUPLICATE_TAUTOMER mode and the above TAU search returned results
 			//we need to also check the stereochemistry matches since we can't do both at once.
 			//the overall results should be the intersection of both queries
-			if (hitListList.size() > 0 && searchType.toUpperCase().equals("DUPLICATE_TAUTOMER")) {
+			if (hitListList.size() > 0 && mol.countAtoms() > 0 && searchType.toUpperCase().equals("DUPLICATE_TAUTOMER")) {
 				query.setParameter("parameters", "STE");
 				List<Integer> stereoHitListList = query.getResultList();
 				hitListList.retainAll(stereoHitListList);
