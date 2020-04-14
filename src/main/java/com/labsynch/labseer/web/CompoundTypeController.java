@@ -1,8 +1,6 @@
 package com.labsynch.labseer.web;
 import javax.servlet.http.HttpServletRequest;
 
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +22,7 @@ import com.labsynch.labseer.domain.CompoundType;
 @RequestMapping("/compoundTypes")
 @Transactional
 @Controller
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 public class CompoundTypeController {
 
@@ -122,11 +119,4 @@ public class CompoundTypeController {
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
     
-    @RequestMapping(produces = "text/html", value = "/list")
-    public String listDatatablesDetail(Model uiModel, HttpServletRequest request, @ModelAttribute CompoundType compoundType) {
-        // Do common datatables operations: get entity list filtered by request parameters
-        listDatatables(uiModel, request, compoundType);
-        // Show only the list fragment (without footer, header, menu, etc.) 
-        return "forward:/WEB-INF/views/compoundTypes/list.jspx";
-    }
 }

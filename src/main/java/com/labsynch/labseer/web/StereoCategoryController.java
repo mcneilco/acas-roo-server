@@ -1,8 +1,6 @@
 package com.labsynch.labseer.web;
 import javax.servlet.http.HttpServletRequest;
 
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +24,7 @@ import com.labsynch.labseer.utils.Configuration;
 @RequestMapping({ "/stereoCategorys", "/stereocategorys", "/stereoCategories" })
 @Transactional
 @Controller
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 public class StereoCategoryController {
 
@@ -139,14 +136,6 @@ public class StereoCategoryController {
         headers.add("Access-Control-Allow-Origin", "*");
         headers.add("Access-Control-Max-Age", "86400");
         return new ResponseEntity<String>(headers, HttpStatus.OK);
-    }
-    
-    @RequestMapping(produces = "text/html", value = "/list")
-    public String listDatatablesDetail(Model uiModel, HttpServletRequest request, @ModelAttribute StereoCategory stereoCategory) {
-        // Do common datatables operations: get entity list filtered by request parameters
-        listDatatables(uiModel, request, stereoCategory);
-        // Show only the list fragment (without footer, header, menu, etc.) 
-        return "forward:/WEB-INF/views/stereocategorys/list.jspx";
     }
     
 }

@@ -5,8 +5,6 @@ import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +32,7 @@ import com.labsynch.labseer.utils.Configuration;
 @RequestMapping({ "/physicalstates", "/physicalStates" })
 @Transactional
 @Controller
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 public class PhysicalStateController {
 	
@@ -230,12 +227,6 @@ public class PhysicalStateController {
         headers.setExpires(0); // Expire the cache
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-    @RequestMapping(produces = "text/html", value = "/list")
-    public String listDatatablesDetail(Model uiModel, HttpServletRequest request, @ModelAttribute PhysicalState physicalState) {
-        // Do common datatables operations: get entity list filtered by request parameters
-        listDatatables(uiModel, request, physicalState);
-        // Show only the list fragment (without footer, header, menu, etc.) 
-        return "forward:/WEB-INF/views/physicalstates/list.jspx";
-    }
+
     
 }

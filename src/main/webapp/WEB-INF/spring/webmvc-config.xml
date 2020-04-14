@@ -8,11 +8,7 @@
     
     <!-- Turns on support for mapping requests to Spring MVC @Controller methods
          Also registers default Formatters and Validators for use across all @Controllers -->
-    <mvc:annotation-driven conversion-service="applicationConversionService">
-        <mvc:argument-resolvers>
-            <bean class="com.github.dandelion.datatables.extras.spring3.ajax.DatatablesCriteriasResolver"/>
-        </mvc:argument-resolvers>
-    </mvc:annotation-driven>
+    <mvc:annotation-driven conversion-service="applicationConversionService"/>
     
     <bean
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
@@ -98,8 +94,4 @@
 <bean class="com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
 <bean class="com.labsynch.labseer.config.SwaggerConfig" id="swaggerConfig"/>
 
-<bean class="org.gvnix.web.datatables.util.impl.EntityManagerProviderImpl" id="entityManagerProvider"/>
-  <bean class="org.gvnix.web.datatables.util.impl.DatatablesUtilsBeanImpl" id="datatableUtilsBean"/>
-  <bean class="org.gvnix.web.datatables.util.impl.QuerydslUtilsBeanImpl" id="querydslUtilsBean"/>
-  
 </beans>

@@ -43,6 +43,20 @@ privileged aspect SolutionUnitController_Roo_Controller {
         return "solutionunits/show";
     }
     
+    @RequestMapping(produces = "text/html")
+    public String SolutionUnitController.list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("solutionunits", SolutionUnit.findSolutionUnitEntries(firstResult, sizeNo, sortFieldName, sortOrder));
+            float nrOfPages = (float) SolutionUnit.countSolutionUnits() / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("solutionunits", SolutionUnit.findAllSolutionUnits(sortFieldName, sortOrder));
+        }
+        return "solutionunits/list";
+    }
+    
     @RequestMapping(method = RequestMethod.PUT, produces = "text/html")
     public String SolutionUnitController.update(@Valid SolutionUnit solutionUnit, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
         if (bindingResult.hasErrors()) {

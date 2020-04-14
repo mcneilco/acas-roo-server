@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
-import org.gvnix.web.datatables.query.SearchResults;
-import org.gvnix.web.datatables.util.DatatablesUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
-import com.github.dandelion.datatables.core.ajax.DataSet;
-import com.github.dandelion.datatables.core.ajax.DatatablesCriterias;
-import com.github.dandelion.datatables.core.ajax.DatatablesResponse;
-import com.github.dandelion.datatables.extras.spring3.ajax.DatatablesParams;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
@@ -43,8 +35,7 @@ import com.mysema.query.types.path.PathBuilder;
 @RequestMapping("/saltforms")
 @Controller
 @Transactional
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 public class SaltFormController {
 
@@ -197,36 +188,4 @@ public class SaltFormController {
 		return pathSegment;
 	}
 
-	@RequestMapping(headers = "Accept=application/json", value = "/datatables/ajax", params = "ajax_find=ByCdId", produces = "application/json")
-	@ResponseBody
-	public DatatablesResponse<Map<String, String>> findSaltFormsByCdId(@DatatablesParams DatatablesCriterias criterias, @RequestParam("CdId") int CdId) {
-		BooleanBuilder baseSearch = new BooleanBuilder();
-		// Base Search. Using BooleanBuilder, a cascading builder for
-		// Predicate expressions
-		PathBuilder<SaltForm> entity = new PathBuilder<SaltForm>(SaltForm.class, "entity");
-		if (CdId > 0) {
-			baseSearch.and(entity.getNumber("CdId", int.class).eq(CdId));
-		} else {
-			baseSearch.and(entity.getNumber("CdId", int.class).isNull());
-		}
-		SearchResults<SaltForm> searchResult = DatatablesUtils.findByCriteria(entity, SaltForm.entityManager(), criterias, baseSearch);
-		// Get datatables required counts
-		long totalRecords = searchResult.getTotalCount();
-		long recordsFound = searchResult.getResultsCount();
-		// Entity pk field name
-		String pkFieldName = "id";
-		org.springframework.ui.Model uiModel = new org.springframework.ui.ExtendedModelMap();
-		addDateTimeFormatPatterns(uiModel);
-		Map<String, Object> datePattern = uiModel.asMap();
-		DataSet<Map<String, String>> dataSet = DatatablesUtils.populateDataSet(searchResult.getResults(), pkFieldName, totalRecords, recordsFound, criterias.getColumnDefs(), datePattern, conversionService_dtt);
-		return DatatablesResponse.build(dataSet, criterias);
-	}
-	
-	@RequestMapping(produces = "text/html", value = "/list")
-	public String listDatatablesDetail(Model uiModel, HttpServletRequest request, @ModelAttribute SaltForm saltForm) {
-		// Do common datatables operations: get entity list filtered by request parameters
-		listDatatables(uiModel, request, saltForm);
-		// Show only the list fragment (without footer, header, menu, etc.) 
-		return "forward:/WEB-INF/views/saltforms/list.jspx";
-	}
 }
