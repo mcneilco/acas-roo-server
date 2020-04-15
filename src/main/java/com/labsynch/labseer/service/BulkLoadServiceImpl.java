@@ -648,6 +648,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					parent = foundParent;
 				}
 			}catch (EmptyResultDataAccessException empty){
+				logger.warn("Parent corp name entered that doesn't already exist (sdf corp name: '"+parent.getCorpName()+"'), this compound will be registered with a new parent corp name: ",empty);
 				foundParent = null;
 			}catch (DupeParentException dupe){
 				throw dupe;
