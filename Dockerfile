@@ -1,4 +1,4 @@
-FROM mcneilco/tomcat-maven:openjdk8
+FROM mcneilco/tomcat-maven:openjdk8 as build
 WORKDIR /src
 ENV CATALINA_HOME /usr/local/tomcat
 ENV PATH $CATALINA_HOME/bin:$PATH
@@ -12,6 +12,9 @@ RUN		mvn compile war:war -P default
 RUN		mv target/acas*.war $CATALINA_HOME/webapps/acas.war
 RUN		mv target/acas* $CATALINA_HOME/webapps/acas
 RUN		rm -rf /src
+
+FROM mcneilco/tomcat-maven:openjdk8
+COPY --from=build $CATALINA_HOME/webapps/acas* $CATALINA_HOME/webapps/ 
 WORKDIR	$CATALINA_HOME
 EXPOSE	8080
 CMD		["catalina.sh", "run"]

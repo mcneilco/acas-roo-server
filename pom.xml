@@ -70,19 +70,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<name>Spring Roo Repository</name>
 			<url>http://spring-roo-repository.springsource.org/release</url>
 		</repository>
-		<repository>
-			<id>jcenter-release</id>
-			<name>jcenter</name>
-			<url>http://oss.jfrog.org/artifactory/oss-release-local/</url>
-		</repository>
-		<repository>
-			<id>OSGEO GeoTools repo</id>
-			<url>http://download.osgeo.org/webdav/geotools</url>
-		</repository>
-		<repository>
-			<id>codehaus</id>
-			<url>https://repository.codehaus.org/org/codehaus</url>
-		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
