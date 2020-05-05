@@ -254,5 +254,13 @@ privileged aspect ServerSettingsConfigDTO_Roo_JavaBean {
     public void ServerSettingsConfigDTO.setCheckACASDependenciesByContainerCode(boolean checkACASDependenciesByContainerCode) {
         this.checkACASDependenciesByContainerCode = checkACASDependenciesByContainerCode;
     }
+
+    public boolean ServerSettingsConfigDTO.getRegisterNoStructureCompoundsAsUniqueParents() {
+        return this.registerNoStructureCompoundsAsUniqueParents;
+    }
+    
+    public void ServerSettingsConfigDTO.setRegisterNoStructureCompoundsAsUniqueParents(boolean registerNoStructureCompoundsAsUniqueParents) {
+        this.registerNoStructureCompoundsAsUniqueParents = registerNoStructureCompoundsAsUniqueParents;
+    }
     
 }

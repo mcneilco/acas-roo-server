@@ -1,5 +1,6 @@
 package com.labsynch.labseer.api;
 
+import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
@@ -204,14 +205,15 @@ public class ApiLabelSequenceController {
 		return new ResponseEntity<String>(labelSequence.toJson(), headers, HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/getAuthorizedLabelSequences", method = RequestMethod.GET)
+	@RequestMapping(value = "/getAuthorizedLabelSequences", method = RequestMethod.POST)
 	@ResponseBody
-	public ResponseEntity<java.lang.String> getAuthorizedLabelSequences(@RequestParam(value="userName", required=true) String userName,
-			@RequestParam(value="thingTypeAndKind", required=false) String thingTypeAndKind, 
-			@RequestParam(value="labelTypeAndKind", required=false) String labelTypeAndKind) {
+	public ResponseEntity<java.lang.String> getAuthorizedLabelSequences(@RequestParam(value="thingTypeAndKind", required=false) String thingTypeAndKind, 
+			@RequestParam(value="labelTypeAndKind", required=false) String labelTypeAndKind,
+			@RequestBody String json) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
-		List<LabelSequence> labelSequences = labelSequenceService.getAuthorizedLabelSequences(userName, thingTypeAndKind, labelTypeAndKind);
+		Collection<AuthorRole> authorRoles = AuthorRole.fromJsonArrayToAuthorRoles(json);
+		List<LabelSequence> labelSequences = labelSequenceService.getAuthorizedLabelSequences(authorRoles, thingTypeAndKind, labelTypeAndKind);
 		return new ResponseEntity<String>(LabelSequence.toJsonArray(labelSequences), headers, HttpStatus.OK);
 	}
 }

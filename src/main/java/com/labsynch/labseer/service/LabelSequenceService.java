@@ -8,6 +8,7 @@ import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.domain.AuthorRole;
 
 @Service
 public interface LabelSequenceService {
@@ -15,7 +16,7 @@ public interface LabelSequenceService {
 	Collection<LabelSequence> saveLabelSequenceArray(
 			Collection<LabelSequence> labelSequences);
 
-	List<LabelSequence> getAuthorizedLabelSequences(String userName, String thingTypeAndKind,
+	List<LabelSequence> getAuthorizedLabelSequences(Collection<AuthorRole> authorRoles, String thingTypeAndKind,
 			String labelTypeAndKind);
 
 }

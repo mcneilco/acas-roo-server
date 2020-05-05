@@ -1,10 +1,6 @@
 package com.labsynch.labseer.web;
 import org.apache.commons.collections.CollectionUtils;
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
-import org.gvnix.web.datatables.util.DatatablesUtilsBean;
-import org.gvnix.web.datatables.util.EntityManagerProvider;
-import org.gvnix.web.datatables.util.QuerydslUtilsBean;
+
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,23 +43,12 @@ import javax.validation.Valid;
 @RequestMapping({ "/solutionunits", "/solutionUnits" })
 @Transactional
 @Controller
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 public class SolutionUnitController {
 
     public BeanWrapper beanWrapper_dtt;
-    
-    @Autowired
-    private EntityManagerProvider entityManagerProvider_dtt;
-    
-    @Autowired
-    public DatatablesUtilsBean datatablesUtilsBean_dtt;
-    
-    @Autowired
-    public QuerydslUtilsBean querydslUtilsBean_dtt;
 
-    
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
@@ -191,34 +176,6 @@ public class SolutionUnitController {
 
 	public BeanWrapper beanWrapper;
 
-	@RequestMapping(method = RequestMethod.GET, produces = "text/html")
-    public String listDatatables(Model uiModel, HttpServletRequest request, @ModelAttribute SolutionUnit SolutionUnit) {
-        // Get parentId parameter for details
-        if (request.getParameterMap().containsKey("_dt_parentId")){
-            uiModel.addAttribute("parentId",request.getParameter("_dt_parentId"));
-        }
-        // Get data (filtered by received parameters) and put it on pageContext
-        @SuppressWarnings("unchecked") List<SolutionUnit> solutionUnits = findSolutionUnitsByParameters(SolutionUnit, request != null ? request.getParameterNames() : null);
-        uiModel.addAttribute("solutionunits",solutionUnits);
-        return "solutionunits/list";
-    }
-
-	@ModelAttribute
-    public void populateDatatablesConfig(Model uiModel) {
-        uiModel.addAttribute("datatablesHasBatchSupport", false);
-        uiModel.addAttribute("datatablesUseAjax",false);
-        uiModel.addAttribute("datatablesInlineEditing",false);
-        uiModel.addAttribute("datatablesInlineCreating",false);
-        uiModel.addAttribute("datatablesSecurityApplied",true);
-        uiModel.addAttribute("datatablesStandardMode",true);
-    }
-
-	@RequestMapping(produces = "text/html")
-    public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
-        // overrides the standard Roo list method and
-        // delegates on datatables list method
-        return listDatatables(uiModel, null, null);
-    }
 
 	public Map<String, String> populateParametersMap(HttpServletRequest request) {
         Map<String, Object> params;
@@ -275,24 +232,6 @@ public class SolutionUnitController {
             }
         }
         return propertyValuesMap;
-    }
-
-	public Map<String, Object> getPropertyMap(SolutionUnit SolutionUnit, HttpServletRequest request) {
-        // URL parameters are used as base search filters
-        @SuppressWarnings("unchecked") Map<String, Object> propertyValuesMap = getPropertyMap(SolutionUnit, request.getParameterNames());
-        // Add to the property map the parameters used as query operators
-        Map<String, Object> params = new HashMap<String, Object>(populateParametersMap(request));
-        Set<String> keySet = params.keySet();
-        for (String key : keySet) {
-            if (datatablesUtilsBean_dtt.isSpecialFilterParameters(key)) {
-                propertyValuesMap.put(key, request.getParameterMap().get(key));
-            }
-        }
-        return propertyValuesMap;
-    }
-
-	public void setDatatablesBaseFilter(Map<String, Object> propertyMap) {
-        // Add here your baseFilters to propertyMap.
     }
 
 	@ResponseBody
@@ -436,66 +375,6 @@ public class SolutionUnitController {
         json.append("}");
         // return JSON with locale strings
         return json.toString();
-    }
-
-	@RequestMapping(produces = "text/html", value = "/list")
-    public String listDatatablesDetail(Model uiModel, HttpServletRequest request, @ModelAttribute SolutionUnit solutionUnit) {
-        // Do common datatables operations: get entity list filtered by request parameters
-        listDatatables(uiModel, request, solutionUnit);
-        // Show only the list fragment (without footer, header, menu, etc.) 
-        return "forward:/WEB-INF/views/solutionunits/list.jspx";
-    }
-
-	@RequestMapping(produces = "text/html", method = RequestMethod.POST, params = "datatablesRedirect")
-    public String createDatatablesDetail(@RequestParam(value = "datatablesRedirect", required = true) String redirect, @Valid SolutionUnit solutionunit, BindingResult bindingResult, Model uiModel, RedirectAttributes redirectModel, HttpServletRequest httpServletRequest) {
-        // Do common create operations (check errors, populate, persist, ...)
-        String view = create(solutionunit, bindingResult, uiModel, httpServletRequest);
-        // If binding errors or no redirect, return common create error view (remain in create form)
-        if (bindingResult.hasErrors() || redirect == null || redirect.trim().isEmpty()) {
-            return view;
-        }
-        String[] paramValues = httpServletRequest.getParameterValues("dtt_table_id_hash");
-        if(paramValues != null && paramValues.length > 0) {
-            redirectModel.addFlashAttribute("dtt_table_id_hash", paramValues[0]);
-        }else{
-            redirectModel.addFlashAttribute("dtt_table_id_hash", "");
-        }
-        redirectModel.addFlashAttribute(DatatablesUtilsBean.ROWS_ON_TOP_IDS_PARAM, solutionunit.getId());
-
-        // If create success, redirect to given URL: master datatables
-        return "redirect:".concat(redirect);
-    }
-
-	@RequestMapping(produces = "text/html", method = RequestMethod.PUT, params = "datatablesRedirect")
-    public String updateDatatablesDetail(@RequestParam(value = "datatablesRedirect", required = true) String redirect, @Valid SolutionUnit solutionunit, BindingResult bindingResult, Model uiModel, RedirectAttributes redirectModel, HttpServletRequest httpServletRequest) {
-        // Do common update operations (check errors, populate, merge, ...)
-        String view = update(solutionunit, bindingResult, uiModel, httpServletRequest);
-        // If binding errors or no redirect, return common update error view (remain in update form)
-        if (bindingResult.hasErrors() || redirect == null || redirect.trim().isEmpty()) {
-            return view;
-        }
-        String[] paramValues = httpServletRequest.getParameterValues("dtt_table_id_hash");
-        if(paramValues != null && paramValues.length > 0) {
-            redirectModel.addFlashAttribute("dtt_table_id_hash", paramValues[0]);
-        }else{
-            redirectModel.addFlashAttribute("dtt_table_id_hash", "");
-        }
-        redirectModel.addFlashAttribute(DatatablesUtilsBean.ROWS_ON_TOP_IDS_PARAM, solutionunit.getId());
-
-        // If update success, redirect to given URL: master datatables
-        return "redirect:".concat(redirect);
-    }
-
-	@RequestMapping(produces = "text/html", method = RequestMethod.DELETE, params = "datatablesRedirect", value = "/{id}")
-    public String deleteDatatablesDetail(@RequestParam(value = "datatablesRedirect", required = true) String redirect, @PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
-        // Do common delete operations (find, remove, add pagination attributes, ...)
-        String view = delete(id, page, size, uiModel);
-        // If no redirect, return common list view
-        if (redirect == null || redirect.trim().isEmpty()) {
-            return view;
-        }
-        // Redirect to given URL: master datatables
-        return "redirect:".concat(redirect);
     }
 
 	public List<SolutionUnit> findSolutionUnitsByParameters(SolutionUnit SolutionUnit, Enumeration<Map<String, String>> propertyNames) {

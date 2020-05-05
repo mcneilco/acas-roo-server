@@ -646,7 +646,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			logger.error("Stereo category is See Comments, but no stereo comment provided");
 			throw new MissingPropertyException("Stereo category is See Comments, but no stereo comment provided");
 		}
-		int[] dupeParentList = chemStructureService.checkDupeMol(parent.getMolStructure(), "Parent_Structure", "Parent");
+		int[] dupeParentList = {};
+		if(mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.getMolWeight(parent.getMolStructure()) == 0.0) {
+			//if true then we are no checking this one for hits
+			logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
+		} else {
+			dupeParentList = chemStructureService.checkDupeMol(parent.getMolStructure(), "Parent_Structure", "Parent");
+		}
 		if (dupeParentList.length > 0){
 			searchResultLoop:
 			for (int foundParentCdId : dupeParentList){
@@ -728,6 +734,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					parent = foundParent;
 				}
 			}catch (EmptyResultDataAccessException empty){
+				logger.warn("Parent corp name entered that doesn't already exist (sdf corp name: '"+parent.getCorpName()+"'), this compound will be registered with a new parent corp name: ",empty);
 				foundParent = null;
 			}catch (DupeParentException dupe){
 				throw dupe;

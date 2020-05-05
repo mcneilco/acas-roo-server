@@ -71,4 +71,6 @@ public class ServerSettingsConfigDTO {
     
     private boolean checkACASDependenciesByContainerCode;
     
+    private boolean registerNoStructureCompoundsAsUniqueParents;
+
 }

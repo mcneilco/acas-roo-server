@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +28,7 @@ import com.labsynch.labseer.domain.ParentAliasKind;
 @RequestMapping("/parentaliaskinds")
 @Controller
 @Transactional
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
+
 @RooWebFinder
 @RooWebJson(jsonObject = ParentAliasKind.class)
 public class ParentAliasKindController {
@@ -161,12 +158,5 @@ public class ParentAliasKindController {
         headers.setExpires(0); // Expire the cache
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
-    
-    @RequestMapping(produces = "text/html", value = "/list")
-    public String listDatatablesDetail(Model uiModel, HttpServletRequest request, @ModelAttribute ParentAliasKind parentAliasKind) {
-        // Do common datatables operations: get entity list filtered by request parameters
-        listDatatables(uiModel, request, parentAliasKind);
-        // Show only the list fragment (without footer, header, menu, etc.) 
-        return "forward:/WEB-INF/views/parentaliaskinds/list.jspx";
-    }
+
 }

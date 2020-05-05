@@ -1,6 +1,5 @@
 package com.labsynch.labseer.web;
-import org.gvnix.addon.datatables.annotations.GvNIXDatatables;
-import org.gvnix.addon.web.mvc.annotations.jquery.GvNIXWebJQuery;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +20,6 @@ import com.labsynch.labseer.utils.Configuration;
 @RequestMapping("/vendors")
 @Transactional
 @Controller
-@GvNIXWebJQuery
-@GvNIXDatatables(ajax = false)
 @RooWebFinder
 public class VendorController {
 
