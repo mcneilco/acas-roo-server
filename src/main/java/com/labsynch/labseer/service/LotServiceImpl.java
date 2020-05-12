@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,7 @@ import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.LotDTO;
+import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.configuration.MainConfigDTO;
 import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.SecurityUtil;
@@ -201,5 +203,9 @@ public class LotServiceImpl implements LotService {
 		return Lot.findLot(lot.getId());
 	}
 
-
+	@Override
+	public Collection<LotsByProjectDTO> getLotsByProjectsList(List<String> projects) {
+		Collection<LotsByProjectDTO> lots = Lot.findLotsByProjectsList(projects).getResultList();
+		return(lots);
+	}
 }
