@@ -571,7 +571,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		else registrationLevel = "New lot of existing parent";
 		mol.setProperty("Registration Level", registrationLevel);
 		registeredMolExporter.writeMol(mol);
-		String csvRow = numRecordsRead+","+sdfCorpName+","+dbCorpName+","+registeredParentCorpName+","+allParentAliases+","+allLotAliases+","+registrationLevel+",\""+warningMessages+"\"\n";
+		String csvRow = numRecordsRead+",\""+sdfCorpName+",\""+dbCorpName+",\""+registeredParentCorpName+",\""+allParentAliases+",\""+allLotAliases+",\""+registrationLevel+",\""+warningMessages+"\"\n";
 		registeredCSVOutStream.write(csvRow.getBytes());
 	}
 
@@ -622,7 +622,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		mol.setProperty("Warnings", errorMessage);
 
 		errorMolExporter.writeMol(mol);
-		String csvRow = numRecordsRead+","+sdfCorpName+","+dbCorpName+","+aliasCorpNames+","+errorMessage+",\""+warningMessages+"\"\n";
+		String csvRow = numRecordsRead+",\""+sdfCorpName+",\""+dbCorpName+",\""+aliasCorpNames+",\""+errorMessage+",\""+warningMessages+"\"\n";
 		errorCSVOutStream.write(csvRow.getBytes());
 	}
 
