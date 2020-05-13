@@ -297,7 +297,10 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			BulkLoadFile bulkLoadFile = new BulkLoadFile(shortFileName, 0, fileSizeInBytes, BulkLoadPropertyMappingDTO.toJsonArray(mappings), chemist, new Date());
 			if (registerRequestDTO.getFileDate() != null) bulkLoadFile.setFileDate(registerRequestDTO.getFileDate());
 			else bulkLoadFile.setFileDate(new Date());
-			bulkLoadFile.persist();
+			if(!validate) {
+				bulkLoadFile.persist();
+			}
+
 
 			//construct the error and report file names and output streams
 			Calendar cal = Calendar.getInstance();
@@ -511,7 +514,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 			//update the BulkLoadFile with how many records were read.
 			bulkLoadFile.setNumberOfMols(numRecordsRead);
-			bulkLoadFile.merge();
+			if(!validate) {
+				bulkLoadFile.merge();
+			}
 			logger.info("Finished bulk loading file: "+bulkLoadFile.toJson());
 			return new BulkLoadRegisterSDFResponseDTO(summaryHtml, results, reportFiles);
 		} catch (Exception e){
