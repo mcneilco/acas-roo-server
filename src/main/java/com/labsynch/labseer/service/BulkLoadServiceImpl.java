@@ -527,14 +527,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	public void writeRegisteredMol(int numRecordsRead, CmpdRegMolecule mol, MetalotReturn metalotReturn, Collection<BulkLoadPropertyMappingDTO> mappings, CmpdRegSDFWriter registeredMolExporter, FileOutputStream registeredCSVOutStream, Boolean isNewParent, Collection<ValidationResponseDTO> validationResponse) throws IOException, CmpdRegMolFormatException {
-		String sdfCorpName = "";
+		String sdfCorpName = getStringValueFromMappings(mol, "Parent Corp Name", mappings);
 		String dbCorpName = "";
 		String registeredParentCorpName = "";
 		String allParentAliases = "";
 		String allLotAliases = "";
 
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, "Lot Corp Name");
-		if (mapping!=null) sdfCorpName = mol.getProperty(mapping.getSdfProperty());
 		if(metalotReturn != null) {
 			dbCorpName = metalotReturn.getMetalot().getLot().getCorpName();
 			registeredParentCorpName = metalotReturn.getMetalot().getLot().getSaltForm().getParent().getCorpName();
@@ -586,12 +585,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String errorMessage = e.getMessage();
 
 		//assuming sdf and db corpNames are Lot Corp Name
-		String sdfCorpName = "";
+		String sdfCorpName = getStringValueFromMappings(mol, "Parent Corp Name", mappings);
 		String dbCorpName = "";
 		String aliasCorpNames = "";
 		String categoryCode = "Unassigned";
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, "Lot Corp Name");
-		if (mapping!=null && mapping.getSdfProperty() != null && mapping.getSdfProperty() != "") sdfCorpName = mol.getProperty(mapping.getSdfProperty());
 		if (e.getClass() == DupeLotException.class){
 			DupeLotException dupeLotError = (DupeLotException) e;
 			categoryCode = "DupeLot";
