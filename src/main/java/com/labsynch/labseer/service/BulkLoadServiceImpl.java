@@ -231,7 +231,19 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 	}
 
-
+	@Transactional
+	public int saveDryRunCompound(CmpdRegMolecule mol, Parent parent, int numRecordsRead, DryRunCompound dryRunCompound) throws CmpdRegMolFormatException{
+		int cdId = chemStructureService.saveStructure(mol.getMolStructure(), "Dry_Run_Compound_Structure", false);
+		dryRunCompound = new DryRunCompound();
+		dryRunCompound.setCdId(cdId);
+		dryRunCompound.setRecordNumber(numRecordsRead);
+		dryRunCompound.setCorpName(parent.getCorpName());
+		dryRunCompound.setStereoCategory(parent.getStereoCategory().getCode());
+		dryRunCompound.setStereoComment(parent.getStereoComment());
+		dryRunCompound.setMolStructure(mol.getMolStructure());
+		dryRunCompound.persist();
+		return cdId;
+	}
 	
 	@Override
 //	@Transactional
@@ -421,15 +433,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				if(validate) {
 					try{
 						parent = validateParentAgainstDryRunCompound(parent, numRecordsRead, results);
-						int cdId = chemStructureService.saveStructure(mol.getMolStructure(), "Dry_Run_Compound_Structure", false);
-						dryRunCompound = new DryRunCompound();
-						dryRunCompound.setCdId(cdId);
-						dryRunCompound.setRecordNumber(numRecordsRead);
-						dryRunCompound.setCorpName(parent.getCorpName());
-						dryRunCompound.setStereoCategory(parent.getStereoCategory().getCode());
-						dryRunCompound.setStereoComment(parent.getStereoComment());
-						dryRunCompound.setMolStructure(mol.getMolStructure());
-						dryRunCompound.persist();
+						saveDryRunCompound(mol, parent, numRecordsRead, dryRunCompound);
+
 					}catch (TransactionSystemException rollbackException) {
 						logger.error("Rollback exception", rollbackException.getApplicationException());
 						Exception causeException = new Exception(rollbackException.getApplicationException().getMessage(), rollbackException.getApplicationException());
