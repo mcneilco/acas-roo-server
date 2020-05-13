@@ -517,7 +517,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			if(!validate) {
 				bulkLoadFile.merge();
 			}
-			logger.info("Finished bulk loading file: "+bulkLoadFile.toJson());
+			if(validate) {
+				logger.info("Finished validating bulk load file: "+bulkLoadFile.toJson());
+			} else {
+				logger.info("Finished bulk loading file: "+bulkLoadFile.toJson());
+			}
 			return new BulkLoadRegisterSDFResponseDTO(summaryHtml, results, reportFiles);
 		} catch (Exception e){
 			logger.error("Caught an error in the big loop",e);
