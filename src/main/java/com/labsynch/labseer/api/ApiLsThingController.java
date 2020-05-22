@@ -68,12 +68,27 @@ public class ApiLsThingController {
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<String> genericLsThingSearch(@RequestParam(value="lsType", required = false) String lsType, @RequestParam("q") String searchQuery) {
+	public ResponseEntity<String> genericLsThingSearch(@RequestParam(value="lsType", required = false) String lsType, @RequestParam("q") String searchQuery,
+														@RequestParam(value = "with", required = false) String with) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			String result = LsThing.toJsonArray(lsThingService.findLsThingsByGenericMetaDataSearch(searchQuery, lsType));
-			return new ResponseEntity<String>(result, headers, HttpStatus.OK);
+			Collection<LsThing> results = lsThingService.findLsThingsByGenericMetaDataSearch(searchQuery, lsType);
+			if (with != null) {
+				if (with.equalsIgnoreCase("nestedfull")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(results), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("prettyjson")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayPretty(results), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("nestedstub")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(results), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("stub")) {
+					return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codetable")) {
+					Collection<CodeTableDTO> codeTables = lsThingService.convertToCodeTables(results);
+					return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
+				}
+			}
+			return new ResponseEntity<String>(LsThing.toJsonArray(results), headers, HttpStatus.OK);
 		} catch(Exception e){
 			String error = e.getMessage() + e.getStackTrace();
 			return new ResponseEntity<String>(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
