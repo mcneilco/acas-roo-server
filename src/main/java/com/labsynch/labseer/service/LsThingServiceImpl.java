@@ -1026,8 +1026,12 @@ public class LsThingServiceImpl implements LsThingService {
 			String searchQuery) {
 		return findLsThingsByGenericMetaDataSearch(searchQuery, null);
 	}
-	
 
+	@Override
+	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
+			String searchQuery, String lsType) {
+		return findLsThingsByGenericMetaDataSearch(searchQuery, lsType, null);
+	}
 
 	@Override
 	public Collection<LsThing> findLsThingProjectsByGenericMetaDataSearch(
@@ -1049,7 +1053,7 @@ public class LsThingServiceImpl implements LsThingService {
 
 	@Override
 	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
-			String queryString, String lsType){
+			String queryString, String lsType, String lsKind){
 		List<Long> lsThingIdList = new ArrayList<Long>();
 		queryString = queryString.replaceAll("\\*", "%");
 		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
@@ -1073,6 +1077,10 @@ public class LsThingServiceImpl implements LsThingService {
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		if (lsType != null && lsType.length() > 0){
 			Predicate predicate = criteriaBuilder.equal(lsThingRoot.<String>get("lsType"), lsType);
+			predicateList.add(predicate);
+		}
+		if (lsKind != null && lsKind.length() > 0){
+			Predicate predicate = criteriaBuilder.equal(lsThingRoot.<String>get("lsKind"), lsKind);
 			predicateList.add(predicate);
 		}
 		for (String term : splitQuery){
