@@ -1030,7 +1030,7 @@ public class LsThingServiceImpl implements LsThingService {
 	@Override
 	public Collection<LsThing> findLsThingsByGenericMetaDataSearch(
 			String searchQuery, String lsType) {
-		return findLsThingsByGenericMetaDataSearch(searchQuery, null, null);
+		return findLsThingsByGenericMetaDataSearch(searchQuery, lsType, null);
 	}
 
 	@Override
