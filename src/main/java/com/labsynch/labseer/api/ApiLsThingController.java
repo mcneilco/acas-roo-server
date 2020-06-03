@@ -69,11 +69,11 @@ public class ApiLsThingController {
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
 	public ResponseEntity<String> genericLsThingSearch(@RequestParam(value="lsType", required = false) String lsType, @RequestParam("q") String searchQuery,
-														@RequestParam(value = "with", required = false) String with) {
+														@RequestParam(value="lsKind", required = false) String lsKind, @RequestParam(value = "with", required = false) String with) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
 		try {
-			Collection<LsThing> results = lsThingService.findLsThingsByGenericMetaDataSearch(searchQuery, lsType);
+			Collection<LsThing> results = lsThingService.findLsThingsByGenericMetaDataSearch(searchQuery, lsType, lsKind);
 			if (with != null) {
 				if (with.equalsIgnoreCase("nestedfull")) {
 					return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedFull(results), headers, HttpStatus.OK);
