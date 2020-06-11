@@ -2278,9 +2278,7 @@ public class LsThingServiceImpl implements LsThingService {
 		criteria.select(thing.<Long>get("id"));
 		criteria.distinct(true);
 		List<Predicate> predicateList = new ArrayList<Predicate>();
-		//root lsThing properties
-		predicateList.add(criteriaBuilder.isFalse(thing.<Boolean>get("ignored")));
-		
+
 		//recordedDates
 		if (query.getRecordedDateGreaterThan() != null && query.getRecordedDateLessThan() != null){
 			try{
@@ -2677,6 +2675,9 @@ public class LsThingServiceImpl implements LsThingService {
 		CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
 		Root<LsThing> thing = criteria.from(LsThing.class);
 		List<Predicate> metaPredicateList = new ArrayList<Predicate>();
+		//root lsThing properties
+		metaPredicateList.add(criteriaBuilder.isFalse(thing.<Boolean>get("ignored")));
+
 		//split query string into terms
 		String queryString = query.getQueryString().replaceAll("\\*", "%");
 		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
