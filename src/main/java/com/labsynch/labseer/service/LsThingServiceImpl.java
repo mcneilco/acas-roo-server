@@ -2312,6 +2312,35 @@ public class LsThingServiceImpl implements LsThingService {
 			predicateList.add(recordedBy);
 		}
 		
+		if (query.getCodeName() != null && query.getCodeName().getCodeName() != null){
+			if (query.getCodeName().getOperator() != null){
+				if (query.getCodeName().getOperator().equals("=")){
+					predicateList.add(criteriaBuilder.equal(thing.<String>get("codeName"), query.getCodeName().getCodeName()));
+				} else if ( query.getCodeName().getOperator().equalsIgnoreCase("equals")){
+					predicateList.add(criteriaBuilder.equal(thing.<String>get("codeName"), query.getCodeName().getCodeName()));
+				}else if (query.getCodeName().getOperator().equals("!=")){
+					predicateList.add(criteriaBuilder.notEqual(thing.<String>get("codeName"), query.getCodeName().getCodeName()));
+				}else if(query.getCodeName().getOperator().equals("~")){
+					predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(thing.<String>get("codeName")), '%' +  query.getCodeName().getCodeName().toLowerCase() + '%'));
+				}else if(query.getCodeName().getOperator().equalsIgnoreCase("like")){
+					predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(thing.<String>get("codeName")), '%' +  query.getCodeName().getCodeName().toLowerCase() + '%'));
+				}else if(query.getCodeName().getOperator().equals("!~")){
+					predicateList.add(criteriaBuilder.notLike(thing.<String>get("codeName"), '%' +  query.getCodeName().getCodeName() + '%'));
+				}else if(query.getCodeName().getOperator().equals(">")){
+					predicateList.add(criteriaBuilder.greaterThan(thing.<String>get("codeName"),  query.getCodeName().getCodeName()));
+				}else if(query.getCodeName().getOperator().equals(">=")){
+					predicateList.add(criteriaBuilder.greaterThanOrEqualTo(thing.<String>get("codeName"),  query.getCodeName().getCodeName()));
+				}else if(query.getCodeName().getOperator().equals("<")){
+					predicateList.add(criteriaBuilder.lessThan(thing.<String>get("codeName"),  query.getCodeName().getCodeName()));
+				}else if(query.getCodeName().getOperator().equals("<=")){
+					predicateList.add(criteriaBuilder.lessThanOrEqualTo(thing.<String>get("codeName"),  query.getCodeName().getCodeName()));
+				}else{
+					predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(thing.<String>get("codeName")), '%' +  query.getCodeName().getCodeName().toLowerCase() + '%'));
+				}
+			} else {
+				predicateList.add(criteriaBuilder.like(criteriaBuilder.lower(thing.<String>get("codeName")), '%' +  query.getCodeName().getCodeName().toLowerCase() + '%'));
+			}
+		}
 		//interactions
 		if (query.getFirstInteractions() != null){
 			for (ItxQueryDTO interaction : query.getFirstInteractions()){
@@ -2705,6 +2734,10 @@ public class LsThingServiceImpl implements LsThingService {
 					label.setLabelText(searchTerm);
 				}
 			}
+			if(queryDTO.getCodeName() != null) {
+				queryDTO.getCodeName().setCodeName(searchTerm);
+			}
+				
 			//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
 			List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
 			Predicate[] predicates = new Predicate[0];

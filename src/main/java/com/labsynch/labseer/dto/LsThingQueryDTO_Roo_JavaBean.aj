@@ -3,6 +3,7 @@
 
 package com.labsynch.labseer.dto;
 
+import com.labsynch.labseer.dto.CodeNameQueryDTO;
 import com.labsynch.labseer.dto.ItxQueryDTO;
 import com.labsynch.labseer.dto.LabelQueryDTO;
 import com.labsynch.labseer.dto.LsThingQueryDTO;
@@ -90,6 +91,14 @@ privileged aspect LsThingQueryDTO_Roo_JavaBean {
     
     public void LsThingQueryDTO.setLabels(Collection<LabelQueryDTO> labels) {
         this.labels = labels;
+    }
+    
+    public CodeNameQueryDTO LsThingQueryDTO.getCodeName() {
+        return this.codeName;
+    }
+    
+    public void LsThingQueryDTO.setCodeName(CodeNameQueryDTO codeName) {
+        this.codeName = codeName;
     }
     
 }
