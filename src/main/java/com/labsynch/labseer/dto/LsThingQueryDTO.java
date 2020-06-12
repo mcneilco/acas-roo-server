@@ -32,6 +32,8 @@ public class LsThingQueryDTO {
 	
 	Collection<LabelQueryDTO> labels;
 	
+	CodeNameQueryDTO codeName;
+	
 	public LsThingQueryDTO(){
 		
 	}
@@ -47,5 +49,6 @@ public class LsThingQueryDTO {
 		this.secondInteractions = queryDTO.getSecondInteractions();
 		this.values = queryDTO.getValues();
 		this.labels = queryDTO.getLabels();
+		this.codeName = queryDTO.getCodeName();
 	}
 }
