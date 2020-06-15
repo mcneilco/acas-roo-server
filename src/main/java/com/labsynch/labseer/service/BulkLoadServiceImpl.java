@@ -775,23 +775,28 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					boolean sameStereoCategory = (parent.getStereoCategory().getCode().equalsIgnoreCase(foundDryRunCompound.getStereoCategory()));
 					boolean sameStereoComment = (((parent.getStereoComment() == null || parent.getStereoComment().length() < 1) && (foundDryRunCompound.getStereoComment() == null || foundDryRunCompound.getStereoComment().length() < 1))
 							|| (parent.getStereoComment() != null && foundDryRunCompound.getStereoComment() != null && parent.getStereoComment().equalsIgnoreCase(foundDryRunCompound.getStereoComment())));
-					boolean sameCorpName = (parent.getCorpName() != null && parent.getCorpName().equals(foundDryRunCompound.getCorpName()));
+					boolean sameCorpName = (parent.getCorpName() != null && foundDryRunCompound.getCorpName() != null && parent.getCorpName().equals(foundDryRunCompound.getCorpName()));
 					boolean noCorpName = (parent.getCorpName() == null);
-					boolean sameCorpPrefixOrNoPrefix = (parent.getLabelPrefix() == null || foundDryRunCompound.getCorpName().contains(parent.getLabelPrefix().getLabelPrefix()));
-					if (sameStereoCategory & sameStereoComment & (sameCorpName | (noCorpName & sameCorpPrefixOrNoPrefix))){
+					boolean noCorpNameDryRunCompound = (foundDryRunCompound.getCorpName() == null);
+					// Its possible that the first compound in the validate table has no corporate ID specified and because we aren't currently predicting what the corp name will be that it receives as part of label
+					// sequences, we need to guard against the null corporate ID.  In the case that a found dry run compound has a null corp name and the new corp name has a corporte ID specified, this is NOT considered
+					// the same prefix.  If both compounds are null corp names then we DO consider them to have the same corp prefix.  If the found dry run compound has a specified corp name and the parent does not, then
+					// we need to check the found dry run compound for the matching specified prefix to make sure they will get the same corp name id on the non dry run.
+					boolean sameCorpPrefixOrNoPrefix = (parent.getLabelPrefix() == null || (noCorpName && noCorpNameDryRunCompound) || (!noCorpNameDryRunCompound && foundDryRunCompound.getCorpName().contains(parent.getLabelPrefix().getLabelPrefix())));
+					if (sameStereoCategory & sameStereoComment & (sameCorpName | (noCorpName & (noCorpNameDryRunCompound | sameCorpPrefixOrNoPrefix)))){
 						//parents match
 						break searchResultLoop;
 					}else if (sameStereoCategory & sameStereoComment & !sameCorpName & !noCorpName){
 						//corp name conflict
-						logger.error("Within file, mismatched corp names for same parent structure, stereo category and stereo comment! sdf corp name: "+parent.getCorpName()+" db corp name: "+foundDryRunCompound.getCorpName());
+						logger.error("Within file, mismatched corp names for same parent structure, stereo category and stereo comment! sdf corp name: '"+parent.getCorpName()+"' earlier sdf record corp name: '"+foundDryRunCompound.getCorpName() + "'");
 						if(dupeException == null) dupeException = new DupeParentException("Within file, mismatched corp names for same parent structure, stereo category and stereo comment!", foundDryRunCompound.getCorpName(), parent.getCorpName(), new ArrayList<String>());
 					}else if (sameStereoCategory & sameStereoComment & noCorpName & !sameCorpPrefixOrNoPrefix) {
 						//corp prefix conflict
-						logger.error("Within file, mismatched corp prefix for same parent structure, stereo category, and stereo comment! sdf corp prefix: "+parent.getLabelPrefix().getLabelPrefix()+" db corp name: "+foundDryRunCompound.getCorpName());
+						logger.error("Within file, mismatched corp prefix for same parent structure, stereo category, and stereo comment! sdf corp prefix: '"+parent.getLabelPrefix().getLabelPrefix()+"' earlier sdf record corp name: '"+foundDryRunCompound.getCorpName() + "'");
 						if(dupeException == null) dupeException =  new DupeParentException("Within file, mismatched corp prefix for same parent structure, stereo category, and stereo comment!", foundDryRunCompound.getCorpName(), parent.getLabelPrefix().getLabelPrefix(), new ArrayList<String>());
 					}else if (sameStereoCategory & !sameStereoComment & sameCorpName & !noCorpName){
 						//stereo comment conflict for same corpName
-						logger.error("Within file, mismatched stereo comments for same parent structure, stereo category and corp name! Corp name: "+parent.getCorpName()+" sdf stereo category: "+parent.getStereoCategory().getCode()+" sdf stereo comment: "+parent.getStereoComment()+" db stereo category: "+foundDryRunCompound.getStereoCategory()+" db stereo comment: "+foundDryRunCompound.getStereoComment());
+						logger.error("Within file, mismatched stereo comments for same parent structure, stereo category and corp name! Corp name: "+parent.getCorpName()+" sdf stereo category: '"+parent.getStereoCategory().getCode()+"' sdf stereo comment: '"+parent.getStereoComment()+"' earlier sdf record stereo category: '"+foundDryRunCompound.getStereoCategory()+"' earlier sdf record stereo comment: '"+foundDryRunCompound.getStereoComment() + "'");
 						if(dupeException == null) dupeException =  new DupeParentException("Within file, mismatched stereo comments for same parent structure, stereo category and corp name!", foundDryRunCompound.getCorpName(), parent.getCorpName(), new ArrayList<String>());
 					}else if (sameStereoCategory & !sameStereoComment & (!sameCorpName | noCorpName)){
 						//same stereo category, but different stereo comment => new parent
@@ -799,7 +804,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						logWarning("WithinFileMatchingStructureSameStereoDifferentComment", categoryDescription, categoryDescription + ": " + foundDryRunCompound.getCorpName()+ "(record number "+foundParentCdId+")", numRecordsRead, validationResponse);
 						continue;
 					}else if (!sameStereoCategory & sameCorpName & !noCorpName){
-						logger.error("Within file, mismatched stereo categories for same parent structure and corp name! Corp name: "+parent.getCorpName()+" sdf stereo category: "+parent.getStereoCategory().getCode()+" db stereo category: "+foundDryRunCompound.getStereoCategory());
+						logger.error("Within file, mismatched stereo categories for same parent structure and corp name! Corp name: '"+parent.getCorpName()+"' sdf stereo category: '"+parent.getStereoCategory().getCode()+"' earlier sdf record stereo category: '"+foundDryRunCompound.getStereoCategory()+ "'");
 						if(dupeException == null) dupeException = new DupeParentException("Within file, mismatched stereo categories for same parent structure and corp name!", foundDryRunCompound.getCorpName(), parent.getCorpName(), new ArrayList<String>());
 					}else if (!sameStereoCategory & (!sameCorpName | noCorpName)){
 						//Different stereo category, different corpName => new parent
