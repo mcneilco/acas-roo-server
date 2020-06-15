@@ -62,8 +62,13 @@ public interface LsThingService {
 
 	Collection<LsThing> findLsThingsByGenericMetaDataSearch(String searchQuery);
 
-	Collection<LsThing> findLsThingsByGenericMetaDataSearch(String lsType,
-			String searchQuery);
+	Collection<LsThing> findLsThingsByGenericMetaDataSearch(String searchQuery,
+			String lsType);
+
+	Collection<LsThing> findLsThingsByGenericMetaDataSearch(String searchQuery,
+			String lsType,
+			String lsKind
+	);
 
 	Collection<CodeTableDTO> getCodeTableLsThings(String lsType, String lsKind, boolean includeIgnored);
 

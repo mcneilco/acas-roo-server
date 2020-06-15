@@ -38,6 +38,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.SearchFormDTO;
 import com.labsynch.labseer.dto.configuration.MainConfigDTO;
 import com.labsynch.labseer.utils.Configuration;
@@ -754,6 +755,24 @@ public class Lot {
         
         return q;
     }
+
+    public static TypedQuery<LotsByProjectDTO> findLotsByProjectsList(List<String> projects) {
+		
+		EntityManager em = Lot.entityManager();
+		String query = "SELECT new com.labsynch.labseer.dto.LotsByProjectDTO( "
+				+ "lt.id as id, lt.corpName as lotCorpName, lt.lotNumber as lotNumber, lt.registrationDate as registrationDate, prnt.corpName as parentCorpName, lt.project as project) " 
+                + "FROM Lot AS lt "
+				+ "JOIN lt.saltForm sltfrm "
+				+ "JOIN sltfrm.parent prnt "
+				+ "WHERE lt.project in (:projects) ";
+		
+		logger.debug("sql query " + query);
+        TypedQuery<LotsByProjectDTO> q = em.createQuery(query, LotsByProjectDTO.class);
+        q.setParameter("projects", projects);
+
+		return q;
+	}
+	
     
     public String toJsonIncludeAliases() {
         return new JSONSerializer()

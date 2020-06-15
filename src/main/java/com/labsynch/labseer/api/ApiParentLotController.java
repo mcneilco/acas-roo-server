@@ -1,6 +1,7 @@
 package com.labsynch.labseer.api;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.LotDTO;
+import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.ParentEditDTO;
 import com.labsynch.labseer.dto.ParentLotCodeDTO;
 import com.labsynch.labseer.dto.ReparentLotDTO;
@@ -155,6 +157,21 @@ public class ApiParentLotController {
 				lotCount++;
 			}
 			return new ResponseEntity<String>("number of lots reparented: " + lotCount, headers, HttpStatus.OK);
+		}catch(Exception e){
+			logger.error("Caught exception updating lot metadata",e);
+			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
+		}
+	}
+
+	@Transactional
+	@RequestMapping(value = "/getLotsByProjectsList", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> getLotsByProjectsList(@RequestBody List<String> allowedProjects){
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");
+		try{
+			Collection<LotsByProjectDTO> lots = lotService.getLotsByProjectsList(allowedProjects);
+			return new ResponseEntity<String>(LotsByProjectDTO.toJsonArray(lots), headers, HttpStatus.OK);	        	
 		}catch(Exception e){
 			logger.error("Caught exception updating lot metadata",e);
 			return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
