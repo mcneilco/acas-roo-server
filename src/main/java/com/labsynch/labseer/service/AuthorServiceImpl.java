@@ -334,7 +334,7 @@ public class AuthorServiceImpl implements AuthorService {
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(author.getEmailAddress());
 		mail.setSubject("User Activation");
-		if(propertiesUtilService.getEmailFromaddress() != null) mail.setFrom(propertiesUtilService.getEmailFromaddress());
+		if(propertiesUtilService.getEmailFromAddress() != null) mail.setFrom(propertiesUtilService.getEmailFromAddress());
 		
 		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your ACAS account: " + propertiesUtilService.getClientPath()+"/activateUser?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +""
 				+ "\n Your username is: "+author.getUserName()
@@ -790,7 +790,7 @@ public class AuthorServiceImpl implements AuthorService {
 		foundAuthor.merge();
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(emailAddress);
-		if(propertiesUtilService.getEmailFromaddress() != null) mail.setFrom(propertiesUtilService.getEmailFromaddress());
+		if(propertiesUtilService.getEmailFromAddress() != null) mail.setFrom(propertiesUtilService.getEmailFromAddress());
 
 		mail.setSubject("ACAS Password Recovery");
 		mail.setText("Hi "+foundAuthor.getFirstName()+",\n"

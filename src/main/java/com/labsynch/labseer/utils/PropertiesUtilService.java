@@ -51,5 +51,6 @@ public interface PropertiesUtilService {
 
 	String getBenchesLocationLabel();
 
+	String getEmailFromAddress();
 	
 }
