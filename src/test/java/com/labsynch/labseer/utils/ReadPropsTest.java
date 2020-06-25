@@ -78,6 +78,8 @@ public class ReadPropsTest {
 		mail.setSubject("User Activaton");
 		
 		mail.setText("Hi -- testing the email send function");
+		if(propertiesUtilService.getEmailFromAddress() != null && !propertiesUtilService.getEmailFromAddress().equals("") ) mail.setFrom(propertiesUtilService.getEmailFromAddress());
+
         mailSender.send(mail);
 		
 	}

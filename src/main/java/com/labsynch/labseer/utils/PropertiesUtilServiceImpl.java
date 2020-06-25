@@ -281,4 +281,16 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public String getBenchesLocationLabel() {
 	    return this.benchesLocationLabel;
 	}
+
+	String emailFromAddress;
+	@Value("${server.support.smtp.from}")
+	public void setEmailFromAddress(String emailFromAddress) {
+		this.emailFromAddress = emailFromAddress;
+		if (this.emailFromAddress.startsWith("${")) this.emailFromAddress = null;
+	}
+	
+	@Override
+	public String getEmailFromAddress() {
+	    return this.emailFromAddress;
+	}
 }
