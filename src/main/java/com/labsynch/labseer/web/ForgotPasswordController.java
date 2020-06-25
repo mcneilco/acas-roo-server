@@ -93,7 +93,7 @@ public class ForgotPasswordController {
     public void sendMessage(String mailTo, String message) {
         simpleMailMessage.setTo(mailTo);
         simpleMailMessage.setText(message);
-        if(propertiesUtilService.getEmailFromAddress() != null) simpleMailMessage.setFrom(propertiesUtilService.getEmailFromAddress());
+		if(propertiesUtilService.getEmailFromAddress() != null && !propertiesUtilService.getEmailFromAddress().equals("") ) simpleMailMessage.setFrom(propertiesUtilService.getEmailFromAddress());
         mailSender.send(simpleMailMessage);
     }
 }
