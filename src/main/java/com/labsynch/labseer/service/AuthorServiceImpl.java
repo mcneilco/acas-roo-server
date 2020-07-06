@@ -334,6 +334,7 @@ public class AuthorServiceImpl implements AuthorService {
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(author.getEmailAddress());
 		mail.setSubject("User Activation");
+		if(propertiesUtilService.getEmailFromAddress() != null && !propertiesUtilService.getEmailFromAddress().equals("") ) mail.setFrom(propertiesUtilService.getEmailFromAddress());
 		
 		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your ACAS account: " + propertiesUtilService.getClientPath()+"/activateUser?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +""
 				+ "\n Your username is: "+author.getUserName()
@@ -789,6 +790,8 @@ public class AuthorServiceImpl implements AuthorService {
 		foundAuthor.merge();
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(emailAddress);
+		if(propertiesUtilService.getEmailFromAddress() != null && !propertiesUtilService.getEmailFromAddress().equals("") ) mail.setFrom(propertiesUtilService.getEmailFromAddress());
+
 		mail.setSubject("ACAS Password Recovery");
 		mail.setText("Hi "+foundAuthor.getFirstName()+",\n"
 				+ "You recently requested for your password to be reset. Your temporary password is "+newPassword+"\n"

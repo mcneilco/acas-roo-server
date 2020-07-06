@@ -138,7 +138,8 @@ public class SignUpController {
             SimpleMailMessage mail = new SimpleMailMessage();
     		mail.setTo(author.getEmailAddress());
     		mail.setSubject("User Activation");
-    		
+            if(propertiesUtilService.getEmailFromAddress() != null && !propertiesUtilService.getEmailFromAddress().equals("") ) mail.setFrom(propertiesUtilService.getEmailFromAddress());
+            
 //    		mail.setText("Hi "+ author.getFirstName() + ",\n. You just registered with us. Please click on this link to activate your account - <a href=\"" + propertiesUtilService.getHostPath() +  "signup?emailAddress="+author.getEmailAddress()+"&activate="+activationKey+"\">Activate Link</a>. \n Thanks Typical Security Admin");
     		mail.setText("Hi "+ author.getFirstName() + ",\nPlease click on the following link to activate your account: " + propertiesUtilService.getClientPath()+"/activateUser?emailAddress="+author.getEmailAddress()+"&activate="+activationKey +  "\nThank you, \nACAS Admin");
             mailSender.send(mail);
@@ -170,6 +171,7 @@ public class SignUpController {
     public void sendMessage(String mailTo, String message) {
         simpleMailMessage.setTo(mailTo);
         simpleMailMessage.setText(message);
+		if(propertiesUtilService.getEmailFromAddress() != null && !propertiesUtilService.getEmailFromAddress().equals("") ) simpleMailMessage.setFrom(propertiesUtilService.getEmailFromAddress());
         mailSender.send(simpleMailMessage);
     }
 }
