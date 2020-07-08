@@ -39,4 +39,12 @@ privileged aspect SimpleBulkLoadPropertyDTO_Roo_JavaBean {
         this.displayOrder = displayOrder;
     }
     
+    public Boolean SimpleBulkLoadPropertyDTO.getIgnored() {
+        return this.ignored;
+    }
+    
+    public void SimpleBulkLoadPropertyDTO.setIgnored(Boolean ignored) {
+        this.ignored = ignored;
+    }
+    
 }

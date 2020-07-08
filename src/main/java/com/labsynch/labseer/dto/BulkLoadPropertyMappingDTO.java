@@ -29,22 +29,25 @@ public class BulkLoadPropertyMappingDTO {
 
 	private Collection<String> invalidValues;
 
-    private String defaultVal;
+	private String defaultVal;
+	
+    private boolean ignored;
     
     public BulkLoadPropertyMappingDTO(){
     	
     }
     
-    public BulkLoadPropertyMappingDTO(String dbProperty, String sdfProperty, boolean required, String defaultVal, Collection<String> invalidValues){
+    public BulkLoadPropertyMappingDTO(String dbProperty, String sdfProperty, boolean required, String defaultVal, Collection<String> invalidValues, boolean ignored){
     	this.dbProperty = dbProperty;
     	this.sdfProperty = sdfProperty;
     	this.required = required;
     	this.defaultVal = defaultVal;
     	this.invalidValues = invalidValues;
+    	this.ignored = ignored;
     }
     
     public String toJson() {
-        return new JSONSerializer().exclude("*.class", "class").include("dbProperty","sdfProperty","required","defaultVal").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "class").include("dbProperty","sdfProperty","required","defaultVal","ignored").transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     public static BulkLoadPropertyMappingDTO findMappingByDbPropertyEquals(Collection<BulkLoadPropertyMappingDTO> mappings, String dbProperty){
