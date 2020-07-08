@@ -135,7 +135,7 @@
 				{"name": "Parent LiveDesign Corp Name", "dataType": "string", "required": false, "ignored": true},
 				{"name": "Parent Stereo Category", "dataType": "string", "required": true, "ignored": false},
 				{"name": "Parent Stereo Comment", "dataType": "string", "required": false, "ignored": false},
-				{"name": "Project", "dataType": "string", "required": false}
+				{"name": "Project", "dataType": "string", "required": false, "ignored": false}
 			]
 	}
 }
