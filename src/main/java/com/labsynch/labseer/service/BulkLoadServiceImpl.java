@@ -363,7 +363,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				Lot lot;
 				//attempt to strip salts
 				try {
-					mol = processForSaltStripping(mol, mappings);
+					mol = processForSaltStripping(mol, mappings, results, numRecordsRead);
 				}catch (CmpdRegMolFormatException e) {
 					String emptyMolfile = "\n" + 
 							"  Ketcher 09111712282D 1   1.00000     0.00000     0\n" + 
@@ -376,7 +376,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					continue;
 				}
 				try{
-					parent = createParent(mol, mappings, chemist, registerRequestDTO.getLabelPrefix());
+					parent = createParent(mol, mappings, chemist, registerRequestDTO.getLabelPrefix(), results, numRecordsRead);
 				}catch (Exception e){
 					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
@@ -394,7 +394,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 				if (parent.getId() != null) isNewParent = false;
 				try{
-					saltForm = createSaltForm(mol, mappings);
+					saltForm = createSaltForm(mol, mappings, results, numRecordsRead);
 				}catch (Exception e){
 					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
@@ -973,15 +973,15 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		//regular fields that do not require lookups or conversions
 		lot.setSynthesisDate(getDateValueFromMappings(mol, "Lot Synthesis Date", mappings, results, recordNumber));
-		lot.setNotebookPage(getStringValueFromMappings(mol, "Lot Notebook Page", mappings));
-		lot.setCorpName(getStringValueFromMappings(mol, "Lot Corp Name", mappings));
-		lot.setBarcode(getStringValueFromMappings(mol, "Lot Barcode", mappings));
-		lot.setColor(getStringValueFromMappings(mol, "Lot Color", mappings));
-		lot.setSupplier(getStringValueFromMappings(mol, "Lot Supplier", mappings));
-		lot.setSupplierID(getStringValueFromMappings(mol, "Lot Supplier ID", mappings));
-		lot.setVendorID(getStringValueFromMappings(mol, "Lot Vendor ID", mappings));
-		lot.setComments(getStringValueFromMappings(mol, "Lot Comments", mappings));		
-		lot.setSupplierLot(getStringValueFromMappings(mol, "Lot Supplier Lot", mappings));
+		lot.setNotebookPage(getStringValueFromMappings(mol, "Lot Notebook Page", mappings, results, recordNumber));
+		lot.setCorpName(getStringValueFromMappings(mol, "Lot Corp Name", mappings, results, recordNumber));
+		lot.setBarcode(getStringValueFromMappings(mol, "Lot Barcode", mappings, results, recordNumber));
+		lot.setColor(getStringValueFromMappings(mol, "Lot Color", mappings, results, recordNumber));
+		lot.setSupplier(getStringValueFromMappings(mol, "Lot Supplier", mappings, results, recordNumber));
+		lot.setSupplierID(getStringValueFromMappings(mol, "Lot Supplier ID", mappings, results, recordNumber));
+		lot.setVendorID(getStringValueFromMappings(mol, "Lot Vendor ID", mappings, results, recordNumber));
+		lot.setComments(getStringValueFromMappings(mol, "Lot Comments", mappings, results, recordNumber));		
+		lot.setSupplierLot(getStringValueFromMappings(mol, "Lot Supplier Lot", mappings, results, recordNumber));
 		lot.setMeltingPoint(getNumericValueFromMappings(mol, "Lot Melting Point", mappings, results, recordNumber));
 		lot.setBoilingPoint(getNumericValueFromMappings(mol, "Lot Boiling Point", mappings, results, recordNumber));
 		lot.setRetain(getNumericValueFromMappings(mol, "Lot Retain", mappings, results, recordNumber));
@@ -991,20 +991,20 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		lot.setSolutionAmount(getNumericValueFromMappings(mol, "Lot Solution Amount", mappings, results, recordNumber));
 		lot.setLambda(getNumericValueFromMappings(mol, "Lot Lambda", mappings, results, recordNumber));
 		lot.setAbsorbance(getNumericValueFromMappings(mol, "Lot Absorbance", mappings, results, recordNumber));
-		lot.setStockSolvent(getStringValueFromMappings(mol, "Lot Stock Solvent", mappings));
-		lot.setStockLocation(getStringValueFromMappings(mol, "Lot Stock Location", mappings));
-		lot.setRetainLocation(getStringValueFromMappings(mol, "Lot Retain Location", mappings));
+		lot.setStockSolvent(getStringValueFromMappings(mol, "Lot Stock Solvent", mappings, results, recordNumber));
+		lot.setStockLocation(getStringValueFromMappings(mol, "Lot Stock Location", mappings, results, recordNumber));
+		lot.setRetainLocation(getStringValueFromMappings(mol, "Lot Retain Location", mappings, results, recordNumber));
 		lot.setObservedMassOne(getNumericValueFromMappings(mol, "Lot Observed Mass #1", mappings, results, recordNumber));
 		lot.setObservedMassTwo(getNumericValueFromMappings(mol, "Lot Observed Mass #2", mappings, results, recordNumber));
 		lot.setTareWeight(getNumericValueFromMappings(mol, "Lot Tare Weight", mappings, results, recordNumber));
 		lot.setTotalAmountStored(getNumericValueFromMappings(mol, "Lot Total Amount Stored", mappings, results, recordNumber));
-		lot.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
+		lot.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings, results, recordNumber));
 
 		//special field for Lot Inventory - not saved in Lot table
-		lot.setStorageLocation(getStringValueFromMappings(mol, "Lot Storage Location", mappings));
+		lot.setStorageLocation(getStringValueFromMappings(mol, "Lot Storage Location", mappings, results, recordNumber));
 
 		//conversions
-		lot.setIsVirtual(Boolean.valueOf(getStringValueFromMappings(mol, "Lot Is Virtual", mappings)));
+		lot.setIsVirtual(Boolean.valueOf(getStringValueFromMappings(mol, "Lot Is Virtual", mappings, results, recordNumber)));
 		Double lotNumber = getNumericValueFromMappings(mol, "Lot Number", mappings, results, recordNumber);
 		if (lotNumber != null) lot.setLotNumber(lotNumber.intValue());
 		else lot.setLotNumber(-1);
@@ -1016,7 +1016,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		Collection<String> lookUpStringList = null;
 
 		lookUpProperty = "Lot Alias";
-		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings);
+		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 		if (lookUpStringList != null && !lookUpStringList.isEmpty()){
 			String aliasType = "default";
 			String aliasKind = "default";
@@ -1030,11 +1030,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		
 		try{
 			lookUpProperty = "Project";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			logger.info("Project lookup: " + lookUpString);
 			lot.setProject(lookUpString);
 			lookUpProperty = "Lot Purity Measured By";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setPurityMeasuredBy(PurityMeasuredBy.findPurityMeasuredBysByNameEquals(lookUpString).getSingleResult());
@@ -1043,7 +1043,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Physical State";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setPhysicalState(PhysicalState.findPhysicalStatesByNameEquals(lookUpString).getSingleResult());
@@ -1052,7 +1052,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Vendor";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setVendor(Vendor.findVendorsByNameEquals(lookUpString).getSingleResult());
@@ -1061,7 +1061,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Purity Operator";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setPurityOperator(Operator.findOperatorsByNameEquals(lookUpString).getSingleResult());
@@ -1070,7 +1070,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Amount Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setAmountUnits(Unit.findUnitsByNameEquals(lookUpString).getSingleResult());
@@ -1079,7 +1079,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Retain Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setRetainUnits(Unit.findUnitsByNameEquals(lookUpString).getSingleResult());
@@ -1088,7 +1088,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Solution Amount Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setSolutionAmountUnits(SolutionUnit.findSolutionUnitsByNameEquals(lookUpString).getSingleResult());
@@ -1097,7 +1097,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Tare Weight Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setTareWeightUnits(Unit.findUnitsByNameEquals(lookUpString).getSingleResult());
@@ -1106,7 +1106,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Total Amount Stored Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setTotalAmountStoredUnits(Unit.findUnitsByNameEquals(lookUpString).getSingleResult());
@@ -1123,22 +1123,22 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 
-	public SaltForm createSaltForm(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings) throws Exception{
+	public SaltForm createSaltForm(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber) throws Exception{
 		//Here we try to fetch all of the possible Lot database properties from the sdf, according to the mappings
 		SaltForm saltForm = new SaltForm();
 		//		saltForm.setMolStructure(mol.getMolStructure());
 		saltForm.setRegistrationDate(new Date());
 
 		//regular fields that do not require lookups or conversions
-		saltForm.setCasNumber(getStringValueFromMappings(mol, "CAS Number", mappings));
+		saltForm.setCasNumber(getStringValueFromMappings(mol, "CAS Number", mappings, results, recordNumber));
 
 		//lookups
 		String lookUpString = null;
 		String lookUpProperty = null;
 		try{
-			saltForm.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
+			saltForm.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings, results, recordNumber));
 			lookUpProperty = "Lot Salt Abbrev";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				//found a salt. Need to split by semicolon, look up salt by abbrev, and check for a matching equivalents #
 				logger.info("Found one or more salts: "+lookUpString);
@@ -1161,7 +1161,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 				//if we reached this point, we have found all the referenced salts by abbrev. We must check for equivalents.
 				lookUpProperty = "Lot Salt Equivalents";
-				lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+				lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 				if (lookUpString==null){
 					logger.error("Caught error creating salt: Lot Salt Equivalents must be supplied.");
 					throw new Exception("Caught error creating salt: Lot Salt Equivalents must be supplied.");
@@ -1208,7 +1208,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 
 	@Transactional
-	public Parent createParent(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist, LabelPrefixDTO labelPrefix) throws Exception{
+	public Parent createParent(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist, LabelPrefixDTO labelPrefix, Collection<ValidationResponseDTO> results, int recordNumber) throws Exception{
 		//Here we try to fetch all of the possible Lot database properties from the sdf, according to the mappings
 		Parent parent = new Parent();
 		parent.setMolStructure(mol.getMolStructure());
@@ -1216,14 +1216,17 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		parent.setRegisteredBy(chemist);
 
 		//regular fields that do not require lookups or conversions
-		parent.setCorpName(getStringValueFromMappings(mol, "Parent Corp Name", mappings));
+		parent.setCorpName(getStringValueFromMappings(mol, "Parent Corp Name", mappings, results, recordNumber));
+		//Not adding warning for coercing this next property because the warning is covered in alias mappings
 		parent.setCommonName(getStringValueFromMappings(mol, "Parent Common Name", mappings));
-		parent.setStereoComment(getStringValueFromMappings(mol, "Parent Stereo Comment", mappings));
-		parent.setComment(getStringValueFromMappings(mol, "Parent Comment", mappings));
+		parent.setStereoComment(getStringValueFromMappings(mol, "Parent Stereo Comment", mappings, results, recordNumber));
+		parent.setComment(getStringValueFromMappings(mol, "Parent Comment", mappings, results, recordNumber));
+		//Not adding warning for coercing this next property because the warning is covered in create lot
 		parent.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
 
 		//conversion
-		parent.setIsMixture(Boolean.valueOf(getStringValueFromMappings(mol, "Parent Is Mixture", mappings)));
+		//Not adding warning for coercing this next property because the warning is covered salt stripping function
+		parent.setIsMixture(Boolean.valueOf(getStringValueFromMappings(mol, "Parent Is Mixture", mappings, results, recordNumber)));
 
 		String lookUpString = null;
 		String lookUpProperty = null;
@@ -1232,7 +1235,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		//add parent aliases
 		lookUpProperty = "Parent LiveDesign Corp Name";
-		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings);
+		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 
 		if (lookUpStringList != null && !lookUpStringList.isEmpty()){
 			String aliasType = "External ID";
@@ -1246,7 +1249,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 
 		lookUpProperty = "Parent Common Name";
-		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings);
+		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 		if (lookUpStringList != null && !lookUpStringList.isEmpty()){
 			String aliasType = "other name";
 			String aliasKind = "Common Name";
@@ -1259,7 +1262,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 		
 		lookUpProperty = "Parent Alias";
-		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings);
+		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 		if (lookUpStringList != null && !lookUpStringList.isEmpty()){
 			String aliasType = "default";
 			String aliasKind = "default";
@@ -1278,7 +1281,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			for (BulkLoadPropertyMappingDTO mapping : mappings){
 				if(mapping.getInvalidValues() != null) {
 					lookUpProperty = mapping.getDbProperty();
-					lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+					lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 					invalidValues = mapping.getInvalidValues();
 					if(invalidValues.contains(lookUpString)) {
 						logger.error("Found invalid "+lookUpProperty+" with code "+lookUpString+" in list of invalid values passed to service");
@@ -1287,13 +1290,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Parent Stereo Category";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) parent.setStereoCategory(StereoCategory.findStereoCategorysByCodeEquals(lookUpString).getSingleResult());
 			lookUpProperty = "Parent Annotation";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) parent.setParentAnnotation(ParentAnnotation.findParentAnnotationsByCodeEquals(lookUpString).getSingleResult());
 			lookUpProperty = "Parent Compound Type";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) parent.setCompoundType(CompoundType.findCompoundTypesByCodeEquals(lookUpString).getSingleResult());
 		}catch (Exception e){
 			logger.error("Caught error looking up parent property "+lookUpProperty+" with code "+lookUpString,e);
@@ -1362,6 +1365,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	public String getStringValueFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings){
+		Collection<ValidationResponseDTO> results = new ArrayList();
+		String value = getStringValueFromMappings(mol, dbProperty, mappings, results, -1);
+		return(value);
+	}
+	public String getStringValueFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber){
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty);
 		if (mapping == null) return null;
 		String sdfProperty = mapping.getSdfProperty();
@@ -1370,12 +1378,20 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String regexMatch = "(\\x00|\\^M|\\^\\@)$";
 		if (value != null) value = value.replaceAll(regexMatch, "");
 		if (value == null) value = mapping.getDefaultVal();
-		
+		Boolean coerced = false;
+		if (value != null) {
+			String trimmedString = value.trim();
+			if(!trimmedString.equals(value)) {
+				value = trimmedString;
+				coerced = true;
+			}
+		}
+		if(recordNumber != -1 && coerced) logWarning("TrimmedStringValue","Trimmed string value for property " + sdfProperty, sdfProperty + " '"+ mol.getProperty(sdfProperty) + "' trimmed to '" + value + "'", recordNumber, results);
 		if (value != null) if (logger.isDebugEnabled()) logger.debug("requested property: " + sdfProperty + "  value: " + value);
 		return value;
 	}
 	
-	public Collection<String> getStringValuesFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings){
+	public Collection<String> getStringValuesFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber){
 		Collection<BulkLoadPropertyMappingDTO> foundMappings = BulkLoadPropertyMappingDTO.findMappingsByDbPropertyEquals(mappings, dbProperty);
 		if (foundMappings == null || foundMappings.isEmpty()) return null;
 		String regexMatch = "(\\x00|\\^M|\\^\\@)$";
@@ -1386,6 +1402,17 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			if (sdfProperty != null && sdfProperty.length() > 0) value = mol.getProperty(sdfProperty);
 			if (value != null) value = value.replaceAll(regexMatch, "");
 			if (value == null) value = mapping.getDefaultVal();
+
+			// TRIM white space and log if the value was changed
+			Boolean coerced = false;
+			if (value != null) {
+				String trimmedString = value.trim();
+				if(!trimmedString.equals(value)) {
+					value = trimmedString;
+					coerced = true;
+				}
+			}
+			if(recordNumber != -1 && coerced) logWarning("TrimmedStringValue","Trimmed string value for property " + sdfProperty, sdfProperty + " '"+ mol.getProperty(sdfProperty) + "' trimmed to '" + value + "'", recordNumber, results);	
 			stringValues.add(value);
 		}
 		return stringValues;
@@ -1875,9 +1902,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return summary;
 	}
 	
-	public CmpdRegMolecule processForSaltStripping(CmpdRegMolecule inputMol, Collection<BulkLoadPropertyMappingDTO> mappings) throws CmpdRegMolFormatException{
+	public CmpdRegMolecule processForSaltStripping(CmpdRegMolecule inputMol, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber) throws CmpdRegMolFormatException{
 		boolean multipleFragments = chemStructureService.checkForSalt(inputMol.getMolStructure());
-		boolean markedAsMixture = Boolean.valueOf(getStringValueFromMappings(inputMol, "Parent Is Mixture", mappings));
+		boolean markedAsMixture = Boolean.valueOf(getStringValueFromMappings(inputMol, "Parent Is Mixture", mappings, results, recordNumber));
 		if (multipleFragments && !markedAsMixture){
 			//attempt salt stripping
 			StrippedSaltDTO strippedSaltDTO = chemStructureService.stripSalts(inputMol);
@@ -1888,12 +1915,14 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				logger.debug(inputMol.getMolStructure());
 				String saltAbbrevString = "";
 				String saltEquivString = "";
-				if (getStringValueFromMappings(inputMol, "Lot Salt Abbrev", mappings) != null){
-					saltAbbrevString += getStringValueFromMappings(inputMol, "Lot Salt Abbrev", mappings);
+				String saltAbbrevMapping = getStringValueFromMappings(inputMol, "Lot Salt Abbrev", mappings, results, recordNumber);
+				if (saltAbbrevMapping != null){
+					saltAbbrevString += saltAbbrevMapping;
 					saltAbbrevString += ";";
 				}
-				if (getStringValueFromMappings(inputMol, "Lot Salt Equivalents", mappings) != null){
-					saltEquivString += getStringValueFromMappings(inputMol, "Lot Salt Equivalents", mappings);
+				String saltEquivMapping = getStringValueFromMappings(inputMol, "Lot Salt Equivalents", mappings, results, recordNumber);
+				if (saltEquivMapping != null){
+					saltEquivString += saltEquivMapping;
 					saltEquivString += ";";
 				}
 				for (Salt salt : strippedSaltDTO.getSaltCounts().keySet()){
