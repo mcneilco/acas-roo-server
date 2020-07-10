@@ -19,7 +19,7 @@ import flexjson.JSONSerializer;
 @RooJson
 public class BulkLoadPropertyMappingDTO {
 	
-	private static final Logger logger = LoggerFactory.getLogger(BulkLoadPropertyMappingDTO.class);
+    private static final Logger logger = LoggerFactory.getLogger(BulkLoadPropertyMappingDTO.class);
 
     private String dbProperty;
     
@@ -27,9 +27,9 @@ public class BulkLoadPropertyMappingDTO {
     
     private boolean required;
 
-	private Collection<String> invalidValues;
+    private Collection<String> invalidValues;
 
-	private String defaultVal;
+    private String defaultVal;
 	
     private boolean ignored;
     
