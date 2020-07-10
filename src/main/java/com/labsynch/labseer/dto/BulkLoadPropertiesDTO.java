@@ -93,8 +93,8 @@ public class BulkLoadPropertiesDTO {
 					}
 				}
 				//if there was a new match, add the mapping
-				if (dbPropMatch != null){
-					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbPropMatch.getName(), sdfProp.getName(), dbPropMatch.getRequired(), null, null);
+				if (dbPropMatch != null && dbPropMatch.getIgnored() != null && dbPropMatch.getIgnored()) {
+					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbPropMatch.getName(), sdfProp.getName(), dbPropMatch.getRequired(), null, null, dbPropMatch.getIgnored());
 					this.bulkLoadProperties.add(newMapping);
 				}
 			}
