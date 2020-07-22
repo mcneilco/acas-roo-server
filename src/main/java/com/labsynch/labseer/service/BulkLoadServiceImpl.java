@@ -310,8 +310,12 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 			String errorSDFName = rootOutFileName+"errors.sdf";
 			String errorCSVName = rootOutFileName+"errors.csv";
-			String registeredSDFName = rootOutFileName+"registered.sdf";
-			String registeredCSVName = rootOutFileName+"registered.csv";
+			String registeredSuffix = "registered"
+			if(validate) {
+				registeredSuffix = "validated"
+			}
+			String registeredSDFName = rootOutFileName + registeredSuffix + ".sdf";
+			String registeredCSVName = rootOutFileName + registeredSuffix + ".csv";
 			String reportName = rootOutFileName+"report.log";
 
 			Collection<String> reportFiles = new HashSet<String>();
