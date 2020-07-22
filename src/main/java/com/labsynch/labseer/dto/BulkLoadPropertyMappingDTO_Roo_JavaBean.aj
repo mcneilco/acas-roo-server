@@ -48,4 +48,12 @@ privileged aspect BulkLoadPropertyMappingDTO_Roo_JavaBean {
         this.defaultVal = defaultVal;
     }
     
+    public boolean BulkLoadPropertyMappingDTO.isIgnored() {
+        return this.ignored;
+    }
+    
+    public void BulkLoadPropertyMappingDTO.setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+    
 }

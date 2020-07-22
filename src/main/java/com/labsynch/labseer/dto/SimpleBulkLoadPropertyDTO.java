@@ -19,7 +19,9 @@ public class SimpleBulkLoadPropertyDTO {
     
     private Boolean required;
     
-    private Integer displayOrder;
+	private Integer displayOrder;
+	
+    private Boolean ignored;
     
     public SimpleBulkLoadPropertyDTO(){
     	
@@ -30,7 +32,7 @@ public class SimpleBulkLoadPropertyDTO {
     }
     
     public String toJson() {
-        return new JSONSerializer().exclude("*.class", "class").include("name","dataType","required","displayOrder").transform(new ExcludeNulls(), void.class).serialize(this);
+        return new JSONSerializer().exclude("*.class", "class").include("name","dataType","required","displayOrder","ignored").transform(new ExcludeNulls(), void.class).serialize(this);
     }
     
     @Override
@@ -39,11 +41,13 @@ public class SimpleBulkLoadPropertyDTO {
     	int dataTypeHashCode = 0;
     	int requiredHashCode = 0;
     	int displayOrderHashCode = 0;
+    	int ignoredHashCode = 0;
     	if (name != null) nameHashCode+=name.hashCode();
     	if (dataType != null) dataTypeHashCode+=dataType.hashCode();
     	if (required != null) requiredHashCode+=required.hashCode();
     	if (displayOrder != null) displayOrderHashCode+=displayOrder.hashCode();
-    	return nameHashCode + dataTypeHashCode + requiredHashCode + displayOrderHashCode;
+    	if (ignored != null) ignoredHashCode+=ignored.hashCode();
+    	return nameHashCode + dataTypeHashCode + requiredHashCode + displayOrderHashCode + ignoredHashCode;
     }
     
     @Override
@@ -71,7 +75,12 @@ public class SimpleBulkLoadPropertyDTO {
     		else if (this.displayOrder == null && thatDTO.displayOrder != null) displayOrderEqual = false;
     		else if (this.displayOrder != null && thatDTO.displayOrder == null) displayOrderEqual = false;
     		else if (this.displayOrder != null && thatDTO.displayOrder != null) displayOrderEqual = this.displayOrder.equals(thatDTO.displayOrder);
-    		return (nameEqual & dataTypeEqual & requiredEqual & displayOrderEqual);
+    		boolean ignoredEqual = false;
+    		if (this.ignored == null && thatDTO.ignored == null) ignoredEqual = true;
+    		else if (this.ignored == null && thatDTO.ignored != null) ignoredEqual = false;
+    		else if (this.ignored != null && thatDTO.ignored == null) ignoredEqual = false;
+    		else if (this.ignored != null && thatDTO.ignored != null) ignoredEqual = this.ignored.equals(thatDTO.ignored);
+    		return (nameEqual & dataTypeEqual & requiredEqual & displayOrderEqual & ignoredEqual);
     	}
     }
 }

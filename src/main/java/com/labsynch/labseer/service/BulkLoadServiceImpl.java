@@ -1939,7 +1939,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				String sdfProperty = dbProperty;
 				if (BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty) == null){
 					//no mapping found - add a new one with dbProperty = sdfProperty
-					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty, false, null, null);
+					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty, false, null, null, false);
 					mappings.add(newMapping);
 				}else{
 					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty).getSdfProperty();					
@@ -1950,7 +1950,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				sdfProperty = dbProperty;
 				if (BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty) == null){
 					//no mapping found - add a new one with dbProperty = sdfProperty
-					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty, false, null, null);
+					BulkLoadPropertyMappingDTO newMapping = new BulkLoadPropertyMappingDTO(dbProperty, sdfProperty, false, null, null, false);
 					mappings.add(newMapping);
 				}else{
 					sdfProperty = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty).getSdfProperty();					
