@@ -702,7 +702,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						if(dupeException == null) dupeException = new DupeParentException("Mismatched stereo comments for same parent structure, stereo category and corp name!", foundParent.getCorpName(), parent.getCorpName(), new ArrayList<String>());
 					}else if (sameStereoCategory & !sameStereoComment & (!sameCorpName | noCorpName)){
 						//same stereo category, but different stereo comment => new parent
-						categoryDescription = "Matching structure found with different stereo category and different db corp name";
+						categoryDescription = "Matching structure found with same stereo category but different stereo comment and different corp name";
 						logWarning("MatchingStructureSameStereoDifferentComment",categoryDescription, categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead, validationResponse);
 						continue;
 					}else if (!sameStereoCategory & sameCorpName & !noCorpName){
