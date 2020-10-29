@@ -67,7 +67,7 @@ public class SecurityUtils {
 
 	}
 
-	private Author creacreateAuthorteAuthor(Authentication authentication) {
+    private Author createAuthor(Authentication authentication) {
 
 		Object principal = authentication.getPrincipal();
 
