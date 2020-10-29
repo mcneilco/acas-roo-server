@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.ldap.userdetails.LdapUserDetails;
+import org.springframework.security.ldap.userdetails.InetOrgPerson;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,7 +67,7 @@ public class SecurityUtils {
 
 	}
 
-	private Author createAuthor(Authentication authentication) {
+    private Author createAuthor(Authentication authentication) {
 
 		Object principal = authentication.getPrincipal();
 
@@ -75,7 +76,30 @@ public class SecurityUtils {
 		
 		Author author = new Author();
 
-		if (principal instanceof LdapUserDetails) {
+		if (principal instanceof InetOrgPerson) {
+			InetOrgPerson inetOrgPerson = (InetOrgPerson) principal;
+			principalUserName = inetOrgPerson.getUsername();
+			logger.debug("username: " + principalUserName);
+			String fullName = inetOrgPerson.getCn()[0];
+			logger.debug("fullName: " + fullName);
+			String [] parts = fullName.split(" ", 2);
+			if (parts.length != 2) {
+				logger.error("Could not get user first name and last name from cn '" + fullName + "'  Please provide a cn which can be split into first and last name by a space e.g. 'Test User'");
+			} 
+			String firstName = parts[0];
+			String lastName = parts[1];
+			author.setUserName(principalUserName);
+			author.setFirstName(firstName);
+			author.setLastName(lastName);
+			author.setEmailAddress(inetOrgPerson.getMail());
+			author.setPassword(principalUserName);
+			author.setRecordedBy("acas");
+			author.setRecordedDate(new Date());
+			author.setLsType("default");
+			author.setLsKind("default");
+			author = authorService.saveAuthor(author);
+
+		} else if (principal instanceof LdapUserDetails) {
 			LdapUserDetails ldapPrincipal = (LdapUserDetails) principal;
 			principalUserName = ldapPrincipal.getUsername();
 			logger.debug("username: " + principalUserName);
@@ -84,8 +108,12 @@ public class SecurityUtils {
 			int endIndex = dn.indexOf(",");
 			String fullName = dn.substring(beginIndex, endIndex);
 			logger.debug("fullName: " + fullName);
-			String firstName = fullName.split(" ",2)[0];
-			String lastName = fullName.split(" ",2)[1];
+			String [] parts = fullName.split(" ", 2);
+			if (parts.length != 2) {
+				logger.error("Could not get user first name and last name from cn '" + fullName + "'  Please provide a cn which can be split into first and last name by a space e.g. 'Test User'");
+			}
+			String firstName = parts[0];
+			String lastName = parts[1];
 			author.setUserName(principalUserName);
 			author.setFirstName(firstName);
 			author.setLastName(lastName);
