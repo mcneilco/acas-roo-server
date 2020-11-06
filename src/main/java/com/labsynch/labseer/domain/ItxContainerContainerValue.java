@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -21,6 +23,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Entity
+@Configurable
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord
@@ -134,5 +138,66 @@ public class ItxContainerContainerValue extends AbstractValue {
 	public static com.labsynch.labseer.domain.ItxContainerContainerValue create(com.labsynch.labseer.domain.ItxContainerContainerValue lsThingValue) {
         ItxContainerContainerValue newItxContainerContainerValue = new JSONDeserializer<ItxContainerContainerValue>().use(null, ItxContainerContainerValue.class).deserializeInto(lsThingValue.toJson(), new ItxContainerContainerValue());
         return newItxContainerContainerValue;
+    }
+
+	public ItxContainerContainerState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(ItxContainerContainerState lsState) {
+        this.lsState = lsState;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("lsState");
+
+	public static long countItxContainerContainerValues() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxContainerContainerValue o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxContainerContainerValue> findAllItxContainerContainerValues() {
+        return entityManager().createQuery("SELECT o FROM ItxContainerContainerValue o", ItxContainerContainerValue.class).getResultList();
+    }
+
+	public static List<ItxContainerContainerValue> findAllItxContainerContainerValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxContainerContainerValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxContainerContainerValue.class).getResultList();
+    }
+
+	public static ItxContainerContainerValue findItxContainerContainerValue(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxContainerContainerValue.class, id);
+    }
+
+	public static List<ItxContainerContainerValue> findItxContainerContainerValueEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxContainerContainerValue o", ItxContainerContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxContainerContainerValue> findItxContainerContainerValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxContainerContainerValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxContainerContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxContainerContainerValue merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxContainerContainerValue merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
     }
 }

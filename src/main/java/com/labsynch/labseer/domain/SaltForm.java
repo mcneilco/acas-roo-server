@@ -2,6 +2,7 @@ package com.labsynch.labseer.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -9,14 +10,20 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
+import javax.persistence.Version;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -25,9 +32,11 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -36,7 +45,11 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.SearchFormDTO;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
+@Entity
+@Configurable
 @Transactional
 @RooJavaBean
 @RooToString
@@ -557,4 +570,400 @@ public class SaltForm implements Comparable {
 		return totalSaltWeight;
 	}
 
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	@PersistenceContext
+    transient EntityManager entityManager;
+
+	public static final EntityManager entityManager() {
+        EntityManager em = new SaltForm().entityManager;
+        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
+        return em;
+    }
+
+	public static List<SaltForm> findAllSaltForms(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM SaltForm o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, SaltForm.class).getResultList();
+    }
+
+	public static List<SaltForm> findSaltFormEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM SaltForm o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, SaltForm.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public void persist() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.persist(this);
+    }
+
+	@Transactional
+    public void remove() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        if (this.entityManager.contains(this)) {
+            this.entityManager.remove(this);
+        } else {
+            SaltForm attached = SaltForm.findSaltForm(this.id);
+            this.entityManager.remove(attached);
+        }
+    }
+
+	@Transactional
+    public void flush() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.flush();
+    }
+
+	@Transactional
+    public void clear() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        this.entityManager.clear();
+    }
+
+	@Transactional
+    public SaltForm merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        SaltForm merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static SaltForm fromJsonToSaltForm(String json) {
+        return new JSONDeserializer<SaltForm>()
+        .use(null, SaltForm.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<SaltForm> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<SaltForm> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<SaltForm> fromJsonArrayToSaltForms(String json) {
+        return new JSONDeserializer<List<SaltForm>>()
+        .use("values", SaltForm.class).deserialize(json);
+    }
+
+	@Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private Long id;
+
+	@Version
+    @Column(name = "version")
+    private Integer version;
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+	public String getMolStructure() {
+        return this.molStructure;
+    }
+
+	public void setMolStructure(String molStructure) {
+        this.molStructure = molStructure;
+    }
+
+	public String getCorpName() {
+        return this.corpName;
+    }
+
+	public void setCorpName(String corpName) {
+        this.corpName = corpName;
+    }
+
+	public String getCasNumber() {
+        return this.casNumber;
+    }
+
+	public void setCasNumber(String casNumber) {
+        this.casNumber = casNumber;
+    }
+
+	public String getChemist() {
+        return this.chemist;
+    }
+
+	public void setChemist(String chemist) {
+        this.chemist = chemist;
+    }
+
+	public Date getRegistrationDate() {
+        return this.registrationDate;
+    }
+
+	public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+	public int getCdId() {
+        return this.CdId;
+    }
+
+	public void setCdId(int CdId) {
+        this.CdId = CdId;
+    }
+
+	public Boolean getIgnore() {
+        return this.ignore;
+    }
+
+	public void setIgnore(Boolean ignore) {
+        this.ignore = ignore;
+    }
+
+	public Double getSaltWeight() {
+        return this.saltWeight;
+    }
+
+	public void setSaltWeight(Double saltWeight) {
+        this.saltWeight = saltWeight;
+    }
+
+	public Parent getParent() {
+        return this.parent;
+    }
+
+	public void setParent(Parent parent) {
+        this.parent = parent;
+    }
+
+	public Set<Lot> getLots() {
+        return this.lots;
+    }
+
+	public void setLots(Set<Lot> lots) {
+        this.lots = lots;
+    }
+
+	public Set<IsoSalt> getIsoSalts() {
+        return this.isoSalts;
+    }
+
+	public void setIsoSalts(Set<IsoSalt> isoSalts) {
+        this.isoSalts = isoSalts;
+    }
+
+	public BulkLoadFile getBulkLoadFile() {
+        return this.bulkLoadFile;
+    }
+
+	public void setBulkLoadFile(BulkLoadFile bulkLoadFile) {
+        this.bulkLoadFile = bulkLoadFile;
+    }
+
+	public static Long countFindSaltFormsByBulkLoadFileEquals(BulkLoadFile bulkLoadFile) {
+        if (bulkLoadFile == null) throw new IllegalArgumentException("The bulkLoadFile argument is required");
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SaltForm AS o WHERE o.bulkLoadFile = :bulkLoadFile", Long.class);
+        q.setParameter("bulkLoadFile", bulkLoadFile);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSaltFormsByCdId(int CdId) {
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SaltForm AS o WHERE o.CdId = :CdId", Long.class);
+        q.setParameter("CdId", CdId);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSaltFormsByCorpNameEquals(String corpName) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SaltForm AS o WHERE o.corpName = :corpName", Long.class);
+        q.setParameter("corpName", corpName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSaltFormsByCorpNameLike(String corpName) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        corpName = corpName.replace('*', '%');
+        if (corpName.charAt(0) != '%') {
+            corpName = "%" + corpName;
+        }
+        if (corpName.charAt(corpName.length() - 1) != '%') {
+            corpName = corpName + "%";
+        }
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SaltForm AS o WHERE LOWER(o.corpName) LIKE LOWER(:corpName)", Long.class);
+        q.setParameter("corpName", corpName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindSaltFormsByParent(Parent parent) {
+        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM SaltForm AS o WHERE o.parent = :parent", Long.class);
+        q.setParameter("parent", parent);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByBulkLoadFileEquals(BulkLoadFile bulkLoadFile) {
+        if (bulkLoadFile == null) throw new IllegalArgumentException("The bulkLoadFile argument is required");
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery<SaltForm> q = em.createQuery("SELECT o FROM SaltForm AS o WHERE o.bulkLoadFile = :bulkLoadFile", SaltForm.class);
+        q.setParameter("bulkLoadFile", bulkLoadFile);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByBulkLoadFileEquals(BulkLoadFile bulkLoadFile, String sortFieldName, String sortOrder) {
+        if (bulkLoadFile == null) throw new IllegalArgumentException("The bulkLoadFile argument is required");
+        EntityManager em = SaltForm.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SaltForm AS o WHERE o.bulkLoadFile = :bulkLoadFile");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SaltForm> q = em.createQuery(queryBuilder.toString(), SaltForm.class);
+        q.setParameter("bulkLoadFile", bulkLoadFile);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByCdId(int CdId) {
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery<SaltForm> q = em.createQuery("SELECT o FROM SaltForm AS o WHERE o.CdId = :CdId", SaltForm.class);
+        q.setParameter("CdId", CdId);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByCdId(int CdId, String sortFieldName, String sortOrder) {
+        EntityManager em = SaltForm.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SaltForm AS o WHERE o.CdId = :CdId");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SaltForm> q = em.createQuery(queryBuilder.toString(), SaltForm.class);
+        q.setParameter("CdId", CdId);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByCorpNameEquals(String corpName) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery<SaltForm> q = em.createQuery("SELECT o FROM SaltForm AS o WHERE o.corpName = :corpName", SaltForm.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByCorpNameEquals(String corpName, String sortFieldName, String sortOrder) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        EntityManager em = SaltForm.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SaltForm AS o WHERE o.corpName = :corpName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SaltForm> q = em.createQuery(queryBuilder.toString(), SaltForm.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByCorpNameLike(String corpName) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        corpName = corpName.replace('*', '%');
+        if (corpName.charAt(0) != '%') {
+            corpName = "%" + corpName;
+        }
+        if (corpName.charAt(corpName.length() - 1) != '%') {
+            corpName = corpName + "%";
+        }
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery<SaltForm> q = em.createQuery("SELECT o FROM SaltForm AS o WHERE LOWER(o.corpName) LIKE LOWER(:corpName)", SaltForm.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByCorpNameLike(String corpName, String sortFieldName, String sortOrder) {
+        if (corpName == null || corpName.length() == 0) throw new IllegalArgumentException("The corpName argument is required");
+        corpName = corpName.replace('*', '%');
+        if (corpName.charAt(0) != '%') {
+            corpName = "%" + corpName;
+        }
+        if (corpName.charAt(corpName.length() - 1) != '%') {
+            corpName = corpName + "%";
+        }
+        EntityManager em = SaltForm.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SaltForm AS o WHERE LOWER(o.corpName) LIKE LOWER(:corpName)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SaltForm> q = em.createQuery(queryBuilder.toString(), SaltForm.class);
+        q.setParameter("corpName", corpName);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByParent(Parent parent) {
+        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        EntityManager em = SaltForm.entityManager();
+        TypedQuery<SaltForm> q = em.createQuery("SELECT o FROM SaltForm AS o WHERE o.parent = :parent", SaltForm.class);
+        q.setParameter("parent", parent);
+        return q;
+    }
+
+	public static TypedQuery<SaltForm> findSaltFormsByParent(Parent parent, String sortFieldName, String sortOrder) {
+        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        EntityManager em = SaltForm.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM SaltForm AS o WHERE o.parent = :parent");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<SaltForm> q = em.createQuery(queryBuilder.toString(), SaltForm.class);
+        q.setParameter("parent", parent);
+        return q;
+    }
 }

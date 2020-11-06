@@ -23,10 +23,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.WebUtils;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.path.PathBuilder;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -405,5 +408,142 @@ public class SolutionUnitController {
         
         // no filter: return all elements
         return SolutionUnit.findAllSolutionUnits();
+    }
+
+	@RequestMapping(method = RequestMethod.POST, produces = "text/html")
+    public String create(@Valid SolutionUnit solutionUnit, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            populateEditForm(uiModel, solutionUnit);
+            return "solutionunits/create";
+        }
+        uiModel.asMap().clear();
+        solutionUnit.persist();
+        return "redirect:/solutionunits/" + encodeUrlPathSegment(solutionUnit.getId().toString(), httpServletRequest);
+    }
+
+	@RequestMapping(params = "form", produces = "text/html")
+    public String createForm(Model uiModel) {
+        populateEditForm(uiModel, new SolutionUnit());
+        return "solutionunits/create";
+    }
+
+	@RequestMapping(value = "/{id}", produces = "text/html")
+    public String show(@PathVariable("id") Long id, Model uiModel) {
+        uiModel.addAttribute("solutionunit", SolutionUnit.findSolutionUnit(id));
+        uiModel.addAttribute("itemId", id);
+        return "solutionunits/show";
+    }
+
+	@RequestMapping(produces = "text/html")
+    public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("solutionunits", SolutionUnit.findSolutionUnitEntries(firstResult, sizeNo, sortFieldName, sortOrder));
+            float nrOfPages = (float) SolutionUnit.countSolutionUnits() / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("solutionunits", SolutionUnit.findAllSolutionUnits(sortFieldName, sortOrder));
+        }
+        return "solutionunits/list";
+    }
+
+	@RequestMapping(method = RequestMethod.PUT, produces = "text/html")
+    public String update(@Valid SolutionUnit solutionUnit, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
+        if (bindingResult.hasErrors()) {
+            populateEditForm(uiModel, solutionUnit);
+            return "solutionunits/update";
+        }
+        uiModel.asMap().clear();
+        solutionUnit.merge();
+        return "redirect:/solutionunits/" + encodeUrlPathSegment(solutionUnit.getId().toString(), httpServletRequest);
+    }
+
+	@RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String updateForm(@PathVariable("id") Long id, Model uiModel) {
+        populateEditForm(uiModel, SolutionUnit.findSolutionUnit(id));
+        return "solutionunits/update";
+    }
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        SolutionUnit solutionUnit = SolutionUnit.findSolutionUnit(id);
+        solutionUnit.remove();
+        uiModel.asMap().clear();
+        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
+        uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
+        return "redirect:/solutionunits";
+    }
+
+	void populateEditForm(Model uiModel, SolutionUnit solutionUnit) {
+        uiModel.addAttribute("solutionUnit", solutionUnit);
+    }
+
+	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
+        String enc = httpServletRequest.getCharacterEncoding();
+        if (enc == null) {
+            enc = WebUtils.DEFAULT_CHARACTER_ENCODING;
+        }
+        try {
+            pathSegment = UriUtils.encodePathSegment(pathSegment, enc);
+        } catch (UnsupportedEncodingException uee) {}
+        return pathSegment;
+    }
+
+	@RequestMapping(params = { "find=ByCodeEquals", "form" }, method = RequestMethod.GET)
+    public String findSolutionUnitsByCodeEqualsForm(Model uiModel) {
+        return "solutionunits/findSolutionUnitsByCodeEquals";
+    }
+
+	@RequestMapping(params = "find=ByCodeEquals", method = RequestMethod.GET)
+    public String findSolutionUnitsByCodeEquals(@RequestParam("code") String code, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("solutionunits", SolutionUnit.findSolutionUnitsByCodeEquals(code, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SolutionUnit.countFindSolutionUnitsByCodeEquals(code) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("solutionunits", SolutionUnit.findSolutionUnitsByCodeEquals(code, sortFieldName, sortOrder).getResultList());
+        }
+        return "solutionunits/list";
+    }
+
+	@RequestMapping(params = { "find=ByCodeLike", "form" }, method = RequestMethod.GET)
+    public String findSolutionUnitsByCodeLikeForm(Model uiModel) {
+        return "solutionunits/findSolutionUnitsByCodeLike";
+    }
+
+	@RequestMapping(params = "find=ByCodeLike", method = RequestMethod.GET)
+    public String findSolutionUnitsByCodeLike(@RequestParam("code") String code, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("solutionunits", SolutionUnit.findSolutionUnitsByCodeLike(code, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SolutionUnit.countFindSolutionUnitsByCodeLike(code) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("solutionunits", SolutionUnit.findSolutionUnitsByCodeLike(code, sortFieldName, sortOrder).getResultList());
+        }
+        return "solutionunits/list";
+    }
+
+	@RequestMapping(params = { "find=ByNameEquals", "form" }, method = RequestMethod.GET)
+    public String findSolutionUnitsByNameEqualsForm(Model uiModel) {
+        return "solutionunits/findSolutionUnitsByNameEquals";
+    }
+
+	@RequestMapping(params = "find=ByNameEquals", method = RequestMethod.GET)
+    public String findSolutionUnitsByNameEquals(@RequestParam("name") String name, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("solutionunits", SolutionUnit.findSolutionUnitsByNameEquals(name, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SolutionUnit.countFindSolutionUnitsByNameEquals(name) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("solutionunits", SolutionUnit.findSolutionUnitsByNameEquals(name, sortFieldName, sortOrder).getResultList());
+        }
+        return "solutionunits/list";
     }
 }

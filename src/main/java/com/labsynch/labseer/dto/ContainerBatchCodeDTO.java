@@ -2,13 +2,15 @@ package com.labsynch.labseer.dto;
 
 import java.util.Collection;
 import java.util.Date;
-
+import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @RooJavaBean
@@ -46,6 +48,60 @@ public class ContainerBatchCodeDTO {
     }
 	
 
+
+	public static ContainerBatchCodeDTO fromJsonToContainerBatchCodeDTO(String json) {
+        return new JSONDeserializer<ContainerBatchCodeDTO>()
+        .use(null, ContainerBatchCodeDTO.class).deserialize(json);
+    }
+
+	public static Collection<ContainerBatchCodeDTO> fromJsonArrayToContainerBatchCoes(String json) {
+        return new JSONDeserializer<List<ContainerBatchCodeDTO>>()
+        .use("values", ContainerBatchCodeDTO.class).deserialize(json);
+    }
+
+	public String getBatchCode() {
+        return this.batchCode;
+    }
+
+	public void setBatchCode(String batchCode) {
+        this.batchCode = batchCode;
+    }
+
+	public String getContainerCodeName() {
+        return this.containerCodeName;
+    }
+
+	public void setContainerCodeName(String containerCodeName) {
+        this.containerCodeName = containerCodeName;
+    }
+
+	public String getContainerBarcode() {
+        return this.containerBarcode;
+    }
+
+	public void setContainerBarcode(String containerBarcode) {
+        this.containerBarcode = containerBarcode;
+    }
+
+	public String getWellCodeName() {
+        return this.wellCodeName;
+    }
+
+	public void setWellCodeName(String wellCodeName) {
+        this.wellCodeName = wellCodeName;
+    }
+
+	public String getWellName() {
+        return this.wellName;
+    }
+
+	public void setWellName(String wellName) {
+        this.wellName = wellName;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }
 
 

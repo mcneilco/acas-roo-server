@@ -223,4 +223,39 @@ public class IsoSaltController {
     }
 	
 
+
+	@RequestMapping(params = "find=BySaltForm", method = RequestMethod.GET)
+    public String findIsoSaltsBySaltForm(@RequestParam("saltForm") SaltForm saltForm, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("isosalts", IsoSalt.findIsoSaltsBySaltForm(saltForm, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) IsoSalt.countFindIsoSaltsBySaltForm(saltForm) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("isosalts", IsoSalt.findIsoSaltsBySaltForm(saltForm, sortFieldName, sortOrder).getResultList());
+        }
+        return "isosalts/list";
+    }
+
+	@RequestMapping(params = "find=BySaltFormAndType", method = RequestMethod.GET)
+    public String findIsoSaltsBySaltFormAndType(@RequestParam("saltForm") SaltForm saltForm, @RequestParam("type") String type, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("isosalts", IsoSalt.findIsoSaltsBySaltFormAndType(saltForm, type, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) IsoSalt.countFindIsoSaltsBySaltFormAndType(saltForm, type) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("isosalts", IsoSalt.findIsoSaltsBySaltFormAndType(saltForm, type, sortFieldName, sortOrder).getResultList());
+        }
+        return "isosalts/list";
+    }
+
+	void populateEditForm(Model uiModel, IsoSalt isoSalt) {
+        uiModel.addAttribute("isoSalt", isoSalt);
+        uiModel.addAttribute("isotopes", Isotope.findAllIsotopes());
+        uiModel.addAttribute("salts", Salt.findAllSalts());
+        uiModel.addAttribute("saltforms", SaltForm.findAllSaltForms());
+    }
 }

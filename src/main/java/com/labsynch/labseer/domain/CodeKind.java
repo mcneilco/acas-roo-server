@@ -1,5 +1,8 @@
 package com.labsynch.labseer.domain;
 
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -11,18 +14,22 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.PersistenceContext;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+@Configurable
 @Entity
 @RooJavaBean
 @RooToString
@@ -154,4 +161,185 @@ public class CodeKind {
 		
 		return codeKind;
 	}
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public CodeType getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(CodeType lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getKindName() {
+        return this.kindName;
+    }
+
+	public void setKindName(String kindName) {
+        this.kindName = kindName;
+    }
+
+	public String getLsTypeAndKind() {
+        return this.lsTypeAndKind;
+    }
+
+	public void setLsTypeAndKind(String lsTypeAndKind) {
+        this.lsTypeAndKind = lsTypeAndKind;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsType", "kindName", "lsTypeAndKind", "id", "version", "entityManager");
+
+	public static List<CodeKind> findAllCodeKinds(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM CodeKind o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, CodeKind.class).getResultList();
+    }
+
+	public static List<CodeKind> findCodeKindEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM CodeKind o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, CodeKind.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static Long countFindCodeKindsByKindNameEqualsAndLsType(String kindName, CodeType lsType) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CodeKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", Long.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindCodeKindsByLsType(CodeType lsType) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CodeKind AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindCodeKindsByLsTypeAndKindEquals(String lsTypeAndKind) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM CodeKind AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", Long.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<CodeKind> findCodeKindsByKindNameEqualsAndLsType(String kindName, CodeType lsType) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery<CodeKind> q = em.createQuery("SELECT o FROM CodeKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType", CodeKind.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<CodeKind> findCodeKindsByKindNameEqualsAndLsType(String kindName, CodeType lsType, String sortFieldName, String sortOrder) {
+        if (kindName == null || kindName.length() == 0) throw new IllegalArgumentException("The kindName argument is required");
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CodeKind AS o WHERE o.kindName = :kindName  AND o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<CodeKind> q = em.createQuery(queryBuilder.toString(), CodeKind.class);
+        q.setParameter("kindName", kindName);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<CodeKind> findCodeKindsByLsType(CodeType lsType) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery<CodeKind> q = em.createQuery("SELECT o FROM CodeKind AS o WHERE o.lsType = :lsType", CodeKind.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<CodeKind> findCodeKindsByLsType(CodeType lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = CodeKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CodeKind AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<CodeKind> q = em.createQuery(queryBuilder.toString(), CodeKind.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<CodeKind> findCodeKindsByLsTypeAndKindEquals(String lsTypeAndKind) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = CodeKind.entityManager();
+        TypedQuery<CodeKind> q = em.createQuery("SELECT o FROM CodeKind AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", CodeKind.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<CodeKind> findCodeKindsByLsTypeAndKindEquals(String lsTypeAndKind, String sortFieldName, String sortOrder) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = CodeKind.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM CodeKind AS o WHERE o.lsTypeAndKind = :lsTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<CodeKind> q = em.createQuery(queryBuilder.toString(), CodeKind.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static CodeKind fromJsonToCodeKind(String json) {
+        return new JSONDeserializer<CodeKind>()
+        .use(null, CodeKind.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<CodeKind> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<CodeKind> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<CodeKind> fromJsonArrayToCodeKinds(String json) {
+        return new JSONDeserializer<List<CodeKind>>()
+        .use("values", CodeKind.class).deserialize(json);
+    }
 }

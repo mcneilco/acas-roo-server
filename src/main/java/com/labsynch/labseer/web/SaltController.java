@@ -227,4 +227,146 @@ public class SaltController {
 		}
 	}
 
+
+	@RequestMapping(params = "form", produces = "text/html")
+    public String createForm(Model uiModel) {
+        populateEditForm(uiModel, new Salt());
+        return "salts/create";
+    }
+
+	@RequestMapping(value = "/{id}", produces = "text/html")
+    public String show(@PathVariable("id") Long id, Model uiModel) {
+        uiModel.addAttribute("salt", Salt.findSalt(id));
+        uiModel.addAttribute("itemId", id);
+        return "salts/show";
+    }
+
+	@RequestMapping(produces = "text/html")
+    public String list(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("salts", Salt.findSaltEntries(firstResult, sizeNo, sortFieldName, sortOrder));
+            float nrOfPages = (float) Salt.countSalts() / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("salts", Salt.findAllSalts(sortFieldName, sortOrder));
+        }
+        return "salts/list";
+    }
+
+	@RequestMapping(value = "/{id}", params = "form", produces = "text/html")
+    public String updateForm(@PathVariable("id") Long id, Model uiModel) {
+        populateEditForm(uiModel, Salt.findSalt(id));
+        return "salts/update";
+    }
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "text/html")
+    public String delete(@PathVariable("id") Long id, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, Model uiModel) {
+        Salt salt = Salt.findSalt(id);
+        salt.remove();
+        uiModel.asMap().clear();
+        uiModel.addAttribute("page", (page == null) ? "1" : page.toString());
+        uiModel.addAttribute("size", (size == null) ? "10" : size.toString());
+        return "redirect:/salts";
+    }
+
+	void populateEditForm(Model uiModel, Salt salt) {
+        uiModel.addAttribute("salt", salt);
+    }
+
+	@RequestMapping(params = { "find=ByAbbrevEquals", "form" }, method = RequestMethod.GET)
+    public String findSaltsByAbbrevEqualsForm(Model uiModel) {
+        return "salts/findSaltsByAbbrevEquals";
+    }
+
+	@RequestMapping(params = "find=ByAbbrevEquals", method = RequestMethod.GET)
+    public String findSaltsByAbbrevEquals(@RequestParam("abbrev") String abbrev, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("salts", Salt.findSaltsByAbbrevEquals(abbrev, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Salt.countFindSaltsByAbbrevEquals(abbrev) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("salts", Salt.findSaltsByAbbrevEquals(abbrev, sortFieldName, sortOrder).getResultList());
+        }
+        return "salts/list";
+    }
+
+	@RequestMapping(params = { "find=ByAbbrevEqualsAndNameEquals", "form" }, method = RequestMethod.GET)
+    public String findSaltsByAbbrevEqualsAndNameEqualsForm(Model uiModel) {
+        return "salts/findSaltsByAbbrevEqualsAndNameEquals";
+    }
+
+	@RequestMapping(params = "find=ByAbbrevEqualsAndNameEquals", method = RequestMethod.GET)
+    public String findSaltsByAbbrevEqualsAndNameEquals(@RequestParam("abbrev") String abbrev, @RequestParam("name") String name, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("salts", Salt.findSaltsByAbbrevEqualsAndNameEquals(abbrev, name, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Salt.countFindSaltsByAbbrevEqualsAndNameEquals(abbrev, name) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("salts", Salt.findSaltsByAbbrevEqualsAndNameEquals(abbrev, name, sortFieldName, sortOrder).getResultList());
+        }
+        return "salts/list";
+    }
+
+	@RequestMapping(params = { "find=ByAbbrevLike", "form" }, method = RequestMethod.GET)
+    public String findSaltsByAbbrevLikeForm(Model uiModel) {
+        return "salts/findSaltsByAbbrevLike";
+    }
+
+	@RequestMapping(params = "find=ByAbbrevLike", method = RequestMethod.GET)
+    public String findSaltsByAbbrevLike(@RequestParam("abbrev") String abbrev, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("salts", Salt.findSaltsByAbbrevLike(abbrev, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Salt.countFindSaltsByAbbrevLike(abbrev) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("salts", Salt.findSaltsByAbbrevLike(abbrev, sortFieldName, sortOrder).getResultList());
+        }
+        return "salts/list";
+    }
+
+	@RequestMapping(params = { "find=ByCdId", "form" }, method = RequestMethod.GET)
+    public String findSaltsByCdIdForm(Model uiModel) {
+        return "salts/findSaltsByCdId";
+    }
+
+	@RequestMapping(params = "find=ByCdId", method = RequestMethod.GET)
+    public String findSaltsByCdId(@RequestParam("cdId") int cdId, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("salts", Salt.findSaltsByCdId(cdId, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Salt.countFindSaltsByCdId(cdId) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("salts", Salt.findSaltsByCdId(cdId, sortFieldName, sortOrder).getResultList());
+        }
+        return "salts/list";
+    }
+
+	@RequestMapping(params = { "find=ByNameEquals", "form" }, method = RequestMethod.GET)
+    public String findSaltsByNameEqualsForm(Model uiModel) {
+        return "salts/findSaltsByNameEquals";
+    }
+
+	@RequestMapping(params = "find=ByNameEquals", method = RequestMethod.GET)
+    public String findSaltsByNameEquals(@RequestParam("name") String name, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("salts", Salt.findSaltsByNameEquals(name, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) Salt.countFindSaltsByNameEquals(name) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("salts", Salt.findSaltsByNameEquals(name, sortFieldName, sortOrder).getResultList());
+        }
+        return "salts/list";
+    }
 }

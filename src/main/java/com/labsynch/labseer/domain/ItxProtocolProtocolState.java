@@ -10,10 +10,13 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -26,6 +29,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Entity
+@Configurable
 @RooJavaBean
 @RooToString
 @RooJpaActiveRecord
@@ -106,4 +111,82 @@ public class ItxProtocolProtocolState extends AbstractState {
     }
 
 
+
+	public static ItxProtocolProtocolState fromJsonToItxProtocolProtocolState(String json) {
+        return new JSONDeserializer<ItxProtocolProtocolState>()
+        .use(null, ItxProtocolProtocolState.class).deserialize(json);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("itxProtocolProtocol", "lsValues");
+
+	public static long countItxProtocolProtocolStates() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ItxProtocolProtocolState o", Long.class).getSingleResult();
+    }
+
+	public static List<ItxProtocolProtocolState> findAllItxProtocolProtocolStates() {
+        return entityManager().createQuery("SELECT o FROM ItxProtocolProtocolState o", ItxProtocolProtocolState.class).getResultList();
+    }
+
+	public static List<ItxProtocolProtocolState> findAllItxProtocolProtocolStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxProtocolProtocolState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxProtocolProtocolState.class).getResultList();
+    }
+
+	public static ItxProtocolProtocolState findItxProtocolProtocolState(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ItxProtocolProtocolState.class, id);
+    }
+
+	public static List<ItxProtocolProtocolState> findItxProtocolProtocolStateEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ItxProtocolProtocolState o", ItxProtocolProtocolState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ItxProtocolProtocolState> findItxProtocolProtocolStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ItxProtocolProtocolState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ItxProtocolProtocolState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ItxProtocolProtocolState merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ItxProtocolProtocolState merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public ItxProtocolProtocolState() {
+        super();
+    }
+
+	public ItxProtocolProtocol getItxProtocolProtocol() {
+        return this.itxProtocolProtocol;
+    }
+
+	public void setItxProtocolProtocol(ItxProtocolProtocol itxProtocolProtocol) {
+        this.itxProtocolProtocol = itxProtocolProtocol;
+    }
+
+	public Set<ItxProtocolProtocolValue> getLsValues() {
+        return this.lsValues;
+    }
+
+	public void setLsValues(Set<ItxProtocolProtocolValue> lsValues) {
+        this.lsValues = lsValues;
+    }
 }

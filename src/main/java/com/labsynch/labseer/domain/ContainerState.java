@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -18,7 +19,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -31,6 +34,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Configurable
+@Entity
 @RooJavaBean
 @RooToString
 @RooJson
@@ -185,4 +190,176 @@ public class ContainerState extends AbstractState {
 		return q;
 	}
 	
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("container", "lsValues");
+
+	public static long countContainerStates() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ContainerState o", Long.class).getSingleResult();
+    }
+
+	public static List<ContainerState> findAllContainerStates() {
+        return entityManager().createQuery("SELECT o FROM ContainerState o", ContainerState.class).getResultList();
+    }
+
+	public static List<ContainerState> findAllContainerStates(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerState.class).getResultList();
+    }
+
+	public static ContainerState findContainerState(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ContainerState.class, id);
+    }
+
+	public static List<ContainerState> findContainerStateEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ContainerState o", ContainerState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ContainerState> findContainerStateEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerState o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerState.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ContainerState merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ContainerState merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public Container getContainer() {
+        return this.container;
+    }
+
+	public void setContainer(Container container) {
+        this.container = container;
+    }
+
+	public Set<ContainerValue> getLsValues() {
+        return this.lsValues;
+    }
+
+	public void setLsValues(Set<ContainerValue> lsValues) {
+        this.lsValues = lsValues;
+    }
+
+	public static Long countFindContainerStatesByContainer(Container container) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        EntityManager em = ContainerState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerState AS o WHERE o.container = :container", Long.class);
+        q.setParameter("container", container);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(Container container, String lsKind, boolean ignored) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = ContainerState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("container", container);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindContainerStatesByIgnoredNot(boolean ignored) {
+        EntityManager em = ContainerState.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerState AS o WHERE o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<ContainerState> findContainerStatesByContainer(Container container) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        EntityManager em = ContainerState.entityManager();
+        TypedQuery<ContainerState> q = em.createQuery("SELECT o FROM ContainerState AS o WHERE o.container = :container", ContainerState.class);
+        q.setParameter("container", container);
+        return q;
+    }
+
+	public static TypedQuery<ContainerState> findContainerStatesByContainer(Container container, String sortFieldName, String sortOrder) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        EntityManager em = ContainerState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerState AS o WHERE o.container = :container");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerState> q = em.createQuery(queryBuilder.toString(), ContainerState.class);
+        q.setParameter("container", container);
+        return q;
+    }
+
+	public static TypedQuery<ContainerState> findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(Container container, String lsKind, boolean ignored) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = ContainerState.entityManager();
+        TypedQuery<ContainerState> q = em.createQuery("SELECT o FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored", ContainerState.class);
+        q.setParameter("container", container);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ContainerState> findContainerStatesByContainerAndLsKindEqualsAndIgnoredNot(Container container, String lsKind, boolean ignored, String sortFieldName, String sortOrder) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = ContainerState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerState AS o WHERE o.container = :container AND o.lsKind = :lsKind  AND o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerState> q = em.createQuery(queryBuilder.toString(), ContainerState.class);
+        q.setParameter("container", container);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ContainerState> findContainerStatesByIgnoredNot(boolean ignored) {
+        EntityManager em = ContainerState.entityManager();
+        TypedQuery<ContainerState> q = em.createQuery("SELECT o FROM ContainerState AS o WHERE o.ignored IS NOT :ignored", ContainerState.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ContainerState> findContainerStatesByIgnoredNot(boolean ignored, String sortFieldName, String sortOrder) {
+        EntityManager em = ContainerState.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerState AS o WHERE o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerState> q = em.createQuery(queryBuilder.toString(), ContainerState.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public ContainerState() {
+        super();
+    }
 }

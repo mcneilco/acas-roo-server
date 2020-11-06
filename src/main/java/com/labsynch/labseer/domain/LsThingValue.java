@@ -6,15 +6,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -24,7 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 
 import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
+@Entity
+@Configurable
 @RooJavaBean
 @RooToString
 @RooJson
@@ -374,4 +379,483 @@ public class LsThingValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static String toJsonArray(Collection<LsThingValue> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<LsThingValue> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsState");
+
+	public static long countLsThingValues() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM LsThingValue o", Long.class).getSingleResult();
+    }
+
+	public static List<LsThingValue> findAllLsThingValues() {
+        return entityManager().createQuery("SELECT o FROM LsThingValue o", LsThingValue.class).getResultList();
+    }
+
+	public static List<LsThingValue> findAllLsThingValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsThingValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsThingValue.class).getResultList();
+    }
+
+	public static LsThingValue findLsThingValue(Long id) {
+        if (id == null) return null;
+        return entityManager().find(LsThingValue.class, id);
+    }
+
+	public static List<LsThingValue> findLsThingValueEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM LsThingValue o", LsThingValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<LsThingValue> findLsThingValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM LsThingValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, LsThingValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public LsThingValue merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        LsThingValue merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public static Long countFindLsThingValuesByCodeValueEquals(String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.codeValue = :codeValue", Long.class);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", Long.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndCodeValueLike(String lsKind, String codeValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        codeValue = codeValue.replace('*', '%');
+        if (codeValue.charAt(0) != '%') {
+            codeValue = "%" + codeValue;
+        }
+        if (codeValue.charAt(codeValue.length() - 1) != '%') {
+            codeValue = codeValue + "%";
+        }
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.codeValue) LIKE LOWER(:codeValue)", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals(String lsKind, Date dateValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.dateValue >= :dateValue", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndDateValueLessThanEquals(String lsKind, Date dateValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.dateValue <= :dateValue", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndDateValueLike(String lsKind, Date dateValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.dateValue) LIKE LOWER(:dateValue)", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndNumericValueEquals(String lsKind, BigDecimal numericValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.numericValue = :numericValue", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals(String lsKind, BigDecimal numericValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.numericValue >= :numericValue", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals(String lsKind, BigDecimal numericValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.numericValue <= :numericValue", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndStringValueEquals(String lsKind, String stringValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.stringValue = :stringValue", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsKindEqualsAndStringValueLike(String lsKind, String stringValue) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        stringValue = stringValue.replace('*', '%');
+        if (stringValue.charAt(0) != '%') {
+            stringValue = "%" + stringValue;
+        }
+        if (stringValue.charAt(stringValue.length() - 1) != '%') {
+            stringValue = stringValue + "%";
+        }
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)", Long.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsState(LsThingState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsState = :lsState", Long.class);
+        q.setParameter("lsState", lsState);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindLsThingValuesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM LsThingValue AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByCodeValueEquals(String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.codeValue = :codeValue", LsThingValue.class);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByCodeValueEquals(String codeValue, String sortFieldName, String sortOrder) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.codeValue = :codeValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", LsThingValue.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue, String sortFieldName, String sortOrder) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndCodeValueLike(String lsKind, String codeValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        codeValue = codeValue.replace('*', '%');
+        if (codeValue.charAt(0) != '%') {
+            codeValue = "%" + codeValue;
+        }
+        if (codeValue.charAt(codeValue.length() - 1) != '%') {
+            codeValue = codeValue + "%";
+        }
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.codeValue) LIKE LOWER(:codeValue)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndDateValueGreaterThanEquals(String lsKind, Date dateValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.dateValue >= :dateValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndDateValueLessThanEquals(String lsKind, Date dateValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.dateValue <= :dateValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndDateValueLike(String lsKind, Date dateValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (dateValue == null) throw new IllegalArgumentException("The dateValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.dateValue) LIKE LOWER(:dateValue)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("dateValue", dateValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndNumericValueEquals(String lsKind, BigDecimal numericValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.numericValue = :numericValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndNumericValueGreaterThanEquals(String lsKind, BigDecimal numericValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.numericValue >= :numericValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndNumericValueLessThanEquals(String lsKind, BigDecimal numericValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (numericValue == null) throw new IllegalArgumentException("The numericValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.numericValue <= :numericValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("numericValue", numericValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndStringValueEquals(String lsKind, String stringValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND o.stringValue = :stringValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsKindEqualsAndStringValueLike(String lsKind, String stringValue, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        stringValue = stringValue.replace('*', '%');
+        if (stringValue.charAt(0) != '%') {
+            stringValue = "%" + stringValue;
+        }
+        if (stringValue.charAt(stringValue.length() - 1) != '%') {
+            stringValue = stringValue + "%";
+        }
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsState(LsThingState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsState = :lsState", LsThingValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsState(LsThingState lsState, String sortFieldName, String sortOrder) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsState = :lsState");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        TypedQuery<LsThingValue> q = em.createQuery("SELECT o FROM LsThingValue AS o WHERE o.lsTransaction = :lsTransaction", LsThingValue.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<LsThingValue> findLsThingValuesByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = LsThingValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM LsThingValue AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<LsThingValue> q = em.createQuery(queryBuilder.toString(), LsThingValue.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public LsThingState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(LsThingState lsState) {
+        this.lsState = lsState;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }

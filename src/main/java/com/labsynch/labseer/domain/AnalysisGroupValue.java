@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -21,9 +21,11 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -44,6 +46,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Configurable
+@Entity
 @RooJavaBean
 @RooToString
 @RooJson
@@ -1492,4 +1496,275 @@ public class AnalysisGroupValue extends AbstractValue {
 		return processors;
 	}
 
+
+	public static Long countFindAnalysisGroupValuesByCodeValueEquals(String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue", Long.class);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", Long.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindAnalysisGroupValuesByLsState(AnalysisGroupState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState", Long.class);
+        q.setParameter("lsState", lsState);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindAnalysisGroupValuesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(String lsType, String lsKind, String stringValue, boolean ignored) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        stringValue = stringValue.replace('*', '%');
+        if (stringValue.charAt(0) != '%') {
+            stringValue = "%" + stringValue;
+        }
+        if (stringValue.charAt(stringValue.length() - 1) != '%') {
+            stringValue = stringValue + "%";
+        }
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByCodeValueEquals(String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue", AnalysisGroupValue.class);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByCodeValueEquals(String codeValue, String sortFieldName, String sortOrder) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.codeValue = :codeValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue", AnalysisGroupValue.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByIgnoredNotAndCodeValueEquals(boolean ignored, String codeValue, String sortFieldName, String sortOrder) {
+        if (codeValue == null || codeValue.length() == 0) throw new IllegalArgumentException("The codeValue argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.ignored IS NOT :ignored  AND o.codeValue = :codeValue");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+        q.setParameter("ignored", ignored);
+        q.setParameter("codeValue", codeValue);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsState(AnalysisGroupState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState", AnalysisGroupValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsState(AnalysisGroupState lsState, String sortFieldName, String sortOrder) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsState = :lsState");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction", AnalysisGroupValue.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", AnalysisGroupValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = AnalysisGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(String lsType, String lsKind, String stringValue, boolean ignored) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        stringValue = stringValue.replace('*', '%');
+        if (stringValue.charAt(0) != '%') {
+            stringValue = "%" + stringValue;
+        }
+        if (stringValue.charAt(stringValue.length() - 1) != '%') {
+            stringValue = stringValue + "%";
+        }
+        EntityManager em = AnalysisGroupValue.entityManager();
+        TypedQuery<AnalysisGroupValue> q = em.createQuery("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored", AnalysisGroupValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupValue> findAnalysisGroupValuesByLsTypeEqualsAndLsKindEqualsAndStringValueLikeAndIgnoredNot(String lsType, String lsKind, String stringValue, boolean ignored, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (stringValue == null || stringValue.length() == 0) throw new IllegalArgumentException("The stringValue argument is required");
+        stringValue = stringValue.replace('*', '%');
+        if (stringValue.charAt(0) != '%') {
+            stringValue = "%" + stringValue;
+        }
+        if (stringValue.charAt(stringValue.length() - 1) != '%') {
+            stringValue = stringValue + "%";
+        }
+        EntityManager em = AnalysisGroupValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND LOWER(o.stringValue) LIKE LOWER(:stringValue)  AND o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroupValue> q = em.createQuery(queryBuilder.toString(), AnalysisGroupValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("stringValue", stringValue);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "PARAMETER_LIMIT", "lsState");
+
+	public static List<AnalysisGroupValue> findAllAnalysisGroupValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroupValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroupValue.class).getResultList();
+    }
+
+	public static List<AnalysisGroupValue> findAnalysisGroupValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroupValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroupValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public AnalysisGroupState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(AnalysisGroupState lsState) {
+        this.lsState = lsState;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public AnalysisGroupValue() {
+        super();
+    }
 }

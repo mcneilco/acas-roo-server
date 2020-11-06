@@ -7,15 +7,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -27,6 +29,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Entity
+@Configurable
 @RooJavaBean
 @RooToString
 @RooJson
@@ -331,5 +335,100 @@ public class ContainerValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		
 		return q;
+    }
+
+	public ContainerState getLsState() {
+        return this.lsState;
+    }
+
+	public void setLsState(ContainerState lsState) {
+        this.lsState = lsState;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static Long countFindContainerValuesByIgnoredNot(boolean ignored) {
+        EntityManager em = ContainerValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindContainerValuesByLsState(ContainerState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = ContainerValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerValue AS o WHERE o.lsState = :lsState", Long.class);
+        q.setParameter("lsState", lsState);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<ContainerValue> findContainerValuesByIgnoredNot(boolean ignored) {
+        EntityManager em = ContainerValue.entityManager();
+        TypedQuery<ContainerValue> q = em.createQuery("SELECT o FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored", ContainerValue.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ContainerValue> findContainerValuesByIgnoredNot(boolean ignored, String sortFieldName, String sortOrder) {
+        EntityManager em = ContainerValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerValue AS o WHERE o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerValue> q = em.createQuery(queryBuilder.toString(), ContainerValue.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ContainerValue> findContainerValuesByLsState(ContainerState lsState) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = ContainerValue.entityManager();
+        TypedQuery<ContainerValue> q = em.createQuery("SELECT o FROM ContainerValue AS o WHERE o.lsState = :lsState", ContainerValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static TypedQuery<ContainerValue> findContainerValuesByLsState(ContainerState lsState, String sortFieldName, String sortOrder) {
+        if (lsState == null) throw new IllegalArgumentException("The lsState argument is required");
+        EntityManager em = ContainerValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerValue AS o WHERE o.lsState = :lsState");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerValue> q = em.createQuery(queryBuilder.toString(), ContainerValue.class);
+        q.setParameter("lsState", lsState);
+        return q;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsState");
+
+	public static List<ContainerValue> findAllContainerValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerValue.class).getResultList();
+    }
+
+	public static List<ContainerValue> findContainerValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
     }
 }

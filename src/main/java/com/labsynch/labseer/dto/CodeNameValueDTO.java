@@ -1,14 +1,16 @@
 package com.labsynch.labseer.dto;
 
 import java.util.Collection;
-
+import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.AbstractValue;
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @RooJavaBean
@@ -37,6 +39,36 @@ public class CodeNameValueDTO {
     }
 	
 
+
+	public static CodeNameValueDTO fromJsonToCodeNameValueDTO(String json) {
+        return new JSONDeserializer<CodeNameValueDTO>()
+        .use(null, CodeNameValueDTO.class).deserialize(json);
+    }
+
+	public static Collection<CodeNameValueDTO> fromJsonArrayToCoes(String json) {
+        return new JSONDeserializer<List<CodeNameValueDTO>>()
+        .use("values", CodeNameValueDTO.class).deserialize(json);
+    }
+
+	public String getCodeName() {
+        return this.codeName;
+    }
+
+	public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
+
+	public AbstractValue getValue() {
+        return this.value;
+    }
+
+	public void setValue(AbstractValue value) {
+        this.value = value;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }
 
 

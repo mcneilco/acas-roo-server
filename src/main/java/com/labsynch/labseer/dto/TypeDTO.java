@@ -3,7 +3,8 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,6 +24,8 @@ import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ThingType;
 import com.labsynch.labseer.domain.UnitType;
 import com.labsynch.labseer.domain.ValueType;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -248,6 +251,48 @@ public class TypeDTO {
 		}
 		return roleTypes;
 	}
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static TypeDTO fromJsonToTypeDTO(String json) {
+        return new JSONDeserializer<TypeDTO>()
+        .use(null, TypeDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<TypeDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<TypeDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<TypeDTO> fromJsonArrayToTypeDTO(String json) {
+        return new JSONDeserializer<List<TypeDTO>>()
+        .use("values", TypeDTO.class).deserialize(json);
+    }
+
+	public String getTypeName() {
+        return this.typeName;
+    }
+
+	public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
 }
 
 

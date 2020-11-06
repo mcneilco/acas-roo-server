@@ -3,7 +3,8 @@ package com.labsynch.labseer.dto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -54,6 +55,76 @@ public class AuthProjectGroupsDTO {
 
 	public static Collection<AuthProjectGroupsDTO> fromJsonArrayToAuthProes(String json) {
         return new JSONDeserializer<List<AuthProjectGroupsDTO>>().use(null, ArrayList.class).use("values", AuthProjectGroupsDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getName() {
+        return this.name;
+    }
+
+	public void setName(String name) {
+        this.name = name;
+    }
+
+	public String getCode() {
+        return this.code;
+    }
+
+	public void setCode(String code) {
+        this.code = code;
+    }
+
+	public String getAlias() {
+        return this.alias;
+    }
+
+	public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+	public boolean isActive() {
+        return this.active;
+    }
+
+	public void setActive(boolean active) {
+        this.active = active;
+    }
+
+	public boolean isIsRestricted() {
+        return this.isRestricted;
+    }
+
+	public void setIsRestricted(boolean isRestricted) {
+        this.isRestricted = isRestricted;
+    }
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Collection<String> getGroups() {
+        return this.groups;
+    }
+
+	public void setGroups(Collection<String> groups) {
+        this.groups = groups;
+    }
+
+	public static AuthProjectGroupsDTO fromJsonToAuthProjectGroupsDTO(String json) {
+        return new JSONDeserializer<AuthProjectGroupsDTO>()
+        .use(null, AuthProjectGroupsDTO.class).deserialize(json);
+    }
+
+	public static Collection<AuthProjectGroupsDTO> fromJsonArrayToAuthProjectGroes(String json) {
+        return new JSONDeserializer<List<AuthProjectGroupsDTO>>()
+        .use("values", AuthProjectGroupsDTO.class).deserialize(json);
     }
 }
 

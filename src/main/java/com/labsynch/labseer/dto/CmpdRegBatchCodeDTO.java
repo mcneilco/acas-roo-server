@@ -3,11 +3,13 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -19,7 +21,7 @@ import com.labsynch.labseer.domain.AnalysisGroupValue;
 import com.labsynch.labseer.domain.SubjectValue;
 import com.labsynch.labseer.domain.TreatmentGroupValue;
 import com.labsynch.labseer.utils.ExcludeNulls;
-
+import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
 @RooJavaBean
@@ -377,6 +379,62 @@ public class CmpdRegBatchCodeDTO {
 		logger.debug("Deduped size: "+linkedExperiments.size());
 	}
 
+
+	public static CmpdRegBatchCodeDTO fromJsonToCmpdRegBatchCodeDTO(String json) {
+        return new JSONDeserializer<CmpdRegBatchCodeDTO>()
+        .use(null, CmpdRegBatchCodeDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<CmpdRegBatchCodeDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<CmpdRegBatchCodeDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<CmpdRegBatchCodeDTO> fromJsonArrayToCmpdRegBatchCoes(String json) {
+        return new JSONDeserializer<List<CmpdRegBatchCodeDTO>>()
+        .use("values", CmpdRegBatchCodeDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public Collection<String> getBatchCodes() {
+        return this.batchCodes;
+    }
+
+	public void setBatchCodes(Collection<String> batchCodes) {
+        this.batchCodes = batchCodes;
+    }
+
+	public Boolean getLinkedDataExists() {
+        return this.linkedDataExists;
+    }
+
+	public void setLinkedDataExists(Boolean linkedDataExists) {
+        this.linkedDataExists = linkedDataExists;
+    }
+
+	public Collection<CodeTableDTO> getLinkedExperiments() {
+        return this.linkedExperiments;
+    }
+
+	public void setLinkedExperiments(Collection<CodeTableDTO> linkedExperiments) {
+        this.linkedExperiments = linkedExperiments;
+    }
+
+	public Collection<ErrorMessageDTO> getErrors() {
+        return this.errors;
+    }
+
+	public void setErrors(Collection<ErrorMessageDTO> errors) {
+        this.errors = errors;
+    }
 }
 
 

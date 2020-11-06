@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -19,7 +22,10 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
+@Entity
+@Configurable
 @RooJavaBean
 @RooToString
 @RooJson
@@ -80,4 +86,156 @@ public class AnalysisGroupLabel extends AbstractLabel {
 	}
     
     
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static AnalysisGroupLabel fromJsonToAnalysisGroupLabel(String json) {
+        return new JSONDeserializer<AnalysisGroupLabel>()
+        .use(null, AnalysisGroupLabel.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<AnalysisGroupLabel> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<AnalysisGroupLabel> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public AnalysisGroupLabel() {
+        super();
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public AnalysisGroup getAnalysisGroup() {
+        return this.analysisGroup;
+    }
+
+	public void setAnalysisGroup(AnalysisGroup analysisGroup) {
+        this.analysisGroup = analysisGroup;
+    }
+
+	public static Long countFindAnalysisGroupLabelsByAnalysisGroup(AnalysisGroup analysisGroup) {
+        if (analysisGroup == null) throw new IllegalArgumentException("The analysisGroup argument is required");
+        EntityManager em = AnalysisGroupLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupLabel AS o WHERE o.analysisGroup = :analysisGroup", Long.class);
+        q.setParameter("analysisGroup", analysisGroup);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindAnalysisGroupLabelsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AnalysisGroupLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM AnalysisGroupLabel AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<AnalysisGroupLabel> findAnalysisGroupLabelsByAnalysisGroup(AnalysisGroup analysisGroup) {
+        if (analysisGroup == null) throw new IllegalArgumentException("The analysisGroup argument is required");
+        EntityManager em = AnalysisGroupLabel.entityManager();
+        TypedQuery<AnalysisGroupLabel> q = em.createQuery("SELECT o FROM AnalysisGroupLabel AS o WHERE o.analysisGroup = :analysisGroup", AnalysisGroupLabel.class);
+        q.setParameter("analysisGroup", analysisGroup);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupLabel> findAnalysisGroupLabelsByAnalysisGroup(AnalysisGroup analysisGroup, String sortFieldName, String sortOrder) {
+        if (analysisGroup == null) throw new IllegalArgumentException("The analysisGroup argument is required");
+        EntityManager em = AnalysisGroupLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupLabel AS o WHERE o.analysisGroup = :analysisGroup");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroupLabel> q = em.createQuery(queryBuilder.toString(), AnalysisGroupLabel.class);
+        q.setParameter("analysisGroup", analysisGroup);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupLabel> findAnalysisGroupLabelsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AnalysisGroupLabel.entityManager();
+        TypedQuery<AnalysisGroupLabel> q = em.createQuery("SELECT o FROM AnalysisGroupLabel AS o WHERE o.lsTransaction = :lsTransaction", AnalysisGroupLabel.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<AnalysisGroupLabel> findAnalysisGroupLabelsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = AnalysisGroupLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM AnalysisGroupLabel AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<AnalysisGroupLabel> q = em.createQuery(queryBuilder.toString(), AnalysisGroupLabel.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("analysisGroup");
+
+	public static long countAnalysisGroupLabels() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM AnalysisGroupLabel o", Long.class).getSingleResult();
+    }
+
+	public static List<AnalysisGroupLabel> findAllAnalysisGroupLabels() {
+        return entityManager().createQuery("SELECT o FROM AnalysisGroupLabel o", AnalysisGroupLabel.class).getResultList();
+    }
+
+	public static List<AnalysisGroupLabel> findAllAnalysisGroupLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroupLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroupLabel.class).getResultList();
+    }
+
+	public static AnalysisGroupLabel findAnalysisGroupLabel(Long id) {
+        if (id == null) return null;
+        return entityManager().find(AnalysisGroupLabel.class, id);
+    }
+
+	public static List<AnalysisGroupLabel> findAnalysisGroupLabelEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM AnalysisGroupLabel o", AnalysisGroupLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<AnalysisGroupLabel> findAnalysisGroupLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM AnalysisGroupLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, AnalysisGroupLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public AnalysisGroupLabel merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        AnalysisGroupLabel merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
 }

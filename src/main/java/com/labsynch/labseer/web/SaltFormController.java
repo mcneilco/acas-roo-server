@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
+import com.labsynch.labseer.domain.BulkLoadFile;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
@@ -188,4 +191,119 @@ public class SaltFormController {
 		return pathSegment;
 	}
 
+
+	@RequestMapping(params = { "find=ByBulkLoadFileEquals", "form" }, method = RequestMethod.GET)
+    public String findSaltFormsByBulkLoadFileEqualsForm(Model uiModel) {
+        uiModel.addAttribute("bulkloadfiles", BulkLoadFile.findAllBulkLoadFiles());
+        return "saltforms/findSaltFormsByBulkLoadFileEquals";
+    }
+
+	@RequestMapping(params = "find=ByBulkLoadFileEquals", method = RequestMethod.GET)
+    public String findSaltFormsByBulkLoadFileEquals(@RequestParam("bulkLoadFile") BulkLoadFile bulkLoadFile, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByBulkLoadFileEquals(bulkLoadFile, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SaltForm.countFindSaltFormsByBulkLoadFileEquals(bulkLoadFile) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByBulkLoadFileEquals(bulkLoadFile, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
+        return "saltforms/list";
+    }
+
+	@RequestMapping(params = { "find=ByCdId", "form" }, method = RequestMethod.GET)
+    public String findSaltFormsByCdIdForm(Model uiModel) {
+        return "saltforms/findSaltFormsByCdId";
+    }
+
+	@RequestMapping(params = "find=ByCdId", method = RequestMethod.GET)
+    public String findSaltFormsByCdId(@RequestParam("cdId") int CdId, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByCdId(CdId, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SaltForm.countFindSaltFormsByCdId(CdId) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByCdId(CdId, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
+        return "saltforms/list";
+    }
+
+	@RequestMapping(params = { "find=ByCorpNameEquals", "form" }, method = RequestMethod.GET)
+    public String findSaltFormsByCorpNameEqualsForm(Model uiModel) {
+        return "saltforms/findSaltFormsByCorpNameEquals";
+    }
+
+	@RequestMapping(params = "find=ByCorpNameEquals", method = RequestMethod.GET)
+    public String findSaltFormsByCorpNameEquals(@RequestParam("corpName") String corpName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByCorpNameEquals(corpName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SaltForm.countFindSaltFormsByCorpNameEquals(corpName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByCorpNameEquals(corpName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
+        return "saltforms/list";
+    }
+
+	@RequestMapping(params = { "find=ByCorpNameLike", "form" }, method = RequestMethod.GET)
+    public String findSaltFormsByCorpNameLikeForm(Model uiModel) {
+        return "saltforms/findSaltFormsByCorpNameLike";
+    }
+
+	@RequestMapping(params = "find=ByCorpNameLike", method = RequestMethod.GET)
+    public String findSaltFormsByCorpNameLike(@RequestParam("corpName") String corpName, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByCorpNameLike(corpName, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SaltForm.countFindSaltFormsByCorpNameLike(corpName) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByCorpNameLike(corpName, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
+        return "saltforms/list";
+    }
+
+	@RequestMapping(params = { "find=ByParent", "form" }, method = RequestMethod.GET)
+    public String findSaltFormsByParentForm(Model uiModel) {
+        uiModel.addAttribute("parents", Parent.findAllParents());
+        return "saltforms/findSaltFormsByParent";
+    }
+
+	@RequestMapping(params = "find=ByParent", method = RequestMethod.GET)
+    public String findSaltFormsByParent(@RequestParam("parent") Parent parent, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByParent(parent, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) SaltForm.countFindSaltFormsByParent(parent) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("saltforms", SaltForm.findSaltFormsByParent(parent, sortFieldName, sortOrder).getResultList());
+        }
+        addDateTimeFormatPatterns(uiModel);
+        return "saltforms/list";
+    }
+
+	void addDateTimeFormatPatterns(Model uiModel) {
+        uiModel.addAttribute("saltForm_registrationdate_date_format", DateTimeFormat.patternForStyle("S-", LocaleContextHolder.getLocale()));
+    }
+
+	void populateEditForm(Model uiModel, SaltForm saltForm) {
+        uiModel.addAttribute("saltForm", saltForm);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("bulkloadfiles", BulkLoadFile.findAllBulkLoadFiles());
+        uiModel.addAttribute("isosalts", IsoSalt.findAllIsoSalts());
+        uiModel.addAttribute("lots", Lot.findAllLots());
+        uiModel.addAttribute("parents", Parent.findAllParents());
+    }
 }

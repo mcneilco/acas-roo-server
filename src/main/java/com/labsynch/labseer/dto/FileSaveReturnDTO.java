@@ -10,7 +10,8 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Transient;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -115,5 +116,77 @@ public class FileSaveReturnDTO{
 
 	public static Collection<FileSaveReturnDTO> fromJsonArrayToFileSaveReturnDTO(String json) {
         return new JSONDeserializer<List<FileSaveReturnDTO>>().use(null, ArrayList.class).use("values", FileSaveReturnDTO.class).deserialize(json);
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getName() {
+        return this.name;
+    }
+
+	public void setName(String name) {
+        this.name = name;
+    }
+
+	public long getSize() {
+        return this.size;
+    }
+
+	public void setSize(long size) {
+        this.size = size;
+    }
+
+	public String getType() {
+        return this.type;
+    }
+
+	public void setType(String type) {
+        this.type = type;
+    }
+
+	public String getUrl() {
+        return this.url;
+    }
+
+	public void setUrl(String url) {
+        this.url = url;
+    }
+
+	public String getDescription() {
+        return this.description;
+    }
+
+	public void setDescription(String description) {
+        this.description = description;
+    }
+
+	public Boolean getUploaded() {
+        return this.uploaded;
+    }
+
+	public void setUploaded(Boolean uploaded) {
+        this.uploaded = uploaded;
+    }
+
+	public Boolean getIe() {
+        return this.ie;
+    }
+
+	public void setIe(Boolean ie) {
+        this.ie = ie;
+    }
+
+	public String getSubdir() {
+        return this.subdir;
+    }
+
+	public void setSubdir(String subdir) {
+        this.subdir = subdir;
+    }
+
+	public void setFile(MultipartFile file) {
+        this.file = file;
     }
 }

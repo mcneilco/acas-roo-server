@@ -6,10 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Transient;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -19,6 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.MimeTypeUtil;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -129,4 +133,66 @@ public class FileSaveSendDTO{
 	}
 	
 
-	}
+	
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static FileSaveSendDTO fromJsonToFileSaveSendDTO(String json) {
+        return new JSONDeserializer<FileSaveSendDTO>()
+        .use(null, FileSaveSendDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<FileSaveSendDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<FileSaveSendDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<FileSaveSendDTO> fromJsonArrayToFileSaveSendDTO(String json) {
+        return new JSONDeserializer<List<FileSaveSendDTO>>()
+        .use("values", FileSaveSendDTO.class).deserialize(json);
+    }
+
+	public Boolean getIe() {
+        return this.ie;
+    }
+
+	public void setIe(Boolean ie) {
+        this.ie = ie;
+    }
+
+	public String getSubdir() {
+        return this.subdir;
+    }
+
+	public void setSubdir(String subdir) {
+        this.subdir = subdir;
+    }
+
+	public List<String> getDescription() {
+        return this.description;
+    }
+
+	public void setDescription(List<String> description) {
+        this.description = description;
+    }
+
+	public void setFile(List<MultipartFile> file) {
+        this.file = file;
+    }
+}

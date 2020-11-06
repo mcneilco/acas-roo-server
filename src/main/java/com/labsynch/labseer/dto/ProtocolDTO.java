@@ -33,7 +33,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -169,5 +170,187 @@ public class ProtocolDTO{
     		if (!experiment.isIgnored()) count++;
     	}
     	return count;
+    }
+
+	public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("lsTags", "lsStates", "experiments", "lsLabels").toString();
+    }
+
+	public String getShortDescription() {
+        return this.shortDescription;
+    }
+
+	public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+	public Long getId() {
+        return this.id;
+    }
+
+	public void setId(Long id) {
+        this.id = id;
+    }
+
+	public Integer getVersion() {
+        return this.version;
+    }
+
+	public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public String getCodeName() {
+        return this.codeName;
+    }
+
+	public void setCodeName(String codeName) {
+        this.codeName = codeName;
+    }
+
+	public String getRecordedBy() {
+        return this.recordedBy;
+    }
+
+	public void setRecordedBy(String recordedBy) {
+        this.recordedBy = recordedBy;
+    }
+
+	public Date getRecordedDate() {
+        return this.recordedDate;
+    }
+
+	public void setRecordedDate(Date recordedDate) {
+        this.recordedDate = recordedDate;
+    }
+
+	public String getModifiedBy() {
+        return this.modifiedBy;
+    }
+
+	public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+	public Date getModifiedDate() {
+        return this.modifiedDate;
+    }
+
+	public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
+    }
+
+	public boolean isIgnored() {
+        return this.ignored;
+    }
+
+	public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+	public boolean isDeleted() {
+        return this.deleted;
+    }
+
+	public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+	public Long getLsTransaction() {
+        return this.lsTransaction;
+    }
+
+	public void setLsTransaction(Long lsTransaction) {
+        this.lsTransaction = lsTransaction;
+    }
+
+	public Integer getExperimentCount() {
+        return this.experimentCount;
+    }
+
+	public void setExperimentCount(Integer experimentCount) {
+        this.experimentCount = experimentCount;
+    }
+
+	public Set<ThingPage> getThingPage() {
+        return this.thingPage;
+    }
+
+	public void setThingPage(Set<ThingPage> thingPage) {
+        this.thingPage = thingPage;
+    }
+
+	public Set<ProtocolState> getLsStates() {
+        return this.lsStates;
+    }
+
+	public void setLsStates(Set<ProtocolState> lsStates) {
+        this.lsStates = lsStates;
+    }
+
+	public Set<Experiment> getExperiments() {
+        return this.experiments;
+    }
+
+	public void setExperiments(Set<Experiment> experiments) {
+        this.experiments = experiments;
+    }
+
+	public Set<ProtocolLabel> getLsLabels() {
+        return this.lsLabels;
+    }
+
+	public void setLsLabels(Set<ProtocolLabel> lsLabels) {
+        this.lsLabels = lsLabels;
+    }
+
+	public Set<LsTag> getLsTags() {
+        return this.lsTags;
+    }
+
+	public void setLsTags(Set<LsTag> lsTags) {
+        this.lsTags = lsTags;
+    }
+
+	public Set<ItxProtocolProtocol> getFirstProtocols() {
+        return this.firstProtocols;
+    }
+
+	public void setFirstProtocols(Set<ItxProtocolProtocol> firstProtocols) {
+        this.firstProtocols = firstProtocols;
+    }
+
+	public Set<ItxProtocolProtocol> getSecondProtocols() {
+        return this.secondProtocols;
+    }
+
+	public void setSecondProtocols(Set<ItxProtocolProtocol> secondProtocols) {
+        this.secondProtocols = secondProtocols;
+    }
+
+	public static ProtocolDTO fromJsonToProtocolDTO(String json) {
+        return new JSONDeserializer<ProtocolDTO>()
+        .use(null, ProtocolDTO.class).deserialize(json);
+    }
+
+	public static Collection<ProtocolDTO> fromJsonArrayToProtocoes(String json) {
+        return new JSONDeserializer<List<ProtocolDTO>>()
+        .use("values", ProtocolDTO.class).deserialize(json);
     }
 }

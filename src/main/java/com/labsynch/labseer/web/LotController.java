@@ -27,7 +27,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 import com.labsynch.labseer.domain.BulkLoadFile;
+import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.domain.LotAlias;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.PhysicalState;
@@ -411,5 +413,20 @@ public class LotController {
         uiModel.addAttribute("lots", Lot.findLotsBySynthesisDateLessThan(synthesisDate).getResultList());
         addDateTimeFormatPatterns(uiModel);
         return "lots/list";
+    }
+
+	void populateEditForm(Model uiModel, Lot lot) {
+        uiModel.addAttribute("lot", lot);
+        addDateTimeFormatPatterns(uiModel);
+        uiModel.addAttribute("bulkloadfiles", BulkLoadFile.findAllBulkLoadFiles());
+        uiModel.addAttribute("filelists", FileList.findAllFileLists());
+        uiModel.addAttribute("lotaliases", LotAlias.findAllLotAliases());
+        uiModel.addAttribute("operators", Operator.findAllOperators());
+        uiModel.addAttribute("physicalstates", PhysicalState.findAllPhysicalStates());
+        uiModel.addAttribute("puritymeasuredbys", PurityMeasuredBy.findAllPurityMeasuredBys());
+        uiModel.addAttribute("saltforms", SaltForm.findAllSaltForms());
+        uiModel.addAttribute("solutionunits", SolutionUnit.findAllSolutionUnits());
+        uiModel.addAttribute("units", Unit.findAllUnits());
+        uiModel.addAttribute("vendors", Vendor.findAllVendors());
     }
 }

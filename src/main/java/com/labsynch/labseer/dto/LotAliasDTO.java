@@ -2,7 +2,9 @@ package com.labsynch.labseer.dto;
 
 import java.util.Collection;
 import java.util.HashSet;
-
+import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
@@ -10,6 +12,8 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.LotAlias;
 import com.labsynch.labseer.domain.ParentAlias;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -65,4 +69,78 @@ public class LotAliasDTO {
 	}
     
    
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getLotCorpName() {
+        return this.lotCorpName;
+    }
+
+	public void setLotCorpName(String lotCorpName) {
+        this.lotCorpName = lotCorpName;
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public String getAliasName() {
+        return this.aliasName;
+    }
+
+	public void setAliasName(String aliasName) {
+        this.aliasName = aliasName;
+    }
+
+	public boolean isPreferred() {
+        return this.preferred;
+    }
+
+	public void setPreferred(boolean preferred) {
+        this.preferred = preferred;
+    }
+
+	public String toJson() {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(this);
+    }
+
+	public String toJson(String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(this);
+    }
+
+	public static LotAliasDTO fromJsonToLotAliasDTO(String json) {
+        return new JSONDeserializer<LotAliasDTO>()
+        .use(null, LotAliasDTO.class).deserialize(json);
+    }
+
+	public static String toJsonArray(Collection<LotAliasDTO> collection) {
+        return new JSONSerializer()
+        .exclude("*.class").serialize(collection);
+    }
+
+	public static String toJsonArray(Collection<LotAliasDTO> collection, String[] fields) {
+        return new JSONSerializer()
+        .include(fields).exclude("*.class").serialize(collection);
+    }
+
+	public static Collection<LotAliasDTO> fromJsonArrayToLoes(String json) {
+        return new JSONDeserializer<List<LotAliasDTO>>()
+        .use("values", LotAliasDTO.class).deserialize(json);
+    }
 }

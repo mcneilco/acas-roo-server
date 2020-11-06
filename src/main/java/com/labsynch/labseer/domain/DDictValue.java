@@ -16,9 +16,11 @@ import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -32,6 +34,7 @@ import com.labsynch.labseer.dto.CodeTableDTO;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Configurable
 @Entity
 @RooJavaBean
 @RooToString
@@ -298,4 +301,349 @@ public class DDictValue {
 			return false;
 		}
 	}
+
+	public static Long countFindDDictValuesByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindDDictValuesByIgnoredNot(boolean ignored) {
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindDDictValuesByLabelTextLike(String labelText) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)", Long.class);
+        q.setParameter("labelText", labelText);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindDDictValuesByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindDDictValuesByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindDDictValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(String lsType, String lsKind, String shortName) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (shortName == null || shortName.length() == 0) throw new IllegalArgumentException("The shortName argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM DDictValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.shortName = :shortName", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("shortName", shortName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.codeName = :codeName", DDictValue.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = DDictValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<DDictValue> q = em.createQuery(queryBuilder.toString(), DDictValue.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByIgnoredNot(boolean ignored) {
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.ignored IS NOT :ignored", DDictValue.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByIgnoredNot(boolean ignored, String sortFieldName, String sortOrder) {
+        EntityManager em = DDictValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<DDictValue> q = em.createQuery(queryBuilder.toString(), DDictValue.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLabelTextLike(String labelText) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)", DDictValue.class);
+        q.setParameter("labelText", labelText);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLabelTextLike(String labelText, String sortFieldName, String sortOrder) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        labelText = labelText.replace('*', '%');
+        if (labelText.charAt(0) != '%') {
+            labelText = "%" + labelText;
+        }
+        if (labelText.charAt(labelText.length() - 1) != '%') {
+            labelText = labelText + "%";
+        }
+        EntityManager em = DDictValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE LOWER(o.labelText) LIKE LOWER(:labelText)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<DDictValue> q = em.createQuery(queryBuilder.toString(), DDictValue.class);
+        q.setParameter("labelText", labelText);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLsKindEquals(String lsKind, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = DDictValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<DDictValue> q = em.createQuery(queryBuilder.toString(), DDictValue.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.lsType = :lsType", DDictValue.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLsTypeEquals(String lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = DDictValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<DDictValue> q = em.createQuery(queryBuilder.toString(), DDictValue.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", DDictValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = DDictValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<DDictValue> q = em.createQuery(queryBuilder.toString(), DDictValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(String lsType, String lsKind, String shortName) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (shortName == null || shortName.length() == 0) throw new IllegalArgumentException("The shortName argument is required");
+        EntityManager em = DDictValue.entityManager();
+        TypedQuery<DDictValue> q = em.createQuery("SELECT o FROM DDictValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.shortName = :shortName", DDictValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("shortName", shortName);
+        return q;
+    }
+
+	public static TypedQuery<DDictValue> findDDictValuesByLsTypeEqualsAndLsKindEqualsAndShortNameEquals(String lsType, String lsKind, String shortName, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        if (shortName == null || shortName.length() == 0) throw new IllegalArgumentException("The shortName argument is required");
+        EntityManager em = DDictValue.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM DDictValue AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind  AND o.shortName = :shortName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<DDictValue> q = em.createQuery(queryBuilder.toString(), DDictValue.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        q.setParameter("shortName", shortName);
+        return q;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public String getLsType() {
+        return this.lsType;
+    }
+
+	public void setLsType(String lsType) {
+        this.lsType = lsType;
+    }
+
+	public String getLsKind() {
+        return this.lsKind;
+    }
+
+	public void setLsKind(String lsKind) {
+        this.lsKind = lsKind;
+    }
+
+	public String getLsTypeAndKind() {
+        return this.lsTypeAndKind;
+    }
+
+	public void setLsTypeAndKind(String lsTypeAndKind) {
+        this.lsTypeAndKind = lsTypeAndKind;
+    }
+
+	public String getShortName() {
+        return this.shortName;
+    }
+
+	public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+	public String getLabelText() {
+        return this.labelText;
+    }
+
+	public void setLabelText(String labelText) {
+        this.labelText = labelText;
+    }
+
+	public String getDescription() {
+        return this.description;
+    }
+
+	public void setDescription(String description) {
+        this.description = description;
+    }
+
+	public String getComments() {
+        return this.comments;
+    }
+
+	public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+	public boolean isIgnored() {
+        return this.ignored;
+    }
+
+	public void setIgnored(boolean ignored) {
+        this.ignored = ignored;
+    }
+
+	public Integer getDisplayOrder() {
+        return this.displayOrder;
+    }
+
+	public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "lsType", "lsKind", "lsTypeAndKind", "shortName", "labelText", "description", "comments", "ignored", "displayOrder", "codeName", "id", "version", "entityManager");
+
+	public static List<DDictValue> findAllDDictValues(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM DDictValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, DDictValue.class).getResultList();
+    }
+
+	public static List<DDictValue> findDDictValueEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM DDictValue o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, DDictValue.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
 }

@@ -229,4 +229,65 @@ public class PhysicalStateController {
     }
 
     
+
+	@RequestMapping(params = { "find=ByCodeEquals", "form" }, method = RequestMethod.GET)
+    public String findPhysicalStatesByCodeEqualsForm(Model uiModel) {
+        return "physicalstates/findPhysicalStatesByCodeEquals";
+    }
+
+	@RequestMapping(params = "find=ByCodeEquals", method = RequestMethod.GET)
+    public String findPhysicalStatesByCodeEquals(@RequestParam("code") String code, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("physicalstates", PhysicalState.findPhysicalStatesByCodeEquals(code, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) PhysicalState.countFindPhysicalStatesByCodeEquals(code) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("physicalstates", PhysicalState.findPhysicalStatesByCodeEquals(code, sortFieldName, sortOrder).getResultList());
+        }
+        return "physicalstates/list";
+    }
+
+	@RequestMapping(params = { "find=ByNameEquals", "form" }, method = RequestMethod.GET)
+    public String findPhysicalStatesByNameEqualsForm(Model uiModel) {
+        return "physicalstates/findPhysicalStatesByNameEquals";
+    }
+
+	@RequestMapping(params = "find=ByNameEquals", method = RequestMethod.GET)
+    public String findPhysicalStatesByNameEquals(@RequestParam("name") String name, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("physicalstates", PhysicalState.findPhysicalStatesByNameEquals(name, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) PhysicalState.countFindPhysicalStatesByNameEquals(name) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("physicalstates", PhysicalState.findPhysicalStatesByNameEquals(name, sortFieldName, sortOrder).getResultList());
+        }
+        return "physicalstates/list";
+    }
+
+	@RequestMapping(params = { "find=ByNameLike", "form" }, method = RequestMethod.GET)
+    public String findPhysicalStatesByNameLikeForm(Model uiModel) {
+        return "physicalstates/findPhysicalStatesByNameLike";
+    }
+
+	@RequestMapping(params = "find=ByNameLike", method = RequestMethod.GET)
+    public String findPhysicalStatesByNameLike(@RequestParam("name") String name, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("physicalstates", PhysicalState.findPhysicalStatesByNameLike(name, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) PhysicalState.countFindPhysicalStatesByNameLike(name) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("physicalstates", PhysicalState.findPhysicalStatesByNameLike(name, sortFieldName, sortOrder).getResultList());
+        }
+        return "physicalstates/list";
+    }
+
+	void populateEditForm(Model uiModel, PhysicalState physicalState) {
+        uiModel.addAttribute("physicalState", physicalState);
+    }
 }

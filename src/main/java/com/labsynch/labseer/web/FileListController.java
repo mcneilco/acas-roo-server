@@ -323,4 +323,48 @@ public class FileListController {
         headers.setExpires(0); // Expire the cache
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
+
+	void populateEditForm(Model uiModel, FileList fileList) {
+        uiModel.addAttribute("fileList", fileList);
+        uiModel.addAttribute("lots", Lot.findAllLots());
+    }
+
+	@RequestMapping(params = { "find=ByLot", "form" }, method = RequestMethod.GET)
+    public String findFileListsByLotForm(Model uiModel) {
+        uiModel.addAttribute("lots", Lot.findAllLots());
+        return "filelists/findFileListsByLot";
+    }
+
+	@RequestMapping(params = "find=ByLot", method = RequestMethod.GET)
+    public String findFileListsByLot(@RequestParam("lot") Lot lot, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("filelists", FileList.findFileListsByLot(lot, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) FileList.countFindFileListsByLot(lot) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("filelists", FileList.findFileListsByLot(lot, sortFieldName, sortOrder).getResultList());
+        }
+        return "filelists/list";
+    }
+
+	@RequestMapping(params = { "find=ByUrlEquals", "form" }, method = RequestMethod.GET)
+    public String findFileListsByUrlEqualsForm(Model uiModel) {
+        return "filelists/findFileListsByUrlEquals";
+    }
+
+	@RequestMapping(params = "find=ByUrlEquals", method = RequestMethod.GET)
+    public String findFileListsByUrlEquals(@RequestParam("url") String url, @RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "size", required = false) Integer size, @RequestParam(value = "sortFieldName", required = false) String sortFieldName, @RequestParam(value = "sortOrder", required = false) String sortOrder, Model uiModel) {
+        if (page != null || size != null) {
+            int sizeNo = size == null ? 10 : size.intValue();
+            final int firstResult = page == null ? 0 : (page.intValue() - 1) * sizeNo;
+            uiModel.addAttribute("filelists", FileList.findFileListsByUrlEquals(url, sortFieldName, sortOrder).setFirstResult(firstResult).setMaxResults(sizeNo).getResultList());
+            float nrOfPages = (float) FileList.countFindFileListsByUrlEquals(url) / sizeNo;
+            uiModel.addAttribute("maxPages", (int) ((nrOfPages > (int) nrOfPages || nrOfPages == 0.0) ? nrOfPages + 1 : nrOfPages));
+        } else {
+            uiModel.addAttribute("filelists", FileList.findFileListsByUrlEquals(url, sortFieldName, sortOrder).getResultList());
+        }
+        return "filelists/list";
+    }
 }

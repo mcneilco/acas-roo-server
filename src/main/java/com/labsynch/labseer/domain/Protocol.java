@@ -10,14 +10,19 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.TypedQuery;
 import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -31,6 +36,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Configurable
+@Entity
 @RooJavaBean
 @RooToString(excludeFields = { "lsTags", "lsStates", "experiments", "lsLabels" })
 @RooJson
@@ -289,5 +296,571 @@ public class Protocol extends AbstractThing {
                 return " ";
             }
         }
+    }
+
+	public static Long countFindProtocolsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.codeName = :codeName", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByCodeNameEqualsAndIgnoredNot(String codeName, boolean ignored) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("codeName", codeName);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Long.class);
+        q.setParameter("codeName", codeName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByIgnoredNot(boolean ignored) {
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Long.class);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByLsTypeAndKindEquals(String lsTypeAndKind) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", Long.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.lsType = :lsType", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByLsTypeLike(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        lsType = lsType.replace('*', '%');
+        if (lsType.charAt(0) != '%') {
+            lsType = "%" + lsType;
+        }
+        if (lsType.charAt(lsType.length() - 1) != '%') {
+            lsType = lsType + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Long.class);
+        q.setParameter("lsType", lsType);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindProtocolsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Protocol AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Long.class);
+        q.setParameter("recordedBy", recordedBy);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByCodeNameEquals(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.codeName = :codeName", Protocol.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByCodeNameEquals(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.codeName = :codeName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByCodeNameEqualsAndIgnoredNot(String codeName, boolean ignored) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored IS NOT :ignored", Protocol.class);
+        q.setParameter("codeName", codeName);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByCodeNameEqualsAndIgnoredNot(String codeName, boolean ignored, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.codeName = :codeName  AND o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("codeName", codeName);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByCodeNameLike(String codeName) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)", Protocol.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByCodeNameLike(String codeName, String sortFieldName, String sortOrder) {
+        if (codeName == null || codeName.length() == 0) throw new IllegalArgumentException("The codeName argument is required");
+        codeName = codeName.replace('*', '%');
+        if (codeName.charAt(0) != '%') {
+            codeName = "%" + codeName;
+        }
+        if (codeName.charAt(codeName.length() - 1) != '%') {
+            codeName = codeName + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE LOWER(o.codeName) LIKE LOWER(:codeName)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("codeName", codeName);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByIgnoredNot(boolean ignored) {
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.ignored IS NOT :ignored", Protocol.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByIgnoredNot(boolean ignored, String sortFieldName, String sortOrder) {
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsKindEquals(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.lsKind = :lsKind", Protocol.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsKindEquals(String lsKind, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsKindLike(String lsKind) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)", Protocol.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsKindLike(String lsKind, String sortFieldName, String sortOrder) {
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        lsKind = lsKind.replace('*', '%');
+        if (lsKind.charAt(0) != '%') {
+            lsKind = "%" + lsKind;
+        }
+        if (lsKind.charAt(lsKind.length() - 1) != '%') {
+            lsKind = lsKind + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE LOWER(o.lsKind) LIKE LOWER(:lsKind)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.lsTransaction = :lsTransaction", Protocol.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTypeAndKindEquals(String lsTypeAndKind) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.lsTypeAndKind = :lsTypeAndKind", Protocol.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTypeAndKindEquals(String lsTypeAndKind, String sortFieldName, String sortOrder) {
+        if (lsTypeAndKind == null || lsTypeAndKind.length() == 0) throw new IllegalArgumentException("The lsTypeAndKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.lsTypeAndKind = :lsTypeAndKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("lsTypeAndKind", lsTypeAndKind);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTypeEquals(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.lsType = :lsType", Protocol.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTypeEquals(String lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.lsType = :lsType");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind", Protocol.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTypeEqualsAndLsKindEquals(String lsType, String lsKind, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (lsKind == null || lsKind.length() == 0) throw new IllegalArgumentException("The lsKind argument is required");
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE o.lsType = :lsType  AND o.lsKind = :lsKind");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("lsKind", lsKind);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTypeLike(String lsType) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        lsType = lsType.replace('*', '%');
+        if (lsType.charAt(0) != '%') {
+            lsType = "%" + lsType;
+        }
+        if (lsType.charAt(lsType.length() - 1) != '%') {
+            lsType = lsType + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)", Protocol.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByLsTypeLike(String lsType, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        lsType = lsType.replace('*', '%');
+        if (lsType.charAt(0) != '%') {
+            lsType = "%" + lsType;
+        }
+        if (lsType.charAt(lsType.length() - 1) != '%') {
+            lsType = lsType + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE LOWER(o.lsType) LIKE LOWER(:lsType)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("lsType", lsType);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByRecordedByLike(String recordedBy) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        TypedQuery<Protocol> q = em.createQuery("SELECT o FROM Protocol AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)", Protocol.class);
+        q.setParameter("recordedBy", recordedBy);
+        return q;
+    }
+
+	public static TypedQuery<Protocol> findProtocolsByRecordedByLike(String recordedBy, String sortFieldName, String sortOrder) {
+        if (recordedBy == null || recordedBy.length() == 0) throw new IllegalArgumentException("The recordedBy argument is required");
+        recordedBy = recordedBy.replace('*', '%');
+        if (recordedBy.charAt(0) != '%') {
+            recordedBy = "%" + recordedBy;
+        }
+        if (recordedBy.charAt(recordedBy.length() - 1) != '%') {
+            recordedBy = recordedBy + "%";
+        }
+        EntityManager em = Protocol.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Protocol AS o WHERE LOWER(o.recordedBy) LIKE LOWER(:recordedBy)");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Protocol> q = em.createQuery(queryBuilder.toString(), Protocol.class);
+        q.setParameter("recordedBy", recordedBy);
+        return q;
+    }
+
+	public String getShortDescription() {
+        return this.shortDescription;
+    }
+
+	public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+	public Set<ProtocolState> getLsStates() {
+        return this.lsStates;
+    }
+
+	public void setLsStates(Set<ProtocolState> lsStates) {
+        this.lsStates = lsStates;
+    }
+
+	public Set<Experiment> getExperiments() {
+        return this.experiments;
+    }
+
+	public void setExperiments(Set<Experiment> experiments) {
+        this.experiments = experiments;
+    }
+
+	public Set<ProtocolLabel> getLsLabels() {
+        return this.lsLabels;
+    }
+
+	public void setLsLabels(Set<ProtocolLabel> lsLabels) {
+        this.lsLabels = lsLabels;
+    }
+
+	public Set<LsTag> getLsTags() {
+        return this.lsTags;
+    }
+
+	public void setLsTags(Set<LsTag> lsTags) {
+        this.lsTags = lsTags;
+    }
+
+	public Set<ItxProtocolProtocol> getFirstProtocols() {
+        return this.firstProtocols;
+    }
+
+	public void setFirstProtocols(Set<ItxProtocolProtocol> firstProtocols) {
+        this.firstProtocols = firstProtocols;
+    }
+
+	public Set<ItxProtocolProtocol> getSecondProtocols() {
+        return this.secondProtocols;
+    }
+
+	public void setSecondProtocols(Set<ItxProtocolProtocol> secondProtocols) {
+        this.secondProtocols = secondProtocols;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "shortDescription", "lsStates", "experiments", "lsLabels", "lsTags", "firstProtocols", "secondProtocols");
+
+	public static long countProtocols() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM Protocol o", Long.class).getSingleResult();
+    }
+
+	public static List<Protocol> findAllProtocols() {
+        return entityManager().createQuery("SELECT o FROM Protocol o", Protocol.class).getResultList();
+    }
+
+	public static List<Protocol> findAllProtocols(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Protocol o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Protocol.class).getResultList();
+    }
+
+	public static List<Protocol> findProtocolEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM Protocol o", Protocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<Protocol> findProtocolEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Protocol o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Protocol.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public Protocol merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        Protocol merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public String toString() {
+        return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames("lsTags", "lsStates", "experiments", "lsLabels").toString();
     }
 }

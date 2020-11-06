@@ -6,21 +6,25 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
-
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
-
+import org.springframework.transaction.annotation.Transactional;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Configurable
+@Entity
 @RooJavaBean
 @RooToString
 @RooJson
@@ -141,4 +145,190 @@ public class ContainerLabel extends AbstractLabel {
 			}
 		}
 	}
+
+	public Container getContainer() {
+        return this.container;
+    }
+
+	public void setContainer(Container container) {
+        this.container = container;
+    }
+
+	public String toString() {
+        return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+	public static Long countFindContainerLabelsByContainerAndIgnoredNot(Container container, boolean ignored) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.container = :container AND o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("container", container);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindContainerLabelsByLabelTextEqualsAndIgnoredNot(String labelText, boolean ignored) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindContainerLabelsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.lsTransaction = :lsTransaction", Long.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(String lsType, String labelText, boolean ignored) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored IS NOT :ignored", Long.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<ContainerLabel> findContainerLabelsByContainerAndIgnoredNot(Container container, boolean ignored, String sortFieldName, String sortOrder) {
+        if (container == null) throw new IllegalArgumentException("The container argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerLabel AS o WHERE o.container = :container AND o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerLabel> q = em.createQuery(queryBuilder.toString(), ContainerLabel.class);
+        q.setParameter("container", container);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ContainerLabel> findContainerLabelsByLabelTextEqualsAndIgnoredNot(String labelText, boolean ignored, String sortFieldName, String sortOrder) {
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerLabel AS o WHERE o.labelText = :labelText  AND o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerLabel> q = em.createQuery(queryBuilder.toString(), ContainerLabel.class);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ContainerLabel> findContainerLabelsByLsTransactionEquals(Long lsTransaction) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        TypedQuery<ContainerLabel> q = em.createQuery("SELECT o FROM ContainerLabel AS o WHERE o.lsTransaction = :lsTransaction", ContainerLabel.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<ContainerLabel> findContainerLabelsByLsTransactionEquals(Long lsTransaction, String sortFieldName, String sortOrder) {
+        if (lsTransaction == null) throw new IllegalArgumentException("The lsTransaction argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerLabel AS o WHERE o.lsTransaction = :lsTransaction");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerLabel> q = em.createQuery(queryBuilder.toString(), ContainerLabel.class);
+        q.setParameter("lsTransaction", lsTransaction);
+        return q;
+    }
+
+	public static TypedQuery<ContainerLabel> findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(String lsType, String labelText, boolean ignored) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        TypedQuery<ContainerLabel> q = em.createQuery("SELECT o FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored IS NOT :ignored", ContainerLabel.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static TypedQuery<ContainerLabel> findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(String lsType, String labelText, boolean ignored, String sortFieldName, String sortOrder) {
+        if (lsType == null || lsType.length() == 0) throw new IllegalArgumentException("The lsType argument is required");
+        if (labelText == null || labelText.length() == 0) throw new IllegalArgumentException("The labelText argument is required");
+        EntityManager em = ContainerLabel.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM ContainerLabel AS o WHERE o.lsType = :lsType  AND o.labelText = :labelText  AND o.ignored IS NOT :ignored");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<ContainerLabel> q = em.createQuery(queryBuilder.toString(), ContainerLabel.class);
+        q.setParameter("lsType", lsType);
+        q.setParameter("labelText", labelText);
+        q.setParameter("ignored", ignored);
+        return q;
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("container");
+
+	public static long countContainerLabels() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM ContainerLabel o", Long.class).getSingleResult();
+    }
+
+	public static List<ContainerLabel> findAllContainerLabels() {
+        return entityManager().createQuery("SELECT o FROM ContainerLabel o", ContainerLabel.class).getResultList();
+    }
+
+	public static List<ContainerLabel> findAllContainerLabels(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerLabel.class).getResultList();
+    }
+
+	public static ContainerLabel findContainerLabel(Long id) {
+        if (id == null) return null;
+        return entityManager().find(ContainerLabel.class, id);
+    }
+
+	public static List<ContainerLabel> findContainerLabelEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM ContainerLabel o", ContainerLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<ContainerLabel> findContainerLabelEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM ContainerLabel o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, ContainerLabel.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public ContainerLabel merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        ContainerLabel merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public ContainerLabel() {
+        super();
+    }
 }

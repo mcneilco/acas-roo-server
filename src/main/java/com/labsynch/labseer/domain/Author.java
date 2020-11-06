@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -17,7 +18,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -29,6 +30,8 @@ import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
+@Configurable
+@Entity
 @RooJson
 @RooJavaBean
 //@RooToString(excludeFields = { "password", "modifiedDate", "activationKey", "activationDate", "emailAddress", "recordedDate", "modifiedDate", "enabled", "locked" })
@@ -209,5 +212,223 @@ public class Author extends AbstractThing {
 	
 
 	public Author() {
+    }
+
+	public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("firstName", "lastName", "userName", "emailAddress", "password", "activationDate", "activationKey", "enabled", "locked", "authorRoles", "lsStates", "lsLabels");
+
+	public static long countAuthors() {
+        return entityManager().createQuery("SELECT COUNT(o) FROM Author o", Long.class).getSingleResult();
+    }
+
+	public static List<Author> findAllAuthors() {
+        return entityManager().createQuery("SELECT o FROM Author o", Author.class).getResultList();
+    }
+
+	public static List<Author> findAllAuthors(String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Author o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Author.class).getResultList();
+    }
+
+	public static Author findAuthor(Long id) {
+        if (id == null) return null;
+        return entityManager().find(Author.class, id);
+    }
+
+	public static List<Author> findAuthorEntries(int firstResult, int maxResults) {
+        return entityManager().createQuery("SELECT o FROM Author o", Author.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	public static List<Author> findAuthorEntries(int firstResult, int maxResults, String sortFieldName, String sortOrder) {
+        String jpaQuery = "SELECT o FROM Author o";
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            jpaQuery = jpaQuery + " ORDER BY " + sortFieldName;
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                jpaQuery = jpaQuery + " " + sortOrder;
+            }
+        }
+        return entityManager().createQuery(jpaQuery, Author.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
+    }
+
+	@Transactional
+    public Author merge() {
+        if (this.entityManager == null) this.entityManager = entityManager();
+        Author merged = this.entityManager.merge(this);
+        this.entityManager.flush();
+        return merged;
+    }
+
+	public String getFirstName() {
+        return this.firstName;
+    }
+
+	public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+	public String getLastName() {
+        return this.lastName;
+    }
+
+	public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+	public String getUserName() {
+        return this.userName;
+    }
+
+	public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+	public String getEmailAddress() {
+        return this.emailAddress;
+    }
+
+	public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+	public String getPassword() {
+        return this.password;
+    }
+
+	public void setPassword(String password) {
+        this.password = password;
+    }
+
+	public Date getActivationDate() {
+        return this.activationDate;
+    }
+
+	public void setActivationDate(Date activationDate) {
+        this.activationDate = activationDate;
+    }
+
+	public String getActivationKey() {
+        return this.activationKey;
+    }
+
+	public void setActivationKey(String activationKey) {
+        this.activationKey = activationKey;
+    }
+
+	public Boolean getEnabled() {
+        return this.enabled;
+    }
+
+	public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+	public Boolean getLocked() {
+        return this.locked;
+    }
+
+	public void setLocked(Boolean locked) {
+        this.locked = locked;
+    }
+
+	public Set<AuthorRole> getAuthorRoles() {
+        return this.authorRoles;
+    }
+
+	public void setAuthorRoles(Set<AuthorRole> authorRoles) {
+        this.authorRoles = authorRoles;
+    }
+
+	public Set<AuthorState> getLsStates() {
+        return this.lsStates;
+    }
+
+	public void setLsStates(Set<AuthorState> lsStates) {
+        this.lsStates = lsStates;
+    }
+
+	public Set<AuthorLabel> getLsLabels() {
+        return this.lsLabels;
+    }
+
+	public void setLsLabels(Set<AuthorLabel> lsLabels) {
+        this.lsLabels = lsLabels;
+    }
+
+	public static Long countFindAuthorsByActivationKeyAndEmailAddress(String activationKey, String emailAddress) {
+        if (activationKey == null || activationKey.length() == 0) throw new IllegalArgumentException("The activationKey argument is required");
+        if (emailAddress == null || emailAddress.length() == 0) throw new IllegalArgumentException("The emailAddress argument is required");
+        EntityManager em = Author.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Author AS o WHERE o.activationKey = :activationKey AND o.emailAddress = :emailAddress", Long.class);
+        q.setParameter("activationKey", activationKey);
+        q.setParameter("emailAddress", emailAddress);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindAuthorsByEmailAddress(String emailAddress) {
+        if (emailAddress == null || emailAddress.length() == 0) throw new IllegalArgumentException("The emailAddress argument is required");
+        EntityManager em = Author.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Author AS o WHERE o.emailAddress = :emailAddress", Long.class);
+        q.setParameter("emailAddress", emailAddress);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static Long countFindAuthorsByUserName(String userName) {
+        if (userName == null || userName.length() == 0) throw new IllegalArgumentException("The userName argument is required");
+        EntityManager em = Author.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM Author AS o WHERE o.userName = :userName", Long.class);
+        q.setParameter("userName", userName);
+        return ((Long) q.getSingleResult());
+    }
+
+	public static TypedQuery<Author> findAuthorsByActivationKeyAndEmailAddress(String activationKey, String emailAddress, String sortFieldName, String sortOrder) {
+        if (activationKey == null || activationKey.length() == 0) throw new IllegalArgumentException("The activationKey argument is required");
+        if (emailAddress == null || emailAddress.length() == 0) throw new IllegalArgumentException("The emailAddress argument is required");
+        EntityManager em = Author.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Author AS o WHERE o.activationKey = :activationKey AND o.emailAddress = :emailAddress");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Author> q = em.createQuery(queryBuilder.toString(), Author.class);
+        q.setParameter("activationKey", activationKey);
+        q.setParameter("emailAddress", emailAddress);
+        return q;
+    }
+
+	public static TypedQuery<Author> findAuthorsByEmailAddress(String emailAddress, String sortFieldName, String sortOrder) {
+        if (emailAddress == null || emailAddress.length() == 0) throw new IllegalArgumentException("The emailAddress argument is required");
+        EntityManager em = Author.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Author AS o WHERE o.emailAddress = :emailAddress");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Author> q = em.createQuery(queryBuilder.toString(), Author.class);
+        q.setParameter("emailAddress", emailAddress);
+        return q;
+    }
+
+	public static TypedQuery<Author> findAuthorsByUserName(String userName, String sortFieldName, String sortOrder) {
+        if (userName == null || userName.length() == 0) throw new IllegalArgumentException("The userName argument is required");
+        EntityManager em = Author.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM Author AS o WHERE o.userName = :userName");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<Author> q = em.createQuery(queryBuilder.toString(), Author.class);
+        q.setParameter("userName", userName);
+        return q;
     }
 }
