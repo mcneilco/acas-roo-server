@@ -11,8 +11,6 @@ import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,8 +26,6 @@ import org.springframework.web.util.WebUtils;
 
 @RequestMapping("/experimentkinds")
 @Controller
-@RooWebScaffold(path = "experimentkinds", formBackingObject = ExperimentKind.class)
-@RooWebJson(jsonObject = ExperimentKind.class)
 public class ExperimentKindController {
 
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")

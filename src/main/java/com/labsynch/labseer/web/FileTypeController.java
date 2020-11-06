@@ -4,9 +4,6 @@ import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,9 +25,6 @@ import java.io.UnsupportedEncodingException;
 @RequestMapping({"/filetypes", "/fileTypes"})
 @Controller
 
-@RooWebJson(jsonObject = FileType.class)
-@RooWebScaffold(path = "filetypes", formBackingObject = FileType.class)
-@RooWebFinder
 public class FileTypeController {
 	
 	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();

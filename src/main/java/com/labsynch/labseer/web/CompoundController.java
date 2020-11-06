@@ -3,7 +3,6 @@ import com.labsynch.labseer.domain.Compound;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,12 +14,9 @@ import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 
 @RequestMapping("/compounds")
 @Controller
-@RooWebScaffold(path = "compounds", formBackingObject = Compound.class)
-@RooWebFinder
 public class CompoundController {
 
 	@RequestMapping(params = { "find=ByCdId", "form" }, method = RequestMethod.GET)

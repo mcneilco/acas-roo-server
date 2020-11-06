@@ -8,9 +8,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.ContainerType;
 import com.labsynch.labseer.domain.DDictType;
@@ -27,9 +24,6 @@ import com.labsynch.labseer.domain.ValueType;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
 public class TypeDTO {
 	
 	private String typeName;

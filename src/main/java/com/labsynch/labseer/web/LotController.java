@@ -39,18 +39,12 @@ import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 
 //import org.joda.time.DateTime;
 //import org.springframework.format.annotation.DateTimeFormat;
-//@RooWebScaffold(path = "lots", formBackingObject = Lot.class)
 @RequestMapping("/lots")
 @Controller
 @Transactional
-@RooWebScaffold(path = "lots", formBackingObject = Lot.class)
-@RooWebFinder
-//@RooWebFinder
 public class LotController {
 
     Logger logger = LoggerFactory.getLogger(LotController.class);

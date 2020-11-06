@@ -21,7 +21,6 @@ import com.labsynch.labseer.dto.SearchFormReturnDTO;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.SearchFormService;
 
-//@RooWebScaffold(path = "searchforms", formBackingObject = SearchForm.class)
 @RequestMapping(value = {"/searchforms", "/search"})
 @Controller
 public class SearchFormController {

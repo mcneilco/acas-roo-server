@@ -11,9 +11,6 @@ import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -28,11 +25,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
-@RooWebJson(jsonObject = RoleKind.class)
 @Controller
 @RequestMapping("/rolekinds")
-@RooWebScaffold(path = "rolekinds", formBackingObject = RoleKind.class)
-@RooWebFinder
 public class RoleKindController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")

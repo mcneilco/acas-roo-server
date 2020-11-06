@@ -10,8 +10,6 @@ import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,8 +25,6 @@ import org.springframework.web.util.WebUtils;
 
 @RequestMapping("/operatorkinds")
 @Controller
-@RooWebScaffold(path = "operatorkinds", formBackingObject = OperatorKind.class)
-@RooWebJson(jsonObject = OperatorKind.class)
 public class OperatorKindController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")

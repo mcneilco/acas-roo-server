@@ -19,10 +19,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.Configuration;
@@ -33,10 +29,6 @@ import flexjson.JSONSerializer;
 @Configurable
 @Entity
 @Transactional
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findIsoSaltsBySaltForm", "findIsoSaltsBySaltFormAndType" })
 public class IsoSalt {
 
 	private static final Logger logger = LoggerFactory.getLogger(IsoSalt.class);

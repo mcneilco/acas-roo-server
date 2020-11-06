@@ -29,10 +29,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-//@RooWebJson(jsonObject = LabelSequence.class)
 @Controller
 @RequestMapping("/api/v1/labelsequences")
-//@RooWebFinder
 public class ApiLabelSequenceController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiLabelSequenceController.class);

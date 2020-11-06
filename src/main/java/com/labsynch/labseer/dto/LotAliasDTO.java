@@ -6,18 +6,12 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.domain.LotAlias;
 import com.labsynch.labseer.domain.ParentAlias;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
 public class LotAliasDTO {
 
     private String lotCorpName;

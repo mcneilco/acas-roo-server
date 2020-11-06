@@ -11,14 +11,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Configurable
-@RooJavaBean
-@RooJpaActiveRecord(sequenceName = "LSSEQ_ITXTHGTHG_PKSEQ" )
 public class LsSeqItxLsThingLsThing {
 	
 

@@ -4,7 +4,6 @@ import com.labsynch.labseer.domain.LsSeqItxProtocolProtocol;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,7 +16,6 @@ import org.springframework.web.util.WebUtils;
 
 @RequestMapping("/lsseqitxprotocolprotocols")
 @Controller
-@RooWebScaffold(path = "lsseqitxprotocolprotocols", formBackingObject = LsSeqItxProtocolProtocol.class)
 public class LsSeqItxProtocolProtocolController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")

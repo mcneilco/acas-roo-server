@@ -1,7 +1,6 @@
 package com.labsynch.labseer.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,7 +16,6 @@ import java.io.UnsupportedEncodingException;
 
 @RequestMapping("/predef_corpnames")
 @Controller
-@RooWebScaffold(path = "predef_corpnames", formBackingObject = PreDef_CorpName.class)
 
 public class PreDef_CorpNameController {
 

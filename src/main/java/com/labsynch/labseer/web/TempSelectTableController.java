@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +18,6 @@ import org.springframework.web.util.WebUtils;
 
 @RequestMapping("/tempselecttables")
 @Controller
-@RooWebScaffold(path = "tempselecttables", formBackingObject = TempSelectTable.class)
 public class TempSelectTableController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")

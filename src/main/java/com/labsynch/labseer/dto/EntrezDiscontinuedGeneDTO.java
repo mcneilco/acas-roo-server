@@ -7,13 +7,7 @@ import java.util.Date;
 import java.util.List;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
-@RooJavaBean
-@RooToString
-@RooJson
 public class EntrezDiscontinuedGeneDTO {
 	
 	//tax_id  GeneID  Discontinued_GeneID     Discontinued_Symbol     Discontinue_Date

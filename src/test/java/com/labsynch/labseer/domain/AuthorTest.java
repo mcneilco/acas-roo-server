@@ -3,9 +3,7 @@ package com.labsynch.labseer.domain;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.roo.addon.test.RooIntegrationTest;
 
-@RooIntegrationTest(entity = Author.class)
 public class AuthorTest {
 	
 	private static final Logger logger = LoggerFactory.getLogger(AuthorTest.class);

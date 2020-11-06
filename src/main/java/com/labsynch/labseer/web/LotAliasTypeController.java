@@ -9,9 +9,6 @@ import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.json.RooWebJson;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -28,13 +25,10 @@ import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 import com.labsynch.labseer.domain.LotAliasType;
 
-@RooWebScaffold(path = "lotaliastypes", formBackingObject = LotAliasType.class)
 @RequestMapping("/lotaliastypes")
 @Controller
 @Transactional
 
-@RooWebFinder
-@RooWebJson(jsonObject = LotAliasType.class)
 public class LotAliasTypeController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")

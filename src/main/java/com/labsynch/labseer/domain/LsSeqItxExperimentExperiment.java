@@ -12,14 +12,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Version;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.transaction.annotation.Transactional;
 
 @Configurable
 @Entity
-@RooJavaBean
-@RooJpaActiveRecord(sequenceName = "LSSEQ_ITXEXPTEXPT_PKSEQ" )
 @Table(name="LS_SEQ_ITX_EXPT_EXPT")
 public class LsSeqItxExperimentExperiment {
 	

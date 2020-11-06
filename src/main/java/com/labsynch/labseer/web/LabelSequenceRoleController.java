@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,7 +20,6 @@ import org.springframework.web.util.WebUtils;
 
 @RequestMapping("/labelsequenceroles")
 @Controller
-@RooWebScaffold(path = "labelsequenceroles", formBackingObject = LabelSequenceRole.class)
 public class LabelSequenceRoleController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")

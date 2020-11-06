@@ -3,7 +3,6 @@ import com.labsynch.labseer.domain.BulkLoadTemplate;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -13,12 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 
 @RequestMapping("/bulkloadtemplates")
 @Controller
-@RooWebScaffold(path = "bulkloadtemplates", formBackingObject = BulkLoadTemplate.class)
-@RooWebFinder
 public class BulkLoadTemplateController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")

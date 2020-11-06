@@ -22,10 +22,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.FlatThingCsvDTO;
@@ -37,10 +33,6 @@ import flexjson.JSONSerializer;
 
 @Entity
 @Configurable
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findTreatmentGroupStatesByLsTypeAndKindEquals", "findTreatmentGroupStatesByTreatmentGroup", "findTreatmentGroupStatesByLsTransactionEquals" })
 public class TreatmentGroupState extends AbstractState {
 
     @NotNull

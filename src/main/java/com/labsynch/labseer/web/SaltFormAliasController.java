@@ -4,7 +4,6 @@ import com.labsynch.labseer.domain.SaltFormAlias;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,12 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
 
 @RequestMapping("/saltformaliases")
 @Controller
-@RooWebScaffold(path = "saltformaliases", formBackingObject = SaltFormAlias.class)
-@RooWebFinder
 public class SaltFormAliasController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")

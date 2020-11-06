@@ -41,7 +41,6 @@ import flexjson.JSONDeserializer;
 @Controller
 @RequestMapping("api/v1/analysisgroupvalues")
 @Transactional
-//@RooWebJson(jsonObject = AnalysisGroupValue.class)
 public class ApiAnalysisGroupValueController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ApiAnalysisGroupValueController.class);

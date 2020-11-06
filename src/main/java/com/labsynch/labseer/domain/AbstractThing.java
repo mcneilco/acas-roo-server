@@ -26,17 +26,11 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 @Configurable
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@RooJavaBean
-@RooToString
-@RooJpaActiveRecord(sequenceName = "THING_PKSEQ", inheritanceType = "TABLE_PER_CLASS")
 @Transactional
 public abstract class AbstractThing {
 

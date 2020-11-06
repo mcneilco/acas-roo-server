@@ -2,9 +2,6 @@ package com.labsynch.labseer.dto;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
@@ -12,9 +9,6 @@ import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
 
-@RooJavaBean
-@RooToString
-@RooJson
 public class SimpleBulkLoadPropertyDTO {
 
     private String name;

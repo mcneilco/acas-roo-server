@@ -1,8 +1,5 @@
 package com.labsynch.labseer.dto;
 
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import java.util.Collection;
 import java.util.Date;
@@ -23,9 +20,6 @@ import com.labsynch.labseer.domain.PhysicalState;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
-@RooJavaBean
-@RooToString
-@RooJson
 public class PreferredNameDTO {
 	
 	public PreferredNameDTO() {		

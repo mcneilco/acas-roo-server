@@ -14,11 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 
 @RequestMapping("/saltloaders")
 @Controller
-@RooWebScaffold(path = "saltloaders", formBackingObject = SaltLoader.class)
 public class SaltLoaderController {
 
 	@RequestMapping(method = RequestMethod.POST, produces = "text/html")

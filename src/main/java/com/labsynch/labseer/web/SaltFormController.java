@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -34,12 +32,10 @@ import com.labsynch.labseer.service.ChemStructureService;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.path.PathBuilder;
 
-@RooWebScaffold(path = "saltforms", formBackingObject = SaltForm.class)
 @RequestMapping("/saltforms")
 @Controller
 @Transactional
 
-@RooWebFinder
 public class SaltFormController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SaltFormController.class);

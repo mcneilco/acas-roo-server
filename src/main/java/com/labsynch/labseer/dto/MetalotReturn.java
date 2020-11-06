@@ -7,18 +7,12 @@ import java.util.List;
 import javax.transaction.Transactional;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 
 import com.labsynch.labseer.service.ErrorMessage;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 import flexjson.transformer.DateTransformer;
 
-@RooJavaBean
-@RooToString
-@RooJson
 public class MetalotReturn {
 	
 	Metalot metalot;

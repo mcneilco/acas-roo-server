@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -38,12 +36,10 @@ import com.labsynch.labseer.utils.MoleculeUtil;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.path.PathBuilder;
 
-@RooWebScaffold(path = "salts", formBackingObject = Salt.class)
 @RequestMapping("/salts")
 @Controller
 @Transactional
 
-@RooWebFinder
 public class SaltController {
 
 	private static final Logger logger = LoggerFactory.getLogger(SaltController.class);

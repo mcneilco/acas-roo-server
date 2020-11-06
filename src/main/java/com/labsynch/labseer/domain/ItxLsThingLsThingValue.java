@@ -17,18 +17,10 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
-import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Configurable
-@RooJavaBean
-@RooToString
-@RooJson
-@RooJpaActiveRecord(finders = { "findItxLsThingLsThingValuesByLsTransactionEquals", "findItxLsThingLsThingValuesByLsKindEquals" })
 public class ItxLsThingLsThingValue extends AbstractValue {
 
     @ManyToOne

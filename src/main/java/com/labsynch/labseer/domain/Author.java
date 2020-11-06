@@ -20,9 +20,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.roo.addon.javabean.RooJavaBean;
-import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
-import org.springframework.roo.addon.json.RooJson;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.utils.ExcludeNulls;
@@ -32,12 +29,7 @@ import flexjson.JSONSerializer;
 
 @Configurable
 @Entity
-@RooJson
-@RooJavaBean
-//@RooToString(excludeFields = { "password", "modifiedDate", "activationKey", "activationDate", "emailAddress", "recordedDate", "modifiedDate", "enabled", "locked" })
-//@RooToString(excludeFields = { "password", "authorRoles"})
 
-@RooJpaActiveRecord(sequenceName = "AUTHOR_PKSEQ", finders = { "findAllAuthors", "findAuthorsByUserName", "findAuthorsByEmailAddress", "findAuthorsByActivationKeyAndEmailAddress" })
 public class Author extends AbstractThing {
 
 	
