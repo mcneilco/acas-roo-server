@@ -2582,22 +2582,29 @@ public class LsThingServiceImpl implements LsThingService {
 							}
 						}
 					}else if (valueQuery.getValueType().equalsIgnoreCase("numericValue")){
-					if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
-						Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueGreaterThan);
-					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
-						Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueGreaterThan);
-					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
-						Predicate valueLessThan = criteriaBuilder.lessThan(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueLessThan);
-					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
-						Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueLessThan);
-					}else{
-						Predicate valueEquals = criteriaBuilder.equal(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueEquals);
-					}
+						try{
+							BigDecimal numberValue = new BigDecimal(valueQuery.getValue());
+							if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+								Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueGreaterThan);
+							}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+								Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueGreaterThan);
+							}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+								Predicate valueLessThan = criteriaBuilder.lessThan(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueLessThan);
+							}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+								Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueLessThan);
+							}else{
+								Predicate valueEquals = criteriaBuilder.equal(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueEquals);
+							}
+						} catch (NumberFormatException e){
+							logger.warn("Failed to parse number in LsThing generic query for value",e);
+							valuePredicatesList.add(criteriaBuilder.disjunction());
+
+						}
 				}else{
 					//string value types: stringValue, codeValue, fileValue, clobValue
 					if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("=")){
