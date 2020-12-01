@@ -2721,43 +2721,121 @@ public class LsThingServiceImpl implements LsThingService {
 		metaPredicateList.add(criteriaBuilder.isFalse(thing.<Boolean>get("ignored")));
 
 		//split query string into terms
-		String queryString = query.getQueryString().replaceAll("\\*", "%");
-		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
-		logger.debug("Number of search terms: " + splitQuery.size());
-		//for each search term, construct a queryDTO with that term filled in every search position of the passed in queryDTO
-		for (String searchTerm : splitQuery){
-			LsThingQueryDTO queryDTO = new LsThingQueryDTO(query.getQueryDTO());
-			if (queryDTO.getFirstInteractions() != null){
-				for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
-					itx.setThingLabelText(searchTerm);
+		String queryString = query.getQueryString();
+		if(queryString != null) {
+			queryString = query.getQueryString().replaceAll("\\*", "%");
+			List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+			logger.debug("Number of search terms: " + splitQuery.size());
+			//for each search term, construct a queryDTO with that term filled in every search position of the passed in queryDTO
+			for (String searchTerm : splitQuery){
+				LsThingQueryDTO queryDTO = new LsThingQueryDTO(query.getQueryDTO());
+				if (queryDTO.getFirstInteractions() != null){
+					for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
+						itx.setThingLabelText(searchTerm);
+					}
 				}
+				if (queryDTO.getSecondInteractions() != null){
+					for (ItxQueryDTO itx : queryDTO.getSecondInteractions()){
+						itx.setThingLabelText(searchTerm);
+					}
+				}
+				if (queryDTO.getValues() != null){
+					for (ValueQueryDTO value : queryDTO.getValues()){
+						value.setValue(searchTerm);
+					}
+				}
+				if (queryDTO.getLabels() != null){
+					for (LabelQueryDTO label : queryDTO.getLabels()){
+						label.setLabelText(searchTerm);
+					}
+				}
+				if(queryDTO.getCodeName() != null) {
+					queryDTO.getCodeName().setCodeName(searchTerm);
+				}
+					
+				//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
+				List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
+				Predicate[] predicates = new Predicate[0];
+				predicates = predicateList.toArray(predicates);
+				Predicate searchTermPredicate;
+				if(queryDTO.getCombineTermsWithAnd()) {
+					//join all the predicatesByTerm with AND
+					searchTermPredicate = criteriaBuilder.and(predicates);
+				} else {
+					//join all the predicatesByTerm with OR
+					searchTermPredicate = criteriaBuilder.or(predicates);
+				}
+				metaPredicateList.add(searchTermPredicate);
+			}
+		} else {
+			//If a value, label or code name is already set in the search (without a search term)
+			//Then searching using the passed in value into the dto
+			LsThingQueryDTO queryDTO = new LsThingQueryDTO(query.getQueryDTO());
+			Boolean hasCriteria = false;
+			if (queryDTO.getFirstInteractions() != null){
+				List<ItxQueryDTO> firstInteractions = new ArrayList<ItxQueryDTO>();
+				for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
+					if(itx.getThingLabelText() != null) {
+						firstInteractions.add(itx);
+						hasCriteria = true;
+					}
+				}
+				queryDTO.setFirstInteractions(firstInteractions);
 			}
 			if (queryDTO.getSecondInteractions() != null){
+				List<ItxQueryDTO> secondInteractions = new ArrayList<ItxQueryDTO>();
 				for (ItxQueryDTO itx : queryDTO.getSecondInteractions()){
-					itx.setThingLabelText(searchTerm);
+					if(itx.getThingLabelText() != null) {
+						secondInteractions.add(itx);
+						hasCriteria = true;
+					}
 				}
+				queryDTO.setSecondInteractions(secondInteractions);
 			}
 			if (queryDTO.getValues() != null){
+				List<ValueQueryDTO> values = new ArrayList<ValueQueryDTO>();
 				for (ValueQueryDTO value : queryDTO.getValues()){
-					value.setValue(searchTerm);
+					if(value.getValue() != null) {
+						values.add(value);
+						hasCriteria = true;
+					}
 				}
+				queryDTO.setValues(values);
 			}
 			if (queryDTO.getLabels() != null){
+				List<LabelQueryDTO> labels = new ArrayList<LabelQueryDTO>();
 				for (LabelQueryDTO label : queryDTO.getLabels()){
-					label.setLabelText(searchTerm);
+					if(label.getLabelText() != null) {
+						labels.add(label);
+						hasCriteria = true;
+					}
 				}
+				queryDTO.setLabels(labels);
 			}
-			if(queryDTO.getCodeName() != null) {
-				queryDTO.getCodeName().setCodeName(searchTerm);
+			if(queryDTO.getCodeName() != null && queryDTO.getCodeName().getCodeName() != null) {
+				hasCriteria = true;
 			}
-				
+			if(hasCriteria) {
 			//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
-			List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
-			Predicate[] predicates = new Predicate[0];
-			predicates = predicateList.toArray(predicates);
-			Predicate searchTermPredicate = criteriaBuilder.or(predicates);
-			metaPredicateList.add(searchTermPredicate);
+				List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
+				Predicate[] predicates = new Predicate[0];
+				predicates = predicateList.toArray(predicates);
+				Predicate searchTermPredicate;
+
+				if(queryDTO.getCombineTermsWithAnd()) {
+					//join all the predicatesByTerm with AND
+					searchTermPredicate = criteriaBuilder.and(predicates);
+				} else {
+					//join all the predicatesByTerm with OR
+					searchTermPredicate = criteriaBuilder.or(predicates);
+				}
+				metaPredicateList.add(searchTermPredicate);
+			}
 		}
+
+
+
+
 		//add in thingType and thingKind as required at top level
 		if (query.getQueryDTO().getLsType() != null){
 			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getQueryDTO().getLsType());
