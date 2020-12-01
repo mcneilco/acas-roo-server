@@ -13,6 +13,14 @@ import java.util.Date;
 
 privileged aspect LsThingQueryDTO_Roo_JavaBean {
     
+    public Boolean LsThingQueryDTO.getCombineTermsWithAnd() {
+        return this.combineTermsWithAnd;
+    }
+    
+    public void LsThingQueryDTO.setCombineTermsWithAnd(Boolean combineTermsWithAnd) {
+        this.combineTermsWithAnd = combineTermsWithAnd;
+    }
+    
     public Date LsThingQueryDTO.getRecordedDateGreaterThan() {
         return this.recordedDateGreaterThan;
     }

@@ -12,6 +12,8 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJson
 public class LsThingQueryDTO {
 
+	Boolean combineTermsWithAnd = false;
+
 	Date recordedDateGreaterThan;
 	
 	Date recordedDateLessThan;
@@ -39,6 +41,7 @@ public class LsThingQueryDTO {
 	}
 	
 	public LsThingQueryDTO(LsThingQueryDTO queryDTO){
+		if(queryDTO.getCombineTermsWithAnd() != null) this.combineTermsWithAnd = queryDTO.getCombineTermsWithAnd();
 		this.recordedDateGreaterThan = queryDTO.getRecordedDateGreaterThan();
 		this.recordedDateLessThan = queryDTO.getRecordedDateLessThan();
 		this.lsType = queryDTO.getLsType();
