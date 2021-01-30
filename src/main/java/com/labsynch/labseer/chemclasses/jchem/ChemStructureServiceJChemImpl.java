@@ -1721,6 +1721,8 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	@Override
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException{
 		try{
+			// If both mols are 0 mol weight then they are both empty mol files and are equal
+			if(getMolWeight(queryMol) == 0.0 && getMolWeight(targetMol) == 0.0) return true;
 			CmpdRegMoleculeJChemImpl queryMolWrapper = new CmpdRegMoleculeJChemImpl(queryMol);
 			CmpdRegMoleculeJChemImpl targetMolWrapper = new CmpdRegMoleculeJChemImpl(queryMol);
 			StandardizedMolSearch molSearch = new StandardizedMolSearch();
