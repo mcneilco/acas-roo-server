@@ -2775,7 +2775,7 @@ public class LsThingServiceImpl implements LsThingService {
 			if (queryDTO.getFirstInteractions() != null){
 				List<ItxQueryDTO> firstInteractions = new ArrayList<ItxQueryDTO>();
 				for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
-					if(itx.getThingLabelText() != null) {
+					if(itx.getThingLabelText() != null | itx.getThingCodeName() != null) {
 						firstInteractions.add(itx);
 						hasCriteria = true;
 					}
@@ -2785,7 +2785,7 @@ public class LsThingServiceImpl implements LsThingService {
 			if (queryDTO.getSecondInteractions() != null){
 				List<ItxQueryDTO> secondInteractions = new ArrayList<ItxQueryDTO>();
 				for (ItxQueryDTO itx : queryDTO.getSecondInteractions()){
-					if(itx.getThingLabelText() != null) {
+					if(itx.getThingLabelText() != null | itx.getThingCodeName() != null) {
 						secondInteractions.add(itx);
 						hasCriteria = true;
 					}
