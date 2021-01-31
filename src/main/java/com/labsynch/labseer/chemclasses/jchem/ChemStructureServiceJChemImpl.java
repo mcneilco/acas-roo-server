@@ -1717,12 +1717,30 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		return deleteSuccessful;
 	}
 
+	@Override
+	public boolean isEmpty(String molStructure) {
+		MolHandler mh = null;
+		boolean badStructureFlag = false;
+		Molecule mol = null;
+		try {
+			mh = new MolHandler(molStructure);
+			mol = mh.getMolecule();			
+		} catch (MolFormatException e) {
+			badStructureFlag = true;
+		}
+
+		if (!badStructureFlag){
+			return mol.isEmpty();
+		} else {
+			return true;
+		}
+	}
 
 	@Override
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException{
 		try{
-			// If both mols are 0 mol weight then they are both empty mol files and are equal
-			if(getMolWeight(queryMol) == 0.0 && getMolWeight(targetMol) == 0.0) return true;
+			// If both mols are empty then they are equal
+			if(isEmpty(queryMol) && isEmpty(targetMol)) return true;
 			CmpdRegMoleculeJChemImpl queryMolWrapper = new CmpdRegMoleculeJChemImpl(queryMol);
 			CmpdRegMoleculeJChemImpl targetMolWrapper = new CmpdRegMoleculeJChemImpl(queryMol);
 			StandardizedMolSearch molSearch = new StandardizedMolSearch();
