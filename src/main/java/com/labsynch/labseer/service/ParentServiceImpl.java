@@ -95,8 +95,8 @@ public class ParentServiceImpl implements ParentService {
 		}
 		Collection<ParentDTO> dupeParents = new HashSet<ParentDTO>();
 		int[] dupeParentList = {};
-		if (mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.getMolWeight(queryParent.getMolStructure()) == 0) {
-			logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
+		if (mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(queryParent.getMolStructure()) ) {
+			logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} {
 			dupeParentList = chemStructureService.checkDupeMol(queryParent.getMolStructure(), "Parent_Structure", "Parent");
 		}
@@ -237,9 +237,9 @@ public class ParentServiceImpl implements ParentService {
 			CmpdRegSDFWriter dupeMolExporter = cmpdRegSDFWriterFactory.getCmpdRegSDFWriter(dupeCheckFile);
 			for  (Long parentId : parentIds){
 				parent = Parent.findParent(parentId);
-				if(registerNoStructureCompoundsAsUniqueParents && chemStructureService.getMolWeight(parent.getMolStructure()) == 0) {
+				if(registerNoStructureCompoundsAsUniqueParents && chemStructureService.isEmpty(parent.getMolStructure())) {
 					//if true then we are no checking this one for hits
-					logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents is true so not checking for dupe parent");
+					logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents is true so not checking for dupe parent");
 					hits = new int[0];
 				} else {
 					hits = chemStructureService.searchMolStructures(parent.getMolStructure(), "Parent_Structure", "DUPLICATE_TAUTOMER");
