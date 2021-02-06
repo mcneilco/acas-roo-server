@@ -162,6 +162,8 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			plainTable = "salt_form";
 		} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
 			plainTable = "salt";
+		} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")){
+			plainTable = "dry_run_compound";
 		}
 
 
@@ -638,7 +640,8 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	@Override
 	public boolean isEmpty(String molStructure) throws CmpdRegMolFormatException {
 		// Return empty if no atoms bonds or SGroups
-		CmpdRegMoleculeIndigoImpl mol = new CmpdRegMoleculeIndigoImpl(molStructure);
+		CmpdRegMoleculeIndigoImpl molWrapper = new CmpdRegMoleculeIndigoImpl(molStructure);
+		IndigoObject mol = molWrapper.molecule;
 		Boolean hasAtoms =  mol.countAtoms() == 0.0;
 		Boolean hasBonds =  mol.countBonds() == 0.0;
 		Boolean hasSGroups = mol.countGenericSGroups() == 0.0 && mol.countDataSGroups() == 0.0;
