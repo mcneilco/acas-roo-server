@@ -638,6 +638,16 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	}
 
 	@Override
+	public boolean isEmpty(String molStructure) throws CmpdRegMolFormatException {
+		// Return empty if no atoms bonds or SGroups
+		CmpdRegMoleculeIndigoImpl mol = new CmpdRegMoleculeIndigoImpl(molStructure);
+		Boolean hasAtoms =  mol.countAtoms() == 0.0;
+		Boolean hasBonds =  mol.countBonds() == 0.0;
+		Boolean hasSGroups = mol.countGenericSGroups() == 0.0 && mol.countDataSGroups() == 0.0;
+		return !hasAtoms && !hasBonds && !hasSGroups;
+	}
+
+	@Override
 	public double getMolWeight(String molStructure) throws CmpdRegMolFormatException {
 		CmpdRegMoleculeIndigoImpl mol = new CmpdRegMoleculeIndigoImpl(molStructure);
 		return mol.getMass();
