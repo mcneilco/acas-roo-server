@@ -1,4 +1,4 @@
-FROM mcneilco/tomcat-maven:openjdk8
+FROM mcneilco/tomcat-maven:1.3-openjdk8
 WORKDIR /src
 ENV CATALINA_HOME /usr/local/tomcat
 ENV PATH $CATALINA_HOME/bin:$PATH
