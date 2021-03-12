@@ -91,10 +91,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<!-- Maven Build profile controls whether to use JChem or Indigo -->
 	<profiles>
 		<profile>
-			<id>default</id>
+			<id>jchem</id>
 			<activation>
             	<activeByDefault>true</activeByDefault>
-        	</activation>	
+        	</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.chemaxon</groupId>
