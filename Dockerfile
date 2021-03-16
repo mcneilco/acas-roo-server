@@ -14,7 +14,6 @@ FROM 	dependencies as indigo
 FROM 	${CHEMISTRY_PACKAGE} as compile
 WORKDIR /src
 ADD 	pom.xml /src/pom.xml
-RUN     mvn dependency:resolve-plugins
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
 RUN 	mvn clean && \
