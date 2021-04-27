@@ -80,6 +80,8 @@ import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
 import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.dto.AutoLabelDTO;
 
 @Service
 public class LsThingServiceImpl implements LsThingService {
@@ -762,6 +764,19 @@ public class LsThingServiceImpl implements LsThingService {
 			Set<LsThingLabel> lsLabels = new HashSet<LsThingLabel>();
 			for(LsThingLabel lsThingLabel : lsThing.getLsLabels()){
 				LsThingLabel newLsThingLabel = new LsThingLabel(lsThingLabel);
+				// If the label text is not set and their is a label sequence which matches this label lsTypeAndKind and thing lsTypeAndKind
+				// then get the next label sequence text and assign it to the label.
+				if(newLsThingLabel.getLabelText() == null || newLsThingLabel.getLabelText().equals("")) {
+					List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(newLsThing.getLsTypeAndKind(), newLsThingLabel.getLsTypeAndKind()).getResultList();
+					if (labelSequences.size() == 1) {
+						LabelSequence labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());
+						AutoLabelDTO autoLabel = labelSequence.generateNextLabel();
+						logger.info("generated new auto label: " + autoLabel.toJson());
+						newLsThingLabel.setLabelText(autoLabel.getAutoLabel());
+					}
+				}
+
+				// Set the thing to the label and save
 				newLsThingLabel.setLsThing(newLsThing);
 				logger.debug("here is the newLsThingLabel before save: " + newLsThingLabel.toJson());
 				newLsThingLabel.persist();
