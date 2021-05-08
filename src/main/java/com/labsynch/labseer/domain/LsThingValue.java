@@ -21,9 +21,12 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.utils.ByteArrayTransformer;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
+import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @RooJavaBean
 @RooToString
@@ -374,4 +377,13 @@ public class LsThingValue extends AbstractValue {
 		q.setParameter("ignored", true);
 		return q;
 	}
+
+    @Transactional
+    public String toJsonWithBlobValue() {
+        return new JSONSerializer().
+                exclude("*.class").
+                include("blobValue").
+                transform(new ByteArrayTransformer(), "blobValue").
+                serialize(this);
+     }
 }

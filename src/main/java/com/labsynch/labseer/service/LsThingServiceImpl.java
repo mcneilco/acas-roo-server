@@ -1326,7 +1326,7 @@ public class LsThingServiceImpl implements LsThingService {
 						if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedLsThingState);
 						LsThingValue updatedLsThingValue = null;
 						if (lsThingValue.getId() == null){
-							updatedLsThingValue = LsThingValue.create(lsThingValue);
+							updatedLsThingValue = new LsThingValue(lsThingValue);
 							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
 							updatedLsThingValue.persist();
 							updatedLsThingState.getLsValues().add(updatedLsThingValue);
