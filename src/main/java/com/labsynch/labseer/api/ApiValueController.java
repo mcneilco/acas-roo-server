@@ -471,13 +471,17 @@ public class ApiValueController {
 	@RequestMapping(value = "/lsthingvalues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	@Transactional
-	public ResponseEntity<String> showLsThingValueJson (@PathVariable("id") Long id) {
+	public ResponseEntity<String> showLsThingValueJson (@PathVariable("id") Long id, @RequestParam(value="format", required = false) String format) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json; charset=utf-8");
 		LsThingValue lsThingValue = LsThingValue.findLsThingValue(id);
         if (lsThingValue == null || lsThingValue.isIgnored()) return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
-        return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
-	}	
+		if(format != null && format.equalsIgnoreCase("withblobvalue")) {
+			return new ResponseEntity<String>(lsThingValue.toJsonWithBlobValue(), headers, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<String>(lsThingValue.toJson(), headers, HttpStatus.OK);
+		}
+	}
 	
 	@RequestMapping(value = "/containervalues/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
