@@ -2433,7 +2433,7 @@ public class LsThingServiceImpl implements LsThingService {
 								firstItxPredicates.add(firstThingLabelLike);
 							}
 						}else{
-							Predicate firstThingLabelLike = criteriaBuilder.like(firstThingLabel.<String>get("labelText"), '%' + interaction.getThingLabelText() + '%');
+							Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
 							firstItxPredicates.add(firstThingLabelLike);
 						}
 					}
@@ -2517,7 +2517,7 @@ public class LsThingServiceImpl implements LsThingService {
 								Predicate secondThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
 								secondItxPredicates.add(secondThingLabelLessThan);
 							}else{
-								Predicate secondThingLabelLike = criteriaBuilder.like(secondThingLabel.<String>get("labelText"), '%' + interaction.getThingLabelText() + '%');
+								Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
 								secondItxPredicates.add(secondThingLabelLike);
 							}
 						}else{
