@@ -2361,14 +2361,11 @@ public class LsThingServiceImpl implements LsThingService {
 			for (ItxQueryDTO interaction : query.getFirstInteractions()){
 				Join<LsThing, ItxLsThingLsThing> firstItx = thing.join("firstLsThings");
 				Join<ItxLsThingLsThing, LsThing> firstThing = firstItx.join("firstLsThing");
-				Join<LsThing, LsThingLabel> firstThingLabel = firstThing.join("lsLabels", JoinType.LEFT);
 				List<Predicate> firstItxPredicates = new ArrayList<Predicate>();
 				Predicate firstItxNotIgn = criteriaBuilder.isFalse(firstItx.<Boolean>get("ignored"));
 				Predicate firstThingNotIgn = criteriaBuilder.isFalse(firstThing.<Boolean>get("ignored"));
-				Predicate firstThingLabelNotIgn = criteriaBuilder.isFalse(firstThingLabel.<Boolean>get("ignored"));
 				firstItxPredicates.add(firstItxNotIgn);
 				firstItxPredicates.add(firstThingNotIgn);
-				firstItxPredicates.add(firstThingLabelNotIgn);
 				if (interaction.getInteractionType() != null){
 					Predicate firstItxType = criteriaBuilder.equal(firstItx.<String>get("lsType"), interaction.getInteractionType());
 					firstItxPredicates.add(firstItxType);
@@ -2389,50 +2386,56 @@ public class LsThingServiceImpl implements LsThingService {
 					Predicate predicate = criteriaBuilder.equal(firstThing.<String>get("codeName"), interaction.getThingCodeName());
 					firstItxPredicates.add(predicate);
 				}
-				if (interaction.getThingLabelType() != null){
-					Predicate firstThingLabelType = criteriaBuilder.equal(firstThingLabel.<String>get("lsType"), interaction.getThingLabelType());
-					firstItxPredicates.add(firstThingLabelType);
-				}
-				if (interaction.getThingLabelKind() != null){
-					Predicate firstThingLabelKind = criteriaBuilder.equal(firstThingLabel.<String>get("lsKind"), interaction.getThingLabelKind());
-					firstItxPredicates.add(firstThingLabelKind);
-				}
-				if (interaction.getThingLabelText() != null){
-					if (interaction.getOperator() != null){
-						if (interaction.getOperator().equals("=")){
-							Predicate firstThingLabelEquals = criteriaBuilder.equal(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelEquals);
-						}else if (interaction.getOperator().equals("!=")){
-							Predicate firstThingLabelNotEquals = criteriaBuilder.notEqual(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelNotEquals);
-						}else if(interaction.getOperator().equals("~")){
-							Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							firstItxPredicates.add(firstThingLabelLike);
-						}else if(interaction.getOperator().equalsIgnoreCase("like")){
-							Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							firstItxPredicates.add(firstThingLabelLike);
-						}else if(interaction.getOperator().equals("!~")){
-							Predicate firstThingLabelNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							firstItxPredicates.add(firstThingLabelNotLike);
-						}else if(interaction.getOperator().equals(">")){
-							Predicate firstThingLabelGreaterThan = criteriaBuilder.greaterThan(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelGreaterThan);
-						}else if(interaction.getOperator().equals(">=")){
-							Predicate firstThingLabelGreaterThan = criteriaBuilder.greaterThanOrEqualTo(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelGreaterThan);
-						}else if(interaction.getOperator().equals("<")){
-							Predicate firstThingLabelLessThan = criteriaBuilder.lessThan(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelLessThan);
-						}else if(interaction.getOperator().equals("<=")){
-							Predicate firstThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelLessThan);
+				if(interaction.getThingLabelType() != null || interaction.getThingLabelKind() != null || interaction.getThingLabelText() != null) {
+					Join<LsThing, LsThingLabel> firstThingLabel = firstThing.join("lsLabels", JoinType.LEFT);
+					Predicate firstThingLabelNotIgn = criteriaBuilder.isFalse(firstThingLabel.<Boolean>get("ignored"));
+					firstItxPredicates.add(firstThingLabelNotIgn);
+
+					if (interaction.getThingLabelType() != null){
+						Predicate firstThingLabelType = criteriaBuilder.equal(firstThingLabel.<String>get("lsType"), interaction.getThingLabelType());
+						firstItxPredicates.add(firstThingLabelType);
+					}
+					if (interaction.getThingLabelKind() != null){
+						Predicate firstThingLabelKind = criteriaBuilder.equal(firstThingLabel.<String>get("lsKind"), interaction.getThingLabelKind());
+						firstItxPredicates.add(firstThingLabelKind);
+					}
+					if (interaction.getThingLabelText() != null){
+						if (interaction.getOperator() != null){
+							if (interaction.getOperator().equals("=")){
+								Predicate firstThingLabelEquals = criteriaBuilder.equal(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelEquals);
+							}else if (interaction.getOperator().equals("!=")){
+								Predicate firstThingLabelNotEquals = criteriaBuilder.notEqual(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelNotEquals);
+							}else if(interaction.getOperator().equals("~")){
+								Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								firstItxPredicates.add(firstThingLabelLike);
+							}else if(interaction.getOperator().equalsIgnoreCase("like")){
+								Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								firstItxPredicates.add(firstThingLabelLike);
+							}else if(interaction.getOperator().equals("!~")){
+								Predicate firstThingLabelNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								firstItxPredicates.add(firstThingLabelNotLike);
+							}else if(interaction.getOperator().equals(">")){
+								Predicate firstThingLabelGreaterThan = criteriaBuilder.greaterThan(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelGreaterThan);
+							}else if(interaction.getOperator().equals(">=")){
+								Predicate firstThingLabelGreaterThan = criteriaBuilder.greaterThanOrEqualTo(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelGreaterThan);
+							}else if(interaction.getOperator().equals("<")){
+								Predicate firstThingLabelLessThan = criteriaBuilder.lessThan(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelLessThan);
+							}else if(interaction.getOperator().equals("<=")){
+								Predicate firstThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelLessThan);
+							}else{
+								Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								firstItxPredicates.add(firstThingLabelLike);
+							}
 						}else{
 							Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
 							firstItxPredicates.add(firstThingLabelLike);
 						}
-					}else{
-						Predicate firstThingLabelLike = criteriaBuilder.like(firstThingLabel.<String>get("labelText"), '%' + interaction.getThingLabelText() + '%');
-						firstItxPredicates.add(firstThingLabelLike);
 					}
 				}
 				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
@@ -2446,14 +2449,11 @@ public class LsThingServiceImpl implements LsThingService {
 			for (ItxQueryDTO interaction : query.getSecondInteractions()){
 				Join<LsThing, ItxLsThingLsThing> secondItx = thing.join("secondLsThings");
 				Join<ItxLsThingLsThing, LsThing> secondThing = secondItx.join("secondLsThing");
-				Join<LsThing, LsThingLabel> secondThingLabel = secondThing.join("lsLabels", JoinType.LEFT);
 				List<Predicate> secondItxPredicates = new ArrayList<Predicate>();
 				Predicate secondItxNotIgn = criteriaBuilder.isFalse(secondItx.<Boolean>get("ignored"));
 				Predicate secondThingNotIgn = criteriaBuilder.isFalse(secondThing.<Boolean>get("ignored"));
-				Predicate secondThingLabelNotIgn = criteriaBuilder.isFalse(secondThingLabel.<Boolean>get("ignored"));
 				secondItxPredicates.add(secondItxNotIgn);
 				secondItxPredicates.add(secondThingNotIgn);
-				secondItxPredicates.add(secondThingLabelNotIgn);
 				if (interaction.getInteractionType() != null){
 					Predicate secondItxType = criteriaBuilder.equal(secondItx.<String>get("lsType"), interaction.getInteractionType());
 					secondItxPredicates.add(secondItxType);
@@ -2474,50 +2474,56 @@ public class LsThingServiceImpl implements LsThingService {
 					Predicate predicate = criteriaBuilder.equal(secondThing.<String>get("codeName"), interaction.getThingCodeName());
 					secondItxPredicates.add(predicate);
 				}
-				if (interaction.getThingLabelType() != null){
-					Predicate secondThingLabelType = criteriaBuilder.equal(secondThingLabel.<String>get("lsType"), interaction.getThingLabelType());
-					secondItxPredicates.add(secondThingLabelType);
-				}
-				if (interaction.getThingLabelKind() != null){
-					Predicate secondThingLabelKind = criteriaBuilder.equal(secondThingLabel.<String>get("lsKind"), interaction.getThingLabelKind());
-					secondItxPredicates.add(secondThingLabelKind);
-				}
-				if (interaction.getThingLabelText() != null){
-					if (interaction.getOperator() != null){
-						if (interaction.getOperator().equals("=")){
-							Predicate secondThingLabelEquals = criteriaBuilder.equal(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelEquals);
-						}else if (interaction.getOperator().equals("!=")){
-							Predicate secondThingLabelNotEquals = criteriaBuilder.notEqual(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelNotEquals);
-						}else if(interaction.getOperator().equals("~")){
-							Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							secondItxPredicates.add(secondThingLabelLike);
-						}else if(interaction.getOperator().equalsIgnoreCase("like")){
-							Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							secondItxPredicates.add(secondThingLabelLike);
-						}else if(interaction.getOperator().equals("!~")){
-							Predicate secondThingLabelNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							secondItxPredicates.add(secondThingLabelNotLike);
-						}else if(interaction.getOperator().equals(">")){
-							Predicate secondThingLabelGreaterThan = criteriaBuilder.greaterThan(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelGreaterThan);
-						}else if(interaction.getOperator().equals(">=")){
-							Predicate secondThingLabelGreaterThan = criteriaBuilder.greaterThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelGreaterThan);
-						}else if(interaction.getOperator().equals("<")){
-							Predicate secondThingLabelLessThan = criteriaBuilder.lessThan(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelLessThan);
-						}else if(interaction.getOperator().equals("<=")){
-							Predicate secondThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelLessThan);
+				if(interaction.getThingLabelType() != null || interaction.getThingLabelKind() != null || interaction.getThingLabelText() != null) {
+					Join<LsThing, LsThingLabel> secondThingLabel = secondThing.join("lsLabels", JoinType.LEFT);
+					Predicate secondThingLabelNotIgn = criteriaBuilder.isFalse(secondThingLabel.<Boolean>get("ignored"));
+					secondItxPredicates.add(secondThingLabelNotIgn);
+
+					if (interaction.getThingLabelType() != null){
+						Predicate secondThingLabelType = criteriaBuilder.equal(secondThingLabel.<String>get("lsType"), interaction.getThingLabelType());
+						secondItxPredicates.add(secondThingLabelType);
+					}
+					if (interaction.getThingLabelKind() != null){
+						Predicate secondThingLabelKind = criteriaBuilder.equal(secondThingLabel.<String>get("lsKind"), interaction.getThingLabelKind());
+						secondItxPredicates.add(secondThingLabelKind);
+					}
+					if (interaction.getThingLabelText() != null){
+						if (interaction.getOperator() != null){
+							if (interaction.getOperator().equals("=")){
+								Predicate secondThingLabelEquals = criteriaBuilder.equal(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelEquals);
+							}else if (interaction.getOperator().equals("!=")){
+								Predicate secondThingLabelNotEquals = criteriaBuilder.notEqual(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelNotEquals);
+							}else if(interaction.getOperator().equals("~")){
+								Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								secondItxPredicates.add(secondThingLabelLike);
+							}else if(interaction.getOperator().equalsIgnoreCase("like")){
+								Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								secondItxPredicates.add(secondThingLabelLike);
+							}else if(interaction.getOperator().equals("!~")){
+								Predicate secondThingLabelNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								secondItxPredicates.add(secondThingLabelNotLike);
+							}else if(interaction.getOperator().equals(">")){
+								Predicate secondThingLabelGreaterThan = criteriaBuilder.greaterThan(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelGreaterThan);
+							}else if(interaction.getOperator().equals(">=")){
+								Predicate secondThingLabelGreaterThan = criteriaBuilder.greaterThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelGreaterThan);
+							}else if(interaction.getOperator().equals("<")){
+								Predicate secondThingLabelLessThan = criteriaBuilder.lessThan(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelLessThan);
+							}else if(interaction.getOperator().equals("<=")){
+								Predicate secondThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelLessThan);
+							}else{
+								Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								secondItxPredicates.add(secondThingLabelLike);
+							}
 						}else{
-							Predicate secondThingLabelLike = criteriaBuilder.like(secondThingLabel.<String>get("labelText"), '%' + interaction.getThingLabelText() + '%');
+							Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
 							secondItxPredicates.add(secondThingLabelLike);
 						}
-					}else{
-						Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-						secondItxPredicates.add(secondThingLabelLike);
 					}
 				}
 				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
