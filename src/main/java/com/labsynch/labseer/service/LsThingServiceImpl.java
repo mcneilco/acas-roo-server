@@ -158,6 +158,14 @@ public class LsThingServiceImpl implements LsThingService {
 		// Build the WHERE clause predicates
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
+		// Thing not ignored
+		Predicate thingNotIgnored = cb.not(lsThingRoot.<Boolean>get("ignored"));
+		predicateList.add(thingNotIgnored);
+		// Label null or not ignored
+		Predicate labelIgnoredNull = cb.isNull(lsThingLabel.<Boolean>get("ignored"));
+		Predicate labelNotIgnored = cb.not(lsThingLabel.<Boolean>get("ignored"));
+		Predicate labelIgnored = cb.or(labelIgnoredNull, labelNotIgnored);
+		predicateList.add(labelIgnored);
 		// Thing Type and Kind
 		if (thingType != null && thingType.length() > 0){
 			Predicate predicate = cb.equal(lsThingRoot.<String>get("lsType"), thingType);
