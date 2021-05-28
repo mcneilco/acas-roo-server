@@ -152,7 +152,7 @@ public class LsThingServiceImpl implements LsThingService {
 		// Construct a query to check for matches either in labelText or in codeName
 		EntityManager em = LsThing.entityManager();
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<PreferredNameDTO> criteria = cb.createQuery(PreferredNameDTO.class);
+		CriteriaQuery<LsThing> criteria = cb.createQuery(LsThing.class);
 		Root<LsThing> lsThingRoot = criteria.from(LsThing.class);
 		Join<LsThing, LsThingLabel> lsThingLabel = lsThingRoot.join("lsLabels", JoinType.LEFT);
 		// Build the WHERE clause predicates
@@ -187,44 +187,48 @@ public class LsThingServiceImpl implements LsThingService {
 		Predicate requestNamePred = cb.or(labelTextPred, codeNamePred);
 		predicateList.add(requestNamePred);
 		predicates = predicateList.toArray(predicates);
-		// We get the requestName back out as a coalesce statement
-		CriteriaBuilder.Coalesce<String> coalesce = cb.coalesce();
-		coalesce.value(lsThingLabel.<String>get("labelText"));
-		coalesce.value(lsThingRoot.<String>get("codeName"));
-		// Construct the query
-		// Construct PreferredNameDTO on the fly using query results
-		criteria.select(cb.construct(PreferredNameDTO.class, coalesce, null, lsThingRoot.<String>get("codeName")));
+		// Construct the query to fetch back LsThings
+		criteria.select(lsThingRoot);
 		criteria.distinct(true);
 		// AND all the terms together
 		criteria.where(cb.and(predicates));
-		TypedQuery<PreferredNameDTO> q = em.createQuery(criteria);
+		TypedQuery<LsThing> q = em.createQuery(criteria);
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
-		List<PreferredNameDTO> queryResults = q.getResultList();
-
-		// Fetch all the LsThing objects so we can pickBestLabel
-		List<String> foundCodeNames = new ArrayList<String>();
-		for (PreferredNameDTO result : queryResults){
-			foundCodeNames.add(result.getReferenceName());
-		}
-		Collection<LsThing> foundLsThings = LsThing.findLsThingsByCodeNamesIn(foundCodeNames);
-		// Build Map of codeName to preferredName
-		Map<String, String> codeNameToPreferredName = new HashMap<String, String>();
+		List<LsThing> foundLsThings = q.getResultList();
+		// Construct two PreferredNameDTOs for each found LsThing, one referenced by label and the other by codeName
+		// The goal is to be able to line up with what was sent in, whether it was by label or by codeName
+		List<PreferredNameDTO> rawResultDTOs = new ArrayList<PreferredNameDTO>();
 		for (LsThing lsThing : foundLsThings){
-			codeNameToPreferredName.put(lsThing.getCodeName(), pickBestLabel(lsThing));
+			String bestLabel = pickBestLabel(lsThing);
+			String codeName = lsThing.getCodeName();
+			String requestName = ""; 
+			for (LsThingLabel label : lsThing.getLsLabels()){
+				boolean typeMatches = labelType == null || label.getLsType().equals(labelType);
+				boolean kindMatches = labelKind == null || label.getLsKind().equals(labelKind);
+				if (typeMatches && kindMatches){
+					requestName = label.getLabelText();
+				}
+			}
+			PreferredNameDTO res = new PreferredNameDTO(requestName, bestLabel, codeName);
+			PreferredNameDTO res2 = new PreferredNameDTO(codeName, bestLabel, codeName);
+			rawResultDTOs.add(res);
+			rawResultDTOs.add(res2);
 		}
+		
 
 		// Work up query results into output
 		for (PreferredNameDTO request : requests){
 			List<PreferredNameDTO> matches = new ArrayList<PreferredNameDTO>();
-			for (PreferredNameDTO res : queryResults){
-				if (res.getRequestName() == request.getRequestName()){
+			for (PreferredNameDTO res : rawResultDTOs){
+				if (res.getRequestName().equals(request.getRequestName())){
 					matches.add(res);
 				}
 			}
 			// Check for multiple or zero matches
 			if (matches.size() == 1){
-				// Lookup preferredName from codeNameToPreferredName
-				request.setPreferredName(codeNameToPreferredName.get(matches.get(0).getReferenceName()));
+				PreferredNameDTO match = matches.get(0);
+				request.setPreferredName(match.getPreferredName());
+				request.setReferenceName(match.getReferenceName());
 			} else if (matches.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
