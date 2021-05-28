@@ -88,9 +88,6 @@ public interface LsThingService {
 	
 	Collection<LsThing> sortBatches(Collection<LsThing> batches);
 
-	PreferredNameResultsDTO getCodeNameFromName(String thingType,
-			String thingKind, String labelType, String labelKind, String json);
-
 	DependencyCheckDTO checkBatchDependencies(LsThing batch);
 
 	DependencyCheckDTO checkParentDependencies(LsThing parent);
