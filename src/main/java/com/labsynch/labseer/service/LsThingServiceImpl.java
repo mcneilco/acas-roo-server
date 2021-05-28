@@ -224,6 +224,8 @@ public class LsThingServiceImpl implements LsThingService {
 
 		// Work up query results into output
 		for (PreferredNameDTO request : requests){
+			request.setPreferredName("");
+			request.setReferenceName("");
 			List<PreferredNameDTO> matches = new ArrayList<PreferredNameDTO>();
 			for (PreferredNameDTO res : rawResultDTOs){
 				if (res.getRequestName().equals(request.getRequestName())){
@@ -238,14 +240,12 @@ public class LsThingServiceImpl implements LsThingService {
 			} else if (matches.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setLevel("MULTIPLE RESULTS");
+				error.setLevel("error");
 				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else{
 				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
-				request.setPreferredName("");
-				request.setReferenceName("");
 			}
 		}
 		
