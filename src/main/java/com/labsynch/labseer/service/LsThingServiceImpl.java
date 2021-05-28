@@ -195,24 +195,22 @@ public class LsThingServiceImpl implements LsThingService {
 		TypedQuery<LsThing> q = em.createQuery(criteria);
 		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
 		List<LsThing> foundLsThings = q.getResultList();
-		// Construct two PreferredNameDTOs for each found LsThing, one referenced by label and the other by codeName
+		// Construct a PreferredNameDTO for each possible requestName for each found LsThing, both by label and by codeName
 		// The goal is to be able to line up with what was sent in, whether it was by label or by codeName
 		List<PreferredNameDTO> rawResultDTOs = new ArrayList<PreferredNameDTO>();
 		for (LsThing lsThing : foundLsThings){
 			String bestLabel = pickBestLabel(lsThing);
 			String codeName = lsThing.getCodeName();
-			String requestName = ""; 
 			for (LsThingLabel label : lsThing.getLsLabels()){
 				boolean typeMatches = labelType == null || label.getLsType().equals(labelType);
 				boolean kindMatches = labelKind == null || label.getLsKind().equals(labelKind);
 				if (typeMatches && kindMatches){
-					requestName = label.getLabelText();
+					PreferredNameDTO resByLabel = new PreferredNameDTO(label.getLabelText(), bestLabel, codeName);
+					rawResultDTOs.add(resByLabel);
 				}
 			}
-			PreferredNameDTO res = new PreferredNameDTO(requestName, bestLabel, codeName);
-			PreferredNameDTO res2 = new PreferredNameDTO(codeName, bestLabel, codeName);
-			rawResultDTOs.add(res);
-			rawResultDTOs.add(res2);
+			PreferredNameDTO resByCodeName = new PreferredNameDTO(codeName, bestLabel, codeName);
+			rawResultDTOs.add(resByCodeName);
 		}
 		
 
