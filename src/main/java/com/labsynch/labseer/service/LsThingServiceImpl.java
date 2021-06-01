@@ -154,18 +154,13 @@ public class LsThingServiceImpl implements LsThingService {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<LsThing> criteria = cb.createQuery(LsThing.class);
 		Root<LsThing> lsThingRoot = criteria.from(LsThing.class);
-		Join<LsThing, LsThingLabel> lsThingLabel = lsThingRoot.join("lsLabels", JoinType.LEFT);
+
 		// Build the WHERE clause predicates
 		Predicate[] predicates = new Predicate[0];
 		List<Predicate> predicateList = new ArrayList<Predicate>();
 		// Thing not ignored
 		Predicate thingNotIgnored = cb.not(lsThingRoot.<Boolean>get("ignored"));
 		predicateList.add(thingNotIgnored);
-		// Label null or not ignored
-		Predicate labelIgnoredNull = cb.isNull(lsThingLabel.<Boolean>get("ignored"));
-		Predicate labelNotIgnored = cb.not(lsThingLabel.<Boolean>get("ignored"));
-		Predicate labelIgnored = cb.or(labelIgnoredNull, labelNotIgnored);
-		predicateList.add(labelIgnored);
 		// Thing Type and Kind
 		if (thingType != null && thingType.length() > 0){
 			Predicate predicate = cb.equal(lsThingRoot.<String>get("lsType"), thingType);
@@ -175,15 +170,25 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate predicate = cb.equal(lsThingRoot.<String>get("lsKind"), thingKind);
 			predicateList.add(predicate);
 		}
-		// Label Type and Kind
+
+		// Label left join and predicates
+		Join<LsThing, LsThingLabel> lsThingLabel = lsThingRoot.join("lsLabels", JoinType.LEFT);
+		List<Predicate> labelPredicatesList = new ArrayList<Predicate>();
+		Predicate[] labelPredicates = new Predicate[0];
+
+		Predicate labelNotIgnored = cb.not(lsThingLabel.<Boolean>get("ignored"));
+		labelPredicatesList.add(labelNotIgnored);
 		if (labelType != null && labelType.length() > 0){
-			Predicate labelTypePred = cb.equal(lsThingLabel.<String>get("lsType"), labelType);
-			predicateList.add(labelTypePred);
+			Predicate labelTypePredicate = cb.equal(lsThingLabel.<String>get("lsType"), labelType);
+			labelPredicatesList.add(labelTypePredicate);
 		}
 		if (labelType != null && labelType.length() > 0){
-			Predicate labelKindPred = cb.equal(lsThingLabel.<String>get("lsKind"), labelKind);
-			predicateList.add(labelKindPred);
+			Predicate labelKindPredicate = cb.equal(lsThingLabel.<String>get("lsKind"), labelKind);
+			labelPredicatesList.add(labelKindPredicate);
 		}
+		labelPredicates = labelPredicatesList.toArray(labelPredicates);
+		lsThingLabel.on(cb.and(labelPredicates));
+
 		// Put all the requestNames into a list
 		List<String> requestNameList = new ArrayList<String>();
 		for (PreferredNameDTO request : requests){
@@ -205,7 +210,8 @@ public class LsThingServiceImpl implements LsThingService {
 		List<LsThing> foundLsThings = q.getResultList();
 		// Construct a PreferredNameDTO for each possible requestName for each found LsThing, both by label and by codeName
 		// The goal is to be able to line up with what was sent in, whether it was by label or by codeName
-		List<PreferredNameDTO> rawResultDTOs = new ArrayList<PreferredNameDTO>();
+		List<PreferredNameDTO> labelResultsDTOs = new ArrayList<PreferredNameDTO>();
+		List<PreferredNameDTO> codeResultsDTOs = new ArrayList<PreferredNameDTO>();
 		for (LsThing lsThing : foundLsThings){
 			String bestLabel = pickBestLabel(lsThing);
 			String codeName = lsThing.getCodeName();
@@ -214,11 +220,11 @@ public class LsThingServiceImpl implements LsThingService {
 				boolean kindMatches = labelKind == null || label.getLsKind().equals(labelKind);
 				if (typeMatches && kindMatches){
 					PreferredNameDTO resByLabel = new PreferredNameDTO(label.getLabelText(), bestLabel, codeName);
-					rawResultDTOs.add(resByLabel);
+					labelResultsDTOs.add(resByLabel);
 				}
 			}
 			PreferredNameDTO resByCodeName = new PreferredNameDTO(codeName, bestLabel, codeName);
-			rawResultDTOs.add(resByCodeName);
+			codeResultsDTOs.add(resByCodeName);
 		}
 		
 
@@ -226,15 +232,20 @@ public class LsThingServiceImpl implements LsThingService {
 		for (PreferredNameDTO request : requests){
 			request.setPreferredName("");
 			request.setReferenceName("");
-			List<PreferredNameDTO> matches = new ArrayList<PreferredNameDTO>();
-			for (PreferredNameDTO res : rawResultDTOs){
+			Collection<PreferredNameDTO> matches = new ArrayList<PreferredNameDTO>();
+			for (PreferredNameDTO res : labelResultsDTOs){
 				if (res.getRequestName().equals(request.getRequestName())){
 					matches.add(res);
 				}
 			}
-			// Check for multiple or zero matches
+			// Unique list of matches by reference name
+			HashMap<String, PreferredNameDTO> labelMatchesMap = new HashMap<String, PreferredNameDTO>();
+			for (PreferredNameDTO match : matches){
+				labelMatchesMap.put(match.getReferenceName(), match);
+			}
+			matches = labelMatchesMap.values();
 			if (matches.size() == 1){
-				PreferredNameDTO match = matches.get(0);
+				PreferredNameDTO match = matches.iterator().next();
 				request.setPreferredName(match.getPreferredName());
 				request.setReferenceName(match.getReferenceName());
 			} else if (matches.size() > 1){
@@ -244,8 +255,33 @@ public class LsThingServiceImpl implements LsThingService {
 				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
-			} else{
-				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+			} else {
+				matches = new ArrayList<PreferredNameDTO>();
+				for (PreferredNameDTO res : codeResultsDTOs){
+					if (res.getRequestName().equals(request.getRequestName())){
+						matches.add(res);
+					}
+				}
+				// Unique list of matches by reference name
+				HashMap<String, PreferredNameDTO> codeMatchesMap = new HashMap<String, PreferredNameDTO>();
+				for (PreferredNameDTO match : matches){
+					codeMatchesMap.put(match.getReferenceName(), match);
+				}
+				matches = codeMatchesMap.values();
+				if (matches.size() == 1){
+					PreferredNameDTO match = matches.iterator().next();
+					request.setPreferredName(match.getPreferredName());
+					request.setReferenceName(match.getReferenceName());
+				} else if (matches.size() > 1){
+					responseOutput.setError(true);
+					ErrorMessageDTO error = new ErrorMessageDTO();
+					error.setLevel("error");
+					error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+					logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
+					errors.add(error);
+				} else {
+					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				}
 			}
 		}
 		
