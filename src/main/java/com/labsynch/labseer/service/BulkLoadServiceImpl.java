@@ -544,6 +544,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, "Lot Corp Name");
 		if(metalotReturn != null) {
 			dbCorpName = metalotReturn.getMetalot().getLot().getCorpName();
+
 			registeredParentCorpName = metalotReturn.getMetalot().getLot().getSaltForm().getParent().getCorpName();
 			Collection<ParentAlias> parentAliases = metalotReturn.getMetalot().getLot().getSaltForm().getParent().getParentAliases();
 			Collection<LotAlias> lotAliases = metalotReturn.getMetalot().getLot().getLotAliases();
@@ -559,8 +560,15 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					lotAliasList.add(lotAlias.getAliasName());
 				}
 			}
-			mol.setProperty("Registered Lot Corp Name", dbCorpName);
 			mol.setProperty("Registered Parent Corp Name", registeredParentCorpName);
+			mol.setProperty("Registered Lot Corp Name", dbCorpName);
+			mol.setProperty("Registered Lot Project", ((metalotReturn.getMetalot().getLot().getProject() == null) ? "" : metalotReturn.getMetalot().getLot().getProject()));
+			mol.setProperty("Registered Lot Barcode", ((metalotReturn.getMetalot().getLot().getBarcode() == null) ? "" : metalotReturn.getMetalot().getLot().getBarcode()));
+			mol.setProperty("Registered Lot Amount", ((metalotReturn.getMetalot().getLot().getAmount() == null) ? "" : metalotReturn.getMetalot().getLot().getAmount().toString()));
+			mol.setProperty("Registered Lot Amount Units", ((metalotReturn.getMetalot().getLot().getAmountUnits() == null) ? "" : metalotReturn.getMetalot().getLot().getAmountUnits().getCode()));
+			mol.setProperty("Registered Lot Supplier", ((metalotReturn.getMetalot().getLot().getSupplier() == null) ? "" : metalotReturn.getMetalot().getLot().getSupplier()));
+			mol.setProperty("Registered Lot Supplier ID",((metalotReturn.getMetalot().getLot().getSupplierID() == null) ? "" : metalotReturn.getMetalot().getLot().getSupplierID()));
+			mol.setProperty("Registered Lot Vendor ID", ((metalotReturn.getMetalot().getLot().getVendorID() == null) ? "" : metalotReturn.getMetalot().getLot().getVendorID()));
 			if (!parentAliasList.isEmpty()){
 				for (String alias : parentAliasList){
 					if (allParentAliases.length() == 0) allParentAliases += alias;
