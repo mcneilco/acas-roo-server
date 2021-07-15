@@ -182,7 +182,7 @@ public class LsThingServiceImpl implements LsThingService {
 			Predicate labelTypePredicate = cb.equal(lsThingLabel.<String>get("lsType"), labelType);
 			labelPredicatesList.add(labelTypePredicate);
 		}
-		if (labelType != null && labelType.length() > 0){
+		if (labelKind != null && labelKind.length() > 0){
 			Predicate labelKindPredicate = cb.equal(lsThingLabel.<String>get("lsKind"), labelKind);
 			labelPredicatesList.add(labelKindPredicate);
 		}
