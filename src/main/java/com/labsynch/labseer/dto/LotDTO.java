@@ -195,8 +195,11 @@ public class LotDTO {
 		if (!parent.getParentAliases().isEmpty()){
 			String parentAliases = "";
 			for (ParentAlias parentAlias : parent.getParentAliases()){
-				if (parentAliases.length() > 0) parentAliases += ";";
-				parentAliases += parentAlias.getAliasName();
+				//Don't include the alias if its ignored
+				if (!parentAlias.isIgnored()){
+					if (parentAliases.length() > 0) parentAliases += ";";
+					parentAliases += parentAlias.getAliasName();
+				}
 			}
 			this.parentAliases = parentAliases;
 		}
