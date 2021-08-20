@@ -34,7 +34,6 @@ public interface ParentService {
 
 	int restandardizeParentStructsWithDisplayChanges() throws CmpdRegMolFormatException, IOException;
 
-
 	String updateParentMetaArray(String jsonInput);
 
 

@@ -35,9 +35,9 @@ import com.labsynch.labseer.dto.ParentAliasDTO;
 import com.labsynch.labseer.dto.ParentDTO;
 import com.labsynch.labseer.dto.ParentEditDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
 
@@ -47,9 +47,9 @@ public class ParentServiceImpl implements ParentService {
 
 	Logger logger = LoggerFactory.getLogger(ParentServiceImpl.class);
 
-	public static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
-	private static Boolean registerNoStructureCompoundsAsUniqueParents = mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents();
 	@Autowired
 	public ChemStructureService chemStructureService;
 
@@ -95,7 +95,7 @@ public class ParentServiceImpl implements ParentService {
 		}
 		Collection<ParentDTO> dupeParents = new HashSet<ParentDTO>();
 		int[] dupeParentList = {};
-		if (mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(queryParent.getMolStructure()) ) {
+		if (propertiesUtilService.getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(queryParent.getMolStructure()) ) {
 			logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} {
 			dupeParentList = chemStructureService.checkDupeMol(queryParent.getMolStructure(), "Parent_Structure", "Parent");
@@ -237,7 +237,7 @@ public class ParentServiceImpl implements ParentService {
 			CmpdRegSDFWriter dupeMolExporter = cmpdRegSDFWriterFactory.getCmpdRegSDFWriter(dupeCheckFile);
 			for  (Long parentId : parentIds){
 				parent = Parent.findParent(parentId);
-				if(registerNoStructureCompoundsAsUniqueParents && chemStructureService.isEmpty(parent.getMolStructure())) {
+				if(propertiesUtilService.getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(parent.getMolStructure())) {
 					//if true then we are no checking this one for hits
 					logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents is true so not checking for dupe parent");
 					hits = new int[0];

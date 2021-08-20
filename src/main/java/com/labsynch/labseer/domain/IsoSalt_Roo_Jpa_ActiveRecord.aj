@@ -14,7 +14,7 @@ privileged aspect IsoSalt_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager IsoSalt.entityManager;
     
-    public static final List<String> IsoSalt.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "isotope", "salt", "type", "equivalents", "ignore", "saltForm");
+    public static final List<String> IsoSalt.fieldNames4OrderClauseFilter = java.util.Arrays.asList("logger", "propertiesUtilService", "isotope", "salt", "type", "equivalents", "ignore", "saltForm");
     
     public static final EntityManager IsoSalt.entityManager() {
         EntityManager em = new IsoSalt().entityManager;

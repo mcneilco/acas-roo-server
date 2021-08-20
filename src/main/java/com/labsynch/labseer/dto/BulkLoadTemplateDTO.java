@@ -24,9 +24,9 @@ import com.labsynch.labseer.domain.BulkLoadTemplate;
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONSerializer;

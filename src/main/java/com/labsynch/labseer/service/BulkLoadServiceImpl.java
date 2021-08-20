@@ -77,13 +77,13 @@ import com.labsynch.labseer.dto.PurgeFileResponseDTO;
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 import com.labsynch.labseer.dto.ValidationResponseDTO;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.MissingPropertyException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 import flexjson.JSONSerializer;
 
@@ -92,11 +92,15 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	Logger logger = LoggerFactory.getLogger(BulkLoadServiceImpl.class);
 
-	public static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
 	public ChemStructureService chemStructureService;
 
+	@Autowired
+	private LotService lotService;
+	
 	@Autowired
 	public MetalotService metalotService;
 	
@@ -671,7 +675,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			throw new MissingPropertyException("Stereo category is See Comments, but no stereo comment provided");
 		}
 		int[] dupeParentList = {};
-		if(mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(parent.getMolStructure()) ) {
+		if(propertiesUtilService.getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(parent.getMolStructure()) ) {
 			//if true then we are no checking this one for hits
 			logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} else {
@@ -845,7 +849,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	public SaltForm validateSaltForm(SaltForm saltForm, Collection<BulkLoadPropertyMappingDTO> mappings) throws CmpdRegMolFormatException {
 		//only try to check for existing saltForm if server is in saltBeforeLot mode
-		if (mainConfig.getMetaLot().isSaltBeforeLot()){
+		if (propertiesUtilService.getSaltBeforeLot()){
 			//structure search
 			if (saltForm.getMolStructure() != null){
 				int[] dupeSaltFormList = chemStructureService.checkDupeMol(saltForm.getMolStructure(), "SaltForm_Structure", "salt_form");
@@ -930,9 +934,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}else if (lot.getIsVirtual() != null && lot.getIsVirtual() == true){
 			throw new MissingPropertyException("Cannot register a virtual lot with lot number "+lot.getLotNumber() +". Try again with lot number = 0 for a virtual lot, or remove the isVirtual property if a non-virtual lot is desired.");
 		}else if (lot.getLotNumber() == -1){
-			lot.setLotNumber(lot.generateLotNumber());
+			lot.setLotNumber(lotService.generateLotNumber(lot));
 		}
-		if (mainConfig.getBulkLoadSettings().getUseProjectRoles()){
+		if (propertiesUtilService.getUseProjectRoles()){
 			//check project is assigned and is in allowed list
 			if (lot.getProject() == null){
 				throw new MissingPropertyException("Project not specified. Please specify a valid project.");
@@ -1678,7 +1682,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		//Then check for data dependencies in ACAS.
 		if (!acasDependencies.isEmpty()){
 			//check dependencies differently if config to check by barcode is enabled
-			if (mainConfig.getServerSettings().isCheckACASDependenciesByContainerCode()) {
+			if (propertiesUtilService.getCheckACASDependenciesByContainerCode()) {
 				try {
 					Map<String, HashSet<String>> acasContainerDependencies = new HashMap<String, HashSet<String>>();
 					for (ContainerBatchCodeDTO container : dependentContainers) {
@@ -1727,7 +1731,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	private Collection<ContainerBatchCodeDTO> checkDependentACASContainers(Set<String> batchCodes) throws MalformedURLException, IOException {
-		String url = mainConfig.getServerConnection().getAcasURL()+"containers/getContainerDTOsByBatchCodes";
+		String url = propertiesUtilService.getAcasURL()+"containers/getContainerDTOsByBatchCodes";
 		String json = (new JSONSerializer()).serialize(batchCodes);
 		String responseJson = SimpleUtil.postRequestToExternalServer(url, json, logger);
 		Collection<ContainerBatchCodeDTO> responseDTOs = ContainerBatchCodeDTO.fromJsonArrayToContainerBatchCoes(responseJson);
@@ -1803,7 +1807,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	public Map<String, HashSet<String>> checkACASDependencies(
 			Map<String, HashSet<String>> acasDependencies) throws MalformedURLException, IOException {
 		//here we make an external request to the ACAS Roo server to check for dependent experimental data
-		String url = mainConfig.getServerConnection().getAcasURL()+"compounds/checkBatchDependencies";
+		String url = propertiesUtilService.getAcasURL()+"compounds/checkBatchDependencies";
 		BatchCodeDependencyDTO request = new BatchCodeDependencyDTO(acasDependencies.keySet());
 		String json = request.toJson();
 		String responseJson = SimpleUtil.postRequestToExternalServer(url, json, logger);
@@ -1847,7 +1851,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				containerCodeNames.add(dto.getContainerCodeName());
 			}
 			if (!containerCodeNames.isEmpty()) {
-				String url = mainConfig.getServerConnection().getAcasURL()+"containers/deleteArrayByCodeNames";
+				String url = propertiesUtilService.getAcasURL()+"containers/deleteArrayByCodeNames";
 				String json = (new JSONSerializer()).serialize(containerCodeNames);
 				SimpleUtil.postRequestToExternalServer(url, json, logger);
 			}

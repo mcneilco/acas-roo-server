@@ -25,8 +25,9 @@ import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
+
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RooWebScaffold(path = "physicalstates", formBackingObject = PhysicalState.class)
 @RequestMapping({ "/physicalstates", "/physicalStates" })
@@ -36,7 +37,8 @@ import com.labsynch.labseer.utils.Configuration;
 @RooWebFinder
 public class PhysicalStateController {
 	
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
     @RequestMapping(method = RequestMethod.POST)
     public String create(@Valid PhysicalState physicalState, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
@@ -146,7 +148,7 @@ public class PhysicalStateController {
         headers.add("Pragma", "no-cache"); //HTTP 1.0
         headers.setExpires(0); // Expire the cache
         
-		if (mainConfig.getServerSettings().isOrderSelectLists()){
+		if (propertiesUtilService.getOrderSelectLists()){
 	        return new ResponseEntity<String>(PhysicalState.toJsonArray(PhysicalState.findAllPhysicalStates("name", "ASC")), headers, HttpStatus.OK);
 		} else {
 	        return new ResponseEntity<String>(PhysicalState.toJsonArray(PhysicalState.findAllPhysicalStates()), headers, HttpStatus.OK);

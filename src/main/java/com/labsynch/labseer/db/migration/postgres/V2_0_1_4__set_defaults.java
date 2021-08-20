@@ -18,8 +18,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
@@ -28,7 +26,7 @@ public class V2_0_1_4__set_defaults implements SpringJdbcMigration {
 
 	Logger logger = LoggerFactory.getLogger(V2_0_1_4__set_defaults.class);
 	
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	// private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
 	
 	@Override
 	public void migrate(JdbcTemplate jdbcTemplate) throws Exception {
@@ -243,7 +241,8 @@ public class V2_0_1_4__set_defaults implements SpringJdbcMigration {
 		// or generate it from a simple counter
 		int numCorpnames = jdbcTemplate.queryForInt("SELECT COUNT(*) FROM pre_def_corp_name");
 		if (numCorpnames < 1L){
-			boolean usePredefinedList = mainConfig.getServerSettings().isUsePredefinedList();
+			// boolean usePredefinedList = mainConfig.getServerSettings().isUsePredefinedList();
+			boolean usePredefinedList = false;
 			long numberOfCorpNamesToGenerate = 50000;
 			
 			if (usePredefinedList && numCorpnames < 1L){

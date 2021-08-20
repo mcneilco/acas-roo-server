@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.CorpName;
+import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Operator;
 import com.labsynch.labseer.domain.Parent;
@@ -24,8 +27,8 @@ import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
 import com.labsynch.labseer.dto.LotDTO;
 import com.labsynch.labseer.dto.LotsByProjectDTO;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
+
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SecurityUtil;
 
 
@@ -36,12 +39,16 @@ public class LotServiceImpl implements LotService {
 	private ChemStructureService chemService;
 
 	@Autowired
+	private CorpNameService corpNameService;
+
+	@Autowired
 	private SaltFormService saltFormService;
 
 	@Autowired
 	public LotAliasService lotAliasService;
 
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	private static final Logger logger = LoggerFactory.getLogger(LotServiceImpl.class);
 	
@@ -77,7 +84,7 @@ public class LotServiceImpl implements LotService {
 		//associate saltForm to new adoptive parent
 		SaltForm saltForm = queryLot.getSaltForm();
 		saltForm.setParent(adoptiveParent);
-		saltForm.setCorpName(CorpName.generateSaltFormCorpName(adoptiveParent.getCorpName(), saltForm.getIsoSalts()));
+		saltForm.setCorpName(corpNameService.generateSaltFormCorpName(adoptiveParent.getCorpName(), saltForm.getIsoSalts()));
 		saltForm.merge();
 
 		// recalculate salt form weight
@@ -88,9 +95,8 @@ public class LotServiceImpl implements LotService {
 		logger.debug("new lot number: " + queryLot.getLotNumber());
 		
 		//rename lot corp name if not cas style
-		MainConfigDTO mainConfig = Configuration.getConfigInfo();
-		if (!mainConfig.getServerSettings().getCorpBatchFormat().equalsIgnoreCase("cas_style_format")){
-			queryLot.setCorpName(queryLot.generateCorpName());
+		if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")){
+			queryLot.setCorpName(this.generateCorpName(queryLot));
 			//TODO: may want to save the old name as an alias
 			// also need to deal with data that may be registered to the old corp name
 		}
@@ -208,4 +214,188 @@ public class LotServiceImpl implements LotService {
 		Collection<LotsByProjectDTO> lots = Lot.findLotsByProjectsList(projects).getResultList();
 		return(lots);
 	}
+
+	//NEW
+	@Override
+	public String generateSaltFormLotName(Lot lot) {
+        String corpName = lot.getSaltForm().getCorpName();
+        logger.debug("Salt corpName = " + corpName);
+        int lotNumber = this.generateSaltFormLotNumber(lot);
+        lot.setLotNumber(lotNumber);
+        
+        String batchFormat = "%0"+ propertiesUtilService.getFormatBatchDigits()  + "d";
+        corpName = corpName.concat(propertiesUtilService.getBatchSeparator()).concat(String.format(batchFormat, lotNumber));
+        logger.debug("corpName: " + corpName);
+        return corpName;
+    }
+
+	@Override
+    public String appendSaltCode(String corpName, Lot lot) {
+    	List<IsoSalt> isoSalts = IsoSalt.findIsoSaltsBySaltForm(lot.getSaltForm()).getResultList();
+    	logger.debug("number of isoSalts: " + isoSalts.size());
+    	if (isoSalts.size() == 0){
+        	corpName = corpName.concat(propertiesUtilService.getNoSaltCode());        		
+    	} else {
+    		for (IsoSalt isoSalt:isoSalts){
+    			if (isoSalt.getType().equalsIgnoreCase("salt")){
+                   	corpName = corpName.concat(isoSalt.getSalt().getAbbrev());        		        				
+    			} else if (isoSalt.getType().equalsIgnoreCase("isotope")){
+                   	corpName = corpName.concat(isoSalt.getIsotope().getAbbrev());        		
+    			}                           			
+    		}
+    	}
+		return corpName;
+	}
+
+	@Override
+    public String generateParentLotName(Lot lot) {
+        logger.debug("generating the new lot corp name");
+        String corpName = lot.getSaltForm().getParent().getCorpName();
+        logger.debug("Parent corpName = " + corpName);
+        int lotNumber = this.generateParentLotNumber(lot);
+        lot.setLotNumber(lotNumber);
+        
+        if (propertiesUtilService.getFormatBatchDigits() == 0){
+        	logger.error("formatBatchDigits is set to " + propertiesUtilService.getFormatBatchDigits() );
+        }
+        String batchFormat = "%0"+ propertiesUtilService.getFormatBatchDigits()  + "d";
+        logger.debug("batch format is " + batchFormat);
+        if (propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("corp_saltcode_batch")){
+        	corpName = corpName.concat(propertiesUtilService.getSaltSeparator());
+        	corpName = appendSaltCode(corpName, lot);
+            corpName = corpName.concat(propertiesUtilService.getBatchSeparator()).concat(String.format(batchFormat, lotNumber));
+        } else if (propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("corp_batch_saltcode")) {
+            corpName = corpName.concat(propertiesUtilService.getBatchSeparator()).concat(String.format(batchFormat, lotNumber));
+            if (propertiesUtilService.getAppendSaltCodeToLotName()){
+            	corpName = corpName.concat(propertiesUtilService.getSaltSeparator());
+            	corpName = appendSaltCode(corpName, lot);
+            }        	
+        } else {
+            corpName = corpName.concat(propertiesUtilService.getBatchSeparator()).concat(String.format(batchFormat, lotNumber));
+        }
+        
+        logger.debug("corpName: " + corpName);
+        return corpName;
+    }
+
+	@Override
+	public String generateCasStyleLotName(Lot lot) {
+    	List seqList = lot.generateCustomLotSequence();
+		String inputSequence = seqList.get(0).toString();
+		int casCheckDigit = generateCasCheckDigit(inputSequence);
+		String fullName =String.format("%09d", Long.parseLong(inputSequence));
+		logger.info(fullName);
+		StringBuilder sb = new StringBuilder();
+		sb = sb.append(propertiesUtilService.getCorpPrefix()).append(propertiesUtilService.getCorpSeparator());
+		
+		String regexPattern = "(\\d{3})(\\d{3})(\\d{3})";
+		Pattern p = Pattern.compile(regexPattern);
+		Matcher m = p.matcher(fullName);
+		if (m.find()){
+			sb.append(m.group(1)).append(propertiesUtilService.getCorpSeparator());
+			sb.append(m.group(2)).append(propertiesUtilService.getCorpSeparator());
+			sb.append(m.group(3)).append(propertiesUtilService.getCorpSeparator());
+			sb.append(Integer.toString(casCheckDigit));
+		}
+		String lotName = sb.toString();
+		logger.info(lotName);
+
+		//set lot number
+		int lotNumber = this.generateParentLotNumber(lot);
+        lot.setLotNumber(lotNumber);
+		
+    	return lotName;
+    }
+
+	@Override 
+    public int generateSaltFormLotNumber(Lot lot){
+    	Integer lotNumber = 0;
+        if (lot.getIsVirtual()) {
+            lotNumber = 0;
+        } else {
+        	if (lot.getLotNumber() != null && lot.getLotNumber() > 0){
+        		lotNumber = lot.getLotNumber();
+        	}else{
+        		 int lotCount = 0;
+                 if (Lot.getMaxSaltFormLotNumber(lot.getSaltForm()) == null) {
+                     logger.error("this is a null pointer exception. Set lotCount = 0");
+                 } else {
+                     lotCount = Lot.getMaxSaltFormLotNumber(lot.getSaltForm());
+                 }
+                 logger.debug("Lot Count = " + lotCount);
+                 lotNumber = lotCount + 1;
+        	}
+        }
+        logger.debug("Lot Number = " + lotNumber);
+        return lotNumber;
+    }
+
+	@Override
+	public int generateCasCheckDigit(String inputCasLabel){
+		int checkDigit = 0;
+		logger.info("" + inputCasLabel.length());
+		int sum = 0;
+		for (int index=0; index < inputCasLabel.length(); index++){
+			logger.info("current index: " + index);
+			sum += (inputCasLabel.length() - index ) * Integer.parseInt(inputCasLabel.substring(index, index+1));
+			logger.info("sum: " + sum);
+		}
+		checkDigit = sum % 10;
+		return checkDigit;
+	}
+   
+	@Override
+    public String generateCorpName(Lot lot) {
+        logger.info("corp batch format is: " + propertiesUtilService.getCorpBatchFormat());
+
+        String corpName = null;
+        if (propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")){
+        	corpName = generateCasStyleLotName(lot);
+        } else if (propertiesUtilService.getSaltBeforeLot()) {
+            corpName = generateSaltFormLotName(lot);
+        } else {
+            corpName = generateParentLotName(lot);
+        }
+        return corpName;
+    }
+    
+	@Override
+    public int generateLotNumber(Lot lot) {
+
+        int lotNumber = 0;
+        if (propertiesUtilService.getSaltBeforeLot()) {
+        	lotNumber = generateSaltFormLotNumber(lot);
+        } else {
+        	lotNumber = generateParentLotNumber(lot);
+        }
+        return lotNumber;
+    }
+    
+	@Override
+    public int generateParentLotNumber(Lot lot){
+    	//set lot number
+		Integer lotNumber = lot.getLotNumber();
+        if (lot.getIsVirtual()) {
+            lotNumber = 0;
+        } else {
+        	if (lot.getLotNumber() != null && lot.getLotNumber() > 0){
+        		lotNumber = lot.getLotNumber();
+        	}else{
+        		int lotCount = 0;
+        		if (lot.getParent().getId() == null){
+        			logger.debug("Setting lotCount of new parent = 0");
+        		}else if (Lot.getMaxParentLotNumber(lot.getParent()) == null) {
+                    logger.debug("this is a null pointer exception. Set lotCount = 0");
+                } else {
+                    lotCount = Lot.getMaxParentLotNumber(lot.getParent());
+                }
+                logger.debug("Lot Count = " + lotCount);
+                lotNumber = lotCount + 1;
+        	}
+        }
+        logger.debug("Lot Number = " + lotNumber);
+        return lotNumber;
+    }
+    
+
 }

@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Vendor;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
+
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @RooWebScaffold(path = "vendors", formBackingObject = Vendor.class)
 @RequestMapping("/vendors")
@@ -23,7 +23,7 @@ import com.labsynch.labseer.utils.Configuration;
 @RooWebFinder
 public class VendorController {
 
-    private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	private PropertiesUtilService propertiesUtilService;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
@@ -52,7 +52,7 @@ public class VendorController {
         headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
         headers.add("Pragma", "no-cache"); //HTTP 1.0
         headers.setExpires(0); // Expire the cache
-        if (mainConfig.getServerSettings().isOrderSelectLists()) {
+        if (propertiesUtilService.getOrderSelectLists()) {
             return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findAllVendors("name", "ASC")), headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findAllVendors()), headers, HttpStatus.OK);

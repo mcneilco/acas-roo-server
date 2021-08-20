@@ -15,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.FileType;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
+
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RequestMapping({"/filetypes", "/fileTypes"})
 @Controller
@@ -26,7 +27,8 @@ import com.labsynch.labseer.utils.Configuration;
 @RooWebFinder
 public class FileTypeController {
 	
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@RequestMapping(headers = "Accept=application/json")
     @ResponseBody
@@ -39,7 +41,7 @@ public class FileTypeController {
 		headers.add("Pragma","no-cache"); //HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 
-		if (mainConfig.getServerSettings().isOrderSelectLists()){
+		if (propertiesUtilService.getOrderSelectLists()){
 	        return new ResponseEntity<String>(FileType.toJsonArray(FileType.findAllFileTypes("name", "ASC")), headers, HttpStatus.OK);
 		} else {
 	        return new ResponseEntity<String>(FileType.toJsonArray(FileType.findAllFileTypes()), headers, HttpStatus.OK);

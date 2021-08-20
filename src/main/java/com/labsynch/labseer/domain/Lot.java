@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
@@ -36,12 +37,11 @@ import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.LotsByProjectDTO;
 import com.labsynch.labseer.dto.SearchFormDTO;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
 
 import flexjson.JSONSerializer;
 
@@ -58,20 +58,6 @@ public class Lot {
 	
     private static final Logger logger = LoggerFactory.getLogger(Lot.class);
     
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
-    
-	private static final int formatBatchDigits = Configuration.getConfigInfo().getServerSettings().getFormatBatchDigits();
-
-	private static final boolean appendSaltCodeToLotName = Configuration.getConfigInfo().getServerSettings().isAppendSaltCodeToLotName();
-
-	private static final String noSaltCode = Configuration.getConfigInfo().getServerSettings().getNoSaltCode();
-
-	private static final String corpBatchFormat = Configuration.getConfigInfo().getServerSettings().getCorpBatchFormat();
-
-	private static final String corpPrefix = Configuration.getConfigInfo().getServerSettings().getCorpPrefix();
-
-	private static final String corpSeparator = Configuration.getConfigInfo().getServerSettings().getCorpSeparator();
-
 	@Column(columnDefinition="text")
     private String asDrawnStruct;
 
@@ -261,181 +247,6 @@ public class Lot {
         if (this.saltForm != null && this.saltForm.getParent() == null) {
             this.saltForm.setParent(this.parent);
         }
-    }
-
-	public static int generateCasCheckDigit(String inputCasLabel){
-		int checkDigit = 0;
-		logger.info("" + inputCasLabel.length());
-		int sum = 0;
-		for (int index=0; index < inputCasLabel.length(); index++){
-			logger.info("current index: " + index);
-			sum += (inputCasLabel.length() - index ) * Integer.parseInt(inputCasLabel.substring(index, index+1));
-			logger.info("sum: " + sum);
-		}
-		checkDigit = sum % 10;
-		return checkDigit;
-	}
-    
-    public String generateCorpName() {
-        MainConfigDTO mainConfig = Configuration.getConfigInfo();
-        logger.info("corp batch format is: " + mainConfig.getServerSettings().getCorpBatchFormat());
-        logger.info("other corp batch format is: " + corpBatchFormat);
-
-        String corpName = null;
-        if (mainConfig.getServerSettings().getCorpBatchFormat().equalsIgnoreCase("cas_style_format")){
-        	corpName = generateCasStyleLotName();
-        } else if (mainConfig.getMetaLot().isSaltBeforeLot()) {
-            corpName = generateSaltFormLotName();
-        } else {
-            corpName = generateParentLotName();
-        }
-        return corpName;
-    }
-    
-    public int generateLotNumber() {
-        MainConfigDTO mainConfig = Configuration.getConfigInfo();
-
-        int lotNumber = 0;
-        if (mainConfig.getMetaLot().isSaltBeforeLot()) {
-        	lotNumber = generateSaltFormLotNumber();
-        } else {
-        	lotNumber = generateParentLotNumber();
-        }
-        return lotNumber;
-    }
-    
-    private int generateParentLotNumber(){
-    	//set lot number
-		Integer lotNumber = this.getLotNumber();
-        if (this.getIsVirtual()) {
-            lotNumber = 0;
-        } else {
-        	if (this.lotNumber != null && this.lotNumber > 0){
-        		lotNumber = this.lotNumber;
-        	}else{
-        		int lotCount = 0;
-        		if (this.getParent().getId() == null){
-        			logger.debug("Setting lotCount of new parent = 0");
-        		}else if (Lot.getMaxParentLotNumber(this.getParent()) == null) {
-                    logger.debug("this is a null pointer exception. Set lotCount = 0");
-                } else {
-                    lotCount = Lot.getMaxParentLotNumber(this.getParent());
-                }
-                logger.debug("Lot Count = " + lotCount);
-                lotNumber = lotCount + 1;
-        	}
-        }
-        logger.debug("Lot Number = " + lotNumber);
-        return lotNumber;
-    }
-    
-    private int generateSaltFormLotNumber(){
-    	Integer lotNumber = 0;
-        if (this.getIsVirtual()) {
-            lotNumber = 0;
-        } else {
-        	if (this.lotNumber != null && this.lotNumber > 0){
-        		lotNumber = this.lotNumber;
-        	}else{
-        		 int lotCount = 0;
-                 if (Lot.getMaxSaltFormLotNumber(this.getSaltForm()) == null) {
-                     logger.error("this is a null pointer exception. Set lotCount = 0");
-                 } else {
-                     lotCount = Lot.getMaxSaltFormLotNumber(this.getSaltForm());
-                 }
-                 logger.debug("Lot Count = " + lotCount);
-                 lotNumber = lotCount + 1;
-        	}
-        }
-        logger.debug("Lot Number = " + lotNumber);
-        return lotNumber;
-    }
-
-    public String generateCasStyleLotName() {
-    	List seqList = generateCustomLotSequence();
-		String inputSequence = seqList.get(0).toString();
-		int casCheckDigit = Lot.generateCasCheckDigit(inputSequence);
-		String fullName =String.format("%09d", Long.parseLong(inputSequence));
-		logger.info(fullName);
-		StringBuilder sb = new StringBuilder();
-		sb = sb.append(corpPrefix).append(corpSeparator);
-		
-		String regexPattern = "(\\d{3})(\\d{3})(\\d{3})";
-		Pattern p = Pattern.compile(regexPattern);
-		Matcher m = p.matcher(fullName);
-		if (m.find()){
-			sb.append(m.group(1)).append(corpSeparator);
-			sb.append(m.group(2)).append(corpSeparator);
-			sb.append(m.group(3)).append(corpSeparator);
-			sb.append(Integer.toString(casCheckDigit));
-		}
-		String lotName = sb.toString();
-		logger.info(lotName);
-
-		//set lot number
-		int lotNumber = this.generateParentLotNumber();
-        this.setLotNumber(lotNumber);
-		
-    	return lotName;
-    }
-    
-    private String generateParentLotName() {
-        logger.debug("generating the new lot corp name");
-        corpName = this.getSaltForm().getParent().getCorpName();
-        logger.debug("Parent corpName = " + corpName);
-        int lotNumber = this.generateParentLotNumber();
-        this.setLotNumber(lotNumber);
-        
-        if (formatBatchDigits == 0){
-        	logger.error("formatBatchDigits is set to " + formatBatchDigits);
-        }
-        String batchFormat = "%0"+ formatBatchDigits + "d";
-        logger.debug("batch format is " + batchFormat);
-        if (corpBatchFormat.equalsIgnoreCase("corp_saltcode_batch")){
-        	corpName = corpName.concat(CorpName.saltSeparator);
-        	corpName = appendSaltCode(corpName);
-            corpName = corpName.concat(CorpName.batchSeparator).concat(String.format(batchFormat, lotNumber));
-        } else if (corpBatchFormat.equalsIgnoreCase("corp_batch_saltcode")) {
-            corpName = corpName.concat(CorpName.batchSeparator).concat(String.format(batchFormat, lotNumber));
-            if (appendSaltCodeToLotName){
-            	corpName = corpName.concat(CorpName.saltSeparator);
-            	corpName = appendSaltCode(corpName);
-            }        	
-        } else {
-            corpName = corpName.concat(CorpName.batchSeparator).concat(String.format(batchFormat, lotNumber));
-        }
-        
-        logger.debug("corpName: " + corpName);
-        return corpName;
-    }
-
-    private String appendSaltCode(String corpName) {
-    	List<IsoSalt> isoSalts = IsoSalt.findIsoSaltsBySaltForm(this.getSaltForm()).getResultList();
-    	logger.debug("number of isoSalts: " + isoSalts.size());
-    	if (isoSalts.size() == 0){
-        	corpName = corpName.concat(noSaltCode);        		
-    	} else {
-    		for (IsoSalt isoSalt:isoSalts){
-    			if (isoSalt.getType().equalsIgnoreCase("salt")){
-                   	corpName = corpName.concat(isoSalt.getSalt().getAbbrev());        		        				
-    			} else if (isoSalt.getType().equalsIgnoreCase("isotope")){
-                   	corpName = corpName.concat(isoSalt.getIsotope().getAbbrev());        		
-    			}                           			
-    		}
-    	}
-		return corpName;
-	}
-
-	private String generateSaltFormLotName() {
-        corpName = this.getSaltForm().getCorpName();
-        logger.debug("Salt corpName = " + corpName);
-        int lotNumber = this.generateSaltFormLotNumber();
-        this.setLotNumber(lotNumber);
-        
-        String batchFormat = "%0"+ formatBatchDigits + "d";
-        corpName = corpName.concat(CorpName.batchSeparator).concat(String.format(batchFormat, lotNumber));
-        logger.debug("corpName: " + corpName);
-        return corpName;
     }
 	
     @Transactional
