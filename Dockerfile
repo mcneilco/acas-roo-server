@@ -30,7 +30,7 @@ COPY 	--from=compile /usr/local/tomcat/webapps/acas.war $CATALINA_HOME/webapps/a
 WORKDIR $CATALINA_HOME
 EXPOSE 	8080
 
-COPY --from=acas-src --chown=runner:runner /home/runner/build/src/javascripts/BuildUtilities/PrepareConfigFiles.js /home/runner/build//src/javascripts/BuildUtilities/PrepareConfigFiles.js
+COPY --chown=runner:runner ./PrepareConfigFiles.coffee /home/runner/build//src/javascripts/BuildUtilities/PrepareConfigFiles.coffee
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"] 
 CMD 	["catalina.sh", "run"]
