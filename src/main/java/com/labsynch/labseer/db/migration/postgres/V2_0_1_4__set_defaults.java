@@ -1,8 +1,5 @@
 package com.labsynch.labseer.db.migration.postgres;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -10,6 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 import org.flywaydb.core.api.migration.spring.SpringJdbcMigration;
 import org.slf4j.Logger;
@@ -26,8 +24,6 @@ public class V2_0_1_4__set_defaults implements SpringJdbcMigration {
 
 	Logger logger = LoggerFactory.getLogger(V2_0_1_4__set_defaults.class);
 	
-	// private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
-	
 	@Override
 	public void migrate(JdbcTemplate jdbcTemplate) throws Exception {
 		savePhysicalStates(jdbcTemplate);
@@ -37,7 +33,6 @@ public class V2_0_1_4__set_defaults implements SpringJdbcMigration {
 		saveUnits(jdbcTemplate);
 		saveFileTypes(jdbcTemplate);
 		savePurityMeasuredBys(jdbcTemplate);
-		loadCorpNames(jdbcTemplate);
 				
 	}
 	
@@ -234,39 +229,6 @@ public class V2_0_1_4__set_defaults implements SpringJdbcMigration {
 			}
 		}
 	}
-	
-	private void loadCorpNames(JdbcTemplate jdbcTemplate) throws FileNotFoundException {
-		// 2 options
-		// load the corpName from a predefined List
-		// or generate it from a simple counter
-		int numCorpnames = jdbcTemplate.queryForInt("SELECT COUNT(*) FROM pre_def_corp_name");
-		if (numCorpnames < 1L){
-			// boolean usePredefinedList = mainConfig.getServerSettings().isUsePredefinedList();
-			boolean usePredefinedList = false;
-			long numberOfCorpNamesToGenerate = 50000;
-			
-			if (usePredefinedList && numCorpnames < 1L){
-				logger.debug("load up preDefined corpNames ");
-				
-				String fileName = "src/test/resources/predef_corpname.csv";
-			    File inputFile = new File(fileName); 
-				Scanner scanner = new Scanner(new FileReader(inputFile));
-				
-				//skip the header line
-				String header = scanner.nextLine();
-				logger.debug("header line: " + header);
-				
-				int lineCount = 0;
-				while ( scanner.hasNextLine() && lineCount < 500 ){
-					processLine( scanner.nextLine() , jdbcTemplate);
-					lineCount++;
-				}
-
-				scanner.close();			
-			} 
-		}
-	}
-
 	
 	protected void processLine(String aLine, JdbcTemplate jdbcTemplate){
 		//use a second Scanner to parse the content of each line 
