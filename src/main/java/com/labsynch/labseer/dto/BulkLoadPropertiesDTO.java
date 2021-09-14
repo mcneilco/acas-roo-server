@@ -51,8 +51,8 @@ public class BulkLoadPropertiesDTO {
     
     private String templateName;
     
-    public BulkLoadPropertiesDTO(Collection<SimpleBulkLoadPropertyDTO> dbProperties){
-    	this.dbProperties = dbProperties;
+    public BulkLoadPropertiesDTO(String dbPropertiesJSON){
+		this.dbProperties = SimpleBulkLoadPropertyDTO.fromJsonToLsThingQueryDTO(dbPropertiesJSON);
     }
     
     public String toJson() {
