@@ -15,8 +15,6 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.utils.PropertiesUtilService;
-import org.springframework.beans.factory.annotation.Autowired;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
@@ -28,9 +26,6 @@ import flexjson.JSONSerializer;
 public class IsoSalt {
 
 	private static final Logger logger = LoggerFactory.getLogger(IsoSalt.class);
-
-	@Autowired
-	private static PropertiesUtilService propertiesUtilService;
 
     @ManyToOne
     private Isotope isotope;

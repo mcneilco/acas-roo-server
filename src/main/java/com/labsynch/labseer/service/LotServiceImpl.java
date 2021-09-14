@@ -229,7 +229,7 @@ public class LotServiceImpl implements LotService {
         return corpName;
     }
 
-	@Override
+    @Override
     public String appendSaltCode(String corpName, Lot lot) {
     	List<IsoSalt> isoSalts = IsoSalt.findIsoSaltsBySaltForm(lot.getSaltForm()).getResultList();
     	logger.debug("number of isoSalts: " + isoSalts.size());

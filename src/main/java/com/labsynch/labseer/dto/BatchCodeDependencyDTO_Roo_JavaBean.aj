@@ -6,18 +6,9 @@ package com.labsynch.labseer.dto;
 import com.labsynch.labseer.dto.BatchCodeDependencyDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 import java.util.Collection;
 
 privileged aspect BatchCodeDependencyDTO_Roo_JavaBean {
-    
-    public PropertiesUtilService BatchCodeDependencyDTO.getPropertiesUtilService() {
-        return this.propertiesUtilService;
-    }
-    
-    public void BatchCodeDependencyDTO.setPropertiesUtilService(PropertiesUtilService propertiesUtilService) {
-        this.propertiesUtilService = propertiesUtilService;
-    }
     
     public Collection<String> BatchCodeDependencyDTO.getBatchCodes() {
         return this.batchCodes;

@@ -27,7 +27,6 @@ import com.labsynch.labseer.domain.PhysicalState;
 
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONSerializer;
@@ -38,9 +37,6 @@ import flexjson.JSONSerializer;
 public class BatchCodeDependencyDTO {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BatchCodeDependencyDTO.class);
-	
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
 
 	private Collection<String> batchCodes;
 	

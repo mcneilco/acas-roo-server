@@ -16,16 +16,12 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFReaderFactory;
 import com.labsynch.labseer.domain.Salt;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
 @Service
 public class SaltServiceImpl implements SaltService {
 
 	Logger logger = LoggerFactory.getLogger(SaltServiceImpl.class);
-
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
 	private ChemStructureService saltStructServ;

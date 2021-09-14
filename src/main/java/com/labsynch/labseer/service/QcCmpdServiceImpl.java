@@ -24,16 +24,12 @@ import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.QcCompound;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
 @Service
 public class QcCmpdServiceImpl implements QcCmpdService {
 
 	Logger logger = LoggerFactory.getLogger(QcCmpdServiceImpl.class);
-
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
 	public ChemStructureService chemStructureService;
