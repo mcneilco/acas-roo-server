@@ -7,18 +7,9 @@ import com.labsynch.labseer.dto.BulkLoadPropertiesDTO;
 import com.labsynch.labseer.dto.BulkLoadPropertyMappingDTO;
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
 import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 import java.util.Collection;
 
 privileged aspect BulkLoadPropertiesDTO_Roo_JavaBean {
-    
-    public PropertiesUtilService BulkLoadPropertiesDTO.getPropertiesUtilService() {
-        return this.propertiesUtilService;
-    }
-    
-    public void BulkLoadPropertiesDTO.setPropertiesUtilService(PropertiesUtilService propertiesUtilService) {
-        this.propertiesUtilService = propertiesUtilService;
-    }
     
     public Collection<SimpleBulkLoadPropertyDTO> BulkLoadPropertiesDTO.getSdfProperties() {
         return this.sdfProperties;

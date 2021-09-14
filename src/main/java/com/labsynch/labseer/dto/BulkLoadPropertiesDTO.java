@@ -38,9 +38,6 @@ import flexjson.JSONSerializer;
 public class BulkLoadPropertiesDTO {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BulkLoadPropertiesDTO.class);
-	
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
 
     private Collection<SimpleBulkLoadPropertyDTO> sdfProperties;
     
@@ -54,8 +51,8 @@ public class BulkLoadPropertiesDTO {
     
     private String templateName;
     
-    public BulkLoadPropertiesDTO(){
-    	this.dbProperties = propertiesUtilService.getDbProperties();
+    public BulkLoadPropertiesDTO(Collection<SimpleBulkLoadPropertyDTO> dbProperties){
+    	this.dbProperties = dbProperties;
     }
     
     public String toJson() {

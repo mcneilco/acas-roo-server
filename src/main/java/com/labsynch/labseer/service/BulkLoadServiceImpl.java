@@ -119,7 +119,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String inputFileName = requestDTO.getFileName();
 		int numRowsToRead = requestDTO.getNumRecords();			
 		//create the resultDTO to be filled in
-		BulkLoadPropertiesDTO resultDTO = new BulkLoadPropertiesDTO();
+		BulkLoadPropertiesDTO resultDTO = new BulkLoadPropertiesDTO(propertiesUtilService.getDbProperties());
 		//fill in any provided mappings
 		resultDTO.setBulkLoadProperties(requestDTO.getMappings());
 		HashSet<SimpleBulkLoadPropertyDTO> foundProperties = new HashSet<SimpleBulkLoadPropertyDTO>();
