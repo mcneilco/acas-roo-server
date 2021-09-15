@@ -73,7 +73,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	
 	String batchSize;
 
-	@Value("${acas.batchSize}")
+	@Value("${server.acas.batchSize}")
 	public void setBatchSize(String batchSize) {
 	    this.batchSize = batchSize;
 	}
@@ -85,7 +85,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 
 	String fetchSize;
 
-	@Value("${acas.fetchSize}")
+	@Value("${server.acas.fetchSize}")
 	public void setFetchSize(String fetchSize) {
 	    this.fetchSize = fetchSize;
 	}
@@ -97,7 +97,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	
 	String uniqueExperimentName;
 
-	@Value("${uniqueExperimentName}")
+	@Value("${server.uniqueExperimentName}")
 	public void setUniqueExperimentName(String uniqueExperimentName) {
 	    this.uniqueExperimentName = uniqueExperimentName;
 	}
@@ -109,7 +109,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	
 	Boolean uniqueProtocolName;
 
-	@Value("${uniqueProtocolName}")
+	@Value("${server.uniqueProtocolName}")
 	public void setUniqueProtocolName(Boolean uniqueProtocolName) {
 	    this.uniqueProtocolName = Boolean.parseBoolean(this.uniqueExperimentName);
 	}
@@ -121,7 +121,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	
 	String autoCreateKinds;
 
-	@Value("${autoCreateKinds}")
+	@Value("${server.autoCreateKinds}")
 	public void setAutoCreateKinds(String autoCreateKinds) {
 	    this.autoCreateKinds = autoCreateKinds;
 	}
@@ -145,7 +145,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 
 	String uniqueLsThingName;
 	
-	@Value("${uniqueLsThingName}")
+	@Value("${server.uniqueLsThingName}")
 	public void setUniqueLsThingName(String uniqueLsThingName) {
 	    this.uniqueLsThingName = uniqueLsThingName;
 	}
@@ -157,7 +157,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	
 	String enableSwagger;
 	
-	@Value("${enableSwagger}")
+	@Value("${server.enableSwagger}")
 	public void setEnableSwagger(String enableSwagger) {
 	    this.enableSwagger = enableSwagger;
 	}
@@ -253,6 +253,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String rootLocationLabel;
+
 	@Value("${client.compoundInventory.rootLocationLabel}")
 	public void setRootLocationLabel(String rootLocationLabel) {
 		this.rootLocationLabel = rootLocationLabel;
@@ -265,6 +266,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String trashLocationLabel;
+
 	@Value("${client.compoundInventory.trashLocationLabel}")
 	public void setTrashLocationLabel(String trashLocationLabel) {
 		this.trashLocationLabel = trashLocationLabel;
@@ -276,6 +278,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	    return this.trashLocationLabel;
 	}
 	String benchesLocationLabel;
+
 	@Value("${client.compoundInventory.benchesLocationLabel}")
 	public void setBenchesLocationLabel(String benchesLocationLabel) {
 		this.benchesLocationLabel = benchesLocationLabel;
@@ -302,6 +305,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 
 	//CMPD REG PROPERTIES
 	String acasURL;
+	
 	@Value("${client.cmpdreg.serverConnection.acasURL}")
 	public void setAcasURL(String acasURL) {
 		this.acasURL = acasURL;
@@ -314,6 +318,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String acasAppURL;
+
 	@Value("${client.cmpdreg.serverConnection.acasAppURL}")
 	public void setAcasAppURL(String acasAppURL) {
 		this.acasAppURL = acasAppURL;
@@ -326,6 +331,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean lotCalledBatch;
+
 	@Value("${client.cmpdreg.metaLot.lotCalledBatch}")
 	public void setLotCalledBatch(String lotCalledBatch) {
 		if (lotCalledBatch.startsWith("${")) {lotCalledBatch = null;} else {this.lotCalledBatch = Boolean.parseBoolean(lotCalledBatch);};
@@ -337,6 +343,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean useExactMass;
+
 	@Value("${client.cmpdreg.metaLot.useExactMass}")
 	public void setUseExactMass(String useExactMass) {
 		if (useExactMass.startsWith("${")) {useExactMass = null;} else {this.useExactMass = Boolean.parseBoolean(useExactMass);};
@@ -348,6 +355,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String corpPrefix;
+
 	@Value("${client.cmpdreg.serverSettings.corpPrefix}")
 	public void setCorpPrefix(String corpPrefix) {
 		this.corpPrefix = corpPrefix;
@@ -360,6 +368,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String corpSeparator;
+
 	@Value("${client.cmpdreg.serverSettings.corpSeparator}")
 	public void setCorpSeparator(String corpSeparator) {
 		this.corpSeparator = corpSeparator;
@@ -372,6 +381,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String saltSeparator;
+
 	@Value("${client.cmpdreg.serverSettings.saltSeparator}")
 	public void setSaltSeparator(String saltSeparator) {
 		this.saltSeparator = saltSeparator;
@@ -384,6 +394,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String batchSeparator;
+
 	@Value("${client.cmpdreg.serverSettings.batchSeparator}")
 	public void setBatchSeparator(String batchSeparator) {
 		this.batchSeparator = batchSeparator;
@@ -396,6 +407,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	int numberCorpDigits;
+
 	@Value("${client.cmpdreg.serverSettings.numberCorpDigits}")
 	public void setNumberCorpDigits(int numberCorpDigits) {
 		this.numberCorpDigits = numberCorpDigits;
@@ -407,6 +419,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Integer formatBatchDigits;
+
 	@Value("${client.cmpdreg.serverSettings.formatBatchDigits}")
 	public void setFormatBatchDigits(Integer formatBatchDigits) {
 		this.formatBatchDigits = formatBatchDigits;
@@ -418,6 +431,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Integer startingCorpNumber;
+
 	@Value("${client.cmpdreg.serverSettings.startingCorpNumber}")
 	public void setStartingCorpNumber(Integer startingCorpNumber) {
 		this.startingCorpNumber = startingCorpNumber;
@@ -429,6 +443,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean fancyCorpNumberFormat;
+
 	@Value("${client.cmpdreg.serverSettings.fancyCorpNumberFormat}")
 	public void setFancyCorpNumberFormat(String fancyCorpNumberFormat) {
 		if (fancyCorpNumberFormat.startsWith("${")) {fancyCorpNumberFormat = null;} else {this.fancyCorpNumberFormat = Boolean.parseBoolean(fancyCorpNumberFormat);};
@@ -440,6 +455,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String corpParentFormat;
+
 	@Value("${client.cmpdreg.serverSettings.corpParentFormat}")
 	public void setCorpParentFormat(String corpParentFormat) {
 		this.corpParentFormat = corpParentFormat;
@@ -452,6 +468,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String corpBatchFormat;
+
 	@Value("${client.cmpdreg.serverSettings.corpBatchFormat}")
 	public void setCorpBatchFormat(String corpBatchFormat) {
 		this.corpBatchFormat = corpBatchFormat;
@@ -464,6 +481,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean appendSaltCodeToLotName;
+
 	@Value("${client.cmpdreg.serverSettings.appendSaltCodeToLotName}")
 	public void setAppendSaltCodeToLotName(String appendSaltCodeToLotName) {
 		if (appendSaltCodeToLotName.startsWith("${")) {appendSaltCodeToLotName = null;} else {this.appendSaltCodeToLotName = Boolean.parseBoolean(appendSaltCodeToLotName);};
@@ -475,6 +493,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 
 	Boolean saltBeforeLot;
+
 	@Value("${client.cmpdreg.metaLot.saltBeforeLot}")
 	public void setSaltBeforeLot(String saltBeforeLot) {
 		if (saltBeforeLot.startsWith("${")) {saltBeforeLot = null;} else {this.saltBeforeLot = Boolean.parseBoolean(saltBeforeLot);};
@@ -486,6 +505,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String noSaltCode;
+
 	@Value("${client.cmpdreg.serverSettings.noSaltCode}")
 	public void setNoSaltCode(String noSaltCode) {
 		this.noSaltCode = noSaltCode;
@@ -498,6 +518,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean usePredefinedList;
+
 	@Value("${client.cmpdreg.serverSettings.usePredefinedList}")
 	public void setUsePredefinedList(String usePredefinedList) {
 		if (usePredefinedList.startsWith("${")) {usePredefinedList = null;} else {this.usePredefinedList = Boolean.parseBoolean(usePredefinedList);};
@@ -509,6 +530,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean uniqueNotebook;
+
 	@Value("${client.cmpdreg.serverSettings.uniqueNotebook}")
 	public void setUniqueNotebook(String uniqueNotebook) {
 		if (uniqueNotebook.startsWith("${")) {uniqueNotebook = null;} else {this.uniqueNotebook = Boolean.parseBoolean(uniqueNotebook);};
@@ -520,6 +542,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String notebookSavePath;
+
 	@Value("${client.cmpdreg.serverSettings.notebookSavePath}")
 	public void setNotebookSavePath(String notebookSavePath) {
 		this.notebookSavePath = notebookSavePath;
@@ -532,6 +555,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String exactMatchDef;
+
 	@Value("${client.cmpdreg.serverSettings.exactMatchDef}")
 	public void setExactMatchDef(String exactMatchDef) {
 		this.exactMatchDef = exactMatchDef;
@@ -544,6 +568,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Integer maxSearchTime;
+
 	@Value("${client.cmpdreg.serverSettings.maxSearchTime}")
 	public void setMaxSearchTime(Integer maxSearchTime) {
 		this.maxSearchTime = maxSearchTime;
@@ -555,6 +580,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Integer maxSearchResults;
+
 	@Value("${client.cmpdreg.serverSettings.maxSearchResults}")
 	public void setMaxSearchResults(Integer maxSearchResults) {
 		this.maxSearchResults = maxSearchResults;
@@ -566,6 +592,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean projectRestrictions;
+
 	@Value("${client.cmpdreg.serverSettings.projectRestrictions}")
 	public void setProjectRestrictions(String projectRestrictions) {
 		if (projectRestrictions.startsWith("${")) {projectRestrictions = null;} else {this.projectRestrictions = Boolean.parseBoolean(projectRestrictions);};
@@ -577,6 +604,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean compoundInventory;
+
 	@Value("${client.cmpdreg.serverSettings.compoundInventory}")
 	public void setCompoundInventory(String compoundInventory) {
 		if (compoundInventory.startsWith("${")) {compoundInventory = null;} else {this.compoundInventory = Boolean.parseBoolean(compoundInventory);};
@@ -588,6 +616,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean disableTubeCreationIfNoBarcode;
+
 	@Value("${client.cmpdreg.serverSettings.disableTubeCreationIfNoBarcode}")
 	public void setDisableTubeCreationIfNoBarcode(String disableTubeCreationIfNoBarcode) {
 		if (disableTubeCreationIfNoBarcode.startsWith("${")) {disableTubeCreationIfNoBarcode = null;} else {this.disableTubeCreationIfNoBarcode = Boolean.parseBoolean(disableTubeCreationIfNoBarcode);};
@@ -599,6 +628,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean checkACASDependenciesByContainerCode;
+
 	@Value("${client.cmpdreg.serverSettings.checkACASDependenciesByContainerCode}")
 	public void setCheckACASDependenciesByContainerCode(String checkACASDependenciesByContainerCode) {
 		if (checkACASDependenciesByContainerCode.startsWith("${")) {checkACASDependenciesByContainerCode = null;} else {this.checkACASDependenciesByContainerCode = Boolean.parseBoolean(checkACASDependenciesByContainerCode);};
@@ -610,6 +640,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean useExternalStandardizerConfig;
+
 	@Value("${client.cmpdreg.serverSettings.useExternalStandardizerConfig}")
 	public void setUseExternalStandardizerConfig(String useExternalStandardizerConfig) {
 		if (useExternalStandardizerConfig.startsWith("${")) {useExternalStandardizerConfig = null;} else {this.useExternalStandardizerConfig = Boolean.parseBoolean(useExternalStandardizerConfig);};
@@ -621,6 +652,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	String standardizerConfigFilePath;
+	
 	@Value("${client.cmpdreg.serverSettings.standardizerConfigFilePath}")
 	public void setStandardizerConfigFilePath(String standardizerConfigFilePath) {
 		this.standardizerConfigFilePath = standardizerConfigFilePath;
@@ -633,6 +665,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean orderSelectLists;
+
 	@Value("${client.cmpdreg.serverSettings.orderSelectLists}")
 	public void setOrderSelectLists(String orderSelectLists) {
 		if (orderSelectLists.startsWith("${")) {orderSelectLists = null;} else {this.orderSelectLists = Boolean.parseBoolean(orderSelectLists);};
@@ -644,6 +677,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean registerNoStructureCompoundsAsUniqueParents;
+
 	@Value("${client.cmpdreg.serverSettings.registerNoStructureCompoundsAsUniqueParents}")
 	public void setRegisterNoStructureCompoundsAsUniqueParents(String registerNoStructureCompoundsAsUniqueParents) {
 		if (registerNoStructureCompoundsAsUniqueParents.startsWith("${")) {registerNoStructureCompoundsAsUniqueParents = null;} else {this.registerNoStructureCompoundsAsUniqueParents = Boolean.parseBoolean(registerNoStructureCompoundsAsUniqueParents);};
@@ -655,6 +689,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Boolean useProjectRoles;
+
 	@Value("${client.cmpdreg.bulkLoadSettings.useProjectRoles}")
 	public void setUseProjectRoles(String useProjectRoles) {
 		if (useProjectRoles.startsWith("${")) {useProjectRoles = null;} else {this.useProjectRoles = Boolean.parseBoolean(useProjectRoles);};
@@ -666,6 +701,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	}
 	
 	Collection<SimpleBulkLoadPropertyDTO> dbProperties;
+	
 	@Value("${client.cmpdreg.bulkLoadSettings.dbProperties}")
 	public void setDbProperties(String dbProperties) {
 		this.dbProperties = SimpleBulkLoadPropertyDTO.fromJsonArrayToSimpleBulkLoadProes(dbProperties);;
