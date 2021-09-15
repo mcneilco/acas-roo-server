@@ -222,7 +222,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			String bingoFunction = null;
 			String orderBy = " ORDER BY cd_id";
 			
-			if (propertiesUtilService.isUseExternalStandardizerConfig()){
+			if (propertiesUtilService.getUseExternalStandardizerConfig()){
 				mol = standardizeMolecule(mol);
 				mol.dearomatize();				
 			} else {
@@ -416,7 +416,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			String orderBy = " ORDER BY cd_id";
 			String filterIdsClause = "";
 			
-			if (propertiesUtilService.isUseExternalStandardizerConfig()){
+			if (propertiesUtilService.getUseExternalStandardizerConfig()){
 				mol = standardizeMolecule(mol);
 				mol.aromatize();				
 			} else {
