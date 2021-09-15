@@ -74,7 +74,7 @@
 		<property name="baselineOnMigrate" value="false" />
 		<property name="outOfOrder" value="true" />
 		<property name="locations" value="${server.flyway.location}" />
-		<property name="schemas" value="${server.database.name}" />
+		<property name="schemas" value="${server.database.schema}" />
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	

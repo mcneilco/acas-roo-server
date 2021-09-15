@@ -18,8 +18,8 @@ RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
 RUN 	mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
-RUN     mv target/acas-1.13-BUILD-SNAPSHOT.war $CATALINA_HOME/webapps/acas.war && \
-        mv target/acas-1.13-BUILD-SNAPSHOT/ $CATALINA_HOME/webapps/acas/
+RUN     mv target/acas*.war $CATALINA_HOME/webapps/acas.war && \
+        mv target/acas* $CATALINA_HOME/webapps/acas/
 
 FROM 	${TOMCAT_IMAGE} as build
 COPY 	--chown=runner:runner --from=compile /usr/local/tomcat/webapps/acas.war $CATALINA_HOME/webapps/acas.war
@@ -27,6 +27,7 @@ COPY 	--chown=runner:runner --from=compile /usr/local/tomcat/webapps/acas $CATAL
 WORKDIR $CATALINA_HOME
 EXPOSE 	8080
 ENV    ACAS_HOME=/home/runner/build
+ENV    CATALINA_OPTS="-Xms512M -Xmx1536M -XX:MaxPermSize=512m"
 COPY --chown=runner:runner ./PrepareConfigFiles.coffee /home/runner/build/src/javascripts/BuildUtilities/PrepareConfigFiles.coffee
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"] 

@@ -26,7 +26,6 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.PhysicalState;
 
 import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONSerializer;
