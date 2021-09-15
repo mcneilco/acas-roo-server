@@ -704,7 +704,7 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	
 	@Value("${client.cmpdreg.bulkLoadSettings.dbProperties}")
 	public void setDbProperties(String dbProperties) {
-		this.dbProperties = SimpleBulkLoadPropertyDTO.fromJsonArrayToSimpleBulkLoadProes(dbProperties);;
+		this.dbProperties = SimpleBulkLoadPropertyDTO.fromJsonArrayToSimpleBulkLoadProes(dbProperties);
 	}
 	
 	@Override

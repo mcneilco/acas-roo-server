@@ -24,7 +24,7 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 @RooWebFinder
 public class VendorController {
 
-    @Autowired
+	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
