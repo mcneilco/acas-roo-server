@@ -6,27 +6,29 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.PreDef_CorpName;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
+
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class LoadPreDefCorpNameServiceImpl implements LoadPreDefCorpNameService {
 
 	Logger logger = LoggerFactory.getLogger(LoadPreDefCorpNameServiceImpl.class);
 	
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@Override
 	public boolean loadDefaultPreDefCorpNames() {
 		long numberOfCorpNamesToGenerate = 50000;
-		long corpNumber = mainConfig.getServerSettings().getStartingCorpNumber(); //starting number
-		int corpDigits = mainConfig.getServerSettings().getNumberCorpDigits();
+		long corpNumber = propertiesUtilService.getStartingCorpNumber(); //starting number
+		int corpDigits = propertiesUtilService.getNumberCorpDigits();
 		String formatCorpDigits = "%0" + corpDigits + "d";
 		try{
 			while ( corpNumber < numberOfCorpNamesToGenerate ){
 				corpNumber++;
 				String corpName = null;
-				corpName = CorpName.prefix.concat(CorpName.separator).concat(String.format(formatCorpDigits, corpNumber));	    		
+				corpName = propertiesUtilService.getCorpPrefix().concat(propertiesUtilService.getCorpSeparator()).concat(String.format(formatCorpDigits, corpNumber));	    		
 				boolean used = false;
 				boolean skip = false;
 				PreDef_CorpName preDefCorpName = new PreDef_CorpName();

@@ -546,15 +546,5 @@ public class SaltForm implements Comparable {
         else
             return 0;
 	}
-	
-	public static double calculateSaltWeight(SaltForm saltForm){
-		double totalSaltWeight = 0;
-		for (IsoSalt isoSalt : saltForm.getIsoSalts() ){
-			double saltWeight = IsoSalt.calculateSaltWeight(isoSalt);
-			totalSaltWeight = totalSaltWeight + saltWeight;
-			logger.debug("current totalSaltWeigth: " + totalSaltWeight);	
-		}
-		return totalSaltWeight;
-	}
 
 }

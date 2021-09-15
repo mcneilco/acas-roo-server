@@ -33,17 +33,18 @@ import com.labsynch.labseer.dto.SearchFormDTO;
 import com.labsynch.labseer.dto.SearchFormReturnDTO;
 import com.labsynch.labseer.dto.SearchLotDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
 public class SearchFormServiceImpl implements SearchFormService {
 
 	Logger logger = LoggerFactory.getLogger(SearchFormServiceImpl.class);
 
-	public static final String corpNamePrefix = Configuration.getConfigInfo().getServerSettings().getCorpPrefix();
-	public static final String corpSeparator = Configuration.getConfigInfo().getServerSettings().getCorpSeparator();
-	public static final String batchSeparator = Configuration.getConfigInfo().getServerSettings().getBatchSeparator();
+	@Autowired
+	private CorpNameService corpNameService;
 
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
 	private ChemStructureService structureService;
@@ -192,9 +193,9 @@ public class SearchFormServiceImpl implements SearchFormService {
 			String[] inputListArray = searchParams.getCorpNameList().split("[\\s,;\\n\\r]+");
 			List<String> formattedCorpNameList = new ArrayList<String>();
 			for (String corpName : inputListArray){
-				logger.info(CorpName.formatCorpName(CorpName.parseParentNumber(corpName)));
+				logger.info(corpNameService.formatCorpName(corpNameService.parseParentNumber(corpName)));
 				formattedCorpNameList.add(corpName);
-				formattedCorpNameList.add(CorpName.formatCorpName(CorpName.parseParentNumber(corpName)));
+				formattedCorpNameList.add(corpNameService.formatCorpName(corpNameService.parseParentNumber(corpName)));
 
 			}
 			searchParams.setFormattedCorpNameList(formattedCorpNameList);
@@ -209,17 +210,17 @@ public class SearchFormServiceImpl implements SearchFormService {
 			logger.debug("parentTo: check corpName " + searchParams.getCorpNameTo());
 
 			Long minParent = 0L;
-			if (CorpName.checkCorpNumber(searchParams.getCorpNameFrom())){
+			if (corpNameService.checkCorpNumber(searchParams.getCorpNameFrom())){
 				logger.debug("this look like a number: " + searchParams.getCorpNameFrom());
-				minParent = CorpName.parseCorpNumber(searchParams.getCorpNameFrom());	
+				minParent = corpNameService.parseCorpNumber(searchParams.getCorpNameFrom());	
 				searchParams.setMinParentNumber(minParent);
-			} if (CorpName.checkBuidNumber(searchParams.getCorpNameFrom())){
+			} if (corpNameService.checkBuidNumber(searchParams.getCorpNameFrom())){
 				logger.debug("Oops: trying to search for a range of BUID numbers. Not supported. " + searchParams.getCorpNameFrom());
 				//force the search on the bad corp name to prevent a cartesian search
 				searchParams.setParentCorpName(searchParams.getCorpNameFrom());
 			} else {
 				String corpName = searchParams.getCorpNameFrom();
-				minParent = CorpName.convertToParentNumber(corpName);
+				minParent = corpNameService.convertToParentNumber(corpName);
 				searchParams.setMinParentNumber(minParent);
 			}
 			logger.debug("parentFrom: " + minParent);
@@ -230,15 +231,15 @@ public class SearchFormServiceImpl implements SearchFormService {
 
 			if (minParent != 0){
 				searchParams.setMaxParentNumber(minParent);
-				if (CorpName.checkCorpNumber(corpNameTo)){
+				if (corpNameService.checkCorpNumber(corpNameTo)){
 					logger.debug("corpNameTo looks like a number. " + searchParams.getCorpNameTo());
-					maxParent = CorpName.parseCorpNumber(corpNameTo);
+					maxParent = corpNameService.parseCorpNumber(corpNameTo);
 					logger.debug("parentTo: " + maxParent);	
 					searchParams.setMaxParentNumber(maxParent);
 				} else {
 					String corpName = searchParams.getCorpNameTo();
 					logger.debug("query corpNameTo: " + searchParams.getCorpNameTo());
-					maxParent = CorpName.convertToParentNumber(corpName);
+					maxParent = corpNameService.convertToParentNumber(corpName);
 					searchParams.setMaxParentNumber(maxParent);
 					logger.debug("parentTo: " + searchParams.getMaxParentNumber());	
 
@@ -252,22 +253,22 @@ public class SearchFormServiceImpl implements SearchFormService {
 			searchParams.setValuesSet(true);
 			String corpName = searchParams.getCorpNameFrom();
 			Long minParent = 0L;
-			if (CorpName.checkCorpNumber(searchParams.getCorpNameFrom())){
+			if (corpNameService.checkCorpNumber(searchParams.getCorpNameFrom())){
 				logger.debug("this look like a number: " + searchParams.getCorpNameFrom());
-				minParent = CorpName.parseCorpNumber(searchParams.getCorpNameFrom());	
+				minParent = corpNameService.parseCorpNumber(searchParams.getCorpNameFrom());	
 				searchParams.setMinParentNumber(minParent);
 				searchParams.setMaxParentNumber(minParent);
-			} else if (CorpName.checkBuidNumber(corpName)){
-				Long buidNumber = CorpName.convertToBuidNumber(corpName);
+			} else if (corpNameService.checkBuidNumber(corpName)){
+				Long buidNumber = corpNameService.convertToBuidNumber(corpName);
 				searchParams.setBuidNumber(buidNumber);
 				logger.debug("Converted BUID Number = " + corpName);
 			} else {
-				if (searchParams.getCorpNameFrom().matches("^.*?"+corpSeparator+"([0-9]{1,9})"+batchSeparator+".*?$")){
+				if (searchParams.getCorpNameFrom().matches("^.*?"+ propertiesUtilService.getCorpSeparator()+"([0-9]{1,9})"+propertiesUtilService.getBatchSeparator()+".*?$")){
 					searchParams.setLotCorpName(searchParams.getCorpNameFrom());
 				}
-				else if (searchParams.getCorpNameFrom().startsWith(corpNamePrefix) || isNumber(searchParams.getCorpNameFrom())){
-					Long corpNumber = CorpName.convertToParentNumber(corpName);
-					corpName = CorpName.convertCorpNameNumber(corpNumber.toString());
+				else if (searchParams.getCorpNameFrom().startsWith(propertiesUtilService.getCorpPrefix()) || isNumber(searchParams.getCorpNameFrom())){
+					Long corpNumber = corpNameService.convertToParentNumber(corpName);
+					corpName = corpNameService.convertCorpNameNumber(corpNumber.toString());
 					searchParams.setParentCorpName(corpName);				
 					logger.debug("Converted corpName = " + corpName);					
 				} else {
@@ -278,8 +279,8 @@ public class SearchFormServiceImpl implements SearchFormService {
 		} else if (searchParams.getCorpNameFrom().equals("") && !searchParams.getCorpNameTo().equals("")){
 			searchParams.setValuesSet(true);
 			String corpName = searchParams.getCorpNameTo();
-			Long corpNumber = CorpName.convertToParentNumber(corpName);
-			corpName = CorpName.convertCorpNameNumber(corpNumber.toString());
+			Long corpNumber = corpNameService.convertToParentNumber(corpName);
+			corpName = corpNameService.convertCorpNameNumber(corpNumber.toString());
 			searchParams.setParentCorpName(corpName);
 			logger.debug("Converted corpName = " + corpName);
 		}
@@ -313,7 +314,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 			for (SaltForm saltForm : saltForms){
 				SearchCompoundReturnDTO searchCompound = new SearchCompoundReturnDTO();
 				if (saltForm.getCdId() == 0){
-					if(Configuration.getConfigInfo().getMetaLot().isSaltBeforeLot()){
+					if(propertiesUtilService.getSaltBeforeLot()){
 						searchCompound.setCorpName(saltForm.getCorpName());
 						searchCompound.setCorpNameType("SaltForm");
 					}else{
@@ -493,7 +494,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 							searchCompound.setMolStructure(saltFormMols.get(saltForm.getCorpName()).getMolStructure());
 						} else {
 							// searchCompound.setMolStructure(hitMol.toFormat("mrv"));
-							if(Configuration.getConfigInfo().getMetaLot().isSaltBeforeLot()){
+							if(propertiesUtilService.getSaltBeforeLot()){
 								searchCompound.setCorpName(saltForm.getCorpName());
 								searchCompound.setCorpNameType("SaltForm");
 							}else{
@@ -596,7 +597,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 		//Construct wrapper object and filter out results by project
 		SearchFormReturnDTO results = new SearchFormReturnDTO();
 		results.setFoundCompounds(foundCompounds);
-		if(Configuration.getConfigInfo().getServerSettings().isProjectRestrictions()) results = filterSearchResultsByProject(results, searchParams.getProjects());
+		if(propertiesUtilService.getProjectRestrictions()) results = filterSearchResultsByProject(results, searchParams.getProjects());
 		
 		return results;
 

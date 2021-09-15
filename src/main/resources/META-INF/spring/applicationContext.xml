@@ -6,7 +6,6 @@
 		application context files in the form of ${propertyKey}. -->
 
     <context:property-placeholder ignore-resource-not-found="true"  location="file://${ACAS_HOME}/conf/compiled/conf.properties" order="1" ignore-unresolvable="true" />
-    <context:property-placeholder ignore-resource-not-found="true"  location="file:///mnt/environments/acas/acas.env" order="2" ignore-unresolvable="true" />
 
  
   <context:property-placeholder ignore-unresolvable="true" location="classpath*:META-INF/spring/*.properties" order="3"/>
@@ -74,8 +73,8 @@
 	<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
 		<property name="baselineOnMigrate" value="false" />
 		<property name="outOfOrder" value="true" />
-		<property name="locations" value="${flyway.location}" />
-		<property name="schemas" value="${flyway.schema}" />
+		<property name="locations" value="${server.flyway.location}" />
+		<property name="schemas" value="${server.database.schema}" />
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	

@@ -24,9 +24,7 @@ public class MoleculeUtil {
 	}
 
 	public static boolean validateMolProperty(CmpdRegMolecule mol, String propName){
-		
-		String jchemVersion = Configuration.getConfigInfo().getServerSettings().getJchemVersion();
-		
+				
 		// note: new method introduced in 5.7 - deprecates the method below
 		// (MPropHandler.convertToString(mol.properties(), "date_submitted")
 		boolean validProperty = false;

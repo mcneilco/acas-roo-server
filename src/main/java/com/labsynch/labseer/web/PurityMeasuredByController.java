@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.PurityMeasuredBy;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
+
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @RequestMapping({"/puritymeasuredbys","/purityMeasuredBys"})
@@ -30,7 +31,8 @@ import com.labsynch.labseer.utils.Configuration;
 public class PurityMeasuredByController {
 
 
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
@@ -62,7 +64,7 @@ public class PurityMeasuredByController {
 		headers.add("Pragma","no-cache"); //HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 
-		if (mainConfig.getServerSettings().isOrderSelectLists()){
+		if (propertiesUtilService.getOrderSelectLists()){
 	        return new ResponseEntity<String>(PurityMeasuredBy.toJsonArray(PurityMeasuredBy.findAllPurityMeasuredBys("name", "ASC")), headers, HttpStatus.OK);
 		} else {
 	        return new ResponseEntity<String>(PurityMeasuredBy.toJsonArray(PurityMeasuredBy.findAllPurityMeasuredBys()), headers, HttpStatus.OK);

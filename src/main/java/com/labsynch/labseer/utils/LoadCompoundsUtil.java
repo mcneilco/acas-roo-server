@@ -36,6 +36,7 @@ import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.dto.Metalot;
 import com.labsynch.labseer.dto.MetalotReturn;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.CorpNameService;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.MetalotService;
 
@@ -47,12 +48,18 @@ public class LoadCompoundsUtil {
 
 	@Autowired
 	private MetalotService metalotServ;
-	
+
+	@Autowired
+	private CorpNameService corpNameService;
+
 	@Autowired
 	private CmpdRegSDFReaderFactory sdfReaderFactory;
 	
 	@Autowired
 	private CmpdRegSDFWriterFactory sdfWriterFactory;
+
+	@Autowired	
+	private PropertiesUtilService propertiesUtilService;
 
     @Transactional
 	public void loadCompounds(String inputFileName, String outputFileName){
@@ -127,7 +134,7 @@ public class LoadCompoundsUtil {
 					chemist = Author.findAuthorsByUserName(chemistCodeName).getSingleResult();
 				}
 
-				String parentCorpName = CorpName.formatCorpName(cmpdCorpId);
+				String parentCorpName = corpNameService.formatCorpName(cmpdCorpId);
 				Parent parent = null;
 				try{
 					parent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
@@ -220,7 +227,7 @@ public class LoadCompoundsUtil {
 						}	
 					}
 				}
-				String saltFormCorpName = CorpName.generateSaltFormCorpName(parent.getCorpName(), isoSalts);
+				String saltFormCorpName = corpNameService.generateSaltFormCorpName(parent.getCorpName(), isoSalts);
 				SaltForm saltForm = null;
 				try{
 					saltForm = SaltForm.findSaltFormsByCorpNameEquals(saltFormCorpName).getSingleResult();	    		
@@ -249,7 +256,7 @@ public class LoadCompoundsUtil {
 						goodMolToProcess = false;
 					}
 				}
-				String lotCorpName = saltForm.getCorpName().concat(CorpName.separator).concat(String.format("%02d", lotNumber));
+				String lotCorpName = saltForm.getCorpName().concat(propertiesUtilService.getCorpSeparator()).concat(String.format("%02d", lotNumber));
 
 
 				Lot lot = null;

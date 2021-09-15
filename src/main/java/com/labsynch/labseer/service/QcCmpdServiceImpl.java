@@ -22,17 +22,14 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.QcCompound;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
 @Service
 public class QcCmpdServiceImpl implements QcCmpdService {
 
 	Logger logger = LoggerFactory.getLogger(QcCmpdServiceImpl.class);
-
-	public static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
 
 	@Autowired
 	public ChemStructureService chemStructureService;
