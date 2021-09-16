@@ -19,9 +19,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import com.labsynch.labseer.utils.MimeTypeUtil;
 
+@Configurable
 @RooJavaBean
 @RooToString
 @RooJson
