@@ -20,4 +20,22 @@ public interface LotService {
 
 	public Collection<LotsByProjectDTO> getLotsByProjectsList(List<String> projects);
 
+	String generateSaltFormLotName(Lot lot);
+
+	String appendSaltCode(String corpName, Lot lot);
+
+	String generateParentLotName(Lot lot);
+
+	String generateCasStyleLotName(Lot lot);
+
+	int generateSaltFormLotNumber(Lot lot);
+
+	int generateCasCheckDigit(String inputCasLabel);
+
+	String generateCorpName(Lot lot);
+
+	int generateLotNumber(Lot lot);
+
+	int generateParentLotNumber(Lot lot);
+
 }

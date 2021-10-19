@@ -3,11 +3,6 @@
     <jsp:output omit-xml-declaration="yes"/>
     <menu:menu id="_menu" z="user-managed">
         <menu:gvnixmenu/>
-        <menu:category id="c_qccompound" z="xYiBmASgLvZsBzTl4ciCL0wZpls=">
-            <menu:item id="i_qccompound_new" messageCode="global_menu_new" url="/qccompounds?form" z="44fOfP2fyH+/itfQXgUiRBBh4pY="/>
-            <menu:item id="i_qccompound_list" messageCode="global_menu_list" url="/qccompounds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="ZUc8hBty5B/z7CiJAkIBF35fsqw="/>
-            <menu:item id="fi_qccompound_cdid" messageCode="global_menu_find" url="/qccompounds?find=ByCdId&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="4/i15dEiEbT6fcAA4aukkxJsl8o="/>
-        </menu:category>
         <menu:category id="c_codeorigin" z="YIlul8nVnnFkXmJTSwjIrUaiCbk=">
             <menu:item id="i_codeorigin_new" messageCode="global_menu_new" url="/codeorigins?form" z="4YkihonA/OS0RucT6PxNTrBF264="/>
             <menu:item id="i_codeorigin_list" messageCode="global_menu_list" url="/codeorigins?page=1&amp;size=${empty param.size ? 10 : param.size}" z="mXDEu129EL4jbhn0szLC72IYL8k="/>
@@ -40,6 +35,11 @@
             <menu:item id="i_codetype_new" messageCode="global_menu_new" url="/codetypes?form" z="py101QqLgRodN2GKQE6Shlifc5o="/>
             <menu:item id="i_codetype_list" messageCode="global_menu_list" url="/codetypes?page=1&amp;size=${empty param.size ? 10 : param.size}" z="eMyxDac/UFBzZNkqxw50aAkz22k="/>
             <menu:item id="fi_codetype_typenameequals" messageCode="global_menu_find" url="/codetypes?find=ByTypeNameEquals&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="zphT1fp05HqGs5+PCcRuamH/Mx0="/>
+        </menu:category>
+        <menu:category id="c_qccompound" z="xYiBmASgLvZsBzTl4ciCL0wZpls=">
+            <menu:item id="i_qccompound_new" messageCode="global_menu_new" url="/qccompounds?form" z="44fOfP2fyH+/itfQXgUiRBBh4pY="/>
+            <menu:item id="i_qccompound_list" messageCode="global_menu_list" url="/qccompounds?page=1&amp;size=${empty param.size ? 10 : param.size}" z="ZUc8hBty5B/z7CiJAkIBF35fsqw="/>
+            <menu:item id="fi_qccompound_cdid" messageCode="global_menu_find" url="/qccompounds?find=ByCdId&amp;form&amp;page=1&amp;size=${empty param.size ? 10 : param.size}" z="4/i15dEiEbT6fcAA4aukkxJsl8o="/>
         </menu:category>
         <menu:category id="c_rolekind" z="KVQVdwzOfGV720M7rpWWHWu1/ZM=">
             <menu:item id="i_rolekind_new" messageCode="global_menu_new" url="/rolekinds?form" z="pg+83KKlLmJSjIPVompKUXMYHV8="/>

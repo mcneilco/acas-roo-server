@@ -34,16 +34,19 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Component
 public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 	Logger logger = LoggerFactory.getLogger(ChemStructureServiceIndigoImpl.class);
 
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
+	
 	private boolean shouldCloseConnection = false;
 
 	public void setShouldCloseConnection(boolean shouldCloseConnection)
@@ -68,13 +71,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	{
 		return basicJdbcTemplate;
 	}
-
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
-	private static String exactSearchDef = mainConfig.getServerSettings().getExactMatchDef();
-	private static long maxSearchTime = mainConfig.getServerSettings().getMaxSearchTime();
-	private static int maxSearchResults = mainConfig.getServerSettings().getMaxSearchResults();
-	private static final boolean shouldStandardize = Configuration.getConfigInfo().getStandardizerSettings().getShouldStandardize();
-
+	
 	private Indigo indigo = new Indigo();
 	
 	@Override
@@ -182,7 +179,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 	@Override
 	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
-		int maxResultCount = maxSearchResults;
+		int maxResultCount = propertiesUtilService.getMaxSearchResults();
 		return searchMolStructures(molfile, structureTable, plainTable, searchType, simlarityPercent, maxResultCount);	
 
 	}
@@ -200,7 +197,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			e1.printStackTrace();
 		}
 		
-		long maxTime = maxSearchTime;
+		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 		//Indigo: the structures in the plainTable are being used. Ignore structureTable from here on out.
 		logger.debug("Search table is  " + plainTable);		
@@ -214,7 +211,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 
 		if (searchType.equalsIgnoreCase("EXACT")){
-			searchType = exactSearchDef;
+			searchType = propertiesUtilService.getExactMatchDef();
 		}
 
 		try {
@@ -225,14 +222,14 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			String bingoFunction = null;
 			String orderBy = " ORDER BY cd_id";
 			
-			if (shouldStandardize){
+			if (propertiesUtilService.getUseExternalStandardizerConfig()){
 				mol = standardizeMolecule(mol);
 				mol.dearomatize();				
 			} else {
 				mol.dearomatize();				
 			}
 
-			logger.debug("definition of exact search: " + exactSearchDef);
+			logger.debug("definition of exact search: " + propertiesUtilService.getExactMatchDef());
 			logger.debug("selected search type: " + searchType);
 			
 			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")) {
@@ -375,7 +372,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	@Override
 	@Transactional
 	public CmpdRegMolecule[] searchMols(String molfile, String structureTable, int[] inputCdIdHitList, String plainTable, String searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
-		int maxResults = maxSearchResults;
+		int maxResults = propertiesUtilService.getMaxSearchResults();
 		return searchMols(molfile, structureTable, inputCdIdHitList, plainTable, searchType, simlarityPercent, maxResults);
 	}
 
@@ -392,7 +389,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			e1.printStackTrace();
 		}
 		
-		long maxTime = maxSearchTime;
+		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 		//Indigo: the structures in the plainTable are being used. Ignore structureTable from here on out.
 		logger.debug("Search table is  " + plainTable);		
@@ -406,7 +403,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 
 		if (searchType.equalsIgnoreCase("EXACT")){
-			searchType = exactSearchDef;
+			searchType = propertiesUtilService.getExactMatchDef();
 		}
 		
 		List<CmpdRegMoleculeIndigoImpl> moleculeList = new ArrayList<CmpdRegMoleculeIndigoImpl>();
@@ -419,14 +416,14 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			String orderBy = " ORDER BY cd_id";
 			String filterIdsClause = "";
 			
-			if (shouldStandardize){
+			if (propertiesUtilService.getUseExternalStandardizerConfig()){
 				mol = standardizeMolecule(mol);
 				mol.aromatize();				
 			} else {
 				mol.aromatize();				
 			}
 
-			logger.debug("definition of exact search: " + exactSearchDef);
+			logger.debug("definition of exact search: " + propertiesUtilService.getExactMatchDef());
 			logger.debug("selected search type: " + searchType);
 			
 			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")) {

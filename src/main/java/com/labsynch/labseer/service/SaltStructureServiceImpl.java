@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
 public class SaltStructureServiceImpl implements SaltStructureService {
@@ -18,6 +18,9 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 	@Autowired
 	private ChemStructureService chemStructureService;
 
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
+	
 	Logger logger = LoggerFactory.getLogger(SaltStructureService.class);
 
 
@@ -29,7 +32,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		salt.setOriginalStructure(salt.getMolStructure());
 		salt.setMolStructure(mol.getMolStructure());
 		salt.setFormula(mol.getFormula());
-		if (Configuration.getConfigInfo().getMetaLot().isUseExactMass()){
+		if (propertiesUtilService.getUseExactMass()){
 			salt.setMolWeight(mol.getExactMass());
 		}else{
 			salt.setMolWeight(mol.getMass());

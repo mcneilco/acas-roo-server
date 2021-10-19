@@ -42,7 +42,7 @@ import com.labsynch.labseer.dto.Metalot;
 import com.labsynch.labseer.dto.MetalotReturn;
 import com.labsynch.labseer.dto.SetTubeLocationDTO;
 import com.labsynch.labseer.dto.WellContentDTO;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.DupeSaltFormCorpNameException;
@@ -52,6 +52,7 @@ import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
 import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.exceptions.UniqueNotebookException;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -62,6 +63,12 @@ public class MetalotServiceImpl implements MetalotService {
 	@Autowired
 	private ChemStructureService chemService;
 
+	@Autowired
+	private LotService lotService;
+
+	@Autowired
+	private CorpNameService corpNameService;
+    
 	@Autowired
 	private LDStandardizerService ldStandardizerService;
 
@@ -75,16 +82,18 @@ public class MetalotServiceImpl implements MetalotService {
 	private SaltFormService saltFormService;
 
 	@Autowired
+	private IsoSaltService isoSaltService;
+
+	@Autowired
 	private LotAliasService lotAliasService;
 
 
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
-	private static final Logger logger = LoggerFactory.getLogger(MetalotServiceImpl.class);
-	public static final String corpParentFormat = Configuration.getConfigInfo().getServerSettings().getCorpParentFormat();
-	private static final boolean shouldStandardize = Configuration.getConfigInfo().getStandardizerSettings().getShouldStandardize();
-    private static final String standardizerType = Configuration.getConfigInfo().getStandardizerSettings().getType();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
-//	@Transactional
+	private static final Logger logger = LoggerFactory.getLogger(MetalotServiceImpl.class);
+
+	//	@Transactional
 	@Override
 	public MetalotReturn save(Metalot metaLot){
 
@@ -186,7 +195,7 @@ public class MetalotServiceImpl implements MetalotService {
 
 
 		if (lot.getId() == null ){
-			if (mainConfig.getServerSettings().isUniqueNotebook() && lot.getNotebookPage() != null){
+			if (propertiesUtilService.getUniqueNotebook() && lot.getNotebookPage() != null){
 				boolean duplicateNotebook = false;
 				try {
 					duplicateNotebook = checkUniqueNotebook(lot);
@@ -217,7 +226,7 @@ public class MetalotServiceImpl implements MetalotService {
 		if (parent.getId() == null){
 			logger.debug("this is a new parent");
 			String molStructure;
-			if (shouldStandardize){
+			if (propertiesUtilService.getUseExternalStandardizerConfig()){
 
 				switch (standardizerType) {
 				case "livedesign":
@@ -234,7 +243,7 @@ public class MetalotServiceImpl implements MetalotService {
 			int dupeParentCount = 0;			
 			if (!metaLot.isSkipParentDupeCheck()){
 				int[] dupeParentList = {};
-				if(mainConfig.getServerSettings().isRegisterNoStructureCompoundsAsUniqueParents() && chemService.getMolWeight(parent.getMolStructure()) == 0.0) {
+				if(propertiesUtilService.getRegisterNoStructureCompoundsAsUniqueParents() && chemService.getMolWeight(parent.getMolStructure()) == 0.0) {
 					//if true then we are no checking this one for hits
 					logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 				} else {
@@ -354,7 +363,7 @@ public class MetalotServiceImpl implements MetalotService {
 					}
 					//try to set the parentNumber if it is not set already
 					if (parent.getParentNumber() < 1){
-						parent.setParentNumber(CorpName.parseParentNumber(parent.getCorpName()));
+						parent.setParentNumber(corpNameService.parseParentNumber(parent.getCorpName()));
 					}
 					logger.debug("Saving new parent with corp name "+parent.getCorpName()+" and parent number "+parent.getParentNumber());
 					parent.persist();
@@ -370,7 +379,6 @@ public class MetalotServiceImpl implements MetalotService {
 		if (!dupeParent){
 
 			logger.info("not a dupe parent");
-			MainConfigDTO mainConfig = Configuration.getConfigInfo();
 
 			//save parent aliases
 			logger.info("--------- Number of parentAliases to save: " + parentAliases.size());
@@ -388,13 +396,13 @@ public class MetalotServiceImpl implements MetalotService {
 				int cdId = 0;
 				System.out.println("this is a new saltForm");
 
-				String saltFormCorpName = CorpName.generateSaltFormCorpName(parent.getCorpName(), metaLot.getIsosalts());
+				String saltFormCorpName = corpNameService.generateSaltFormCorpName(parent.getCorpName(), metaLot.getIsosalts());
 				saltForm.setCorpName(saltFormCorpName);
 				logger.debug("saltForm corpName:= " + saltForm.getCorpName());
 				long saltFormCount = SaltForm.countSaltFormsByCorpNameEquals(saltFormCorpName);
 				logger.debug("number of saltForms found by corpName: " + saltFormCount);
 				if (saltFormCount > 0){
-					if(mainConfig.getMetaLot().isSaltBeforeLot()){
+					if(propertiesUtilService.getSaltBeforeLot()){
 						saltFormError.setLevel("warning");
 						saltFormError.setMessage("Duplicate saltForm found by corpName. Please select existing saltForm.");
 						errors.add(saltFormError);	
@@ -447,14 +455,14 @@ public class MetalotServiceImpl implements MetalotService {
 				logger.debug("Checking if SaltForm needs to be updated");
 				saltForm = saltFormService.updateSaltForm(parent, saltForm, isoSalts, lot, totalSaltWeight, errors);
 				lot.setSaltForm(saltForm);
-				totalSaltWeight = SaltForm.calculateSaltWeight(saltForm);
+				totalSaltWeight = saltFormService.calculateSaltWeight(saltForm);
 				logger.debug("calculate saltWeight: " + totalSaltWeight);
 			} else if (newSaltForm && !metalotError){
 				logger.debug("saving new set of isoSalts. Number of salts: " + isoSalts.size());
 				for (IsoSalt isoSalt : isoSalts ){
 					isoSalt.setSaltForm(saltForm);
 					isoSalt.persist();
-					double saltWeight = IsoSalt.calculateSaltWeight(isoSalt);
+					double saltWeight = isoSaltService.calculateSaltWeight(isoSalt);
 					totalSaltWeight = totalSaltWeight + saltWeight;
 					logger.debug("current totalSaltWeigth: " + totalSaltWeight);	
 				}
@@ -475,7 +483,7 @@ public class MetalotServiceImpl implements MetalotService {
 					lot.setSaltForm(saltForm);
 					//lot.setParent(parent);
 					if(lot.getCorpName() == null || lot.getCorpName().trim().equalsIgnoreCase("")){
-						lot.setCorpName(lot.generateCorpName());
+						lot.setCorpName(lotService.generateCorpName(lot));
 					}
 					if (lot.getRegistrationDate() == null){
 						lot.setRegistrationDate(new Date());				
@@ -508,7 +516,7 @@ public class MetalotServiceImpl implements MetalotService {
 					} catch (Exception e){
 						logger.error("Caught an exception saving the lot: " + e);
 						//get a new corp name and try saving again
-						lot.setCorpName(lot.generateCorpName());	
+						lot.setCorpName(lotService.generateCorpName(lot));	
 						lot.persist();
 						if (!lot.getIsVirtual()){
 							if (lot.getBuid() == 0){
@@ -539,9 +547,9 @@ public class MetalotServiceImpl implements MetalotService {
 					lot = lotAliasService.updateLotAliases(lot, lotAliases);
 					if (logger.isDebugEnabled()) logger.debug("Lot aliases after save: "+ LotAlias.toJsonArray(lot.getLotAliases()));
 					
-					if (mainConfig.getServerSettings().isCompoundInventory()) {
+					if (propertiesUtilService.getCompoundInventory()) {
 						boolean hasBarcode = (lot.getBarcode() != null && lot.getBarcode().length() > 0);
-						if (hasBarcode || !mainConfig.getServerSettings().isDisableTubeCreationIfNoBarcode() ) {
+						if (hasBarcode || !propertiesUtilService.getDisableTubeCreationIfNoBarcode() ) {
 							createNewTube(lot);
 						}
 					}
@@ -701,7 +709,7 @@ public class MetalotServiceImpl implements MetalotService {
 
 	@Transactional
 	private void createNewTube(Lot lot) throws MalformedURLException, IOException, NoResultException, NonUniqueResultException {
-		String baseurl = mainConfig.getServerConnection().getAcasURL();
+		String baseurl = propertiesUtilService.getAcasURL();
 		String url = baseurl + "containers?";
 		Map<String, String> queryParams = new HashMap<String, String>();
 		queryParams.put("lsType","definition container");
@@ -763,8 +771,7 @@ public class MetalotServiceImpl implements MetalotService {
 			}
 			Collection<SetTubeLocationDTO> moveDTOs = new ArrayList<SetTubeLocationDTO>();
 			moveDTOs.add(moveDTO);
-			String acasAppUrl = mainConfig.getServerConnection().getAcasAppURL();
-			url = acasAppUrl + "setLocationByBreadCrumb";
+			url = propertiesUtilService.getAcasAppURL() + "setLocationByBreadCrumb";
 			try {
 				String setLocationResponse = SimpleUtil.postRequestToExternalServer(url, SetTubeLocationDTO.toJsonArray(moveDTOs), logger);
 				logger.debug("Successfully set location: ");
@@ -818,27 +825,27 @@ public class MetalotServiceImpl implements MetalotService {
 	}
 	
 	private void generateAndSetCorpName(Parent parent) throws MalformedURLException, IOException {
-		if (corpParentFormat.equalsIgnoreCase("license_plate_format")){
-			parent.setCorpName(CorpName.generateCorpLicensePlate());
+		if (propertiesUtilService.getCorpParentFormat().equalsIgnoreCase("license_plate_format")){
+			parent.setCorpName(corpNameService.generateCorpLicensePlate());
 			//TODO: set parent number if required
-		} else if (corpParentFormat.equalsIgnoreCase("pre_defined_format")){
+		} else if (propertiesUtilService.getCorpParentFormat().equalsIgnoreCase("pre_defined_format")){
 			PreDef_CorpName preDef_CorpName = PreDef_CorpName.findNextCorpName();
 			parent.setCorpName(preDef_CorpName.getCorpName());
 			preDef_CorpName.setUsed(true);
 			preDef_CorpName.persist();
 			parent.setParentNumber(preDef_CorpName.getCorpNumber());							
-		} else if (corpParentFormat.equalsIgnoreCase("ACASLabelSequence")) {
+		} else if (propertiesUtilService.getCorpParentFormat().equalsIgnoreCase("ACASLabelSequence")) {
 			LabelPrefixDTO labelPrefixDTO = parent.getLabelPrefix();
 			labelPrefixDTO.setNumberOfLabels(1L);
 			labelPrefixDTO.setLabelPrefix(labelPrefixDTO.getName());
-			String url = mainConfig.getServerConnection().getAcasURL()+"labelsequences/getLabels";
+			String url = propertiesUtilService.getAcasURL()+"labelsequences/getLabels";
 			String jsonContent = labelPrefixDTO.toSafeJson();
 			String responseJson = SimpleUtil.postRequestToExternalServer(url, jsonContent, logger);
 			AutoLabelDTO autoLabel = AutoLabelDTO.fromJsonArrayToAutoes(responseJson).iterator().next();
 			parent.setCorpName(autoLabel.getAutoLabel());
 			parent.setParentNumber(autoLabel.getLabelNumber());
 		} else {
-			CorpNameDTO corpName = CorpName.generateParentNameFromSequence();
+			CorpNameDTO corpName = corpNameService.generateParentNameFromSequence();
 			parent.setCorpName(corpName.getCorpName());
 			parent.setParentNumber(corpName.getCorpNumber());
 		}

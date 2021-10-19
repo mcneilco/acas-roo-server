@@ -21,15 +21,11 @@ import com.labsynch.labseer.dto.ParentAliasDTO;
 import com.labsynch.labseer.dto.ParentDTO;
 import com.labsynch.labseer.dto.ParentEditDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.MoleculeUtil;
+import com.labsynch.labseer.utils.Configuration;
 
 
 
@@ -38,9 +34,9 @@ public class ParentServiceImpl implements ParentService {
 
 	Logger logger = LoggerFactory.getLogger(ParentServiceImpl.class);
 
-	public static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
-	private static Boolean registerNoStructureCompoundsAsUniqueParents = mainConfig.getServerSettings().isRegisterNoStructureCompoundsAsUniqueParents();
 	@Autowired
 	public ChemStructureService chemStructureService;
 
@@ -59,18 +55,6 @@ public class ParentServiceImpl implements ParentService {
 	
 	@Autowired
 	public CmpdRegMoleculeFactory cmpdRegMoleculeFactory;
-
-	@Override
-	public Collection<CodeTableDTO> updateParent(Parent parent){
-		Set<ParentAlias> parentAliases = parent.getParentAliases();
-		parent = parentStructureService.update(parent);
-		//save parent aliases
-		logger.info("--------- Number of parentAliases to save: " + parentAliases.size());
-		parent = parentAliasService.updateParentAliases(parent, parentAliases);
-		if (logger.isDebugEnabled()) logger.debug("Parent aliases after save: "+ ParentAlias.toJsonArray(parent.getParentAliases()));
-		Collection<CodeTableDTO> affectedLots = parentLotService.getCodeTableLotsByParentCorpName(parent.getCorpName());
-		return affectedLots;
-	}
 
 	@Override
 	@Transactional
@@ -99,7 +83,7 @@ public class ParentServiceImpl implements ParentService {
 		}
 		Collection<ParentDTO> dupeParents = new HashSet<ParentDTO>();
 		int[] dupeParentList = {};
-		if (mainConfig.getServerSettings().isRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(queryParent.getMolStructure()) ) {
+		if (propertiesUtilService.getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(queryParent.getMolStructure()) ) {
 			logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} {
 			dupeParentList = chemStructureService.checkDupeMol(queryParent.getMolStructure(), "Parent_Structure", "Parent");

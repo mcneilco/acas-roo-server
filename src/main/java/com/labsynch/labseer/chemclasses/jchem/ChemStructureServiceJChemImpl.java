@@ -27,10 +27,10 @@ import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import chemaxon.calculations.cip.CIPStereoCalculator;
 import chemaxon.calculations.clean.Cleaner;
@@ -91,12 +91,8 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		return basicJdbcTemplate;
 	}
 
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
-	private static String exactSearchDef = mainConfig.getServerSettings().getExactMatchDef();
-	private static long maxSearchTime = mainConfig.getServerSettings().getMaxSearchTime();
-	private static int maxSearchResults = mainConfig.getServerSettings().getMaxSearchResults();
-	private static final boolean shouldStandardize = Configuration.getConfigInfo().getStandardizerSettings().getShouldStandardize();
-    private static final String standardizerConfigFilePath = Configuration.getConfigInfo().getStandardizerSettings().getJchemSettings().getStandardizerConfigFilePath();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@Override
 	public int getCount(String structureTable) {
@@ -159,7 +155,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		// create Standardizer based on a XML configuration file
 		String molOut = null;
 		try {
-			Standardizer standardizer = new Standardizer(new File(standardizerConfigFilePath));
+			Standardizer standardizer = new Standardizer(new File(propertiesUtilService.getStandardizerConfigFilePath()));
 			MolHandler mh = new MolHandler(molfile);
 			Molecule molecule = mh.getMolecule();
 			// standardize molecule
@@ -183,7 +179,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		// service to standardize input structure
 		// return standardized structure
 		// create Standardizer based on a XML configuration file
-		Standardizer standardizer = new Standardizer(new File(standardizerConfigFilePath));
+		Standardizer standardizer = new Standardizer(new File(propertiesUtilService.getStandardizerConfigFilePath()));
 		try {
 			// standardize molecule
 			standardizer.standardize(molecule);
@@ -380,7 +376,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 	@Override
 	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType, Float simlarityPercent) {
-		int maxResultCount = maxSearchResults;
+		int maxResultCount = propertiesUtilService.getMaxSearchResults();
 		return searchMolStructures(molfile, structureTable, plainTable, searchType, simlarityPercent, maxResultCount);	
 
 	}
@@ -401,7 +397,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		ch.setConnection(conn);
 
 		CacheRegistrationUtil cru = null;
-		long maxTime = maxSearchTime;
+		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 
 		if (logger.isDebugEnabled()) logger.debug("Search table is  " + structureTable);		
@@ -410,7 +406,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 
 		if (searchType.equalsIgnoreCase("EXACT")){
-			searchType = exactSearchDef;
+			searchType = propertiesUtilService.getExactMatchDef();
 		}
 
 		MolHandler mh = null;
@@ -464,7 +460,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			mh = new MolHandler(molfile);
 			Molecule mol = mh.getMolecule();
 
-			if (shouldStandardize){
+			if (propertiesUtilService.getUseExternalStandardizerConfig()){
 				mol = standardizeMolecule(mol);
 				mol.aromatize();				
 			} else {
@@ -476,7 +472,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			searcher.setConnectionHandler(ch);
 			searcher.setStructureTable(structureTable);
 
-			if (logger.isDebugEnabled()) logger.debug("definition of exact search: " + exactSearchDef);
+			if (logger.isDebugEnabled()) logger.debug("definition of exact search: " + propertiesUtilService.getExactMatchDef());
 			if (logger.isDebugEnabled()) logger.debug("selected search type: " + searchType);
 
 			JChemSearchOptions searchOptions = null;
@@ -645,15 +641,15 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		}
 		CacheRegistrationUtil cru = null;
 
-		long maxTime = maxSearchTime;
-		int maxResultCount = maxSearchResults;
+		long maxTime = propertiesUtilService.getMaxSearchTime();
+		int maxResultCount = propertiesUtilService.getMaxSearchResults();
 
 		if (logger.isDebugEnabled()) logger.debug("Search table is  " + structureTable);		
 		if (logger.isDebugEnabled()) logger.debug("Search type is  " + searchType);	
 		if (logger.isDebugEnabled()) logger.debug("search mol is: " + molfile);
 
 		if (searchType.equalsIgnoreCase("EXACT")){
-			searchType = exactSearchDef;
+			searchType = propertiesUtilService.getExactMatchDef();
 		}
 
 		MolHandler mh = null;
@@ -701,7 +697,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			searcher.setStructureTable(structureTable);
 			JChemSearchOptions searchOptions = null;
 
-			if (logger.isDebugEnabled()) logger.debug("definition of exact search: " + exactSearchDef);
+			if (logger.isDebugEnabled()) logger.debug("definition of exact search: " + propertiesUtilService.getExactMatchDef());
 			if (logger.isDebugEnabled()) logger.debug("selected search type: " + searchType);
 
 
@@ -880,7 +876,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		}
 		CacheRegistrationUtil cru = null;
 
-		long maxTime = maxSearchTime;
+		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 
 		if (logger.isDebugEnabled()) logger.debug("Search table is  " + structureTable);		
@@ -888,7 +884,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		if (logger.isDebugEnabled()) logger.debug("search mol is: " + molfile);
 
 		if (searchType.equalsIgnoreCase("EXACT")){
-			searchType = exactSearchDef;
+			searchType = propertiesUtilService.getExactMatchDef();
 		}
 
 		MolHandler mh = null;
@@ -936,7 +932,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			searcher.setStructureTable(structureTable);
 			JChemSearchOptions searchOptions = null;
 
-			if (logger.isDebugEnabled()) logger.debug("definition of exact search: " + exactSearchDef);
+			if (logger.isDebugEnabled()) logger.debug("definition of exact search: " + propertiesUtilService.getExactMatchDef());
 			if (logger.isDebugEnabled()) logger.debug("selected search type: " + searchType);
 
 

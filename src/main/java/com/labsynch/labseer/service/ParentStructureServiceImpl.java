@@ -13,7 +13,6 @@ import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.MoleculeUtil;
 import com.labsynch.labseer.utils.SecurityUtil;
 
