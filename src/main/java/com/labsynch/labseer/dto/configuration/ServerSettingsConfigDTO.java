@@ -57,12 +57,6 @@ public class ServerSettingsConfigDTO {
     
     private String databaseType;
     
-    private boolean standardizeStructure;
-
-    private boolean useExternalStandardizerConfig;
-    
-    private String standardizerConfigFilePath;
-
     private boolean usePredefinedList;
     
     private boolean newUserIsChemist;

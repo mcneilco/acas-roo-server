@@ -2,12 +2,14 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StandardizerException;
 
 @Service
 public interface ChemStructureService {
@@ -87,12 +89,19 @@ public interface ChemStructureService {
 
 	StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException;
 
-	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, IOException;
+	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, StandardizerException, IOException;
 
 	public boolean compareStructures(String preMolStruct, String postMolStruct, String string);
 
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException;
 
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException;
+
+	default boolean isIdenticalDisplay(String molStructure, String molStructure2) {
+		//strip the first 2 lines of each mol and do a string equals
+		String mol1 = molStructure.substring(StringUtils.ordinalIndexOf(molStructure, "\n", 2)+1);
+		String mol2 = molStructure2.substring(StringUtils.ordinalIndexOf(molStructure2, "\n", 2)+1);
+		return(mol1.equals(mol2));
+	}
 	
 }

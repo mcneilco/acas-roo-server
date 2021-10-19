@@ -199,30 +199,6 @@ privileged aspect ServerSettingsConfigDTO_Roo_JavaBean {
         this.databaseType = databaseType;
     }
     
-    public boolean ServerSettingsConfigDTO.isStandardizeStructure() {
-        return this.standardizeStructure;
-    }
-    
-    public void ServerSettingsConfigDTO.setStandardizeStructure(boolean standardizeStructure) {
-        this.standardizeStructure = standardizeStructure;
-    }
-    
-    public boolean ServerSettingsConfigDTO.isUseExternalStandardizerConfig() {
-        return this.useExternalStandardizerConfig;
-    }
-    
-    public void ServerSettingsConfigDTO.setUseExternalStandardizerConfig(boolean useExternalStandardizerConfig) {
-        this.useExternalStandardizerConfig = useExternalStandardizerConfig;
-    }
-    
-    public String ServerSettingsConfigDTO.getStandardizerConfigFilePath() {
-        return this.standardizerConfigFilePath;
-    }
-    
-    public void ServerSettingsConfigDTO.setStandardizerConfigFilePath(String standardizerConfigFilePath) {
-        this.standardizerConfigFilePath = standardizerConfigFilePath;
-    }
-    
     public boolean ServerSettingsConfigDTO.isUsePredefinedList() {
         return this.usePredefinedList;
     }
@@ -254,8 +230,8 @@ privileged aspect ServerSettingsConfigDTO_Roo_JavaBean {
     public void ServerSettingsConfigDTO.setCheckACASDependenciesByContainerCode(boolean checkACASDependenciesByContainerCode) {
         this.checkACASDependenciesByContainerCode = checkACASDependenciesByContainerCode;
     }
-
-    public boolean ServerSettingsConfigDTO.getRegisterNoStructureCompoundsAsUniqueParents() {
+    
+    public boolean ServerSettingsConfigDTO.isRegisterNoStructureCompoundsAsUniqueParents() {
         return this.registerNoStructureCompoundsAsUniqueParents;
     }
     

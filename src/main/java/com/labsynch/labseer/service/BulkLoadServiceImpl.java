@@ -671,7 +671,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			throw new MissingPropertyException("Stereo category is See Comments, but no stereo comment provided");
 		}
 		int[] dupeParentList = {};
-		if(mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(parent.getMolStructure()) ) {
+		if(mainConfig.getServerSettings().isRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(parent.getMolStructure()) ) {
 			//if true then we are no checking this one for hits
 			logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} else {

@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.service.StructureImageService;
 
 @RequestMapping("/structureimage")
@@ -158,6 +159,56 @@ public class StructureImageController {
         Parent parent = Parent.findParentsByCorpNameEquals(corpName).getSingleResult();      
         byte[] image = structureImageService.displayImage(parent.getMolStructure());
         
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        headers.add("Access-Control-Allow-Headers", "Content-Type");
+        headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
+		headers.add("Pragma","no-cache"); //HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+
+       return new ResponseEntity<byte[]>(image, headers, HttpStatus.OK);
+
+    }
+
+    @RequestMapping(value = "/standardization/{corpName}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> displayDryrunCompoundImage(@PathVariable("corpName") String corpName,
+			@RequestParam(value = "hSize", required=false) Integer hSize,
+			@RequestParam(value = "wSize", required=false) Integer wSize,
+			@RequestParam(value = "format", required=false) String format) {
+        StandardizationDryRunCompound stndznCompound = StandardizationDryRunCompound.findStandardizationDryRunCompoundsByCorpNameEquals(corpName).getSingleResult();
+        byte[] image = structureImageService.convertMolToImage(stndznCompound.getMolStructure(), hSize, wSize, format);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        headers.add("Access-Control-Allow-Headers", "Content-Type");
+        headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
+		headers.add("Pragma","no-cache"); //HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+
+       return new ResponseEntity<byte[]>(image, headers, HttpStatus.OK);
+
+    }
+
+	@RequestMapping(value = "/originallydrawnas/{corpName}", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<byte[]> displayOriginallyDrawnAsCompoundImage(@PathVariable("corpName") String corpName,
+			@RequestParam(value = "hSize", required=false) Integer hSize,
+			@RequestParam(value = "wSize", required=false) Integer wSize,
+			@RequestParam(value = "format", required=false) String format) {
+		Parent parent = Parent.findParentsByCorpNameEquals(corpName).getSingleResult();
+		List<Lot> queryLots;
+		String asDrawnStruct;
+		queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
+		if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null){
+			asDrawnStruct = queryLots.get(0).getAsDrawnStruct();
+		} else {
+			asDrawnStruct = parent.getMolStructure();
+		}
+        byte[] image = structureImageService.convertMolToImage(asDrawnStruct, hSize, wSize, format);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
         headers.add("Access-Control-Allow-Headers", "Content-Type");

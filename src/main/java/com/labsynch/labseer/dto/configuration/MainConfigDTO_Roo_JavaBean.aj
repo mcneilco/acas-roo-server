@@ -10,6 +10,7 @@ import com.labsynch.labseer.dto.configuration.MarvinDTO;
 import com.labsynch.labseer.dto.configuration.MetaLotDTO;
 import com.labsynch.labseer.dto.configuration.ServerConnectionConfigDTO;
 import com.labsynch.labseer.dto.configuration.ServerSettingsConfigDTO;
+import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 
 privileged aspect MainConfigDTO_Roo_JavaBean {
     
@@ -59,6 +60,14 @@ privileged aspect MainConfigDTO_Roo_JavaBean {
     
     public void MainConfigDTO.setBulkLoadSettings(BulkLoadSettingsConfigDTO bulkLoadSettings) {
         this.bulkLoadSettings = bulkLoadSettings;
+    }
+    
+    public StandardizerSettingsConfigDTO MainConfigDTO.getStandardizerSettings() {
+        return this.standardizerSettings;
+    }
+    
+    public void MainConfigDTO.setStandardizerSettings(StandardizerSettingsConfigDTO standardizerSettings) {
+        this.standardizerSettings = standardizerSettings;
     }
     
 }

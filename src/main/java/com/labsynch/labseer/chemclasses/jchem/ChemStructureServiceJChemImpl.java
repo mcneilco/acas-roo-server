@@ -95,8 +95,8 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	private static String exactSearchDef = mainConfig.getServerSettings().getExactMatchDef();
 	private static long maxSearchTime = mainConfig.getServerSettings().getMaxSearchTime();
 	private static int maxSearchResults = mainConfig.getServerSettings().getMaxSearchResults();
-	private static boolean useStandardizer = mainConfig.getServerSettings().isUseExternalStandardizerConfig();
-	private static String standardizerConfigFilePath = mainConfig.getServerSettings().getStandardizerConfigFilePath();
+	private static final boolean shouldStandardize = Configuration.getConfigInfo().getStandardizerSettings().getShouldStandardize();
+    private static final String standardizerConfigFilePath = Configuration.getConfigInfo().getStandardizerSettings().getJchemSettings().getStandardizerConfigFilePath();
 
 	@Override
 	public int getCount(String structureTable) {
@@ -464,7 +464,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			mh = new MolHandler(molfile);
 			Molecule mol = mh.getMolecule();
 
-			if (useStandardizer){
+			if (shouldStandardize){
 				mol = standardizeMolecule(mol);
 				mol.aromatize();				
 			} else {

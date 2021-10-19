@@ -366,4 +366,58 @@ public class SimpleUtil {
 		inStream.close();
 		return response.toString();
 	}
+
+
+	public static class PostResponse {
+	    private String json = null;
+	    private int status = -1;
+
+	    public int getStatus() {
+	        return this.status;
+	    }
+
+	    public void setStatus(int status) {
+	        this.status = status;
+	    }
+
+	    public String getJson() {
+	        return this.json;
+	    }
+
+	    public void setJson(String json) {
+	        this.json = json;
+	    }
+
+	}
+
+	public static PostResponse postRequestToExternalServerReturnObject(String url, String jsonContent, Logger logger) throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		connection.setRequestProperty("Content-Type", "application/json");		
+		logger.info("Sending request to: "+url);
+		logger.info("with data: "+jsonContent);
+		try{
+			OutputStream output = connection.getOutputStream();
+			output.write(jsonContent.getBytes());
+		} catch (Exception e){
+			logger.error("Error occurred in making HTTP Request to external server",e);
+		}
+		InputStream input;
+		if (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+			input = connection.getInputStream();
+		} else {
+		     /* error from server */
+			input = connection.getErrorStream();
+		}
+		byte[] bytes = IOUtils.toByteArray(input);
+		String responseJson = new String(bytes);
+		PostResponse postResponse = new PostResponse();
+		postResponse.setJson(responseJson);
+		postResponse.setStatus(connection.getResponseCode());
+		return postResponse;
+	}
 }

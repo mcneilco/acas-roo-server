@@ -50,6 +50,7 @@ import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
 import com.labsynch.labseer.exceptions.JsonParseException;
 import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
+import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.exceptions.UniqueNotebookException;
 import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -61,6 +62,8 @@ public class MetalotServiceImpl implements MetalotService {
 	@Autowired
 	private ChemStructureService chemService;
 
+	@Autowired
+	private LDStandardizerService ldStandardizerService;
 
 	@Autowired
 	private ParentStructureServiceImpl parentStructureServiceImpl;
@@ -78,8 +81,8 @@ public class MetalotServiceImpl implements MetalotService {
 	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
 	private static final Logger logger = LoggerFactory.getLogger(MetalotServiceImpl.class);
 	public static final String corpParentFormat = Configuration.getConfigInfo().getServerSettings().getCorpParentFormat();
-	private static boolean useStandardizer = Configuration.getConfigInfo().getServerSettings().isUseExternalStandardizerConfig();
-	private static String standardizerConfigFilePath = Configuration.getConfigInfo().getServerSettings().getStandardizerConfigFilePath();
+	private static final boolean shouldStandardize = Configuration.getConfigInfo().getStandardizerSettings().getShouldStandardize();
+    private static final String standardizerType = Configuration.getConfigInfo().getStandardizerSettings().getType();
 
 //	@Transactional
 	@Override
@@ -138,6 +141,12 @@ public class MetalotServiceImpl implements MetalotService {
 			saltFormError.setMessage("Barcode already exists as a vial.");
 			logger.error(saltFormError.getMessage());
 			errors.add(saltFormError);
+		} catch (StandardizerException e) {
+			ErrorMessage standardizerError = new ErrorMessage();
+			standardizerError.setLevel("error");
+			standardizerError.setMessage("Standardizer Error: " + e.getMessage());
+			logger.error(standardizerError.getMessage());
+			errors.add(standardizerError);
 		}catch (Exception e) {
 			ErrorMessage genericError = new ErrorMessage();
 			genericError.setLevel("error");
@@ -155,7 +164,7 @@ public class MetalotServiceImpl implements MetalotService {
 	public MetalotReturn processAndSave(Metalot metaLot, MetalotReturn mr, ArrayList<ErrorMessage> errors) 
 			throws UniqueNotebookException, DupeParentException, JsonParseException, 
 			DupeSaltFormCorpNameException, DupeSaltFormStructureException, SaltFormMolFormatException, 
-			SaltedCompoundException, IOException, CmpdRegMolFormatException {
+			SaltedCompoundException, IOException, CmpdRegMolFormatException, StandardizerException {
 
 		logger.info("attempting to save the metaLot. ");
 
@@ -208,14 +217,24 @@ public class MetalotServiceImpl implements MetalotService {
 		if (parent.getId() == null){
 			logger.debug("this is a new parent");
 			String molStructure;
-			if (useStandardizer){
-				molStructure = chemService.standardizeStructure(parent.getMolStructure());
-				parent.setMolStructure(molStructure);
+			if (shouldStandardize){
+
+				switch (standardizerType) {
+				case "livedesign":
+					molStructure = ldStandardizerService.standardizeStructure(parent.getMolStructure());
+					parent.setMolStructure(molStructure);
+					break;
+				case "jchem":
+					molStructure = chemService.standardizeStructure(parent.getMolStructure());
+					parent.setMolStructure(molStructure);
+					break;
+				}
+
 			}
 			int dupeParentCount = 0;			
 			if (!metaLot.isSkipParentDupeCheck()){
 				int[] dupeParentList = {};
-				if(mainConfig.getServerSettings().getRegisterNoStructureCompoundsAsUniqueParents() && chemService.getMolWeight(parent.getMolStructure()) == 0.0) {
+				if(mainConfig.getServerSettings().isRegisterNoStructureCompoundsAsUniqueParents() && chemService.getMolWeight(parent.getMolStructure()) == 0.0) {
 					//if true then we are no checking this one for hits
 					logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 				} else {
