@@ -122,5 +122,7 @@ public interface PropertiesUtilService {
 	Boolean getUseProjectRoles();
 	
 	Collection<SimpleBulkLoadPropertyDTO> getDbProperties();
+
+	String getPreprocessorSettings();
 	
 }

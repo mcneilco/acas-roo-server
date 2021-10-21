@@ -711,5 +711,17 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public Collection<SimpleBulkLoadPropertyDTO> getDbProperties() {
 		return this.dbProperties;
 	}
+
+	String preprocessorSettings;
+
+	@Value("${client.cmpdreg.serverSettings.liveDesign.preprocessorSettings}")
+	public void setPreprocessorSettings(String preprocessorSettings) {
+	    this.preprocessorSettings = preprocessorSettings;
+	}
+
+	@Override
+	public String getPreprocessorSettings() {
+	    return this.preprocessorSettings;
+	}
 	
 }
