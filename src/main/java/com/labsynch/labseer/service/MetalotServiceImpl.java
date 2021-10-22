@@ -48,6 +48,7 @@ import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.DupeSaltFormCorpNameException;
 import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
 import com.labsynch.labseer.exceptions.JsonParseException;
+import com.labsynch.labseer.exceptions.MissingPropertyException;
 import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
 import com.labsynch.labseer.exceptions.UniqueNotebookException;
@@ -138,6 +139,12 @@ public class MetalotServiceImpl implements MetalotService {
 			saltFormError.setMessage("Barcode already exists as a vial.");
 			logger.error(saltFormError.getMessage());
 			errors.add(saltFormError);
+		} catch (MissingPropertyException e) {
+			ErrorMessage saltFormError = new ErrorMessage();
+			saltFormError.setLevel("error");
+			saltFormError.setMessage("Lot Amount or Lot Amount Units missing. Both must be provided when saving a Barcode.");
+			logger.error(saltFormError.getMessage());
+			errors.add(saltFormError);
 		}catch (Exception e) {
 			ErrorMessage genericError = new ErrorMessage();
 			genericError.setLevel("error");
@@ -155,7 +162,7 @@ public class MetalotServiceImpl implements MetalotService {
 	public MetalotReturn processAndSave(Metalot metaLot, MetalotReturn mr, ArrayList<ErrorMessage> errors) 
 			throws UniqueNotebookException, DupeParentException, JsonParseException, 
 			DupeSaltFormCorpNameException, DupeSaltFormStructureException, SaltFormMolFormatException, 
-			SaltedCompoundException, IOException, CmpdRegMolFormatException {
+			SaltedCompoundException, IOException, CmpdRegMolFormatException, MissingPropertyException {
 
 		logger.info("attempting to save the metaLot. ");
 
@@ -681,7 +688,7 @@ public class MetalotServiceImpl implements MetalotService {
 	}
 
 	@Transactional
-	private void createNewTube(Lot lot) throws MalformedURLException, IOException, NoResultException, NonUniqueResultException {
+	private void createNewTube(Lot lot) throws MalformedURLException, IOException, NoResultException, NonUniqueResultException, MissingPropertyException {
 		String baseurl = mainConfig.getServerConnection().getAcasURL();
 		String url = baseurl + "containers?";
 		Map<String, String> queryParams = new HashMap<String, String>();
@@ -707,8 +714,12 @@ public class MetalotServiceImpl implements MetalotService {
 		Collection<WellContentDTO> wells = new ArrayList<WellContentDTO>();
 		WellContentDTO well = new WellContentDTO();
 		well.setWellName(wellName);
-		if (lot.getAmount() != null) well.setAmount(new BigDecimal(lot.getAmount()));
-		if (lot.getAmountUnits() != null) well.setAmountUnits(lot.getAmountUnits().getCode());
+		if (lot.getAmount() == null || lot.getAmountUnits() == null) {
+			logger.error("amount or amount units is null is null when trying to create a new tube");
+			throw new MissingPropertyException("amount or amount units is null");
+		}
+		well.setAmount(new BigDecimal(lot.getAmount()));
+		well.setAmountUnits(lot.getAmountUnits().getCode());
 		well.setPhysicalState("solid");
 		well.setBatchCode(lot.getCorpName());
 		well.setRecordedBy(lot.getRegisteredBy());
