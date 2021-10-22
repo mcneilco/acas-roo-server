@@ -43,6 +43,14 @@ privileged aspect BulkLoadRegisterSDFRequestDTO_Roo_JavaBean {
         this.labelPrefix = labelPrefix;
     }
     
+    public Boolean BulkLoadRegisterSDFRequestDTO.getValidate() {
+        return this.validate;
+    }
+    
+    public void BulkLoadRegisterSDFRequestDTO.setValidate(Boolean validate) {
+        this.validate = validate;
+    }
+    
     public Collection<BulkLoadPropertyMappingDTO> BulkLoadRegisterSDFRequestDTO.getMappings() {
         return this.mappings;
     }

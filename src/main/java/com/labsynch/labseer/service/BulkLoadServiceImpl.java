@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.io.IOUtils;
 import org.hibernate.Session;
@@ -57,6 +59,7 @@ import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
+import com.labsynch.labseer.domain.DryRunCompound;
 import com.labsynch.labseer.dto.BatchCodeDependencyDTO;
 import com.labsynch.labseer.dto.BulkLoadPropertiesDTO;
 import com.labsynch.labseer.dto.BulkLoadPropertyMappingDTO;
@@ -73,6 +76,7 @@ import com.labsynch.labseer.dto.PurgeFileDependencyCheckResponseDTO;
 import com.labsynch.labseer.dto.PurgeFileResponseDTO;
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
+import com.labsynch.labseer.dto.ValidationResponseDTO;
 import com.labsynch.labseer.dto.configuration.MainConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.DupeLotException;
@@ -81,7 +85,6 @@ import com.labsynch.labseer.exceptions.MissingPropertyException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
 import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.SimpleUtil;
-
 import flexjson.JSONSerializer;
 
 @Service
@@ -228,6 +231,20 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 	}
 
+	@Transactional
+	public int saveDryRunCompound(CmpdRegMolecule mol, Parent parent, int numRecordsRead, DryRunCompound dryRunCompound) throws CmpdRegMolFormatException{
+		int cdId = chemStructureService.saveStructure(mol.getMolStructure(), "Dry_Run_Compound_Structure", false);
+		dryRunCompound = new DryRunCompound();
+		dryRunCompound.setCdId(cdId);
+		dryRunCompound.setRecordNumber(numRecordsRead);
+		dryRunCompound.setCorpName(parent.getCorpName());
+		dryRunCompound.setStereoCategory(parent.getStereoCategory().getCode());
+		dryRunCompound.setStereoComment(parent.getStereoComment());
+		dryRunCompound.setMolStructure(mol.getMolStructure());
+		dryRunCompound.persist();
+		return cdId;
+	}
+	
 	@Override
 //	@Transactional
 	public BulkLoadRegisterSDFResponseDTO registerSdf(BulkLoadRegisterSDFRequestDTO registerRequestDTO){
@@ -236,9 +253,25 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		String chemist = registerRequestDTO.getUserName();
+		Collection<ValidationResponseDTO> results = new ArrayList();
+		Boolean validate = registerRequestDTO.getValidate();
+		if(validate == null) {
+			validate = false;
+		}
+		DryRunCompound dryRunCompound = new DryRunCompound();
+
+		if(validate) {
+			boolean dropTable = chemStructureService.dropJChemTable("dry_run_compound_structure");
+			if (dropTable){
+				chemStructureService.createJChemTable("dry_run_compound_structure", true);				
+			} else {
+				logger.info("unable to drop jchem table");
+			}
+			dryRunCompound.truncateTable();
+		}
+
 		Session session = Parent.entityManager().unwrap(Session.class);
 
-		
 		Collection<BulkLoadPropertyMappingDTO> mappings = registerRequestDTO.getMappings();
 		//instantiate input and output streams
 		FileOutputStream errorCSVOutStream;
@@ -264,7 +297,10 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			BulkLoadFile bulkLoadFile = new BulkLoadFile(shortFileName, 0, fileSizeInBytes, BulkLoadPropertyMappingDTO.toJsonArray(mappings), chemist, new Date());
 			if (registerRequestDTO.getFileDate() != null) bulkLoadFile.setFileDate(registerRequestDTO.getFileDate());
 			else bulkLoadFile.setFileDate(new Date());
-			bulkLoadFile.persist();
+			if(!validate) {
+				bulkLoadFile.persist();
+			}
+
 
 			//construct the error and report file names and output streams
 			Calendar cal = Calendar.getInstance();
@@ -274,8 +310,12 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 			String errorSDFName = rootOutFileName+"errors.sdf";
 			String errorCSVName = rootOutFileName+"errors.csv";
-			String registeredSDFName = rootOutFileName+"registered.sdf";
-			String registeredCSVName = rootOutFileName+"registered.csv";
+			String registeredSuffix = "registered";
+			if(validate) {
+				registeredSuffix = "validated";
+			}
+			String registeredSDFName = rootOutFileName + registeredSuffix + ".sdf";
+			String registeredCSVName = rootOutFileName + registeredSuffix + ".csv";
 			String reportName = rootOutFileName+"report.log";
 
 			Collection<String> reportFiles = new HashSet<String>();
@@ -298,7 +338,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					+ "Corp Name in File,"
 					+ "Corp Name in DB,"
 					+ "Alias Corp Names in File,"
-					+ "Error Description\n";
+					+ "Error Description,"
+					+ "Warnings\n";
 			errorCSVOutStream.write(errorCSVHeaders.getBytes());
 			String registeredCSVHeaders = "Record Number,"
 					+ "Corp Name in File,"
@@ -306,7 +347,8 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					+ "Registered Parent Corp Name,"
 					+ "Registered Parent Aliases,"
 					+ "Registered Lot Aliases,"
-					+ "Registration Level\n";
+					+ "Registration Level,"
+					+ "Warnings\n";
 			registeredCSVOutStream.write(registeredCSVHeaders.getBytes());
 
 			CmpdRegSDFWriter errorMolExporter = sdfWriterFactory.getCmpdRegSDFWriter(errorSDFName);
@@ -314,7 +356,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 			CmpdRegMolecule mol = null;
 			int numRecordsRead = 0;
-			Map<String, Integer> errorMap = new HashMap<String, Integer>();
 			int numNewParentsLoaded = 0;
 			int numNewLotsOldParentsLoaded = 0;
 			while ((mol = molReader.readNextMol()) != null){
@@ -326,7 +367,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				Lot lot;
 				//attempt to strip salts
 				try {
-					mol = processForSaltStripping(mol, mappings);
+					mol = processForSaltStripping(mol, mappings, results, numRecordsRead);
 				}catch (CmpdRegMolFormatException e) {
 					String emptyMolfile = "\n" + 
 							"  Ketcher 09111712282D 1   1.00000     0.00000     0\n" + 
@@ -335,45 +376,45 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 							"M  END\n" + 
 							"";
 					CmpdRegMolecule emptyMol = mol.replaceStructure(emptyMolfile);
-					logError(e, numRecordsRead, emptyMol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
+					logError(e, numRecordsRead, emptyMol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
 				}
 				try{
-					parent = createParent(mol, mappings, chemist, registerRequestDTO.getLabelPrefix());
+					parent = createParent(mol, mappings, chemist, registerRequestDTO.getLabelPrefix(), results, numRecordsRead);
 				}catch (Exception e){
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
+					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
 				}
 				try{
-					parent = validateParent(parent, mappings);
+					parent = validateParent(parent, mappings, numRecordsRead, results);
 				}catch (TransactionSystemException rollbackException) {
 					logger.error("Rollback exception", rollbackException.getApplicationException());
 					Exception causeException = new Exception(rollbackException.getApplicationException().getMessage(), rollbackException.getApplicationException());
-					logError(causeException, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
+					logError(causeException, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
 				}catch (Exception e){
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
+					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
 				}
 				if (parent.getId() != null) isNewParent = false;
 				try{
-					saltForm = createSaltForm(mol, mappings);
+					saltForm = createSaltForm(mol, mappings, results, numRecordsRead);
 				}catch (Exception e){
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
+					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
 				}
 				saltForm.setParent(parent);
 				try{
 					saltForm = validateSaltForm(saltForm, mappings);
 				}catch (Exception e){
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
+					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
 				}
 
 				try{
-					lot = createLot(mol, mappings, bulkLoadFile.getFileDate(), chemist);
+					lot = createLot(mol, numRecordsRead, mappings, results, bulkLoadFile.getFileDate(), chemist);
 				}catch (Exception e){
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
+					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
 				}
 				lot.setSaltForm(saltForm);
@@ -384,9 +425,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				if (parent.getId() == null) parent.setBulkLoadFile(bulkLoadFile);
 
 				try{
-					lot = validateLot(lot, mappings);
+					lot = validateLot(lot, mappings, results);
 				}catch (Exception e){
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
+					logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 					continue;
 				}
 
@@ -396,24 +437,42 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				metalot.setSkipParentDupeCheck(true);
 				MetalotReturn metalotReturn = null;              
 
+				if(validate) {
+					try{
+						parent = validateParentAgainstDryRunCompound(parent, numRecordsRead, results);
+						saveDryRunCompound(mol, parent, numRecordsRead, dryRunCompound);
 
-				try{
-					metalotReturn = metalotService.save(metalot);
-					if (!metalotReturn.getErrors().isEmpty()){
-						for (ErrorMessage errorMessage : metalotReturn.getErrors()){
-							Exception e = new Exception(errorMessage.getMessage());
-							logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
-						}
+					}catch (TransactionSystemException rollbackException) {
+						logger.error("Rollback exception", rollbackException.getApplicationException());
+						Exception causeException = new Exception(rollbackException.getApplicationException().getMessage(), rollbackException.getApplicationException());
+						logError(causeException, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+						continue;
+					}catch (Exception e){
+						logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
 						continue;
 					}
-				}catch (Exception e){
-					logError(e, numRecordsRead, mol, mappings, errorMolExporter, errorMap, errorCSVOutStream);
-					continue;
+
 				}
-				//Successful registration: update summary and write registered record
+				if(!validate) {
+					try{
+						metalotReturn = metalotService.save(metalot);
+						if (!metalotReturn.getErrors().isEmpty()){
+							for (ErrorMessage errorMessage : metalotReturn.getErrors()){
+								Exception e = new Exception(errorMessage.getMessage());
+								logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+							}
+							continue;
+						}
+					}catch (Exception e){
+						logError(e, numRecordsRead, mol, mappings, errorMolExporter, results, errorCSVOutStream);
+						continue;
+					}
+				}
+				
+				//Successful registration/validation: update summary and write registered/validated record
 				if (isNewParent) numNewParentsLoaded++;
 				else numNewLotsOldParentsLoaded++;
-				writeRegisteredMol(numRecordsRead, mol, metalotReturn, mappings, registeredMolExporter, registeredCSVOutStream, isNewParent);
+				writeRegisteredMol(numRecordsRead, mol, metalotReturn, mappings, registeredMolExporter, registeredCSVOutStream, isNewParent, results);
 				if (numRecordsRead % 100 == 0){
 					logger.info("flushing bulk loader session");
 					session.flush();
@@ -428,22 +487,27 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			//generate summary html, which also writes the report file
-			String summaryHtml = generateSummaryHtml(numRecordsRead, numNewParentsLoaded, numNewLotsOldParentsLoaded, errorMap, errorSDFName, reportOutStream);
+			String summaryHtml = generateSummaryHtml(numRecordsRead, numNewParentsLoaded, numNewLotsOldParentsLoaded, results, errorSDFName, reportOutStream);
 			if (logger.isDebugEnabled()) logger.debug(summaryHtml);
 
-			//close the input and output streams, importers and exporters
-//			molReader.close();
-//			errorMolExporter.close();
-//			registeredMolExporter.close();
-//			fis.close();	
-//			errorSDFOutStream.close();
+			//truncate the validation table
+			if(validate) {
+				dryRunCompound.truncateTable();
+			}
+
 			errorCSVOutStream.close();
-//			registeredSDFOutStream.close();
 			registeredCSVOutStream.close();
 			reportOutStream.close();
 
 			//if there were no errors, delete the error files, since they are empty
-			if (errorMap.isEmpty()){
+			Boolean errorFree = true;
+			for(ValidationResponseDTO valResp : results) {
+				if(valResp.getLevel() == "error") {
+					errorFree = false;
+					break;
+				}
+			}
+			if (errorFree){
 				File errorCSVFile = new File(errorCSVName);
 				File errorSDFFile = new File(errorSDFName);
 				errorCSVFile.delete();
@@ -454,83 +518,102 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 			//update the BulkLoadFile with how many records were read.
 			bulkLoadFile.setNumberOfMols(numRecordsRead);
-			bulkLoadFile.merge();
-			logger.info("Finished bulk loading file: "+bulkLoadFile.toJson());
-			return new BulkLoadRegisterSDFResponseDTO(summaryHtml, reportFiles);
+			if(!validate) {
+				bulkLoadFile.merge();
+			}
+			if(validate) {
+				logger.info("Finished validating bulk load file: "+bulkLoadFile.toJson());
+			} else {
+				logger.info("Finished bulk loading file: "+bulkLoadFile.toJson());
+			}
+			return new BulkLoadRegisterSDFResponseDTO(summaryHtml, results, reportFiles);
 		} catch (Exception e){
 			logger.error("Caught an error in the big loop",e);
-			return new BulkLoadRegisterSDFResponseDTO(e.getMessage(), null);
+			results.add(new ValidationResponseDTO("error", -1, "Unassigned", e.getMessage(), e.getMessage()));
+			return new BulkLoadRegisterSDFResponseDTO(e.getMessage(), results, null);
 		}
 	}
 
-	public void writeRegisteredMol(int numRecordsRead, CmpdRegMolecule mol, MetalotReturn metalotReturn, Collection<BulkLoadPropertyMappingDTO> mappings, CmpdRegSDFWriter registeredMolExporter, FileOutputStream registeredCSVOutStream, Boolean isNewParent) throws IOException, CmpdRegMolFormatException {
-		String sdfCorpName = "";
+	public void writeRegisteredMol(int numRecordsRead, CmpdRegMolecule mol, MetalotReturn metalotReturn, Collection<BulkLoadPropertyMappingDTO> mappings, CmpdRegSDFWriter registeredMolExporter, FileOutputStream registeredCSVOutStream, Boolean isNewParent, Collection<ValidationResponseDTO> validationResponse) throws IOException, CmpdRegMolFormatException {
+		String sdfCorpName = getStringValueFromMappings(mol, "Parent Corp Name", mappings);
 		String dbCorpName = "";
 		String registeredParentCorpName = "";
-		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, "Lot Corp Name");
-		if (mapping!=null) sdfCorpName = mol.getProperty(mapping.getSdfProperty());
-		dbCorpName = metalotReturn.getMetalot().getLot().getCorpName();
-		registeredParentCorpName = metalotReturn.getMetalot().getLot().getSaltForm().getParent().getCorpName();
-		Collection<ParentAlias> parentAliases = metalotReturn.getMetalot().getLot().getSaltForm().getParent().getParentAliases();
-		Collection<LotAlias> lotAliases = metalotReturn.getMetalot().getLot().getLotAliases();
-		List<String> parentAliasList = new ArrayList<String>();
-		if (!parentAliases.isEmpty()){
-			for (ParentAlias parentAlias : parentAliases){
-				parentAliasList.add(parentAlias.getAliasName());
-			}
-		}
-		List<String> lotAliasList = new ArrayList<String>();
-		if (!lotAliases.isEmpty()){
-			for (LotAlias lotAlias : lotAliases){
-				lotAliasList.add(lotAlias.getAliasName());
-			}
-		}
-		mol.setProperty("Registered Lot Corp Name", dbCorpName);
-		mol.setProperty("Registered Parent Corp Name", registeredParentCorpName);
 		String allParentAliases = "";
-		if (!parentAliasList.isEmpty()){
-			for (String alias : parentAliasList){
-				if (allParentAliases.length() == 0) allParentAliases += alias;
-				else allParentAliases += "; "+alias;
-			}
-			mol.setProperty("Registered Parent Aliases", allParentAliases);
-		}
 		String allLotAliases = "";
-		if (!lotAliasList.isEmpty()){
-			for (String alias : lotAliasList){
-				if (allLotAliases.length() == 0) allLotAliases += alias;
-				else allLotAliases += "; "+alias;
+
+		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, "Lot Corp Name");
+		if(metalotReturn != null) {
+			dbCorpName = metalotReturn.getMetalot().getLot().getCorpName();
+
+			registeredParentCorpName = metalotReturn.getMetalot().getLot().getSaltForm().getParent().getCorpName();
+			Collection<ParentAlias> parentAliases = metalotReturn.getMetalot().getLot().getSaltForm().getParent().getParentAliases();
+			Collection<LotAlias> lotAliases = metalotReturn.getMetalot().getLot().getLotAliases();
+			List<String> parentAliasList = new ArrayList<String>();
+			if (!parentAliases.isEmpty()){
+				for (ParentAlias parentAlias : parentAliases){
+					parentAliasList.add(parentAlias.getAliasName());
+				}
 			}
-			mol.setProperty("Registered Lot Aliases", allLotAliases);
+			List<String> lotAliasList = new ArrayList<String>();
+			if (!lotAliases.isEmpty()){
+				for (LotAlias lotAlias : lotAliases){
+					lotAliasList.add(lotAlias.getAliasName());
+				}
+			}
+			mol.setProperty("Registered Parent Corp Name", registeredParentCorpName);
+			mol.setProperty("Registered Lot Corp Name", dbCorpName);
+			mol.setProperty("Registered Lot Project", ((metalotReturn.getMetalot().getLot().getProject() == null) ? "" : metalotReturn.getMetalot().getLot().getProject()));
+			mol.setProperty("Registered Lot Barcode", ((metalotReturn.getMetalot().getLot().getBarcode() == null) ? "" : metalotReturn.getMetalot().getLot().getBarcode()));
+			mol.setProperty("Registered Lot Amount", ((metalotReturn.getMetalot().getLot().getAmount() == null) ? "" : metalotReturn.getMetalot().getLot().getAmount().toString()));
+			mol.setProperty("Registered Lot Amount Units", ((metalotReturn.getMetalot().getLot().getAmountUnits() == null) ? "" : metalotReturn.getMetalot().getLot().getAmountUnits().getCode()));
+			mol.setProperty("Registered Lot Supplier", ((metalotReturn.getMetalot().getLot().getSupplier() == null) ? "" : metalotReturn.getMetalot().getLot().getSupplier()));
+			mol.setProperty("Registered Lot Supplier ID",((metalotReturn.getMetalot().getLot().getSupplierID() == null) ? "" : metalotReturn.getMetalot().getLot().getSupplierID()));
+			mol.setProperty("Registered Lot Vendor ID", ((metalotReturn.getMetalot().getLot().getVendorID() == null) ? "" : metalotReturn.getMetalot().getLot().getVendorID()));
+			if (!parentAliasList.isEmpty()){
+				for (String alias : parentAliasList){
+					if (allParentAliases.length() == 0) allParentAliases += alias;
+					else allParentAliases += "; "+alias;
+				}
+				mol.setProperty("Registered Parent Aliases", allParentAliases);
+			}
 		}
+		ArrayList<String> warningMessagesArray = new ArrayList<>();
+		for(ValidationResponseDTO valResp : validationResponse) {
+			if(valResp.getRecord() == numRecordsRead && valResp.getLevel() == "warning") {
+				warningMessagesArray.add(valResp.getMessage());
+			}
+		}
+		String warningMessages = String.join("; ", warningMessagesArray);
+		mol.setProperty("Warnings", warningMessages);
+
 		String registrationLevel;
 		if (isNewParent) registrationLevel = "New parent with new lot";
 		else registrationLevel = "New lot of existing parent";
 		mol.setProperty("Registration Level", registrationLevel);
 		registeredMolExporter.writeMol(mol);
-		String csvRow = numRecordsRead+","+sdfCorpName+","+dbCorpName+","+registeredParentCorpName+","+allParentAliases+","+allLotAliases+","+registrationLevel+"\n";
+		String csvRow = numRecordsRead+",\""+sdfCorpName+"\",\""+dbCorpName+"\",\""+registeredParentCorpName+"\",\""+allParentAliases+"\",\""+allLotAliases+"\",\""+registrationLevel+"\",\""+warningMessages+"\"\n";
 		registeredCSVOutStream.write(csvRow.getBytes());
-
 	}
 
-	public void logError(Exception e, int numRecordsRead, CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, CmpdRegSDFWriter errorMolExporter, Map<String, Integer> errorMap, FileOutputStream errorCSVOutStream) throws IOException, CmpdRegMolFormatException {
+	public void logError(Exception e, int numRecordsRead, CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, CmpdRegSDFWriter errorMolExporter, Collection<ValidationResponseDTO> validationResponse, FileOutputStream errorCSVOutStream) throws IOException, CmpdRegMolFormatException {
 		logger.error("Caught exception on molecule number "+numRecordsRead, e);
 
 		String errorMessage = e.getMessage();
-		if (!errorMap.containsKey(errorMessage)) errorMap.put(errorMessage, 1);
-		else errorMap.put(errorMessage, errorMap.get(errorMessage)+1);
+
 		//assuming sdf and db corpNames are Lot Corp Name
-		String sdfCorpName = "";
+		String sdfCorpName = getStringValueFromMappings(mol, "Parent Corp Name", mappings);
 		String dbCorpName = "";
 		String aliasCorpNames = "";
+		String categoryCode = "Unassigned";
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, "Lot Corp Name");
-		if (mapping!=null && mapping.getSdfProperty() != null && mapping.getSdfProperty() != "") sdfCorpName = mol.getProperty(mapping.getSdfProperty());
 		if (e.getClass() == DupeLotException.class){
 			DupeLotException dupeLotError = (DupeLotException) e;
+			categoryCode = "DupeLot";
 			dbCorpName = dupeLotError.getLotCorpName();
 			if (dbCorpName != null && dbCorpName.length() > 0) mol.setProperty("Lot Corp Name in DB", dbCorpName);
 		}else if (e.getClass() == DupeParentException.class){
 			DupeParentException dupeParentError = (DupeParentException) e;
+			categoryCode = "DupeParent";
 			dbCorpName = dupeParentError.getDbCorpName();
 			sdfCorpName = dupeParentError.getSdfCorpName();
 			if (dupeParentError.getAliasCorpNames() != null && !dupeParentError.getAliasCorpNames().isEmpty()){
@@ -543,15 +626,32 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			if (sdfCorpName != null && sdfCorpName.length() > 0) mol.setProperty("Parent Corp Name in SDF", sdfCorpName);
 			if (aliasCorpNames != null && aliasCorpNames.length() > 0) mol.setProperty("Alias Corp Names in SDF", aliasCorpNames);
 			
-
-		}
+			}
+		
+		validationResponse.add(new ValidationResponseDTO("error", numRecordsRead, categoryCode, errorMessage, errorMessage));
 		mol.setProperty("Error", errorMessage);
+
+		ArrayList<String> warningMessagesArray = new ArrayList<>();
+		for(ValidationResponseDTO valResp : validationResponse) {
+			if(valResp.getRecord() == numRecordsRead && valResp.getLevel() == "warning") {
+				warningMessagesArray.add(valResp.getMessage());
+			}
+		}
+		String warningMessages = String.join("; ", warningMessagesArray);
+		mol.setProperty("Warnings", errorMessage);
+
 		errorMolExporter.writeMol(mol);
-		String csvRow = numRecordsRead+","+sdfCorpName+","+dbCorpName+","+aliasCorpNames+","+errorMessage+"\n";
+		String csvRow = numRecordsRead+",\""+sdfCorpName+"\",\""+dbCorpName+"\",\""+aliasCorpNames+"\",\""+errorMessage+"\",\""+warningMessages+"\"\n";
 		errorCSVOutStream.write(csvRow.getBytes());
 	}
 
-	public Parent validateParent(Parent parent, Collection<BulkLoadPropertyMappingDTO> mappings) throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception{
+	public void logWarning(String categoryCode, String categoryDescription, String warningMessage, int numRecordsRead, Collection<ValidationResponseDTO> validationResponse) {
+		logger.error("Caught warning on molecule number "+numRecordsRead, warningMessage);
+		validationResponse.add(new ValidationResponseDTO("warning", numRecordsRead, categoryCode, categoryDescription, warningMessage));
+		String warning = categoryCode + ": " + categoryDescription;
+	}
+
+	public Parent validateParent(Parent parent, Collection<BulkLoadPropertyMappingDTO> mappings, int numRecordsRead, Collection<ValidationResponseDTO> validationResponse) throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception{
 		//Search for the parent structure + stereo category
 		if (parent.getStereoCategory() == null) throw new MissingPropertyException("Parent Stereo Category must be provided");
 		HashSet<String> requiredDbProperties = new HashSet<String>();
@@ -581,6 +681,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			searchResultLoop:
 			for (int foundParentCdId : dupeParentList){
 				List<Parent> foundParents = Parent.findParentsByCdId(foundParentCdId).getResultList();
+				
+				DupeParentException dupeException = null;
+				String categoryDescription;
 				for (Parent foundParent : foundParents){
 					//same structure
 					boolean sameStereoCategory = (parent.getStereoCategory().getCode().equalsIgnoreCase(foundParent.getStereoCategory().getCode()));
@@ -596,25 +699,32 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					}else if (sameStereoCategory & sameStereoComment & !sameCorpName & !noCorpName){
 						//corp name conflict
 						logger.error("Mismatched corp names for same parent structure, stereo category and stereo comment! sdf corp name: "+parent.getCorpName()+" db corp name: "+foundParent.getCorpName());
-						throw new DupeParentException("Mismatched corp names for same parent structure, stereo category and stereo comment!", foundParent.getCorpName(), parent.getCorpName(), new ArrayList<String>());
+						if(dupeException == null) dupeException = new DupeParentException("Mismatched corp names for same parent structure, stereo category and stereo comment!", foundParent.getCorpName(), parent.getCorpName(), new ArrayList<String>());
 					}else if (sameStereoCategory & sameStereoComment & noCorpName & !sameCorpPrefixOrNoPrefix) {
 						//corp prefix conflict
 						logger.error("Mismatched corp prefix for same parent structure, stereo category, and stereo comment! sdf corp prefix: "+parent.getLabelPrefix().getLabelPrefix()+" db corp name: "+foundParent.getCorpName());
-						throw new DupeParentException("Mismatched corp prefix for same parent structure, stereo category, and stereo comment!", foundParent.getCorpName(), parent.getLabelPrefix().getLabelPrefix(), new ArrayList<String>());
+						if(dupeException == null) dupeException = new DupeParentException("Mismatched corp prefix for same parent structure, stereo category, and stereo comment!", foundParent.getCorpName(), parent.getLabelPrefix().getLabelPrefix(), new ArrayList<String>());
 					}else if (sameStereoCategory & !sameStereoComment & sameCorpName & !noCorpName){
 						//stereo comment conflict for same corpName
 						logger.error("Mismatched stereo comments for same parent structure, stereo category and corp name! Corp name: "+parent.getCorpName()+" sdf stereo category: "+parent.getStereoCategory().getCode()+" sdf stereo comment: "+parent.getStereoComment()+" db stereo category: "+foundParent.getStereoCategory().getCode()+" db stereo comment: "+foundParent.getStereoComment());
-						throw new DupeParentException("Mismatched stereo comments for same parent structure, stereo category and corp name!", foundParent.getCorpName(), parent.getCorpName(), new ArrayList<String>());
+						if(dupeException == null) dupeException = new DupeParentException("Mismatched stereo comments for same parent structure, stereo category and corp name!", foundParent.getCorpName(), parent.getCorpName(), new ArrayList<String>());
 					}else if (sameStereoCategory & !sameStereoComment & (!sameCorpName | noCorpName)){
 						//same stereo category, but different stereo comment => new parent
+						categoryDescription = "Matching structure found with same stereo category but different stereo comment and different corp name";
+						logWarning("MatchingStructureSameStereoDifferentComment",categoryDescription, categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead, validationResponse);
 						continue;
 					}else if (!sameStereoCategory & sameCorpName & !noCorpName){
 						logger.error("Mismatched stereo categories for same parent structure and corp name! Corp name: "+parent.getCorpName()+" sdf stereo category: "+parent.getStereoCategory().getCode()+" db stereo category: "+foundParent.getStereoCategory().getCode());
-						throw new DupeParentException("Mismatched stereo categories for same parent structure and corp name!", foundParent.getCorpName(), parent.getCorpName(), new ArrayList<String>());
+						if(dupeException == null) dupeException = new DupeParentException("Mismatched stereo categories for same parent structure and corp name!", foundParent.getCorpName(), parent.getCorpName(), new ArrayList<String>());
 					}else if (!sameStereoCategory & (!sameCorpName | noCorpName)){
 						//Different stereo category, different corpName => new parent
+						categoryDescription = "Matching structure found with different stereo category and different db corp name";
+						logWarning("MatchingStructureDifferentStereoCategory",categoryDescription, categoryDescription + ": " + foundParent.getCorpName(), numRecordsRead, validationResponse);
 						continue;
 					}
+				}
+				if(dupeException != null) {
+					throw dupeException;
 				}
 			}
 		}
@@ -648,7 +758,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 					parent = foundParent;
 				}
 			}catch (EmptyResultDataAccessException empty){
-				logger.warn("Parent corp name entered that doesn't already exist (sdf corp name: '"+parent.getCorpName()+"'), this compound will be registered with a new parent corp name: ",empty);
+				logger.warn("Parent corp name entered that doesn't already exist (sdf corp name: '"+parent.getCorpName()+"'), this compound will be registered with a new parent corp name: ");
 				foundParent = null;
 			}catch (DupeParentException dupe){
 				throw dupe;
@@ -659,6 +769,77 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			if (foundParent != null && foundParent != parent) throw new DupeParentException("Duplicate corp names for different parent structure and stereo category! sdf corp name: "+parent.getCorpName()+" db corp name: "+foundParent.getCorpName());
 		}
 
+		return parent;
+	}
+
+
+	public Parent validateParentAgainstDryRunCompound(Parent parent, int numRecordsRead, Collection<ValidationResponseDTO> validationResponse) throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception{
+		int[] dupeDryRunCompoundsList = chemStructureService.checkDupeMol(parent.getMolStructure(), "Dry_Run_Compound_Structure", "Dry_Run_Compound");
+		if (dupeDryRunCompoundsList.length > 0){
+			searchResultLoop:
+			for (int foundParentCdId : dupeDryRunCompoundsList){
+				List<DryRunCompound> foundDryRunCompounds = DryRunCompound.findDryRunCompoundsByCdId(foundParentCdId).getResultList();
+				
+				DupeParentException dupeException = null;
+				String categoryDescription;
+				for (DryRunCompound foundDryRunCompound : foundDryRunCompounds){
+					//same structure
+					boolean sameStereoCategory = (parent.getStereoCategory().getCode().equalsIgnoreCase(foundDryRunCompound.getStereoCategory()));
+					boolean sameStereoComment = (((parent.getStereoComment() == null || parent.getStereoComment().length() < 1) && (foundDryRunCompound.getStereoComment() == null || foundDryRunCompound.getStereoComment().length() < 1))
+							|| (parent.getStereoComment() != null && foundDryRunCompound.getStereoComment() != null && parent.getStereoComment().equalsIgnoreCase(foundDryRunCompound.getStereoComment())));
+					boolean sameCorpName = (parent.getCorpName() != null && foundDryRunCompound.getCorpName() != null && parent.getCorpName().equals(foundDryRunCompound.getCorpName()));
+					boolean noCorpName = (parent.getCorpName() == null);
+					boolean noCorpNameDryRunCompound = (foundDryRunCompound.getCorpName() == null);
+					// Its possible that the first compound in the validate table has no corporate ID specified and because we aren't currently predicting what the corp name will be that it receives as part of label
+					// sequences, we need to guard against the null corporate ID.  In the case that a found dry run compound has a null corp name and the new corp name has a corporte ID specified, this is NOT considered
+					// the same prefix.  If both compounds are null corp names then we DO consider them to have the same corp prefix.  If the found dry run compound has a specified corp name and the parent does not, then
+					// we need to check the found dry run compound for the matching specified prefix to make sure they will get the same corp name id on the non dry run.
+					boolean sameCorpPrefixOrNoPrefix = (parent.getLabelPrefix() == null || (noCorpName && noCorpNameDryRunCompound) || (!noCorpNameDryRunCompound && foundDryRunCompound.getCorpName().contains(parent.getLabelPrefix().getLabelPrefix())));
+					if (sameStereoCategory & sameStereoComment & (sameCorpName | (noCorpName & (noCorpNameDryRunCompound | sameCorpPrefixOrNoPrefix)))){
+						//parents match
+						break searchResultLoop;
+					}else if (sameStereoCategory & sameStereoComment & !sameCorpName & !noCorpName){
+						//corp name conflict
+						logger.error("Within file, mismatched corp names for same parent structure, stereo category and stereo comment! sdf corp name: '"+parent.getCorpName()+"' earlier sdf record corp name: '"+foundDryRunCompound.getCorpName() + "'");
+						if(dupeException == null) dupeException = new DupeParentException("Within file, mismatched corp names for same parent structure, stereo category and stereo comment!", foundDryRunCompound.getCorpName(), parent.getCorpName(), new ArrayList<String>());
+					}else if (sameStereoCategory & sameStereoComment & noCorpName & !sameCorpPrefixOrNoPrefix) {
+						//corp prefix conflict
+						logger.error("Within file, mismatched corp prefix for same parent structure, stereo category, and stereo comment! sdf corp prefix: '"+parent.getLabelPrefix().getLabelPrefix()+"' earlier sdf record corp name: '"+foundDryRunCompound.getCorpName() + "'");
+						if(dupeException == null) dupeException =  new DupeParentException("Within file, mismatched corp prefix for same parent structure, stereo category, and stereo comment!", foundDryRunCompound.getCorpName(), parent.getLabelPrefix().getLabelPrefix(), new ArrayList<String>());
+					}else if (sameStereoCategory & !sameStereoComment & sameCorpName & !noCorpName){
+						//stereo comment conflict for same corpName
+						logger.error("Within file, mismatched stereo comments for same parent structure, stereo category and corp name! Corp name: "+parent.getCorpName()+" sdf stereo category: '"+parent.getStereoCategory().getCode()+"' sdf stereo comment: '"+parent.getStereoComment()+"' earlier sdf record stereo category: '"+foundDryRunCompound.getStereoCategory()+"' earlier sdf record stereo comment: '"+foundDryRunCompound.getStereoComment() + "'");
+						if(dupeException == null) dupeException =  new DupeParentException("Within file, mismatched stereo comments for same parent structure, stereo category and corp name!", foundDryRunCompound.getCorpName(), parent.getCorpName(), new ArrayList<String>());
+					}else if (sameStereoCategory & !sameStereoComment & (!sameCorpName | noCorpName)){
+						//same stereo category, but different stereo comment => new parent
+						categoryDescription = "Within file, matching structure found with same stereo category but different stereo comment and different corp name";
+						logWarning("WithinFileMatchingStructureSameStereoDifferentComment", categoryDescription, categoryDescription + ": " + foundDryRunCompound.getCorpName()+ "(record number "+foundParentCdId+")", numRecordsRead, validationResponse);
+						continue;
+					}else if (!sameStereoCategory & sameCorpName & !noCorpName){
+						logger.error("Within file, mismatched stereo categories for same parent structure and corp name! Corp name: '"+parent.getCorpName()+"' sdf stereo category: '"+parent.getStereoCategory().getCode()+"' earlier sdf record stereo category: '"+foundDryRunCompound.getStereoCategory()+ "'");
+						if(dupeException == null) dupeException = new DupeParentException("Within file, mismatched stereo categories for same parent structure and corp name!", foundDryRunCompound.getCorpName(), parent.getCorpName(), new ArrayList<String>());
+					}else if (!sameStereoCategory & (!sameCorpName | noCorpName)){
+						//Different stereo category, different corpName => new parent
+						categoryDescription = "Within file, matching structure found with different stereo category and different corp name";
+						logWarning("WithinFileMatchingStructureDifferentStereoCategory", categoryDescription, categoryDescription + ": " + foundDryRunCompound.getCorpName()+ "(record number "+foundParentCdId+")", numRecordsRead, validationResponse);
+						continue;
+					}
+				}
+				if(dupeException != null) {
+					throw dupeException;
+				}
+			}
+		} else {
+			//At this point we know the structured doesn't already exist in the file so check to see if Corp name already exists
+			//  if the corp name does exist, that is an error because it's a different structure
+			if(parent.getCorpName() != null && !parent.getCorpName().equals("")) {
+				List<DryRunCompound> dryRunCmpds = DryRunCompound.findDryRunCompoundsByCorpNameEquals(parent.getCorpName()).getResultList();
+				if(dryRunCmpds.size() > 0) {
+					logger.error("Within file, parent corp name already exists for a different parent structure: "+dryRunCmpds.get(0).getCorpName());
+					throw new DupeParentException("Within file, parent corp name "+ dryRunCmpds.get(0).getCorpName() + " already exists for a different parent structure record number "+dryRunCmpds.get(0).getRecordNumber());
+				}
+			}
+		}
 		return parent;
 	}
 
@@ -721,7 +902,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return saltForm;
 	}
 
-	public Lot validateLot(Lot lot, Collection<BulkLoadPropertyMappingDTO> mappings) throws MissingPropertyException, DupeLotException {
+	public Lot validateLot(Lot lot, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results) throws MissingPropertyException, DupeLotException {
 		//check for required fields
 		HashSet<String> requiredDbProperties = new HashSet<String>();
 		for (BulkLoadPropertyMappingDTO mapping : mappings){
@@ -794,7 +975,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 
-	public Lot createLot(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, Date registrationDate, String chemist) throws Exception{
+	public Lot createLot(CmpdRegMolecule mol, int recordNumber, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, Date registrationDate, String chemist) throws Exception{
 		//Here we try to fetch all of the possible Lot database properties from the sdf, according to the mappings
 		Lot lot = new Lot();
 		//set a couple properties that do not come in from mappings
@@ -803,40 +984,40 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		lot.setRegisteredBy(chemist);
 
 		//regular fields that do not require lookups or conversions
-		lot.setSynthesisDate(getDateValueFromMappings(mol, "Lot Synthesis Date", mappings));
-		lot.setNotebookPage(getStringValueFromMappings(mol, "Lot Notebook Page", mappings));
-		lot.setCorpName(getStringValueFromMappings(mol, "Lot Corp Name", mappings));
-		lot.setBarcode(getStringValueFromMappings(mol, "Lot Barcode", mappings));
-		lot.setColor(getStringValueFromMappings(mol, "Lot Color", mappings));
-		lot.setSupplier(getStringValueFromMappings(mol, "Lot Supplier", mappings));
-		lot.setSupplierID(getStringValueFromMappings(mol, "Lot Supplier ID", mappings));
-		lot.setVendorID(getStringValueFromMappings(mol, "Lot Vendor ID", mappings));
-		lot.setComments(getStringValueFromMappings(mol, "Lot Comments", mappings));		
-		lot.setSupplierLot(getStringValueFromMappings(mol, "Lot Supplier Lot", mappings));
-		lot.setMeltingPoint(getNumericValueFromMappings(mol, "Lot Melting Point", mappings));
-		lot.setBoilingPoint(getNumericValueFromMappings(mol, "Lot Boiling Point", mappings));
-		lot.setRetain(getNumericValueFromMappings(mol, "Lot Retain", mappings));
-		lot.setPercentEE(getNumericValueFromMappings(mol, "Lot Percent ee", mappings));
-		lot.setPurity(getNumericValueFromMappings(mol, "Lot Purity", mappings));
-		lot.setAmount(getNumericValueFromMappings(mol, "Lot Amount", mappings));
-		lot.setSolutionAmount(getNumericValueFromMappings(mol, "Lot Solution Amount", mappings));
-		lot.setLambda(getNumericValueFromMappings(mol, "Lot Lambda", mappings));
-		lot.setAbsorbance(getNumericValueFromMappings(mol, "Lot Absorbance", mappings));
-		lot.setStockSolvent(getStringValueFromMappings(mol, "Lot Stock Solvent", mappings));
-		lot.setStockLocation(getStringValueFromMappings(mol, "Lot Stock Location", mappings));
-		lot.setRetainLocation(getStringValueFromMappings(mol, "Lot Retain Location", mappings));
-		lot.setObservedMassOne(getNumericValueFromMappings(mol, "Lot Observed Mass #1", mappings));
-		lot.setObservedMassTwo(getNumericValueFromMappings(mol, "Lot Observed Mass #2", mappings));
-		lot.setTareWeight(getNumericValueFromMappings(mol, "Lot Tare Weight", mappings));
-		lot.setTotalAmountStored(getNumericValueFromMappings(mol, "Lot Total Amount Stored", mappings));
-		lot.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
+		lot.setSynthesisDate(getDateValueFromMappings(mol, "Lot Synthesis Date", mappings, results, recordNumber));
+		lot.setNotebookPage(getStringValueFromMappings(mol, "Lot Notebook Page", mappings, results, recordNumber));
+		lot.setCorpName(getStringValueFromMappings(mol, "Lot Corp Name", mappings, results, recordNumber));
+		lot.setBarcode(getStringValueFromMappings(mol, "Lot Barcode", mappings, results, recordNumber));
+		lot.setColor(getStringValueFromMappings(mol, "Lot Color", mappings, results, recordNumber));
+		lot.setSupplier(getStringValueFromMappings(mol, "Lot Supplier", mappings, results, recordNumber));
+		lot.setSupplierID(getStringValueFromMappings(mol, "Lot Supplier ID", mappings, results, recordNumber));
+		lot.setVendorID(getStringValueFromMappings(mol, "Lot Vendor ID", mappings, results, recordNumber));
+		lot.setComments(getStringValueFromMappings(mol, "Lot Comments", mappings, results, recordNumber));		
+		lot.setSupplierLot(getStringValueFromMappings(mol, "Lot Supplier Lot", mappings, results, recordNumber));
+		lot.setMeltingPoint(getNumericValueFromMappings(mol, "Lot Melting Point", mappings, results, recordNumber));
+		lot.setBoilingPoint(getNumericValueFromMappings(mol, "Lot Boiling Point", mappings, results, recordNumber));
+		lot.setRetain(getNumericValueFromMappings(mol, "Lot Retain", mappings, results, recordNumber));
+		lot.setPercentEE(getNumericValueFromMappings(mol, "Lot Percent ee", mappings, results, recordNumber));
+		lot.setPurity(getNumericValueFromMappings(mol, "Lot Purity", mappings, results, recordNumber));
+		lot.setAmount(getNumericValueFromMappings(mol, "Lot Amount", mappings, results, recordNumber));
+		lot.setSolutionAmount(getNumericValueFromMappings(mol, "Lot Solution Amount", mappings, results, recordNumber));
+		lot.setLambda(getNumericValueFromMappings(mol, "Lot Lambda", mappings, results, recordNumber));
+		lot.setAbsorbance(getNumericValueFromMappings(mol, "Lot Absorbance", mappings, results, recordNumber));
+		lot.setStockSolvent(getStringValueFromMappings(mol, "Lot Stock Solvent", mappings, results, recordNumber));
+		lot.setStockLocation(getStringValueFromMappings(mol, "Lot Stock Location", mappings, results, recordNumber));
+		lot.setRetainLocation(getStringValueFromMappings(mol, "Lot Retain Location", mappings, results, recordNumber));
+		lot.setObservedMassOne(getNumericValueFromMappings(mol, "Lot Observed Mass #1", mappings, results, recordNumber));
+		lot.setObservedMassTwo(getNumericValueFromMappings(mol, "Lot Observed Mass #2", mappings, results, recordNumber));
+		lot.setTareWeight(getNumericValueFromMappings(mol, "Lot Tare Weight", mappings, results, recordNumber));
+		lot.setTotalAmountStored(getNumericValueFromMappings(mol, "Lot Total Amount Stored", mappings, results, recordNumber));
+		lot.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings, results, recordNumber));
 
 		//special field for Lot Inventory - not saved in Lot table
-		lot.setStorageLocation(getStringValueFromMappings(mol, "Lot Storage Location", mappings));
+		lot.setStorageLocation(getStringValueFromMappings(mol, "Lot Storage Location", mappings, results, recordNumber));
 
 		//conversions
-		lot.setIsVirtual(Boolean.valueOf(getStringValueFromMappings(mol, "Lot Is Virtual", mappings)));
-		Double lotNumber = getNumericValueFromMappings(mol, "Lot Number", mappings);
+		lot.setIsVirtual(Boolean.valueOf(getStringValueFromMappings(mol, "Lot Is Virtual", mappings, results, recordNumber)));
+		Double lotNumber = getNumericValueFromMappings(mol, "Lot Number", mappings, results, recordNumber);
 		if (lotNumber != null) lot.setLotNumber(lotNumber.intValue());
 		else lot.setLotNumber(-1);
 
@@ -847,7 +1028,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		Collection<String> lookUpStringList = null;
 
 		lookUpProperty = "Lot Alias";
-		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings);
+		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 		if (lookUpStringList != null && !lookUpStringList.isEmpty()){
 			String aliasType = "default";
 			String aliasKind = "default";
@@ -861,11 +1042,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		
 		try{
 			lookUpProperty = "Project";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			logger.info("Project lookup: " + lookUpString);
 			lot.setProject(lookUpString);
 			lookUpProperty = "Lot Purity Measured By";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setPurityMeasuredBy(PurityMeasuredBy.findPurityMeasuredBysByNameEquals(lookUpString).getSingleResult());
@@ -874,7 +1055,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Physical State";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setPhysicalState(PhysicalState.findPhysicalStatesByNameEquals(lookUpString).getSingleResult());
@@ -883,7 +1064,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Vendor";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setVendor(Vendor.findVendorsByNameEquals(lookUpString).getSingleResult());
@@ -892,7 +1073,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Purity Operator";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setPurityOperator(Operator.findOperatorsByNameEquals(lookUpString).getSingleResult());
@@ -901,7 +1082,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Amount Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setAmountUnits(Unit.findUnitsByNameEquals(lookUpString).getSingleResult());
@@ -910,7 +1091,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Retain Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setRetainUnits(Unit.findUnitsByNameEquals(lookUpString).getSingleResult());
@@ -919,7 +1100,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Solution Amount Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setSolutionAmountUnits(SolutionUnit.findSolutionUnitsByNameEquals(lookUpString).getSingleResult());
@@ -928,7 +1109,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Tare Weight Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setTareWeightUnits(Unit.findUnitsByNameEquals(lookUpString).getSingleResult());
@@ -937,7 +1118,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Lot Total Amount Stored Units";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				try{
 					lot.setTotalAmountStoredUnits(Unit.findUnitsByNameEquals(lookUpString).getSingleResult());
@@ -954,22 +1135,22 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 
-	public SaltForm createSaltForm(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings) throws Exception{
+	public SaltForm createSaltForm(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber) throws Exception{
 		//Here we try to fetch all of the possible Lot database properties from the sdf, according to the mappings
 		SaltForm saltForm = new SaltForm();
 		//		saltForm.setMolStructure(mol.getMolStructure());
 		saltForm.setRegistrationDate(new Date());
 
 		//regular fields that do not require lookups or conversions
-		saltForm.setCasNumber(getStringValueFromMappings(mol, "CAS Number", mappings));
+		saltForm.setCasNumber(getStringValueFromMappings(mol, "CAS Number", mappings, results, recordNumber));
 
 		//lookups
 		String lookUpString = null;
 		String lookUpProperty = null;
 		try{
-			saltForm.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
+			saltForm.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings, results, recordNumber));
 			lookUpProperty = "Lot Salt Abbrev";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0){
 				//found a salt. Need to split by semicolon, look up salt by abbrev, and check for a matching equivalents #
 				logger.info("Found one or more salts: "+lookUpString);
@@ -992,7 +1173,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 				//if we reached this point, we have found all the referenced salts by abbrev. We must check for equivalents.
 				lookUpProperty = "Lot Salt Equivalents";
-				lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+				lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 				if (lookUpString==null){
 					logger.error("Caught error creating salt: Lot Salt Equivalents must be supplied.");
 					throw new Exception("Caught error creating salt: Lot Salt Equivalents must be supplied.");
@@ -1039,7 +1220,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 
 	@Transactional
-	public Parent createParent(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist, LabelPrefixDTO labelPrefix) throws Exception{
+	public Parent createParent(CmpdRegMolecule mol, Collection<BulkLoadPropertyMappingDTO> mappings, String chemist, LabelPrefixDTO labelPrefix, Collection<ValidationResponseDTO> results, int recordNumber) throws Exception{
 		//Here we try to fetch all of the possible Lot database properties from the sdf, according to the mappings
 		Parent parent = new Parent();
 		parent.setMolStructure(mol.getMolStructure());
@@ -1047,14 +1228,17 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		parent.setRegisteredBy(chemist);
 
 		//regular fields that do not require lookups or conversions
-		parent.setCorpName(getStringValueFromMappings(mol, "Parent Corp Name", mappings));
+		parent.setCorpName(getStringValueFromMappings(mol, "Parent Corp Name", mappings, results, recordNumber));
+		//Not adding warning for coercing this next property because the warning is covered in alias mappings
 		parent.setCommonName(getStringValueFromMappings(mol, "Parent Common Name", mappings));
-		parent.setStereoComment(getStringValueFromMappings(mol, "Parent Stereo Comment", mappings));
-		parent.setComment(getStringValueFromMappings(mol, "Parent Comment", mappings));
+		parent.setStereoComment(getStringValueFromMappings(mol, "Parent Stereo Comment", mappings, results, recordNumber));
+		parent.setComment(getStringValueFromMappings(mol, "Parent Comment", mappings, results, recordNumber));
+		//Not adding warning for coercing this next property because the warning is covered in create lot
 		parent.setChemist(getStringValueFromMappings(mol, "Lot Chemist", mappings));
 
 		//conversion
-		parent.setIsMixture(Boolean.valueOf(getStringValueFromMappings(mol, "Parent Is Mixture", mappings)));
+		//Not adding warning for coercing this next property because the warning is covered salt stripping function
+		parent.setIsMixture(Boolean.valueOf(getStringValueFromMappings(mol, "Parent Is Mixture", mappings, results, recordNumber)));
 
 		String lookUpString = null;
 		String lookUpProperty = null;
@@ -1063,7 +1247,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 		//add parent aliases
 		lookUpProperty = "Parent LiveDesign Corp Name";
-		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings);
+		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 
 		if (lookUpStringList != null && !lookUpStringList.isEmpty()){
 			String aliasType = "External ID";
@@ -1077,7 +1261,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 
 		lookUpProperty = "Parent Common Name";
-		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings);
+		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 		if (lookUpStringList != null && !lookUpStringList.isEmpty()){
 			String aliasType = "other name";
 			String aliasKind = "Common Name";
@@ -1090,7 +1274,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		}
 		
 		lookUpProperty = "Parent Alias";
-		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings);
+		lookUpStringList = getStringValuesFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 		if (lookUpStringList != null && !lookUpStringList.isEmpty()){
 			String aliasType = "default";
 			String aliasKind = "default";
@@ -1109,7 +1293,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			for (BulkLoadPropertyMappingDTO mapping : mappings){
 				if(mapping.getInvalidValues() != null) {
 					lookUpProperty = mapping.getDbProperty();
-					lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+					lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 					invalidValues = mapping.getInvalidValues();
 					if(invalidValues.contains(lookUpString)) {
 						logger.error("Found invalid "+lookUpProperty+" with code "+lookUpString+" in list of invalid values passed to service");
@@ -1118,13 +1302,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}
 			}
 			lookUpProperty = "Parent Stereo Category";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) parent.setStereoCategory(StereoCategory.findStereoCategorysByCodeEquals(lookUpString).getSingleResult());
 			lookUpProperty = "Parent Annotation";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) parent.setParentAnnotation(ParentAnnotation.findParentAnnotationsByCodeEquals(lookUpString).getSingleResult());
 			lookUpProperty = "Parent Compound Type";
-			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings);
+			lookUpString = getStringValueFromMappings(mol, lookUpProperty, mappings, results, recordNumber);
 			if (lookUpString != null && lookUpString.length() > 0) parent.setCompoundType(CompoundType.findCompoundTypesByCodeEquals(lookUpString).getSingleResult());
 		}catch (Exception e){
 			logger.error("Caught error looking up parent property "+lookUpProperty+" with code "+lookUpString,e);
@@ -1193,6 +1377,11 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	public String getStringValueFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings){
+		Collection<ValidationResponseDTO> results = new ArrayList();
+		String value = getStringValueFromMappings(mol, dbProperty, mappings, results, -1);
+		return(value);
+	}
+	public String getStringValueFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber){
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty);
 		if (mapping == null) return null;
 		String sdfProperty = mapping.getSdfProperty();
@@ -1201,12 +1390,20 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		String regexMatch = "(\\x00|\\^M|\\^\\@)$";
 		if (value != null) value = value.replaceAll(regexMatch, "");
 		if (value == null) value = mapping.getDefaultVal();
-		
+		Boolean coerced = false;
+		if (value != null) {
+			String trimmedString = value.trim();
+			if(!trimmedString.equals(value)) {
+				value = trimmedString;
+				coerced = true;
+			}
+		}
+		if(recordNumber != -1 && coerced) logWarning("TrimmedStringValue","Trimmed string value for property " + sdfProperty, sdfProperty + " '"+ mol.getProperty(sdfProperty) + "' trimmed to '" + value + "'", recordNumber, results);
 		if (value != null) if (logger.isDebugEnabled()) logger.debug("requested property: " + sdfProperty + "  value: " + value);
 		return value;
 	}
 	
-	public Collection<String> getStringValuesFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings){
+	public Collection<String> getStringValuesFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber){
 		Collection<BulkLoadPropertyMappingDTO> foundMappings = BulkLoadPropertyMappingDTO.findMappingsByDbPropertyEquals(mappings, dbProperty);
 		if (foundMappings == null || foundMappings.isEmpty()) return null;
 		String regexMatch = "(\\x00|\\^M|\\^\\@)$";
@@ -1217,35 +1414,55 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			if (sdfProperty != null && sdfProperty.length() > 0) value = mol.getProperty(sdfProperty);
 			if (value != null) value = value.replaceAll(regexMatch, "");
 			if (value == null) value = mapping.getDefaultVal();
+
+			// TRIM white space and log if the value was changed
+			Boolean coerced = false;
+			if (value != null) {
+				String trimmedString = value.trim();
+				if(!trimmedString.equals(value)) {
+					value = trimmedString;
+					coerced = true;
+				}
+			}
+			if(recordNumber != -1 && coerced) logWarning("TrimmedStringValue","Trimmed string value for property " + sdfProperty, sdfProperty + " '"+ mol.getProperty(sdfProperty) + "' trimmed to '" + value + "'", recordNumber, results);	
 			stringValues.add(value);
 		}
 		return stringValues;
 	}
 
 
-	public Double getNumericValueFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings){
+	public Double getNumericValueFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber){
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty);
 		if (mapping == null) return null;
 		String sdfProperty = mapping.getSdfProperty();
 		String stringVal = null;
 		if (sdfProperty != null && sdfProperty.length() > 0) stringVal = mol.getProperty(sdfProperty);
-		String regexMatch = "(\\x00|\\^M|\\^\\@)$";
+		String regexMatch1 = "(\\x00|\\^M|\\^\\@)$";
+		String regexMatch2 = "[^0-9.]+";
+		Boolean coerced = false;
 		if (stringVal != null) {
-			stringVal = stringVal.replaceAll(regexMatch, "");
-			stringVal = stringVal.replaceAll("[^0-9.]+", "");			
-		} 
+			Matcher matches1 = Pattern.compile(regexMatch1).matcher(stringVal);
+			if(matches1.find()) {
+				stringVal = matches1.replaceAll("");
+				coerced = true;	
+			}
+			Matcher matches2 = Pattern.compile(regexMatch2).matcher(stringVal);
+			if(matches2.find()) {
+				stringVal = matches2.replaceAll("");
+				coerced = true;	
+			}
+		}
 		if (stringVal != null && stringVal.length() < 1) stringVal = null;
 		Double value;
 		if (stringVal == null && mapping.getDefaultVal() != null && mapping.getDefaultVal().length() > 0) value = new Double(mapping.getDefaultVal());
 		else if (stringVal ==null) value = null;
 		else value = new Double(stringVal);
-		
+		if(coerced) logWarning("CoercedNumericValue","Coerced numeric value for property " + sdfProperty, sdfProperty + " '"+ mol.getProperty(sdfProperty) + "' coerced to '" + value + "'", recordNumber, results);
 		if (value != null) if (logger.isDebugEnabled()) logger.debug("requested property: " + sdfProperty + "  value: " + value);
 		return value;
 	}
 
-
-	public Date getDateValueFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings) throws Exception{
+	public Date getDateValueFromMappings(CmpdRegMolecule mol, String dbProperty, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber) throws Exception{
 		BulkLoadPropertyMappingDTO mapping = BulkLoadPropertyMappingDTO.findMappingByDbPropertyEquals(mappings, dbProperty);
 		if (mapping == null) return null;
 		String sdfProperty = mapping.getSdfProperty();
@@ -1263,12 +1480,21 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			if (defaultVal != null){
 				try{
 					value = df.parse(mapping.getDefaultVal());
+					if(!df.format(value).equals(mapping.getDefaultVal())) {
+						logWarning("CoercedDateValue", "Coerced date value for property " + sdfProperty, sdfProperty + " '"+ mapping.getDefaultVal() + " coerced to " + df.format(value) + "'", recordNumber, results);
+					}
 				} catch (ParseException e){
 					try{
 						value = df2.parse(mapping.getDefaultVal());
+						if(!df2.format(value).equals(mapping.getDefaultVal())) {
+							logWarning("CoercedDateValue","Coerced date value for property " + sdfProperty, sdfProperty + " '"+ mapping.getDefaultVal() + "' coerced to " + df2.format(value) + "'", recordNumber, results);
+						}
 					}catch (ParseException e2){
 						try{
 							value = df3.parse(mapping.getDefaultVal());
+							if(!df3.format(value).equals(mapping.getDefaultVal())) {
+								logWarning("CoercedDateValue", "Coerced date value for property " + sdfProperty, sdfProperty + " '"+ mapping.getDefaultVal() + "' coerced to " + df3.format(value) + "'", recordNumber, results);
+							}
 						}catch (ParseException e3){
 							logger.error("Could not parse date:"+mapping.getDefaultVal());
 							throw new Exception("Could not parse the date:" + mapping.getDefaultVal() + ". Accepted date formats are YYYY-MM-DD or MM-DD-YYYY");
@@ -1283,12 +1509,21 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			//there is a value in sdf, try to parse it
 			try{
 				value = df.parse(stringVal);
+				if(!df.format(value).equals(stringVal)) {
+					logWarning("CoercedDateValue", "Coerced date value for property " + sdfProperty, sdfProperty + " '"+ stringVal + "' coerced to '" + df.format(value) + "'", recordNumber, results);
+				}
 			} catch (ParseException e){
 				try{
 					value = df2.parse(stringVal);
+					if(!df2.format(value).equals(stringVal)) {
+						logWarning("CoercedDateValue", "Coerced date value for property " + sdfProperty, sdfProperty + " '"+ stringVal + "' coerced to '" + df2.format(value) + "'", recordNumber, results);
+					}
 				} catch (ParseException e2){
 					try{
 						value = df3.parse(stringVal);
+						if(!df3.format(value).equals(stringVal)) {
+							logWarning("CoercedDateValue", "Coerced date value for property " + sdfProperty, sdfProperty + " '"+ stringVal + "' coerced to '" + df3.format(value) + "'", recordNumber, results);
+						}
 					} catch (ParseException e3){
 						logger.error("Could not parse date:"+stringVal);
 						throw new Exception("Could not parse the date:" + stringVal + ". Accepted date formats are YYYY-MM-DD or MM-DD-YYYY");
@@ -1302,25 +1537,49 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 	}
 
 	public String generateSummaryHtml(int numRecordsRead,
-			int numNewParentsLoaded, int numNewLotsOldParentsLoaded, Map<String, Integer> errorMap, String errorSDFName, FileOutputStream reportOutStream) throws IOException {
+			int numNewParentsLoaded, int numNewLotsOldParentsLoaded, Collection<ValidationResponseDTO> validationResponse, String errorSDFName, FileOutputStream reportOutStream) throws IOException {
 		int numErrorRecords = 0;
-		for (Integer count : errorMap.values()) numErrorRecords += count;
-
-		String summary = "<div>Registration completed.</div>";
-		summary+="<div style=\"margin-top:15px;\">";
-		summary+="<div>"+numNewParentsLoaded+" new compounds registered"+"</div>";
-		summary+="<div>"+numNewLotsOldParentsLoaded+" new lots of existing compounds registered"+"</div>";
-		if (!errorMap.isEmpty()){
-			summary+="<div style=\"margin-top:15px;margin-bottom:10px;\">";
-			summary+=""+numErrorRecords+" errors have been written to: "+errorSDFName+"";
-			summary+="</div>";
-			for (String error: errorMap.keySet()){
-				summary+="<div style=\"margin-left:15px;\">";
-				summary += errorMap.get(error)+" compounds had the error: "+error+"";
-				summary+="</div>";
+		int numWarningRecords = 0;
+		Map<String, Integer> errorMap = new HashMap<String, Integer>();
+		for(ValidationResponseDTO valResp : validationResponse) {
+			if(valResp.getLevel() == "error") {
+				if (!errorMap.containsKey(valResp.getCategoryDescription())) errorMap.put(valResp.getCategoryDescription(), 1);
+				else errorMap.put(valResp.getCategoryDescription(), errorMap.get(valResp.getCategoryDescription())+1);
 			}
 		}
+		for (Integer count : errorMap.values()) numErrorRecords += count;
+
+		Map<String, Integer> warningMap = new HashMap<String, Integer>();
+		for(ValidationResponseDTO valResp : validationResponse) {
+			if(valResp.getLevel() == "warning") {
+				if (!warningMap.containsKey(valResp.getCategoryDescription())) warningMap.put(valResp.getCategoryDescription(), 1);
+				else warningMap.put(valResp.getCategoryDescription(), warningMap.get(valResp.getCategoryDescription())+1);
+			}
+		}
+		for (Integer count : warningMap.values()) numWarningRecords += count;
+		
+		String summary = "<div><ul>";
+		summary+="<li>Number of entries processed: "+numRecordsRead+"</li>";
+		summary+="<li>Number of entries with error: "+numErrorRecords+"</li>";
+		summary+="<li>Number of warnings: "+numWarningRecords+"</li>";
+		summary+="<li>New compounds: "+numNewParentsLoaded+"</li>";
+		summary+="<li>New lots of existing compounds: "+numNewLotsOldParentsLoaded+"</li>";
+		summary+="<li>New lots of new compounds in the file: "+numNewLotsOldParentsLoaded+"</li>";
 		summary+="</div>";
+		if (!errorMap.isEmpty()){
+			summary+="<div><h5>Errors</h5><ul>";
+			for (String error: errorMap.keySet()){
+				summary += "<li>"+errorMap.get(error)+" entries had: "+error+"</li>";
+			}
+			summary+="</ul></div>";
+		}
+		if (!warningMap.isEmpty()){
+			summary+="<div><h5>Warnings</h5><ul>";
+			for (String warning: warningMap.keySet()){
+				summary += "<li>"+warningMap.get(warning)+" entries had: "+warning+"</li>";
+			}
+			summary+="</ul></div>";
+		}
 		reportOutStream.write(summary.getBytes());
 		return summary;
 	}
@@ -1655,9 +1914,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		return summary;
 	}
 	
-	public CmpdRegMolecule processForSaltStripping(CmpdRegMolecule inputMol, Collection<BulkLoadPropertyMappingDTO> mappings) throws CmpdRegMolFormatException{
+	public CmpdRegMolecule processForSaltStripping(CmpdRegMolecule inputMol, Collection<BulkLoadPropertyMappingDTO> mappings, Collection<ValidationResponseDTO> results, int recordNumber) throws CmpdRegMolFormatException{
 		boolean multipleFragments = chemStructureService.checkForSalt(inputMol.getMolStructure());
-		boolean markedAsMixture = Boolean.valueOf(getStringValueFromMappings(inputMol, "Parent Is Mixture", mappings));
+		boolean markedAsMixture = Boolean.valueOf(getStringValueFromMappings(inputMol, "Parent Is Mixture", mappings, results, recordNumber));
 		if (multipleFragments && !markedAsMixture){
 			//attempt salt stripping
 			StrippedSaltDTO strippedSaltDTO = chemStructureService.stripSalts(inputMol);
@@ -1668,12 +1927,14 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				logger.debug(inputMol.getMolStructure());
 				String saltAbbrevString = "";
 				String saltEquivString = "";
-				if (getStringValueFromMappings(inputMol, "Lot Salt Abbrev", mappings) != null){
-					saltAbbrevString += getStringValueFromMappings(inputMol, "Lot Salt Abbrev", mappings);
+				String saltAbbrevMapping = getStringValueFromMappings(inputMol, "Lot Salt Abbrev", mappings, results, recordNumber);
+				if (saltAbbrevMapping != null){
+					saltAbbrevString += saltAbbrevMapping;
 					saltAbbrevString += ";";
 				}
-				if (getStringValueFromMappings(inputMol, "Lot Salt Equivalents", mappings) != null){
-					saltEquivString += getStringValueFromMappings(inputMol, "Lot Salt Equivalents", mappings);
+				String saltEquivMapping = getStringValueFromMappings(inputMol, "Lot Salt Equivalents", mappings, results, recordNumber);
+				if (saltEquivMapping != null){
+					saltEquivString += saltEquivMapping;
 					saltEquivString += ";";
 				}
 				for (Salt salt : strippedSaltDTO.getSaltCounts().keySet()){

@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -437,6 +438,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);		
 			} else if (structureTable.equalsIgnoreCase("QC_Compound_Structure")) {
 				String cacheIdentifier = "labsynch_qc_cmpd_cache";
+				if (!cru.isCacheIDRegistered(cacheIdentifier)){
+					cru.registerPermanentCache(cacheIdentifier);	
+				}
+				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
+			} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")) {
+				String cacheIdentifier = "labsynch_dr_cmpd_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
@@ -1374,8 +1381,15 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			for (String table : tableList){
 				logger.info("tables: " + table);
 			}
-			if (tableList.contains(tableName)){
-				UpdateHandler.dropStructureTable(ch, tableName);				
+			String matchingTable = null;
+			for (String t : tables) {
+				if(t.toLowerCase().contains(tableName.toLowerCase())){
+					matchingTable = t;
+					break;
+				}
+			}
+			if (matchingTable != null){
+				UpdateHandler.dropStructureTable(ch, matchingTable);				
 			} else {
 				logger.info(tableName + " does not exist");
 			}

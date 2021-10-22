@@ -334,18 +334,34 @@ public class CorpName {
 		return q.getResultList();
 	}
 
-	public static List generateLicensePlate(int inputNumber) {
-		String sqlQuery = "SELECT licenseplate(:inputNumber) as license_plate";
-		logger.debug(sqlQuery);
-		EntityManager em = Lot.entityManager();
-		Query q = em.createNativeQuery(sqlQuery);
-		q.setParameter("inputNumber", inputNumber);
-		return q.getResultList();
+	public static String generateLicensePlate(int inputNumber) {
+		inputNumber = inputNumber - 1;
+		int num;
+		if (inputNumber >= 1062600) {
+			// changed algorithm to skip '000'
+			inputNumber = inputNumber - 1063;
+			num= inputNumber % 999 + 1;
+			inputNumber=(int)(inputNumber/999);
+
+		} else {
+			num=inputNumber%1000;
+			inputNumber=(int)(inputNumber/1000);
+      
+		};
+
+		String let="";
+		
+		for (int i=0; i<3; i++) {
+			let = let+(char) (inputNumber%26 + 65);
+			inputNumber = (int)(inputNumber/26);
+		};
+		let = new StringBuilder(let).reverse().toString();
+		return String.format("%s%03d", let, num);
 	}
 
 	public static String generateCorpLicensePlate() {
 		List<Object> seqList = CorpName.generateCustomParentSequence();
-		String corpName = (String) CorpName.generateLicensePlate(Integer.parseInt(String.valueOf(seqList.get(0)))).get(0);
+		String corpName = CorpName.generateLicensePlate(Integer.parseInt(String.valueOf(seqList.get(0))));
 		return corpName;
 	}
 

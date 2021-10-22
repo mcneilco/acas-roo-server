@@ -80,6 +80,8 @@ import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
 import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.dto.AutoLabelDTO;
 
 @Service
 public class LsThingServiceImpl implements LsThingService {
@@ -137,40 +139,6 @@ public class LsThingServiceImpl implements LsThingService {
 		return responseOutput;
 	}
 
-
-	@Override
-	public PreferredNameResultsDTO getCodeNameFromName(String thingType, String thingKind, String labelType, String labelKind, String json){
-
-		PreferredNameRequestDTO requestDTO = PreferredNameRequestDTO.fromJsonToPreferredNameRequestDTO(json);	
-		logger.info("number of requests: " + requestDTO.getRequests().size());
-		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
-
-		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
-		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
-
-		for (PreferredNameDTO request : requests){
-			request.setPreferredName("");
-			request.setReferenceName("");
-			List<LsThing> lsThings = LsThing.findLsThingByLabelText(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
-			if (lsThings.size() == 1){
-				request.setPreferredName(lsThings.get(0).getCodeName());
-				request.setReferenceName(lsThings.get(0).getCodeName());
-			} else if (lsThings.size() > 1){
-				responseOutput.setError(true);
-				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setLevel("error");
-				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
-				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
-				errors.add(error);
-			} else {
-				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
-			}
-		}
-		responseOutput.setResults(requests);
-		responseOutput.setErrorMessages(errors);
-
-		return responseOutput;
-	}
 	
 	@Override
 	public PreferredNameResultsDTO getCodeNameFromName(String thingType, String thingKind, String labelType, String labelKind, PreferredNameRequestDTO requestDTO){
@@ -181,64 +149,106 @@ public class LsThingServiceImpl implements LsThingService {
 		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
 		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
 
-		for (PreferredNameDTO request : requests){
-			request.setPreferredName("");
-			request.setReferenceName("");
-			List<LsThing> lsThings = new ArrayList<LsThing>();
-			if (labelType==null || labelKind==null || labelType.length()==0 || labelKind.length()==0){
-				lsThings = LsThing.findLsThingByLabelText(thingType, thingKind, request.getRequestName()).getResultList();
+		// Construct a query to check for matches either in labelText or in codeName
+		EntityManager em = LsThing.entityManager();
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<LsThing> criteria = cb.createQuery(LsThing.class);
+		Root<LsThing> lsThingRoot = criteria.from(LsThing.class);
 
-			}else{
-				lsThings = LsThing.findLsThingByLabelText(thingType, thingKind, labelType, labelKind, request.getRequestName()).getResultList();
-			}
-			if (lsThings.size() == 1){
-				request.setPreferredName(pickBestLabel(lsThings.get(0)));
-				request.setReferenceName(lsThings.get(0).getCodeName());
-			} else if (lsThings.size() > 1){
-				responseOutput.setError(true);
-				ErrorMessageDTO error = new ErrorMessageDTO();
-				error.setLevel("MULTIPLE RESULTS");
-				error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
-				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
-				errors.add(error);
-			} else {
-				try{
-					LsThing codeNameMatch = LsThing.findLsThingsByCodeNameEquals(request.getRequestName()).getSingleResult();
-					if (codeNameMatch.getLsKind().equals(thingKind) && codeNameMatch.getLsType().equals(thingType)){
-						logger.info("Made it to the codeMatch");
-						request.setPreferredName(pickBestLabel(codeNameMatch));
-	 					request.setReferenceName(codeNameMatch.getCodeName());
-					}else{
-						logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
-					}
-				}catch (EmptyResultDataAccessException e){
-					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+		// Build the WHERE clause predicates
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+		// Thing not ignored
+		Predicate thingNotIgnored = cb.not(lsThingRoot.<Boolean>get("ignored"));
+		predicateList.add(thingNotIgnored);
+		// Thing Type and Kind
+		if (thingType != null && thingType.length() > 0){
+			Predicate predicate = cb.equal(lsThingRoot.<String>get("lsType"), thingType);
+			predicateList.add(predicate);
+		}
+		if (thingKind != null && thingKind.length() > 0){
+			Predicate predicate = cb.equal(lsThingRoot.<String>get("lsKind"), thingKind);
+			predicateList.add(predicate);
+		}
+
+		// Label left join and predicates
+		Join<LsThing, LsThingLabel> lsThingLabel = lsThingRoot.join("lsLabels", JoinType.LEFT);
+		List<Predicate> labelPredicatesList = new ArrayList<Predicate>();
+		Predicate[] labelPredicates = new Predicate[0];
+
+		Predicate labelNotIgnored = cb.not(lsThingLabel.<Boolean>get("ignored"));
+		labelPredicatesList.add(labelNotIgnored);
+		if (labelType != null && labelType.length() > 0){
+			Predicate labelTypePredicate = cb.equal(lsThingLabel.<String>get("lsType"), labelType);
+			labelPredicatesList.add(labelTypePredicate);
+		}
+		if (labelKind != null && labelKind.length() > 0){
+			Predicate labelKindPredicate = cb.equal(lsThingLabel.<String>get("lsKind"), labelKind);
+			labelPredicatesList.add(labelKindPredicate);
+		}
+		labelPredicates = labelPredicatesList.toArray(labelPredicates);
+		lsThingLabel.on(cb.and(labelPredicates));
+
+		// Put all the requestNames into a list
+		List<String> requestNameList = new ArrayList<String>();
+		for (PreferredNameDTO request : requests){
+			requestNameList.add(request.getRequestName());
+		}
+		// Match on either labelText or codeName
+		Predicate labelTextPred = lsThingLabel.<String>get("labelText").in(requestNameList);
+		Predicate codeNamePred = lsThingRoot.<String>get("codeName").in(requestNameList);
+		Predicate requestNamePred = cb.or(labelTextPred, codeNamePred);
+		predicateList.add(requestNamePred);
+		predicates = predicateList.toArray(predicates);
+		// Construct the query to fetch back LsThings
+		criteria.select(lsThingRoot);
+		criteria.distinct(true);
+		// AND all the terms together
+		criteria.where(cb.and(predicates));
+		TypedQuery<LsThing> q = em.createQuery(criteria);
+		logger.debug(q.unwrap(org.hibernate.Query.class).getQueryString());
+		List<LsThing> foundLsThings = q.getResultList();
+		// Construct a PreferredNameDTO for each possible requestName for each found LsThing, both by label and by codeName
+		// The goal is to be able to line up with what was sent in, whether it was by label or by codeName
+		List<PreferredNameDTO> labelResultsDTOs = new ArrayList<PreferredNameDTO>();
+		List<PreferredNameDTO> codeResultsDTOs = new ArrayList<PreferredNameDTO>();
+		for (LsThing lsThing : foundLsThings){
+			String bestLabel = pickBestLabel(lsThing);
+			String codeName = lsThing.getCodeName();
+			for (LsThingLabel label : lsThing.getLsLabels()){
+				boolean typeMatches = labelType == null || label.getLsType().equals(labelType);
+				boolean kindMatches = labelKind == null || label.getLsKind().equals(labelKind);
+				if (typeMatches && kindMatches){
+					PreferredNameDTO resByLabel = new PreferredNameDTO(label.getLabelText(), bestLabel, codeName);
+					labelResultsDTOs.add(resByLabel);
 				}
 			}
+			PreferredNameDTO resByCodeName = new PreferredNameDTO(codeName, bestLabel, codeName);
+			codeResultsDTOs.add(resByCodeName);
 		}
-		responseOutput.setResults(requests);
-		responseOutput.setErrorMessages(errors);
+		
 
-		return responseOutput;
-	}
-	
-	
-	public PreferredNameResultsDTO getCodeNameFromName(PreferredNameRequestDTO requestDTO){
-
-		logger.info("number of requests: " + requestDTO.getRequests().size());
-		Collection<PreferredNameDTO> requests = requestDTO.getRequests();
-
-		PreferredNameResultsDTO responseOutput = new PreferredNameResultsDTO();
-		Collection<ErrorMessageDTO> errors = new HashSet<ErrorMessageDTO>();
-
+		// Work up query results into output
 		for (PreferredNameDTO request : requests){
 			request.setPreferredName("");
 			request.setReferenceName("");
-			List<LsThing> lsThings = LsThing.findLsThingByLabelText(request.getRequestName()).getResultList();
-			if (lsThings.size() == 1){
-				request.setPreferredName(lsThings.get(0).getCodeName());
-				request.setReferenceName(lsThings.get(0).getCodeName());
-			} else if (lsThings.size() > 1){
+			Collection<PreferredNameDTO> matches = new ArrayList<PreferredNameDTO>();
+			for (PreferredNameDTO res : labelResultsDTOs){
+				if (res.getRequestName().equals(request.getRequestName())){
+					matches.add(res);
+				}
+			}
+			// Unique list of matches by reference name
+			HashMap<String, PreferredNameDTO> labelMatchesMap = new HashMap<String, PreferredNameDTO>();
+			for (PreferredNameDTO match : matches){
+				labelMatchesMap.put(match.getReferenceName(), match);
+			}
+			matches = labelMatchesMap.values();
+			if (matches.size() == 1){
+				PreferredNameDTO match = matches.iterator().next();
+				request.setPreferredName(match.getPreferredName());
+				request.setReferenceName(match.getReferenceName());
+			} else if (matches.size() > 1){
 				responseOutput.setError(true);
 				ErrorMessageDTO error = new ErrorMessageDTO();
 				error.setLevel("error");
@@ -246,9 +256,35 @@ public class LsThingServiceImpl implements LsThingService {
 				logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
 				errors.add(error);
 			} else {
-				logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				matches = new ArrayList<PreferredNameDTO>();
+				for (PreferredNameDTO res : codeResultsDTOs){
+					if (res.getRequestName().equals(request.getRequestName())){
+						matches.add(res);
+					}
+				}
+				// Unique list of matches by reference name
+				HashMap<String, PreferredNameDTO> codeMatchesMap = new HashMap<String, PreferredNameDTO>();
+				for (PreferredNameDTO match : matches){
+					codeMatchesMap.put(match.getReferenceName(), match);
+				}
+				matches = codeMatchesMap.values();
+				if (matches.size() == 1){
+					PreferredNameDTO match = matches.iterator().next();
+					request.setPreferredName(match.getPreferredName());
+					request.setReferenceName(match.getReferenceName());
+				} else if (matches.size() > 1){
+					responseOutput.setError(true);
+					ErrorMessageDTO error = new ErrorMessageDTO();
+					error.setLevel("error");
+					error.setMessage("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName() );	
+					logger.error("FOUND MULTIPLE LSTHINGS WITH THE SAME NAME: " + request.getRequestName());
+					errors.add(error);
+				} else {
+					logger.info("Did not find a LS_THING WITH THE REQUESTED NAME: " + request.getRequestName());
+				}
 			}
 		}
+		
 		responseOutput.setResults(requests);
 		responseOutput.setErrorMessages(errors);
 
@@ -762,6 +798,19 @@ public class LsThingServiceImpl implements LsThingService {
 			Set<LsThingLabel> lsLabels = new HashSet<LsThingLabel>();
 			for(LsThingLabel lsThingLabel : lsThing.getLsLabels()){
 				LsThingLabel newLsThingLabel = new LsThingLabel(lsThingLabel);
+				// If the label text is not set and their is a label sequence which matches this label lsTypeAndKind and thing lsTypeAndKind
+				// then get the next label sequence text and assign it to the label.
+				if(newLsThingLabel.getLabelText() == null || newLsThingLabel.getLabelText().equals("")) {
+					List<LabelSequence> labelSequences = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(newLsThing.getLsTypeAndKind(), newLsThingLabel.getLsTypeAndKind()).getResultList();
+					if (labelSequences.size() == 1) {
+						LabelSequence labelSequence = LabelSequence.findLabelSequence(labelSequences.get(0).getId());
+						AutoLabelDTO autoLabel = labelSequence.generateNextLabel();
+						logger.info("generated new auto label: " + autoLabel.toJson());
+						newLsThingLabel.setLabelText(autoLabel.getAutoLabel());
+					}
+				}
+
+				// Set the thing to the label and save
 				newLsThingLabel.setLsThing(newLsThing);
 				logger.debug("here is the newLsThingLabel before save: " + newLsThingLabel.toJson());
 				newLsThingLabel.persist();
@@ -1311,7 +1360,7 @@ public class LsThingServiceImpl implements LsThingService {
 						if (lsThingValue.getLsState() == null) lsThingValue.setLsState(updatedLsThingState);
 						LsThingValue updatedLsThingValue = null;
 						if (lsThingValue.getId() == null){
-							updatedLsThingValue = LsThingValue.create(lsThingValue);
+							updatedLsThingValue = new LsThingValue(lsThingValue);
 							updatedLsThingValue.setLsState(LsThingState.findLsThingState(updatedLsThingState.getId()));
 							updatedLsThingValue.persist();
 							updatedLsThingState.getLsValues().add(updatedLsThingValue);
@@ -2346,14 +2395,11 @@ public class LsThingServiceImpl implements LsThingService {
 			for (ItxQueryDTO interaction : query.getFirstInteractions()){
 				Join<LsThing, ItxLsThingLsThing> firstItx = thing.join("firstLsThings");
 				Join<ItxLsThingLsThing, LsThing> firstThing = firstItx.join("firstLsThing");
-				Join<LsThing, LsThingLabel> firstThingLabel = firstThing.join("lsLabels", JoinType.LEFT);
 				List<Predicate> firstItxPredicates = new ArrayList<Predicate>();
 				Predicate firstItxNotIgn = criteriaBuilder.isFalse(firstItx.<Boolean>get("ignored"));
 				Predicate firstThingNotIgn = criteriaBuilder.isFalse(firstThing.<Boolean>get("ignored"));
-				Predicate firstThingLabelNotIgn = criteriaBuilder.isFalse(firstThingLabel.<Boolean>get("ignored"));
 				firstItxPredicates.add(firstItxNotIgn);
 				firstItxPredicates.add(firstThingNotIgn);
-				firstItxPredicates.add(firstThingLabelNotIgn);
 				if (interaction.getInteractionType() != null){
 					Predicate firstItxType = criteriaBuilder.equal(firstItx.<String>get("lsType"), interaction.getInteractionType());
 					firstItxPredicates.add(firstItxType);
@@ -2374,50 +2420,56 @@ public class LsThingServiceImpl implements LsThingService {
 					Predicate predicate = criteriaBuilder.equal(firstThing.<String>get("codeName"), interaction.getThingCodeName());
 					firstItxPredicates.add(predicate);
 				}
-				if (interaction.getThingLabelType() != null){
-					Predicate firstThingLabelType = criteriaBuilder.equal(firstThingLabel.<String>get("lsType"), interaction.getThingLabelType());
-					firstItxPredicates.add(firstThingLabelType);
-				}
-				if (interaction.getThingLabelKind() != null){
-					Predicate firstThingLabelKind = criteriaBuilder.equal(firstThingLabel.<String>get("lsKind"), interaction.getThingLabelKind());
-					firstItxPredicates.add(firstThingLabelKind);
-				}
-				if (interaction.getThingLabelText() != null){
-					if (interaction.getOperator() != null){
-						if (interaction.getOperator().equals("=")){
-							Predicate firstThingLabelEquals = criteriaBuilder.equal(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelEquals);
-						}else if (interaction.getOperator().equals("!=")){
-							Predicate firstThingLabelNotEquals = criteriaBuilder.notEqual(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelNotEquals);
-						}else if(interaction.getOperator().equals("~")){
-							Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							firstItxPredicates.add(firstThingLabelLike);
-						}else if(interaction.getOperator().equalsIgnoreCase("like")){
-							Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							firstItxPredicates.add(firstThingLabelLike);
-						}else if(interaction.getOperator().equals("!~")){
-							Predicate firstThingLabelNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							firstItxPredicates.add(firstThingLabelNotLike);
-						}else if(interaction.getOperator().equals(">")){
-							Predicate firstThingLabelGreaterThan = criteriaBuilder.greaterThan(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelGreaterThan);
-						}else if(interaction.getOperator().equals(">=")){
-							Predicate firstThingLabelGreaterThan = criteriaBuilder.greaterThanOrEqualTo(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelGreaterThan);
-						}else if(interaction.getOperator().equals("<")){
-							Predicate firstThingLabelLessThan = criteriaBuilder.lessThan(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelLessThan);
-						}else if(interaction.getOperator().equals("<=")){
-							Predicate firstThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							firstItxPredicates.add(firstThingLabelLessThan);
+				if(interaction.getThingLabelType() != null || interaction.getThingLabelKind() != null || interaction.getThingLabelText() != null) {
+					Join<LsThing, LsThingLabel> firstThingLabel = firstThing.join("lsLabels", JoinType.LEFT);
+					Predicate firstThingLabelNotIgn = criteriaBuilder.isFalse(firstThingLabel.<Boolean>get("ignored"));
+					firstItxPredicates.add(firstThingLabelNotIgn);
+
+					if (interaction.getThingLabelType() != null){
+						Predicate firstThingLabelType = criteriaBuilder.equal(firstThingLabel.<String>get("lsType"), interaction.getThingLabelType());
+						firstItxPredicates.add(firstThingLabelType);
+					}
+					if (interaction.getThingLabelKind() != null){
+						Predicate firstThingLabelKind = criteriaBuilder.equal(firstThingLabel.<String>get("lsKind"), interaction.getThingLabelKind());
+						firstItxPredicates.add(firstThingLabelKind);
+					}
+					if (interaction.getThingLabelText() != null){
+						if (interaction.getOperator() != null){
+							if (interaction.getOperator().equals("=")){
+								Predicate firstThingLabelEquals = criteriaBuilder.equal(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelEquals);
+							}else if (interaction.getOperator().equals("!=")){
+								Predicate firstThingLabelNotEquals = criteriaBuilder.notEqual(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelNotEquals);
+							}else if(interaction.getOperator().equals("~")){
+								Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								firstItxPredicates.add(firstThingLabelLike);
+							}else if(interaction.getOperator().equalsIgnoreCase("like")){
+								Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								firstItxPredicates.add(firstThingLabelLike);
+							}else if(interaction.getOperator().equals("!~")){
+								Predicate firstThingLabelNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								firstItxPredicates.add(firstThingLabelNotLike);
+							}else if(interaction.getOperator().equals(">")){
+								Predicate firstThingLabelGreaterThan = criteriaBuilder.greaterThan(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelGreaterThan);
+							}else if(interaction.getOperator().equals(">=")){
+								Predicate firstThingLabelGreaterThan = criteriaBuilder.greaterThanOrEqualTo(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelGreaterThan);
+							}else if(interaction.getOperator().equals("<")){
+								Predicate firstThingLabelLessThan = criteriaBuilder.lessThan(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelLessThan);
+							}else if(interaction.getOperator().equals("<=")){
+								Predicate firstThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(firstThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								firstItxPredicates.add(firstThingLabelLessThan);
+							}else{
+								Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								firstItxPredicates.add(firstThingLabelLike);
+							}
 						}else{
 							Predicate firstThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(firstThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
 							firstItxPredicates.add(firstThingLabelLike);
 						}
-					}else{
-						Predicate firstThingLabelLike = criteriaBuilder.like(firstThingLabel.<String>get("labelText"), '%' + interaction.getThingLabelText() + '%');
-						firstItxPredicates.add(firstThingLabelLike);
 					}
 				}
 				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
@@ -2431,14 +2483,11 @@ public class LsThingServiceImpl implements LsThingService {
 			for (ItxQueryDTO interaction : query.getSecondInteractions()){
 				Join<LsThing, ItxLsThingLsThing> secondItx = thing.join("secondLsThings");
 				Join<ItxLsThingLsThing, LsThing> secondThing = secondItx.join("secondLsThing");
-				Join<LsThing, LsThingLabel> secondThingLabel = secondThing.join("lsLabels", JoinType.LEFT);
 				List<Predicate> secondItxPredicates = new ArrayList<Predicate>();
 				Predicate secondItxNotIgn = criteriaBuilder.isFalse(secondItx.<Boolean>get("ignored"));
 				Predicate secondThingNotIgn = criteriaBuilder.isFalse(secondThing.<Boolean>get("ignored"));
-				Predicate secondThingLabelNotIgn = criteriaBuilder.isFalse(secondThingLabel.<Boolean>get("ignored"));
 				secondItxPredicates.add(secondItxNotIgn);
 				secondItxPredicates.add(secondThingNotIgn);
-				secondItxPredicates.add(secondThingLabelNotIgn);
 				if (interaction.getInteractionType() != null){
 					Predicate secondItxType = criteriaBuilder.equal(secondItx.<String>get("lsType"), interaction.getInteractionType());
 					secondItxPredicates.add(secondItxType);
@@ -2459,50 +2508,56 @@ public class LsThingServiceImpl implements LsThingService {
 					Predicate predicate = criteriaBuilder.equal(secondThing.<String>get("codeName"), interaction.getThingCodeName());
 					secondItxPredicates.add(predicate);
 				}
-				if (interaction.getThingLabelType() != null){
-					Predicate secondThingLabelType = criteriaBuilder.equal(secondThingLabel.<String>get("lsType"), interaction.getThingLabelType());
-					secondItxPredicates.add(secondThingLabelType);
-				}
-				if (interaction.getThingLabelKind() != null){
-					Predicate secondThingLabelKind = criteriaBuilder.equal(secondThingLabel.<String>get("lsKind"), interaction.getThingLabelKind());
-					secondItxPredicates.add(secondThingLabelKind);
-				}
-				if (interaction.getThingLabelText() != null){
-					if (interaction.getOperator() != null){
-						if (interaction.getOperator().equals("=")){
-							Predicate secondThingLabelEquals = criteriaBuilder.equal(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelEquals);
-						}else if (interaction.getOperator().equals("!=")){
-							Predicate secondThingLabelNotEquals = criteriaBuilder.notEqual(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelNotEquals);
-						}else if(interaction.getOperator().equals("~")){
-							Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							secondItxPredicates.add(secondThingLabelLike);
-						}else if(interaction.getOperator().equalsIgnoreCase("like")){
-							Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							secondItxPredicates.add(secondThingLabelLike);
-						}else if(interaction.getOperator().equals("!~")){
-							Predicate secondThingLabelNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-							secondItxPredicates.add(secondThingLabelNotLike);
-						}else if(interaction.getOperator().equals(">")){
-							Predicate secondThingLabelGreaterThan = criteriaBuilder.greaterThan(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelGreaterThan);
-						}else if(interaction.getOperator().equals(">=")){
-							Predicate secondThingLabelGreaterThan = criteriaBuilder.greaterThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelGreaterThan);
-						}else if(interaction.getOperator().equals("<")){
-							Predicate secondThingLabelLessThan = criteriaBuilder.lessThan(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelLessThan);
-						}else if(interaction.getOperator().equals("<=")){
-							Predicate secondThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
-							secondItxPredicates.add(secondThingLabelLessThan);
+				if(interaction.getThingLabelType() != null || interaction.getThingLabelKind() != null || interaction.getThingLabelText() != null) {
+					Join<LsThing, LsThingLabel> secondThingLabel = secondThing.join("lsLabels", JoinType.LEFT);
+					Predicate secondThingLabelNotIgn = criteriaBuilder.isFalse(secondThingLabel.<Boolean>get("ignored"));
+					secondItxPredicates.add(secondThingLabelNotIgn);
+
+					if (interaction.getThingLabelType() != null){
+						Predicate secondThingLabelType = criteriaBuilder.equal(secondThingLabel.<String>get("lsType"), interaction.getThingLabelType());
+						secondItxPredicates.add(secondThingLabelType);
+					}
+					if (interaction.getThingLabelKind() != null){
+						Predicate secondThingLabelKind = criteriaBuilder.equal(secondThingLabel.<String>get("lsKind"), interaction.getThingLabelKind());
+						secondItxPredicates.add(secondThingLabelKind);
+					}
+					if (interaction.getThingLabelText() != null){
+						if (interaction.getOperator() != null){
+							if (interaction.getOperator().equals("=")){
+								Predicate secondThingLabelEquals = criteriaBuilder.equal(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelEquals);
+							}else if (interaction.getOperator().equals("!=")){
+								Predicate secondThingLabelNotEquals = criteriaBuilder.notEqual(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelNotEquals);
+							}else if(interaction.getOperator().equals("~")){
+								Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								secondItxPredicates.add(secondThingLabelLike);
+							}else if(interaction.getOperator().equalsIgnoreCase("like")){
+								Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								secondItxPredicates.add(secondThingLabelLike);
+							}else if(interaction.getOperator().equals("!~")){
+								Predicate secondThingLabelNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								secondItxPredicates.add(secondThingLabelNotLike);
+							}else if(interaction.getOperator().equals(">")){
+								Predicate secondThingLabelGreaterThan = criteriaBuilder.greaterThan(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelGreaterThan);
+							}else if(interaction.getOperator().equals(">=")){
+								Predicate secondThingLabelGreaterThan = criteriaBuilder.greaterThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelGreaterThan);
+							}else if(interaction.getOperator().equals("<")){
+								Predicate secondThingLabelLessThan = criteriaBuilder.lessThan(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelLessThan);
+							}else if(interaction.getOperator().equals("<=")){
+								Predicate secondThingLabelLessThan = criteriaBuilder.lessThanOrEqualTo(secondThingLabel.<String>get("labelText"), interaction.getThingLabelText());
+								secondItxPredicates.add(secondThingLabelLessThan);
+							}else{
+								Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
+								secondItxPredicates.add(secondThingLabelLike);
+							}
 						}else{
-							Predicate secondThingLabelLike = criteriaBuilder.like(secondThingLabel.<String>get("labelText"), '%' + interaction.getThingLabelText() + '%');
+							Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
 							secondItxPredicates.add(secondThingLabelLike);
 						}
-					}else{
-						Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
-						secondItxPredicates.add(secondThingLabelLike);
 					}
 				}
 				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
@@ -2582,22 +2637,29 @@ public class LsThingServiceImpl implements LsThingService {
 							}
 						}
 					}else if (valueQuery.getValueType().equalsIgnoreCase("numericValue")){
-					if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
-						Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueGreaterThan);
-					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
-						Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueGreaterThan);
-					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
-						Predicate valueLessThan = criteriaBuilder.lessThan(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueLessThan);
-					}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
-						Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueLessThan);
-					}else{
-						Predicate valueEquals = criteriaBuilder.equal(value.<BigDecimal>get("numericValue"), new BigDecimal(valueQuery.getValue()));
-						valuePredicatesList.add(valueEquals);
-					}
+						try{
+							BigDecimal numberValue = new BigDecimal(valueQuery.getValue());
+							if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+								Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueGreaterThan);
+							}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+								Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueGreaterThan);
+							}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+								Predicate valueLessThan = criteriaBuilder.lessThan(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueLessThan);
+							}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+								Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueLessThan);
+							}else{
+								Predicate valueEquals = criteriaBuilder.equal(value.<BigDecimal>get("numericValue"), numberValue);
+								valuePredicatesList.add(valueEquals);
+							}
+						} catch (NumberFormatException e){
+							logger.warn("Failed to parse number in LsThing generic query for value",e);
+							valuePredicatesList.add(criteriaBuilder.disjunction());
+
+						}
 				}else{
 					//string value types: stringValue, codeValue, fileValue, clobValue
 					if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("=")){
@@ -2714,43 +2776,121 @@ public class LsThingServiceImpl implements LsThingService {
 		metaPredicateList.add(criteriaBuilder.isFalse(thing.<Boolean>get("ignored")));
 
 		//split query string into terms
-		String queryString = query.getQueryString().replaceAll("\\*", "%");
-		List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
-		logger.debug("Number of search terms: " + splitQuery.size());
-		//for each search term, construct a queryDTO with that term filled in every search position of the passed in queryDTO
-		for (String searchTerm : splitQuery){
-			LsThingQueryDTO queryDTO = new LsThingQueryDTO(query.getQueryDTO());
-			if (queryDTO.getFirstInteractions() != null){
-				for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
-					itx.setThingLabelText(searchTerm);
+		String queryString = query.getQueryString();
+		if(queryString != null) {
+			queryString = query.getQueryString().replaceAll("\\*", "%");
+			List<String> splitQuery = SimpleUtil.splitSearchString(queryString);
+			logger.debug("Number of search terms: " + splitQuery.size());
+			//for each search term, construct a queryDTO with that term filled in every search position of the passed in queryDTO
+			for (String searchTerm : splitQuery){
+				LsThingQueryDTO queryDTO = new LsThingQueryDTO(query.getQueryDTO());
+				if (queryDTO.getFirstInteractions() != null){
+					for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
+						itx.setThingLabelText(searchTerm);
+					}
 				}
+				if (queryDTO.getSecondInteractions() != null){
+					for (ItxQueryDTO itx : queryDTO.getSecondInteractions()){
+						itx.setThingLabelText(searchTerm);
+					}
+				}
+				if (queryDTO.getValues() != null){
+					for (ValueQueryDTO value : queryDTO.getValues()){
+						value.setValue(searchTerm);
+					}
+				}
+				if (queryDTO.getLabels() != null){
+					for (LabelQueryDTO label : queryDTO.getLabels()){
+						label.setLabelText(searchTerm);
+					}
+				}
+				if(queryDTO.getCodeName() != null) {
+					queryDTO.getCodeName().setCodeName(searchTerm);
+				}
+					
+				//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
+				List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
+				Predicate[] predicates = new Predicate[0];
+				predicates = predicateList.toArray(predicates);
+				Predicate searchTermPredicate;
+				if(queryDTO.getCombineTermsWithAnd()) {
+					//join all the predicatesByTerm with AND
+					searchTermPredicate = criteriaBuilder.and(predicates);
+				} else {
+					//join all the predicatesByTerm with OR
+					searchTermPredicate = criteriaBuilder.or(predicates);
+				}
+				metaPredicateList.add(searchTermPredicate);
+			}
+		} else {
+			//If a value, label or code name is already set in the search (without a search term)
+			//Then searching using the passed in value into the dto
+			LsThingQueryDTO queryDTO = new LsThingQueryDTO(query.getQueryDTO());
+			Boolean hasCriteria = false;
+			if (queryDTO.getFirstInteractions() != null){
+				List<ItxQueryDTO> firstInteractions = new ArrayList<ItxQueryDTO>();
+				for (ItxQueryDTO itx : queryDTO.getFirstInteractions()){
+					if(itx.getThingLabelText() != null | itx.getThingCodeName() != null) {
+						firstInteractions.add(itx);
+						hasCriteria = true;
+					}
+				}
+				queryDTO.setFirstInteractions(firstInteractions);
 			}
 			if (queryDTO.getSecondInteractions() != null){
+				List<ItxQueryDTO> secondInteractions = new ArrayList<ItxQueryDTO>();
 				for (ItxQueryDTO itx : queryDTO.getSecondInteractions()){
-					itx.setThingLabelText(searchTerm);
+					if(itx.getThingLabelText() != null | itx.getThingCodeName() != null) {
+						secondInteractions.add(itx);
+						hasCriteria = true;
+					}
 				}
+				queryDTO.setSecondInteractions(secondInteractions);
 			}
 			if (queryDTO.getValues() != null){
+				List<ValueQueryDTO> values = new ArrayList<ValueQueryDTO>();
 				for (ValueQueryDTO value : queryDTO.getValues()){
-					value.setValue(searchTerm);
+					if(value.getValue() != null) {
+						values.add(value);
+						hasCriteria = true;
+					}
 				}
+				queryDTO.setValues(values);
 			}
 			if (queryDTO.getLabels() != null){
+				List<LabelQueryDTO> labels = new ArrayList<LabelQueryDTO>();
 				for (LabelQueryDTO label : queryDTO.getLabels()){
-					label.setLabelText(searchTerm);
+					if(label.getLabelText() != null) {
+						labels.add(label);
+						hasCriteria = true;
+					}
 				}
+				queryDTO.setLabels(labels);
 			}
-			if(queryDTO.getCodeName() != null) {
-				queryDTO.getCodeName().setCodeName(searchTerm);
+			if(queryDTO.getCodeName() != null && queryDTO.getCodeName().getCodeName() != null) {
+				hasCriteria = true;
 			}
-				
+			if(hasCriteria) {
 			//get a list of predicates for that queryDTO, OR them all together, then add to the meta list
-			List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
-			Predicate[] predicates = new Predicate[0];
-			predicates = predicateList.toArray(predicates);
-			Predicate searchTermPredicate = criteriaBuilder.or(predicates);
-			metaPredicateList.add(searchTermPredicate);
+				List<Predicate> predicateList = buildPredicatesForQueryDTO(criteriaBuilder, criteria, thing, queryDTO);
+				Predicate[] predicates = new Predicate[0];
+				predicates = predicateList.toArray(predicates);
+				Predicate searchTermPredicate;
+
+				if(queryDTO.getCombineTermsWithAnd()) {
+					//join all the predicatesByTerm with AND
+					searchTermPredicate = criteriaBuilder.and(predicates);
+				} else {
+					//join all the predicatesByTerm with OR
+					searchTermPredicate = criteriaBuilder.or(predicates);
+				}
+				metaPredicateList.add(searchTermPredicate);
+			}
 		}
+
+
+
+
 		//add in thingType and thingKind as required at top level
 		if (query.getQueryDTO().getLsType() != null){
 			Predicate thingType = criteriaBuilder.equal(thing.<String>get("lsType"), query.getQueryDTO().getLsType());

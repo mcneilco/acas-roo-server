@@ -29,6 +29,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.api.ApiExperimentController;
+import com.labsynch.labseer.utils.ByteArrayTransformer;
 import com.labsynch.labseer.utils.CustomBigDecimalFactory;
 import com.labsynch.labseer.utils.ExcludeNulls;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -124,22 +125,36 @@ public class LsThing extends AbstractThing {
         return new JSONSerializer().
         		exclude("*.class","lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
         		include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsLabels","secondLsThings.secondLsThing.lsLabels").
-        		transform(new ExcludeNulls(), void.class).serialize(this);
-    }
+                transform(new ExcludeNulls(), void.class).
+        		serialize(this);
+     }
+
+     @Transactional
+     public String toJsonWithNestedStubsWithBlobValues() {
+         return new JSONSerializer().
+                 exclude("*.class","lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
+                 include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsLabels","secondLsThings.secondLsThing.lsLabels").
+                 transform(new ExcludeNulls(), void.class).
+                 transform(new ByteArrayTransformer(), "lsStates.lsValues.blobValue").
+                 serialize(this);
+      }
     
     @Transactional
     public String toJsonWithNestedFull() {
         return new JSONSerializer().
         		exclude("*.class", "lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
         		include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels", "secondLsThings.secondLsThing.lsStates.lsValues","secondLsThings.secondLsThing.lsLabels","firstLsThings.lsStates.lsValues","firstLsThings.lsLabels","secondLsThings.lsStates.lsValues","secondLsThings.lsLabels").
-        		transform(new ExcludeNulls(), void.class).serialize(this);
+                transform(new ExcludeNulls(), void.class).
+        		serialize(this);
     }
 
     @Transactional
     public String toPrettyJson() {
         return new JSONSerializer().
         		exclude("*.class", "lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
-        		include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(this);
+        		include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).
+                transform(new ExcludeNulls(), void.class).
+        		serialize(this);
     }
 
     @Transactional
@@ -151,38 +166,52 @@ public class LsThing extends AbstractThing {
     public static String toJsonArrayWithNestedStubs(Collection<com.labsynch.labseer.domain.LsThing> collection) {
         return new JSONSerializer().
         		exclude("*.class","lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
-        		include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsLabels","secondLsThings.secondLsThing.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+        		include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsLabels","secondLsThings.secondLsThing.lsLabels").
+                transform(new ExcludeNulls(), void.class).
+        		serialize(collection);
+
     }
     
     @Transactional
     public static String toJsonArrayWithNestedFull(Collection<com.labsynch.labseer.domain.LsThing> collection) {
         return new JSONSerializer().
         		exclude("*.class","lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
-        		include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","secondLsThings.secondLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels","secondLsThings.secondLsThing.lsLabels","firstLsThings.lsStates.lsValues","secondLsThings.lsStates.lsValues","firstLsThings.lsLabels","secondLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+        		include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","secondLsThings.secondLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels","secondLsThings.secondLsThing.lsLabels","firstLsThings.lsStates.lsValues","secondLsThings.lsStates.lsValues","firstLsThings.lsLabels","secondLsThings.lsLabels").
+                transform(new ExcludeNulls(), void.class).
+        		serialize(collection);
+
     }
     
     @Transactional
     public static String toJsonArrayWithNestedFirstLsThings(Collection<com.labsynch.labseer.domain.LsThing> collection) {
-        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels","firstLsThings.lsStates.lsValues","firstLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "firstLsThings.firstLsThing.lsStates.lsValues","firstLsThings.firstLsThing.lsLabels","firstLsThings.lsStates.lsValues","firstLsThings.lsLabels").
+        transform(new ExcludeNulls(), void.class).
+        serialize(collection);
     }
     
     @Transactional
     public static String toJsonArrayWithNestedSecondLsThings(Collection<com.labsynch.labseer.domain.LsThing> collection) {
-        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "secondLsThings.secondLsThing.lsStates.lsValues","secondLsThings.secondLsThing.lsLabels","secondLsThings.lsStates.lsValues","secondLsThings.lsLabels").transform(new ExcludeNulls(), void.class).serialize(collection);
+        return new JSONSerializer().exclude("*.class").include("lsTags", "lsLabels", "lsStates.lsValues", "secondLsThings.secondLsThing.lsStates.lsValues","secondLsThings.secondLsThing.lsLabels","secondLsThings.lsStates.lsValues","secondLsThings.lsLabels").
+        transform(new ExcludeNulls(), void.class).
+        serialize(collection);
     }
     
     @Transactional
     public static String toJsonArrayPretty(Collection<com.labsynch.labseer.domain.LsThing> collection) {
         return new JSONSerializer().
         		exclude("*.class", "lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing").
-        		include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).transform(new ExcludeNulls(), void.class).serialize(collection);
+        		include("lsTags", "lsLabels", "lsStates.lsValues").prettyPrint(true).
+                transform(new ExcludeNulls(), void.class).
+        		serialize(collection);
     }
 
     @Transactional
     public static String toJsonArrayStub(Collection<com.labsynch.labseer.domain.LsThing> collection) {
         return new JSONSerializer().
         		exclude("*.class","lsStates").
-        		include("lsTags", "lsLabels").prettyPrint(false).transform(new ExcludeNulls(), void.class).serialize(collection);
+        		include("lsTags", "lsLabels").prettyPrint(false).
+                transform(new ExcludeNulls(), void.class).
+        		serialize(collection);
     }
 
     @Transactional
@@ -190,8 +219,9 @@ public class LsThing extends AbstractThing {
         return new JSONSerializer()
         .exclude("*.class", "lsStates.lsValues.lsState", "lsStates.lsThing", "lsLabels.lsThing")
         .include("lsTags", "lsLabels", "lsStates.lsValues")
-        .prettyPrint(true)
-        .transform(new ExcludeNulls(), void.class).serialize(this);
+        .prettyPrint(true).
+        transform(new ExcludeNulls(), void.class).
+        serialize(this);
     }
 
 	public static TypedQuery<LsThing> findLsThing(String thingType, String thingKind) {
