@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
@@ -75,6 +76,8 @@ public class MetalotServiceImpl implements MetalotService {
 	@Autowired
 	private LotAliasService lotAliasService;
 
+	@Autowired
+	private ContainerService containerService;
 
 	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
 	private static final Logger logger = LoggerFactory.getLogger(MetalotServiceImpl.class);
@@ -687,21 +690,42 @@ public class MetalotServiceImpl implements MetalotService {
 
 	}
 
+	private ArrayList<ErrorMessage> validateLotForTubeCreation(Lot lot) {
+		Container dupeContainer = Container.findContainerByLabelTextAndLabelTypeKind("barcode", "barcode", lot.getBarcode()).getSingleResult();
+		ArrayList errors = new ArrayList<ErrorMessage>();
+		if (dupeContainer != null){
+			ErrorMessage error = new ErrorMessage();
+			error.setLevel("error");
+			error.setMessage("found a duplicate container with the same barcode: " + dupeContainer.getLabelText());
+			errors.add(error);
+		}
+		if (lot.getAmount() == null || lot.getAmountUnits() == null) {
+			logger.error("amount or amountUnits is null");
+			ErrorMessage error = new ErrorMessage();
+			error.setLevel("error");
+			error.setMessage("amount or amountUnits is null");
+			errors.add(error);
+		}
+
+		// Verify definitions have been loaded for tube kind
+		List<Container> definitionContainerResults = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "tube").getResultList();
+		if (definitionContainerResults.size() == 0){
+			ErrorMessage error = new ErrorMessage();
+			error.setLevel("error");
+			error.setMessage("no definition containers found for tube kind");
+			errors.add(error);
+		}
+
+		return errors;
+	}
+
 	@Transactional
 	private void createNewTube(Lot lot) throws MalformedURLException, IOException, NoResultException, NonUniqueResultException, MissingPropertyException {
-		String baseurl = mainConfig.getServerConnection().getAcasURL();
-		String url = baseurl + "containers?";
-		Map<String, String> queryParams = new HashMap<String, String>();
-		queryParams.put("lsType","definition container");
-		queryParams.put("lsKind","tube");
-		queryParams.put("format","codetable");
-		String definitionContainerCodeTable = SimpleUtil.getFromExternalServer(url, queryParams, logger);
-		Collection<CodeTableDTO> definitionContainerResults = CodeTableDTO.fromJsonArrayToCoes(definitionContainerCodeTable);
-		if (definitionContainerResults.size() == 0){
-			logger.error("Could not find definition container for tube");
-			throw new NoResultException("Could not find definition container for tube");
+		ArrayList<ErrorMessage> messages = validateLotForTubeCreation(lot);
+		for (ErrorMessage error : messages){
+			logger.error(error.getMessage());
 		}
-		CodeTableDTO definitionContainer = CodeTableDTO.fromJsonArrayToCoes(definitionContainerCodeTable).iterator().next();
+		Container definitionContainer = Container.findContainersByLsTypeEqualsAndLsKindEquals("definition container", "tube").getResultList().getSingleResult();
 		String wellName = "A001";
 		Date recordedDate = new Date();
 		CreatePlateRequestDTO tubeRequest = new CreatePlateRequestDTO();
@@ -709,15 +733,11 @@ public class MetalotServiceImpl implements MetalotService {
 		if (tubeRequest.getBarcode() == null || tubeRequest.getBarcode().length() < 1) tubeRequest.setBarcode(lot.getCorpName());
 		tubeRequest.setCreatedDate(recordedDate);
 		tubeRequest.setCreatedUser(lot.getRegisteredBy());
-		tubeRequest.setDefinition(definitionContainer.getCode());
+		tubeRequest.setDefinition(definitionContainer.getCodeName());
 		tubeRequest.setRecordedBy(lot.getRegisteredBy());
 		Collection<WellContentDTO> wells = new ArrayList<WellContentDTO>();
 		WellContentDTO well = new WellContentDTO();
 		well.setWellName(wellName);
-		if (lot.getAmount() == null || lot.getAmountUnits() == null) {
-			logger.error("amount or amount units is null is null when trying to create a new tube");
-			throw new MissingPropertyException("amount or amount units is null");
-		}
 		well.setAmount(new BigDecimal(lot.getAmount()));
 		well.setAmountUnits(lot.getAmountUnits().getCode());
 		well.setPhysicalState("solid");
@@ -726,7 +746,8 @@ public class MetalotServiceImpl implements MetalotService {
 		well.setRecordedDate(recordedDate);
 		wells.add(well);
 		tubeRequest.setWells(wells);
-				
+		
+		// Calling node because Node has a customer specific server function on createTube
 		url = baseurl + "containers/createTube";
 		try {
 			String createTubeResponse = SimpleUtil.postRequestToExternalServer(url, tubeRequest.toJson(), logger);
@@ -741,6 +762,7 @@ public class MetalotServiceImpl implements MetalotService {
 			}
 		}
 		
+		// Calling node because Node has a customer specific server function on createTube
 		if(lot.getStorageLocation() != null && lot.getStorageLocation().length() > 0) {
 			SetTubeLocationDTO moveDTO = new SetTubeLocationDTO();
 			moveDTO.setBarcode(tubeRequest.getBarcode());

@@ -970,7 +970,28 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				logger.debug("Not a duplicate lot corp name");
 			}	
 		}
-		
+
+		// When using Lot Inventory, if a Barcode is provided we check:
+		// 1. If the Barcode is already in use
+		// 2. If the Lot Amount is not provided
+		// 3. If the Lot Amount Units are not provided
+		// 4. Enforce mg units for Lot Amount as required by the Lot Inventory solids
+		if (mainConfig.getServerSettings().isCompoundInventory() && lot.getBarcode() != null) {
+			if (lot.getAmount() == null && lot.getAmountUnits() == null) {
+				throw new MissingPropertyException("Lot Amount and Lot Amount Units must be provided when using inventory and Barcode is provided.");
+			}
+			if (lot.getAmount() == null) {
+				throw new MissingPropertyException("Lot Amount must be provided when using inventory and Barcode is provided.");
+			}
+			if (lot.getAmountUnits() == null) {
+				throw new MissingPropertyException("Lot Amount Units must be provided when using inventory and Barcode is provided");
+			} else {
+				if (lot.getAmountUnits().getCode() != "mg") {
+					throw new MissingPropertyException("Lot Amount Units must be 'mg' as Bulk Loader only supports loading solid tubes and Lot inventory only supports 'mg' units for solids. If loading solution tubes please use inventory modules.");
+				}
+			}
+		}
+
 		return lot;
 	}
 
