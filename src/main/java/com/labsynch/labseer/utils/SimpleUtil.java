@@ -338,6 +338,26 @@ public class SimpleUtil {
 		String responseJson = new String(bytes);
 		return responseJson;
 	}
+
+	public static byte[] postRequestToExternalServerBinaryResponse(String url, String jsonContent, Logger logger) throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		connection.setRequestProperty("Content-Type", "application/json");		
+		logger.info("Sending request to: "+url);
+		logger.info("with data: "+jsonContent);
+		try{
+			OutputStream output = connection.getOutputStream();
+			output.write(jsonContent.getBytes());
+		}catch (Exception e){
+			logger.error("Error occurred in making HTTP Request to external server",e);
+		}
+		InputStream input = connection.getInputStream();
+		return IOUtils.toByteArray(input);
+	}
 	
 	public static String getFromExternalServer(String url, Map<String, String> queryParams, Logger logger) throws MalformedURLException, IOException {
 		String charset = "UTF-8";

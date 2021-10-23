@@ -2,11 +2,19 @@ package com.labsynch.labseer.chemclasses.jchem;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
+
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
+import org.codehaus.jackson.JsonNode;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 import chemaxon.formats.MolExporter;
 import chemaxon.formats.MolFormatException;
@@ -14,10 +22,13 @@ import chemaxon.struc.MProp;
 import chemaxon.struc.Molecule;
 import chemaxon.util.MolHandler;
 
+@Configurable
 public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 	
 	Logger logger = LoggerFactory.getLogger(CmpdRegMoleculeJChemImpl.class);
 
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 	
 	Molecule molecule;
 	
@@ -127,9 +138,40 @@ public class CmpdRegMoleculeJChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public byte[] toBinary(CmpdRegMolecule molecule, String imageFormat, String hSize, String wSize) throws IOException {
-		Molecule mol = ((CmpdRegMoleculeJChemImpl) molecule).molecule;
-		String format = imageFormat + ":" + "h" + hSize + ",w" + wSize + ",maxScale28";
-		return MolExporter.exportToBinFormat(mol, format);
+		// If preprocessor settings are not null then use the preprocessor settings
+		if(propertiesUtilService.getPreprocessorSettings() != null) {
+			// Read the preprocessor settings as json
+			ObjectMapper objectMapper = new ObjectMapper();
+			JsonNode jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+			
+			// Extract the url to call
+			JsonNode urlNode = jsonNode.get("imageURL");
+			if(urlNode == null || urlNode.isNull()) {
+				logger.error("Missing preprocessorSettings imageURL!!");
+			}
+			String url = urlNode.asText();
+
+			// Create the request json
+			ObjectMapper mapper = new ObjectMapper();
+			ObjectNode requestData = mapper.createObjectNode();
+			Molecule jchemMol = ((CmpdRegMoleculeJChemImpl) molecule).molecule;
+			String mol = MolExporter.exportToFormat(jchemMol, "mol");
+			requestData.put("molv3", mol);
+			requestData.put("format", imageFormat);
+			ObjectNode options = mapper.createObjectNode();
+			options.put("width", wSize);
+			options.put("height", hSize);
+			requestData.put("options", options);
+			String request = requestData.toString();
+			logger.info("Image request"+ request);
+
+			//Return the response bytes
+			return SimpleUtil.postRequestToExternalServerBinaryResponse(url, request, logger);
+		} else {
+			Molecule mol = ((CmpdRegMoleculeJChemImpl) molecule).molecule;
+			String format = imageFormat + ":" + "h" + hSize + ",w" + wSize + ",maxScale28";
+			return MolExporter.exportToBinFormat(mol, format);
+		}
 	}
 
 	@Override
