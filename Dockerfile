@@ -1,4 +1,4 @@
-ARG 	CHEMISTRY_PACKAGE=jchem
+ARG 	CHEMISTRY_PACKAGE=rdkit
 ARG 	TOMCAT_IMAGE=mcneilco/tomcat-maven:1.4-openjdk8
 
 FROM 	${TOMCAT_IMAGE} as dependencies
@@ -8,6 +8,10 @@ ENV     CHEMISTRY_PACKAGE=${CHEMISTRY_PACKAGE}
 FROM 	dependencies as jchem
 ADD 	lib/jchem-16.4.25.0.jar /lib/jchem-16.4.25.0.jar
 RUN     mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jchem -DgroupId=com.chemaxon -Dversion=16.4.25.0 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+
+FROM 	dependencies as rdkit
+ADD 	lib/rdkit-2021.03.1-release.org.RDKit.jar /lib/rdkit-2021.03.1-release.org.RDKit.jar
+RUN     mvn install:install-file -Dfile=/lib/rdkit-2021.03.1-release.org.RDKit.jar -DartifactId=rdkit -DgroupId=org.RDKit -Dversion=2021.03.1-release -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
 
 FROM 	dependencies as indigo
 
