@@ -174,25 +174,26 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			JsonNode jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
 
 			// Extract the url to call
-			JsonNode urlNode = jsonNode.get("url");
+			JsonNode urlNode = jsonNode.get("preprocessorURL");
 			if(urlNode == null || urlNode.isNull()) {
-				System.out.println("Missing URL!!");
+				logger.error("Missing preprocessorSettings preprocessorURL!!");
 			}
 
 			String url = urlNode.asText();
 
-			// Remove url from the request
-			((ObjectNode) jsonNode).remove("url");
+			// Get the preprocessory settings
+			JsonNode preprocessorSettingsNode = jsonNode.get("preprocessorSettings");
+
 		
 			// Create a "structures": { "structure-id": "molfile" } object and add it to the request
 			ObjectNode structuresNode = objectMapper.createObjectNode();
 			String id = UUID.randomUUID().toString();
 			structuresNode.put(id, molfile);
-			ObjectNode jsonObject = ((ObjectNode) jsonNode);
-			jsonObject.put("structures", structuresNode);
+			ObjectNode preprocessorSettingObject = ((ObjectNode) preprocessorSettingsNode);
+			preprocessorSettingObject.put("structures", structuresNode);
 	
 			// Post to the service
-			String postResponse = SimpleUtil.postRequestToExternalServer(url, jsonObject.toString(), logger);
+			String postResponse = SimpleUtil.postRequestToExternalServer(url, preprocessorSettingObject.toString(), logger);
 			logger.info("Got response: "+ postResponse);
 
 			// Parse the response json to get the standardized mol
