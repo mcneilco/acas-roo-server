@@ -10,7 +10,7 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CmpdRegSDFReaderFactoryRDKitImpl implements CmpdRegSDFReaderFactory{
+public class CmpdRegSDFReaderFactoryRDKitImpl implements CmpdRegSDFReaderFactory {
 
     @Override
     public CmpdRegSDFReader getCmpdRegSDFReader(String fileName)
@@ -18,6 +18,5 @@ public class CmpdRegSDFReaderFactoryRDKitImpl implements CmpdRegSDFReaderFactory
         return new CmpdRegSDFReaderRDKitImpl(fileName);
 
     }
-
 
 }

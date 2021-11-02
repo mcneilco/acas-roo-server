@@ -8,18 +8,16 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CmpdRegSDFWriterFactoryRDKitImpl implements CmpdRegSDFWriterFactory{
+public class CmpdRegSDFWriterFactoryRDKitImpl implements CmpdRegSDFWriterFactory {
 
-    @Override
-    public CmpdRegSDFWriter getCmpdRegSDFWriter(String fileName) throws IllegalArgumentException, IOException {
-		return new CmpdRegSDFWriterRDKitImpl(fileName);
-    }
+  @Override
+  public CmpdRegSDFWriter getCmpdRegSDFWriter(String fileName) throws IllegalArgumentException, IOException {
+    return new CmpdRegSDFWriterRDKitImpl(fileName);
+  }
 
-    @Override
-    public CmpdRegSDFWriter getCmpdRegSDFBufferWriter() throws IllegalArgumentException, IOException {
-		return new CmpdRegSDFWriterRDKitImpl();
-    }
-	
-
+  @Override
+  public CmpdRegSDFWriter getCmpdRegSDFBufferWriter() throws IllegalArgumentException, IOException {
+    return new CmpdRegSDFWriterRDKitImpl();
+  }
 
 }
