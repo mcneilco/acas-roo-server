@@ -6,27 +6,36 @@ import java.util.List;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
 import org.RDKit.RWMol;
 import org.RDKit.Str_Vect;
-import org.apache.batik.transcoder.image.PNGTranscoder;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.batik.transcoder.TranscoderException;
-import org.apache.batik.transcoder.TranscoderInput;
-import org.apache.batik.transcoder.TranscoderOutput;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
+
+@Configurable
 public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 	
 	Logger logger = LoggerFactory.getLogger(CmpdRegMoleculeRDKitImpl.class);
 
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
+
 	RWMol molecule;
 
+	static {
+        System.loadLibrary("GraphMolWrap");
+    }
+	
 	public CmpdRegMoleculeRDKitImpl(String molStructure) throws CmpdRegMolFormatException{
 		this.molecule = RWMol.MolFromMolBlock(molStructure);
 	}
@@ -36,7 +45,11 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 	}
 
 	public CmpdRegMoleculeRDKitImpl(ROMol readOnlyMol) {
-		this.molecule = (RWMol) readOnlyMol;
+		if(readOnlyMol == null) {
+			logger.info("Got empty mol record");
+		} else {
+			this.molecule = RWMol.MolFromMolBlock(readOnlyMol.MolToMolBlock());
+		}
 	}
 
 	@Override
@@ -51,13 +64,17 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	@Override
 	public String[] getPropertyKeys() {
-		List<String> propertyKeys = new ArrayList<String>();
-		Str_Vect propList = this.molecule.getPropList();
-		for (int i = 0; i < propList.size(); i++) {
-			propertyKeys.add(propList.get(i));
+		if(this.molecule != null) {
+			List<String> propertyKeys = new ArrayList<String>();
+			Str_Vect propList = this.molecule.getPropList();
+			for (int i = 0; i < propList.size(); i++) {
+				propertyKeys.add(propList.get(i));
+			}
+			String[] keys = new String[propertyKeys.size()];
+			return propertyKeys.toArray(keys);
+		} else {
+			return new String[0];
 		}
-		String[] keys = new String[propertyKeys.size()];
-		return propertyKeys.toArray(keys);
 	}
 
 	@Override
@@ -68,7 +85,7 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	@Override
 	public String getMolStructure() throws CmpdRegMolFormatException {
-		return RDKFuncs.MolToMolBlock(this.molecule);
+		return this.molecule.MolToMolBlock();
 	}
 
 	@Override
@@ -119,23 +136,40 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 	@Override
 	public byte[] toBinary(CmpdRegMolecule molecule, String imageFormat, String hSize, String wSize) 
 			throws IOException {
-			// Currently only PNG is supported
-			String svg = this.molecule.ToSVG();
-			TranscoderInput input_svg_image = new TranscoderInput(svg);        
-			//Step-2: Define OutputStream to PNG Image and attach to TranscoderOutput
-            ByteArrayOutputStream ostream = new ByteArrayOutputStream();
-			TranscoderOutput output_png_image = new TranscoderOutput(ostream);              
-			// Step-3: Create PNGTranscoder and define hints if required
-			PNGTranscoder my_converter = new PNGTranscoder();        
-			// Step-4: Convert and Write output
+
+			// Read the preprocessor settings as json
+			ObjectMapper objectMapper = new ObjectMapper();
+			JsonNode jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+			
+			// Extract the url to call
+			JsonNode urlNode = jsonNode.get("imageURL");
+			if(urlNode == null || urlNode.isNull()) {
+				logger.error("Missing preprocessorSettings imageURL!!");
+			}
+			String url = urlNode.asText();
+
+			// Create the request json
+			ObjectMapper mapper = new ObjectMapper();
+			ObjectNode requestData = mapper.createObjectNode();
+			String mol = "";
 			try {
-				my_converter.transcode(input_svg_image, output_png_image);
-			} catch (TranscoderException e) {
+				mol = molecule.getMolStructure();
+			} catch (CmpdRegMolFormatException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			ostream.flush();
-			ostream.close();        
-			return ostream.toByteArray();
+			requestData.put("molv3", mol);
+			requestData.put("format", imageFormat);
+			ObjectNode options = mapper.createObjectNode();
+			options.put("width", wSize);
+			options.put("height", hSize);
+			requestData.put("options", options);
+			String request = requestData.toString();
+			logger.info("Image request"+ request);
+
+			//Return the response bytes
+			return SimpleUtil.postRequestToExternalServerBinaryResponse(url, request, logger);
+
 	}
 
 	@Override

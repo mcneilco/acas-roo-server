@@ -54,7 +54,7 @@ public class CmpdRegSDFWriterRDKitImpl implements CmpdRegSDFWriter {
     @Override
     public void close() throws IOException {
         this.writer.close();
-        if(this.tempFile != null  & this.tempFile.exists()){
+        if(this.tempFile != null && this.tempFile.exists()){
             this.tempFile.delete();
         }
     }

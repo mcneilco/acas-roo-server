@@ -2,6 +2,7 @@ package com.labsynch.labseer.chemclasses.rdkit;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,8 @@ import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.slf4j.Logger;
@@ -22,14 +25,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.RDKit.*;
 
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonToken;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
+import java.util.UUID;
+
 @Component
 public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	Logger logger = LoggerFactory.getLogger(ChemStructureServiceRDKitImpl.class);
 
 	@Autowired
+	private PropertiesUtilService propertiesUtilService;
+	
+	@Autowired
 	private JdbcTemplate basicJdbcTemplate;
 
+	static {
+        System.loadLibrary("GraphMolWrap");
+    }
+	
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate)
 	{
 		this.basicJdbcTemplate = jdbcTemplate;
@@ -98,8 +118,68 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType)
 			throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+
+			// If preprocessor settings are not null then use the preprocessor settings
+			if(propertiesUtilService.getPreprocessorSettings() != null) {
+	
+				// Read the preprocessor settings as json
+				ObjectMapper objectMapper = new ObjectMapper();
+				JsonNode jsonNode = null;
+				try{
+					jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+
+				} catch (IOException e) {
+					logger.error("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
+					throw new CmpdRegMolFormatException("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
+				}
+	
+				// Extract the url to call
+				JsonNode urlNode = jsonNode.get("processURL");
+				if(urlNode == null || urlNode.isNull()) {
+					logger.error("Missing preprocessorSettings processURL!!");
+				}
+	
+				String url = urlNode.asText();
+	
+				// Get the preprocessory settings
+				ObjectMapper mapper = new ObjectMapper();
+				ObjectNode requestData = mapper.createObjectNode();
+				JsonNode standardizerActions = jsonNode.get("standardizer_actions");
+				ObjectNode options = (ObjectNode) jsonNode.get("process_options");
+				options.put("standardizer_actions", standardizerActions);
+				requestData.put("options", options);
+
+				ArrayNode arrayNode = mapper.createArrayNode();
+				arrayNode.add(molfile);
+				requestData.put("structures", arrayNode);
+		
+				// Post to the service
+				try {
+					String requestString = requestData.toString();
+					logger.info("requestString: " + requestString);
+					String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
+					logger.info("Got response: "+ postResponse);
+		
+					// Parse the response json to get the standardized mol
+					ObjectMapper responseMapper = new ObjectMapper();
+					JsonNode responseNode = responseMapper.readTree(postResponse);
+					for (JsonNode responseJsonNode : responseNode) {
+						JsonNode registrationHashesNode = responseJsonNode.get("registration_hash");
+						for (JsonNode registrationHashNode : registrationHashesNode) {
+							logger.info(registrationHashNode.asText());
+						}
+						JsonNode noStereoHashNode = responseJsonNode.get("no_stereo_hash");
+						String noStereoHash = noStereoHashNode.asText();
+						logger.info(noStereoHash);
+					}
+	
+				} catch (Exception e) {
+					logger.error("Error posting to preprocessor service: " + e.getMessage());
+					throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + e.getMessage());
+				}
+		
+			}
+			return new int[0];
 	}
 
 	@Override
@@ -130,14 +210,14 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public CmpdRegMolecule toMolecule(String molStructure) throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		return new CmpdRegMoleculeRDKitImpl(RWMol.MolFromMolBlock(molStructure));
 	}
 
 	@Override
 	public String toMolfile(String molStructure) throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		RWMol mol = RWMol.MolFromMolBlock(molStructure);
+		mol.Kekulize();
+		return mol.MolToMolBlock()
 	}
 
 	@Override
@@ -156,13 +236,12 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public int[] checkDupeMol(String molStructure, String structureTable, String plainTable)
 			throws CmpdRegMolFormatException {
 		// TODO Auto-generated method stub
-		return null;
+		return new int[0];
 	}
 
 	@Override
 	public String toInchi(String molStructure) {
-		RWMol mol = RWMol.MolFromMolBlock(molStructure);
-		return RDKFuncs.MolToSmiles(mol);
+		return RDKFuncs.MolBlockToInchi(molStructure, new ExtraInchiReturnValues());
 	}
 
 	@Override
@@ -191,8 +270,13 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public boolean checkForSalt(String molfile) throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return false;
+		boolean foundNonCovalentSalt = false;
+		RWMol mol = RWMol.MolFromMolBlock(molfile);
+		ROMol_Vect frags = RDKFuncs.getMolFrags(mol);
+		if(frags.size() > 0.0) {
+			foundNonCovalentSalt = true;
+		}
+		return foundNonCovalentSalt;
 	}
 
 	@Override
@@ -231,8 +315,34 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public MolConvertOutputDTO toFormat(String structure, String inputFormat, String outputFormat)
 			throws IOException, CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		boolean badStructureFlag = false;
+		RWMol mol = null;
+		try {
+			if (inputFormat == null || inputFormat.equalsIgnoreCase("mol")) {
+				mol = RWMol.MolFromMolBlock(structure);
+			} else if (inputFormat.equalsIgnoreCase("sdf")) {
+				mol = RWMol.MolFromMolBlock(structure);
+			} else if (inputFormat.equalsIgnoreCase("smi")) {
+				mol = RWMol.MolFromSmiles(structure);
+			}
+		} catch (Exception e) {
+			badStructureFlag = true;
+		}
+
+		MolConvertOutputDTO output = new MolConvertOutputDTO();		
+		if (!badStructureFlag){
+			if (outputFormat == null || outputFormat.equalsIgnoreCase("mol")) {
+				output.setStructure(mol.MolToMolBlock());
+			} else if (inputFormat.equalsIgnoreCase("sdf")) {
+				output.setStructure(mol.MolToMolBlock());
+			} else if (inputFormat.equalsIgnoreCase("smi")) {
+				output.setStructure(mol.MolToSmiles());
+			}
+			output.setFormat(outputFormat);
+			String contentUrl = "TO DO: Download Link";
+			output.setContentUrl(contentUrl);
+		} 
+		return output;
 	}
 
 	@Override
@@ -245,14 +355,23 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public String hydrogenizeMol(String structure, String inputFormat, String method)
 			throws IOException, CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		RWMol mol = RWMol.MolFromMolBlock(structure);
+		if (method.equalsIgnoreCase("HYDROGENIZE")){
+			RDKFuncs.addHs(mol);		
+		} else {
+			RDKFuncs.removeHs(mol);
+		}
+		return mol.MolToMolBlock();
 	}
 
 	@Override
 	public String getCipStereo(String structure) throws IOException, CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		//Jchem implementation returns something like
+		//e.g. [TH: 1{0,3,2} S]
+		//Indigo implementaiton returns the mol file after running some Indigo function
+		//No implementing this function because its not used anywhere that I can find
+		//Perhaps it was used as a utility function at somepoint
+		return "NOT IMPLEMENTED";
 	}
 
 	@Override
@@ -293,8 +412,49 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, IOException {
-		// TODO Auto-generated method stub
-		return null;
+		// service to standardize input structure
+		// return standardized structre
+		// error conditions? 
+		// throw or catch errors
+		// create Standardizer based on a XML configuration file
+		String molOut = null;
+
+		// Read the preprocessor settings as json
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+
+		// Extract the url to call
+		JsonNode urlNode = jsonNode.get("preprocessURL");
+		if(urlNode == null || urlNode.isNull()) {
+			logger.error("Missing preprocessorSettings preprocessURL!!");
+		}
+
+		String url = urlNode.asText();
+
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
+		requestData.put("config", standardizerActions);
+		requestData.put("output_format", "MOL");
+
+		// Create a "structures": { "structure-id": "molfile" } object and add it to the request
+		ObjectNode structuresNode = objectMapper.createObjectNode();
+		String id = UUID.randomUUID().toString();
+		structuresNode.put(id, molfile);
+		requestData.put("structures", structuresNode);
+
+		// Post to the service
+		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestData.toString(), logger);
+		logger.info("Got response: "+ postResponse);
+
+		// Parse the response json to get the standardized mol
+		ObjectMapper responseMapper = new ObjectMapper();
+		JsonNode responseNode = responseMapper.readTree(postResponse);
+		JsonNode structuresResponseNode = responseNode.get("structures");
+		JsonNode structureResponseNode = structuresResponseNode.get(id);
+		molOut = structureResponseNode.get("structure").asText();
+	
+		return molOut;
 	}
 
 	@Override
@@ -311,8 +471,11 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return false;
+		RWMol mol = RWMol.MolFromMolBlock(molFile);
+		Boolean hasAtoms =  mol.getNumAtoms() == 0.0;
+		Boolean hasBonds =  mol.getNumBonds() == 0.0;
+		Boolean hasSGroups = RDKFuncs.getSubstanceGroupCount(mol) == 0.0;
+		return !hasAtoms && !hasBonds && !hasSGroups;
 	}
 
 }

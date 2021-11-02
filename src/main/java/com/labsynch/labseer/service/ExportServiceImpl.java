@@ -172,6 +172,7 @@ public class ExportServiceImpl implements ExportService {
 			if (lotDTO.getParentIsMixture() != null) mol.setProperty("Parent Is Mixture", lotDTO.getParentIsMixture().toString());
 			exporter.writeMol(mol);
 		}
+		exporter.close();
 		return lotDTOs.size();
 	}
 
