@@ -136,11 +136,4 @@ public class CmpdRegMoleculeIndigoImpl implements CmpdRegMolecule {
 		this.molecule.dearomatize();
 	}
 
-	public CmpdRegMoleculeIndigoImpl clone() {
-		for (IndigoObject prop : this.molecule.iterateProperties()) {
-			newMol.setProperty(prop.name(), prop.rawData());
-		}
-		return this.replaceStructure(RDKFuncs.MolToMolStructure(this.molecule));
-	}
-
 }
