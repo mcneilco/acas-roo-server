@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.sql.DataSource;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -365,5 +367,33 @@ public class SimpleUtil {
 		}
 		inStream.close();
 		return response.toString();
+	}
+
+	public enum DbType {
+		MY_SQL, ORACLE, POSTGRES, SQL_SERVER, HSQLDB, H2, UNKNOWN
+	}
+
+	public static DbType getDatabaseType(DatabaseMetaData metadata) {
+		try{
+			String rawName = metadata.getDatabaseProductName();
+			if(rawName == "PostgreSQL") {
+				return DbType.POSTGRES;
+			} else if (rawName == "MySQL") {
+				return DbType.MY_SQL;
+			} else if (rawName == "Oracle") {
+				return DbType.ORACLE;
+			} else if (rawName == "Microsoft SQL Server") {
+				return DbType.SQL_SERVER;
+			} else if (rawName == "DB2") {
+				return DbType.HSQLDB;
+			} else if (rawName == "H2") {
+				return DbType.H2;
+			} else {
+				return DbType.UNKNOWN;
+			}
+
+		} catch (SQLException e) {
+			return DbType.UNKNOWN;
+		}
 	}
 }
