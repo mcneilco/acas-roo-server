@@ -36,6 +36,7 @@ import javax.sql.DataSource;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.dialect.PostgreSQL9Dialect;
+import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
 import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
@@ -3543,7 +3544,7 @@ public class ContainerServiceImpl implements ContainerService {
 			dialect = dialectResolver
 					.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
 		}
-		if (dialect instanceof PostgreSQL9Dialect) {
+		if (dialect instanceof PostgreSQLDialect || dialect instanceof PostgreSQL9Dialect) {
 			queryString = "WITH RECURSIVE t1 ( \n"
 					+ "    code_name, \n"
 					+ "    parent_code_name, \n"
