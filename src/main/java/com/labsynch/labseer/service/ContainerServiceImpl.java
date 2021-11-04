@@ -33,12 +33,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.sql.DataSource;
 
-import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.Oracle10gDialect;
-import org.hibernate.dialect.PostgreSQL9Dialect;
-import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
-import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
-import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +84,7 @@ import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.UniqueNameException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.utils.SimpleUtil.DbType;
 
 import flexjson.JSONTokener;
 
@@ -3537,13 +3532,8 @@ public class ContainerServiceImpl implements ContainerService {
 		}
 		EntityManager em = Container.entityManager();
 		String queryString = null;
-		Dialect dialect;
-		try (Connection connection = dataSource.getConnection()) {
-			DialectResolver dialectResolver = new StandardDialectResolver();
-			dialect = dialectResolver
-					.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
-		}
-		if (dialect instanceof PostgreSQL9Dialect) {
+		DbType dbType = SimpleUtil.getDatabaseType(dataSource.getConnection().getMetaData());
+		if (dbType == DbType.POSTGRES) {
 			queryString = "WITH RECURSIVE t1 ( \n"
 					+ "    code_name, \n"
 					+ "    parent_code_name, \n"
@@ -3673,7 +3663,7 @@ public class ContainerServiceImpl implements ContainerService {
 				queryString += "WHERE label_text_bread_crumb IN :breadcrumbList \n";
 			}
 			queryString += ";";
-		} else if (dialect instanceof Oracle10gDialect) {
+		} else if (dbType == DbType.ORACLE) {
 			queryString = "WITH interactions AS ( \n"
 					+ "    SELECT c1.code_name AS code_name, \n"
 					+ "        cl1.label_text AS label_text, \n"
