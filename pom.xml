@@ -44,6 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>16.4.25.0</jchem.version>
+		<rdkit.version>2021.03.1-release</rdkit.version>
 		<indigo.version>1.2.3.r0</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
@@ -91,9 +92,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<!-- Maven Build profile controls whether to use JChem or Indigo -->
 	<profiles>
 		<profile>
-			<id>jchem</id>
+			<id>rdkit</id>
 			<activation>
             	<activeByDefault>true</activeByDefault>
+        	</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.RDKit</groupId>
+					<artifactId>rdkit</artifactId>
+					<version>${rdkit.version}</version>
+				</dependency>
+			</dependencies>	
+			<properties>
+				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
+				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrationsA>
+				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/jchem/**</exclude.chemistry.packageB>
+				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/jchem/**</exclude.chemistry.migrationsB>
+			</properties>
+		</profile>
+		<profile>
+			<id>jchem</id>
+			<activation>
+            	<activeByDefault>false</activeByDefault>
         	</activation>
 			<dependencies>
 				<dependency>
@@ -103,8 +123,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				</dependency>
 			</dependencies>	
 			<properties>
-				<exclude.chemistry.package>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.package>
-				<exclude.chemistry.migrations>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrations>
+				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
+				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrationsA>
+				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/rdkit/**</exclude.chemistry.packageB>
+				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/rdkit/**</exclude.chemistry.migrationsB>
 			</properties>
 		</profile>
 		<profile>
@@ -127,8 +149,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				</dependency>
 			</dependencies>	
 			<properties>
-				<exclude.chemistry.package>com/labsynch/labseer/chemclasses/jchem/**</exclude.chemistry.package>
-				<exclude.chemistry.migrations>com/labsynch/labseer/db/migration/*/jchem/**</exclude.chemistry.migrations>
+				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/rdkit/**</exclude.chemistry.packageA>
+				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/rdkit/**</exclude.chemistry.migrationsA>
+				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/jchem/**</exclude.chemistry.packageB>
+				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/jchem/**</exclude.chemistry.migrationsB>
 			</properties>
 		</profile>
 	</profiles>
@@ -594,8 +618,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 					<useIncrementalCompilation>false</useIncrementalCompilation>
 					<encoding>${project.build.sourceEncoding}</encoding>
 					<excludes>
-						<exclude>${exclude.chemistry.package}</exclude>
-						<exclude>${exclude.chemistry.migrations}</exclude>
+						<exclude>${exclude.chemistry.packageA}</exclude>
+						<exclude>${exclude.chemistry.migrationsA}</exclude>
+						<exclude>${exclude.chemistry.packageB}</exclude>
+						<exclude>${exclude.chemistry.migrationsB}</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -678,8 +704,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 						the test-compile goal if weaveWithAspectsInMainSourceFolder is set to true -->
 					<weaveWithAspectsInMainSourceFolder>false</weaveWithAspectsInMainSourceFolder>
 					<excludes>
-							<exclude>${exclude.chemistry.package}</exclude>
-							<exclude>${exclude.chemistry.migrations}</exclude>
+							<exclude>${exclude.chemistry.packageA}</exclude>
+							<exclude>${exclude.chemistry.migrationsA}</exclude>
+							<exclude>${exclude.chemistry.packageB}</exclude>
+							<exclude>${exclude.chemistry.migrationsB}</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -767,8 +795,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
                 <version>2.2</version>
                 <configuration>
                     <excludes>
-                        <exclude>${exclude.chemistry.package}</exclude>
-                        <exclude>${exclude.chemistry.migrations}</exclude>
+                        <exclude>${exclude.chemistry.packageA}</exclude>
+                        <exclude>${exclude.chemistry.migrationsA}</exclude>
+                        <exclude>${exclude.chemistry.packageB}</exclude>
+                        <exclude>${exclude.chemistry.migrationsB}</exclude>
                     </excludes>
                 </configuration>
                 <dependencies>
