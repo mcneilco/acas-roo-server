@@ -23,9 +23,6 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.dialect.OracleDialect;
-import org.hibernate.dialect.PostgreSQLDialect;
-import org.hibernate.dialect.PostgreSQL9Dialect;
 import org.hibernate.engine.jdbc.dialect.internal.StandardDialectResolver;
 import org.hibernate.engine.jdbc.dialect.spi.DatabaseMetaDataDialectResolutionInfoAdapter;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
@@ -39,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.utils.ExcludeNulls;
+import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.utils.SimpleUtil.DbType;
 
 import flexjson.JSONSerializer;
 
@@ -188,10 +187,9 @@ public class LabelSequence {
 		ReturningWork<Long> maxReturningWork = new ReturningWork<Long>() {
 			@Override
 			public Long execute(Connection connection) throws SQLException {
-				DialectResolver dialectResolver = new StandardDialectResolver();
-				Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
 				String currentValueString = "";
-				if (dialect instanceof PostgreSQLDialect || dialect instanceof PostgreSQL9Dialect) {
+				DbType dbType = SimpleUtil.getDatabaseType(connection.getMetaData());
+				if (dbType == DbType.POSTGRES) {
 					currentValueString = "SELECT currval('"+sequenceName+"')";
 					long currentValue;
 					try (PreparedStatement preparedStatement = connection.prepareStatement( currentValueString);
@@ -205,10 +203,10 @@ public class LabelSequence {
 						resultSet.next();
 						return resultSet.getLong(1);	
 					}
-				}else if (dialect instanceof OracleDialect) {
+				}else if (dbType == DbType.ORACLE) {
 					throw new SQLException("Decrement sequence not implemented for Oracle");
 				}else {
-					throw new SQLException("Unsupported Hibernate Dialect:"+dialect.toString());
+					throw new SQLException("Unssupported database type");
 				}
 			}
 		};
@@ -222,13 +220,12 @@ public class LabelSequence {
 		ReturningWork<Long> maxReturningWork = new ReturningWork<Long>() {
 			@Override
 			public Long execute(Connection connection) throws SQLException {
-				DialectResolver dialectResolver = new StandardDialectResolver();
-				Dialect dialect =  dialectResolver.resolveDialect(new DatabaseMetaDataDialectResolutionInfoAdapter(connection.getMetaData()));
+				DbType dbType = SimpleUtil.getDatabaseType(connection.getMetaData());
 				try {
 					String currentValueString = "";
-					if (dialect instanceof PostgreSQLDialect || dialect instanceof PostgreSQL9Dialect) {
+					if (dbType == DbType.POSTGRES) {
 						currentValueString = "SELECT last_value FROM "+sequenceName;
-					}else if (dialect instanceof OracleDialect) {
+					}else if (dbType == DbType.ORACLE) {
 						currentValueString = "SELECT last_number FROM all_sequences WHERE sequence_name = '"+sequenceName+"'";
 					}
 					try (
