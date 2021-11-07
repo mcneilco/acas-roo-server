@@ -50,16 +50,14 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	private JdbcTemplate basicJdbcTemplate;
 
 	static {
-        System.loadLibrary("GraphMolWrap");
-    }
+		System.loadLibrary("GraphMolWrap");
+	}
 	
-	public void setJdbcTemplate(JdbcTemplate jdbcTemplate)
-	{
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.basicJdbcTemplate = jdbcTemplate;
 	}
 
-	public JdbcTemplate getJdbcTemplate()
-	{
+	public JdbcTemplate getJdbcTemplate() {
 		return basicJdbcTemplate;
 	}
 	
@@ -332,8 +330,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public boolean checkForSalt(String molfile) throws CmpdRegMolFormatException {
 		boolean foundNonCovalentSalt = false;
 		RWMol mol = RWMol.MolFromMolBlock(molfile);
-		//Passing true so that this function returns mols rather than atom ids
-		ROMol_Vect frags = RDKFuncs.getMolFrags(mol, true);
+		ROMol_Vect frags = RDKFuncs.getMolFrags(mol);
 		if(frags.size() > 1.0) {
 			foundNonCovalentSalt = true;
 		}
@@ -487,11 +484,6 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, IOException {
-		// service to standardize input structure
-		// return standardized structre
-		// error conditions? 
-		// throw or catch errors
-		// create Standardizer based on a XML configuration file
 		String molOut = null;
 
 		// Read the preprocessor settings as json
