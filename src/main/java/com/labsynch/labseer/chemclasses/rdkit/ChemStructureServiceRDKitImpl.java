@@ -3,6 +3,7 @@ package com.labsynch.labseer.chemclasses.rdkit;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.RDKitStructure;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
@@ -34,7 +36,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import java.util.UUID;
-
+import static java.lang.Math.toIntExact;
 @Component
 public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
@@ -78,15 +80,15 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public int saveStructure(String molfile, String structureTable) {
-		// TODO Auto-generated method stub
-		return 0;
+		boolean checkForDupes = false;
+		return saveStructure(molfile, structureTable, checkForDupes);
 	}
 
 	@Override
 	public int[] searchMolStructures(String molfile, String structureTable, String searchType, Float simlarityPercent)
 			throws CmpdRegMolFormatException {
 		// TODO Auto-generated method stub
-		return null;
+		return searchMolStructures(molfile, structureTable, null, searchType, simlarityPercent);	
 	}
 
 	@Override
@@ -98,15 +100,22 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public int[] searchMolStructures(String molfile, String structureTable, String searchType)
 			throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		String plainTable = null;
+		if (structureTable.equalsIgnoreCase("Parent_Structure")){
+			plainTable = "parent";
+		} else if (structureTable.equalsIgnoreCase("SaltForm_Structure")){
+			plainTable = "salt_form";
+		} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
+			plainTable = "salt";
+		}
+
+		return searchMolStructures(molfile, structureTable, plainTable, searchType);	
 	}
 
 	@Override
 	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType,
 			Float simlarityPercent) throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		return searchMolStructures(molfile, structureTable, plainTable, searchType, 0f);	
 	}
 
 	@Override
@@ -119,67 +128,89 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType)
 			throws CmpdRegMolFormatException {
 
-			// If preprocessor settings are not null then use the preprocessor settings
-			if(propertiesUtilService.getPreprocessorSettings() != null) {
-	
-				// Read the preprocessor settings as json
-				ObjectMapper objectMapper = new ObjectMapper();
-				JsonNode jsonNode = null;
-				try{
-					jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+		RDKitStructure serviceRDKitStructure = getRDKitStructureFromService(molfile);
 
-				} catch (IOException e) {
-					logger.error("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
-					throw new CmpdRegMolFormatException("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
-				}
+		//Create empty list
+		List<RDKitStructure> rdkitStructures = new ArrayList<RDKitStructure>();
+	    if (searchType.equalsIgnoreCase("FULL_TAUTOMER")){
+			rdkitStructures = RDKitStructure.findRDKitStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
+		}else if (searchType.equalsIgnoreCase("DUPLICATE_TAUTOMER")){
+			rdkitStructures = RDKitStructure.findRDKitStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
+		}
+		// Create empty int hit list
+		int[] hits = new int[rdkitStructures.size()];
+		for (int i = 0; i < hits.length; i++) {
+			hits[i] = toIntExact(rdkitStructures.get(i).getId());
+		}
+		return hits;
+	}
 	
-				// Extract the url to call
-				JsonNode urlNode = jsonNode.get("processURL");
-				if(urlNode == null || urlNode.isNull()) {
-					logger.error("Missing preprocessorSettings processURL!!");
-				}
-	
-				String url = urlNode.asText();
-	
-				// Get the preprocessory settings
-				ObjectMapper mapper = new ObjectMapper();
-				ObjectNode requestData = mapper.createObjectNode();
-				JsonNode standardizerActions = jsonNode.get("standardizer_actions");
-				ObjectNode options = (ObjectNode) jsonNode.get("process_options");
-				options.put("standardizer_actions", standardizerActions);
-				requestData.put("options", options);
+	public RDKitStructure getRDKitStructureFromService(String molfile) throws CmpdRegMolFormatException {
+		RDKitStructure rdkitStructure = new RDKitStructure();
 
-				ArrayNode arrayNode = mapper.createArrayNode();
-				arrayNode.add(molfile);
-				requestData.put("structures", arrayNode);
-		
-				// Post to the service
-				try {
-					String requestString = requestData.toString();
-					logger.info("requestString: " + requestString);
-					String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
-					logger.info("Got response: "+ postResponse);
-		
-					// Parse the response json to get the standardized mol
-					ObjectMapper responseMapper = new ObjectMapper();
-					JsonNode responseNode = responseMapper.readTree(postResponse);
-					for (JsonNode responseJsonNode : responseNode) {
-						JsonNode registrationHashesNode = responseJsonNode.get("registration_hash");
-						for (JsonNode registrationHashNode : registrationHashesNode) {
-							logger.info(registrationHashNode.asText());
-						}
-						JsonNode noStereoHashNode = responseJsonNode.get("no_stereo_hash");
-						String noStereoHash = noStereoHashNode.asText();
-						logger.info(noStereoHash);
-					}
-	
-				} catch (Exception e) {
-					logger.error("Error posting to preprocessor service: " + e.getMessage());
-					throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + e.getMessage());
-				}
-		
+		// Read the preprocessor settings as json
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = null;
+		try{
+			jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+
+		} catch (IOException e) {
+			logger.error("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
+			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
+		}
+
+		// Extract the url to call
+		JsonNode urlNode = jsonNode.get("processURL");
+		if(urlNode == null || urlNode.isNull()) {
+			logger.error("Missing preprocessorSettings processURL!!");
+		}
+
+		String url = urlNode.asText();
+
+		// Get the preprocessory settings
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
+		ObjectNode options = (ObjectNode) jsonNode.get("process_options");
+		options.put("standardizer_actions", standardizerActions);
+		requestData.put("options", options);
+
+		ArrayNode arrayNode = mapper.createArrayNode();
+		arrayNode.add(molfile);
+		requestData.put("structures", arrayNode);
+
+		// Post to the service
+		try {
+			String requestString = requestData.toString();
+			logger.info("requestString: " + requestString);
+			String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
+			logger.info("Got response: "+ postResponse);
+
+			// Parse the response json to get the standardized mol
+			ObjectMapper responseMapper = new ObjectMapper();
+			JsonNode responseNode = responseMapper.readTree(postResponse);
+			for (JsonNode responseJsonNode : responseNode)  {
+				JsonNode registrationHashesNode = responseJsonNode.get("registration_hash");
+				String registrationHash = registrationHashesNode.get(0).asText();
+				rdkitStructure.setReg(registrationHashesNode.get(0).asText());
+
+				JsonNode noStereoHashNode = responseJsonNode.get("no_stereo_hash");
+				rdkitStructure.setPreReg(noStereoHashNode.asText());
+
+				JsonNode sdfNode = responseJsonNode.get("sdf");
+				rdkitStructure.setMol(sdfNode.asText());
 			}
-			return new int[0];
+
+
+		} catch (Exception e) {
+			logger.error("Error posting to preprocessor service: " + e.getMessage());
+			throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + e.getMessage());
+		}
+
+		// Set recorded date todays date. This simplifies the code when we need to persist the structure
+		// in various places.
+		rdkitStructure.setRecordedDate(new Date());
+		return rdkitStructure;
 	}
 
 	@Override
@@ -190,15 +221,21 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public int saveStructure(String molfile, String structureTable, boolean checkForDupes) {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			RDKitStructure rdkitStructure = getRDKitStructureFromService(molfile);
+			rdkitStructure.persist();
+			return toIntExact(rdkitStructure.getId());
+		} catch (CmpdRegMolFormatException e) {
+			logger.error("Error saving structure: " + e.getMessage());
+			return -1;
+		}
 	}
 
 	@Override
 	public CmpdRegMolecule[] searchMols(String molfile, String structureTable, int[] cdHitList, String plainTable,
 			String searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		int maxResults = propertiesUtilService.getMaxSearchResults();
+		return searchMols(molfile, structureTable, cdHitList, plainTable, searchType, simlarityPercent, maxResults);
 	}
 
 	@Override
@@ -217,7 +254,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public String toMolfile(String molStructure) throws CmpdRegMolFormatException {
 		RWMol mol = RWMol.MolFromMolBlock(molStructure);
 		mol.Kekulize();
-		return mol.MolToMolBlock()
+		return mol.MolToMolBlock();
 	}
 
 	@Override
@@ -235,8 +272,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public int[] checkDupeMol(String molStructure, String structureTable, String plainTable)
 			throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return new int[0];
+		return searchMolStructures(molStructure, structureTable, plainTable, "DUPLICATE_TAUTOMER"); 
 	}
 
 	@Override
@@ -272,8 +308,9 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public boolean checkForSalt(String molfile) throws CmpdRegMolFormatException {
 		boolean foundNonCovalentSalt = false;
 		RWMol mol = RWMol.MolFromMolBlock(molfile);
-		ROMol_Vect frags = RDKFuncs.getMolFrags(mol);
-		if(frags.size() > 0.0) {
+		//Passing true so that this function returns mols rather than atom ids
+		ROMol_Vect frags = RDKFuncs.getMolFrags(mol, true);
+		if(frags.size() > 1.0) {
 			foundNonCovalentSalt = true;
 		}
 		return foundNonCovalentSalt;
@@ -301,15 +338,29 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public CmpdRegMolecule[] searchMols(String molfile, String structureTable, int[] inputCdIdHitList,
 			String plainTable, String searchType, Float simlarityPercent, int maxResults)
 			throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		
+			RDKitStructure serviceRDKitStructure = getRDKitStructureFromService(molfile);
+
+			//Create empty list
+			List<RDKitStructure> rdkitStructures = new ArrayList<RDKitStructure>();
+			if (searchType.equalsIgnoreCase("FULL_TAUTOMER")){
+				rdkitStructures = RDKitStructure.findRDKitStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
+			}
+
+			List<CmpdRegMolecule> resultList = new ArrayList<CmpdRegMolecule>();
+			for (RDKitStructure hit : rdkitStructures) {
+				resultList.add(new CmpdRegMoleculeRDKitImpl(hit.getMol()));
+			}
+			CmpdRegMolecule[] resultArray = new CmpdRegMolecule[resultList.size()];
+			
+			return resultList.toArray(resultArray);
 	}
 
 	@Override
 	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType,
 			Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return null;
+		int maxResultCount = propertiesUtilService.getMaxSearchResults();
+		return searchMolStructures(molfile, structureTable, plainTable, searchType, simlarityPercent, maxResultCount);	
 	}
 
 	@Override
