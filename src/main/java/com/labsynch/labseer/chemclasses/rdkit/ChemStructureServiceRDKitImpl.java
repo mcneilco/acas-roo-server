@@ -131,7 +131,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 		//Create empty list
 		List<RDKitStructure> rdkitStructures = new ArrayList<RDKitStructure>();
-	    if (searchType.equalsIgnoreCase("FULL_TAUTOMER")){
+		if (searchType.equalsIgnoreCase("FULL_TAUTOMER")){
 			rdkitStructures = RDKitStructure.findRDKitStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
 		}else if (searchType.equalsIgnoreCase("DUPLICATE_TAUTOMER")){
 			rdkitStructures = RDKitStructure.findRDKitStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
