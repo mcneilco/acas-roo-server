@@ -18,7 +18,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "RDKIT_STRUCTURE_PKSEQ", finders = { "findRDKitStructuresByRegEquals"})
+@RooJpaActiveRecord(sequenceName = "RDKIT_STRUCTURE_PKSEQ", inheritanceType = "TABLE_PER_CLASS", finders = { "findRDKitStructuresByRegEquals"})
 public class RDKitStructure {
 
     @Id

@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.RDKitSaltStructure;
 import com.labsynch.labseer.domain.RDKitStructure;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
@@ -223,7 +224,30 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public int saveStructure(String molfile, String structureTable, boolean checkForDupes) {
 		try {
 			RDKitStructure rdkitStructure = getRDKitStructureFromService(molfile);
-			rdkitStructure.persist();
+
+			if (structureTable.equalsIgnoreCase("Parent_Structure")){
+				rdkitStructure.persist();
+			} else if (structureTable.equalsIgnoreCase("SaltForm_Structure")){
+
+			} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
+				// Can't type cast from subclass to superclass so we go to json and back
+				RDKitSaltStructure rdkitStructureSalt = RDKitSaltStructure.fromJsonToRDKitSaltStructure(rdkitStructure.toJson());
+
+				if(checkForDupes){
+					List<RDKitSaltStructure> rdkitStructures =  RDKitSaltStructure.findRDKitSaltStructuresByRegEquals(rdkitStructureSalt.getReg()).getResultList();
+					if(rdkitStructures.size() > 0){
+						logger.error("Salt structure already exists with id "+ rdkitStructures.get(0).getId());
+						return 0;
+					}
+				}
+				rdkitStructureSalt.persist();
+
+				// We can type cast from subclass to superclass
+				rdkitStructure = (RDKitStructure) rdkitStructureSalt;
+			} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")){
+				// plainTable = "dry_run_compound";
+			}
+
 			return toIntExact(rdkitStructure.getId());
 		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error saving structure: " + e.getMessage());
