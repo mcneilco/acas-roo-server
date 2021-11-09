@@ -1389,7 +1389,6 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		}
 	}
 
-	@Override
 	public boolean createJChemTable(String tableName, boolean tautomerDupe) {
 		boolean tableCreated = false;
 		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
@@ -1421,7 +1420,6 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		return tableCreated;
 	}	
 
-	@Override
 	@Transactional
 	public boolean dropJChemTable(String tableName) {
 		boolean tableDropped = false;
@@ -1465,9 +1463,17 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		}
 
 		return tableDropped;
-	}	
+	}
 
 	@Override
+	public boolean truncateStructureTable(String tableName) {
+		dropJchemTable(tableName);
+		if (!dropTable) {
+			logger.info("Unable to drop jchem table " + tableName);
+		}
+		createJChemTable(tableName, true);
+	}
+
 	@Transactional
 	public boolean deleteAllJChemTableRows(String tableName) {
 		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
@@ -1533,31 +1539,6 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 		return false;
 	}	
-
-	@Override
-	public boolean createJchemPropertyTable() {
-		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
-		ConnectionHandler ch = new ConnectionHandler();
-		ch.setConnection(conn);
-		try {
-			conn.setAutoCommit(true);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		boolean tableCreated = true;
-		try{
-			if (!DatabaseProperties.propertyTableExists(ch)){
-				DatabaseProperties.createPropertyTable(ch);				
-				logger.info("created the Jchem property table" );
-			}
-		} catch (SQLException e) {
-			logger.error("SQL error - unable to create the Jchem property table" );
-			tableCreated = false;
-		}
-
-		return tableCreated;
-	}
 
 	@Override
 	public int[] checkDupeMol(String molStructure, String structureTable, String plainTable) {

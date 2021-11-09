@@ -378,6 +378,13 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 	@Override
 	@Transactional
+	public boolean truncateStructureTable(String tableName) {
+		//TODO: Implment validation mode for indigo builds
+		return true;
+	}
+
+	@Override
+	@Transactional
 	public CmpdRegMolecule[] searchMols(String molfile, String structureTable, int[] inputCdIdHitList, 
 			String plainTable, String searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 
@@ -660,38 +667,6 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	public  String getMolFormula(String molStructure) throws CmpdRegMolFormatException {
 		CmpdRegMoleculeIndigoImpl mol = new CmpdRegMoleculeIndigoImpl(molStructure);
 		return mol.getFormula();
-	}
-
-	@Override
-	public boolean createJChemTable(String tableName, boolean tautomerDupe) {
-		//no-op
-		return false;
-	}	
-
-	@Override
-	@Transactional
-	public boolean dropJChemTable(String tableName) {
-		//no-op
-		return false;
-	}	
-
-	@Override
-	@Transactional
-	public boolean deleteAllJChemTableRows(String tableName) {
-		//no-op
-		return false;
-	}	
-
-	@Override
-	public boolean deleteJChemTableRows(String tableName, int[] cdIds) {
-		//no-op
-		return false;
-	}	
-
-	@Override
-	public boolean createJchemPropertyTable() {
-		//no-op
-		return false;
 	}
 
 	@Override

@@ -142,7 +142,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	@Transactional
-	public boolean dropJChemTable(String tableName) {
+	public boolean truncateStructureTable(String tableName) {
 		String truncateStatement = "TRUNCATE TABLE " + getRDKitStructureTableFromGenericName(tableName);
 		RDKitStructure.entityManager().createNativeQuery(truncateStatement).executeUpdate();
 		return true;
@@ -235,11 +235,6 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 		// in various places.
 		rdkitStructure.setRecordedDate(new Date());
 		return rdkitStructure;
-	}
-
-	@Override
-	public boolean createJChemTable(String tableName, boolean tautomerDupe) {
-		return true;
 	}
 
 	@Override
@@ -336,12 +331,6 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	}
 
 	@Override
-	public boolean createJchemPropertyTable() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public int[] checkDupeMol(String molStructure, String structureTable, String plainTable)
 			throws CmpdRegMolFormatException {
 		return searchMolStructures(molStructure, structureTable, plainTable, "DUPLICATE_TAUTOMER"); 
@@ -385,18 +374,6 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public String getMolFormula(String molStructure) throws CmpdRegMolFormatException {
 		RWMol mol = RWMol.MolFromMolBlock(molStructure);
 		return RDKFuncs.calcMolFormula(mol);
-	}
-
-	@Override
-	public boolean deleteAllJChemTableRows(String tableName) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean deleteJChemTableRows(String tableName, int[] cdIds) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

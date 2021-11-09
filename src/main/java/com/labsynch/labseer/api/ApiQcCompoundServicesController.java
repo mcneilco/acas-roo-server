@@ -42,10 +42,8 @@ public class ApiQcCompoundServicesController {
 		if (adminCode.equalsIgnoreCase("lajolla-reset")){
 			// reset qc compound tables if the correct code is sent (basic guard)
 			logger.info("resetting QC Compound tables");
-			boolean dropTable = chemStructServ.dropJChemTable("qc_compound_structure");
-			logger.info("drop table is: " + dropTable);
+			boolean dropTable = chemStructServ.truncateStructureTable("qc_compound_structure");
 			if (dropTable){
-				chemStructServ.createJChemTable("qc_compound_structure", true);				
 				QcCompound.truncateTable();
 			} else {
 				logger.info("unable to drop jchem table");

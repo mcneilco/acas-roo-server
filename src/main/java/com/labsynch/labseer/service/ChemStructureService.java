@@ -26,12 +26,10 @@ public interface ChemStructureService {
 	public int[] searchMolStructures(String molfile, String structureTable,
 			String plainTable, String searchType, Float simlarityPercent) throws CmpdRegMolFormatException;
 
-	public boolean dropJChemTable(String tableName);
-
 	public int[] searchMolStructures(String molfile, String structureTable,
 			String plainTable, String searchType) throws CmpdRegMolFormatException;
 
-	public boolean createJChemTable(String tableName, boolean tautomerDupe);
+	public boolean truncateStructureTable(String structureTable);
 
 	public int saveStructure(String molfile, String structureTable, boolean checkForDupes);
 
@@ -47,9 +45,6 @@ public interface ChemStructureService {
 
 	public String toSmiles(String molStructure) throws CmpdRegMolFormatException;
 
-	public boolean createJchemPropertyTable();
-
-
 	public int[] checkDupeMol(String molStructure, String structureTable, String plainTable) throws CmpdRegMolFormatException;
 
 	public String toInchi(String molStructure);
@@ -57,10 +52,6 @@ public interface ChemStructureService {
 	public boolean updateStructure(String molStructure, String structureTable, int cdId);
 
 	public String getMolFormula(String molStructure) throws CmpdRegMolFormatException;
-
-	public boolean deleteAllJChemTableRows(String tableName);
-
-	public boolean deleteJChemTableRows(String tableName, int[] cdIds);
 
 	boolean checkForSalt(String molfile) throws CmpdRegMolFormatException;
 
