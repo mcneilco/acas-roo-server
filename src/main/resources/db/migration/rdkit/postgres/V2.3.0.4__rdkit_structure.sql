@@ -1,17 +1,30 @@
-CREATE TABLE IF NOT EXISTS rdkit_structure
-(
-  id bigint NOT NULL,
-  pre_reg CHAR(40) NOT NULL,
-  reg CHAR(40) NOT NULL,
-  mol TEXT NOT NULL,
-  CONSTRAINT rdkit_structure_pkey PRIMARY KEY (id)
+CREATE TABLE rdkit_structure (
+    id bigint NOT NULL,
+    mol text NOT NULL,
+    pre_reg character(40) NOT NULL,
+    recorded_date timestamp without time zone NOT NULL,
+    reg character(40) NOT NULL,
+    version integer
 );
 
+ALTER TABLE ONLY rdkit_structure
+    ADD CONSTRAINT rdkit_structure_pkey PRIMARY KEY (id);
 CREATE INDEX rdkit_structure_pk_idx ON rdkit_structure(id);
 CREATE INDEX rdkit_structure_pre_reg_idx ON rdkit_structure(pre_reg);
 CREATE INDEX rdkit_structure_reg_idx ON rdkit_structure(reg);
 
 
--- LOT - Original structure/As drawn
--- Parent - LD displayed Structure (standardized structure)
--- Structure - Same as PARENT
+CREATE TABLE rdkit_salt_structure (
+    id bigint NOT NULL,
+    mol text NOT NULL,
+    pre_reg character(40) NOT NULL,
+    recorded_date timestamp without time zone NOT NULL,
+    reg character(40) NOT NULL,
+    version integer
+);
+
+ALTER TABLE ONLY rdkit_salt_structure
+    ADD CONSTRAINT rdkit_salt_structure_pkey PRIMARY KEY (id);
+CREATE INDEX rdkit_salt_structure_pk_idx ON rdkit_salt_structure(id);
+CREATE INDEX rdkit_salt_structure_pre_reg_idx ON rdkit_salt_structure(pre_reg);
+CREATE INDEX rdkit_salt_structure_reg_idx ON rdkit_salt_structure(reg);
