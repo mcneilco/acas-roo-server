@@ -9,6 +9,7 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
+import org.RDKit.KeyErrorException;
 import org.RDKit.RDKFuncs;
 import org.RDKit.ROMol;
 import org.RDKit.RWMol;
@@ -47,7 +48,8 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 		if (readOnlyMol == null) {
 			logger.info("Got empty mol record");
 		} else {
-			this.molecule = RWMol.MolFromMolBlock(readOnlyMol.MolToMolBlock());
+			// We want the molecule to be editable so we convert it to a RWMol
+			this.molecule = new RWMol(readOnlyMol);
 		}
 	}
 
@@ -58,7 +60,16 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	@Override
 	public String getProperty(String key) {
-		return molecule.getProp(key);
+		try{
+			String prop = molecule.getProp(key);
+			if(prop.equals("")) {
+				return null;
+			} else {
+				return prop;
+			}
+		} catch (KeyErrorException e) {
+			return null;
+		}
 	}
 
 	@Override
@@ -174,22 +185,6 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 	@Override
 	public void dearomatize() {
 		this.molecule.Kekulize();
-	}
-
-	public CmpdRegMoleculeRDKitImpl clone() {
-		CmpdRegMoleculeRDKitImpl newMol = null;
-		try {
-			newMol = new CmpdRegMoleculeRDKitImpl(RDKFuncs.MolToMolBlock(this.molecule));
-			Str_Vect propList = this.molecule.getPropList();
-			for (int i = 0; i < propList.size(); i++) {
-				newMol.setProperty(propList.get(i), this.getProperty(propList.get(i)));
-			}
-			return newMol;
-		} catch (CmpdRegMolFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return newMol;
 	}
 
 }

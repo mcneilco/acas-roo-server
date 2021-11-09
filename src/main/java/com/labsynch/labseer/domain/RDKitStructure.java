@@ -50,4 +50,10 @@ public class RDKitStructure {
     @DateTimeFormat(style="M-")
     private Date recordedDate;
 
+    public void updateStructureInfo(String mol, String reg, String preReg) {
+        this.setMol(mol);
+        this.setReg(reg);
+        this.setPreReg(preReg);
+    } 
+
 }

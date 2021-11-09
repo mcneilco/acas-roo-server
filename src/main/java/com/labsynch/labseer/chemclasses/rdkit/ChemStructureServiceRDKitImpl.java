@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.RDKitDryRunStructure;
+import com.labsynch.labseer.domain.RDKitSaltFormStructure;
 import com.labsynch.labseer.domain.RDKitSaltStructure;
 import com.labsynch.labseer.domain.RDKitStructure;
 import com.labsynch.labseer.domain.Salt;
@@ -26,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.RDKit.*;
 
 import org.codehaus.jackson.JsonFactory;
@@ -96,9 +99,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 		
 	}
 
-	@Override
-	public int[] searchMolStructures(String molfile, String structureTable, String searchType)
-			throws CmpdRegMolFormatException {
+	public String getRDkitEntityTableNameFromGenericName(String structureTable) {
 		String plainTable = null;
 		if (structureTable.equalsIgnoreCase("Parent_Structure")){
 			plainTable = "parent";
@@ -106,8 +107,30 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 			plainTable = "salt_form";
 		} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
 			plainTable = "salt";
+		} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")){
+			plainTable = "dry_run_compound";
 		}
+		return(plainTable);
+	}
 
+	public String getRDKitStructureTableFromGenericName(String structureTable) {
+		String plainTable = null;
+		if (structureTable.equalsIgnoreCase("Parent_Structure")){
+			plainTable = "rdkit_structure";
+		} else if (structureTable.equalsIgnoreCase("SaltForm_Structure")){
+			plainTable = "rdkit_salt_form_structure";
+		} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
+			plainTable = "rdkit_salt_structure";
+		} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")){
+			plainTable = "rdkit_dry_run_structure";
+		}
+		return(plainTable);
+	}
+
+	@Override
+	public int[] searchMolStructures(String molfile, String structureTable, String searchType)
+			throws CmpdRegMolFormatException {
+		String plainTable = getRDkitEntityTableNameFromGenericName(structureTable);
 		return searchMolStructures(molfile, structureTable, plainTable, searchType);	
 	}
 
@@ -118,9 +141,11 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	}
 
 	@Override
+	@Transactional
 	public boolean dropJChemTable(String tableName) {
-		// TODO Auto-generated method stub
-		return false;
+		String truncateStatement = "TRUNCATE TABLE " + getRDKitStructureTableFromGenericName(tableName);
+		RDKitStructure.entityManager().createNativeQuery(truncateStatement).executeUpdate();
+		return true;
 	}
 
 	@Override
@@ -214,8 +239,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public boolean createJChemTable(String tableName, boolean tautomerDupe) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -226,7 +250,20 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 			if (structureTable.equalsIgnoreCase("Parent_Structure")){
 				rdkitStructure.persist();
 			} else if (structureTable.equalsIgnoreCase("SaltForm_Structure")){
+				// Can't type cast from subclass to superclass so we go to json and back
+				RDKitSaltFormStructure rdkitSaltFormStructure = RDKitSaltFormStructure.fromJsonToRDKitSaltFormStructure(rdkitStructure.toJson());
 
+				if(checkForDupes){
+					List<RDKitSaltFormStructure> rdkitStructures =  RDKitSaltFormStructure.findRDKitSaltFormStructuresByRegEquals(rdkitSaltFormStructure.getReg()).getResultList();
+					if(rdkitStructures.size() > 0){
+						logger.error("Salt form structure already exists with id "+ rdkitStructures.get(0).getId());
+						return 0;
+					}
+				}
+				rdkitSaltFormStructure.persist();
+
+				// We can type cast from subclass to superclass
+				rdkitStructure = (RDKitStructure) rdkitSaltFormStructure;
 			} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
 				// Can't type cast from subclass to superclass so we go to json and back
 				RDKitSaltStructure rdkitStructureSalt = RDKitSaltStructure.fromJsonToRDKitSaltStructure(rdkitStructure.toJson());
@@ -243,7 +280,20 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 				// We can type cast from subclass to superclass
 				rdkitStructure = (RDKitStructure) rdkitStructureSalt;
 			} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")){
-				// plainTable = "dry_run_compound";
+				// Can't type cast from subclass to superclass so we go to json and back
+				RDKitDryRunStructure rdkitStructureDryRun = RDKitDryRunStructure.fromJsonToRDKitDryRunStructure(rdkitStructure.toJson());
+
+				if(checkForDupes){
+					List<RDKitDryRunStructure> rdkitStructures =  RDKitDryRunStructure.findRDKitDryRunStructuresByRegEquals(rdkitStructureDryRun.getReg()).getResultList();
+					if(rdkitStructures.size() > 0){
+						logger.error("DryRun structure already exists with id "+ rdkitStructures.get(0).getId());
+						return 0;
+					}
+				}
+				rdkitStructureDryRun.persist();
+
+				// We can type cast from subclass to superclass
+				rdkitStructure = (RDKitStructure) rdkitStructureDryRun;
 			}
 
 			return toIntExact(rdkitStructure.getId());
@@ -304,8 +354,31 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public boolean updateStructure(String molStructure, String structureTable, int cdId) {
-		// TODO Auto-generated method stub
-		return false;
+		Long id= new Long(cdId);
+		try {
+			RDKitStructure rdkitStructureUpdated = getRDKitStructureFromService(molStructure);
+			if (structureTable.equalsIgnoreCase("Parent_Structure")){
+				RDKitStructure rdkitStructureSaved = RDKitStructure.findRDKitStructure(id);
+				rdkitStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
+				rdkitStructureSaved.persist();
+			} else if (structureTable.equalsIgnoreCase("SaltForm_Structure")){
+				RDKitStructure rdkitSaltFormStructureSaved = RDKitSaltFormStructure.findRDKitSaltFormStructure(id);
+				rdkitSaltFormStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
+				rdkitSaltFormStructureSaved.persist();
+			} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
+				RDKitStructure rdkitSaltStructureSaved = RDKitSaltStructure.findRDKitSaltStructure(id);
+				rdkitSaltStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
+				rdkitSaltStructureSaved.persist();
+			} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")){
+				RDKitStructure rdkitDryRunStructureSaved = RDKitDryRunStructure.findRDKitDryRunStructure(id);
+				rdkitDryRunStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
+				rdkitDryRunStructureSaved.persist();
+			}
+		} catch (CmpdRegMolFormatException e) {
+			logger.error("Error updating structure: ", e);
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -339,8 +412,13 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public boolean updateStructure(CmpdRegMolecule mol, String structureTable, int cdId) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			updateStructure(mol.getMolStructure(), structureTable, cdId);
+		} catch (CmpdRegMolFormatException e) {
+			logger.error("Error updating structure: " + e.getMessage());
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -351,8 +429,21 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public boolean deleteStructure(String structureTable, int cdId) {
-		// TODO Auto-generated method stub
-		return false;
+		Long id = new Long(cdId);
+		if (structureTable.equalsIgnoreCase("Parent_Structure")){
+			RDKitStructure rdkitStructure = RDKitStructure.findRDKitStructure(id);
+			rdkitStructure.remove();
+		} else if (structureTable.equalsIgnoreCase("SaltForm_Structure")){
+			RDKitSaltFormStructure rdkitSaltFormStructure = RDKitSaltFormStructure.findRDKitSaltFormStructure(id);
+			rdkitSaltFormStructure.remove();
+		} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
+			RDKitSaltStructure rdkitSaltStructure = RDKitSaltStructure.findRDKitSaltStructure(id);
+			rdkitSaltStructure.remove();
+		} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")){
+			RDKitDryRunStructure rdkitDryRunStructure = RDKitDryRunStructure.findRDKitDryRunStructure(id);
+			rdkitDryRunStructure.remove();
+		}
+		return true;
 	}
 
 	@Override
@@ -449,7 +540,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException {
 		CmpdRegMoleculeRDKitImpl molWrapper = (CmpdRegMoleculeRDKitImpl) inputStructure;
-		CmpdRegMoleculeRDKitImpl mol = molWrapper.clone();
+		CmpdRegMoleculeRDKitImpl mol = new CmpdRegMoleculeRDKitImpl(new RWMol(molWrapper.molecule));
 		RWMol clone = mol.molecule;
 		List<CmpdRegMoleculeRDKitImpl> allFrags = new ArrayList<CmpdRegMoleculeRDKitImpl>();
 	    ROMol_Vect frags = RDKFuncs.getMolFrags(clone);
@@ -532,8 +623,14 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			RDKitStructure queryMolRDKitStructure = getRDKitStructureFromService(queryMol);
+			RDKitStructure targetMolRDKitStructure = getRDKitStructureFromService(targetMol);
+			return queryMolRDKitStructure.getReg() == targetMolRDKitStructure.getReg();
+		} catch (Exception e) {
+			logger.error("Error in standardizedMolCompare: ", e);
+			throw new CmpdRegMolFormatException(e);
+		}
 	}
 
 	@Override

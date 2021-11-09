@@ -265,9 +265,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		DryRunCompound dryRunCompound = new DryRunCompound();
 
 		if(validate) {
-			boolean dropTable = chemStructureService.dropJChemTable("dry_run_compound_structure");
+			boolean dropTable = chemStructureService.dropJChemTable("Dry_Run_Compound_Structure");
 			if (dropTable){
-				chemStructureService.createJChemTable("dry_run_compound_structure", true);				
+				chemStructureService.createJChemTable("Dry_Run_Compound_Structure", true);				
 			} else {
 				logger.info("unable to drop jchem table");
 			}
