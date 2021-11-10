@@ -27,6 +27,7 @@ import com.labsynch.labseer.dto.StructureSearchDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.service.LsThingService;
 import com.labsynch.labseer.service.StructureService;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 @Controller
 @RequestMapping("api/v1/structure")
@@ -264,9 +265,9 @@ public class ApiStructureController {
         	StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
         	logger.info("incoming query: " + query.getLsType() + "  " + query.getLsKind());
         	if (query.getLsType() != null && query.getLsKind() != null){
-            	structures = structureService.searchStructuresByTypeKind( query.getQueryMol(), query.getLsType(), query.getLsKind(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
+            	structures = structureService.searchStructuresByTypeKind( query.getQueryMol(), query.getLsType(), query.getLsKind(), SearchType.getIfPresent(query.getSearchType()).orElse(SearchType.DEFAULT), query.getMaxResults(), query.getSimilarity());
         	} else {
-            	structures = structureService.searchStructures( query.getQueryMol(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
+            	structures = structureService.searchStructures( query.getQueryMol(), SearchType.getIfPresent(query.getSearchType()).orElse(SearchType.DEFAULT), query.getMaxResults(), query.getSimilarity());
         	}
         	logger.info("number of structs found: " + structures.size());
             return new ResponseEntity<String>(ChemStructure.toJsonArray(structures), headers, HttpStatus.OK);

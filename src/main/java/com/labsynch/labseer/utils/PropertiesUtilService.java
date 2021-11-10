@@ -3,6 +3,7 @@ package com.labsynch.labseer.utils;
 import java.util.Collection;
 
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 import org.springframework.stereotype.Service;
 
@@ -97,7 +98,7 @@ public interface PropertiesUtilService {
 	
 	String getNotebookSavePath();
 	
-	String getExactMatchDef();
+	SearchType getExactMatchDef();
 	
 	Integer getMaxSearchTime();
 	

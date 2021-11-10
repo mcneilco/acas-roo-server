@@ -73,23 +73,9 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	}
 	
 	private Indigo indigo = new Indigo();
-	
-	@Override
-	public int getCount(String structureTable) {
-		String sql = "select count(*) from " + structureTable;
-		int count;
-		Integer countInt = basicJdbcTemplate.queryForObject(sql, Integer.class);
-		if (countInt == null){
-			count = 0;
-		} else {
-			count = countInt;
-		}
-
-		return count;
-	}
 
 	@Override
-	public boolean compareStructures(String preMolStruct, String postMolStruct, String searchType){
+	public boolean compareStructures(String preMolStruct, String postMolStruct, SearchType searchType){
 
 
 		//logger.info("SearchType is: " + searchType);
@@ -133,13 +119,13 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 
 	@Override
-	public int saveStructure(String molfile, String structureTable) {
+	public int saveStructure(String molfile, StructureType structureType) {
 		boolean checkForDupes = false;
-		return saveStructure(molfile, structureTable, checkForDupes);
+		return saveStructure(molfile, structureType, checkForDupes);
 	}
 
 	@Override
-	public int saveStructure(String molfile, String structureTable, boolean checkForDupes) {
+	public int saveStructure(String molfile, StructureType structureType, boolean checkForDupes) {
 		return  (int) Parent.countParents() + 1;
 	}
 
@@ -148,45 +134,21 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		//do nothing
 	}
 
-
 	@Override
-	public int[] searchMolStructures(String molfile, String structureTable, String searchType) throws CmpdRegMolFormatException {
-		String plainTable = null;
-		if (structureTable.equalsIgnoreCase("Parent_Structure")){
-			plainTable = "parent";
-		} else if (structureTable.equalsIgnoreCase("SaltForm_Structure")){
-			plainTable = "salt_form";
-		} else if (structureTable.equalsIgnoreCase("Salt_Structure")){
-			plainTable = "salt";
-		} else if (structureTable.equalsIgnoreCase("Dry_Run_Compound_Structure")){
-			plainTable = "dry_run_compound";
-		}
-
-
-
-		return searchMolStructures(molfile, structureTable, plainTable, searchType);	
+	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType) throws CmpdRegMolFormatException {
+		return searchMolStructures(molfile, structureType, searchType, 0f);	
 	}
 
 	@Override
-	public int[] searchMolStructures(String molfile, String structureTable, String searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
-		return searchMolStructures(molfile, structureTable, null,searchType, simlarityPercent);	
-	}
-
-	@Override
-	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType) throws CmpdRegMolFormatException {
-		return searchMolStructures(molfile, structureTable, plainTable, searchType, 0f);	
-	}
-
-	@Override
-	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
+	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
 		int maxResultCount = propertiesUtilService.getMaxSearchResults();
-		return searchMolStructures(molfile, structureTable, plainTable, searchType, simlarityPercent, maxResultCount);	
+		return searchMolStructures(molfile, structureType, searchType, simlarityPercent, maxResultCount);	
 
 	}
 
 	@Override
 	@Transactional
-	public int[] searchMolStructures(String molfile, String structureTable, String plainTable, String searchType, 
+	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType, 
 			Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 
 		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
@@ -200,7 +162,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 		//Indigo: the structures in the plainTable are being used. Ignore structureTable from here on out.
-		logger.debug("Search table is  " + plainTable);		
+		logger.debug("Search table is  " + structureType.table);		
 		logger.debug("Search type is  " + searchType);		
 		logger.debug("Max number of results is  " + maxResults);		
 
@@ -210,7 +172,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		logger.debug("Indigo search similarity is  " + indSimilarity);		
 
 
-		if (searchType.equalsIgnoreCase("EXACT")){
+		if (searchType == SearchType.EXACT){
 			searchType = propertiesUtilService.getExactMatchDef();
 		}
 
@@ -218,7 +180,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			CmpdRegMoleculeIndigoImpl molWrapper = new CmpdRegMoleculeIndigoImpl(molfile);
 			IndigoObject mol = molWrapper.molecule;
 			
-			String baseQuery = "SELECT cd_id FROM " + plainTable + " WHERE mol_structure @ ";
+			String baseQuery = "SELECT cd_id FROM " + structureType.table + " WHERE mol_structure @ ";
 			String bingoFunction = null;
 			String orderBy = " ORDER BY cd_id";
 			
@@ -232,9 +194,9 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			logger.debug("definition of exact search: " + propertiesUtilService.getExactMatchDef());
 			logger.debug("selected search type: " + searchType);
 			
-			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")) {
+			if (searchType == SearchType.SUBSTRUCTURE) {
 				bingoFunction = "cast( ( :queryMol , :parameters ) as bingo.sub)";
-			}else if (searchType.equalsIgnoreCase("SIMILARITY")) {
+			}else if (searchType == SearchType.SIMILARITY) {
 				bingoFunction = "cast( ( :minSimilarity , :maxSimilarity , :queryMol , :metric ) as bingo.sim)";
 				orderBy = " ORDER BY "+bingoFunction;
 			}else { 
@@ -257,28 +219,28 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			//CReg: "SIMILARITY" :: JChem "SIMILARITY" :: Bingo.Sim > $min
 			//CReg: "FULL" :: JChem "FULL", "CHARGE_MATCHING_IGNORE", "ISOTOPE_MATCHING_IGNORE", "STEREO_IGNORE", "TAUTOMER_SEARCH_OFF" :: Bingo.Exact "ALL -ELE -MAS -STE"
 			
-			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")) {
+			if (searchType == SearchType.SUBSTRUCTURE) {
 				query.setParameter("parameters", "");
-			}else if (searchType.equalsIgnoreCase("SIMILARITY")) {
+			}else if (searchType == SearchType.SIMILARITY) {
 				query.setParameter("minSimilarity", indSimilarity);
 				query.setParameter("maxSimilarity", 1.0);
 				query.setParameter("metric", "Tanimoto");
 			}else {
 				String parameters = null;
-				switch (searchType.toUpperCase()) {
-				case "DUPLICATE":
+				switch (searchType) {
+				case DUPLICATE:
 					parameters = "ALL";
 					break;
-				case "DUPLICATE_TAUTOMER":
+				case DUPLICATE_TAUTOMER:
 					parameters = "TAU";
 					break;
-				case "STEREO_IGNORE":
+				case STEREO_IGNORE:
 					parameters = "ALL -STE";
 					break;
-				case "FULL_TAUTOMER":
+				case FULL_TAUTOMER:
 					parameters = "TAU";
 					break;
-				case "FULL":
+				case FULL:
 					parameters = "ALL -ELE -MAS -STE";
 					break;
 				default:
@@ -296,7 +258,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			//if we are searching in DUPLICATE_TAUTOMER mode and the above TAU search returned results
 			//we need to also check the stereochemistry matches since we can't do both at once.
 			//the overall results should be the intersection of both queries
-			if (hitListList.size() > 0 && mol.countAtoms() > 0 && searchType.toUpperCase().equals("DUPLICATE_TAUTOMER")) {
+			if (hitListList.size() > 0 && mol.countAtoms() > 0 && searchType == SearchType.DUPLICATE_TAUTOMER) {
 				query.setParameter("parameters", "STE");
 				List<Integer> stereoHitListList = query.getResultList();
 				hitListList.retainAll(stereoHitListList);
@@ -349,7 +311,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		Map<Salt, Integer> saltCounts = new HashMap<Salt, Integer>();
 		Set<CmpdRegMoleculeIndigoImpl> unidentifiedFragments = new HashSet<CmpdRegMoleculeIndigoImpl>();
 		for (CmpdRegMoleculeIndigoImpl fragment : allFrags){
-			int[] cdIdMatches = searchMolStructures(fragment.getMolStructure(), "Salt_Structure", "DUPLICATE_TAUTOMER");
+			int[] cdIdMatches = searchMolStructures(fragment.getMolStructure(), StructureType.SALT, SearchType.DUPLICATE_TAUTOMER);
 			if (cdIdMatches.length>0){
 				Salt foundSalt = Salt.findSaltsByCdId(cdIdMatches[0]).getSingleResult();
 				if (saltCounts.containsKey(foundSalt)) saltCounts.put(foundSalt, saltCounts.get(foundSalt)+1);
@@ -371,15 +333,22 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 
 	@Override
 	@Transactional
-	public CmpdRegMolecule[] searchMols(String molfile, String structureTable, int[] inputCdIdHitList, String plainTable, String searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
+	public CmpdRegMolecule[] searchMols(String molfile, StructureType structureType, int[] inputCdIdHitList, SearchType searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
 		int maxResults = propertiesUtilService.getMaxSearchResults();
-		return searchMols(molfile, structureTable, inputCdIdHitList, plainTable, searchType, simlarityPercent, maxResults);
+		return searchMols(molfile, structureType, inputCdIdHitList, searchType, simlarityPercent, maxResults);
 	}
 
 	@Override
 	@Transactional
-	public CmpdRegMolecule[] searchMols(String molfile, String structureTable, int[] inputCdIdHitList, 
-			String plainTable, String searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
+	public boolean truncateStructureTable(StructureType structureType) {
+		//TODO: Implment validation mode for indigo builds
+		return true;
+	}
+
+	@Override
+	@Transactional
+	public CmpdRegMolecule[] searchMols(String molfile, StructureType structureType, int[] inputCdIdHitList, 
+			SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 
 		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
 		try {
@@ -392,7 +361,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 		//Indigo: the structures in the plainTable are being used. Ignore structureTable from here on out.
-		logger.debug("Search table is  " + plainTable);		
+		logger.debug("Search table is  " + structureType.table);		
 		logger.debug("Search type is  " + searchType);		
 		logger.debug("Max number of results is  " + maxResults);	
 		
@@ -402,7 +371,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		logger.debug("Indigo search similarity is  " + indSimilarity);		
 
 
-		if (searchType.equalsIgnoreCase("EXACT")){
+		if (searchType == SearchType.EXACT){
 			searchType = propertiesUtilService.getExactMatchDef();
 		}
 		
@@ -411,7 +380,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			CmpdRegMoleculeIndigoImpl molWrapper = new CmpdRegMoleculeIndigoImpl(molfile);
 			IndigoObject mol = molWrapper.molecule;
 			
-			String baseQuery = "SELECT cd_id, mol_structure FROM " + plainTable + " WHERE mol_structure @ ";
+			String baseQuery = "SELECT cd_id, mol_structure FROM " + structureType.table + " WHERE mol_structure @ ";
 			String bingoFunction = null;
 			String orderBy = " ORDER BY cd_id";
 			String filterIdsClause = "";
@@ -426,9 +395,9 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			logger.debug("definition of exact search: " + propertiesUtilService.getExactMatchDef());
 			logger.debug("selected search type: " + searchType);
 			
-			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")) {
+			if (searchType == SearchType.SUBSTRUCTURE) {
 				bingoFunction = "cast(( :queryMol , :parameters ) as bingo.sub) ";
-			}else if (searchType.equalsIgnoreCase("SIMILARITY")) {
+			}else if (searchType == SearchType.SIMILARITY) {
 				bingoFunction = "cast( ( :minSimilarity , :maxSimilarity , :queryMol , :metric ) as bingo.sim)";
 				orderBy = " ORDER BY "+bingoFunction;
 			}else { 
@@ -455,28 +424,28 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			//CReg: "SIMILARITY" :: JChem "SIMILARITY" :: Bingo.Sim > $min
 			//CReg: "FULL" :: JChem "FULL", "CHARGE_MATCHING_IGNORE", "ISOTOPE_MATCHING_IGNORE", "STEREO_IGNORE", "TAUTOMER_SEARCH_OFF" :: Bingo.Exact "ALL -ELE -MAS -STE"
 			
-			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")) {
+			if (searchType == SearchType.SUBSTRUCTURE) {
 				query.setParameter("parameters", "");
-			}else if (searchType.equalsIgnoreCase("SIMILARITY")) {
+			}else if (searchType == SearchType.SIMILARITY) {
 				query.setParameter("minSimilarity", indSimilarity);
 				query.setParameter("maxSimilarity", 1.0);
 				query.setParameter("metric", "Tanimoto");
 			}else {
 				String parameters = null;
-				switch (searchType.toUpperCase()) {
-				case "DUPLICATE":
+				switch (searchType) {
+				case DUPLICATE:
 					parameters = "ALL";
 					break;
-				case "DUPLICATE_TAUTOMER":
+				case DUPLICATE_TAUTOMER:
 					parameters = "TAU";
 					break;
-				case "STEREO_IGNORE":
+				case STEREO_IGNORE:
 					parameters = "ALL -STE";
 					break;
-				case "FULL_TAUTOMER":
+				case FULL_TAUTOMER:
 					parameters = "TAU";
 					break;
-				case "FULL":
+				case FULL:
 					parameters = "ALL -ELE -MAS -STE";
 					break;
 				default:
@@ -663,57 +632,25 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	}
 
 	@Override
-	public boolean createJChemTable(String tableName, boolean tautomerDupe) {
-		//no-op
-		return false;
-	}	
+	public int[] checkDupeMol(String molStructure, StructureType structureType) throws CmpdRegMolFormatException {
 
-	@Override
-	@Transactional
-	public boolean dropJChemTable(String tableName) {
-		//no-op
-		return false;
-	}	
-
-	@Override
-	@Transactional
-	public boolean deleteAllJChemTableRows(String tableName) {
-		//no-op
-		return false;
-	}	
-
-	@Override
-	public boolean deleteJChemTableRows(String tableName, int[] cdIds) {
-		//no-op
-		return false;
-	}	
-
-	@Override
-	public boolean createJchemPropertyTable() {
-		//no-op
-		return false;
+		return searchMolStructures(molStructure, structureType, SearchType.DUPLICATE_TAUTOMER); 
 	}
 
 	@Override
-	public int[] checkDupeMol(String molStructure, String structureTable, String plainTable) throws CmpdRegMolFormatException {
-
-		return searchMolStructures(molStructure, structureTable, plainTable, "DUPLICATE_TAUTOMER"); 
-	}
-
-	@Override
-	public boolean updateStructure(String molStructure, String structureTable, int cdId) {
+	public boolean updateStructure(String molStructure, StructureType structureType, int cdId) {
 		//no-op
 		return true;
 	}	
 
 	@Override
-	public boolean updateStructure(CmpdRegMolecule mol, String structureTable, int cdId) {
+	public boolean updateStructure(CmpdRegMolecule mol, StructureType structureType, int cdId) {
 		//no-op
 		return true;
 	}
 
 	@Override
-	public boolean deleteStructure(String structureTable, int cdId){
+	public boolean deleteStructure(StructureType structureType, int cdId){
 		//no-op
 		return true;
 	}

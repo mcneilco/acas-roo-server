@@ -21,6 +21,7 @@ import com.labsynch.labseer.domain.SaltForm;
 
 import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
 import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
@@ -148,7 +149,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 						logger.debug("no salt form structure");
 
 					} else {
-						cdId = chemService.saveStructure(saltForm.getMolStructure(), "SaltForm_Structure", true);
+						cdId = chemService.saveStructure(saltForm.getMolStructure(), StructureType.SALT_FORM, true);
 						if (cdId == -1){
 							ErrorMessage saltFormError = new ErrorMessage();
 							saltFormError.setLevel("error");

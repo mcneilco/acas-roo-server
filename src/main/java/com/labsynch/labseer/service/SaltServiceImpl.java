@@ -16,6 +16,8 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFReaderFactory;
 import com.labsynch.labseer.domain.Salt;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
 @Service
@@ -80,12 +82,12 @@ public class SaltServiceImpl implements SaltService {
 		logger.debug("salt name: " + salt.getName());
 		logger.debug("salt structure: " + salt.getMolStructure());
 
-		int[] queryHits = saltStructServ.searchMolStructures(salt.getMolStructure(), "Salt_Structure", "salt", "DUPLICATE_NO_TAUTOMER");
+		int[] queryHits = saltStructServ.searchMolStructures(salt.getMolStructure(), StructureType.SALT, SearchType.DUPLICATE_NO_TAUTOMER);
 		Integer cdId = 0;
 		if (queryHits.length > 0){
 			cdId = 0;
 		} else {
-			cdId = saltStructServ.saveStructure(salt.getMolStructure(), "Salt_Structure");			
+			cdId = saltStructServ.saveStructure(salt.getMolStructure(), StructureType.SALT);			
 		}
 		salt.setCdId(cdId);
 

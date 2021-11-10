@@ -131,6 +131,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		</profile>
 		<profile>
 			<id>indigo</id>
+			<activation>
+            	<activeByDefault>false</activeByDefault>
+        	</activation>
 			<dependencies>
 				<dependency>
 					<groupId>com.epam.indigo</groupId>
