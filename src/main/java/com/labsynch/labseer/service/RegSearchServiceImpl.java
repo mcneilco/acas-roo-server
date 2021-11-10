@@ -26,6 +26,8 @@ import com.labsynch.labseer.dto.RegSearchDTO;
 import com.labsynch.labseer.dto.RegSearchParamsDTO;
 import com.labsynch.labseer.dto.SaltFormDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
@@ -79,7 +81,7 @@ public class RegSearchServiceImpl implements RegSearchService {
 				regSearchDTO.setAsDrawnMolWeight(mol.getMass());
 
 			}
-			int[] parentHits = chemStructureService.searchMolStructures(MoleculeUtil.exportMolAsText(mol, "mol"), "Parent_Structure", "parent", "FULL_TAUTOMER");
+			int[] parentHits = chemStructureService.searchMolStructures(MoleculeUtil.exportMolAsText(mol, "mol"), StructureType.PARENT, SearchType.FULL_TAUTOMER);
 			logger.debug("number of parents found: " + parentHits.length);
 
 			if (parentHits.length > 0){

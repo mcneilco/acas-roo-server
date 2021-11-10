@@ -37,6 +37,8 @@ import com.labsynch.labseer.dto.ParentEditDTO;
 import com.labsynch.labseer.dto.ParentValidationDTO;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
@@ -98,7 +100,7 @@ public class ParentServiceImpl implements ParentService {
 		if (propertiesUtilService.getRegisterNoStructureCompoundsAsUniqueParents() && chemStructureService.isEmpty(queryParent.getMolStructure()) ) {
 			logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} {
-			dupeParentList = chemStructureService.checkDupeMol(queryParent.getMolStructure(), "Parent_Structure", "Parent");
+			dupeParentList = chemStructureService.checkDupeMol(queryParent.getMolStructure(), StructureType.PARENT);
 		}
 		if (dupeParentList.length > 0){
 			searchResultLoop:
@@ -242,7 +244,7 @@ public class ParentServiceImpl implements ParentService {
 					logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents is true so not checking for dupe parent");
 					hits = new int[0];
 				} else {
-					hits = chemStructureService.searchMolStructures(parent.getMolStructure(), "Parent_Structure", "DUPLICATE_TAUTOMER");
+					hits = chemStructureService.searchMolStructures(parent.getMolStructure(), StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER);
 				}
 				if (hits.length == 0){
 					logger.error("did not find a match for parentId: " + parentId + "   parent: " + parent.getCorpName());
@@ -307,7 +309,7 @@ public class ParentServiceImpl implements ParentService {
 			CmpdRegSDFWriter dupeMolExporter = cmpdRegSDFWriterFactory.getCmpdRegSDFWriter(dupeCheckFile);
 			for  (Long parentId : parentIds){
 				parent = Parent.findParent(parentId);
-				hits = chemStructureService.searchMolStructures(parent.getMolStructure(), "Parent_Structure", "DUPLICATE_TAUTOMER");
+				hits = chemStructureService.searchMolStructures(parent.getMolStructure(), StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER);
 				if (hits.length == 0){
 					logger.error("did not find a match for parentId: " + parentId + "   parent: " + parent.getCorpName());
 				} 
@@ -415,7 +417,7 @@ public class ParentServiceImpl implements ParentService {
 				qcCompound = QcCompound.findQcCompound(qcId);
 				queryParent = Parent.findParent(qcCompound.getParentId());
 				logger.info("query compound: " + qcCompound.getCorpName());
-				hits = chemStructureService.searchMolStructures(qcCompound.getMolStructure(), "Parent_Structure", "DUPLICATE_TAUTOMER");
+				hits = chemStructureService.searchMolStructures(qcCompound.getMolStructure(), StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER);
 				for (int hit:hits){
 					List<Parent> searchResultParents = Parent.findParentsByCdId(hit).getResultList();
 					for (Parent searchResultParent : searchResultParents){

@@ -38,6 +38,7 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.ParentStructureService;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.MoleculeUtil;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.path.PathBuilder;
@@ -189,7 +190,7 @@ public class ParentController {
 	}
 
 	private Parent saveParentStructure(Parent parent) {
-		int parentCdId = service.saveStructure(parent.getMolStructure(), "Parent_Structure");
+		int parentCdId = service.saveStructure(parent.getMolStructure(), StructureType.PARENT);
 		parent.setCdId(parentCdId);
 		return parent;
 	}

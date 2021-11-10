@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -49,11 +50,11 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		if (salts.size() > 0){
 			logger.error("found another salt with the same name and abbrev");
 			salt.setCdId(0);
-			int[] dupeMols = chemStructureService.checkDupeMol(salt.getMolStructure(), "Salt_Structure", "salt");
+			int[] dupeMols = chemStructureService.checkDupeMol(salt.getMolStructure(), StructureType.SALT);
 			logger.debug("number of matching salt structures: " + dupeMols.length);
 		} else {
 			boolean checkForDupes = true;
-			int cdId = chemStructureService.saveStructure(salt.getMolStructure(), "Salt_Structure", checkForDupes);			
+			int cdId = chemStructureService.saveStructure(salt.getMolStructure(), StructureType.SALT, checkForDupes);			
 			salt.setCdId(cdId);			
 		}
 
@@ -76,7 +77,7 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		logger.debug("salt name: " + salt.getName());
 		logger.debug("salt structure: " + salt.getMolStructure());
 
-		boolean updated = chemStructureService.updateStructure(mol, "Salt_Structure", salt.getCdId());
+		boolean updated = chemStructureService.updateStructure(mol, StructureType.SALT, salt.getCdId());
 		salt.merge();
 		
 		if (updated){

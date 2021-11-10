@@ -9,12 +9,43 @@ import javax.persistence.TypedQuery;
 
 privileged aspect RDKitDryRunStructure_Roo_Finder {
     
+    public static Long RDKitDryRunStructure.countFindRDKitDryRunStructuresByPreRegEquals(String preReg) {
+        if (preReg == null || preReg.length() == 0) throw new IllegalArgumentException("The preReg argument is required");
+        EntityManager em = RDKitDryRunStructure.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM RDKitDryRunStructure AS o WHERE o.preReg = :preReg", Long.class);
+        q.setParameter("preReg", preReg);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static Long RDKitDryRunStructure.countFindRDKitDryRunStructuresByRegEquals(String reg) {
         if (reg == null || reg.length() == 0) throw new IllegalArgumentException("The reg argument is required");
         EntityManager em = RDKitDryRunStructure.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM RDKitDryRunStructure AS o WHERE o.reg = :reg", Long.class);
         q.setParameter("reg", reg);
         return ((Long) q.getSingleResult());
+    }
+    
+    public static TypedQuery<RDKitDryRunStructure> RDKitDryRunStructure.findRDKitDryRunStructuresByPreRegEquals(String preReg) {
+        if (preReg == null || preReg.length() == 0) throw new IllegalArgumentException("The preReg argument is required");
+        EntityManager em = RDKitDryRunStructure.entityManager();
+        TypedQuery<RDKitDryRunStructure> q = em.createQuery("SELECT o FROM RDKitDryRunStructure AS o WHERE o.preReg = :preReg", RDKitDryRunStructure.class);
+        q.setParameter("preReg", preReg);
+        return q;
+    }
+    
+    public static TypedQuery<RDKitDryRunStructure> RDKitDryRunStructure.findRDKitDryRunStructuresByPreRegEquals(String preReg, String sortFieldName, String sortOrder) {
+        if (preReg == null || preReg.length() == 0) throw new IllegalArgumentException("The preReg argument is required");
+        EntityManager em = RDKitDryRunStructure.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM RDKitDryRunStructure AS o WHERE o.preReg = :preReg");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<RDKitDryRunStructure> q = em.createQuery(queryBuilder.toString(), RDKitDryRunStructure.class);
+        q.setParameter("preReg", preReg);
+        return q;
     }
     
     public static TypedQuery<RDKitDryRunStructure> RDKitDryRunStructure.findRDKitDryRunStructuresByRegEquals(String reg) {

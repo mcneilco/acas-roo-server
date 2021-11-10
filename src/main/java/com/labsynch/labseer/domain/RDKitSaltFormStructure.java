@@ -8,7 +8,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "RDKIT_STRUCTURE_PKSEQ", finders = { "findRDKitSaltFormStructuresByRegEquals"})
+@RooJpaActiveRecord(sequenceName = "RDKIT_STRUCTURE_PKSEQ", finders = { "findRDKitSaltFormStructuresByRegEquals", "findRDKitSaltFormStructuresByPreRegEquals"})
 public class RDKitSaltFormStructure extends RDKitStructure {
 
 }

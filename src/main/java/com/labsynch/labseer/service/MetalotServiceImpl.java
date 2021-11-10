@@ -51,6 +51,7 @@ import com.labsynch.labseer.exceptions.JsonParseException;
 import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
 import com.labsynch.labseer.exceptions.UniqueNotebookException;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -226,7 +227,7 @@ public class MetalotServiceImpl implements MetalotService {
 					//if true then we are no checking this one for hits
 					logger.warn("mol weight is 0 and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 				} else {
-					dupeParentList = chemService.checkDupeMol(parent.getMolStructure(), "Parent_Structure", "Parent");
+					dupeParentList = chemService.checkDupeMol(parent.getMolStructure(), StructureType.PARENT);
 				}
 				if(dupeParentList.length > 0 && !metaLot.isSkipParentDupeCheck()){
 					for (int parentCdId : dupeParentList){
@@ -316,7 +317,7 @@ public class MetalotServiceImpl implements MetalotService {
 			}
 			if (!dupeParent) {
 				boolean checkForDupe = false;
-				cdId = chemService.saveStructure(parent.getMolStructure(), "Parent_Structure", checkForDupe);
+				cdId = chemService.saveStructure(parent.getMolStructure(), StructureType.PARENT, checkForDupe);
 				if (cdId == -1){
 					logger.error("Bad molformat. Please fix the molfile: " + parent.getMolStructure());
 					throw new CmpdRegMolFormatException();
@@ -394,7 +395,7 @@ public class MetalotServiceImpl implements MetalotService {
 						logger.debug("no salt form structure");
 
 					} else {
-						cdId = chemService.saveStructure(saltForm.getMolStructure(), "SaltForm_Structure", true);
+						cdId = chemService.saveStructure(saltForm.getMolStructure(), StructureType.SALT_FORM, true);
 						if (cdId == -1){
 							saltFormError.setLevel("error");
 							saltFormError.setMessage("Bad molformat. Please fix the molfile: " + saltForm.getMolStructure());
