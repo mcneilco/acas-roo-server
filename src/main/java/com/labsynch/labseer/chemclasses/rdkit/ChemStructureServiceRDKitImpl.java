@@ -40,6 +40,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import java.util.UUID;
+
+import javax.persistence.TypedQuery;
+
 import static java.lang.Math.toIntExact;
 @Component
 public class ChemStructureServiceRDKitImpl implements ChemStructureService {
@@ -76,35 +79,46 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 		// Create empty list
 		List<? extends RDKitStructure> rdkitStructures = new ArrayList<RDKitStructure>();
-
+		TypedQuery<? extends RDKitStructure> query;
 		if (searchType == SearchType.FULL_TAUTOMER){
 			// FULL TAUTOMER hashes are stored on the pre reg hash column
+			// 
 			if(structureType == StructureType.PARENT) {
-				rdkitStructures = RDKitStructure.findRDKitStructuresByPreRegEquals(serviceRDKitStructure.getPreReg()).getResultList();
+				query = RDKitStructure.findRDKitStructuresByPreRegEquals(serviceRDKitStructure.getPreReg());
 			} else if (structureType == StructureType.SALT) {
-				rdkitStructures = RDKitSaltStructure.findRDKitSaltStructuresByPreRegEquals(serviceRDKitStructure.getPreReg()).getResultList();
+				query = RDKitSaltStructure.findRDKitSaltStructuresByPreRegEquals(serviceRDKitStructure.getPreReg());
 			} else if (structureType == StructureType.SALT_FORM) {
-				rdkitStructures = RDKitSaltFormStructure.findRDKitSaltFormStructuresByPreRegEquals(serviceRDKitStructure.getPreReg()).getResultList();
+				query = RDKitSaltFormStructure.findRDKitSaltFormStructuresByPreRegEquals(serviceRDKitStructure.getPreReg());
 			} else if (structureType == StructureType.DRY_RUN) {
-				rdkitStructures = RDKitDryRunStructure.findRDKitDryRunStructuresByPreRegEquals(serviceRDKitStructure.getPreReg()).getResultList();
+				query = RDKitDryRunStructure.findRDKitDryRunStructuresByPreRegEquals(serviceRDKitStructure.getPreReg());
+			} else {
+				throw new CmpdRegMolFormatException("Structure type not implemented for RDkit searches" + structureType);
 			}
-		}else if (searchType == SearchType.DUPLICATE_TAUTOMER){
+		}else if (searchType == SearchType.DUPLICATE_TAUTOMER | searchType == SearchType.EXACT){
 			// DUPLICATE TAUTOMER hashes are stored on the reg column
 			if(structureType == StructureType.PARENT) {
-				rdkitStructures = RDKitStructure.findRDKitStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
+				query = RDKitStructure.findRDKitStructuresByRegEquals(serviceRDKitStructure.getReg());
 			} else if (structureType == StructureType.SALT) {
-				rdkitStructures = RDKitSaltStructure.findRDKitSaltStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
+				query = RDKitSaltStructure.findRDKitSaltStructuresByRegEquals(serviceRDKitStructure.getReg());
 			} else if (structureType == StructureType.SALT_FORM) {
-				rdkitStructures = RDKitSaltFormStructure.findRDKitSaltFormStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
+				query = RDKitSaltFormStructure.findRDKitSaltFormStructuresByRegEquals(serviceRDKitStructure.getReg());
 			} else if (structureType == StructureType.DRY_RUN) {
-				rdkitStructures = RDKitDryRunStructure.findRDKitDryRunStructuresByRegEquals(serviceRDKitStructure.getReg()).getResultList();
+				query = RDKitDryRunStructure.findRDKitDryRunStructuresByRegEquals(serviceRDKitStructure.getReg());
 			} else {
 				throw new CmpdRegMolFormatException("Structure type not implemented for RDkit searches" + structureType);
 			}
 		} else {
 			throw new CmpdRegMolFormatException("Search type not implemented for RDKit searches" + searchType);
 		}
+	
+		// int is not nullable so you either have a valid maxResults passed in
+		// or -1 to express unlimited
+		if(maxResults > -1) {
+			query.setMaxResults(maxResults);
+		}
 
+		rdkitStructures = query.getResultList();
+		
 		return(rdkitStructures);
 	}
 
@@ -132,17 +146,12 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType, Float simlarityPercent) throws CmpdRegMolFormatException {
-		return searchMolStructures(molfile, structureType, searchType, simlarityPercent);	
+		return searchMolStructures(molfile, structureType, searchType, simlarityPercent, -1);	
 	}
 
 	@Override
 	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
-		if(maxResults < 1) {
-			maxResults = propertiesUtilService.getMaxSearchResults();
-		}
-		if(searchType == SearchType.SIMILARITY  && simlarityPercent < 0.0F) {
-			simlarityPercent = 90.0F;
-		}
+
 		List<? extends RDKitStructure> rdkitStructures = searchRDkitStructures(molfile, structureType,  new int[0] , searchType, simlarityPercent, maxResults);
 
 		// Create empty int hit list
