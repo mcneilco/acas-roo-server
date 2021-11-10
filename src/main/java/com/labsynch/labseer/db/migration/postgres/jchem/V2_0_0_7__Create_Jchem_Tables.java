@@ -25,9 +25,9 @@ public class V2_0_0_7__Create_Jchem_Tables implements JdbcMigration {
 		logger.info("getTransactionIsolation  " + conn.getTransactionIsolation());
 		
 		createJchemPropertyTable(conn);
-		createJChemTable(conn, StructureType.SALT, false);
-		createJChemTable(conn, StructureType.SALT_FORM, true);
-		createJChemTable(conn, StructureType.PARENT, true);	
+		createJChemTable(conn, "Salt_Structure", false);
+		createJChemTable(conn, "SaltForm_Structure", true);
+		createJChemTable(conn, "Parent_Structure", true);	
 	
 		conn.setAutoCommit(false);
 		logger.info("conneciton autocommit mode: " + conn.getAutoCommit());
