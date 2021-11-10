@@ -44,6 +44,7 @@ import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.service.GeneThingService;
 import com.labsynch.labseer.service.LsThingService;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -889,7 +890,7 @@ public class ApiLsThingController {
 			logger.info("################################### ");
 
 			StructureSearchDTO query = StructureSearchDTO.fromJsonToStructureSearchDTO(json);
-			Collection<LsThing> results = lsThingService.structureSearch( query.getQueryMol(), query.getLsType(), query.getLsKind(), query.getSearchType(), query.getMaxResults(), query.getSimilarity());
+			Collection<LsThing> results = lsThingService.structureSearch( query.getQueryMol(), query.getLsType(), query.getLsKind(), SearchType.getIfPresent(query.getSearchType()).orElse(SearchType.DEFAULT), query.getMaxResults(), query.getSimilarity());
 
 			logger.info("##### number of results found: " + results.size());
 			return new ResponseEntity<String>(LsThing.toJsonArrayStub(results), headers, HttpStatus.OK);
@@ -914,7 +915,7 @@ public class ApiLsThingController {
 		Collection<Long> lsThingIds;
 		LsThingQueryResultDTO result = new LsThingQueryResultDTO();
 		try{
-			lsThingIds = lsThingService.searchLsThingIdsByQueryDTOandStructure(structureAndThingQuery.getLsThingQueryDTO(), structureAndThingQuery.getQueryMol(), structureAndThingQuery.getSearchType(), structureAndThingQuery.getMaxResults(), structureAndThingQuery.getSimilarity());
+			lsThingIds = lsThingService.searchLsThingIdsByQueryDTOandStructure(structureAndThingQuery.getLsThingQueryDTO(), structureAndThingQuery.getQueryMol(), SearchType.getIfPresent(structureAndThingQuery.getSearchType()).orElse(SearchType.DEFAULT), structureAndThingQuery.getMaxResults(), structureAndThingQuery.getSimilarity());
 			result.setNumberOfResults(lsThingIds.size());
 			result.setMaxResults(structureAndThingQuery.getMaxResults());
 			if (structureAndThingQuery.getMaxResults() == null || result.getNumberOfResults() <= result.getMaxResults()){

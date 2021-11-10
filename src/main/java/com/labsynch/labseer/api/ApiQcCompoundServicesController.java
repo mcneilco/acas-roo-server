@@ -20,6 +20,7 @@ import com.labsynch.labseer.domain.QcCompound;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.service.QcCmpdService;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 
 @RequestMapping(value = {"/api/v1/qcCompoundServices"})
 @Controller
@@ -42,7 +43,7 @@ public class ApiQcCompoundServicesController {
 		if (adminCode.equalsIgnoreCase("lajolla-reset")){
 			// reset qc compound tables if the correct code is sent (basic guard)
 			logger.info("resetting QC Compound tables");
-			boolean dropTable = chemStructServ.truncateStructureTable("qc_compound_structure");
+			boolean dropTable = chemStructServ.truncateStructureTable(StructureType.QC_COMPOUND);
 			if (dropTable){
 				QcCompound.truncateTable();
 			} else {

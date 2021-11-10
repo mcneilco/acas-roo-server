@@ -33,6 +33,8 @@ import com.labsynch.labseer.dto.SearchFormDTO;
 import com.labsynch.labseer.dto.SearchFormReturnDTO;
 import com.labsynch.labseer.dto.SearchLotDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -52,18 +54,15 @@ public class SearchFormServiceImpl implements SearchFormService {
 	@Override
 	@Transactional
 	public String findParentIds(String molStructure,
-			int maxResults, Float similarity, String searchType,
+			int maxResults, Float similarity, SearchType searchType,
 			String outputFormat) throws IOException, CmpdRegMolFormatException {
 
 		//options for outputFormat -- corpname, cdid, corpname-cdid, sdf ; default is cdid
 
 		logger.info("incoming searchType is: " + searchType);
 
-		String structureTable = "parent_structure";
-		String plainTable = "parent";
 		
-		int[] parentStructureHits = structureService.searchMolStructures(molStructure,  structureTable, plainTable, searchType, similarity, maxResults);
-				//(String molfile, String structureTable, String plainTable, String searchType, Float simlarityPercent, int maxResults) {
+		int[] parentStructureHits = structureService.searchMolStructures(molStructure, StructureType.PARENT, searchType, similarity, maxResults);
 
 
 		logger.debug("Number of parentStructureHits = " + parentStructureHits.length);
@@ -162,8 +161,8 @@ public class SearchFormServiceImpl implements SearchFormService {
 			}
 		}
 
-
-		if (searchParams.getSearchType().equalsIgnoreCase("Similarity")){
+		SearchType matchedSearchType = SearchType.getIfPresent(searchParams.getSearchType()).orElse(SearchType.DEFAULT);
+		if (matchedSearchType == SearchType.SIMILARITY){
 			float similarity = searchParams.getPercentSimilarity();
 			logger.debug("original similarity = " + similarity);			
 
@@ -178,14 +177,13 @@ public class SearchFormServiceImpl implements SearchFormService {
 			searchParams.setPercentSimilarity(similarity);
 		}
 
-		searchParams.setSearchType(searchParams.getSearchType().toUpperCase().trim());
 
 		List<SaltForm> saltForms = new ArrayList<SaltForm>();
 		List<SearchCompoundReturnDTO> foundCompounds = null;
 		HashMap<String, SaltForm> saltFormMols = new HashMap<String, SaltForm>(); 
 		HashMap<String, SaltForm> parentMols = new HashMap<String, SaltForm>(); 
 
-		logger.debug("here is the self built query string: " + this.buildMetaQuery(searchParams, "Parent"));
+		logger.debug("here is the self built query string: " + this.buildMetaQuery(searchParams, StructureType.PARENT));
 
 
 		if (!searchParams.getCorpNameList().equals("")) {
@@ -378,33 +376,28 @@ public class SearchFormServiceImpl implements SearchFormService {
 			//then loop through the results of the saltForm structure search
 			foundCompounds = new ArrayList<SearchCompoundReturnDTO>();
 			int[] filterCdIds = null;
-			String structureTable = null;
-			String plainTable = null;	
 
 
 			List<Integer> saltFormCdIds = SaltForm.findSaltFormCdIdsByMeta(searchParams);
 			if (saltFormCdIds != null && saltFormCdIds.size() > 0){
 				filterCdIds = ArrayUtils.toPrimitive(saltFormCdIds.toArray(new Integer[saltFormCdIds.size()]));				
 				logger.debug("list of filter saltForm cdIds found: " + saltFormCdIds.toString());
-				plainTable = "Parent";
 			} else if (searchParams.isValuesSet() && saltFormCdIds.size() == 0) {
 				saltFormCdIds.add(0);
 				filterCdIds = ArrayUtils.toPrimitive(saltFormCdIds.toArray(new Integer[saltFormCdIds.size()]));				
 			} else {
 				filterCdIds = null;
-				plainTable = "Salt_Form";
 			}
-			structureTable = "SaltForm_Structure";
-			logger.debug(structureTable + "   search type:= " + searchParams.getSearchType());
+			logger.debug(StructureType.SALT_FORM + "   search type:= " + searchParams.getSearchType());
 //			logger.debug("Query Structure Smiles: " + structureService.toSmiles(searchParams.getMolStructure()));
 
 			CmpdRegMolecule[] saltFormStructureHits;
 			if (searchParams.getMaxResults() != null){
-				saltFormStructureHits = structureService.searchMols( searchParams.getMolStructure(), structureTable, filterCdIds, plainTable, 
-						searchParams.getSearchType(), searchParams.getPercentSimilarity(), searchParams.getMaxResults());
+				saltFormStructureHits = structureService.searchMols( searchParams.getMolStructure(), StructureType.SALT_FORM, filterCdIds, 
+						matchedSearchType, searchParams.getPercentSimilarity(), searchParams.getMaxResults());
 			}else{
-				saltFormStructureHits = structureService.searchMols( searchParams.getMolStructure(), structureTable, filterCdIds, plainTable, 
-						searchParams.getSearchType(), searchParams.getPercentSimilarity());
+				saltFormStructureHits = structureService.searchMols( searchParams.getMolStructure(), StructureType.SALT_FORM, filterCdIds, 
+					matchedSearchType, searchParams.getPercentSimilarity());
 			}
 
 			logger.debug("found: " + saltFormStructureHits.length + " saltForm structure hits");
@@ -424,25 +417,23 @@ public class SearchFormServiceImpl implements SearchFormService {
 			if (parentCdIds != null && parentCdIds.size() > 0){
 				filterCdIds = ArrayUtils.toPrimitive(parentCdIds.toArray(new Integer[parentCdIds.size()]));;				
 				logger.debug("list of parent filter cdIds found: " + parentCdIds.toString());
-				plainTable = null;
 			} else if (searchParams.isValuesSet() && parentCdIds.size() == 0) {
 				parentCdIds.add(0);
 				filterCdIds = ArrayUtils.toPrimitive(parentCdIds.toArray(new Integer[parentCdIds.size()]));;				
 			} else {
 				logger.debug("no filter cdIds found");
 				filterCdIds = null;
-				plainTable = "Parent";
 			}
-			structureTable = "Parent_Structure";
-			logger.debug(structureTable + "   search type:= " + searchParams.getSearchType());
+
+			logger.debug(StructureType.PARENT + "   search type:= " + searchParams.getSearchType());
 
 			CmpdRegMolecule[] parentStructureHits;
 			if (searchParams.getMaxResults() != null){
-				parentStructureHits = structureService.searchMols( searchParams.getMolStructure(), structureTable, filterCdIds, plainTable, 
-						searchParams.getSearchType(), searchParams.getPercentSimilarity(), searchParams.getMaxResults());
+				parentStructureHits = structureService.searchMols( searchParams.getMolStructure(), StructureType.PARENT, filterCdIds, 
+						matchedSearchType, searchParams.getPercentSimilarity(), searchParams.getMaxResults());
 			}else{
-				parentStructureHits = structureService.searchMols( searchParams.getMolStructure(), structureTable, filterCdIds, plainTable, 
-						searchParams.getSearchType(), searchParams.getPercentSimilarity());
+				parentStructureHits = structureService.searchMols( searchParams.getMolStructure(), StructureType.PARENT, filterCdIds, 
+						matchedSearchType, searchParams.getPercentSimilarity());
 			}
 
 			if (parentStructureHits != null) {
@@ -633,12 +624,12 @@ public class SearchFormServiceImpl implements SearchFormService {
 		}
 	}
 
-	private String buildMetaQuery(SearchFormDTO searchParams, String plainTable) {
+	private String buildMetaQuery(SearchFormDTO searchParams, StructureType structureType) {
 
 		SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
 		boolean isFirst = true; 
 
-		StringBuilder query = new StringBuilder("SELECT cd_id from " + plainTable );
+		StringBuilder query = new StringBuilder("SELECT cd_id from " + structureType.table );
 
 		if(searchParams.getMinSynthDate() != null){
 			if(isFirst){

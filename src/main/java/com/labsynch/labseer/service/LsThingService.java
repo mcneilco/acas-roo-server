@@ -24,6 +24,7 @@ import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 @Service
 public interface LsThingService {
@@ -107,7 +108,7 @@ public interface LsThingService {
 	StoichiometryPropertiesResultsDTO getStoichiometryProperties(
 			Collection<CodeTypeKindDTO> requests);
 
-	Collection<LsThing> structureSearch(String queryMol, String searchType,
+	Collection<LsThing> structureSearch(String queryMol, SearchType searchType,
 			Integer maxResults, Float similarity);
 
 	DependencyCheckDTO checkDependencies(LsThing lsThing);
@@ -122,10 +123,10 @@ public interface LsThingService {
 
 	Collection<Long> searchLsThingIdsByBrowserQueryDTO(LsThingBrowserQueryDTO query) throws Exception;
 
-	Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, String searchType,
+	Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, SearchType searchType,
 			Integer maxResults, Float similarity) throws Exception;
 
-	Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, String searchType,
+	Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, SearchType searchType,
 			Integer maxResults, Float similarity);
 	
 	Collection<String> getLsThingCodesByDateValueComparison(

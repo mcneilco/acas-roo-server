@@ -9,12 +9,43 @@ import javax.persistence.TypedQuery;
 
 privileged aspect RDKitSaltFormStructure_Roo_Finder {
     
+    public static Long RDKitSaltFormStructure.countFindRDKitSaltFormStructuresByPreRegEquals(String preReg) {
+        if (preReg == null || preReg.length() == 0) throw new IllegalArgumentException("The preReg argument is required");
+        EntityManager em = RDKitSaltFormStructure.entityManager();
+        TypedQuery q = em.createQuery("SELECT COUNT(o) FROM RDKitSaltFormStructure AS o WHERE o.preReg = :preReg", Long.class);
+        q.setParameter("preReg", preReg);
+        return ((Long) q.getSingleResult());
+    }
+    
     public static Long RDKitSaltFormStructure.countFindRDKitSaltFormStructuresByRegEquals(String reg) {
         if (reg == null || reg.length() == 0) throw new IllegalArgumentException("The reg argument is required");
         EntityManager em = RDKitSaltFormStructure.entityManager();
         TypedQuery q = em.createQuery("SELECT COUNT(o) FROM RDKitSaltFormStructure AS o WHERE o.reg = :reg", Long.class);
         q.setParameter("reg", reg);
         return ((Long) q.getSingleResult());
+    }
+    
+    public static TypedQuery<RDKitSaltFormStructure> RDKitSaltFormStructure.findRDKitSaltFormStructuresByPreRegEquals(String preReg) {
+        if (preReg == null || preReg.length() == 0) throw new IllegalArgumentException("The preReg argument is required");
+        EntityManager em = RDKitSaltFormStructure.entityManager();
+        TypedQuery<RDKitSaltFormStructure> q = em.createQuery("SELECT o FROM RDKitSaltFormStructure AS o WHERE o.preReg = :preReg", RDKitSaltFormStructure.class);
+        q.setParameter("preReg", preReg);
+        return q;
+    }
+    
+    public static TypedQuery<RDKitSaltFormStructure> RDKitSaltFormStructure.findRDKitSaltFormStructuresByPreRegEquals(String preReg, String sortFieldName, String sortOrder) {
+        if (preReg == null || preReg.length() == 0) throw new IllegalArgumentException("The preReg argument is required");
+        EntityManager em = RDKitSaltFormStructure.entityManager();
+        StringBuilder queryBuilder = new StringBuilder("SELECT o FROM RDKitSaltFormStructure AS o WHERE o.preReg = :preReg");
+        if (fieldNames4OrderClauseFilter.contains(sortFieldName)) {
+            queryBuilder.append(" ORDER BY ").append(sortFieldName);
+            if ("ASC".equalsIgnoreCase(sortOrder) || "DESC".equalsIgnoreCase(sortOrder)) {
+                queryBuilder.append(" ").append(sortOrder);
+            }
+        }
+        TypedQuery<RDKitSaltFormStructure> q = em.createQuery(queryBuilder.toString(), RDKitSaltFormStructure.class);
+        q.setParameter("preReg", preReg);
+        return q;
     }
     
     public static TypedQuery<RDKitSaltFormStructure> RDKitSaltFormStructure.findRDKitSaltFormStructuresByRegEquals(String reg) {

@@ -83,6 +83,7 @@ import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.exceptions.DupeParentException;
 import com.labsynch.labseer.exceptions.MissingPropertyException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 import flexjson.JSONSerializer;
@@ -237,7 +238,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 	@Transactional
 	public int saveDryRunCompound(CmpdRegMolecule mol, Parent parent, int numRecordsRead, DryRunCompound dryRunCompound) throws CmpdRegMolFormatException{
-		int cdId = chemStructureService.saveStructure(mol.getMolStructure(), "Dry_Run_Compound_Structure", false);
+		int cdId = chemStructureService.saveStructure(mol.getMolStructure(), StructureType.DRY_RUN, false);
 		dryRunCompound = new DryRunCompound();
 		dryRunCompound.setCdId(cdId);
 		dryRunCompound.setRecordNumber(numRecordsRead);
@@ -265,7 +266,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		DryRunCompound dryRunCompound = new DryRunCompound();
 
 		if(validate) {
-			boolean dropTable = chemStructureService.truncateStructureTable("Dry_Run_Compound_Structure");
+			boolean dropTable = chemStructureService.truncateStructureTable(StructureType.DRY_RUN);
 			dryRunCompound.truncateTable();
 		}
 
@@ -674,7 +675,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			//if true then we are no checking this one for hits
 			logger.warn("mol is empty and registerNoStructureCompoundsAsUniqueParents so not checking for dupe parents by structure but other dupe checking will be done");
 		} else {
-			dupeParentList = chemStructureService.checkDupeMol(parent.getMolStructure(), "Parent_Structure", "Parent");
+			dupeParentList = chemStructureService.checkDupeMol(parent.getMolStructure(), StructureType.PARENT);
 		}
 		if (dupeParentList.length > 0){
 			searchResultLoop:
@@ -773,7 +774,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 
 
 	public Parent validateParentAgainstDryRunCompound(Parent parent, int numRecordsRead, Collection<ValidationResponseDTO> validationResponse) throws MissingPropertyException, DupeParentException, SaltedCompoundException, Exception{
-		int[] dupeDryRunCompoundsList = chemStructureService.checkDupeMol(parent.getMolStructure(), "Dry_Run_Compound_Structure", "Dry_Run_Compound");
+		int[] dupeDryRunCompoundsList = chemStructureService.checkDupeMol(parent.getMolStructure(), StructureType.DRY_RUN);
 		if (dupeDryRunCompoundsList.length > 0){
 			searchResultLoop:
 			for (int foundParentCdId : dupeDryRunCompoundsList){
@@ -847,7 +848,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		if (propertiesUtilService.getSaltBeforeLot()){
 			//structure search
 			if (saltForm.getMolStructure() != null){
-				int[] dupeSaltFormList = chemStructureService.checkDupeMol(saltForm.getMolStructure(), "SaltForm_Structure", "salt_form");
+				int[] dupeSaltFormList = chemStructureService.checkDupeMol(saltForm.getMolStructure(), StructureType.SALT_FORM);
 				if (dupeSaltFormList.length > 0){
 					for (int foundSaltFormCdId : dupeSaltFormList){
 						//verify the found salt form has the same parent. If so, it's a match! If not, probably belongs to a parent with another stereo category
@@ -1880,13 +1881,13 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 //					isoSalt.flush();
 				}
 			}
-			chemStructureService.deleteStructure("saltform_structure", saltForm.getCdId());
+			chemStructureService.deleteStructure(StructureType.SALT_FORM, saltForm.getCdId());
 			saltForm.remove();
 		}
 		Collection<Parent> parents = Parent.findParentsByBulkLoadFileEquals(bulkLoadFile).getResultList();
 		numParents = parents.size();
 		for (Parent parent : parents){
-			chemStructureService.deleteStructure("parent_structure", parent.getCdId());
+			chemStructureService.deleteStructure(StructureType.PARENT, parent.getCdId());
 			for (ParentAlias alias : parent.getParentAliases()){
 				alias.remove();
 			}

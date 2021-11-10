@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
 import java.util.Collection;
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 @Service
 public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	
@@ -554,16 +555,15 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 		return this.notebookSavePath;
 	}
 	
-	String exactMatchDef;
+	SearchType exactMatchDef;
 
 	@Value("${client.cmpdreg.serverSettings.exactMatchDef}")
 	public void setExactMatchDef(String exactMatchDef) {
-		this.exactMatchDef = exactMatchDef;
-		if (this.exactMatchDef.startsWith("${")) {exactMatchDef = null;} else {this.exactMatchDef = exactMatchDef;};
+		this.exactMatchDef = SearchType.getIfPresent(exactMatchDef).orElse(SearchType.DUPLICATE_TAUTOMER);
 	}
 	
 	@Override
-	public String getExactMatchDef() {
+	public SearchType getExactMatchDef() {
 		return this.exactMatchDef;
 	}
 	

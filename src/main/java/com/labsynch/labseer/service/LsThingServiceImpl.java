@@ -75,6 +75,7 @@ import com.labsynch.labseer.exceptions.LsThingValidationErrorMessage;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.UniqueInteractionsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.utils.ItxLsThingLsThingComparator;
 import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
 import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
@@ -2174,7 +2175,7 @@ public class LsThingServiceImpl implements LsThingService {
 
 	
 	@Override
-	public Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, String searchType, Integer maxResults, Float similarity){
+	public Collection<LsThing> structureSearch(String queryMol, String lsType, String lsKind, SearchType searchType, Integer maxResults, Float similarity){
 		Collection<LsThing> lsThings = new HashSet<LsThing>();
 		Collection<ChemStructure> structures = structureService.searchStructuresByTypeKind(queryMol, lsType, lsKind, searchType, maxResults, similarity);
 		if (structures != null && !structures.isEmpty()){
@@ -2259,7 +2260,7 @@ public class LsThingServiceImpl implements LsThingService {
 	}
 		
 	@Override
-	public Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, String searchType, Integer maxResults, Float similarity) throws Exception{
+	public Collection<Long> searchLsThingIdsByQueryDTOandStructure(LsThingQueryDTO query, String queryMol, SearchType searchType, Integer maxResults, Float similarity) throws Exception{
 		Collection<Long> thingIdList = searchLsThingIdsByQueryDTO(query);
 		logger.debug(" thing ids:");
 		for (Long id : thingIdList){
@@ -2311,9 +2312,9 @@ public class LsThingServiceImpl implements LsThingService {
 	}
 
 	
-	public Collection<LsThing> lsThingSearchByMetaAndStructure(LsThingQueryDTO query, String queryMol, String searchType, Integer maxResults, Float similarity) throws Exception{
+	public Collection<LsThing> lsThingSearchByMetaAndStructure(LsThingQueryDTO query, String queryMol, SearchType searchType, Integer maxResults, Float similarity) throws Exception{
 		Collection<LsThing> lsThings = new HashSet<LsThing>();
-		Collection<Long> lsThingIds = searchLsThingIdsByQueryDTOandStructure(query, searchType, searchType, maxResults, similarity);
+		Collection<Long> lsThingIds = searchLsThingIdsByQueryDTOandStructure(query, queryMol, searchType, maxResults, similarity);
 		for (Long id : lsThingIds){
 			lsThings.add(LsThing.findLsThing(id));
 		}
@@ -2913,7 +2914,7 @@ public class LsThingServiceImpl implements LsThingService {
 
 
 	@Override
-	public Collection<LsThing> structureSearch(String queryMol, String searchType, Integer maxResults,
+	public Collection<LsThing> structureSearch(String queryMol, SearchType searchType, Integer maxResults,
 			Float similarity) {
 		// TODO Auto-generated method stub
 		return null;

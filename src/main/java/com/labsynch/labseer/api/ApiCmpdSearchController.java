@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import com.labsynch.labseer.dto.SearchFormDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.RegSearchService;
 import com.labsynch.labseer.service.SearchFormService;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 @RequestMapping(value = {"/api/v1/structuresearch"})
 @Controller
@@ -79,7 +81,8 @@ public class ApiCmpdSearchController {
 		headers.setExpires(0); // Expire the cache
 		
 		try {
-			String searchResults = searchFormService.findParentIds(molStructure, maxResults, similarity, searchType, outputFormat);
+			SearchType matchedSearchType = SearchType.getIfPresent(searchType).orElse(SearchType.SUBSTRUCTURE);
+			String searchResults = searchFormService.findParentIds(molStructure, maxResults, similarity, matchedSearchType, outputFormat);
 			return new ResponseEntity<String>(searchResults, headers, HttpStatus.OK);
 		} catch (CmpdRegMolFormatException e) {
 			return new ResponseEntity<String>("Encountered error with input structure: "+e.toString(), headers, HttpStatus.BAD_REQUEST);
@@ -108,11 +111,11 @@ public class ApiCmpdSearchController {
 		headers.setExpires(0); // Expire the cache
 
 		if (outputFormat == null || outputFormat.equalsIgnoreCase("")) outputFormat = "cdid";
-		if (searchType == null || searchType.equalsIgnoreCase("")) searchType = "SUBSTRUCTURE";
 
 		String searchResults;
 		try {
-			searchResults = searchFormService.findParentIds(molStructure, maxResults, similarity, searchType, outputFormat);
+			SearchType matchedSearchType = SearchType.getIfPresent(searchType).orElse(SearchType.DEFAULT);
+			searchResults = searchFormService.findParentIds(molStructure, maxResults, similarity, matchedSearchType, outputFormat);
 			return new ResponseEntity<String>(searchResults, headers, HttpStatus.OK);
 		} catch (CmpdRegMolFormatException e) {
 			return new ResponseEntity<String>("Encountered error with input structure: "+e.toString(), headers, HttpStatus.BAD_REQUEST);

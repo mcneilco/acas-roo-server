@@ -24,6 +24,8 @@ import com.labsynch.labseer.domain.ParentAlias;
 import com.labsynch.labseer.domain.QcCompound;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
 @Service
@@ -50,7 +52,7 @@ public class QcCmpdServiceImpl implements QcCmpdService {
 	CmpdRegMoleculeFactory cmpdRegMoleculeFactory;
 
 	public void saveQcCmpdStructure(QcCompound qcCmpd){
-		Integer cdId = chemStructureService.saveStructure(qcCmpd.getMolStructure(), "QC_Cmpd_Structure");
+		Integer cdId = chemStructureService.saveStructure(qcCmpd.getMolStructure(), StructureType.QC_COMPOUND);
 		if (cdId == -1){
 			logger.error("Bad molformat. Please fix the molfile: " + qcCmpd.getMolStructure());
 		} else {
@@ -175,14 +177,14 @@ public class QcCmpdServiceImpl implements QcCmpdService {
 			}
 			logger.debug("attempting to standardize: " + parentId + "   " + asDrawnStruct);
 			qcCompound.setMolStructure(chemStructureService.standardizeStructure(asDrawnStruct));				
-			boolean matching = chemStructureService.compareStructures(asDrawnStruct, qcCompound.getMolStructure(), "DUPLICATE");
+			boolean matching = chemStructureService.compareStructures(asDrawnStruct, qcCompound.getMolStructure(), SearchType.DUPLICATE);
 			if (!matching){
 				qcCompound.setDisplayChange(true);
 				logger.info("the compounds are NOT matching: " + parent.getCorpName());
 				nonMatchingCmpds++;
 			}
 			logger.debug("time to save the struture");
-			cdId = chemStructureService.saveStructure(qcCompound.getMolStructure(), "QC_Compound_Structure", false);
+			cdId = chemStructureService.saveStructure(qcCompound.getMolStructure(), StructureType.QC_COMPOUND, false);
 			if (cdId == -1){
 				logger.error("Bad molformat. Please fix the molfile: " + qcCompound.getMolStructure());
 			} else {
@@ -228,7 +230,7 @@ public class QcCmpdServiceImpl implements QcCmpdService {
 				boolean firstDupeHit = true;
 				qcCompound = QcCompound.findQcCompound(qcId);
 				logger.debug("query compound: " + qcCompound.getCorpName());
-				hits = chemStructureService.searchMolStructures(qcCompound.getMolStructure(), "QC_Compound_Structure", "DUPLICATE_TAUTOMER");
+				hits = chemStructureService.searchMolStructures(qcCompound.getMolStructure(), StructureType.QC_COMPOUND, SearchType.DUPLICATE_TAUTOMER);
 				dupeCount = hits.length;
 				logger.debug("current dupeCount: " + dupeCount);
 				for (int hit:hits){

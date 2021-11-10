@@ -45,12 +45,7 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 	}
 
 	public CmpdRegMoleculeRDKitImpl(ROMol readOnlyMol) {
-		if (readOnlyMol == null) {
-			logger.info("Got empty mol record");
-		} else {
-			// We want the molecule to be editable so we convert it to a RWMol
-			this.molecule = new RWMol(readOnlyMol);
-		}
+		this.molecule = new RWMol(readOnlyMol);
 	}
 
 	@Override
