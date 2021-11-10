@@ -391,7 +391,7 @@ public class ParentServiceImpl implements ParentService {
 				asDrawnStruct = parent.getMolStructure();
 			}
 			qcCompound.setMolStructure(chemStructureService.standardizeStructure(asDrawnStruct));				
-			boolean matching = chemStructureService.compareStructures(asDrawnStruct, qcCompound.getMolStructure(), "DUPLICATE");
+			boolean matching = chemStructureService.compareStructures(asDrawnStruct, qcCompound.getMolStructure(), SearchType.DUPLICATE);
 			if (!matching){
 				qcCompound.setDisplayChange(true);
 				logger.info("the compounds are NOT matching: " + parent.getCorpName());

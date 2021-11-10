@@ -634,7 +634,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	@Override
 	public int[] checkDupeMol(String molStructure, StructureType structureType) throws CmpdRegMolFormatException {
 
-		return searchMolStructures(molStructure, structureTable, SearchType.DUPLICATE_TAUTOMER); 
+		return searchMolStructures(molStructure, structureType, SearchType.DUPLICATE_TAUTOMER); 
 	}
 
 	@Override

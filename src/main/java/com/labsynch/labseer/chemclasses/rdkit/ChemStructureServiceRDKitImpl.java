@@ -599,7 +599,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	}
 
 	@Override
-	public boolean compareStructures(String preMolStruct, String postMolStruct, String string) {
+	public boolean compareStructures(String preMolStruct, String postMolStruct, SearchType searchType) {
 		// TODO Auto-generated method stub
 		return false;
 	}

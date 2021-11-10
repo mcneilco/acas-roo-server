@@ -69,7 +69,7 @@ public interface ChemStructureService {
 
 	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, IOException;
 
-	public boolean compareStructures(String preMolStruct, String postMolStruct, String string);
+	public boolean compareStructures(String preMolStruct, String postMolStruct, SearchType searchType);
 
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException;
 

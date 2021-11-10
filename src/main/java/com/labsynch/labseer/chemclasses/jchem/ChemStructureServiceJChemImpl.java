@@ -106,7 +106,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	private PropertiesUtilService propertiesUtilService;
 
 	@Override
-	public boolean compareStructures(String preMolStruct, String postMolStruct, SeasrchType searchType){
+	public boolean compareStructures(String preMolStruct, String postMolStruct, SearchType searchType){
 
 
 		//logger.info("SearchType is: " + searchType);
@@ -284,7 +284,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 		boolean foundDupe = false;
 		if (checkForDupes){
-			int[] hitCount = this.searchMolStructures(molfile, structureTable, SearchType.DUPLICATE_TAUTOMER);
+			int[] hitCount = this.searchMolStructures(molfile, structureType, SearchType.DUPLICATE_TAUTOMER);
 			if (hitCount.length > 0){
 				foundDupe = true;
 			}
@@ -399,26 +399,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 	
 	@Override
-	public int[] searchMolStructures(String molfile, StructureType structureType, SeasrchType searchType) {
-
-
-
-
+	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType) {
 		return searchMolStructures(molfile, structureType, searchType);	
 	}
 
 	@Override
-	public int[] searchMolStructures(String molfile, StructureType structureType, SeasrchType searchType, Float simlarityPercent) {
-		return searchMolStructures(molfile, structureType, null,searchType, simlarityPercent);	
-	}
-
-	@Override
-	public int[] searchMolStructures(String molfile, StructureType structureType, SeasrchType searchType) {
-		return searchMolStructures(molfile, structureType, searchType, 0f);	
-	}
-
-	@Override
-	public int[] searchMolStructures(String molfile, StructureType structureType, SeasrchType searchType, Float simlarityPercent) {
+	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType, Float simlarityPercent) {
 		int maxResultCount = propertiesUtilService.getMaxSearchResults();
 		return searchMolStructures(molfile, structureType, searchType, simlarityPercent, maxResultCount);	
 
@@ -426,7 +412,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 	@Override
 	@Transactional
-	public int[] searchMolStructures(String molfile, StructureType structureType, SeasrchType searchType, 
+	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType, 
 			Float simlarityPercent, int maxResults) {
 
 		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
@@ -448,7 +434,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		if (logger.isDebugEnabled()) logger.debug("Max number of results is  " + maxResults);		
 
 
-		if (searchType = SearchType.EXACT){
+		if (searchType == SearchType.EXACT){
 			searchType = propertiesUtilService.getExactMatchDef();
 		}
 
@@ -671,7 +657,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 	@Override
 	@Transactional
-	public CmpdRegMolecule[] searchMols(String molfile, StructureType structureType, int[] inputCdIdHitList, SeasrchType searchType, Float simlarityPercent) {
+	public CmpdRegMolecule[] searchMols(String molfile, StructureType structureType, int[] inputCdIdHitList, SearchType searchType, Float simlarityPercent) {
 
 		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
 		ConnectionHandler ch = new ConnectionHandler();
@@ -686,12 +672,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = propertiesUtilService.getMaxSearchResults();
-
+		String structureTable = getJchemStructureTableFromStructureType(structureType);
 		if (logger.isDebugEnabled()) logger.debug("Search table is  " + structureTable);		
 		if (logger.isDebugEnabled()) logger.debug("Search type is  " + searchType);	
 		if (logger.isDebugEnabled()) logger.debug("search mol is: " + molfile);
 
-		if (searchType = SearchType.EXACT){
+		if (searchType == SearchType.EXACT){
 			searchType = propertiesUtilService.getExactMatchDef();
 		}
 
@@ -745,27 +731,27 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 
 			HitColoringAndAlignmentOptions hitColorOptions = null;
-			if (searchType = SearchType.DUPLICATE){
+			if (searchType == SearchType.DUPLICATE){
 				searchOptions = new JChemSearchOptions(SearchConstants.DUPLICATE);
 				searchOptions.setTautomerSearch(SearchConstants.TAUTOMER_SEARCH_OFF);
 				if (logger.isDebugEnabled()) logger.debug("selected DUPLICATE search for " + searchType);
 
-			}else if (searchType = SearchType.DUPLICATE_TAUTOMER){
+			}else if (searchType == SearchType.DUPLICATE_TAUTOMER){
 				System.out.println("Search type is DUPLICATE_TAUTOMER");		
 				searchOptions = new JChemSearchOptions(SearchConstants.DUPLICATE);
 				searchOptions.setTautomerSearch(SearchConstants.TAUTOMER_SEARCH_ON);
 
-			}else if (searchType = SearchType.DUPLICATE_NO_TAUTOMER){
+			}else if (searchType == SearchType.DUPLICATE_NO_TAUTOMER){
 				System.out.println("Search type is DUPLICATE_NO_TAUTOMER");		
 				searchOptions = new JChemSearchOptions(SearchConstants.DUPLICATE);
 				searchOptions.setTautomerSearch(SearchConstants.TAUTOMER_SEARCH_OFF);
 
-			}else if (searchType = SearchType.STEREO_IGNORE){
+			}else if (searchType == SearchType.STEREO_IGNORE){
 				System.out.println("Search type is  no stereo");		
 				searchOptions = new JChemSearchOptions(SearchConstants.STEREO_IGNORE);
 				searchOptions.setStereoSearchType(JChemSearchOptions.STEREO_IGNORE);
 
-			} else if (searchType = SearchType.FULL_TAUTOMER){
+			} else if (searchType == SearchType.FULL_TAUTOMER){
 				System.out.println("Search type is exact FULL_TAUTOMER");		
 				searchOptions = new JChemSearchOptions(SearchConstants.FULL);
 				searchOptions.setChargeMatching(JChemSearchOptions.CHARGE_MATCHING_IGNORE);
@@ -773,7 +759,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				searchOptions.setStereoSearchType(JChemSearchOptions.STEREO_IGNORE);
 				searchOptions.setTautomerSearch(SearchConstants.TAUTOMER_SEARCH_ON);
 
-			} else if (searchType = SearchType.SUBSTRUCTURE){
+			} else if (searchType == SearchType.SUBSTRUCTURE){
 				System.out.println("Search type is substructure");	
 				searchOptions = new JChemSearchOptions(SearchConstants.SUBSTRUCTURE);
 				// One can also specify coloring and alignment options 
@@ -788,7 +774,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				//				hitColorOptions.setHitColor(hitColor);
 				//				hitColorOptions.setNonHitColor(nonHitColor);
 
-			} else if (searchType = SearchType.SIMILARITY){
+			} else if (searchType == SearchType.SIMILARITY){
 				searchOptions = new JChemSearchOptions(SearchConstants.SIMILARITY);
 				searchOptions.setDissimilarityThreshold(simlarityPercent);
 				//				searchOptions.setMaxTime(maxTime);
@@ -803,7 +789,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				hitColorOptions.setHitColor(hitColor);
 				hitColorOptions.setNonHitColor(nonHitColor);
 
-			} else if (searchType = SearchType.FULL){
+			} else if (searchType == SearchType.FULL){
 				if (logger.isDebugEnabled()) logger.debug("Default Search type is full with no tautomer search");		
 				searchOptions = new JChemSearchOptions(SearchConstants.FULL);
 				searchOptions.setChargeMatching(JChemSearchOptions.CHARGE_MATCHING_IGNORE);
@@ -906,7 +892,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	@Override
 	@Transactional
 	public CmpdRegMolecule[] searchMols(String molfile, StructureType structureType, int[] inputCdIdHitList, 
-			SeasrchType searchType, Float simlarityPercent, int maxResults) {
+			SearchType searchType, Float simlarityPercent, int maxResults) {
 
 		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
 		ConnectionHandler ch = new ConnectionHandler();
@@ -922,11 +908,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 
+		String structureTable = getJchemStructureTableFromStructureType(structureType);
 		if (logger.isDebugEnabled()) logger.debug("Search table is  " + structureTable);		
 		if (logger.isDebugEnabled()) logger.debug("Search type is  " + searchType);	
 		if (logger.isDebugEnabled()) logger.debug("search mol is: " + molfile);
 
-		if (searchType = SearchType.EXACT){
+		if (searchType == SearchType.EXACT){
 			searchType = propertiesUtilService.getExactMatchDef();
 		}
 
@@ -980,27 +967,27 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 
 			HitColoringAndAlignmentOptions hitColorOptions = null;
-			if (searchType = SearchType.DUPLICATE){
+			if (searchType == SearchType.DUPLICATE){
 				searchOptions = new JChemSearchOptions(SearchConstants.DUPLICATE);
 				searchOptions.setTautomerSearch(SearchConstants.TAUTOMER_SEARCH_OFF);
 				if (logger.isDebugEnabled()) logger.debug("selected DUPLICATE search for " + searchType);
 
-			}else if (searchType = SearchType.DUPLICATE_TAUTOMER){
+			}else if (searchType == SearchType.DUPLICATE_TAUTOMER){
 				System.out.println("Search type is DUPLICATE_TAUTOMER");		
 				searchOptions = new JChemSearchOptions(SearchConstants.DUPLICATE);
 				searchOptions.setTautomerSearch(SearchConstants.TAUTOMER_SEARCH_ON);
 
-			}else if (searchType = SearchType.DUPLICATE_NO_TAUTOMER){
+			}else if (searchType == SearchType.DUPLICATE_NO_TAUTOMER){
 				System.out.println("Search type is DUPLICATE_NO_TAUTOMER");		
 				searchOptions = new JChemSearchOptions(SearchConstants.DUPLICATE);
 				searchOptions.setTautomerSearch(SearchConstants.TAUTOMER_SEARCH_OFF);
 
-			}else if (searchType = SearchType.STEREO_IGNORE){
+			}else if (searchType == SearchType.STEREO_IGNORE){
 				System.out.println("Search type is  no stereo");		
 				searchOptions = new JChemSearchOptions(SearchConstants.STEREO_IGNORE);
 				searchOptions.setStereoSearchType(JChemSearchOptions.STEREO_IGNORE);
 
-			} else if (searchType = SearchType.FULL_TAUTOMER){
+			} else if (searchType == SearchType.FULL_TAUTOMER){
 				System.out.println("Search type is exact FULL_TAUTOMER");		
 				searchOptions = new JChemSearchOptions(SearchConstants.FULL);
 				searchOptions.setChargeMatching(JChemSearchOptions.CHARGE_MATCHING_IGNORE);
@@ -1008,7 +995,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				searchOptions.setStereoSearchType(JChemSearchOptions.STEREO_IGNORE);
 				searchOptions.setTautomerSearch(SearchConstants.TAUTOMER_SEARCH_ON);
 
-			} else if (searchType = SearchType.SUBSTRUCTURE){
+			} else if (searchType == SearchType.SUBSTRUCTURE){
 				System.out.println("Search type is substructure");	
 				searchOptions = new JChemSearchOptions(SearchConstants.SUBSTRUCTURE);
 				// One can also specify coloring and alignment options 
@@ -1023,7 +1010,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				//				hitColorOptions.setHitColor(hitColor);
 				//				hitColorOptions.setNonHitColor(nonHitColor);
 
-			} else if (searchType = SearchType.SIMILARITY){
+			} else if (searchType == SearchType.SIMILARITY){
 				searchOptions = new JChemSearchOptions(SearchConstants.SIMILARITY);
 				searchOptions.setDissimilarityThreshold(simlarityPercent);
 				//				searchOptions.setMaxTime(maxTime);
@@ -1038,7 +1025,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				hitColorOptions.setHitColor(hitColor);
 				hitColorOptions.setNonHitColor(nonHitColor);
 
-			} else if (searchType = SearchType.FULL){
+			} else if (searchType == SearchType.FULL){
 				if (logger.isDebugEnabled()) logger.debug("Default Search type is full with no tautomer search");		
 				searchOptions = new JChemSearchOptions(SearchConstants.FULL);
 				searchOptions.setChargeMatching(JChemSearchOptions.CHARGE_MATCHING_IGNORE);
@@ -1447,15 +1434,15 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	public String getJchemStructureTableFromStructureType(StructureType structureType) {
 		String plainTable = null;
 		if (structureType == StructureType.PARENT){
-			plainTable = StructureType.PARENT;
+			plainTable = "PARENT_STRUCTURE";
 		} else if (structureType == StructureType.SALT_FORM){
 			plainTable = "SALT_FORM_STRUCTURE";
 		} else if (structureType == StructureType.SALT){
-			plainTable = StructureType.SALT;
+			plainTable = "SALT_STRUCTURE";
 		} else if (structureType == StructureType.DRY_RUN){
 			plainTable = "DRY_RUN_COMPOUND_STRUCTURE";
 		} else if(structureType == StructureType.QC_COMPOUND) {
-			tableName = "QC_COMPOUND_STRUCTURE";
+			plainTable = "QC_COMPOUND_STRUCTURE";
 		}
 		return(plainTable);
 	}
@@ -1463,17 +1450,17 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	@Override
 	public boolean truncateStructureTable(StructureType structureType) {
 		String tableName = getJchemStructureTableFromStructureType(structureType);
-		dropJchemTable(tableName);
+		Boolean dropTable = dropJChemTable(tableName);
 		if (!dropTable) {
 			logger.info("Unable to drop jchem table " + tableName);
 		}
-		createJChemTable(tableName, true);
+		return createJChemTable(tableName, true);
 	}
 
 	@Override
 	public int[] checkDupeMol(String molStructure, StructureType structureType) {
 
-		return searchMolStructures(molStructure, structureTable, SearchType.DUPLICATE_TAUTOMER); 
+		return searchMolStructures(molStructure, structureType, SearchType.DUPLICATE_TAUTOMER); 
 	}
 
 	@Override
@@ -1591,7 +1578,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
 		ConnectionHandler ch = new ConnectionHandler();
 		CacheRegistrationUtil cru = null;
-
+		String structureTable = getJchemStructureTableFromStructureType(structureType);
 		boolean updatedStructure = false;
 
 		try {
