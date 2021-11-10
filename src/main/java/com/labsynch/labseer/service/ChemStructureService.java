@@ -27,11 +27,11 @@ public interface ChemStructureService {
 
 	public int saveStructure(String molfile, StructureType structureType);
 
+	public int saveStructure(String molfile, StructureType structureType, boolean checkForDupes);
+
 	void closeConnection();
 
 	public boolean truncateStructureTable(StructureType structureType);
-
-	public int saveStructure(String molfile, StructureType structureType, boolean checkForDupes);
 
 	public double getMolWeight(String molStructure) throws CmpdRegMolFormatException;
 
@@ -47,11 +47,11 @@ public interface ChemStructureService {
 
 	public boolean updateStructure(String molStructure, StructureType structureType, int cdId);
 
+	public boolean updateStructure(CmpdRegMolecule mol, StructureType structureType, int cdId);
+
 	public String getMolFormula(String molStructure) throws CmpdRegMolFormatException;
 
 	boolean checkForSalt(String molfile) throws CmpdRegMolFormatException;
-
-	public boolean updateStructure(CmpdRegMolecule mol, StructureType structureType, int cdId);
 
 	double getExactMass(String molStructure) throws CmpdRegMolFormatException;
 
