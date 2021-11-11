@@ -27,8 +27,9 @@ import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
-
+import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -63,6 +64,7 @@ import chemaxon.util.ConnectionHandler;
 import chemaxon.util.HitColoringAndAlignmentOptions;
 import chemaxon.util.MolHandler;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -314,20 +316,18 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
-
-			} else if (structureType == StructureType.QC_COMPOUND) {
-				String cacheIdentifier = "labsynch_qc_cmpd_cache";
-				if (!cru.isCacheIDRegistered(cacheIdentifier)){
-					cru.registerPermanentCache(cacheIdentifier);	
-				}
-				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
-
 			}  else if (structureType == StructureType.SALT) {
 				String cacheIdentifier = "labsynch_salt_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);				
+			} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+				String cacheIdentifier = "labsync_standardization_dry_run_cache";
+				if (!cru.isCacheIDRegistered(cacheIdentifier)){
+					cru.registerPermanentCache(cacheIdentifier);	
+				}
+				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
 			}
 
 
@@ -461,14 +461,14 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);		
-			} else if (structureType == StructureType.QC_COMPOUND) {
-				String cacheIdentifier = "labsynch_qc_cmpd_cache";
+			} else if (structureType == StructureType.DRY_RUN) {
+				String cacheIdentifier = "labsynch_dr_cmpd_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
-			} else if (structureType == StructureType.DRY_RUN) {
-				String cacheIdentifier = "labsynch_dr_cmpd_cache";
+			} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+				String cacheIdentifier = "labsynch_standardization_dry_run_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
@@ -559,7 +559,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 
 			if (searchType == SearchType.SUBSTRUCTURE){
-				searchOptions.setFilterQuery("select cd_id from "+ structureType.table + " where id > 0");				
+				searchOptions.setFilterQuery("select cd_id from "+ structureType.entityTable + " where id > 0");				
 			}
 
 			searchOptions.setMaxResultCount(maxResultCount);
@@ -699,12 +699,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);		
-			} else if (structureType == StructureType.QC_COMPOUND) {
-				String cacheIdentifier = "labsynch_qc_cmpd_cache";
+			} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+				String cacheIdentifier = "labsynch_standardization_dry_run_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
-				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
+				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);				
 			} else {
 				String cacheIdentifier = "labsynch_cmpd_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
@@ -809,7 +809,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				searcher.setFilterIDList(inputCdIdHitList);		
 			} 
 			else if (inputCdIdHitList == null && searchType == SearchType.SUBSTRUCTURE){
-				searchOptions.setFilterQuery("select cd_id from "+ structureType.table + " where id > 0");				
+				searchOptions.setFilterQuery("select cd_id from "+ structureType.entityTable + " where id > 0");				
 			}
 
 			if (logger.isDebugEnabled()) logger.debug("max result count is: " + maxResultCount );
@@ -935,12 +935,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 					cru.registerPermanentCache(cacheIdentifier);	
 				}	
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);				
-			} else if (structureType == StructureType.QC_COMPOUND) {
-				String cacheIdentifier = "labsynch_qc_cmpd_cache";
+			} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+				String cacheIdentifier = "labsynch_standardization_dry_run_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
-				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
+				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);				
 			} else {
 				String cacheIdentifier = "labsynch_cmpd_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
@@ -1045,7 +1045,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				searcher.setFilterIDList(inputCdIdHitList);		
 			} 
 			else if (inputCdIdHitList == null && searchType == SearchType.SUBSTRUCTURE){
-				searchOptions.setFilterQuery("select cd_id from "+ structureType.table + " where id > 0");				
+				searchOptions.setFilterQuery("select cd_id from "+ structureType.entityTable + " where id > 0");				
 			}
 
 			if (logger.isDebugEnabled()) logger.debug("max result count is: " + maxResultCount );
@@ -1441,8 +1441,8 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			plainTable = "SALT_STRUCTURE";
 		} else if (structureType == StructureType.DRY_RUN){
 			plainTable = "DRY_RUN_COMPOUND_STRUCTURE";
-		} else if(structureType == StructureType.QC_COMPOUND) {
-			plainTable = "QC_COMPOUND_STRUCTURE";
+		} else if(structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+			plainTable = "STANDARDIZATION_DRY_RUN_STRUCTURE";
 		}
 		return(plainTable);
 	}
@@ -1523,6 +1523,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 			} else if (structureType == StructureType.SALT) {
 				String cacheIdentifier = "labsynch_salt_cache";
+				if (!cru.isCacheIDRegistered(cacheIdentifier)){
+					cru.registerPermanentCache(cacheIdentifier);	
+				}
+				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);				
+			} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+				String cacheIdentifier = "labsynch_standardization_dry_run_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
@@ -1609,20 +1615,19 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
-			} else if (structureType == StructureType.QC_COMPOUND) {
-				String cacheIdentifier = "labsynch_qc_cmpd_cache";
-				if (!cru.isCacheIDRegistered(cacheIdentifier)){
-					cru.registerPermanentCache(cacheIdentifier);	
-				}
-				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
 			} else if (structureType == StructureType.SALT) {
 				String cacheIdentifier = "labsynch_salt_cache";
 				if (!cru.isCacheIDRegistered(cacheIdentifier)){
 					cru.registerPermanentCache(cacheIdentifier);	
 				}
 				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);				
+			} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+				String cacheIdentifier = "labsynch_standardization_dry_run_cache";
+				if (!cru.isCacheIDRegistered(cacheIdentifier)){
+					cru.registerPermanentCache(cacheIdentifier);	
+				}
+				CacheRegistrationUtil.setPermanentCacheID(cacheIdentifier);
 			}
-
 
 			String cacheID = CacheRegistrationUtil.getCacheID();
 			if (logger.isDebugEnabled()) logger.debug("current cache ID: " + cacheID);
@@ -1729,6 +1734,21 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			//TODO: throw better error
 			throw new CmpdRegMolFormatException(e2);
 		}
+	}
+
+	@Override
+	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException{
+		File standardizationSettingsFile = new File(propertiesUtilService.getStandardizerConfigFilePath());
+        String standardizerSetttingsFileContents = "";
+        try {
+            standardizerSetttingsFileContents = FileUtils.readFileToString(standardizationSettingsFile);
+        } catch (IOException e) {
+			throw new StandardizerException("Got error trying to read jchem standardizer file at " + standardizationSettingsFile.getAbsolutePath(), e);
+        }
+		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
+		standardizationConfigDTO.setSettings(standardizerSetttingsFileContents);
+		standardizationConfigDTO.setType("jchem");
+		return standardizationConfigDTO;
 	}
 }
 

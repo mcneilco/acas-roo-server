@@ -32,10 +32,12 @@ import com.epam.indigo.IndigoObject;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
+import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -162,7 +164,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 		//Indigo: the structures in the plainTable are being used. Ignore structureTable from here on out.
-		logger.debug("Search table is  " + structureType.table);		
+		logger.debug("Search table is  " + structureType.entityTable);		
 		logger.debug("Search type is  " + searchType);		
 		logger.debug("Max number of results is  " + maxResults);		
 
@@ -180,7 +182,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			CmpdRegMoleculeIndigoImpl molWrapper = new CmpdRegMoleculeIndigoImpl(molfile);
 			IndigoObject mol = molWrapper.molecule;
 			
-			String baseQuery = "SELECT cd_id FROM " + structureType.table + " WHERE mol_structure @ ";
+			String baseQuery = "SELECT cd_id FROM " + structureType.entityTable + " WHERE mol_structure @ ";
 			String bingoFunction = null;
 			String orderBy = " ORDER BY cd_id";
 			
@@ -361,7 +363,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		long maxTime = propertiesUtilService.getMaxSearchTime();
 		int maxResultCount = maxResults;
 		//Indigo: the structures in the plainTable are being used. Ignore structureTable from here on out.
-		logger.debug("Search table is  " + structureType.table);		
+		logger.debug("Search table is  " + structureType.entityTable);		
 		logger.debug("Search type is  " + searchType);		
 		logger.debug("Max number of results is  " + maxResults);	
 		
@@ -380,7 +382,7 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			CmpdRegMoleculeIndigoImpl molWrapper = new CmpdRegMoleculeIndigoImpl(molfile);
 			IndigoObject mol = molWrapper.molecule;
 			
-			String baseQuery = "SELECT cd_id, mol_structure FROM " + structureType.table + " WHERE mol_structure @ ";
+			String baseQuery = "SELECT cd_id, mol_structure FROM " + structureType.entityTable + " WHERE mol_structure @ ";
 			String bingoFunction = null;
 			String orderBy = " ORDER BY cd_id";
 			String filterIdsClause = "";
@@ -662,6 +664,15 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		IndigoObject targetMolecule = (new CmpdRegMoleculeIndigoImpl(targetMol)).molecule;
 		targetMolecule.standardize();
 		return (indigo.exactMatch(queryMolecule, targetMolecule) != null);
+	}
+
+	@Override
+	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException{
+		//There are no standardizer settings for Indigo implmented so returning empty string
+		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
+		standardizationConfigDTO.setSettings("");
+		standardizationConfigDTO.setType("indigo");
+		return standardizationConfigDTO;
 	}
 }
 

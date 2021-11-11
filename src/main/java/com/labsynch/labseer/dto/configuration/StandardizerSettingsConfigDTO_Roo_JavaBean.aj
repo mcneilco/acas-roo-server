@@ -3,8 +3,6 @@
 
 package com.labsynch.labseer.dto.configuration;
 
-import com.labsynch.labseer.dto.SimpleStandardizerJchemPropertyDTO;
-import com.labsynch.labseer.dto.SimpleStandardizerLiveDesignPropertyDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 
 privileged aspect StandardizerSettingsConfigDTO_Roo_JavaBean {
@@ -25,20 +23,12 @@ privileged aspect StandardizerSettingsConfigDTO_Roo_JavaBean {
         this.type = type;
     }
     
-    public SimpleStandardizerLiveDesignPropertyDTO StandardizerSettingsConfigDTO.getLivedesignSettings() {
-        return this.livedesignSettings;
+    public String StandardizerSettingsConfigDTO.getSettings() {
+        return this.settings;
     }
     
-    public void StandardizerSettingsConfigDTO.setLivedesignSettings(SimpleStandardizerLiveDesignPropertyDTO livedesignSettings) {
-        this.livedesignSettings = livedesignSettings;
-    }
-    
-    public SimpleStandardizerJchemPropertyDTO StandardizerSettingsConfigDTO.getJchemSettings() {
-        return this.jchemSettings;
-    }
-    
-    public void StandardizerSettingsConfigDTO.setJchemSettings(SimpleStandardizerJchemPropertyDTO jchemSettings) {
-        this.jchemSettings = jchemSettings;
+    public void StandardizerSettingsConfigDTO.setSettings(String settings) {
+        this.settings = settings;
     }
     
 }

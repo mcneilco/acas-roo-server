@@ -18,7 +18,7 @@ public interface StandardizationService {
 
 	String getStandardizationDryRunReport() throws IOException, CmpdRegMolFormatException, StandardizerException;
 
-	String getDryRunStats();
+	String getDryRunStats() throws StandardizerException;
 
 	String executeStandardization(String username, String reason) throws IOException, CmpdRegMolFormatException, StandardizerException;
 

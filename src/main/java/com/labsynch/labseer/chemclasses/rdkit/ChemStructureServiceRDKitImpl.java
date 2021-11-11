@@ -18,7 +18,9 @@ import com.labsynch.labseer.domain.RDKitStructure;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
+import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -623,6 +625,27 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 		Boolean hasBonds =  mol.getNumBonds() == 0.0;
 		Boolean hasSGroups = RDKFuncs.getSubstanceGroupCount(mol) == 0.0;
 		return !hasAtoms && !hasBonds && !hasSGroups;
+	}
+
+	@Override
+	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException{
+		// Read the preprocessor settings as json
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = null;
+		try{
+			jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+			jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+			jsonNode.get("standardizer_actions");
+		} catch (IOException e) {
+			logger.error("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
+			throw new StandardizerException("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
+		}
+
+		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
+		standardizationConfigDTO.setSettings(jsonNode.toString());
+		standardizationConfigDTO.setType("rdkit");
+		return standardizationConfigDTO;
+
 	}
 
 }

@@ -54,7 +54,6 @@ import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.exceptions.UniqueNotebookException;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 
@@ -70,9 +69,6 @@ public class MetalotServiceImpl implements MetalotService {
 	@Autowired
 	private CorpNameService corpNameService;
     
-	@Autowired
-	private LDStandardizerService ldStandardizerService;
-
 	@Autowired
 	private ParentStructureServiceImpl parentStructureServiceImpl;
 
@@ -228,18 +224,7 @@ public class MetalotServiceImpl implements MetalotService {
 			logger.debug("this is a new parent");
 			String molStructure;
 			if (propertiesUtilService.getUseExternalStandardizerConfig()){
-
-				switch (standardizerType) {
-				case "livedesign":
-					molStructure = ldStandardizerService.standardizeStructure(parent.getMolStructure());
-					parent.setMolStructure(molStructure);
-					break;
-				case "jchem":
-					molStructure = chemService.standardizeStructure(parent.getMolStructure());
-					parent.setMolStructure(molStructure);
-					break;
-				}
-
+				molStructure = chemService.standardizeStructure(parent.getMolStructure());
 			}
 			int dupeParentCount = 0;			
 			if (!metaLot.isSkipParentDupeCheck()){

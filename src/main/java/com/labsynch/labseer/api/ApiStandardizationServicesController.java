@@ -152,7 +152,7 @@ public class ApiStandardizationServicesController {
 	@Transactional
 	@RequestMapping(value = "/dryRunStats", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> getDryRunStats(){
+	public ResponseEntity<String> getDryRunStats() throws StandardizerException{
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
 		String dryRunStats = standardizationService.getDryRunStats();

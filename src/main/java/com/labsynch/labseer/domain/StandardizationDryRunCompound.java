@@ -4,6 +4,9 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.TypedQuery;
 import static java.lang.Math.toIntExact;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -11,14 +14,19 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.exceptions.StandardizerException;
+import com.labsynch.labseer.service.ChemStructureService;
 
 @RooJavaBean
 @RooToString
 @RooJson
 @RooJpaActiveRecord(finders = {"findStandardizationDryRunCompoundsByCorpNameEquals","findStandardizationDryRunCompoundsByCdId" })
+@Configurable
 public class StandardizationDryRunCompound {
 
+	@Autowired
+	ChemStructureService chemStructurService;
+	
 	private int runNumber;
 
 	private Date qcDate;
@@ -67,6 +75,7 @@ public class StandardizationDryRunCompound {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
 	@Transactional
 	public static TypedQuery<Long> findAllIds() {
@@ -97,11 +106,10 @@ public class StandardizationDryRunCompound {
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class);
 	}
 
-	public static StandardizationHistory fetchStats() {
+	public StandardizationHistory fetchStats() throws StandardizerException{
 //		String querySQL = "SELECT o.parentId FROM StandardizationDryRunCompound o WHERE displayChange = true";
 //		Query q = StandardizationDryRunCompound.entityManager().createNativeQuery(querySQL);
-		final StandardizerSettingsConfigDTO standardizerConfigs = Configuration.getConfigInfo().getStandardizerSettings();
-
+		StandardizerSettingsConfigDTO standardizerConfigs = chemStructurService.getStandardizerSettings();
 		StandardizationHistory stats = new StandardizationHistory();
 		stats.setSettings(standardizerConfigs.toJson());
 		stats.setSettingsHash(standardizerConfigs.hashCode());

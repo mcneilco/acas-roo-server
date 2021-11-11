@@ -629,7 +629,7 @@ public class SearchFormServiceImpl implements SearchFormService {
 		SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd");
 		boolean isFirst = true; 
 
-		StringBuilder query = new StringBuilder("SELECT cd_id from " + structureType.table );
+		StringBuilder query = new StringBuilder("SELECT cd_id from " + structureType.entityTable );
 
 		if(searchParams.getMinSynthDate() != null){
 			if(isFirst){

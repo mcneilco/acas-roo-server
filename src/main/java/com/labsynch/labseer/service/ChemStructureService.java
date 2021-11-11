@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
+import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
 
@@ -77,6 +78,8 @@ public interface ChemStructureService {
 
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException;
 
+	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException;
+
 	public enum SearchType {
 		DUPLICATE, DUPLICATE_TAUTOMER, DUPLICATE_NO_TAUTOMER, STEREO_IGNORE, FULL_TAUTOMER,
 		SUBSTRUCTURE, SIMILARITY, FULL, EXACT, DEFAULT;
@@ -90,11 +93,17 @@ public interface ChemStructureService {
 	}
 
 	public enum StructureType {
-		PARENT("PARENT"), SALT("SALT"), SALT_FORM("SALT_FORM"), DRY_RUN("DRY_RUN_COMPOUND"), COMPOUND("COMPOUND"), QC_COMPOUND("QC_COMPOUND");
+		PARENT("PARENT"), SALT("SALT"), SALT_FORM("SALT_FORM"), DRY_RUN("DRY_RUN_COMPOUND"), COMPOUND("COMPOUND"), STANDARDIZATION_DRY_RUN("STANDARDIZATION_DRY_RUN_COMPOUND");
 
-		public final String table;
-		private StructureType(String table) {
-        	this.table = table;
+		// Note the entity table like "PARENT", "SALT_FORM"...etc.
+		// are where the actual entity is stored.  This can differ from
+		// what the implemntations often call the "structure table".  The Structure
+		// table may or may not exist as part of the chemical engineings implemntation.
+		// e.g. Indigo stores structures directly in the parent table indexed by the bingo 
+		// cartridge.  Jchem uses a table called "parent_structure".
+		public final String entityTable;
+		private StructureType(String entityTable) {
+        	this.entityTable = entityTable;
 		}
 
 		//IGNORES case on purpose
