@@ -30,7 +30,6 @@ import com.labsynch.labseer.domain.LsSeqItxSubjCntr;
 import com.labsynch.labseer.domain.LsSeqProtocol;
 import com.labsynch.labseer.domain.LsSeqSubject;
 import com.labsynch.labseer.domain.LsSeqTrtGrp;
-import com.labsynch.labseer.domain.QcCompound;
 import com.labsynch.labseer.domain.RoleKind;
 import com.labsynch.labseer.domain.RoleType;
 import com.labsynch.labseer.domain.SaltFormAlias;
@@ -687,30 +686,6 @@ privileged aspect ApplicationConversionServiceFactoryBean_Roo_ConversionService 
         return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.LsSeqTrtGrp>() {
             public com.labsynch.labseer.domain.LsSeqTrtGrp convert(String id) {
                 return getObject().convert(getObject().convert(id, Long.class), LsSeqTrtGrp.class);
-            }
-        };
-    }
-    
-    public Converter<QcCompound, String> ApplicationConversionServiceFactoryBean.getQcCompoundToStringConverter() {
-        return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.QcCompound, java.lang.String>() {
-            public String convert(QcCompound qcCompound) {
-                return new StringBuilder().append(qcCompound.getRunNumber()).append(' ').append(qcCompound.getQcDate()).append(' ').append(qcCompound.getParentId()).append(' ').append(qcCompound.getCorpName()).toString();
-            }
-        };
-    }
-    
-    public Converter<Long, QcCompound> ApplicationConversionServiceFactoryBean.getIdToQcCompoundConverter() {
-        return new org.springframework.core.convert.converter.Converter<java.lang.Long, com.labsynch.labseer.domain.QcCompound>() {
-            public com.labsynch.labseer.domain.QcCompound convert(java.lang.Long id) {
-                return QcCompound.findQcCompound(id);
-            }
-        };
-    }
-    
-    public Converter<String, QcCompound> ApplicationConversionServiceFactoryBean.getStringToQcCompoundConverter() {
-        return new org.springframework.core.convert.converter.Converter<java.lang.String, com.labsynch.labseer.domain.QcCompound>() {
-            public com.labsynch.labseer.domain.QcCompound convert(String id) {
-                return getObject().convert(getObject().convert(id, Long.class), QcCompound.class);
             }
         };
     }
