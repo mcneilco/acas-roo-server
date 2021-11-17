@@ -2,6 +2,7 @@ package com.labsynch.labseer.domain;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 import static java.lang.Math.toIntExact;
 
@@ -14,8 +15,6 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
-import com.labsynch.labseer.exceptions.StandardizerException;
-import com.labsynch.labseer.service.ChemStructureService;
 
 @RooJavaBean
 @RooToString
@@ -23,9 +22,6 @@ import com.labsynch.labseer.service.ChemStructureService;
 @RooJpaActiveRecord(finders = {"findStandardizationDryRunCompoundsByCorpNameEquals","findStandardizationDryRunCompoundsByCdId" })
 @Configurable
 public class StandardizationDryRunCompound {
-
-	@Autowired
-	ChemStructureService chemStructurService;
 	
 	private int runNumber;
 
@@ -106,13 +102,10 @@ public class StandardizationDryRunCompound {
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class);
 	}
 
-	public StandardizationHistory fetchStats() throws StandardizerException{
+	public StandardizationHistory fetchStats() {
 //		String querySQL = "SELECT o.parentId FROM StandardizationDryRunCompound o WHERE displayChange = true";
 //		Query q = StandardizationDryRunCompound.entityManager().createNativeQuery(querySQL);
-		StandardizerSettingsConfigDTO standardizerConfigs = chemStructurService.getStandardizerSettings();
 		StandardizationHistory stats = new StandardizationHistory();
-		stats.setSettings(standardizerConfigs.toJson());
-		stats.setSettingsHash(standardizerConfigs.hashCode());
 		stats.setStructuresStandardizedCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s", Long.class).getSingleResult()));
 		stats.setChangedStructureCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.changedStructure = true", Long.class).getSingleResult()));
 		stats.setExistingDuplicateCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.existingDuplicateCount > 0", Long.class).getSingleResult()));

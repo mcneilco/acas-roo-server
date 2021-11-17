@@ -130,7 +130,6 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			CmpdRegSDFReader molReader = sdfReaderFactory.getCmpdRegSDFReader(inputFileName);
 			CmpdRegMolecule mol = null;
 			while ((numRowsToRead == -1 || numRecordsRead < numRowsToRead) && (mol = molReader.readNextMol()) != null){
-				numRecordsRead++;
 				String[] propertyKeys = mol.getPropertyKeys();
 				if (propertyKeys.length != 0){
 					for (String key : propertyKeys){
@@ -139,10 +138,12 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 						foundProperties.add(propDTO);
 					}
 				}
+				numRecordsRead++;
+				logger.info("Num records read " + numRecordsRead);
 			}
 		} catch (Exception e){
-			logger.error("Caught exception trying to read SDF properties",e);
-			errors.add(new ErrorMessage("error",e.getMessage()));
+			logger.error("Caught exception trying to read SDF properties (num records read was "+numRecordsRead+1,") ",e);
+			errors.add(new ErrorMessage("error", "Error when reading record number "+numRecordsRead+1+ ": "+e.getMessage()));
 			resultDTO.setErrors(errors);
 			return resultDTO;
 		}

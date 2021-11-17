@@ -16,11 +16,6 @@ CREATE SEQUENCE stndzn_settings_pkseq
     NO MAXVALUE
     CACHE 1;
 
-ALTER TABLE stndzn_settings_pkseq OWNER TO compound_admin;
-
-ALTER TABLE standardization_settings
-  OWNER TO compound_admin;
-
 CREATE TABLE standardization_dry_run_compound
 (
   id bigint NOT NULL,
@@ -50,9 +45,6 @@ CREATE TABLE standardization_dry_run_compound
 WITH (
   OIDS=FALSE
 );
-
-ALTER TABLE standardization_dry_run_compound
-  OWNER TO compound_admin;
 
 CREATE INDEX stndzn_dry_run_cdid_idx ON standardization_dry_run_compound USING btree (cd_id);
 
@@ -84,14 +76,9 @@ WITH (
   OIDS=FALSE
 );
 
-ALTER TABLE standardization_history
-  OWNER TO compound_admin;
-
 CREATE SEQUENCE stndzn_hist_pkseq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-ALTER TABLE stndzn_hist_pkseq OWNER TO compound_admin;

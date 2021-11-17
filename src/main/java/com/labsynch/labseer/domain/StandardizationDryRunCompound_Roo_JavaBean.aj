@@ -4,18 +4,9 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
-import com.labsynch.labseer.service.ChemStructureService;
 import java.util.Date;
 
 privileged aspect StandardizationDryRunCompound_Roo_JavaBean {
-    
-    public ChemStructureService StandardizationDryRunCompound.getChemStructurService() {
-        return this.chemStructurService;
-    }
-    
-    public void StandardizationDryRunCompound.setChemStructurService(ChemStructureService chemStructurService) {
-        this.chemStructurService = chemStructurService;
-    }
     
     public int StandardizationDryRunCompound.getRunNumber() {
         return this.runNumber;

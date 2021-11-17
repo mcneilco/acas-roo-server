@@ -644,6 +644,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
 		standardizationConfigDTO.setSettings(jsonNode.toString());
 		standardizationConfigDTO.setType("rdkit");
+		standardizationConfigDTO.setShouldStandardize(true);
 		return standardizationConfigDTO;
 
 	}

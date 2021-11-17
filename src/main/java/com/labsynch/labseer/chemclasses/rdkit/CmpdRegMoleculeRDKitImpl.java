@@ -44,8 +44,13 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 		this.molecule = molecule;
 	}
 
-	public CmpdRegMoleculeRDKitImpl(ROMol readOnlyMol) {
-		this.molecule = new RWMol(readOnlyMol);
+	public CmpdRegMoleculeRDKitImpl(ROMol readOnlyMol) throws IOException, CmpdRegMolFormatException{
+		try {
+			this.molecule = new RWMol(readOnlyMol);
+		} catch(NullPointerException e) {
+			logger.error("Caught error trying to read mol");
+			throw new CmpdRegMolFormatException(e);
+		}
 	}
 
 	@Override
