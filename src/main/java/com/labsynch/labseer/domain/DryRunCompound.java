@@ -31,11 +31,6 @@ public class DryRunCompound {
 	public DryRunCompound() {
 	}
 
-	public static List<Long> getAllIds() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Transactional
 	public void truncateTable() {
 		int output = DryRunCompound.entityManager().createNativeQuery("TRUNCATE dry_run_compound").executeUpdate();

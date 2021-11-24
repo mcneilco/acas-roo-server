@@ -67,12 +67,6 @@ public class StandardizationDryRunCompound {
 	public StandardizationDryRunCompound() {
 	}
 
-	public static List<Long> getAllIds() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-
 	@Transactional
 	public static TypedQuery<Long> findAllIds() {
 		return StandardizationDryRunCompound.entityManager().createQuery("SELECT o.id FROM StandardizationDryRunCompound o", Long.class);
