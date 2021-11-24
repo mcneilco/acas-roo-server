@@ -56,7 +56,6 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> populateDryRunTable() throws CmpdRegMolFormatException, IOException, StandardizerException{
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
-		// populate qc compound tables if the correct code is sent (basic guard)
 		logger.info("checking parent structs and saving to dry run table");
 		int numberOfDisplayChanges = 0;
 		numberOfDisplayChanges = standardizationService.populateStanardizationDryRunTable();
