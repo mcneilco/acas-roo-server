@@ -86,7 +86,7 @@ public class ApiStandardizationServicesController {
 	@Transactional
 	@RequestMapping(value = "/findStandardizationDupeStructs", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> findQCDupeStructs(){
+	public ResponseEntity<String> findDryRunDupeStructs(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
 		logger.info("checking parent structs and saving to stanardization dryrun compound table");
