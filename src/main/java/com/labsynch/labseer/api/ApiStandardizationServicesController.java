@@ -84,7 +84,7 @@ public class ApiStandardizationServicesController {
 
 
 	@Transactional
-	@RequestMapping(value = "/findStanardizationDupeStructs", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/findStandardizationDupeStructs", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
 	public ResponseEntity<String> findQCDupeStructs(){
 		HttpHeaders headers = new HttpHeaders();
