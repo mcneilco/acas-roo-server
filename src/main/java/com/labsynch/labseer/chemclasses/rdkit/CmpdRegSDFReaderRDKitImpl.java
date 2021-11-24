@@ -1,31 +1,45 @@
 package com.labsynch.labseer.chemclasses.rdkit;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Scanner;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-
-import org.RDKit.SDMolSupplier;
+import com.labsynch.labseer.service.ExternalStructureService;
 
 public class CmpdRegSDFReaderRDKitImpl implements CmpdRegSDFReader {
 
-    private SDMolSupplier molSupplier;
+    private Scanner scanner;
 
-    public CmpdRegSDFReaderRDKitImpl(String fileName) {
-        this.molSupplier = new SDMolSupplier(fileName);
+    private ExternalStructureService bbChemStructureService;
+
+    public CmpdRegSDFReaderRDKitImpl(String fileName, ExternalStructureService bbChemStructureService) {
+        this.bbChemStructureService = bbChemStructureService;
+        Scanner scanner;
+		try {
+			scanner = new Scanner(new File(fileName));
+            // \\R was added in java 8 and it matches any combination of line endings \r, \n, \r\n, \n\r
+            scanner.useDelimiter("\\$\\$\\$\\$\\R");
+            this.scanner = scanner;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     @Override
     public void close() throws IOException {
-        this.molSupplier.close();
+        this.scanner.close();
 
     }
 
     @Override
     public CmpdRegMolecule readNextMol() throws IOException, CmpdRegMolFormatException {
-        if (!this.molSupplier.atEnd()) {
-            CmpdRegMoleculeRDKitImpl molecule = new CmpdRegMoleculeRDKitImpl(molSupplier.next());
+        if (this.scanner.hasNext()) {
+            CmpdRegMoleculeRDKitImpl molecule = new CmpdRegMoleculeRDKitImpl(scanner.next()+"$$$$", this.bbChemStructureService);
             return molecule;
         } else {
             return null;

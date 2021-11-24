@@ -1,12 +1,14 @@
 package com.labsynch.labseer.domain;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -45,6 +47,24 @@ public class RDKitStructure {
     @NotNull
     @Column(columnDefinition = "text")
     private String mol;
+
+    @Transient
+    private Double exactMolWeight;
+
+    @Transient
+    private Double averageMolWeight;
+
+    @Transient
+    private Integer totalCharge;
+
+    @Transient
+    private String smiles;
+
+    @Transient
+    private String molecularFormula;
+
+    @Transient
+    private HashMap<String, String> properties;
 
     @NotNull
     @DateTimeFormat(style="M-")

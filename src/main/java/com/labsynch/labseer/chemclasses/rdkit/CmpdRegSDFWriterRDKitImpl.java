@@ -1,36 +1,46 @@
 package com.labsynch.labseer.chemclasses.rdkit;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ExternalStructureService;
 
-import org.RDKit.SDWriter;
 
+@Configurable
 public class CmpdRegSDFWriterRDKitImpl implements CmpdRegSDFWriter {
 
     Logger logger = LoggerFactory.getLogger(CmpdRegSDFWriterRDKitImpl.class);
 
-    private SDWriter writer;
+	@Autowired
+	private ExternalStructureService bbChemStructureServices;
+
+    private FileWriter writer;
 
     private File tempFile;
 
     public CmpdRegSDFWriterRDKitImpl(String fileName) {
-        this.writer = new SDWriter(fileName);
+        try {
+			this.writer = new FileWriter(fileName);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+            logger.error("Unable to write RDKit sdf", e);
+		}
     }
 
     public CmpdRegSDFWriterRDKitImpl() {
-        // RDKIT doesn't have the ability to write in memory so we create a file
-        // which gets deleted on exit
         try {
             this.tempFile = File.createTempFile("rdkit-molwriter-", ".sdf");
             this.tempFile.deleteOnExit();
-            this.writer = new SDWriter(this.tempFile.getAbsolutePath());
+            this.writer = new FileWriter(this.tempFile.getAbsolutePath());
         } catch (IOException e) {
             logger.error("Unable to write RDKit sdf", e);
         }
@@ -41,7 +51,7 @@ public class CmpdRegSDFWriterRDKitImpl implements CmpdRegSDFWriter {
     public boolean writeMol(CmpdRegMolecule molecule) throws CmpdRegMolFormatException, IOException {
         CmpdRegMoleculeRDKitImpl molWrapper = (CmpdRegMoleculeRDKitImpl) molecule;
         try {
-            this.writer.write(molWrapper.molecule);
+            this.writer.write(bbChemStructureServices.getSDFFromRDkitStructure(molWrapper.molecule));
         } catch (Exception e) {
             logger.error("Unable to write mol", e);
             return false;

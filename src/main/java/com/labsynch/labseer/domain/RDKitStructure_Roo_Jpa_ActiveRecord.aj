@@ -14,7 +14,7 @@ privileged aspect RDKitStructure_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager RDKitStructure.entityManager;
     
-    public static final List<String> RDKitStructure.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "preReg", "reg", "mol", "recordedDate");
+    public static final List<String> RDKitStructure.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "preReg", "reg", "mol", "exactMolWeight", "averageMolWeight", "totalCharge", "smiles", "molecularFormula", "properties", "recordedDate");
     
     public static final EntityManager RDKitStructure.entityManager() {
         EntityManager em = new RDKitStructure().entityManager;

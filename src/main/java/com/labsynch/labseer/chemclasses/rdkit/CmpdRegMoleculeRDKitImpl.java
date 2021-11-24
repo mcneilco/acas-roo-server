@@ -1,19 +1,13 @@
 package com.labsynch.labseer.chemclasses.rdkit;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.RDKitStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.service.ExternalStructureService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
-import org.RDKit.KeyErrorException;
-import org.RDKit.RDKFuncs;
-import org.RDKit.ROMol;
-import org.RDKit.RWMol;
-import org.RDKit.Str_Vect;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -21,67 +15,54 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.stereotype.Component;
 
-@Configurable
 public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	Logger logger = LoggerFactory.getLogger(CmpdRegMoleculeRDKitImpl.class);
 
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
+	RDKitStructure molecule;
 
-	RWMol molecule;
+	private ExternalStructureService bbChemStructureService;
 
 	static {
 		System.loadLibrary("GraphMolWrap");
 	}
 
-	public CmpdRegMoleculeRDKitImpl(String molStructure) throws CmpdRegMolFormatException {
-		this.molecule = RWMol.MolFromMolBlock(molStructure);
-	}
-
-	public CmpdRegMoleculeRDKitImpl(RWMol molecule) throws CmpdRegMolFormatException {
+	public CmpdRegMoleculeRDKitImpl(RDKitStructure molecule) {
 		this.molecule = molecule;
 	}
 
-	public CmpdRegMoleculeRDKitImpl(ROMol readOnlyMol) throws IOException, CmpdRegMolFormatException{
+	public CmpdRegMoleculeRDKitImpl(String mol, ExternalStructureService bbChemStructureService) {
+		this.bbChemStructureService = bbChemStructureService;
 		try {
-			this.molecule = new RWMol(readOnlyMol);
-		} catch(NullPointerException e) {
-			logger.error("Caught error trying to read mol");
-			throw new CmpdRegMolFormatException(e);
+			this.molecule = bbChemStructureService.getRDKitStructuresFromSDFService(mol).get(0);
+		} catch (CmpdRegMolFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 	}
 
 	@Override
 	public void setProperty(String key, String value) {
-		molecule.setProp(key, value);
+		this.molecule.getProperties().put(key, value);
 	}
 
 	@Override
 	public String getProperty(String key) {
-		try{
-			String prop = molecule.getProp(key);
-			if(prop.equals("")) {
-				return null;
-			} else {
-				return prop;
-			}
-		} catch (KeyErrorException e) {
+		String prop = this.molecule.getProperties().get(key);
+		if(prop.equals("")) {
 			return null;
+		} else {
+			return prop;
 		}
 	}
 
 	@Override
 	public String[] getPropertyKeys() {
 		if (this.molecule != null) {
-			List<String> propertyKeys = new ArrayList<String>();
-			Str_Vect propList = this.molecule.getPropList();
-			for (int i = 0; i < propList.size(); i++) {
-				propertyKeys.add(propList.get(i));
-			}
-			String[] keys = new String[propertyKeys.size()];
-			return propertyKeys.toArray(keys);
+			return this.molecule.getProperties().keySet().toArray(new String[0]);
 		} else {
 			return new String[0];
 		}
@@ -95,45 +76,56 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	@Override
 	public String getMolStructure() throws CmpdRegMolFormatException {
-		return this.molecule.MolToMolBlock();
+		return this.molecule.getMol();
 	}
 
 	@Override
 	public String getFormula() {
-		return RDKFuncs.calcMolFormula(this.molecule);
-
+		if(this.molecule.getMolecularFormula() != null) {
+			return this.molecule.getMolecularFormula();
+		} else {
+			bbChemStructureService.populateDescriptors(this.molecule);
+			return this.molecule.getMolecularFormula();
+		}
 	}
 
 	@Override
 	public Double getExactMass() {
-		return RDKFuncs.calcExactMW(this.molecule);
+		if(this.molecule.getExactMolWeight() != null) {
+			return this.molecule.getExactMolWeight();
+		} else {
+			bbChemStructureService.populateDescriptors(this.molecule);
+			return this.molecule.getExactMolWeight();
+		}	
 	}
 
 	@Override
 	public Double getMass() {
-		return RDKFuncs.calcAMW(this.molecule);
-
+		if(this.molecule.getAverageMolWeight() != null) {
+			return this.molecule.getAverageMolWeight();
+		} else {
+			bbChemStructureService.populateDescriptors(this.molecule);
+			return this.molecule.getAverageMolWeight();
+		}
 	}
 
 	@Override
 	public int getTotalCharge() {
-		return RDKFuncs.getFormalCharge(this.molecule);
+		logger.error("UNIMPLEMENTED getTotalCharge!!!!");
+		return -1;
 
 	}
 
 	@Override
 	public String getSmiles() {
-		return RDKFuncs.MolToSmiles(this.molecule);
-
+		logger.error("UNIMPLEMENTED get smiles!!!!");
+		return "";
 	}
 
 	@Override
 	public CmpdRegMolecule replaceStructure(String newStructure) throws CmpdRegMolFormatException {
-		CmpdRegMoleculeRDKitImpl newMol = new CmpdRegMoleculeRDKitImpl(newStructure);
-		Str_Vect propList = this.molecule.getPropList();
-		for (int i = 0; i < propList.size(); i++) {
-			newMol.setProperty(propList.get(i), this.getProperty(propList.get(i)));
-		}
+		CmpdRegMoleculeRDKitImpl newMol = new CmpdRegMoleculeRDKitImpl(newStructure, bbChemStructureService);
+		newMol.molecule.setProperties(this.molecule.getProperties());
 		return newMol;
 	}
 
@@ -148,8 +140,7 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 			throws IOException {
 
 		// Read the preprocessor settings as json
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+		JsonNode jsonNode = bbChemStructureService.getPreprocessorSettings();
 
 		// Extract the url to call
 		JsonNode urlNode = jsonNode.get("imageURL");
@@ -184,7 +175,7 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	@Override
 	public void dearomatize() {
-		this.molecule.Kekulize();
+		// No implemented
 	}
 
 }
