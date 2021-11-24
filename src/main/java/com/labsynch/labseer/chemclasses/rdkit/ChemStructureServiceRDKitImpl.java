@@ -633,9 +633,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JsonNode jsonNode = null;
 		try{
-			jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
-			jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
-			jsonNode.get("standardizer_actions");
+			jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings()).get("standardizer_actions");
 		} catch (IOException e) {
 			logger.error("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
 			throw new StandardizerException("Error parsing preprocessor settings json: " + propertiesUtilService.getPreprocessorSettings());
