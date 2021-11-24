@@ -28,7 +28,7 @@ public interface StandardizationService {
 
 	StandardizationSettings getStandardizationSettings();
 
-	List<StandardizationHistory> getStanardizationHistory();
+	List<StandardizationHistory> getStandardizationHistory();
 
 	void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException;
 

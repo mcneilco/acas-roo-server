@@ -145,7 +145,7 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> getStandardizationHistory(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
-		List<StandardizationHistory> standardizationHistory = standardizationService.getStanardizationHistory();
+		List<StandardizationHistory> standardizationHistory = standardizationService.getStandardizationHistory();
 		return new ResponseEntity<String>(StandardizationHistory.toJsonArray(standardizationHistory), headers, HttpStatus.OK);
 	}
 

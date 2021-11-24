@@ -468,7 +468,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Override
-	public List<StandardizationHistory> getStanardizationHistory() {
+	public List<StandardizationHistory> getStandardizationHistory() {
 		List<StandardizationHistory> standardizationSettingses = StandardizationHistory.findStandardizationHistoryEntries(0, 500, "dateOfStandardization", "DESC");
 		return standardizationSettingses;
 	}
