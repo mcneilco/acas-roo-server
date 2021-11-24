@@ -89,7 +89,6 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> findQCDupeStructs(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
-		// searches for dupes in the qc compound tables if the correct code is sent (basic guard)
 		logger.info("checking parent structs and saving to stanardization dryrun compound table");
 		int numberOfDisplayChanges = 0;
 		try {
