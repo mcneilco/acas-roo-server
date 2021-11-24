@@ -190,7 +190,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 			cdId = chemStructureService.saveStructure(stndznCompound.getMolStructure(), StructureType.DRY_RUN, false);
 			if (cdId == -1){
-				logger.error("Bad molformat. Please fix the molfile: " + stndznCompound.getMolStructure());
+				logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName() + ", Parent ID "+ stndznCompound.getParentId() + ": " + stndznCompound.getMolStructure());
 			} else {
 				stndznCompound.setCdId(cdId);
 				stndznCompound.persist();
