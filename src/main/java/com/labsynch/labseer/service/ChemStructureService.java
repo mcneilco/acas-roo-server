@@ -97,8 +97,8 @@ public interface ChemStructureService {
 
 		// Note the entity table like "PARENT", "SALT_FORM"...etc.
 		// are where the actual entity is stored.  This can differ from
-		// what the implemntations often call the "structure table".  The Structure
-		// table may or may not exist as part of the chemical engineings implemntation.
+		// what the implementation often call the "structure table".  The Structure
+		// table may or may not exist as part of the chemical entities implementation.
 		// e.g. Indigo stores structures directly in the parent table indexed by the bingo 
 		// cartridge.  Jchem uses a table called "parent_structure".
 		public final String entityTable;

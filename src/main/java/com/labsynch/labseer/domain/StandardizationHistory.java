@@ -1,4 +1,5 @@
 package com.labsynch.labseer.domain;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -18,13 +19,13 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJpaActiveRecord
 public class StandardizationHistory {
 
-    @Id
-    @SequenceGenerator(name = "stndznHistGen", sequenceName = "STNDZN_HIST_PKSEQ")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "stndznHistGen")
-    @Column(name = "id")
-    private Long id;
+	@Id
+	@SequenceGenerator(name = "stndznHistGen", sequenceName = "STNDZN_HIST_PKSEQ")
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "stndznHistGen")
+	@Column(name = "id")
+	private Long id;
 
-    private Date recordedDate;
+	private Date recordedDate;
 
 	private String settings;
 

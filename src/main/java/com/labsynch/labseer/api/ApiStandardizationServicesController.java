@@ -56,7 +56,6 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> populateDryRunTable() throws CmpdRegMolFormatException, IOException, StandardizerException{
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
-		// populate qc compound tables if the correct code is sent (basic guard)
 		logger.info("checking parent structs and saving to dry run table");
 		int numberOfDisplayChanges = 0;
 		numberOfDisplayChanges = standardizationService.populateStanardizationDryRunTable();
@@ -84,12 +83,11 @@ public class ApiStandardizationServicesController {
 
 
 	@Transactional
-	@RequestMapping(value = "/findStanardizationDupeStructs", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/findStandardizationDupeStructs", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
-	public ResponseEntity<String> findQCDupeStructs(){
+	public ResponseEntity<String> findDryRunDupeStructs(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
-		// searches for dupes in the qc compound tables if the correct code is sent (basic guard)
 		logger.info("checking parent structs and saving to stanardization dryrun compound table");
 		int numberOfDisplayChanges = 0;
 		try {
@@ -145,7 +143,7 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> getStandardizationHistory(){
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
-		List<StandardizationHistory> standardizationHistory = standardizationService.getStanardizationHistory();
+		List<StandardizationHistory> standardizationHistory = standardizationService.getStandardizationHistory();
 		return new ResponseEntity<String>(StandardizationHistory.toJsonArray(standardizationHistory), headers, HttpStatus.OK);
 	}
 

@@ -4,28 +4,10 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.RDKitStructure;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Version;
 
 privileged aspect RDKitStructure_Roo_Jpa_Entity {
     
     declare @type: RDKitStructure: @Entity;
-    
-    declare @type: RDKitStructure: @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS);
-    
-    @Version
-    @Column(name = "version")
-    private Integer RDKitStructure.version;
-    
-    public Integer RDKitStructure.getVersion() {
-        return this.version;
-    }
-    
-    public void RDKitStructure.setVersion(Integer version) {
-        this.version = version;
-    }
     
 }
