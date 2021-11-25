@@ -500,10 +500,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		logger.info("standardization dry run initialized");
 		logger.info("step 1/3: resetting dry run table");
 		this.reset();
-		logger.info("standardization dry run 1% complete");
 		logger.info("step 2/3: populating dry run table");
 		int numberOfDisplayChanges = this.populateStanardizationDryRunTable();  
-		logger.info("standardization dry run 20% complete");
 		logger.info("step 3/3: checking for standardization duplicates");
 	    numberOfDisplayChanges = this.dupeCheckStandardizationStructures();
 		logger.info("standardization dry run complete");
