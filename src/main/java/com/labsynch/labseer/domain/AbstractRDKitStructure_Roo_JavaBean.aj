@@ -5,6 +5,7 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.AbstractRDKitStructure;
 import java.util.Date;
+import java.util.HashMap;
 
 privileged aspect AbstractRDKitStructure_Roo_JavaBean {
     
@@ -38,6 +39,54 @@ privileged aspect AbstractRDKitStructure_Roo_JavaBean {
     
     public void AbstractRDKitStructure.setRecordedDate(Date recordedDate) {
         this.recordedDate = recordedDate;
+    }
+    
+    public Double AbstractRDKitStructure.getExactMolWeight() {
+        return this.exactMolWeight;
+    }
+    
+    public void AbstractRDKitStructure.setExactMolWeight(Double exactMolWeight) {
+        this.exactMolWeight = exactMolWeight;
+    }
+    
+    public Double AbstractRDKitStructure.getAverageMolWeight() {
+        return this.averageMolWeight;
+    }
+    
+    public void AbstractRDKitStructure.setAverageMolWeight(Double averageMolWeight) {
+        this.averageMolWeight = averageMolWeight;
+    }
+    
+    public Integer AbstractRDKitStructure.getTotalCharge() {
+        return this.totalCharge;
+    }
+    
+    public void AbstractRDKitStructure.setTotalCharge(Integer totalCharge) {
+        this.totalCharge = totalCharge;
+    }
+    
+    public String AbstractRDKitStructure.getSmiles() {
+        return this.smiles;
+    }
+    
+    public void AbstractRDKitStructure.setSmiles(String smiles) {
+        this.smiles = smiles;
+    }
+    
+    public String AbstractRDKitStructure.getMolecularFormula() {
+        return this.molecularFormula;
+    }
+    
+    public void AbstractRDKitStructure.setMolecularFormula(String molecularFormula) {
+        this.molecularFormula = molecularFormula;
+    }
+    
+    public HashMap<String, String> AbstractRDKitStructure.getProperties() {
+        return this.properties;
+    }
+    
+    public void AbstractRDKitStructure.setProperties(HashMap<String, String> properties) {
+        this.properties = properties;
     }
     
 }
