@@ -229,14 +229,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Override
 	public int dupeCheckStandardizationStructures() throws CmpdRegMolFormatException{
-		List<Long> qcIds = StandardizationDryRunCompound.findAllIds().getResultList();
-		int totalCount = qcIds.size();
+		List<Long> dryRunIds = StandardizationDryRunCompound.findAllIds().getResultList();
+		int totalCount = dryRunIds.size();
 		logger.debug("number of compounds found in dry run table: " + totalCount);
 		int totalNewDuplicateCount = 0;
 		int totalExistingDuplicateCount = 0;
-		if (qcIds.size() > 0){
+		if (dryRunIds.size() > 0){
 			int[] hits;	
-			StandardizationDryRunCompound qcCompound;
+			StandardizationDryRunCompound dryRunCompound;
 			String newDuplicateCorpNames = "";
 			String oldDuplicateCorpNames = "";
 			int newDupeCount = 0;
@@ -246,73 +246,75 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			int p = 1;
 		    float previousPercent = percent;
 			previousPercent = percent;
-			for (Long qcId : qcIds){
+			for (Long dryRunId : dryRunIds){
 				boolean firstNewDuplicateHit = true;
 				boolean firstOldDuplicateHit = true;
-				qcCompound = StandardizationDryRunCompound.findStandardizationDryRunCompound(qcId);
-				logger.debug("query compound: " + qcCompound.getCorpName());
-				if(qcCompound.getNewMolWeight() == 0) {
-					logger.debug("mol has a weight of 0 - skipping");			
+				dryRunCompound = StandardizationDryRunCompound.findStandardizationDryRunCompound(dryRunId);
+				logger.info("query compound: " + dryRunCompound.getCorpName());
+				if(dryRunCompound.getNewMolWeight() == 0) {
+					logger.info("mol has a weight of 0 - skipping");			
 				} else {
-					hits = chemStructureService.searchMolStructures(qcCompound.getMolStructure(), StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER);
+					hits = chemStructureService.searchMolStructures(dryRunCompound.getMolStructure(), StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER);
 					newDupeCount = hits.length;
-					qcCompound.setChangedStructure(true);
 					for (int hit:hits){
 						List<StandardizationDryRunCompound> searchResults = StandardizationDryRunCompound.findStandardizationDryRunCompoundsByCdId(hit).getResultList();
 						for (StandardizationDryRunCompound searchResult : searchResults){
-							if (searchResult.getCorpName().equalsIgnoreCase(qcCompound.getCorpName())){
-								qcCompound.setChangedStructure(false);
+							if (searchResult.getCorpName().equalsIgnoreCase(dryRunCompound.getCorpName())){
 								newDupeCount = newDupeCount-1;
 							} else {
-								if (StringUtils.equals(searchResult.getStereoCategory(), qcCompound.getStereoCategory())
-										&& StringUtils.equalsIgnoreCase(searchResult.getStereoComment(), qcCompound.getStereoComment())){
+								if (StringUtils.equals(searchResult.getStereoCategory(), dryRunCompound.getStereoCategory())
+										&& StringUtils.equalsIgnoreCase(searchResult.getStereoComment(), dryRunCompound.getStereoComment())){
 									if (!firstNewDuplicateHit) newDuplicateCorpNames = newDuplicateCorpNames.concat(";");
 									newDuplicateCorpNames = newDuplicateCorpNames.concat(searchResult.getCorpName());
 									firstNewDuplicateHit = false;
-									logger.debug("found new dupe parents");
-									logger.debug("query: " + qcCompound.getCorpName() + "     dupe: " + searchResult.getCorpName());
+									logger.info("found new dupe parents");
+									logger.info("query: " + dryRunCompound.getCorpName() + "     dupe: " + searchResult.getCorpName());
 									totalNewDuplicateCount++;
 								} else {
-									logger.debug("found different stereo codes and comments");
+									newDupeCount = newDupeCount-1;
+									logger.info("found different stereo codes and comments");
 								}
 							}
 						}
 					}
 					
-					hits = chemStructureService.searchMolStructures(qcCompound.getMolStructure(), StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER);
+					hits = chemStructureService.searchMolStructures(dryRunCompound.getMolStructure(), StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER);
 					oldDuplicateCount = hits.length;
+					dryRunCompound.setChangedStructure(true);
 					for (int hit:hits){
 						List<Parent> searchResults = Parent.findParentsByCdId(hit).getResultList();
 						for (Parent searchResult : searchResults){
-							if (searchResult.getCorpName().equalsIgnoreCase(qcCompound.getCorpName())){
+							if (searchResult.getCorpName().equalsIgnoreCase(dryRunCompound.getCorpName())){
 								oldDuplicateCount = oldDuplicateCount-1;
+								dryRunCompound.setChangedStructure(false);
 							} else {
-								if (StringUtils.equals(searchResult.getStereoCategory().getName(), qcCompound.getStereoCategory())
-										&& StringUtils.equalsIgnoreCase(searchResult.getStereoComment(), qcCompound.getStereoComment())){
+								if (StringUtils.equals(searchResult.getStereoCategory().getName(), dryRunCompound.getStereoCategory())
+										&& StringUtils.equalsIgnoreCase(searchResult.getStereoComment(), dryRunCompound.getStereoComment())){
 									if (!firstOldDuplicateHit) oldDuplicateCorpNames = oldDuplicateCorpNames.concat(";");
 									oldDuplicateCorpNames = oldDuplicateCorpNames.concat(searchResult.getCorpName());
 									firstOldDuplicateHit = false;
-									logger.debug("found old dupe parents");
-									logger.debug("query: " + qcCompound.getCorpName() + "     dupe: " + searchResult.getCorpName());
+									logger.info("found old dupe parents");
+									logger.info("query: " + dryRunCompound.getCorpName() + "     dupe: " + searchResult.getCorpName());
 									totalExistingDuplicateCount++;
 								} else {
-									logger.debug("found different stereo codes and comments");
+									oldDuplicateCount = oldDuplicateCount-1;
+									logger.info("found different stereo codes and comments");
 								}
 							}
 						}
 					}
-					qcCompound.setNewDuplicateCount(newDupeCount);
+					dryRunCompound.setNewDuplicateCount(newDupeCount);
 					if(!newDuplicateCorpNames.equals("")) {
-						qcCompound.setNewDuplicates(newDuplicateCorpNames);
+						dryRunCompound.setNewDuplicates(newDuplicateCorpNames);
 					}
-					qcCompound.setExistingDuplicateCount(oldDuplicateCount);
+					dryRunCompound.setExistingDuplicateCount(oldDuplicateCount);
 					if(!oldDuplicateCorpNames.equals("")) {
-						qcCompound.setExistingDuplicates(oldDuplicateCorpNames);
+						dryRunCompound.setExistingDuplicates(oldDuplicateCorpNames);
 					}	
 
 				}
 
-				qcCompound.merge();
+				dryRunCompound.merge();
 				newDuplicateCorpNames = "";
 				oldDuplicateCorpNames = "";
 				
