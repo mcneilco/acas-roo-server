@@ -15,6 +15,12 @@ import com.labsynch.labseer.service.ExternalStructureService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
+import org.RDKit.RDKFuncs;
+import org.RDKit.RDKFuncsConstants;
+import org.RDKit.RDKFuncsJNI;
+import org.RDKit.ROMol;
+import org.RDKit.RWMol;
+import org.RDKit.SanitizeFlags;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -31,15 +37,64 @@ public class BBChemStructureService  implements ExternalStructureService {
     
     Logger logger = LoggerFactory.getLogger(BBChemStructureService.class);
 
+	static {
+		System.loadLibrary("GraphMolWrap");
+	}
+
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
+	
 	@Override
     public void populateDescriptors(RDKitStructure rdKitStructure) {
-		rdKitStructure.setAverageMolWeight(-1.0);
-		rdKitStructure.setExactMolWeight(-1.0);
-		rdKitStructure.setSmiles("C");
-		rdKitStructure.setTotalCharge(-1);
+
+		RWMol mol = getPartialiallySanizedRWMol(rdKitStructure.getMol());
+
+		// https://www.rdkit.org/docs/cppapi/classRDKit_1_1ROMol.html#a48ab4e1692b503eda6d31c5bb10fe0bb
+		// calculates any of our lazy properties
+		// 	bool 	strict = true	
+		mol.updatePropertyCache(false);
+		
+		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1Descriptors.html#a4a0f6886e3798fcb195b6c270a3645c6
+		// const ROMol & 	mol,
+		// bool 	onlyHeavy = false
+		rdKitStructure.setAverageMolWeight(RDKFuncs.calcAMW(mol, false));
+
+		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1Descriptors.html#a468168875d98b415e14c6eac9d7c36ae
+		// const ROMol & 	mol,
+		// bool  onlyHeavy = false
+		// https://www.mail-archive.com/rdkit-discuss@lists.sourceforge.net/msg10222.html
+		// MolWt uses naturally occurring average atomic weights, the ones you find in
+		// a typical periodic table. For example, Cl = 35.453.
+		// ExactMolWt uses the weight of a specific isotope (the most naturally
+		// abundant isotope unless the structure specifies a different one for an
+		// atom). These are the atomic weights you find in an isotope chart, not a
+		// regular periodic table. For example, 35Cl = 34.96885268.
+		// https://www.nist.gov/pml/atomic-weights-and-isotopic-compositions-relative-atomic-masses
+		rdKitStructure.setExactMolWeight(RDKFuncs.calcExactMW(mol, false));
+
+		// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a75e1240acc451a7a73280220f79b6c05
+		// mol	: the molecule in question.
+		// doIsomericSmiles	: include stereochemistry and isotope information in the SMILES
+		// doKekule	: do Kekule smiles (i.e. don't use aromatic bonds) NOTE that this will throw an exception if the molecule cannot be kekulized.
+		// rootedAtAtom	: make sure the SMILES starts at the specified atom. The resulting SMILES is not, of course, canonical.
+		// canonical	: if false, no attempt will be made to canonicalize the SMILES
+		// allBondsExplicit	: if true, symbols will be included for all bonds.
+		// allHsExplicit	: if true, hydrogen counts will be provided for every atom.
+		rdKitStructure.setSmiles(RDKFuncs.MolToSmiles(mol, true, false, -1, true, false, false, false));
+
+		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1MolOps.html#a3c5021831c089f1dfacf1f3ce2ff9303
+		rdKitStructure.setTotalCharge(RDKFuncs.getFormalCharge(mol));
+
+		// https://www.rdkit.org/docs/source/rdkit.Chem.rdinchi.html#rdkit.Chem.rdinchi.MolBlockToInchi
+		// Doesn't appear to be used anywhere in the code base
+		// rdKitStructure.setInchi(RDKFuncs.MolBlockToInchi(rdKitStructure.getMol(), new ExtraInchiReturnValues());
+
+		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1Descriptors.html#a4a80d0fa71a5bad581e4436fe37e9ce6
+		// mol	the molecule of interest
+		// separateIsotopes	if true, isotopes will show up separately in the formula. So C[13CH2]O will give the formula: C[13C]H6O
+		// abbreviateHIsotopes	if true, 2H and 3H will be represented as D and T instead of [2H] and [3H]. This only applies if separateIsotopes is true
+		rdKitStructure.setMolecularFormula(RDKFuncs.calcMolFormula(mol, false, false));
 	}
 
 	@Override
@@ -245,4 +300,40 @@ public class BBChemStructureService  implements ExternalStructureService {
 		return rdkitStructures;
 
 	}
+
+	@Override
+	public RWMol getPartialiallySanizedRWMol(String molstructure) {
+				// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a3a2051f80037d7633c3ea4cc72f58856
+		// MolBlockToMol
+		// molBlock: string containing the Mol block
+		// sanitize: (optional) toggles sanitization of the molecule. Defaults to True.
+		// removeHs: (optional) toggles removing hydrogens from the molecule. This only make sense when sanitization is done. Defaults to true.
+		// strictParsing: (optional) if this is false, the parser is more lax about. correctness of the content. Defaults to true.
+		RWMol mol = RDKFuncs.MolBlockToMol(molstructure, false, false, false);
+
+		// Do partial sanization on mol so that we can calculate properties
+		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1MolOps.html#a1ea8c8a254b2f9cd006029e9ad72deac
+		// mol	: the RWMol to be cleaned
+		// operationThatFailed	: the first (if any) sanitization operation that fails is set here. The values are taken from the SanitizeFlags enum. On success, the value is SanitizeFlags::SANITIZE_NONE
+		// sanitizeOps	: the bits here are used to set which sanitization operations are carried out. The elements of the SanitizeFlags enum define the operations.
+		int ops = (SanitizeFlags.SANITIZE_ALL.swigValue() ^ SanitizeFlags.SANITIZE_CLEANUP.swigValue() ^
+			   SanitizeFlags.SANITIZE_PROPERTIES.swigValue() ^ SanitizeFlags.SANITIZE_KEKULIZE.swigValue() ^
+               SanitizeFlags.SANITIZE_FINDRADICALS.swigValue() ^ SanitizeFlags.SANITIZE_CLEANUPCHIRALITY.swigValue());
+		RDKFuncs.sanitizeMol(mol, ops);
+
+		return mol;
+	}
+
+	@Override
+	public String getMolStructureFromRDKMol(ROMol rdkMol) {
+		// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a8159eb5c49b1d325ac994a15607cdffa
+		// MolToMolBlock
+		// mol	- the molecule in question
+		// includeStereo	- toggles inclusion of stereochemistry information
+		// confId	- selects the conformer to be used
+		// kekulize	- triggers kekulization of the molecule before it is written
+		// forceV3000	- force generation a V3000 mol block (happens automatically with more than 999 atoms or bonds)
+		return RDKFuncs.MolToMolBlock(rdkMol, true, -1, false, false);
+	}
+
 }

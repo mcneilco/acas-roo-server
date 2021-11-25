@@ -65,6 +65,9 @@ public abstract class AbstractRDKitStructure {
     private String smiles;
 
     @Transient
+    private String inchi;
+
+    @Transient
     private String molecularFormula;
 
     @Transient

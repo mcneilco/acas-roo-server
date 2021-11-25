@@ -5,6 +5,8 @@ import java.util.List;
 import com.labsynch.labseer.domain.RDKitStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
+import org.RDKit.ROMol;
+import org.RDKit.RWMol;
 import org.codehaus.jackson.JsonNode;
 import org.springframework.stereotype.Service;
 
@@ -21,4 +23,8 @@ public interface ExternalStructureService {
 
     public List<RDKitStructure> getRDKitStructuresFromSDFService(String molfile) throws CmpdRegMolFormatException;
     
+    public RWMol getPartialiallySanizedRWMol(String molfile);
+
+    public String getMolStructureFromRDKMol(ROMol rdkMol);
+
 }

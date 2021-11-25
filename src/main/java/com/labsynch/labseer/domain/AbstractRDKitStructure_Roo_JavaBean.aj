@@ -73,6 +73,14 @@ privileged aspect AbstractRDKitStructure_Roo_JavaBean {
         this.smiles = smiles;
     }
     
+    public String AbstractRDKitStructure.getInchi() {
+        return this.inchi;
+    }
+    
+    public void AbstractRDKitStructure.setInchi(String inchi) {
+        this.inchi = inchi;
+    }
+    
     public String AbstractRDKitStructure.getMolecularFormula() {
         return this.molecularFormula;
     }

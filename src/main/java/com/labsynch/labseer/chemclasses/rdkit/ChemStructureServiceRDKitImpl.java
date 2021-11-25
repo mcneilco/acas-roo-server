@@ -90,7 +90,6 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 		TypedQuery<? extends AbstractRDKitStructure> query;
 		if (searchType == SearchType.FULL_TAUTOMER){
 			// FULL TAUTOMER hashes are stored on the pre reg hash column
-			// 
 			if(structureType == StructureType.PARENT) {
 				query = RDKitStructure.findRDKitStructuresByPreRegEquals(serviceRDKitStructure.getPreReg());
 			} else if (structureType == StructureType.SALT) {
@@ -178,8 +177,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public void closeConnection() {
-		// TODO Auto-generated method stub
-		
+		// Not used for this implementation
 	}
 
 	public String getRDKitStructureTableNameFromStructureType(StructureType structureType) {
@@ -314,8 +312,12 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public String toInchi(String molStructure) {
-		// NOT IMPLEMENTED
-		return null;
+		try {
+			return bbChemStructureService.getRDKitStructureFromProcessService(molStructure).getInchi();
+		} catch (CmpdRegMolFormatException e) {
+			logger.error("Error calculating inchi: ", e);
+			return null;
+		}
 	}
 
 	@Override
@@ -355,7 +357,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public boolean checkForSalt(String molfile) throws CmpdRegMolFormatException {
 		boolean foundNonCovalentSalt = false;
-		RWMol mol = RWMol.MolFromMolBlock(molfile);
+		RWMol mol = bbChemStructureService.getPartialiallySanizedRWMol(molfile);
 		ROMol_Vect frags = RDKFuncs.getMolFrags(mol);
 		if(frags.size() > 1.0) {
 			foundNonCovalentSalt = true;
@@ -454,15 +456,20 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public MolConvertOutputDTO cleanStructure(String structure, int dim, String opts)
 			throws IOException, CmpdRegMolFormatException {
-		// TODO Auto-generated method stub
+		// Unused for this implementation
 		return null;
 	}
 
 	@Override
 	public String hydrogenizeMol(String structure, String inputFormat, String method)
 			throws IOException, CmpdRegMolFormatException {
-		//NOT IMLEMENTED
-		return structure;
+			RWMol mol = bbChemStructureService.getPartialiallySanizedRWMol(structure);
+			if (method.equalsIgnoreCase("HYDROGENIZE")){
+				RDKFuncs.addHs(mol);		
+			} else {
+				RDKFuncs.removeHs(mol);
+			}
+			return mol.MolToMolBlock();
 	}
 
 	@Override
@@ -477,29 +484,27 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException {
-		CmpdRegMoleculeRDKitImpl molWrapper = (CmpdRegMoleculeRDKitImpl) inputStructure;
-		CmpdRegMoleculeRDKitImpl mol = new CmpdRegMoleculeRDKitImpl(molWrapper.molecule);
-		// RWMol clone = mol.molecule;
-		// List<CmpdRegMoleculeRDKitImpl> allFrags = new ArrayList<CmpdRegMoleculeRDKitImpl>();
-	    // ROMol_Vect frags = RDKFuncs.getMolFrags(clone);
-		// for (int i = 0; i < frags.size(); i++) {
-		// 	RWMol frag = (RWMol) frags.get(i);
-		// 	CmpdRegMoleculeRDKitImpl fragWrapper = new CmpdRegMoleculeRDKitImpl(frag);
-		// 	allFrags.add(fragWrapper);
-		// }
+		RWMol clone = bbChemStructureService.getPartialiallySanizedRWMol(inputStructure.getMolStructure());
+		List<CmpdRegMoleculeRDKitImpl> allFrags = new ArrayList<CmpdRegMoleculeRDKitImpl>();
+	    ROMol_Vect frags = RDKFuncs.getMolFrags(clone);
+		for (int i = 0; i < frags.size(); i++) {
+			RWMol frag = (RWMol) frags.get(i);
+			CmpdRegMoleculeRDKitImpl fragWrapper = new CmpdRegMoleculeRDKitImpl(bbChemStructureService.getMolStructureFromRDKMol(frag), bbChemStructureService);
+			allFrags.add(fragWrapper);
+		}
 	
 		Map<Salt, Integer> saltCounts = new HashMap<Salt, Integer>();
 		Set<CmpdRegMoleculeRDKitImpl> unidentifiedFragments = new HashSet<CmpdRegMoleculeRDKitImpl>();
-		// for (CmpdRegMoleculeRDKitImpl fragment : allFrags){
-		// 	int[] cdIdMatches = searchMolStructures(fragment.getMolStructure(), StructureType.SALT, SearchType.DUPLICATE_TAUTOMER);
-		// 	if (cdIdMatches.length>0){
-		// 		Salt foundSalt = Salt.findSaltsByCdId(cdIdMatches[0]).getSingleResult();
-		// 		if (saltCounts.containsKey(foundSalt)) saltCounts.put(foundSalt, saltCounts.get(foundSalt)+1);
-		// 		else saltCounts.put(foundSalt, 1);
-		// 	}else{
-		// 		unidentifiedFragments.add(fragment);
-		// 	}
-		// }
+		for (CmpdRegMoleculeRDKitImpl fragment : allFrags){
+			int[] cdIdMatches = searchMolStructures(fragment.getMolStructure(), StructureType.SALT, SearchType.DUPLICATE_TAUTOMER);
+			if (cdIdMatches.length>0){
+				Salt foundSalt = Salt.findSaltsByCdId(cdIdMatches[0]).getSingleResult();
+				if (saltCounts.containsKey(foundSalt)) saltCounts.put(foundSalt, saltCounts.get(foundSalt)+1);
+				else saltCounts.put(foundSalt, 1);
+			}else{
+				unidentifiedFragments.add(fragment);
+			}
+		}
 		StrippedSaltDTO resultDTO = new StrippedSaltDTO();
 		resultDTO.setSaltCounts(saltCounts);
 		resultDTO.setUnidentifiedFragments(unidentifiedFragments);

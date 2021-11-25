@@ -8,6 +8,8 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ExternalStructureService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
+import org.RDKit.RDKFuncs;
+import org.RDKit.RWMol;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -21,13 +23,13 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	Logger logger = LoggerFactory.getLogger(CmpdRegMoleculeRDKitImpl.class);
 
-	RDKitStructure molecule;
-
-	private ExternalStructureService bbChemStructureService;
-
 	static {
 		System.loadLibrary("GraphMolWrap");
 	}
+	
+	RDKitStructure molecule;
+
+	private ExternalStructureService bbChemStructureService;
 
 	public CmpdRegMoleculeRDKitImpl(RDKitStructure molecule) {
 		this.molecule = molecule;
@@ -111,15 +113,22 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	@Override
 	public int getTotalCharge() {
-		logger.error("UNIMPLEMENTED getTotalCharge!!!!");
-		return -1;
-
+		if(this.molecule.getTotalCharge() != null) {
+			return this.molecule.getTotalCharge();
+		} else {
+			bbChemStructureService.populateDescriptors(this.molecule);
+			return this.molecule.getTotalCharge();
+		}
 	}
 
 	@Override
 	public String getSmiles() {
-		logger.error("UNIMPLEMENTED get smiles!!!!");
-		return "";
+		if(this.molecule.getSmiles() != null) {
+			return this.molecule.getSmiles();
+		} else {
+			bbChemStructureService.populateDescriptors(this.molecule);
+			return this.molecule.getSmiles();
+		}
 	}
 
 	@Override
@@ -175,7 +184,9 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	@Override
 	public void dearomatize() {
-		// No implemented
+		RWMol mol = bbChemStructureService.getPartialiallySanizedRWMol(this.molecule.getMol());
+		mol.Kekulize();
+		this.molecule.setMol(bbChemStructureService.getMolStructureFromRDKMol(mol));
 	}
 
 }
