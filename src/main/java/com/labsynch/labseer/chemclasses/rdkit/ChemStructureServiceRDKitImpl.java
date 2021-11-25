@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.AbstractRDKitStructure;
 import com.labsynch.labseer.domain.RDKitDryRunStructure;
 import com.labsynch.labseer.domain.RDKitSaltFormStructure;
 import com.labsynch.labseer.domain.RDKitSaltStructure;
@@ -75,13 +76,13 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 		return searchMols(molfile, structureType, cdHitList, searchType, simlarityPercent, maxResults);
 	}
 
-	private List<? extends RDKitStructure> searchRDkitStructures(String molfile, StructureType structureType, int[] inputCdIdHitList, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
+	private List<? extends AbstractRDKitStructure> searchRDkitStructures(String molfile, StructureType structureType, int[] inputCdIdHitList, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 
 		RDKitStructure serviceRDKitStructure = getRDKitStructureFromService(molfile);
 
 		// Create empty list
-		List<? extends RDKitStructure> rdkitStructures = new ArrayList<RDKitStructure>();
-		TypedQuery<? extends RDKitStructure> query;
+		List<? extends AbstractRDKitStructure> rdkitStructures = new ArrayList<AbstractRDKitStructure>();
+		TypedQuery<? extends AbstractRDKitStructure> query;
 		if (searchType == SearchType.FULL_TAUTOMER){
 			// FULL TAUTOMER hashes are stored on the pre reg hash column
 			// 
@@ -128,10 +129,10 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public CmpdRegMolecule[] searchMols(String molfile, StructureType structureType, int[] inputCdIdHitList, SearchType searchType, Float simlarityPercent, int maxResults)
 			throws CmpdRegMolFormatException {
 		
-			List<? extends RDKitStructure>  rdkitStructures = searchRDkitStructures(molfile, structureType, inputCdIdHitList, searchType, simlarityPercent, maxResults);
+			List<? extends AbstractRDKitStructure>  rdkitStructures = searchRDkitStructures(molfile, structureType, inputCdIdHitList, searchType, simlarityPercent, maxResults);
 
 			List<CmpdRegMolecule> resultList = new ArrayList<CmpdRegMolecule>();
-			for (RDKitStructure hit : rdkitStructures) {
+			for (AbstractRDKitStructure hit : rdkitStructures) {
 				resultList.add(new CmpdRegMoleculeRDKitImpl(hit.getMol()));
 			}
 			CmpdRegMolecule[] resultArray = new CmpdRegMolecule[resultList.size()];
@@ -154,7 +155,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 
-		List<? extends RDKitStructure> rdkitStructures = searchRDkitStructures(molfile, structureType,  new int[0] , searchType, simlarityPercent, maxResults);
+		List<? extends AbstractRDKitStructure> rdkitStructures = searchRDkitStructures(molfile, structureType,  new int[0] , searchType, simlarityPercent, maxResults);
 
 		// Create empty int hit list
 		int[] hits = new int[rdkitStructures.size()];
@@ -268,11 +269,24 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public int saveStructure(String molfile, StructureType structureType, boolean checkForDupes) {
+
+		Long cdId=0L;
 		try {
 			RDKitStructure rdkitStructure = getRDKitStructureFromService(molfile);
 
 			if (structureType == StructureType.PARENT){
-				rdkitStructure.persist();
+				// Can't type cast from subclass to superclass so we go to json and back
+				RDKitStructure rdStructure = RDKitStructure.fromJsonToRDKitStructure(rdkitStructure.toJson());
+
+				if(checkForDupes){
+					List<RDKitStructure> rdkitStructures =  RDKitStructure.findRDKitStructuresByRegEquals(rdStructure.getReg()).getResultList();
+					if(rdkitStructures.size() > 0){
+						logger.error("RDkit parent structure already exists with id "+ rdkitStructures.get(0).getId());
+						return 0;
+					}
+				}
+				rdStructure.persist();
+				cdId = rdStructure.getId();
 			} else if (structureType == StructureType.SALT_FORM){
 				// Can't type cast from subclass to superclass so we go to json and back
 				RDKitSaltFormStructure rdkitSaltFormStructure = RDKitSaltFormStructure.fromJsonToRDKitSaltFormStructure(rdkitStructure.toJson());
@@ -285,9 +299,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 					}
 				}
 				rdkitSaltFormStructure.persist();
-
-				// We can type cast from subclass to superclass
-				rdkitStructure = (RDKitStructure) rdkitSaltFormStructure;
+				cdId = rdkitSaltFormStructure.getId();
 			} else if (structureType == StructureType.SALT){
 				// Can't type cast from subclass to superclass so we go to json and back
 				RDKitSaltStructure rdkitStructureSalt = RDKitSaltStructure.fromJsonToRDKitSaltStructure(rdkitStructure.toJson());
@@ -300,9 +312,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 					}
 				}
 				rdkitStructureSalt.persist();
-
-				// We can type cast from subclass to superclass
-				rdkitStructure = (RDKitStructure) rdkitStructureSalt;
+				cdId = rdkitStructureSalt.getId();
 			} else if (structureType == StructureType.SALT_FORM){
 				// Can't type cast from subclass to superclass so we go to json and back
 				RDKitSaltFormStructure rdkitSaltFormStructure = RDKitSaltFormStructure.fromJsonToRDKitSaltFormStructure(rdkitStructure.toJson());
@@ -315,9 +325,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 					}
 				}
 				rdkitSaltFormStructure.persist();
-
-				// We can type cast from subclass to superclass
-				rdkitStructure = (RDKitStructure) rdkitSaltFormStructure;
+				cdId = rdkitSaltFormStructure.getId();
 			} else if (structureType == StructureType.DRY_RUN){
 				// Can't type cast from subclass to superclass so we go to json and back
 				RDKitDryRunStructure rdkitStructureDryRun = RDKitDryRunStructure.fromJsonToRDKitDryRunStructure(rdkitStructure.toJson());
@@ -330,12 +338,10 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 					}
 				}
 				rdkitStructureDryRun.persist();
-
-				// We can type cast from subclass to superclass
-				rdkitStructure = (RDKitStructure) rdkitStructureDryRun;
+				cdId = rdkitStructureDryRun.getId();
 			}
 
-			return toIntExact(rdkitStructure.getId());
+			return toIntExact(cdId);
 		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error saving structure: " + e.getMessage());
 			return -1;
@@ -388,15 +394,15 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 				rdkitStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
 				rdkitStructureSaved.persist();
 			} else if (structureType == StructureType.SALT_FORM){
-				RDKitStructure rdkitSaltFormStructureSaved = RDKitSaltFormStructure.findRDKitSaltFormStructure(id);
+				RDKitSaltFormStructure rdkitSaltFormStructureSaved = RDKitSaltFormStructure.findRDKitSaltFormStructure(id);
 				rdkitSaltFormStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
 				rdkitSaltFormStructureSaved.persist();
 			} else if (structureType == StructureType.SALT){
-				RDKitStructure rdkitSaltStructureSaved = RDKitSaltStructure.findRDKitSaltStructure(id);
+				RDKitSaltStructure rdkitSaltStructureSaved = RDKitSaltStructure.findRDKitSaltStructure(id);
 				rdkitSaltStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
 				rdkitSaltStructureSaved.persist();
 			} else if (structureType == StructureType.DRY_RUN){
-				RDKitStructure rdkitDryRunStructureSaved = RDKitDryRunStructure.findRDKitDryRunStructure(id);
+				RDKitDryRunStructure rdkitDryRunStructureSaved = RDKitDryRunStructure.findRDKitDryRunStructure(id);
 				rdkitDryRunStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
 				rdkitDryRunStructureSaved.persist();
 			}
