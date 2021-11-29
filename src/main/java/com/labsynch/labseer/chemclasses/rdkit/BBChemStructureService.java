@@ -184,7 +184,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 	}
 
 	@Override
-	public String getSDFFromRDkitStructure(RDKitStructure rdkitStructure) throws IOException{
+	public String getSDF(RDKitStructure rdkitStructure) throws IOException{
 		// Read the preprocessor settings as json
 		JsonNode jsonNode = getPreprocessorSettings();
 

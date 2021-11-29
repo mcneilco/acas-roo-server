@@ -50,7 +50,7 @@ public class CmpdRegSDFWriterRDKitImpl implements CmpdRegSDFWriter {
     public boolean writeMol(CmpdRegMolecule molecule) throws CmpdRegMolFormatException, IOException {
         CmpdRegMoleculeRDKitImpl molWrapper = (CmpdRegMoleculeRDKitImpl) molecule;
         try {
-            this.writer.write(bbChemStructureServices.getSDFFromRDkitStructure(molWrapper.molecule));
+            this.writer.write(bbChemStructureServices.getSDF(molWrapper.molecule));
         } catch (Exception e) {
             logger.error("Unable to write mol", e);
             return false;
