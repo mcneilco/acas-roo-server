@@ -356,7 +356,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public boolean checkForSalt(String molfile) throws CmpdRegMolFormatException {
 		boolean foundNonCovalentSalt = false;
-		RWMol mol = bbChemStructureService.getPartialiallySanizedRWMol(molfile);
+		RWMol mol = bbChemStructureService.getPartialiallySanitizedRWMol(molfile);
 		ROMol_Vect frags = RDKFuncs.getMolFrags(mol);
 		if(frags.size() > 1.0) {
 			foundNonCovalentSalt = true;
@@ -462,7 +462,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public String hydrogenizeMol(String structure, String inputFormat, String method)
 			throws IOException, CmpdRegMolFormatException {
-			RWMol mol = bbChemStructureService.getPartialiallySanizedRWMol(structure);
+			RWMol mol = bbChemStructureService.getPartialiallySanitizedRWMol(structure);
 			if (method.equalsIgnoreCase("HYDROGENIZE")){
 				RDKFuncs.addHs(mol);		
 			} else {
@@ -483,7 +483,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException {
-		RWMol clone = bbChemStructureService.getPartialiallySanizedRWMol(inputStructure.getMolStructure());
+		RWMol clone = bbChemStructureService.getPartialiallySanitizedRWMol(inputStructure.getMolStructure());
 		List<CmpdRegMoleculeRDKitImpl> allFrags = new ArrayList<CmpdRegMoleculeRDKitImpl>();
 	    ROMol_Vect frags = RDKFuncs.getMolFrags(clone);
 		for (int i = 0; i < frags.size(); i++) {

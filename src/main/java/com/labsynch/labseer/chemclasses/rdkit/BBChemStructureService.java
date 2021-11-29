@@ -47,7 +47,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 	@Override
     public void populateDescriptors(RDKitStructure rdKitStructure) {
 
-		RWMol mol = getPartialiallySanizedRWMol(rdKitStructure.getMol());
+		RWMol mol = getPartialiallySanitizedRWMol(rdKitStructure.getMol());
 
 		// https://www.rdkit.org/docs/cppapi/classRDKit_1_1ROMol.html#a48ab4e1692b503eda6d31c5bb10fe0bb
 		// calculates any of our lazy properties
@@ -301,7 +301,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 	}
 
 	@Override
-	public RWMol getPartialiallySanizedRWMol(String molstructure) {
+	public RWMol getPartialiallySanitizedRWMol(String molstructure) {
 				// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a3a2051f80037d7633c3ea4cc72f58856
 		// MolBlockToMol
 		// molBlock: string containing the Mol block

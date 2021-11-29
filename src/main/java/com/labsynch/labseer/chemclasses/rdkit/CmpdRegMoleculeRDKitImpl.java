@@ -183,7 +183,7 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 
 	@Override
 	public void dearomatize() {
-		RWMol mol = bbChemStructureService.getPartialiallySanizedRWMol(this.molecule.getMol());
+		RWMol mol = bbChemStructureService.getPartialiallySanitizedRWMol(this.molecule.getMol());
 		mol.Kekulize();
 		this.molecule.setMol(bbChemStructureService.getMolStructureFromRDKMol(mol));
 	}
