@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
+import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StandardizerException;
 
 @Service
 public interface ChemStructureService {
@@ -67,13 +70,15 @@ public interface ChemStructureService {
 
 	StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException;
 
-	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, IOException;
+	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, StandardizerException, IOException;
 
 	public boolean compareStructures(String preMolStruct, String postMolStruct, SearchType searchType);
 
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException;
 
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException;
+
+	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException;
 
 	public enum SearchType {
 		DUPLICATE, DUPLICATE_TAUTOMER, DUPLICATE_NO_TAUTOMER, STEREO_IGNORE, FULL_TAUTOMER,
@@ -88,11 +93,17 @@ public interface ChemStructureService {
 	}
 
 	public enum StructureType {
-		PARENT("PARENT"), SALT("SALT"), SALT_FORM("SALT_FORM"), DRY_RUN("DRY_RUN_COMPOUND"), COMPOUND("COMPOUND"), QC_COMPOUND("QC_COMPOUND");
+		PARENT("PARENT"), SALT("SALT"), SALT_FORM("SALT_FORM"), DRY_RUN("DRY_RUN_COMPOUND"), COMPOUND("COMPOUND"), STANDARDIZATION_DRY_RUN("STANDARDIZATION_DRY_RUN_COMPOUND");
 
-		public final String table;
-		private StructureType(String table) {
-        	this.table = table;
+		// Note the entity table like "PARENT", "SALT_FORM"...etc.
+		// are where the actual entity is stored.  This can differ from
+		// what the implementation often call the "structure table".  The Structure
+		// table may or may not exist as part of the chemical entities implementation.
+		// e.g. Indigo stores structures directly in the parent table indexed by the bingo 
+		// cartridge.  Jchem uses a table called "parent_structure".
+		public final String entityTable;
+		private StructureType(String entityTable) {
+        	this.entityTable = entityTable;
 		}
 
 		//IGNORES case on purpose
@@ -101,6 +112,13 @@ public interface ChemStructureService {
 							.filter(type -> str.trim().equalsIgnoreCase(type.name()))
 							.findFirst();
 		}
+	}
+
+	default boolean isIdenticalDisplay(String molStructure, String molStructure2) {
+		//strip the first 2 lines of each mol and do a string equals
+		String mol1 = molStructure.substring(StringUtils.ordinalIndexOf(molStructure, "\n", 2)+1);
+		String mol2 = molStructure2.substring(StringUtils.ordinalIndexOf(molStructure2, "\n", 2)+1);
+		return(mol1.equals(mol2));
 	}
 	
 }

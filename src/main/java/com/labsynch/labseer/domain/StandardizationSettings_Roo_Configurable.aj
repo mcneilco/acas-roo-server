@@ -3,11 +3,11 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.QcCompound;
+import com.labsynch.labseer.domain.StandardizationSettings;
 import org.springframework.beans.factory.annotation.Configurable;
 
-privileged aspect QcCompound_Roo_Configurable {
+privileged aspect StandardizationSettings_Roo_Configurable {
     
-    declare @type: QcCompound: @Configurable;
+    declare @type: StandardizationSettings: @Configurable;
     
 }

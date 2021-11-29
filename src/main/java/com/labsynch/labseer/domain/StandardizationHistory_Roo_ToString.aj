@@ -3,13 +3,13 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.QcCompound;
+import com.labsynch.labseer.domain.StandardizationHistory;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-privileged aspect QcCompound_Roo_ToString {
+privileged aspect StandardizationHistory_Roo_ToString {
     
-    public String QcCompound.toString() {
+    public String StandardizationHistory.toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     

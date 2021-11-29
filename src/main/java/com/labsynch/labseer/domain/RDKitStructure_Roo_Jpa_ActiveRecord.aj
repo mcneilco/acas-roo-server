@@ -5,22 +5,11 @@ package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.RDKitStructure;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 
 privileged aspect RDKitStructure_Roo_Jpa_ActiveRecord {
     
-    @PersistenceContext
-    transient EntityManager RDKitStructure.entityManager;
-    
-    public static final List<String> RDKitStructure.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "preReg", "reg", "mol", "recordedDate");
-    
-    public static final EntityManager RDKitStructure.entityManager() {
-        EntityManager em = new RDKitStructure().entityManager;
-        if (em == null) throw new IllegalStateException("Entity manager has not been injected (is the Spring Aspects JAR configured as an AJC/AJDT aspects library?)");
-        return em;
-    }
+    public static final List<String> RDKitStructure.fieldNames4OrderClauseFilter = java.util.Arrays.asList("");
     
     public static long RDKitStructure.countRDKitStructures() {
         return entityManager().createQuery("SELECT COUNT(o) FROM RDKitStructure o", Long.class).getSingleResult();
@@ -59,35 +48,6 @@ privileged aspect RDKitStructure_Roo_Jpa_ActiveRecord {
             }
         }
         return entityManager().createQuery(jpaQuery, RDKitStructure.class).setFirstResult(firstResult).setMaxResults(maxResults).getResultList();
-    }
-    
-    @Transactional
-    public void RDKitStructure.persist() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.persist(this);
-    }
-    
-    @Transactional
-    public void RDKitStructure.remove() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        if (this.entityManager.contains(this)) {
-            this.entityManager.remove(this);
-        } else {
-            RDKitStructure attached = RDKitStructure.findRDKitStructure(this.id);
-            this.entityManager.remove(attached);
-        }
-    }
-    
-    @Transactional
-    public void RDKitStructure.flush() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.flush();
-    }
-    
-    @Transactional
-    public void RDKitStructure.clear() {
-        if (this.entityManager == null) this.entityManager = entityManager();
-        this.entityManager.clear();
     }
     
     @Transactional

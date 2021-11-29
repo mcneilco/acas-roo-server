@@ -27,6 +27,7 @@ import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.MolInputDTO;
 import com.labsynch.labseer.dto.ParentAliasDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.service.SearchFormService;
 
@@ -56,6 +57,9 @@ public class ApiStructureServicesController {
 		} catch (CmpdRegMolFormatException e) {
 			logger.error(e.toString());
 			return new ResponseEntity<String>("Cannot read input molfile: "+e.toString(), headers, HttpStatus.BAD_REQUEST);
+		} catch (StandardizerException e) {
+			logger.error(e.toString());
+			return new ResponseEntity<String>("Standardization ERROR: "+e.toString(), headers, HttpStatus.BAD_REQUEST);
 		}
 		output.setStructure(standardizedMol);
 		output.setFormat("mol");

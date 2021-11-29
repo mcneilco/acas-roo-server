@@ -50,6 +50,7 @@ import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
 import com.labsynch.labseer.exceptions.JsonParseException;
 import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
 import com.labsynch.labseer.exceptions.SaltedCompoundException;
+import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.exceptions.UniqueNotebookException;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -67,7 +68,7 @@ public class MetalotServiceImpl implements MetalotService {
 
 	@Autowired
 	private CorpNameService corpNameService;
-
+    
 	@Autowired
 	private ParentStructureServiceImpl parentStructureServiceImpl;
 
@@ -146,6 +147,12 @@ public class MetalotServiceImpl implements MetalotService {
 			saltFormError.setMessage("Barcode already exists as a vial.");
 			logger.error(saltFormError.getMessage());
 			errors.add(saltFormError);
+		} catch (StandardizerException e) {
+			ErrorMessage standardizerError = new ErrorMessage();
+			standardizerError.setLevel("error");
+			standardizerError.setMessage("Standardizer Error: " + e.getMessage());
+			logger.error(standardizerError.getMessage());
+			errors.add(standardizerError);
 		}catch (Exception e) {
 			ErrorMessage genericError = new ErrorMessage();
 			genericError.setLevel("error");
@@ -163,7 +170,7 @@ public class MetalotServiceImpl implements MetalotService {
 	public MetalotReturn processAndSave(Metalot metaLot, MetalotReturn mr, ArrayList<ErrorMessage> errors) 
 			throws UniqueNotebookException, DupeParentException, JsonParseException, 
 			DupeSaltFormCorpNameException, DupeSaltFormStructureException, SaltFormMolFormatException, 
-			SaltedCompoundException, IOException, CmpdRegMolFormatException {
+			SaltedCompoundException, IOException, CmpdRegMolFormatException, StandardizerException {
 
 		logger.info("attempting to save the metaLot. ");
 
@@ -218,7 +225,6 @@ public class MetalotServiceImpl implements MetalotService {
 			String molStructure;
 			if (propertiesUtilService.getUseExternalStandardizerConfig()){
 				molStructure = chemService.standardizeStructure(parent.getMolStructure());
-				parent.setMolStructure(molStructure);
 			}
 			int dupeParentCount = 0;			
 			if (!metaLot.isSkipParentDupeCheck()){

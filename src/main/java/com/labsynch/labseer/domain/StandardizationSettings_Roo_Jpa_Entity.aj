@@ -3,7 +3,7 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.QcCompound;
+import com.labsynch.labseer.domain.StandardizationSettings;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,32 +11,32 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Version;
 
-privileged aspect QcCompound_Roo_Jpa_Entity {
+privileged aspect StandardizationSettings_Roo_Jpa_Entity {
     
-    declare @type: QcCompound: @Entity;
+    declare @type: StandardizationSettings: @Entity;
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private Long QcCompound.id;
+    private Long StandardizationSettings.id;
     
     @Version
     @Column(name = "version")
-    private Integer QcCompound.version;
+    private Integer StandardizationSettings.version;
     
-    public Long QcCompound.getId() {
+    public Long StandardizationSettings.getId() {
         return this.id;
     }
     
-    public void QcCompound.setId(Long id) {
+    public void StandardizationSettings.setId(Long id) {
         this.id = id;
     }
     
-    public Integer QcCompound.getVersion() {
+    public Integer StandardizationSettings.getVersion() {
         return this.version;
     }
     
-    public void QcCompound.setVersion(Integer version) {
+    public void StandardizationSettings.setVersion(Integer version) {
         this.version = version;
     }
     
