@@ -1,4 +1,4 @@
-package com.labsynch.labseer.service;
+package com.labsynch.labseer.chemclasses.rdkit;
 import java.io.IOException;
 import java.util.List;
 

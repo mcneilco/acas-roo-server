@@ -11,7 +11,6 @@ import java.util.Map;
 
 import com.labsynch.labseer.domain.RDKitStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.service.ExternalStructureService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 

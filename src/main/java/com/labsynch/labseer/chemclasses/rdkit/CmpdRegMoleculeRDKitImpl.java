@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.RDKitStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.service.ExternalStructureService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 import org.RDKit.RDKFuncs;

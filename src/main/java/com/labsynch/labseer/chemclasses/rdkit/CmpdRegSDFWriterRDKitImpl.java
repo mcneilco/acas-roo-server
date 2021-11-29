@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.service.ExternalStructureService;
 
 
 @Configurable

@@ -8,7 +8,6 @@ import java.util.Scanner;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.service.ExternalStructureService;
 
 public class CmpdRegSDFReaderRDKitImpl implements CmpdRegSDFReader {
 
