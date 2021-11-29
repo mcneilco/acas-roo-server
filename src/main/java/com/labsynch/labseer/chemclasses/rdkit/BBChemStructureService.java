@@ -33,8 +33,8 @@ import org.springframework.stereotype.Service;
 
 @Component
 public class BBChemStructureService  implements ExternalStructureService {
-    
-    Logger logger = LoggerFactory.getLogger(BBChemStructureService.class);
+
+	Logger logger = LoggerFactory.getLogger(BBChemStructureService.class);
 
 	static {
 		System.loadLibrary("GraphMolWrap");
@@ -45,7 +45,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 
 	
 	@Override
-    public void populateDescriptors(RDKitStructure rdKitStructure) {
+	public void populateDescriptors(RDKitStructure rdKitStructure) {
 
 		RWMol mol = getPartialiallySanitizedRWMol(rdKitStructure.getMol());
 
@@ -98,9 +98,9 @@ public class BBChemStructureService  implements ExternalStructureService {
 
 	@Override
 	public JsonNode getPreprocessorSettings() throws IOException {
-			ObjectMapper objectMapper = new ObjectMapper();
-			JsonNode jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
-			return jsonNode;
+		ObjectMapper objectMapper = new ObjectMapper();
+		JsonNode jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
+		return jsonNode;
 	}
 
 	@Override
@@ -302,7 +302,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 
 	@Override
 	public RWMol getPartialiallySanitizedRWMol(String molstructure) {
-				// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a3a2051f80037d7633c3ea4cc72f58856
+		// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a3a2051f80037d7633c3ea4cc72f58856
 		// MolBlockToMol
 		// molBlock: string containing the Mol block
 		// sanitize: (optional) toggles sanitization of the molecule. Defaults to True.
@@ -316,8 +316,8 @@ public class BBChemStructureService  implements ExternalStructureService {
 		// operationThatFailed	: the first (if any) sanitization operation that fails is set here. The values are taken from the SanitizeFlags enum. On success, the value is SanitizeFlags::SANITIZE_NONE
 		// sanitizeOps	: the bits here are used to set which sanitization operations are carried out. The elements of the SanitizeFlags enum define the operations.
 		int ops = (SanitizeFlags.SANITIZE_ALL.swigValue() ^ SanitizeFlags.SANITIZE_CLEANUP.swigValue() ^
-			   SanitizeFlags.SANITIZE_PROPERTIES.swigValue() ^ SanitizeFlags.SANITIZE_KEKULIZE.swigValue() ^
-               SanitizeFlags.SANITIZE_FINDRADICALS.swigValue() ^ SanitizeFlags.SANITIZE_CLEANUPCHIRALITY.swigValue());
+		SanitizeFlags.SANITIZE_PROPERTIES.swigValue() ^ SanitizeFlags.SANITIZE_KEKULIZE.swigValue() ^
+		SanitizeFlags.SANITIZE_FINDRADICALS.swigValue() ^ SanitizeFlags.SANITIZE_CLEANUPCHIRALITY.swigValue());
 		RDKFuncs.sanitizeMol(mol, ops);
 
 		return mol;
