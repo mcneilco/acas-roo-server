@@ -21,7 +21,7 @@ public interface ExternalStructureService {
     
     public String getSDFFromRDkitStructure(RDKitStructure rdkitStructure) throws IOException;
 
-    public List<RDKitStructure> getRDKitStructuresFromSDFService(String molfile) throws CmpdRegMolFormatException;
+    public List<RDKitStructure> parseSDF(String molfile) throws CmpdRegMolFormatException;
     
     public RWMol getPartialiallySanitizedRWMol(String molfile);
 
