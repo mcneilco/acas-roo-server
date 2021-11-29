@@ -215,7 +215,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 				if(checkForDupes){
 					List<RDKitStructure> rdkitStructures =  RDKitStructure.findRDKitStructuresByRegEquals(rdStructure.getReg()).getResultList();
 					if(rdkitStructures.size() > 0){
-						logger.error("RDkit parent structure already exists with id "+ rdkitStructures.get(0).getId());
+						logger.error("RDkit structure for " + structureType + " type already exists with id "+ rdkitStructures.get(0).getId());
 						return 0;
 					}
 				}
