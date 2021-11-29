@@ -19,8 +19,8 @@ public class CmpdRegSDFWriterRDKitImpl implements CmpdRegSDFWriter {
 
     Logger logger = LoggerFactory.getLogger(CmpdRegSDFWriterRDKitImpl.class);
 
-	@Autowired
-	private ExternalStructureService bbChemStructureServices;
+    @Autowired
+    private ExternalStructureService bbChemStructureServices;
 
     private FileWriter writer;
 
@@ -28,11 +28,11 @@ public class CmpdRegSDFWriterRDKitImpl implements CmpdRegSDFWriter {
 
     public CmpdRegSDFWriterRDKitImpl(String fileName) {
         try {
-			this.writer = new FileWriter(fileName);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+            this.writer = new FileWriter(fileName);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
             logger.error("Unable to write RDKit sdf", e);
-		}
+        }
     }
 
     public CmpdRegSDFWriterRDKitImpl() {
