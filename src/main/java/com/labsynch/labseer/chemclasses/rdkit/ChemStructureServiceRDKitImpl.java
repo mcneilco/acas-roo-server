@@ -82,7 +82,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	private List<? extends AbstractRDKitStructure> searchRDkitStructures(String molfile, StructureType structureType, int[] inputCdIdHitList, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 
-		RDKitStructure serviceRDKitStructure = bbChemStructureService.getRDKitStructureFromProcessService(molfile);
+		RDKitStructure serviceRDKitStructure = bbChemStructureService.getProcessedStructure(molfile);
 
 		// Create empty list
 		List<? extends AbstractRDKitStructure> rdkitStructures = new ArrayList<AbstractRDKitStructure>();
@@ -206,7 +206,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 		Long cdId=0L;
 		try {
-			RDKitStructure rdkitStructure = bbChemStructureService.getRDKitStructureFromProcessService(molfile);
+			RDKitStructure rdkitStructure = bbChemStructureService.getProcessedStructure(molfile);
 
 			if (structureType == StructureType.PARENT){
 				// Can't type cast from subclass to superclass so we go to json and back
@@ -285,7 +285,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public double getMolWeight(String molStructure) throws CmpdRegMolFormatException {
 		// Calculates the average molecular weight of a molecule
-		return bbChemStructureService.getRDKitStructureFromProcessService(molStructure).getAverageMolWeight();
+		return bbChemStructureService.getProcessedStructure(molStructure).getAverageMolWeight();
 	}
 
 	@Override
@@ -295,12 +295,12 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public String toMolfile(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getRDKitStructureFromProcessService(molStructure).getMol();
+		return bbChemStructureService.getProcessedStructure(molStructure).getMol();
 	}
 
 	@Override
 	public String toSmiles(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getRDKitStructureFromProcessService(molStructure).getSmiles();
+		return bbChemStructureService.getProcessedStructure(molStructure).getSmiles();
 	}
 
 	@Override
@@ -312,7 +312,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public String toInchi(String molStructure) {
 		try {
-			return bbChemStructureService.getRDKitStructureFromProcessService(molStructure).getInchi();
+			return bbChemStructureService.getProcessedStructure(molStructure).getInchi();
 		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error calculating inchi: ", e);
 			return null;
@@ -323,7 +323,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	public boolean updateStructure(String molStructure, StructureType structureType, int cdId) {
 		Long id= new Long(cdId);
 		try {
-			RDKitStructure rdkitStructureUpdated = bbChemStructureService.getRDKitStructureFromProcessService(molStructure);
+			RDKitStructure rdkitStructureUpdated = bbChemStructureService.getProcessedStructure(molStructure);
 			if (structureType == StructureType.PARENT){
 				RDKitStructure rdkitStructureSaved = RDKitStructure.findRDKitStructure(id);
 				rdkitStructureSaved.updateStructureInfo(rdkitStructureUpdated.getMol(), rdkitStructureUpdated.getReg(), rdkitStructureUpdated.getPreReg());
@@ -350,7 +350,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public String getMolFormula(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getRDKitStructureFromProcessService(molStructure).getMolecularFormula();
+		return bbChemStructureService.getProcessedStructure(molStructure).getMolecularFormula();
 	}
 
 	@Override
@@ -377,7 +377,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public double getExactMass(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getRDKitStructureFromProcessService(molStructure).getExactMolWeight();
+		return bbChemStructureService.getProcessedStructure(molStructure).getExactMolWeight();
 	}
 
 	@Override
@@ -566,8 +566,8 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	@Override
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException {
 		try {
-			RDKitStructure queryMolRDKitStructure = bbChemStructureService.getRDKitStructureFromProcessService(queryMol);
-			RDKitStructure targetMolRDKitStructure = bbChemStructureService.getRDKitStructureFromProcessService(targetMol);
+			RDKitStructure queryMolRDKitStructure = bbChemStructureService.getProcessedStructure(queryMol);
+			RDKitStructure targetMolRDKitStructure = bbChemStructureService.getProcessedStructure(targetMol);
 			return queryMolRDKitStructure.getReg() == targetMolRDKitStructure.getReg();
 		} catch (Exception e) {
 			logger.error("Error in standardizedMolCompare: ", e);

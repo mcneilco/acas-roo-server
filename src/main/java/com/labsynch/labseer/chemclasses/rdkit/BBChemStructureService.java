@@ -104,7 +104,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 	}
 
 	@Override
-	public RDKitStructure getRDKitStructureFromProcessService(String molfile) throws CmpdRegMolFormatException {
+	public RDKitStructure getProcessedStructure(String molfile) throws CmpdRegMolFormatException {
 		RDKitStructure rdkitStructure = new RDKitStructure();
 
 		// Read the preprocessor settings as json
