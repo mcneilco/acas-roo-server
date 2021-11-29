@@ -237,7 +237,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 	}
 
 	@Override
-	public List<RDKitStructure> getRDKitStructuresFromSDFService(String molfile) throws CmpdRegMolFormatException {
+	public List<RDKitStructure> parseSDF(String molfile) throws CmpdRegMolFormatException {
 		List<RDKitStructure> rdkitStructures = new ArrayList<RDKitStructure>();
 
 		// Read the preprocessor settings as json

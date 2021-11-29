@@ -37,7 +37,7 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 	public CmpdRegMoleculeRDKitImpl(String mol, ExternalStructureService bbChemStructureService) {
 		this.bbChemStructureService = bbChemStructureService;
 		try {
-			this.molecule = bbChemStructureService.getRDKitStructuresFromSDFService(mol).get(0);
+			this.molecule = bbChemStructureService.parseSDF(mol).get(0);
 		} catch (CmpdRegMolFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
