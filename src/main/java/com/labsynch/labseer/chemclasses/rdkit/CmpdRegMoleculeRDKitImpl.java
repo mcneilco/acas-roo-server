@@ -34,10 +34,10 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 		this.molecule = molecule;
 	}
 
-	public CmpdRegMoleculeRDKitImpl(String mol, ExternalStructureService bbChemStructureService) {
+	public CmpdRegMoleculeRDKitImpl(String singleSDF, ExternalStructureService bbChemStructureService) {
 		this.bbChemStructureService = bbChemStructureService;
 		try {
-			this.molecule = bbChemStructureService.parseSDF(mol).get(0);
+			this.molecule = bbChemStructureService.parseSDF(singleSDF).get(0);
 		} catch (CmpdRegMolFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
