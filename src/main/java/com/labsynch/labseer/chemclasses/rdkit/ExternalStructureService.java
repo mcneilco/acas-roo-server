@@ -23,7 +23,7 @@ public interface ExternalStructureService {
 
     public List<RDKitStructure> parseSDF(String molfile) throws CmpdRegMolFormatException;
     
-    public RWMol getPartialiallySanitizedRWMol(String molfile);
+    public RWMol getPartiallySanitizedRWMol(String molfile);
 
     public String getMolStructureFromRDKMol(ROMol rdkMol);
 
