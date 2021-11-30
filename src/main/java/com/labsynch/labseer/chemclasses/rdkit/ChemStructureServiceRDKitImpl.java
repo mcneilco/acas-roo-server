@@ -57,7 +57,7 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 	private PropertiesUtilService propertiesUtilService;
 
 	@Autowired
-	private ExternalStructureService bbChemStructureService;
+	private BBChemStructureService bbChemStructureService;
 
 	@Autowired
 	private JdbcTemplate basicJdbcTemplate;

@@ -80,8 +80,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		// canonical	: if false, no attempt will be made to canonicalize the SMILES
 		// allBondsExplicit	: if true, symbols will be included for all bonds.
 		// allHsExplicit	: if true, hydrogen counts will be provided for every atom.
-		// doRandom : undocumented as of 2021-11-29 but default is false
-		rdKitStructure.setSmiles(RDKFuncs.MolToSmiles(mol, true, false, -1, true, false, false, false, false));
+		rdKitStructure.setSmiles(RDKFuncs.MolToSmiles(mol, true, false, -1, true, false, false, false));
 
 		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1MolOps.html#a3c5021831c089f1dfacf1f3ce2ff9303
 		rdKitStructure.setTotalCharge(RDKFuncs.getFormalCharge(mol));
