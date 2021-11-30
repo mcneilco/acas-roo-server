@@ -196,7 +196,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 		}
 		String url = urlNode.asText();
 
-		// Get the standardization actions and options
+		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
 
@@ -257,7 +257,7 @@ public class BBChemStructureService  implements ExternalStructureService {
 		}
 		String url = urlNode.asText();
 
-		// Get the standardization actions and options
+		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
 
