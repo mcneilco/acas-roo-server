@@ -92,7 +92,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		if (searchType == SearchType.FULL_TAUTOMER){
 			// FULL TAUTOMER hashes are stored on the pre reg hash column
 			if(structureType == StructureType.PARENT) {
-				query = BBChemParentStructure.findBBChemStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
+				query = BBChemParentStructure.findBBChemParentStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
 			} else if (structureType == StructureType.SALT) {
 				query = BBChemSaltStructure.findBBChemSaltStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
 			} else if (structureType == StructureType.SALT_FORM) {
@@ -105,7 +105,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		}else if (searchType == SearchType.DUPLICATE_TAUTOMER | searchType == SearchType.EXACT){
 			// DUPLICATE TAUTOMER hashes are stored on the reg column
 			if(structureType == StructureType.PARENT) {
-				query = BBChemParentStructure.findBBChemStructuresByRegEquals(serviceBBChemStructure.getReg());
+				query = BBChemParentStructure.findBBChemParentStructuresByRegEquals(serviceBBChemStructure.getReg());
 			} else if (structureType == StructureType.SALT) {
 				query = BBChemSaltStructure.findBBChemSaltStructuresByRegEquals(serviceBBChemStructure.getReg());
 			} else if (structureType == StructureType.SALT_FORM) {
@@ -212,10 +212,10 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 			if (structureType == StructureType.PARENT){
 				// Can't type cast from subclass to superclass so we go to json and back
-				BBChemParentStructure bbStructure = BBChemParentStructure.fromJsonToBBChemStructure(bbChemStructure.toJson());
+				BBChemParentStructure bbStructure = BBChemParentStructure.fromJsonToBBChemParentStructure(bbChemStructure.toJson());
 
 				if(checkForDupes){
-					List<BBChemParentStructure> bbChemStructures =  BBChemParentStructure.findBBChemStructuresByRegEquals(bbStructure.getReg()).getResultList();
+					List<BBChemParentStructure> bbChemStructures =  BBChemParentStructure.findBBChemParentStructuresByRegEquals(bbStructure.getReg()).getResultList();
 					if(bbChemStructures.size() > 0){
 						logger.error("BBChem structure for " + structureType + " type already exists with id "+ bbChemStructures.get(0).getId());
 						return 0;
@@ -327,7 +327,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		try {
 			BBChemParentStructure bbChemStructureUpdated = bbChemStructureService.getProcessedStructure(molStructure);
 			if (structureType == StructureType.PARENT){
-				BBChemParentStructure bbChemStructureSaved = BBChemParentStructure.findBBChemStructure(id);
+				BBChemParentStructure bbChemStructureSaved = BBChemParentStructure.findBBChemParentStructure(id);
 				bbChemStructureSaved.updateStructureInfo(bbChemStructureUpdated.getMol(), bbChemStructureUpdated.getReg(), bbChemStructureUpdated.getPreReg());
 				bbChemStructureSaved.persist();
 			} else if (structureType == StructureType.SALT_FORM){
@@ -386,7 +386,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public boolean deleteStructure(StructureType structureType, int cdId) {
 		Long id = new Long(cdId);
 		if (structureType == StructureType.PARENT){
-			BBChemParentStructure bbChemStructure = BBChemParentStructure.findBBChemStructure(id);
+			BBChemParentStructure bbChemStructure = BBChemParentStructure.findBBChemParentStructure(id);
 			bbChemStructure.remove();
 		} else if (structureType == StructureType.SALT_FORM){
 			BBChemSaltFormStructure bbChemSaltFormStructure = BBChemSaltFormStructure.findBBChemSaltFormStructure(id);
