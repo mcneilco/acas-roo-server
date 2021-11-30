@@ -3,11 +3,11 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.BBChemStructure;
+import com.labsynch.labseer.domain.BBChemParentStructure;
 import org.springframework.beans.factory.annotation.Configurable;
 
-privileged aspect BBChemStructure_Roo_Configurable {
+privileged aspect BBChemParentStructure_Roo_Configurable {
     
-    declare @type: BBChemStructure: @Configurable;
+    declare @type: BBChemParentStructure: @Configurable;
     
 }

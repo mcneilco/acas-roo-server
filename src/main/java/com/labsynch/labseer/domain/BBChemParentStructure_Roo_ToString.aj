@@ -3,13 +3,13 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.BBChemStructure;
+import com.labsynch.labseer.domain.BBChemParentStructure;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-privileged aspect BBChemStructure_Roo_ToString {
+privileged aspect BBChemParentStructure_Roo_ToString {
     
-    public String BBChemStructure.toString() {
+    public String BBChemParentStructure.toString() {
         return ReflectionToStringBuilder.toString(this, ToStringStyle.SHORT_PREFIX_STYLE);
     }
     

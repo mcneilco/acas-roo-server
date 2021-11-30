@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.labsynch.labseer.domain.BBChemStructure;
+import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
@@ -45,7 +45,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 	
 	@Override
-	public void populateDescriptors(BBChemStructure bbChemStructure) {
+	public void populateDescriptors(BBChemParentStructure bbChemStructure) {
 
 		RWMol mol = getPartiallySanitizedRWMol(bbChemStructure.getMol());
 
@@ -104,8 +104,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	@Override
-	public BBChemStructure getProcessedStructure(String molfile) throws CmpdRegMolFormatException {
-		BBChemStructure bbChemStructure = new BBChemStructure();
+	public BBChemParentStructure getProcessedStructure(String molfile) throws CmpdRegMolFormatException {
+		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
 
 		// Read the preprocessor settings as json
 		JsonNode jsonNode = null;
@@ -181,7 +181,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	@Override
-	public String getSDF(BBChemStructure bbChemStructure) throws IOException{
+	public String getSDF(BBChemParentStructure bbChemStructure) throws IOException{
 		// Read the preprocessor settings as json
 		JsonNode jsonNode = getPreprocessorSettings();
 
@@ -234,8 +234,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	@Override
-	public List<BBChemStructure> parseSDF(String molfile) throws CmpdRegMolFormatException {
-		List<BBChemStructure> bbChemStructures = new ArrayList<BBChemStructure>();
+	public List<BBChemParentStructure> parseSDF(String molfile) throws CmpdRegMolFormatException {
+		List<BBChemParentStructure> bbChemStructures = new ArrayList<BBChemParentStructure>();
 
 		// Read the preprocessor settings as json
 		JsonNode jsonNode = null;
@@ -273,7 +273,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			ObjectMapper responseMapper = new ObjectMapper();
 			JsonNode responseNode = responseMapper.readTree(postResponse);
 			for (JsonNode responseJsonNode : responseNode)  {
-				BBChemStructure bbChemStructure = new BBChemStructure();
+				BBChemParentStructure bbChemStructure = new BBChemParentStructure();
 				JsonNode molNode = responseJsonNode.get("mol");
 				bbChemStructure.setMol(molNode.asText());
 

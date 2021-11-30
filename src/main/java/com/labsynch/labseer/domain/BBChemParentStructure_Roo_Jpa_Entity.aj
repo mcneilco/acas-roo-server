@@ -3,11 +3,11 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.domain.BBChemStructure;
+import com.labsynch.labseer.domain.BBChemParentStructure;
 import javax.persistence.Entity;
 
-privileged aspect BBChemStructure_Roo_Jpa_Entity {
+privileged aspect BBChemParentStructure_Roo_Jpa_Entity {
     
-    declare @type: BBChemStructure: @Entity;
+    declare @type: BBChemParentStructure: @Entity;
     
 }

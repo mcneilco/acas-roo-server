@@ -8,7 +8,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 @RooJavaBean
 @RooToString
 @RooJson
-@RooJpaActiveRecord(sequenceName = "BBCHEM_STRUCTURE_PKSEQ", finders = { "findBBChemStructuresByRegEquals", "findBBChemStructuresByPreRegEquals"})
-public class BBChemStructure extends AbstractBBChemStructure {
+@RooJpaActiveRecord(sequenceName = "BBCHEM_STRUCTURE_PKSEQ", finders = { "findBBChemParentStructuresByRegEquals", "findBBChemParentStructuresByPreRegEquals"})
+public class BBChemParentStructure extends AbstractBBChemStructure {
 
 }

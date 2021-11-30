@@ -3,7 +3,7 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.IOException;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
-import com.labsynch.labseer.domain.BBChemStructure;
+import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.SimpleUtil;
 
@@ -26,11 +26,11 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		System.loadLibrary("GraphMolWrap");
 	}
 	
-	BBChemStructure molecule;
+	BBChemParentStructure molecule;
 
 	private BBChemStructureService bbChemStructureService;
 
-	public CmpdRegMoleculeBBChemImpl(BBChemStructure molecule) {
+	public CmpdRegMoleculeBBChemImpl(BBChemParentStructure molecule) {
 		this.molecule = molecule;
 	}
 

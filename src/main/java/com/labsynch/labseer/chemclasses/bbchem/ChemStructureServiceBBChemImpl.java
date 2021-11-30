@@ -16,7 +16,7 @@ import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.domain.BBChemDryRunStructure;
 import com.labsynch.labseer.domain.BBChemSaltFormStructure;
 import com.labsynch.labseer.domain.BBChemSaltStructure;
-import com.labsynch.labseer.domain.BBChemStructure;
+import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
@@ -84,7 +84,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	private List<? extends AbstractBBChemStructure> searchBBChemStructures(String molfile, StructureType structureType, int[] inputCdIdHitList, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 
-		BBChemStructure serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile);
+		BBChemParentStructure serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile);
 
 		// Create empty list
 		List<? extends AbstractBBChemStructure> bbChemStructures = new ArrayList<AbstractBBChemStructure>();
@@ -92,7 +92,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		if (searchType == SearchType.FULL_TAUTOMER){
 			// FULL TAUTOMER hashes are stored on the pre reg hash column
 			if(structureType == StructureType.PARENT) {
-				query = BBChemStructure.findBBChemStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
+				query = BBChemParentStructure.findBBChemStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
 			} else if (structureType == StructureType.SALT) {
 				query = BBChemSaltStructure.findBBChemSaltStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
 			} else if (structureType == StructureType.SALT_FORM) {
@@ -105,7 +105,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		}else if (searchType == SearchType.DUPLICATE_TAUTOMER | searchType == SearchType.EXACT){
 			// DUPLICATE TAUTOMER hashes are stored on the reg column
 			if(structureType == StructureType.PARENT) {
-				query = BBChemStructure.findBBChemStructuresByRegEquals(serviceBBChemStructure.getReg());
+				query = BBChemParentStructure.findBBChemStructuresByRegEquals(serviceBBChemStructure.getReg());
 			} else if (structureType == StructureType.SALT) {
 				query = BBChemSaltStructure.findBBChemSaltStructuresByRegEquals(serviceBBChemStructure.getReg());
 			} else if (structureType == StructureType.SALT_FORM) {
@@ -199,7 +199,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Transactional
 	public boolean truncateStructureTable(StructureType structureType) {
 		String truncateStatement = "TRUNCATE TABLE " + getBBChemStructureTableNameFromStructureType(structureType);
-		BBChemStructure.entityManager().createNativeQuery(truncateStatement).executeUpdate();
+		BBChemParentStructure.entityManager().createNativeQuery(truncateStatement).executeUpdate();
 		return true;
 	}
 
@@ -208,14 +208,14 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		Long cdId=0L;
 		try {
-			BBChemStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molfile);
+			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molfile);
 
 			if (structureType == StructureType.PARENT){
 				// Can't type cast from subclass to superclass so we go to json and back
-				BBChemStructure bbStructure = BBChemStructure.fromJsonToBBChemStructure(bbChemStructure.toJson());
+				BBChemParentStructure bbStructure = BBChemParentStructure.fromJsonToBBChemStructure(bbChemStructure.toJson());
 
 				if(checkForDupes){
-					List<BBChemStructure> bbChemStructures =  BBChemStructure.findBBChemStructuresByRegEquals(bbStructure.getReg()).getResultList();
+					List<BBChemParentStructure> bbChemStructures =  BBChemParentStructure.findBBChemStructuresByRegEquals(bbStructure.getReg()).getResultList();
 					if(bbChemStructures.size() > 0){
 						logger.error("BBChem structure for " + structureType + " type already exists with id "+ bbChemStructures.get(0).getId());
 						return 0;
@@ -325,9 +325,9 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public boolean updateStructure(String molStructure, StructureType structureType, int cdId) {
 		Long id= new Long(cdId);
 		try {
-			BBChemStructure bbChemStructureUpdated = bbChemStructureService.getProcessedStructure(molStructure);
+			BBChemParentStructure bbChemStructureUpdated = bbChemStructureService.getProcessedStructure(molStructure);
 			if (structureType == StructureType.PARENT){
-				BBChemStructure bbChemStructureSaved = BBChemStructure.findBBChemStructure(id);
+				BBChemParentStructure bbChemStructureSaved = BBChemParentStructure.findBBChemStructure(id);
 				bbChemStructureSaved.updateStructureInfo(bbChemStructureUpdated.getMol(), bbChemStructureUpdated.getReg(), bbChemStructureUpdated.getPreReg());
 				bbChemStructureSaved.persist();
 			} else if (structureType == StructureType.SALT_FORM){
@@ -386,7 +386,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public boolean deleteStructure(StructureType structureType, int cdId) {
 		Long id = new Long(cdId);
 		if (structureType == StructureType.PARENT){
-			BBChemStructure bbChemStructure = BBChemStructure.findBBChemStructure(id);
+			BBChemParentStructure bbChemStructure = BBChemParentStructure.findBBChemStructure(id);
 			bbChemStructure.remove();
 		} else if (structureType == StructureType.SALT_FORM){
 			BBChemSaltFormStructure bbChemSaltFormStructure = BBChemSaltFormStructure.findBBChemSaltFormStructure(id);
@@ -568,8 +568,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException {
 		try {
-			BBChemStructure queryStructure = bbChemStructureService.getProcessedStructure(queryMol);
-			BBChemStructure targetStructure = bbChemStructureService.getProcessedStructure(targetMol);
+			BBChemParentStructure queryStructure = bbChemStructureService.getProcessedStructure(queryMol);
+			BBChemParentStructure targetStructure = bbChemStructureService.getProcessedStructure(targetMol);
 			return queryStructure.getReg() == targetStructure.getReg();
 		} catch (Exception e) {
 			logger.error("Error in standardizedMolCompare: ", e);
