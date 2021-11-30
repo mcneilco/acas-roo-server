@@ -33,8 +33,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.RDKit.*;
-
+import org.RDKit.RDKFuncs;
+import org.RDKit.ROMol;
+import org.RDKit.ROMol_Vect;
+import org.RDKit.RWMol;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
