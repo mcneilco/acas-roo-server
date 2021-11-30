@@ -1,4 +1,4 @@
-ARG 	CHEMISTRY_PACKAGE=rdkit
+ARG 	CHEMISTRY_PACKAGE=bbchem
 ARG 	TOMCAT_IMAGE=mcneilco/tomcat-maven:1.4-openjdk8
 
 FROM 	${TOMCAT_IMAGE} as dependencies

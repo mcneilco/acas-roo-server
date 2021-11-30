@@ -92,7 +92,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<!-- Maven Build profile controls whether to use JChem or Indigo -->
 	<profiles>
 		<profile>
-			<id>rdkit</id>
+			<id>bbchem</id>
 			<activation>
             	<activeByDefault>true</activeByDefault>
         	</activation>
@@ -125,8 +125,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<properties>
 				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
 				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrationsA>
-				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/rdkit/**</exclude.chemistry.packageB>
-				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/rdkit/**</exclude.chemistry.migrationsB>
+				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/bbchem/**</exclude.chemistry.packageB>
+				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/bbchem/**</exclude.chemistry.migrationsB>
 			</properties>
 		</profile>
 		<profile>
@@ -152,8 +152,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				</dependency>
 			</dependencies>	
 			<properties>
-				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/rdkit/**</exclude.chemistry.packageA>
-				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/rdkit/**</exclude.chemistry.migrationsA>
+				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/bbchem/**</exclude.chemistry.packageA>
+				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/bbchem/**</exclude.chemistry.migrationsA>
 				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/jchem/**</exclude.chemistry.packageB>
 				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/jchem/**</exclude.chemistry.migrationsB>
 			</properties>
