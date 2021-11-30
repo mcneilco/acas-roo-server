@@ -161,9 +161,6 @@ public class BBChemStructureService  implements ExternalStructureService {
 				JsonNode averageMolWeightNode = responseJsonNode.get("molecular_weight");
 				rdkitStructure.setAverageMolWeight(averageMolWeightNode.asDouble());
 
-				JsonNode exactMolWeightNode = responseJsonNode.get("molecular_weight");
-				rdkitStructure.setExactMolWeight(-1.0);
-
 				JsonNode smilesNode = responseJsonNode.get("smiles");
 				rdkitStructure.setSmiles(smilesNode.asText());
 
