@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>16.4.25.0</jchem.version>
-		<rdkit.version>2021.03.1-release</rdkit.version>
+		<rdkit.version>2021.03.5-release</rdkit.version>
 		<indigo.version>1.2.3.r0</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
