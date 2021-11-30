@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class CmpdRegMoleculeFactoryRDKitImpl implements CmpdRegMoleculeFactory{
 
     @Autowired
-    private ExternalStructureService bbChemStructureService;
+    private BBChemStructureService bbChemStructureService;
 
     @Override
     public CmpdRegMolecule getCmpdRegMolecule(String molStructure) throws CmpdRegMolFormatException {

@@ -13,9 +13,9 @@ public class CmpdRegSDFReaderRDKitImpl implements CmpdRegSDFReader {
 
     private Scanner scanner;
 
-    private ExternalStructureService bbChemStructureService;
+    private BBChemStructureService bbChemStructureService;
 
-    public CmpdRegSDFReaderRDKitImpl(String fileName, ExternalStructureService bbChemStructureService) {
+    public CmpdRegSDFReaderRDKitImpl(String fileName, BBChemStructureService bbChemStructureService) {
         this.bbChemStructureService = bbChemStructureService;
         Scanner scanner;
 		try {

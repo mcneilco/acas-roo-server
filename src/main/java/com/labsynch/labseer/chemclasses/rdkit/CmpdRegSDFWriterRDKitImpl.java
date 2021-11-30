@@ -20,7 +20,7 @@ public class CmpdRegSDFWriterRDKitImpl implements CmpdRegSDFWriter {
     Logger logger = LoggerFactory.getLogger(CmpdRegSDFWriterRDKitImpl.class);
 
     @Autowired
-    private ExternalStructureService bbChemStructureServices;
+    private BBChemStructureService bbChemStructureServices;
 
     private FileWriter writer;
 

@@ -28,13 +28,13 @@ public class CmpdRegMoleculeRDKitImpl implements CmpdRegMolecule {
 	
 	RDKitStructure molecule;
 
-	private ExternalStructureService bbChemStructureService;
+	private BBChemStructureService bbChemStructureService;
 
 	public CmpdRegMoleculeRDKitImpl(RDKitStructure molecule) {
 		this.molecule = molecule;
 	}
 
-	public CmpdRegMoleculeRDKitImpl(String singleSDF, ExternalStructureService bbChemStructureService) {
+	public CmpdRegMoleculeRDKitImpl(String singleSDF, BBChemStructureService bbChemStructureService) {
 		this.bbChemStructureService = bbChemStructureService;
 		try {
 			this.molecule = bbChemStructureService.parseSDF(singleSDF).get(0);

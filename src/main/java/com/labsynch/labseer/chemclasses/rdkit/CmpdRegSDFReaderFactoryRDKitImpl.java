@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class CmpdRegSDFReaderFactoryRDKitImpl implements CmpdRegSDFReaderFactory {
 
     @Autowired
-    private ExternalStructureService bbChemStructureService;
+    private BBChemStructureService bbChemStructureService;
 
     @Override
     public CmpdRegSDFReader getCmpdRegSDFReader(String fileName)
