@@ -577,12 +577,11 @@ public class ChemStructureServiceRDKitImpl implements ChemStructureService {
 
 	@Override
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException {
-		// RWMol mol = RWMol.MolFromMolBlock(molFile);
-		// Boolean hasAtoms =  mol.getNumAtoms() == 0.0;
-		// Boolean hasBonds =  mol.getNumBonds() == 0.0;
-		// Boolean hasSGroups = RDKFuncs.getSubstanceGroupCount(mol) == 0.0;
-		// return !hasAtoms && !hasBonds && !hasSGroups;
-		return false;
+		RWMol mol = bbChemStructureService.getPartiallySanitizedRWMol(molFile);
+		Boolean hasAtoms =  mol.getNumAtoms() == 0.0;
+		Boolean hasBonds =  mol.getNumBonds() == 0.0;
+		Boolean hasSGroups = RDKFuncs.getSubstanceGroupCount(mol) == 0.0;
+		return !hasAtoms && !hasBonds && !hasSGroups;
 	}
 
 	@Override
