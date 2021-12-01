@@ -531,7 +531,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			stndznHistory.setDryRunComplete(new Date());
 			stndznHistory.setDryRunStatus("failed");
 			stndznHistory.persist();
-			return;
+			throw e;
 		}
 
 		stndznHistory.setDryRunComplete(new Date());
