@@ -594,7 +594,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		try{
 			jsonNode = bbChemStructureService.getPreprocessorSettings().get("standardizer_actions");
 		} catch (IOException e) {
-			logger.error("Error parsing preprocessor settings json");
+			logger.error("Error parsing preprocessor settings json", e);
 			throw new StandardizerException("Error parsing preprocessor settings json");
 		}
 
