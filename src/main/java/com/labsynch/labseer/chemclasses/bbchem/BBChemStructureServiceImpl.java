@@ -1,6 +1,7 @@
 package com.labsynch.labseer.chemclasses.bbchem;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -140,7 +141,14 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		try {
 			String requestString = requestData.toString();
 			logger.info("requestString: " + requestString);
-			String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
+			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+			String postResponse = null;
+			if(connection.getResponseCode() != 200) {
+				logger.error("Error posting to preprocessor service: " + connection.getResponseMessage());
+				throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + connection.getResponseMessage());
+			} else {
+				postResponse = SimpleUtil.getStringBody(connection);
+			}
 			logger.info("Got response: "+ postResponse);
 
 			// Parse the response json to get the standardized mol
