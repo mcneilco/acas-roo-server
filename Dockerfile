@@ -9,7 +9,7 @@ FROM 	dependencies as jchem
 ADD 	lib/jchem-16.4.25.0.jar /lib/jchem-16.4.25.0.jar
 RUN     mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jchem -DgroupId=com.chemaxon -Dversion=16.4.25.0 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
 
-FROM 	dependencies as rdkit
+FROM 	dependencies as bbchem
 ADD     lib/*.so /usr/java/packages/lib/amd64
 ADD     lib/rdkit-*.jar /lib/
 RUN     mvn install:install-file -Dfile=/lib/rdkit-2021.03.5-release.org.RDKit.jar -DartifactId=rdkit -DgroupId=org.RDKit -Dversion=2021.03.5-release -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true && \
