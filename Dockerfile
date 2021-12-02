@@ -1,4 +1,4 @@
-ARG 	CHEMISTRY_PACKAGE=rdkit
+ARG 	CHEMISTRY_PACKAGE=bbchem
 ARG 	TOMCAT_IMAGE=mcneilco/tomcat-maven:1.4-openjdk8
 
 FROM 	${TOMCAT_IMAGE} as dependencies
@@ -9,9 +9,11 @@ FROM 	dependencies as jchem
 ADD 	lib/jchem-16.4.25.0.jar /lib/jchem-16.4.25.0.jar
 RUN     mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jchem -DgroupId=com.chemaxon -Dversion=16.4.25.0 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
 
-FROM 	dependencies as rdkit
-ADD 	lib/rdkit-2021.03.1-release.org.RDKit.jar /lib/rdkit-2021.03.1-release.org.RDKit.jar
-RUN     mvn install:install-file -Dfile=/lib/rdkit-2021.03.1-release.org.RDKit.jar -DartifactId=rdkit -DgroupId=org.RDKit -Dversion=2021.03.1-release -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
+FROM 	dependencies as bbchem
+ADD     lib/*.so /usr/java/packages/lib/amd64
+ADD     lib/rdkit-*.jar /lib/
+RUN     mvn install:install-file -Dfile=/lib/rdkit-2021.03.5-release.org.RDKit.jar -DartifactId=rdkit -DgroupId=org.RDKit -Dversion=2021.03.5-release -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true && \
+        mvn install:install-file -Dfile=/lib/rdkit-2021.03.5-release.org.RDKitDoc.jar -DartifactId=rdkit-docs -DgroupId=org.RDKit -Dversion=2021.03.5-release -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
 
 FROM 	dependencies as indigo
 
@@ -32,6 +34,7 @@ WORKDIR $CATALINA_HOME
 EXPOSE 	8080
 ENV    ACAS_HOME=/home/runner/build
 ENV    CATALINA_OPTS="-Xms512M -Xmx1536M -XX:MaxPermSize=512m"
+ADD  lib/libGraphMolWrap.so /usr/java/packages/lib/amd64/libGraphMolWrap.so
 COPY --chown=runner:runner ./PrepareConfigFiles.coffee /home/runner/build/src/javascripts/BuildUtilities/PrepareConfigFiles.coffee
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"] 

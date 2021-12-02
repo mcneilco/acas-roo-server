@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<spring-security.version>3.2.5.RELEASE</spring-security.version>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>16.4.25.0</jchem.version>
-		<rdkit.version>2021.03.1-release</rdkit.version>
+		<rdkit.version>2021.03.5-release</rdkit.version>
 		<indigo.version>1.2.3.r0</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
@@ -92,7 +92,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	<!-- Maven Build profile controls whether to use JChem or Indigo -->
 	<profiles>
 		<profile>
-			<id>rdkit</id>
+			<id>bbchem</id>
 			<activation>
             	<activeByDefault>true</activeByDefault>
         	</activation>
@@ -125,8 +125,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<properties>
 				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
 				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrationsA>
-				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/rdkit/**</exclude.chemistry.packageB>
-				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/rdkit/**</exclude.chemistry.migrationsB>
+				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/bbchem/**</exclude.chemistry.packageB>
+				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/bbchem/**</exclude.chemistry.migrationsB>
 			</properties>
 		</profile>
 		<profile>
@@ -152,8 +152,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				</dependency>
 			</dependencies>	
 			<properties>
-				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/rdkit/**</exclude.chemistry.packageA>
-				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/rdkit/**</exclude.chemistry.migrationsA>
+				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/bbchem/**</exclude.chemistry.packageA>
+				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/bbchem/**</exclude.chemistry.migrationsA>
 				<exclude.chemistry.packageB>com/labsynch/labseer/chemclasses/jchem/**</exclude.chemistry.packageB>
 				<exclude.chemistry.migrationsB>com/labsynch/labseer/db/migration/*/jchem/**</exclude.chemistry.migrationsB>
 			</properties>
