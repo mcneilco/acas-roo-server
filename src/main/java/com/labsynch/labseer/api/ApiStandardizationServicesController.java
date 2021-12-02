@@ -68,7 +68,6 @@ public class ApiStandardizationServicesController {
 	public ResponseEntity<String> dryRun(@RequestParam(value="reportOnly", required = false) Boolean reportOnly) throws CmpdRegMolFormatException, IOException, StandardizerException{
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
-		int numberOfDisplayChanges = 0;
 		boolean onlyReport = true;
 		if (reportOnly != null && reportOnly == false){
 			onlyReport = false;
@@ -77,6 +76,7 @@ public class ApiStandardizationServicesController {
 			logger.info("reseting dry run table, populating dryrun table, dupe checking, and returning results");
 			standardizationService.executeDryRun();
 		}
+		// Get most recent standardization history
 		String jsonReport = standardizationService.getStandardizationDryRunReport();
 		return new ResponseEntity<String>(jsonReport, headers, HttpStatus.OK);
 	}
