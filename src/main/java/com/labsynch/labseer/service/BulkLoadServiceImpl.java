@@ -500,6 +500,9 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			registeredCSVOutStream.close();
 			reportOutStream.close();
 
+			registeredMolExporter.close();
+			errorMolExporter.close();
+
 			//if there were no errors, delete the error files, since they are empty
 			Boolean errorFree = true;
 			for(ValidationResponseDTO valResp : results) {
