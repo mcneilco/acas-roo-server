@@ -139,7 +139,9 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 			List<CmpdRegMolecule> resultList = new ArrayList<CmpdRegMolecule>();
 			for (AbstractBBChemStructure hit : bbChemStructures) {
-				resultList.add(new CmpdRegMoleculeBBChemImpl(hit.getMol(), bbChemStructureService));
+				CmpdRegMoleculeBBChemImpl molecule = new CmpdRegMoleculeBBChemImpl(hit.getMol(), bbChemStructureService);
+				molecule.setProperty("cd_id", String.valueOf(hit.getId()));
+				resultList.add(molecule);
 			}
 			CmpdRegMolecule[] resultArray = new CmpdRegMolecule[resultList.size()];
 			
@@ -380,7 +382,10 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public double getExactMass(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getProcessedStructure(molStructure).getExactMolWeight();
+		// Processor doesn't return exact mass so we need to populate it and then return it
+		BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molStructure);
+		bbChemStructureService.populateDescriptors(bbChemStructure);
+		return bbChemStructure.getExactMolWeight();
 	}
 
 	@Override
