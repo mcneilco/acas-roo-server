@@ -1,6 +1,7 @@
 package com.labsynch.labseer.service;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -21,12 +22,14 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
+import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.domain.StandardizationSettings;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
+import com.labsynch.labseer.exceptions.StructureSaveException;
 import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -39,6 +42,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Autowired
 	public ChemStructureService chemStructureService;
 
+	@Autowired
+	private SaltStructureService saltStructureService;
+	
 	@Autowired
 	public ParentLotService parentLotService;
 
@@ -477,8 +483,17 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	private int runStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
 		List<Long> parentIds = StandardizationDryRunCompound.findParentIdsWithStandardizationChanges().getResultList();
 		logger.info("standardization initialized");
+		logger.info("save missing salt structures - started");
+		try {
+			Collection<Salt> missingSaltStructures = saltStructureService.saveMissingStructures();
+			logger.info("saved " + missingSaltStructures.size() + " missing salt structures");
+		} catch (StructureSaveException e) {
+			throw new StandardizerException(e);
+		}
+		logger.info("save missing salt structures - complete");
+		logger.info("restandardize parent structures - started");
 		int result = restandardizeParentStructures(parentIds);
-		logger.info("standardization complete");
+		logger.info("restandardize parent structures - complete");
 		return (result);
 	}
 
