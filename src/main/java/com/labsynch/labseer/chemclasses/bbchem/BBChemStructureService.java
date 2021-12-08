@@ -27,4 +27,6 @@ public interface BBChemStructureService {
 
     public String getMolStructureFromRDKMol(ROMol rdkMol);
 
+    public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException;
+
 }
