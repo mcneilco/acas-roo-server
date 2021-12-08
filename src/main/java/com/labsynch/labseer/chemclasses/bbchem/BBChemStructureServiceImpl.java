@@ -340,4 +340,64 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		return RDKFuncs.MolToMolBlock(rdkMol, true, -1, false, false);
 	}
 
+	@Override
+	public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException {
+
+		// Read the preprocessor settings as json
+		JsonNode jsonNode = null;
+		try{
+			jsonNode = getPreprocessorSettings();
+		} catch (IOException e) {
+			logger.error("Error parsing preprocessor settings json");
+			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json");
+		}
+
+		// Extract the processURL
+		JsonNode urlNode = jsonNode.get("splitURL");
+		if(urlNode == null || urlNode.isNull()) {
+			logger.error("Missing preprocessorSettings splitURL!!");
+		}
+		String url = urlNode.asText();
+
+		// Get the standardization actions and options
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+
+		// Add the structures to the request
+		ArrayNode arrayNode = mapper.createArrayNode();
+		arrayNode.add(molfile);
+		requestData.put("sdfs", arrayNode);
+
+		List<String> molStrings = new ArrayList<>();
+		// Post to the service and parse the response
+		try {
+			String requestString = requestData.toString();
+			logger.info("requestString: " + requestString);
+			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+			String postResponse = null;
+			if(connection.getResponseCode() != 200) {
+				logger.error("Error posting to split service: " + connection.getResponseMessage());
+				throw new CmpdRegMolFormatException("Error posting to split service: " + connection.getResponseMessage());
+			} else {
+				postResponse = SimpleUtil.getStringBody(connection);
+			}
+			logger.info("Got response: "+ postResponse);
+
+			// Parse the response json to get the standardized mol
+			ObjectMapper responseMapper = new ObjectMapper();
+			JsonNode responseNode = responseMapper.readTree(postResponse);
+			JsonNode resultsNode = responseNode.get("results");
+			for (JsonNode resultNode : resultsNode)  {
+				JsonNode splitSDFS = resultNode.get("split_sdfs");
+				molStrings.add(splitSDFS.get(0).asText());
+
+			}
+		} catch (Exception e) {
+			logger.error("Error posting to split service: " + e.getMessage());
+			throw new CmpdRegMolFormatException("Error posting to split service: " + e.getMessage());
+		}
+
+		return molStrings;
+	}
+
 }
