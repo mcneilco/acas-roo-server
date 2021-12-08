@@ -44,58 +44,6 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
-	
-	@Override
-	public void populateDescriptors(BBChemParentStructure bbChemStructure) {
-
-		RWMol mol = getPartiallySanitizedRWMol(bbChemStructure.getMol());
-
-		// https://www.rdkit.org/docs/cppapi/classRDKit_1_1ROMol.html#a48ab4e1692b503eda6d31c5bb10fe0bb
-		// calculates any of our lazy properties
-		// 	bool 	strict = true	
-		mol.updatePropertyCache(false);
-		
-		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1Descriptors.html#a4a0f6886e3798fcb195b6c270a3645c6
-		// const ROMol & 	mol,
-		// bool 	onlyHeavy = false
-		bbChemStructure.setAverageMolWeight(RDKFuncs.calcAMW(mol, false));
-
-		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1Descriptors.html#a468168875d98b415e14c6eac9d7c36ae
-		// const ROMol & 	mol,
-		// bool  onlyHeavy = false
-		// https://www.mail-archive.com/rdkit-discuss@lists.sourceforge.net/msg10222.html
-		// MolWt uses naturally occurring average atomic weights, the ones you find in
-		// a typical periodic table. For example, Cl = 35.453.
-		// ExactMolWt uses the weight of a specific isotope (the most naturally
-		// abundant isotope unless the structure specifies a different one for an
-		// atom). These are the atomic weights you find in an isotope chart, not a
-		// regular periodic table. For example, 35Cl = 34.96885268.
-		// https://www.nist.gov/pml/atomic-weights-and-isotopic-compositions-relative-atomic-masses
-		bbChemStructure.setExactMolWeight(RDKFuncs.calcExactMW(mol, false));
-
-		// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a75e1240acc451a7a73280220f79b6c05
-		// mol	: the molecule in question.
-		// doIsomericSmiles	: include stereochemistry and isotope information in the SMILES
-		// doKekule	: do Kekule smiles (i.e. don't use aromatic bonds) NOTE that this will throw an exception if the molecule cannot be kekulized.
-		// rootedAtAtom	: make sure the SMILES starts at the specified atom. The resulting SMILES is not, of course, canonical.
-		// canonical	: if false, no attempt will be made to canonicalize the SMILES
-		// allBondsExplicit	: if true, symbols will be included for all bonds.
-		// allHsExplicit	: if true, hydrogen counts will be provided for every atom.
-		bbChemStructure.setSmiles(RDKFuncs.MolToSmiles(mol, true, false, -1, true, false, false, false));
-
-		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1MolOps.html#a3c5021831c089f1dfacf1f3ce2ff9303
-		bbChemStructure.setTotalCharge(RDKFuncs.getFormalCharge(mol));
-
-		// https://www.rdkit.org/docs/source/rdkit.Chem.rdinchi.html#rdkit.Chem.rdinchi.MolBlockToInchi
-		// Doesn't appear to be used anywhere in the code base
-		// rdKitStructure.setInchi(RDKFuncs.MolBlockToInchi(rdKitStructure.getMol(), new ExtraInchiReturnValues());
-
-		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1Descriptors.html#a4a80d0fa71a5bad581e4436fe37e9ce6
-		// mol	the molecule of interest
-		// separateIsotopes	if true, isotopes will show up separately in the formula. So C[13CH2]O will give the formula: C[13C]H6O
-		// abbreviateHIsotopes	if true, 2H and 3H will be represented as D and T instead of [2H] and [3H]. This only applies if separateIsotopes is true
-		bbChemStructure.setMolecularFormula(RDKFuncs.calcMolFormula(mol, false, false));
-	}
 
 	@Override
 	public JsonNode getPreprocessorSettings() throws IOException {
@@ -167,6 +115,12 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 				JsonNode averageMolWeightNode = responseJsonNode.get("molecular_weight");
 				bbChemStructure.setAverageMolWeight(averageMolWeightNode.asDouble());
+
+				JsonNode exactMolWeightNode = responseJsonNode.get("exact_molecular_weight");
+				bbChemStructure.setExactMolWeight(exactMolWeightNode.asDouble());
+
+				JsonNode totalChargeNode = responseJsonNode.get("total_charge");
+				bbChemStructure.setTotalCharge(Integer.valueOf(totalChargeNode.asInt()));
 
 				JsonNode smilesNode = responseJsonNode.get("smiles");
 				bbChemStructure.setSmiles(smilesNode.asText());

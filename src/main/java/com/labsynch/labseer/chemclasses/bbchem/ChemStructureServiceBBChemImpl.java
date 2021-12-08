@@ -383,7 +383,6 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public double getExactMass(String molStructure) throws CmpdRegMolFormatException {
 		// Processor doesn't return exact mass so we need to populate it and then return it
 		BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molStructure);
-		bbChemStructureService.populateDescriptors(bbChemStructure);
 		return bbChemStructure.getExactMolWeight();
 	}
 

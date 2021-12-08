@@ -15,8 +15,6 @@ public interface BBChemStructureService {
 
     public JsonNode getPreprocessorSettings() throws IOException;
 
-    public void populateDescriptors(BBChemParentStructure structure);
-
     public BBChemParentStructure getProcessedStructure(String molfile) throws CmpdRegMolFormatException;
     
     public String getSDF(BBChemParentStructure structure) throws IOException;
