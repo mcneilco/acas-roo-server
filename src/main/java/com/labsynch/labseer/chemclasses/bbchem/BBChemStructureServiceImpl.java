@@ -75,9 +75,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		// Get the standardization actions and options
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
-		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
 		ObjectNode options = (ObjectNode) jsonNode.get("process_options");
-		options.put("standardizer_actions", standardizerActions);
+		options.put("standardizer_actions", mapper.createObjectNode());
 		requestData.put("options", options);
 
 		// Add the structures to the request
