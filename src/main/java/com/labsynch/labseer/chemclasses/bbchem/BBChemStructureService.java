@@ -15,7 +15,7 @@ public interface BBChemStructureService {
 
     public JsonNode getPreprocessorSettings() throws IOException;
 
-    public BBChemParentStructure getProcessedStructure(String molfile) throws CmpdRegMolFormatException;
+    public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprint) throws CmpdRegMolFormatException;
     
     public String getSDF(BBChemParentStructure structure) throws IOException;
 

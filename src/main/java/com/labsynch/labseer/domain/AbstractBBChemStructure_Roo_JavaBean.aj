@@ -4,6 +4,7 @@
 package com.labsynch.labseer.domain;
 
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -31,6 +32,22 @@ privileged aspect AbstractBBChemStructure_Roo_JavaBean {
     
     public void AbstractBBChemStructure.setMol(String mol) {
         this.mol = mol;
+    }
+    
+    public BitSet AbstractBBChemStructure.getSubstructure() {
+        return this.substructure;
+    }
+    
+    public void AbstractBBChemStructure.setSubstructure(BitSet substructure) {
+        this.substructure = substructure;
+    }
+    
+    public BitSet AbstractBBChemStructure.getSimilarity() {
+        return this.similarity;
+    }
+    
+    public void AbstractBBChemStructure.setSimilarity(BitSet similarity) {
+        this.similarity = similarity;
     }
     
     public Date AbstractBBChemStructure.getRecordedDate() {

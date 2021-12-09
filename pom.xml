@@ -304,6 +304,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<version>4.3.11.Final</version>
 		</dependency>
 		<dependency>
+			<groupId>com.vladmihalcea</groupId>
+			<artifactId>hibernate-types-43</artifactId>
+			<version>2.14.0</version>
+		</dependency>
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.3.11.Final</version>

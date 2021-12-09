@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -318,6 +319,26 @@ public class SimpleUtil {
 
 		return filteredValues;
 	}
+
+	public static String bitSetToString(BitSet bitSet) {
+        if(bitSet.length() == 0) return null;
+
+        final StringBuilder s = new StringBuilder();
+        for( int i = 0; i < bitSet.size();  i++ ) {
+            s.append( bitSet.get( i ) == true ? 1: 0 );
+        }
+        return s.toString();
+    }
+
+    public static BitSet stringToBitSet(String bitString) {
+        BitSet bitset = new BitSet(bitString.length());
+        for (int i = 0; i < bitString.length(); i++) {
+            if (bitString.charAt(i) == '1') {
+                bitset.set(i);
+            }
+        }
+        return bitset;
+    }
 
 	public static String postRequestToExternalServer(String url, String jsonContent, Logger logger) throws MalformedURLException, IOException {
 		String charset = "UTF-8";

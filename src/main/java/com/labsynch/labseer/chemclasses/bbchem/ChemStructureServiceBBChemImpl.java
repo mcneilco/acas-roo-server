@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.RDKit.RDKFuncs;
-import org.RDKit.ROMol;
 import org.RDKit.ROMol_Vect;
 import org.RDKit.RWMol;
 import org.codehaus.jackson.JsonFactory;
@@ -85,48 +84,71 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	private List<? extends AbstractBBChemStructure> searchBBChemStructures(String molfile, StructureType structureType, int[] inputCdIdHitList, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 
-		BBChemParentStructure serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile);
 
 		// Create empty list
 		List<? extends AbstractBBChemStructure> bbChemStructures = new ArrayList<AbstractBBChemStructure>();
-		TypedQuery<? extends AbstractBBChemStructure> query;
-		if (searchType == SearchType.FULL_TAUTOMER){
-			// FULL TAUTOMER hashes are stored on the pre reg hash column
-			if(structureType == StructureType.PARENT) {
-				query = BBChemParentStructure.findBBChemParentStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
-			} else if (structureType == StructureType.SALT) {
-				query = BBChemSaltStructure.findBBChemSaltStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
-			} else if (structureType == StructureType.SALT_FORM) {
-				query = BBChemSaltFormStructure.findBBChemSaltFormStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
-			} else if (structureType == StructureType.DRY_RUN) {
-				query = BBChemDryRunStructure.findBBChemDryRunStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
-			} else {
-				throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches" + structureType);
-			}
-		}else if (searchType == SearchType.DUPLICATE_TAUTOMER | searchType == SearchType.EXACT){
-			// DUPLICATE TAUTOMER hashes are stored on the reg column
-			if(structureType == StructureType.PARENT) {
-				query = BBChemParentStructure.findBBChemParentStructuresByRegEquals(serviceBBChemStructure.getReg());
-			} else if (structureType == StructureType.SALT) {
-				query = BBChemSaltStructure.findBBChemSaltStructuresByRegEquals(serviceBBChemStructure.getReg());
-			} else if (structureType == StructureType.SALT_FORM) {
-				query = BBChemSaltFormStructure.findBBChemSaltFormStructuresByRegEquals(serviceBBChemStructure.getReg());
-			} else if (structureType == StructureType.DRY_RUN) {
-				query = BBChemDryRunStructure.findBBChemDryRunStructuresByRegEquals(serviceBBChemStructure.getReg());
-			} else {
-				throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches" + structureType);
-			}
-		} else {
-			throw new CmpdRegMolFormatException("Search type not implemented for BBChem searches" + searchType);
-		}
-	
-		// int is not nullable so you either have a valid maxResults passed in
-		// or -1 to express unlimited
-		if(maxResults > -1) {
-			query.setMaxResults(maxResults);
-		}
 
-		bbChemStructures = query.getResultList();
+		if (searchType == SearchType.FULL_TAUTOMER | searchType == SearchType.DUPLICATE_TAUTOMER | searchType == SearchType.EXACT){
+			// Don't need to calculate fingerprint if not doing similarity or substructure
+			BBChemParentStructure serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile, false);
+			TypedQuery<? extends AbstractBBChemStructure> query;
+
+			if (searchType == SearchType.FULL_TAUTOMER){
+				// FULL TAUTOMER hashes are stored on the pre reg hash column
+				if(structureType == StructureType.PARENT) {
+					query = BBChemParentStructure.findBBChemParentStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
+				} else if (structureType == StructureType.SALT) {
+					query = BBChemSaltStructure.findBBChemSaltStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
+				} else if (structureType == StructureType.SALT_FORM) {
+					query = BBChemSaltFormStructure.findBBChemSaltFormStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
+				} else if (structureType == StructureType.DRY_RUN) {
+					query = BBChemDryRunStructure.findBBChemDryRunStructuresByPreRegEquals(serviceBBChemStructure.getPreReg());
+				} else {
+					throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches on " + structureType);
+				}
+			} else if (searchType == SearchType.DUPLICATE_TAUTOMER | searchType == SearchType.EXACT){
+				// DUPLICATE TAUTOMER hashes are stored on the reg column
+				if(structureType == StructureType.PARENT) {
+					query = BBChemParentStructure.findBBChemParentStructuresByRegEquals(serviceBBChemStructure.getReg());
+				} else if (structureType == StructureType.SALT) {
+					query = BBChemSaltStructure.findBBChemSaltStructuresByRegEquals(serviceBBChemStructure.getReg());
+				} else if (structureType == StructureType.SALT_FORM) {
+					query = BBChemSaltFormStructure.findBBChemSaltFormStructuresByRegEquals(serviceBBChemStructure.getReg());
+				} else if (structureType == StructureType.DRY_RUN) {
+					query = BBChemDryRunStructure.findBBChemDryRunStructuresByRegEquals(serviceBBChemStructure.getReg());
+				} else {
+					throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches on " + structureType);
+				}
+			} else {
+				throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches on " + structureType);
+			}
+
+			// int is not nullable so you either have a valid maxResults passed in
+			// or -1 to express unlimited
+			if(maxResults > -1) {
+				query.setMaxResults(maxResults);
+			}
+
+			bbChemStructures = query.getResultList();
+			
+		} else if (searchType == SearchType.SUBSTRUCTURE | searchType == SearchType.SIMILARITY){
+			// Calculate fingerprint
+			BBChemParentStructure serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile, true);
+			if(searchType == SearchType.SUBSTRUCTURE) {
+				if(structureType == StructureType.PARENT) {
+					bbChemStructures = BBChemParentStructure.findBBChemParentStructuresBySubstructure(serviceBBChemStructure.getSubstructure(), maxResults);
+				} else if (structureType == StructureType.SALT_FORM) {
+					bbChemStructures = BBChemSaltFormStructure.findBBChemSaltFormStructuresBySubstructure(serviceBBChemStructure.getSubstructure(), maxResults);
+				} else {
+					throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches " + structureType);
+				}
+			} else {
+				throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches " + structureType);
+			}
+
+		} else {
+			throw new CmpdRegMolFormatException("Search type not implemented for BBChem searches on " + searchType);
+		}
 		
 		return(bbChemStructures);
 	}
@@ -211,24 +233,22 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		Long cdId=0L;
 		try {
-			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molfile);
+			// Process the molfile and calculate fingerprints = true
+			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molfile, true);
 
 			if (structureType == StructureType.PARENT){
-				// Can't type cast from subclass to superclass so we go to json and back
-				BBChemParentStructure bbStructure = BBChemParentStructure.fromJsonToBBChemParentStructure(bbChemStructure.toJson());
-
 				if(checkForDupes){
-					List<BBChemParentStructure> bbChemStructures =  BBChemParentStructure.findBBChemParentStructuresByRegEquals(bbStructure.getReg()).getResultList();
+					List<BBChemParentStructure> bbChemStructures =  BBChemParentStructure.findBBChemParentStructuresByRegEquals(bbChemStructure.getReg()).getResultList();
 					if(bbChemStructures.size() > 0){
 						logger.error("BBChem structure for " + structureType + " type already exists with id "+ bbChemStructures.get(0).getId());
 						return 0;
 					}
 				}
-				bbStructure.persist();
-				cdId = bbStructure.getId();
+				bbChemStructure.persist();
+				cdId = bbChemStructure.getId();
 			} else if (structureType == StructureType.SALT_FORM){
-				// Can't type cast from subclass to superclass so we go to json and back
-				BBChemSaltFormStructure bbChemSaltFormStructure = BBChemSaltFormStructure.fromJsonToBBChemSaltFormStructure(bbChemStructure.toJson());
+				BBChemSaltFormStructure bbChemSaltFormStructure = new BBChemSaltFormStructure();
+				bbChemSaltFormStructure.updateStructureInfo(bbChemStructure);
 
 				if(checkForDupes){
 					List<BBChemSaltFormStructure> bbChemStructures =  BBChemSaltFormStructure.findBBChemSaltFormStructuresByRegEquals(bbChemSaltFormStructure.getReg()).getResultList();
@@ -240,8 +260,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				bbChemSaltFormStructure.persist();
 				cdId = bbChemSaltFormStructure.getId();
 			} else if (structureType == StructureType.SALT){
-				// Can't type cast from subclass to superclass so we go to json and back
-				BBChemSaltStructure bbChemStructureSalt = BBChemSaltStructure.fromJsonToBBChemSaltStructure(bbChemStructure.toJson());
+				BBChemSaltStructure bbChemStructureSalt = new BBChemSaltStructure();
+				bbChemStructureSalt.updateStructureInfo(bbChemStructure);
 
 				if(checkForDupes){
 					List<BBChemSaltStructure> bbChemStructures =  BBChemSaltStructure.findBBChemSaltStructuresByRegEquals(bbChemStructureSalt.getReg()).getResultList();
@@ -252,22 +272,10 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				}
 				bbChemStructureSalt.persist();
 				cdId = bbChemStructureSalt.getId();
-			} else if (structureType == StructureType.SALT_FORM){
-				// Can't type cast from subclass to superclass so we go to json and back
-				BBChemSaltFormStructure bbChemSaltFormStructure = BBChemSaltFormStructure.fromJsonToBBChemSaltFormStructure(bbChemStructure.toJson());
-
-				if(checkForDupes){
-					List<BBChemSaltFormStructure> bbChemStructures =  BBChemSaltFormStructure.findBBChemSaltFormStructuresByRegEquals(bbChemSaltFormStructure.getReg()).getResultList();
-					if(bbChemStructures.size() > 0){
-						logger.error("Salt structure already exists with id "+ bbChemStructures.get(0).getId());
-						return 0;
-					}
-				}
-				bbChemSaltFormStructure.persist();
-				cdId = bbChemSaltFormStructure.getId();
 			} else if (structureType == StructureType.DRY_RUN){
 				// Can't type cast from subclass to superclass so we go to json and back
-				BBChemDryRunStructure bbChemStructureDryRun = BBChemDryRunStructure.fromJsonToBBChemDryRunStructure(bbChemStructure.toJson());
+				BBChemDryRunStructure bbChemStructureDryRun = new BBChemDryRunStructure();
+				bbChemStructureDryRun.updateStructureInfo(bbChemStructure);
 
 				if(checkForDupes){
 					List<BBChemDryRunStructure> bbChemStructures =  BBChemDryRunStructure.findBBChemDryRunStructuresByRegEquals(bbChemStructureDryRun.getReg()).getResultList();
@@ -290,7 +298,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public double getMolWeight(String molStructure) throws CmpdRegMolFormatException {
 		// Calculates the average molecular weight of a molecule
-		return bbChemStructureService.getProcessedStructure(molStructure).getAverageMolWeight();
+		return bbChemStructureService.getProcessedStructure(molStructure, false).getAverageMolWeight();
 	}
 
 	@Override
@@ -300,12 +308,12 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public String toMolfile(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getProcessedStructure(molStructure).getMol();
+		return bbChemStructureService.getProcessedStructure(molStructure, false).getMol();
 	}
 
 	@Override
 	public String toSmiles(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getProcessedStructure(molStructure).getSmiles();
+		return bbChemStructureService.getProcessedStructure(molStructure, false).getSmiles();
 	}
 
 	@Override
@@ -317,7 +325,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public String toInchi(String molStructure) {
 		try {
-			return bbChemStructureService.getProcessedStructure(molStructure).getInchi();
+			return bbChemStructureService.getProcessedStructure(molStructure, false).getInchi();
 		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error calculating inchi: ", e);
 			return null;
@@ -328,22 +336,22 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public boolean updateStructure(String molStructure, StructureType structureType, int cdId) {
 		Long id= new Long(cdId);
 		try {
-			BBChemParentStructure bbChemStructureUpdated = bbChemStructureService.getProcessedStructure(molStructure);
+			BBChemParentStructure bbChemStructureUpdated = bbChemStructureService.getProcessedStructure(molStructure, true);
 			if (structureType == StructureType.PARENT){
 				BBChemParentStructure bbChemStructureSaved = BBChemParentStructure.findBBChemParentStructure(id);
-				bbChemStructureSaved.updateStructureInfo(bbChemStructureUpdated.getMol(), bbChemStructureUpdated.getReg(), bbChemStructureUpdated.getPreReg());
+				bbChemStructureSaved.updateStructureInfo(bbChemStructureUpdated);
 				bbChemStructureSaved.persist();
 			} else if (structureType == StructureType.SALT_FORM){
 				BBChemSaltFormStructure bbChemSaltFormStructureSaved = BBChemSaltFormStructure.findBBChemSaltFormStructure(id);
-				bbChemSaltFormStructureSaved.updateStructureInfo(bbChemStructureUpdated.getMol(), bbChemStructureUpdated.getReg(), bbChemStructureUpdated.getPreReg());
+				bbChemSaltFormStructureSaved.updateStructureInfo(bbChemStructureUpdated);
 				bbChemSaltFormStructureSaved.persist();
 			} else if (structureType == StructureType.SALT){
 				BBChemSaltStructure bbChemSaltStructureSaved = BBChemSaltStructure.findBBChemSaltStructure(id);
-				bbChemSaltStructureSaved.updateStructureInfo(bbChemStructureUpdated.getMol(), bbChemStructureUpdated.getReg(), bbChemStructureUpdated.getPreReg());
+				bbChemSaltStructureSaved.updateStructureInfo(bbChemStructureUpdated);
 				bbChemSaltStructureSaved.persist();
 			} else if (structureType == StructureType.DRY_RUN){
 				BBChemDryRunStructure bbChemDryRunStructureSaved = BBChemDryRunStructure.findBBChemDryRunStructure(id);
-				bbChemDryRunStructureSaved.updateStructureInfo(bbChemStructureUpdated.getMol(), bbChemStructureUpdated.getReg(), bbChemStructureUpdated.getPreReg());
+				bbChemDryRunStructureSaved.updateStructureInfo(bbChemStructureUpdated);
 				bbChemDryRunStructureSaved.persist();
 			}
 		} catch (CmpdRegMolFormatException e) {
@@ -355,13 +363,14 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public String getMolFormula(String molStructure) throws CmpdRegMolFormatException {
-		return bbChemStructureService.getProcessedStructure(molStructure).getMolecularFormula();
+		return bbChemStructureService.getProcessedStructure(molStructure, false).getMolecularFormula();
 	}
 
 	@Override
 	public boolean checkForSalt(String molfile) throws CmpdRegMolFormatException {
 		boolean foundNonCovalentSalt = false;
-		List<String> frags = bbChemStructureService.getMolFragments(molfile);
+		RWMol mol = bbChemStructureService.getPartiallySanitizedRWMol(molfile);
+		ROMol_Vect frags = RDKFuncs.getMolFrags(mol);
 		if(frags.size() > 1.0) {
 			foundNonCovalentSalt = true;
 		}
@@ -382,7 +391,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public double getExactMass(String molStructure) throws CmpdRegMolFormatException {
 		// Processor doesn't return exact mass so we need to populate it and then return it
-		BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molStructure);
+		BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molStructure, false);
 		return bbChemStructure.getExactMolWeight();
 	}
 
@@ -489,33 +498,30 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException {
-
-		// Get all fragments
-		List<String> allFrags = bbChemStructureService.getMolFragments(inputStructure.getMolStructure());
+		RWMol clone = bbChemStructureService.getPartiallySanitizedRWMol(inputStructure.getMolStructure());
+		List<CmpdRegMoleculeBBChemImpl> allFrags = new ArrayList<CmpdRegMoleculeBBChemImpl>();
+	    ROMol_Vect frags = RDKFuncs.getMolFrags(clone);
+		for (int i = 0; i < frags.size(); i++) {
+			RWMol frag = (RWMol) frags.get(i);
+			CmpdRegMoleculeBBChemImpl fragWrapper = new CmpdRegMoleculeBBChemImpl(bbChemStructureService.getMolStructureFromRDKMol(frag), bbChemStructureService);
+			allFrags.add(fragWrapper);
+		}
 	
-		// Loop through the fragments and search for salts that match
-		// If a fragment matches, add it to the salt counts
-		// If a fragment doesn't match, then add it to the unidentified fragments
 		Map<Salt, Integer> saltCounts = new HashMap<Salt, Integer>();
 		Set<CmpdRegMoleculeBBChemImpl> unidentifiedFragments = new HashSet<CmpdRegMoleculeBBChemImpl>();
-		for (String fragment : allFrags){
-			int[] cdIdMatches = searchMolStructures(fragment, StructureType.SALT, SearchType.DUPLICATE_TAUTOMER);
+		for (CmpdRegMoleculeBBChemImpl fragment : allFrags){
+			int[] cdIdMatches = searchMolStructures(fragment.getMolStructure(), StructureType.SALT, SearchType.DUPLICATE_TAUTOMER);
 			if (cdIdMatches.length>0){
 				Salt foundSalt = Salt.findSaltsByCdId(cdIdMatches[0]).getSingleResult();
 				if (saltCounts.containsKey(foundSalt)) saltCounts.put(foundSalt, saltCounts.get(foundSalt)+1);
 				else saltCounts.put(foundSalt, 1);
 			}else{
-				CmpdRegMoleculeBBChemImpl fragWrapper = new CmpdRegMoleculeBBChemImpl(fragment, bbChemStructureService);
-				unidentifiedFragments.add(fragWrapper);
+				unidentifiedFragments.add(fragment);
 			}
 		}
-
-		// Add the unidentified fragments and identified salts to the output
 		StrippedSaltDTO resultDTO = new StrippedSaltDTO();
 		resultDTO.setSaltCounts(saltCounts);
 		resultDTO.setUnidentifiedFragments(unidentifiedFragments);
-
-		// Some debug lines to prnt identified salts
 		logger.debug("Identified stripped salts:");
 		for (Salt salt : saltCounts.keySet()){
 			logger.debug("Salt Abbrev: "+salt.getAbbrev());
@@ -582,8 +588,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException {
 		try {
-			BBChemParentStructure queryStructure = bbChemStructureService.getProcessedStructure(queryMol);
-			BBChemParentStructure targetStructure = bbChemStructureService.getProcessedStructure(targetMol);
+			BBChemParentStructure queryStructure = bbChemStructureService.getProcessedStructure(queryMol, false);
+			BBChemParentStructure targetStructure = bbChemStructureService.getProcessedStructure(targetMol, false);
 			return queryStructure.getReg() == targetStructure.getReg();
 		} catch (Exception e) {
 			logger.error("Error in standardizedMolCompare: ", e);

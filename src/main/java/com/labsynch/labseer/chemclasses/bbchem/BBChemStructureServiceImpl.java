@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -52,8 +53,73 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		return jsonNode;
 	}
 
+    private static BitSet fromString(String binary) {
+        BitSet bitset = new BitSet(binary.length());
+        for (int i = 0; i < binary.length(); i++) {
+            if (binary.charAt(i) == '1') {
+                bitset.set(i);
+            }
+        }
+        return bitset;
+    }
+
+	private BitSet getFingerprint(String molStructure, String type)  throws CmpdRegMolFormatException{
+		// Fetch the fingerprint from the BBChem finerprint service
+
+		// Read the preprocessor settings as json
+		JsonNode jsonNode = null;
+		try{
+			jsonNode = getPreprocessorSettings();
+		} catch (IOException e) {
+			logger.error("Error parsing preprocessor settings json");
+			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json");
+		}
+
+		// Extract the processURL
+		JsonNode urlNode = jsonNode.get("fingerprintURL");
+		if(urlNode == null || urlNode.isNull()) {
+			logger.error("Missing preprocessorSettings fingerprintURL!!");
+		}
+		String url = urlNode.asText();
+		
+		// Get the standardization actions and options
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+
+		// Add the structures to the request
+		ArrayNode arrayNode = mapper.createArrayNode();
+		arrayNode.add(molStructure);
+		requestData.put("sdfs", arrayNode);
+
+		requestData.put("fingerprint_type", type);
+
+		// Post to the service and parse the response
+		try {
+			String requestString = requestData.toString();
+			logger.info("requestString: " + requestString);
+			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+			String postResponse = null;
+			if(connection.getResponseCode() != 200) {
+				logger.error("Error posting to fingerprint service: " + connection.getResponseMessage());
+				throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + connection.getResponseMessage());
+			} else {
+				postResponse = SimpleUtil.getStringBody(connection);
+			}
+			logger.info("Got response: "+ postResponse);
+
+			// Parse the response json to get the standardized mol
+			ObjectMapper responseMapper = new ObjectMapper();
+			JsonNode responseNode = responseMapper.readTree(postResponse);
+			JsonNode resultsNode = responseNode.get("fingerprint_results");
+			return SimpleUtil.stringToBitSet(resultsNode.get(0).asText());
+		} catch (Exception e) {
+			logger.error("Error posting to fingerprint service: " + e.getMessage());
+			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
+		}
+	}
+
 	@Override
-	public BBChemParentStructure getProcessedStructure(String molfile) throws CmpdRegMolFormatException {
+	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints) throws CmpdRegMolFormatException {
 		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
 
 		// Read the preprocessor settings as json
@@ -127,6 +193,11 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				JsonNode molecularFormulaNode = responseJsonNode.get("molecular_formula");
 				bbChemStructure.setMolecularFormula(molecularFormulaNode.asText());
 
+				if(includeFingerprints) {
+					JsonNode fingerprintNode = responseJsonNode.get("fingerprint");
+					bbChemStructure.setSubstructure(getFingerprint(bbChemStructure.getMol(), "substructure_search"));
+					bbChemStructure.setSimilarity(getFingerprint(bbChemStructure.getMol(), "similarity_score"));
+				}
 			}
 
 
