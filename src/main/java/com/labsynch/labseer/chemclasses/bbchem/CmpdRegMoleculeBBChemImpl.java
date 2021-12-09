@@ -20,10 +20,6 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	Logger logger = LoggerFactory.getLogger(CmpdRegMoleculeBBChemImpl.class);
 
-	static {
-		System.loadLibrary("GraphMolWrap");
-	}
-	
 	BBChemParentStructure molecule;
 
 	private BBChemStructureService bbChemStructureService;
