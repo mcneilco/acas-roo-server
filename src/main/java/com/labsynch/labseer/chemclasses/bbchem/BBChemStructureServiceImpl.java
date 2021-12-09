@@ -16,12 +16,6 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
-import org.RDKit.RDKFuncs;
-import org.RDKit.RDKFuncsConstants;
-import org.RDKit.RDKFuncsJNI;
-import org.RDKit.ROMol;
-import org.RDKit.RWMol;
-import org.RDKit.SanitizeFlags;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -37,10 +31,6 @@ import org.springframework.stereotype.Service;
 public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 	Logger logger = LoggerFactory.getLogger(BBChemStructureServiceImpl.class);
-
-	static {
-		System.loadLibrary("GraphMolWrap");
-	}
 
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
@@ -119,17 +109,11 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	@Override
-	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints) throws CmpdRegMolFormatException {
-		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
-
+	public HttpURLConnection postToPreprocessorService(String molfile) throws IOException {
 		// Read the preprocessor settings as json
 		JsonNode jsonNode = null;
-		try{
-			jsonNode = getPreprocessorSettings();
-		} catch (IOException e) {
-			logger.error("Error parsing preprocessor settings json");
-			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json");
-		}
+
+		jsonNode = getPreprocessorSettings();
 
 		// Extract the processURL
 		JsonNode urlNode = jsonNode.get("processURL");
@@ -151,10 +135,19 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		requestData.put("structures", arrayNode);
 
 		// Post to the service and parse the response
+		String requestString = requestData.toString();
+		logger.info("requestString: " + requestString);
+		HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+
+		return connection;
+	}
+
+	@Override
+	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints) throws CmpdRegMolFormatException {
+		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
+		// Post to the service and parse the response
 		try {
-			String requestString = requestData.toString();
-			logger.info("requestString: " + requestString);
-			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+			HttpURLConnection connection = postToPreprocessorService(molfile);
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
 				logger.error("Error posting to preprocessor service: " + connection.getResponseMessage());
@@ -330,41 +323,6 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	@Override
-	public RWMol getPartiallySanitizedRWMol(String molstructure) {
-		// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a3a2051f80037d7633c3ea4cc72f58856
-		// MolBlockToMol
-		// molBlock: string containing the Mol block
-		// sanitize: (optional) toggles sanitization of the molecule. Defaults to True.
-		// removeHs: (optional) toggles removing hydrogens from the molecule. This only make sense when sanitization is done. Defaults to true.
-		// strictParsing: (optional) if this is false, the parser is more lax about. correctness of the content. Defaults to true.
-		RWMol mol = RDKFuncs.MolBlockToMol(molstructure, false, false, false);
-
-		// Do partial sanization on mol so that we can calculate properties
-		// https://www.rdkit.org/docs/cppapi/namespaceRDKit_1_1MolOps.html#a1ea8c8a254b2f9cd006029e9ad72deac
-		// mol	: the RWMol to be cleaned
-		// operationThatFailed	: the first (if any) sanitization operation that fails is set here. The values are taken from the SanitizeFlags enum. On success, the value is SanitizeFlags::SANITIZE_NONE
-		// sanitizeOps	: the bits here are used to set which sanitization operations are carried out. The elements of the SanitizeFlags enum define the operations.
-		int ops = (SanitizeFlags.SANITIZE_ALL.swigValue() ^ SanitizeFlags.SANITIZE_CLEANUP.swigValue() ^
-		SanitizeFlags.SANITIZE_PROPERTIES.swigValue() ^ SanitizeFlags.SANITIZE_KEKULIZE.swigValue() ^
-		SanitizeFlags.SANITIZE_FINDRADICALS.swigValue() ^ SanitizeFlags.SANITIZE_CLEANUPCHIRALITY.swigValue());
-		RDKFuncs.sanitizeMol(mol, ops);
-
-		return mol;
-	}
-
-	@Override
-	public String getMolStructureFromRDKMol(ROMol rdkMol) {
-		// https://www.rdkit.org/docs/cppapi/namespaceRDKit.html#a8159eb5c49b1d325ac994a15607cdffa
-		// MolToMolBlock
-		// mol	- the molecule in question
-		// includeStereo	- toggles inclusion of stereochemistry information
-		// confId	- selects the conformer to be used
-		// kekulize	- triggers kekulization of the molecule before it is written
-		// forceV3000	- force generation a V3000 mol block (happens automatically with more than 999 atoms or bonds)
-		return RDKFuncs.MolToMolBlock(rdkMol, true, -1, false, false);
-	}
-
-	@Override
 	public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException {
 
 		// Read the preprocessor settings as json
@@ -413,8 +371,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			JsonNode resultsNode = responseNode.get("results");
 			for (JsonNode resultNode : resultsNode)  {
 				JsonNode splitSDFS = resultNode.get("split_sdfs");
-				molStrings.add(splitSDFS.get(0).asText());
-
+				for (JsonNode sdfNode : splitSDFS)  {
+					molStrings.add(sdfNode.asText());
+				}
 			}
 		} catch (Exception e) {
 			logger.error("Error posting to split service: " + e.getMessage());

@@ -34,9 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.RDKit.RDKFuncs;
-import org.RDKit.ROMol_Vect;
-import org.RDKit.RWMol;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;
@@ -63,10 +60,6 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Autowired
 	private JdbcTemplate basicJdbcTemplate;
-
-	static {
-		System.loadLibrary("GraphMolWrap");
-	}
 	
 	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
 		this.basicJdbcTemplate = jdbcTemplate;
@@ -369,9 +362,9 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public boolean checkForSalt(String molfile) throws CmpdRegMolFormatException {
 		boolean foundNonCovalentSalt = false;
-		RWMol mol = bbChemStructureService.getPartiallySanitizedRWMol(molfile);
-		ROMol_Vect frags = RDKFuncs.getMolFrags(mol);
-		if(frags.size() > 1.0) {
+		// Get all fragments
+		List<String> allFrags = bbChemStructureService.getMolFragments(molfile);
+		if(allFrags.size() > 1.0) {
 			foundNonCovalentSalt = true;
 		}
 		return foundNonCovalentSalt;
@@ -470,20 +463,14 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	@Override
 	public MolConvertOutputDTO cleanStructure(String structure, int dim, String opts)
 			throws IOException, CmpdRegMolFormatException {
-		// Unused for this implementation
-		return null;
+			throw new CmpdRegMolFormatException("Hydrogenization not implemented");
 	}
 
 	@Override
 	public String hydrogenizeMol(String structure, String inputFormat, String method)
 			throws IOException, CmpdRegMolFormatException {
-			RWMol mol = bbChemStructureService.getPartiallySanitizedRWMol(structure);
-			if (method.equalsIgnoreCase("HYDROGENIZE")){
-				RDKFuncs.addHs(mol);		
-			} else {
-				RDKFuncs.removeHs(mol);
-			}
-			return mol.MolToMolBlock();
+			//Not implmented
+			throw new CmpdRegMolFormatException("Hydrogenization not implemented");
 	}
 
 	@Override
@@ -493,35 +480,39 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		//Indigo implementaiton returns the mol file after running some Indigo function
 		//No implementing this function because its not used anywhere that I can find
 		//Perhaps it was used as a utility function at somepoint
-		return "NOT IMPLEMENTED";
+		throw new CmpdRegMolFormatException("Hydrogenization not implemented");
+
 	}
 
 	@Override
 	public StrippedSaltDTO stripSalts(CmpdRegMolecule inputStructure) throws CmpdRegMolFormatException {
-		RWMol clone = bbChemStructureService.getPartiallySanitizedRWMol(inputStructure.getMolStructure());
-		List<CmpdRegMoleculeBBChemImpl> allFrags = new ArrayList<CmpdRegMoleculeBBChemImpl>();
-	    ROMol_Vect frags = RDKFuncs.getMolFrags(clone);
-		for (int i = 0; i < frags.size(); i++) {
-			RWMol frag = (RWMol) frags.get(i);
-			CmpdRegMoleculeBBChemImpl fragWrapper = new CmpdRegMoleculeBBChemImpl(bbChemStructureService.getMolStructureFromRDKMol(frag), bbChemStructureService);
-			allFrags.add(fragWrapper);
-		}
+
+		// Get all fragments
+		List<String> allFrags = bbChemStructureService.getMolFragments(inputStructure.getMolStructure());
 	
+		// Loop through the fragments and search for salts that match
+		// If a fragment matches, add it to the salt counts
+		// If a fragment doesn't match, then add it to the unidentified fragments
 		Map<Salt, Integer> saltCounts = new HashMap<Salt, Integer>();
 		Set<CmpdRegMoleculeBBChemImpl> unidentifiedFragments = new HashSet<CmpdRegMoleculeBBChemImpl>();
-		for (CmpdRegMoleculeBBChemImpl fragment : allFrags){
-			int[] cdIdMatches = searchMolStructures(fragment.getMolStructure(), StructureType.SALT, SearchType.DUPLICATE_TAUTOMER);
+		for (String fragment : allFrags){
+			int[] cdIdMatches = searchMolStructures(fragment, StructureType.SALT, SearchType.DUPLICATE_TAUTOMER);
 			if (cdIdMatches.length>0){
 				Salt foundSalt = Salt.findSaltsByCdId(cdIdMatches[0]).getSingleResult();
 				if (saltCounts.containsKey(foundSalt)) saltCounts.put(foundSalt, saltCounts.get(foundSalt)+1);
 				else saltCounts.put(foundSalt, 1);
 			}else{
-				unidentifiedFragments.add(fragment);
+				CmpdRegMoleculeBBChemImpl fragWrapper = new CmpdRegMoleculeBBChemImpl(fragment, bbChemStructureService);
+				unidentifiedFragments.add(fragWrapper);
 			}
 		}
+
+		// Add the unidentified fragments and identified salts to the output
 		StrippedSaltDTO resultDTO = new StrippedSaltDTO();
 		resultDTO.setSaltCounts(saltCounts);
 		resultDTO.setUnidentifiedFragments(unidentifiedFragments);
+
+		// Some debug lines to prnt identified salts
 		logger.debug("Identified stripped salts:");
 		for (Salt salt : saltCounts.keySet()){
 			logger.debug("Salt Abbrev: "+salt.getAbbrev());
@@ -599,11 +590,14 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException {
-		RWMol mol = bbChemStructureService.getPartiallySanitizedRWMol(molFile);
-		Boolean hasAtoms =  mol.getNumAtoms() == 0.0;
-		Boolean hasBonds =  mol.getNumBonds() == 0.0;
-		Boolean hasSGroups = RDKFuncs.getSubstanceGroupCount(mol) == 0.0;
-		return !hasAtoms && !hasBonds && !hasSGroups;
+		try{
+			HttpURLConnection mol = bbChemStructureService.postToPreprocessorService(molFile);
+			return mol.getResponseCode() == 4004;
+
+		} catch (IOException e) {
+			logger.error("Error in isEmpty: ", e);
+			throw new CmpdRegMolFormatException(e);
+		}
 	}
 
 	@Override

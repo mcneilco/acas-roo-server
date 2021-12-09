@@ -7,7 +7,6 @@ import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.SimpleUtil;
 
-import org.RDKit.RWMol;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -207,9 +206,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public void dearomatize() {
-		RWMol mol = bbChemStructureService.getPartiallySanitizedRWMol(this.molecule.getMol());
-		mol.Kekulize();
-		this.molecule.setMol(bbChemStructureService.getMolStructureFromRDKMol(mol));
+		// BBCHem implementation always kekulizes the structure
 	}
 
 }

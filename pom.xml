@@ -96,13 +96,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<activation>
             	<activeByDefault>true</activeByDefault>
         	</activation>
-			<dependencies>
-				<dependency>
-					<groupId>org.RDKit</groupId>
-					<artifactId>rdkit</artifactId>
-					<version>${rdkit.version}</version>
-				</dependency>
-			</dependencies>	
 			<properties>
 				<exclude.chemistry.packageA>com/labsynch/labseer/chemclasses/indigo/**</exclude.chemistry.packageA>
 				<exclude.chemistry.migrationsA>com/labsynch/labseer/db/migration/*/indigo/**</exclude.chemistry.migrationsA>
