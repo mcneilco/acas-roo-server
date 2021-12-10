@@ -325,7 +325,7 @@ public class SimpleUtil {
 
 		final StringBuilder s = new StringBuilder();
 		for( int i = 0; i < bitSet.size();  i++ ) {
-			s.append( bitSet.get( i ) == true ? 1: 0 );
+			s.append( bitSet.get( i ) == true ? '1': '0' );
 		}
 		return s.toString();
 	}
