@@ -115,6 +115,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 		// Get the standardization actions and options
 		ObjectNode options = (ObjectNode) jsonNode.get("process_options");
+
+		// We do not want standardization here but the route requires a standardization object to be sent in.
+		// Adding an empty standardizer actions so to avoid any standardization
 		options.put("standardizer_actions", mapper.createObjectNode());
 		requestData.put("options", options);
 
