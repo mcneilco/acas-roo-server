@@ -129,12 +129,39 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			BBChemParentStructure serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile, true);
 			if(searchType == SearchType.SUBSTRUCTURE) {
 				if(structureType == StructureType.PARENT) {
-					bbChemStructures = BBChemParentStructure.findBBChemParentStructuresBySubstructure(serviceBBChemStructure.getSubstructure(), maxResults);
+					// Get basic fingerprint substructure matchs
+					List<BBChemParentStructure> fingerprintMatchBBChemStructures = BBChemParentStructure.findBBChemParentStructuresBySubstructure(serviceBBChemStructure.getSubstructure(), maxResults);
+					
+					// Narrow list down to those that match a true subgraph substructure search
+					HashMap<? extends AbstractBBChemStructure, Boolean> bbchemSubstructureMatchMap = bbChemStructureService.substructureMatch(serviceBBChemStructure.getMol(), fingerprintMatchBBChemStructures);
+
+					// Loop through the llist of all and only keep those which have a true match
+					List<BBChemParentStructure> bbchemMatchStructures = new ArrayList<BBChemParentStructure>();
+					for(Map.Entry<? extends AbstractBBChemStructure, Boolean> v : bbchemSubstructureMatchMap.entrySet()) {
+						if(v.getValue()) {
+							bbchemMatchStructures.add((BBChemParentStructure) v.getKey());
+						}
+					}
+					bbChemStructures = bbchemMatchStructures;
 				} else if (structureType == StructureType.SALT_FORM) {
-					bbChemStructures = BBChemSaltFormStructure.findBBChemSaltFormStructuresBySubstructure(serviceBBChemStructure.getSubstructure(), maxResults);
+					// Get basic fingerprint substructure matchs
+					List<BBChemSaltFormStructure> fingerprintMatchBBChemStructures = BBChemSaltFormStructure.findBBChemSaltFormStructuresBySubstructure(serviceBBChemStructure.getSubstructure(), maxResults);
+
+					// Narrow list down to those that match a true subgraph substructure search
+					HashMap<? extends AbstractBBChemStructure, Boolean> bbchemSubstructureMatchMap = bbChemStructureService.substructureMatch(serviceBBChemStructure.getMol(), fingerprintMatchBBChemStructures);
+
+					// Loop through the llist of all and only keep those which have a true match
+					List<BBChemSaltFormStructure> bbchemMatchStructures = new ArrayList<BBChemSaltFormStructure>();
+					for(Map.Entry<? extends AbstractBBChemStructure, Boolean> v : bbchemSubstructureMatchMap.entrySet()) {
+						if(v.getValue()) {
+							bbchemMatchStructures.add((BBChemSaltFormStructure) v.getKey());
+						}
+					}
+					bbChemStructures = bbchemMatchStructures;
 				} else {
 					throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches " + structureType);
 				}
+
 			} else {
 				throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches " + structureType);
 			}

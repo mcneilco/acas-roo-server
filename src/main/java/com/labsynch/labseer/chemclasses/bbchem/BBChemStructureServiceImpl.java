@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
@@ -381,6 +382,70 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		}
 
 		return molStrings;
+	}
+
+	@Override
+	public HashMap<? extends AbstractBBChemStructure, Boolean> substructureMatch(String queryMol, List<? extends AbstractBBChemStructure> needsMatchStructures)
+			throws CmpdRegMolFormatException {
+// Fetch the fingerprint from the BBChem finerprint service
+
+		// Read the preprocessor settings as json
+		JsonNode jsonNode = null;
+		try{
+			jsonNode = getPreprocessorSettings();
+		} catch (IOException e) {
+			logger.error("Error parsing preprocessor settings json");
+			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json");
+		}
+
+		// Extract the processURL
+		JsonNode urlNode = jsonNode.get("substructureMatchURL");
+		if(urlNode == null || urlNode.isNull()) {
+			logger.error("Missing preprocessorSettings substructureMatchURL!!");
+		}
+		String url = urlNode.asText();
+		
+		// Get the standardization actions and options
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+
+		// Add the structures to the request
+		ArrayNode arrayNode = mapper.createArrayNode();
+		for(AbstractBBChemStructure needsMatch : needsMatchStructures) {
+			arrayNode.add(needsMatch.getMol());
+		}
+		requestData.put("needs_match_molv3s", arrayNode);
+		requestData.put("query_molv3", queryMol);
+		requestData.put("boolean_results", true);
+		// Post to the service and parse the response
+		try {
+			String requestString = requestData.toString();
+			logger.info("requestString: " + requestString);
+			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+			String postResponse = null;
+			if(connection.getResponseCode() != 200) {
+				logger.error("Error posting to substructure match service: " + connection.getResponseMessage());
+				throw new CmpdRegMolFormatException("Error posting to substructure match service: " + connection.getResponseMessage());
+			} else {
+				postResponse = SimpleUtil.getStringBody(connection);
+			}
+			logger.info("Got response: "+ postResponse);
+
+			// Parse the response json to get the standardized mol
+			ObjectMapper responseMapper = new ObjectMapper();
+			JsonNode responseNode = responseMapper.readTree(postResponse);
+			JsonNode resultsNode = responseNode.get("results");
+
+			HashMap<AbstractBBChemStructure, Boolean> matchMap = new HashMap<>();
+			// Loop through length of the results
+			for (int i = 0; i < resultsNode.size(); i++) {
+				matchMap.put(needsMatchStructures.get(i), resultsNode.get(i).get("has_hits").asBoolean());
+			}
+			return matchMap;
+		} catch (Exception e) {
+			logger.error("Error posting to fingerprint service: " + e.getMessage());
+			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
+		}
 	}
 
 }
