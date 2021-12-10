@@ -66,7 +66,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			throw new CmpdRegMolFormatException(e);
 		}
 		
-		// Get the standardization actions and options
+		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
 
@@ -107,11 +107,13 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		
 		String url = getUrlFromPreprocessorSettings("processURL");
 
-
 		JsonNode jsonNode = getPreprocessorSettings();
-		// Get the standardization actions and options
+
+		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
+
+		// Get the standardization actions and options
 		ObjectNode options = (ObjectNode) jsonNode.get("process_options");
 		options.put("standardizer_actions", mapper.createObjectNode());
 		requestData.put("options", options);
@@ -304,7 +306,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			throw new CmpdRegMolFormatException(e);
 		}
 
-		// Get the standardization actions and options
+		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
 
@@ -358,7 +360,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			throw new CmpdRegMolFormatException(e);
 		}
 		
-		// Get the standardization actions and options
+		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
 
