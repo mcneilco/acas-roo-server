@@ -45,7 +45,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	private BitSet getFingerprint(String molStructure, String type)  throws CmpdRegMolFormatException{
-		// Fetch the fingerprint from the BBChem finerprint service
+		// Fetch the fingerprint from the BBChem fingerprint service
 
 		// Read the preprocessor settings as json
 		JsonNode jsonNode = null;
