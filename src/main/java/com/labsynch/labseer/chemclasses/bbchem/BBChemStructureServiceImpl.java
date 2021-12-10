@@ -44,24 +44,27 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		return jsonNode;
 	}
 
+	private String getUrlFromPreprocessorSettings(String propertyKey) throws IOException {
+		JsonNode jsonNode = null;
+		jsonNode = getPreprocessorSettings();
+		JsonNode urlNode = jsonNode.get(propertyKey);
+		if(urlNode == null || urlNode.isNull()) {
+			logger.error("Missing preprocessorSettings "+propertyKey+"!!");
+			throw new IOException("Missing preprocessorSettings "+propertyKey+"!!");
+		}
+		String url = urlNode.getTextValue();
+		return url;
+
+	}
+
 	private BitSet getFingerprint(String molStructure, String type)  throws CmpdRegMolFormatException{
 		// Fetch the fingerprint from the BBChem fingerprint service
-
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = null;
-		try{
-			jsonNode = getPreprocessorSettings();
+		String url = null;
+		try {
+			url = getUrlFromPreprocessorSettings("fingerprintURL");
 		} catch (IOException e) {
-			logger.error("Error parsing preprocessor settings json");
-			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json");
+			throw new CmpdRegMolFormatException(e);
 		}
-
-		// Extract the processURL
-		JsonNode urlNode = jsonNode.get("fingerprintURL");
-		if(urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings fingerprintURL!!");
-		}
-		String url = urlNode.asText();
 		
 		// Get the standardization actions and options
 		ObjectMapper mapper = new ObjectMapper();
@@ -101,18 +104,11 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 	@Override
 	public HttpURLConnection postToPreprocessorService(String molfile) throws IOException {
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = null;
+		
+		String url = getUrlFromPreprocessorSettings("processURL");
 
-		jsonNode = getPreprocessorSettings();
 
-		// Extract the processURL
-		JsonNode urlNode = jsonNode.get("processURL");
-		if(urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings processURL!!");
-		}
-		String url = urlNode.asText();
-
+		JsonNode jsonNode = getPreprocessorSettings();
 		// Get the standardization actions and options
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
@@ -198,15 +194,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 	@Override
 	public String getSDF(BBChemParentStructure bbChemStructure) throws IOException{
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = getPreprocessorSettings();
 
-		// Extract the processURL
-		JsonNode urlNode = jsonNode.get("exportSDFURL");
-		if(urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings exportSDFURL!!");
-		}
-		String url = urlNode.asText();
+		String url = getUrlFromPreprocessorSettings("exportSDFURL");
+
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -253,21 +243,12 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	public List<BBChemParentStructure> parseSDF(String molfile) throws CmpdRegMolFormatException {
 		List<BBChemParentStructure> bbChemStructures = new ArrayList<BBChemParentStructure>();
 
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = null;
-		try{
-			jsonNode = getPreprocessorSettings();
+		String url = null;
+		try {
+			url = getUrlFromPreprocessorSettings("parseURL");
 		} catch (IOException e) {
-			logger.error("Error parsing preprocessor settings json");
-			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json");
+			throw new CmpdRegMolFormatException(e);
 		}
-
-		// Extract the processURL
-		JsonNode urlNode = jsonNode.get("parseURL");
-		if(urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings parseURL!!");
-		}
-		String url = urlNode.asText();
 
 		// Create the request data object
 		ObjectMapper mapper = new ObjectMapper();
@@ -316,21 +297,12 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	@Override
 	public List<String> getMolFragments(String molfile) throws CmpdRegMolFormatException {
 
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = null;
-		try{
-			jsonNode = getPreprocessorSettings();
+		String url = null;
+		try {
+			url = getUrlFromPreprocessorSettings("splitURL");
 		} catch (IOException e) {
-			logger.error("Error parsing preprocessor settings json");
-			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json");
+			throw new CmpdRegMolFormatException(e);
 		}
-
-		// Extract the processURL
-		JsonNode urlNode = jsonNode.get("splitURL");
-		if(urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings splitURL!!");
-		}
-		String url = urlNode.asText();
 
 		// Get the standardization actions and options
 		ObjectMapper mapper = new ObjectMapper();
@@ -377,23 +349,14 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	@Override
 	public HashMap<? extends AbstractBBChemStructure, Boolean> substructureMatch(String queryMol, List<? extends AbstractBBChemStructure> needsMatchStructures)
 			throws CmpdRegMolFormatException {
-// Fetch the fingerprint from the BBChem finerprint service
+		// Fetch the fingerprint from the BBChem finerprint service
 
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = null;
-		try{
-			jsonNode = getPreprocessorSettings();
+		String url = null;
+		try {
+			url = getUrlFromPreprocessorSettings("substructureMatchURL");
 		} catch (IOException e) {
-			logger.error("Error parsing preprocessor settings json");
-			throw new CmpdRegMolFormatException("Error parsing preprocessor settings json");
+			throw new CmpdRegMolFormatException(e);
 		}
-
-		// Extract the processURL
-		JsonNode urlNode = jsonNode.get("substructureMatchURL");
-		if(urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings substructureMatchURL!!");
-		}
-		String url = urlNode.asText();
 		
 		// Get the standardization actions and options
 		ObjectMapper mapper = new ObjectMapper();
