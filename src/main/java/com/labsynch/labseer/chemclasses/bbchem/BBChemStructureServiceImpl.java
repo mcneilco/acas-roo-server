@@ -103,7 +103,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	@Override
-	public HttpURLConnection postToPreprocessorService(String molfile) throws IOException {
+	public JsonNode postToProcessService(String molfile) throws IOException {
 		
 		String url = getUrlFromPreprocessorSettings("processURL");
 
@@ -131,7 +131,21 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		logger.info("requestString: " + requestString);
 		HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
 
-		return connection;
+		String postResponse = null;
+		if(connection.getResponseCode() != 200) {
+			logger.error("Error posting to process service: " + connection.getResponseMessage());
+			throw new IOException("Error posting to process service: " + connection.getResponseMessage());
+		} else {
+			postResponse = SimpleUtil.getStringBody(connection);
+		}
+		logger.info("Got response: "+ postResponse);
+
+		// Parse the response json to get the standardized mol
+		ObjectMapper responseMapper = new ObjectMapper();
+		
+		JsonNode responseNode = responseMapper.readTree(postResponse);
+
+		return responseNode;
 	}
 
 	@Override
@@ -139,20 +153,22 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
 		// Post to the service and parse the response
 		try {
-			HttpURLConnection connection = postToPreprocessorService(molfile);
-			String postResponse = null;
-			if(connection.getResponseCode() != 200) {
-				logger.error("Error posting to preprocessor service: " + connection.getResponseMessage());
-				throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + connection.getResponseMessage());
-			} else {
-				postResponse = SimpleUtil.getStringBody(connection);
+			JsonNode responseNode;
+			try {
+				responseNode = postToProcessService(molfile);
+			} catch (IOException e) {
+				throw new CmpdRegMolFormatException(e);
 			}
-			logger.info("Got response: "+ postResponse);
-
-			// Parse the response json to get the standardized mol
-			ObjectMapper responseMapper = new ObjectMapper();
-			JsonNode responseNode = responseMapper.readTree(postResponse);
 			for (JsonNode responseJsonNode : responseNode)  {
+
+				// Throw exception if there is an error reading the molecule
+				JsonNode errorCodeNode = responseJsonNode.get("error_code");
+
+				// Check if we have an error code
+				if( errorCodeNode != null) {
+					throw new CmpdRegMolFormatException("Error processing mol: Code " + errorCodeNode.getTextValue() + " " + responseJsonNode.get("error_msg").getTextValue());
+				}
+
 				JsonNode registrationHashesNode = responseJsonNode.get("registration_hash");
 				String registrationHash = registrationHashesNode.get(0).asText();
 				bbChemStructure.setReg(registrationHashesNode.get(0).asText());
@@ -186,9 +202,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			}
 
 
-		} catch (Exception e) {
+		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error posting to preprocessor service: " + e.getMessage());
-			throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + e.getMessage());
+			throw new CmpdRegMolFormatException(e);
 		}
 
 		// Set recorded date todays date. This simplifies the code when we need to persist the structure

@@ -2,7 +2,6 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.net.HttpURLConnection;
 
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.domain.BBChemParentStructure;
@@ -16,7 +15,7 @@ public interface BBChemStructureService {
 
     public JsonNode getPreprocessorSettings() throws IOException;
 
-    public HttpURLConnection postToPreprocessorService(String molfile) throws IOException;
+    public JsonNode postToProcessService(String molfile) throws IOException;
 
     public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprint) throws CmpdRegMolFormatException;
     

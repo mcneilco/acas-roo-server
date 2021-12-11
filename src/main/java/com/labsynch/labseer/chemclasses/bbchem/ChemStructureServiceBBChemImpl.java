@@ -617,9 +617,21 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	@Override
 	public boolean isEmpty(String molFile) throws CmpdRegMolFormatException {
+		// Response from service looks like this if the mol is empty:
+		// [
+		// 	{
+		// 		"error_code": "4004",
+		// 		"error_msg": "No atoms present"
+		// 	}
+		// ]
 		try{
-			HttpURLConnection mol = bbChemStructureService.postToPreprocessorService(molFile);
-			return mol.getResponseCode() == 4004;
+			JsonNode responseNode = bbChemStructureService.postToProcessService(molFile);
+			JsonNode errorCodeNode = responseNode.get(0).get("error_code");
+			if( errorCodeNode != null && errorCodeNode.getTextValue().equals("4004")){
+				return true;
+			} else {
+				return false;
+			}
 
 		} catch (IOException e) {
 			logger.error("Error in isEmpty: ", e);
