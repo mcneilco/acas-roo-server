@@ -24,9 +24,9 @@ public class BBChemSaltFormStructure  extends AbstractBBChemStructure {
         if (substructure == null || substructure.length() == 0) throw new IllegalArgumentException("The substructure argument is required");
         EntityManager em = BBChemSaltFormStructure.entityManager();
         String fingerprintString = SimpleUtil.bitSetToString(substructure);
-        Query q = em.createNativeQuery("SELECT o.* FROM bbchem_salt_form_structure AS o WHERE (o.substructure \\& B':substrucure') = B':substrucure' ", BBChemSaltFormStructure.class);
-        q.setParameter("substructure", fingerprintString);
-        if(maxResults > -1) {
+        Query q = em.createNativeQuery("SELECT o.* FROM bbchem_salt_form_structure AS o WHERE (o.substructure \\& CAST(:fingerprintString AS bit(2048))) = CAST(:fingerprintString AS bit(2048)) ", BBChemSaltFormStructure.class);
+        q.setParameter("fingerprintString", fingerprintString);
+       if(maxResults > -1) {
 			q.setMaxResults(maxResults);
 		}
         return q.getResultList();

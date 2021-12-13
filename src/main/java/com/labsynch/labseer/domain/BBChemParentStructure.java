@@ -24,8 +24,8 @@ public class BBChemParentStructure extends AbstractBBChemStructure {
         if (substructure == null || substructure.length() == 0) throw new IllegalArgumentException("The substructure argument is required");
         EntityManager em = BBChemParentStructure.entityManager();
         String fingerprintString = SimpleUtil.bitSetToString(substructure);
-        Query q = em.createNativeQuery("SELECT o.* FROM bbchem_parent_structure AS o WHERE (o.substructure \\& B':substrucure') = B':substrucure' ", BBChemParentStructure.class);
-        q.setParameter("substructure", fingerprintString);
+        Query q = em.createNativeQuery("SELECT o.* FROM bbchem_parent_structure AS o WHERE (o.substructure \\& CAST(:fingerprintString AS bit(2048))) = CAST(:fingerprintString AS bit(2048))  ", BBChemParentStructure.class);
+        q.setParameter("fingerprintString", fingerprintString);
         if(maxResults > -1) {
 			q.setMaxResults(maxResults);
 		}
