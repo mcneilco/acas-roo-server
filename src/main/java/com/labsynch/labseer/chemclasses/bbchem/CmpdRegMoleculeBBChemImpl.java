@@ -7,8 +7,6 @@ import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.SimpleUtil;
 
-import org.RDKit.RDKFuncs;
-import org.RDKit.RWMol;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ObjectNode;
@@ -22,10 +20,6 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	Logger logger = LoggerFactory.getLogger(CmpdRegMoleculeBBChemImpl.class);
 
-	static {
-		System.loadLibrary("GraphMolWrap");
-	}
-	
 	BBChemParentStructure molecule;
 
 	private BBChemStructureService bbChemStructureService;
@@ -85,8 +79,13 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		if(this.molecule.getMolecularFormula() != null) {
 			return this.molecule.getMolecularFormula();
 		} else {
-			bbChemStructureService.populateDescriptors(this.molecule);
-			return this.molecule.getMolecularFormula();
+			try {
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				return this.molecule.getMolecularFormula();
+			} catch (CmpdRegMolFormatException e) {
+				logger.error(e.getMessage());
+				return null;
+			}
 		}
 	}
 
@@ -95,8 +94,13 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		if(this.molecule.getExactMolWeight() != null) {
 			return this.molecule.getExactMolWeight();
 		} else {
-			bbChemStructureService.populateDescriptors(this.molecule);
-			return this.molecule.getExactMolWeight();
+			try {
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				return this.molecule.getExactMolWeight();
+			} catch (CmpdRegMolFormatException e) {
+				logger.error(e.getMessage());
+				return null;
+			}
 		}	
 	}
 
@@ -105,8 +109,13 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		if(this.molecule.getAverageMolWeight() != null) {
 			return this.molecule.getAverageMolWeight();
 		} else {
-			bbChemStructureService.populateDescriptors(this.molecule);
-			return this.molecule.getAverageMolWeight();
+			try {
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				return this.molecule.getAverageMolWeight();
+			} catch (CmpdRegMolFormatException e) {
+				logger.error(e.getMessage());
+				return null;
+			}
 		}
 	}
 
@@ -115,8 +124,13 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		if(this.molecule.getTotalCharge() != null) {
 			return this.molecule.getTotalCharge();
 		} else {
-			bbChemStructureService.populateDescriptors(this.molecule);
-			return this.molecule.getTotalCharge();
+			try {
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				return this.molecule.getTotalCharge();
+			} catch (CmpdRegMolFormatException e) {
+				logger.error(e.getMessage());
+				return -1;
+			}
 		}
 	}
 
@@ -125,8 +139,13 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		if(this.molecule.getSmiles() != null) {
 			return this.molecule.getSmiles();
 		} else {
-			bbChemStructureService.populateDescriptors(this.molecule);
-			return this.molecule.getSmiles();
+			try {
+				this.molecule = bbChemStructureService.getProcessedStructure(this.molecule.getMol(), false);
+				return this.molecule.getSmiles();
+			} catch (CmpdRegMolFormatException e) {
+				logger.error(e.getMessage());
+				return null;
+			}
 		}
 	}
 
@@ -183,9 +202,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public void dearomatize() {
-		RWMol mol = bbChemStructureService.getPartiallySanitizedRWMol(this.molecule.getMol());
-		mol.Kekulize();
-		this.molecule.setMol(bbChemStructureService.getMolStructureFromRDKMol(mol));
+		// BBCHem implementation always kekulizes the structure
 	}
 
 }

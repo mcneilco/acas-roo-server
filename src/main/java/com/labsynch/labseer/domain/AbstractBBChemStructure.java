@@ -1,5 +1,6 @@
 package com.labsynch.labseer.domain;
 
+import java.util.BitSet;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -11,6 +12,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+
+import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
@@ -48,6 +51,14 @@ public abstract class AbstractBBChemStructure {
     @Column(columnDefinition = "text")
     private String mol;
 
+    @Column
+    @Type(type = "com.labsynch.labseer.utils.BitSetUserType")
+    private BitSet substructure;
+
+    @Column
+    @Type(type = "com.labsynch.labseer.utils.BitSetUserType")
+    private BitSet similarity;
+
     @NotNull
     @DateTimeFormat(style="M-")
     private Date recordedDate;
@@ -73,10 +84,18 @@ public abstract class AbstractBBChemStructure {
     @Transient
     private HashMap<String, String> properties;
 
-    public void updateStructureInfo(String mol, String reg, String preReg) {
-        this.setMol(mol);
-        this.setReg(reg);
-        this.setPreReg(preReg);
+    public void updateStructureInfo(AbstractBBChemStructure updatedBbChemStructure) {
+        this.setMol(updatedBbChemStructure.getMol());
+        this.setReg(updatedBbChemStructure.getReg());
+        this.setPreReg(updatedBbChemStructure.getPreReg());
+        this.setSubstructure(updatedBbChemStructure.getSubstructure());
+        this.setSimilarity(updatedBbChemStructure.getSimilarity());
+        this.setExactMolWeight(updatedBbChemStructure.getExactMolWeight());
+        this.setAverageMolWeight(updatedBbChemStructure.getAverageMolWeight());
+        this.setTotalCharge(updatedBbChemStructure.getTotalCharge());
+        this.setSmiles(updatedBbChemStructure.getSmiles());
+        this.setMolecularFormula(updatedBbChemStructure.getMolecularFormula());
+        this.setRecordedDate(updatedBbChemStructure.getRecordedDate());
     } 
 
 }
