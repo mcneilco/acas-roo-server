@@ -31,6 +31,7 @@ import org.springframework.web.util.WebUtils;
 
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StructureSaveException;
 import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.SaltStructureService;
@@ -225,6 +226,24 @@ public class SaltController {
 		}catch (CmpdRegMolFormatException e) {
 			return new ResponseEntity<String>("ERROR: Bad molfile:"+e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+
+	@RequestMapping(value = "/saveMissingStructures", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<String> saveMissingStructures() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/text; charset=utf-8");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Cache-Control", "no-store, no-cache, must-revalidate"); //HTTP 1.1
+		headers.add("Pragma", "no-cache"); //HTTP 1.0
+		headers.setExpires(0); // Expire the cache
+		try {
+			Collection<Salt> missingSaltStructures = saltStructureService.saveMissingStructures();
+			return new ResponseEntity<String>(Salt.toJsonArray(missingSaltStructures), headers, HttpStatus.OK);
+		}catch (StructureSaveException e) {
+			return new ResponseEntity<String>("ERROR: Saving missing structures:"+e.getMessage(), headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
 	}
 
 }

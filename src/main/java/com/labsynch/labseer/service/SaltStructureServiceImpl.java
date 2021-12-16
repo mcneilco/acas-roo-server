@@ -1,15 +1,19 @@
 package com.labsynch.labseer.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Salt;
+import com.labsynch.labseer.exceptions.StructureSaveException;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
@@ -85,6 +89,36 @@ public class SaltStructureServiceImpl implements SaltStructureService {
 		} else {
 			return null;
 		}
+	}
+
+
+
+	@Override
+	@Transactional
+	public List<Salt> saveMissingStructures() throws StructureSaveException {
+		List<Salt> allSalts = Salt.findAllSalts();
+		List<Salt> missingSaltsStructures = new ArrayList<Salt>();
+		for (Salt salt : allSalts) {
+			Boolean checkForDupes = true;
+			Integer cdId = chemStructureService.saveStructure(salt.getMolStructure(), StructureType.SALT, checkForDupes);
+			// Chem structure service api currently returns 0 if duplicate found
+			// and -1 if there is an error saving the structure
+			if (cdId != 0 && cdId != -1){
+				salt.setCdId(cdId);
+				salt.merge();
+				missingSaltsStructures.add(salt);
+				logger.info("saved missing salt structure: " + salt.getAbbrev());
+			} else {
+				if(cdId == -1){
+					String message = "error saving salt structure: " + salt.getAbbrev();
+					logger.error(message);
+					throw new StructureSaveException(message);
+				} else {
+					logger.info("salt structure already registered as cd_id: " + cdId);
+				}
+			}
+		}
+		return missingSaltsStructures;
 	}
 
 }
