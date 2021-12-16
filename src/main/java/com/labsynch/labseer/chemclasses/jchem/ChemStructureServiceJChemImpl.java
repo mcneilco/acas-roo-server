@@ -1676,16 +1676,19 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 	@Override
 	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException{
-		File standardizationSettingsFile = new File(propertiesUtilService.getStandardizerConfigFilePath());
-        String standardizerSettingsFileContents = "";
-        try {
-            standardizerSettingsFileContents = FileUtils.readFileToString(standardizationSettingsFile);
-        } catch (IOException e) {
-			throw new StandardizerException("Got error trying to read jchem standardizer file at " + standardizationSettingsFile.getAbsolutePath(), e);
-        }
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
-		standardizationConfigDTO.setSettings(standardizerSettingsFileContents);
 		standardizationConfigDTO.setType("jchem");
+		// Check if standardizer turned on
+		if(propertiesUtilService.getUseExternalStandardizerConfig()){
+			File standardizationSettingsFile = new File(propertiesUtilService.getStandardizerConfigFilePath());
+			String standardizerSettingsFileContents = "";
+			try {
+				standardizerSettingsFileContents = FileUtils.readFileToString(standardizationSettingsFile);
+				standardizationConfigDTO.setSettings(standardizerSettingsFileContents);
+			} catch (IOException e) {
+				throw new StandardizerException("Got error trying to read jchem standardizer file at " + standardizationSettingsFile.getAbsolutePath(), e);
+			}
+		}
 		return standardizationConfigDTO;
 	}
 }
