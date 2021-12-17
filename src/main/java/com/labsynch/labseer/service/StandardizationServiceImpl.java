@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
@@ -66,8 +67,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
+		ApplicationContext context = event.getApplicationContext();
+        System.out.println(context.getDisplayName());
 		logger.info("Checking compound standardization state");
-
+		logger.info("Application context: " + context.getDisplayName());
+		if (context.getDisplayName().equals("Root WebApplicationContext")) {
+			// this is the root context so wait for the web application context to be initialized
+			return;
+		}
 		try {
 			// Get the current configuration settings
 			StandardizerSettingsConfigDTO currentStandardizationSettings = chemStructureService
