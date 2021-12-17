@@ -308,9 +308,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				boolean firstNewDuplicateHit = true;
 				boolean firstOldDuplicateHit = true;
 				dryRunCompound = StandardizationDryRunCompound.findStandardizationDryRunCompound(dryRunId);
-				logger.info("query compound: " + dryRunCompound.getCorpName());
+				logger.debug("query compound: " + dryRunCompound.getCorpName());
 				if (dryRunCompound.getNewMolWeight() == 0) {
-					logger.info("mol has a weight of 0 - skipping");
+					logger.debug("mol has a weight of 0 - skipping");
 				} else {
 					hits = chemStructureService.searchMolStructures(dryRunCompound.getMolStructure(),
 							StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER);
@@ -336,7 +336,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 									totalNewDuplicateCount++;
 								} else {
 									newDupeCount = newDupeCount - 1;
-									logger.info("found different stereo codes and comments");
+									logger.debug("found different stereo codes and comments");
 								}
 							}
 						}
