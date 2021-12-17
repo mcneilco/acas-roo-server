@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,10 +153,21 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Transactional
+	private int saveDryRunStructure(String molStructure) {
+		int cdId = chemStructureService.saveStructure(molStructure, StructureType.DRY_RUN, false);
+		return cdId;
+	}
+
 	@Override
 	public int populateStanardizationDryRunTable()
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		List<Long> parentIds = Parent.getParentIds();
+
+		Session session = StandardizationDryRunCompound.entityManager().unwrap(Session.class);
+		Long startTime = new Date().getTime();
+		Long currentTime = new Date().getTime();
+
+		int batchSize = propertiesUtilService.getBatchSize();
 		Parent parent;
 		StandardizationDryRunCompound stndznCompound;
 		int nonMatchingCmpds = 0;
@@ -219,7 +231,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					nonMatchingCmpds++;
 				}
 			}
-			cdId = chemStructureService.saveStructure(stndznCompound.getMolStructure(), StructureType.DRY_RUN, false);
+			cdId = saveDryRunStructure(stndznCompound.getMolStructure());
 			if (cdId == -1) {
 				logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
 						+ ", Parent ID " + stndznCompound.getParentId() + ": " + stndznCompound.getMolStructure());
@@ -227,22 +239,33 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				stndznCompound.setCdId(cdId);
 				stndznCompound.persist();
 			}
+
+			if (p % 100 == 0){
+				logger.info("flushing loader session");
+				session.flush();
+				session.clear();
+			}
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
 				// Output if different from the last time.
 				logger.info("populating standardization dry run table " + percent + "% complete");
+				currentTime = new Date().getTime();
+				logger.debug("SPEED REPORT:");
+				logger.debug("Time Elapsed:"+ (currentTime - startTime));
+				logger.debug("Rows Handled:"+ p);
+				logger.debug("Average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 			}
 			// Update the percentage.
 			previousPercent = percent;
 			p++;
+
 		}
 		logger.info(
 				"total number of non matching; structure, display or as drawn display changes: " + nonMatchingCmpds);
 		return (nonMatchingCmpds);
 	}
 
-	@Transactional
 	private String getParentAlias(Parent parent) {
 		StringBuilder aliasSB = new StringBuilder();
 		Set<ParentAlias> parentAliases = parent.getParentAliases();
@@ -261,6 +284,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	public int dupeCheckStandardizationStructures() throws CmpdRegMolFormatException {
 		List<Long> dryRunIds = StandardizationDryRunCompound.findAllIds().getResultList();
+
+		Session session = StandardizationDryRunCompound.entityManager().unwrap(Session.class);
+		Long startTime = new Date().getTime();
+		Long currentTime = new Date().getTime();
+
 		int totalCount = dryRunIds.size();
 		logger.debug("number of compounds found in dry run table: " + totalCount);
 		int totalNewDuplicateCount = 0;
@@ -360,11 +388,22 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				newDuplicateCorpNames = "";
 				oldDuplicateCorpNames = "";
 
+				if (p % 100 == 0){
+					logger.info("flushing loader session");
+					session.flush();
+					session.clear();
+				}
+
 				// Compute your percentage.
 				percent = (float) Math.floor(p * 100f / totalCount);
 				if (percent != previousPercent) {
 					// Output if different from the last time.
 					logger.info("checking for standardization duplicates " + percent + "% complete");
+					currentTime = new Date().getTime();
+					logger.debug("SPEED REPORT:");
+					logger.debug("Time Elapsed:"+ (currentTime - startTime));
+					logger.debug("Rows Handled:"+ p);
+					logger.debug("Average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 				}
 				// Update the percentage.
 				previousPercent = percent;
@@ -531,8 +570,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return standardizationSettingses;
 	}
 
-	@Override
-	public void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
+	@Transactional
+	private StandardizationHistory setCurrentStandardizationDryRunStatus(String status)  throws StandardizerException{
 		StandardizationHistory stndznHistory = getMostRecentStandardizationHistory();
 		StandardizerSettingsConfigDTO standardizationSettings = chemStructureService.getStandardizerSettings();
 		if (stndznHistory == null
@@ -542,10 +581,17 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			stndznHistory.setSettingsHash(standardizationSettings.hashCode());
 			stndznHistory.setRecordedDate(new Date());
 		}
-		stndznHistory.setDryRunStatus("running");
+		stndznHistory.setDryRunStatus(status);
 		stndznHistory.setDryRunStart(new Date());
 		stndznHistory.setDryRunComplete(null);
 		stndznHistory.persist();
+		return stndznHistory;
+	}
+
+	@Override
+	public void executeDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
+
+		StandardizationHistory stndznHistory = this.setCurrentStandardizationDryRunStatus("running");
 		int numberOfDisplayChanges = -1;
 		try {
 			numberOfDisplayChanges = this.runDryRun();
@@ -553,16 +599,15 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			logger.error("error running dry run", e);
 			stndznHistory.setDryRunComplete(new Date());
 			stndznHistory.setDryRunStatus("failed");
-			stndznHistory.persist();
+			stndznHistory.merge();
 			throw e;
 		}
 
 		stndznHistory.setDryRunComplete(new Date());
 		stndznHistory.setDryRunStatus("complete");
-		stndznHistory.persist();
+		stndznHistory.merge();
 	}
 
-	@Transactional
 	private int runDryRun() throws CmpdRegMolFormatException, IOException, StandardizerException {
 		logger.info("standardization dry run initialized");
 		logger.info("step 1/3: resetting dry run table");
@@ -572,7 +617,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		logger.info("step 3/3: checking for standardization duplicates");
 		numberOfDisplayChanges = this.dupeCheckStandardizationStructures();
 		logger.info("standardization dry run complete");
-		return (numberOfDisplayChanges);
+		return numberOfDisplayChanges;
 	}
 
 	public StandardizationHistory getMostRecentStandardizationHistory() {
