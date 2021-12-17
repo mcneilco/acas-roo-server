@@ -305,11 +305,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			e.printStackTrace();
 		} 
 
-
-		System.out.println("here is the new saved cdId  " + cdId);		
 		return cdId;
-
-
 	}
 
 	@Override
@@ -338,7 +334,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	
 	@Override
 	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType) {
-		return searchMolStructures(molfile, structureType, searchType);	
+		return searchMolStructures(molfile, structureType, searchType, 0f);	
 	}
 
 	@Override
@@ -1678,8 +1674,11 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException{
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
 		standardizationConfigDTO.setType("jchem");
+		standardizationConfigDTO.setShouldStandardize(false);
+
 		// Check if standardizer turned on
 		if(propertiesUtilService.getUseExternalStandardizerConfig()){
+			standardizationConfigDTO.setShouldStandardize(true);
 			File standardizationSettingsFile = new File(propertiesUtilService.getStandardizerConfigFilePath());
 			String standardizerSettingsFileContents = "";
 			try {
