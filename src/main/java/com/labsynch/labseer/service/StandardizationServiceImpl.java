@@ -248,14 +248,12 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
+				currentTime = new Date().getTime();
 				// Output if different from the last time.
 				logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
-						+ totalCount + ")");
+				+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 				currentTime = new Date().getTime();
-				logger.debug("SPEED REPORT:");
 				logger.debug("Time Elapsed:"+ (currentTime - startTime));
-				logger.debug("Rows Handled:"+ p);
-				logger.debug("Average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 			}
 			// Update the percentage.
 			previousPercent = percent;
@@ -398,14 +396,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				// Compute your percentage.
 				percent = (float) Math.floor(p * 100f / totalCount);
 				if (percent != previousPercent) {
+					currentTime = new Date().getTime();
 					// Output if different from the last time.
 					logger.info("checking for standardization duplicates " + percent + "% complete (" + p + "/"
-							+ totalCount + ")");
-					currentTime = new Date().getTime();
-					logger.debug("SPEED REPORT:");
+							+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 					logger.debug("Time Elapsed:"+ (currentTime - startTime));
-					logger.debug("Rows Handled:"+ p);
-					logger.debug("Average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 				}
 				// Update the percentage.
 				previousPercent = percent;
