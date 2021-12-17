@@ -241,7 +241,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 
 			if (p % 100 == 0){
-				logger.info("flushing loader session");
+				logger.debug("flushing loader session");
 				session.flush();
 				session.clear();
 			}
@@ -249,7 +249,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
 				// Output if different from the last time.
-				logger.info("populating standardization dry run table " + percent + "% complete");
+				logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
+						+ totalCount + ")");
 				currentTime = new Date().getTime();
 				logger.debug("SPEED REPORT:");
 				logger.debug("Time Elapsed:"+ (currentTime - startTime));
@@ -389,7 +390,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				oldDuplicateCorpNames = "";
 
 				if (p % 100 == 0){
-					logger.info("flushing loader session");
+					logger.debug("flushing loader session");
 					session.flush();
 					session.clear();
 				}
@@ -398,7 +399,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				percent = (float) Math.floor(p * 100f / totalCount);
 				if (percent != previousPercent) {
 					// Output if different from the last time.
-					logger.info("checking for standardization duplicates " + percent + "% complete");
+					logger.info("checking for standardization duplicates " + percent + "% complete (" + p + "/"
+							+ totalCount + ")");
 					currentTime = new Date().getTime();
 					logger.debug("SPEED REPORT:");
 					logger.debug("Time Elapsed:"+ (currentTime - startTime));
