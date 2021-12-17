@@ -367,7 +367,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 									totalExistingDuplicateCount++;
 								} else {
 									oldDuplicateCount = oldDuplicateCount - 1;
-									logger.info("found different stereo codes and comments");
+									logger.debug("found different stereo codes and comments");
 								}
 							}
 						}
@@ -538,7 +538,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return standardizationHistory.toJson();
 	}
 
-	@Transactional
 	private int runStandardization() throws CmpdRegMolFormatException, IOException, StandardizerException {
 		List<Long> parentIds = StandardizationDryRunCompound.findParentIdsWithStandardizationChanges().getResultList();
 		logger.info("standardization initialized");
