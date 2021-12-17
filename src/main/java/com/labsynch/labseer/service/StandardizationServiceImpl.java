@@ -454,6 +454,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		int p = 1;
 		float previousPercent = percent;
 		previousPercent = percent;
+
+		Session session = StandardizationDryRunCompound.entityManager().unwrap(Session.class);
+		Long startTime = new Date().getTime();
+		Long currentTime = new Date().getTime();
+		
 		for (Long parentId : parentIds) {
 			parent = Parent.findParent(parentId);
 			lots = Lot.findLotsByParent(parent).getResultList();
@@ -466,16 +471,27 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 
 			result = chemStructureService.standardizeStructure(originalStructure);
+			Boolean success = chemStructureService.updateStructure(result, StructureType.PARENT, parent.getCdId());
+			parent.setMolStructure(result);
+			parent.persist();
 
+			if (p % 100 == 0){
+				logger.debug("flushing loader session");
+				session.flush();
+				session.clear();
+			}
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
+				currentTime = new Date().getTime();
 				// Output if different from the last time.
-				logger.info("standardization " + percent + "% complete");
+				logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
+				+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
+				currentTime = new Date().getTime();
+				logger.debug("Time Elapsed:"+ (currentTime - startTime));
 			}
 			// Update the percentage.
 			previousPercent = percent;
-			p++;
 
 		}
 		return parentIds.size();
