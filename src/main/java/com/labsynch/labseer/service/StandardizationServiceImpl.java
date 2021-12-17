@@ -549,7 +549,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		int numberOfDisplayChanges = -1;
 		try {
 			numberOfDisplayChanges = this.runDryRun();
-		} catch (CmpdRegMolFormatException | IOException | StandardizerException e) {
+		} catch (Exception e) {
+			logger.error("error running dry run", e);
 			stndznHistory.setDryRunComplete(new Date());
 			stndznHistory.setDryRunStatus("failed");
 			stndznHistory.persist();
