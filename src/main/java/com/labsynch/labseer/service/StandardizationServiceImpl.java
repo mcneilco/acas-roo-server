@@ -440,6 +440,12 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		StandardizationDryRunCompound.truncateTable();
 	}
 
+	@Transactional
+	public Boolean updateStructure(String molStructure, int cdId) {
+		Boolean success = chemStructureService.updateStructure(molStructure, StructureType.PARENT, cdId);
+		return success;
+	}
+
 	@Override
 	public int restandardizeParentStructures(List<Long> parentIds)
 			throws CmpdRegMolFormatException, StandardizerException, IOException {
@@ -455,7 +461,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		float previousPercent = percent;
 		previousPercent = percent;
 
-		Session session = StandardizationDryRunCompound.entityManager().unwrap(Session.class);
+		Session session = Parent.entityManager().unwrap(Session.class);
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		
@@ -471,7 +477,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 
 			result = chemStructureService.standardizeStructure(originalStructure);
-			Boolean success = chemStructureService.updateStructure(result, StructureType.PARENT, parent.getCdId());
+			Boolean success = updateStructure(result, parent.getCdId());
 			parent.setMolStructure(result);
 			parent.persist();
 
@@ -485,14 +491,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			if (percent != previousPercent) {
 				currentTime = new Date().getTime();
 				// Output if different from the last time.
-				logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
+				logger.info("parent structure restandardization " + percent + "% complete (" + p + " of "
 				+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 				currentTime = new Date().getTime();
 				logger.debug("Time Elapsed:"+ (currentTime - startTime));
 			}
 			// Update the percentage.
 			previousPercent = percent;
-
+			p++;
 		}
 		return parentIds.size();
 	}
@@ -519,7 +525,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		} catch (CmpdRegMolFormatException | IOException | StandardizerException e) {
 			standardizationHistory.setStandardizationComplete(new Date());
 			standardizationHistory.setStandardizationStatus("failed");
-			standardizationHistory.persist();
+			standardizationHistory.merge();
 			return (standardizationHistory.toJson());
 		}
 
@@ -533,7 +539,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		standardizationHistory.setStandardizationStatus("complete");
 		standardizationHistory.setStandardizationUser(username);
 		standardizationHistory.setStandardizationReason(reason);
-		standardizationHistory.persist();
+		standardizationHistory.merge();
 		this.reset();
 		return standardizationHistory.toJson();
 	}

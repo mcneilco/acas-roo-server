@@ -1407,7 +1407,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		boolean updatedStructure = false;
 
 		try {
-			logger.info("the connection closed: " + conn.isClosed());
+			logger.debug("the connection closed: " + conn.isClosed());
 			conn.setAutoCommit(true);
 			ch.setConnection(conn);
 		} catch (SQLException e1) {
@@ -1522,7 +1522,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		boolean updatedStructure = false;
 
 		try {
-			logger.info("the connection closed: " + conn.isClosed());
+			logger.debug("the connection closed: " + conn.isClosed());
 			conn.setAutoCommit(true);
 			ch.setConnection(conn);
 		} catch (SQLException e1) {
@@ -1611,7 +1611,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		boolean deleteSuccessful = false;
 
 		try {
-			logger.info("the connection closed: " + conn.isClosed());
+			logger.debug("the connection closed: " + conn.isClosed());
 			conn.setAutoCommit(true);
 			ch.setConnection(conn);
 		} catch (SQLException e1) {
