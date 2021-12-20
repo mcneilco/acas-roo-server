@@ -453,7 +453,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		List<Lot> lots;
 		Lot lot;
 		String originalStructure = null;
-		String result;
+		String standardizedMol;
 		int totalCount = parentIds.size();
 		logger.info("number of parents to restandardize: " + totalCount);
 		float percent = 0;
@@ -469,6 +469,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			parent = Parent.findParent(parentId);
 			lots = Lot.findLotsByParent(parent).getResultList();
 			lot = lots.get(0);
+
+			// Try getting the as drawn structure first if we have it
 			if (lots.size() > 0 && lot.getAsDrawnStruct() != null) {
 				originalStructure = lot.getAsDrawnStruct();
 			} else {
@@ -476,9 +478,24 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				originalStructure = parent.getMolStructure();
 			}
 
-			result = chemStructureService.standardizeStructure(originalStructure);
-			Boolean success = updateStructure(result, parent.getCdId());
-			parent.setMolStructure(result);
+			// We standardize the structure first
+			standardizedMol = chemStructureService.standardizeStructure(originalStructure);
+
+			// Now we update the parent structure
+			Boolean success = updateStructure(standardizedMol, parent.getCdId());
+
+			// In the case where we are switching chemistry engines the structure might not exist,
+			// so we need to check for that	and if it does not exist we need to create it
+			if(!success){
+				logger.warn("Could not update structure for parent: " + parentId + "  " + parent.getCorpName());
+				logger.info("Assuming the structure did not exist in the first place and saving a new one");
+				int newCdId = chemStructureService.saveStructure(standardizedMol, StructureType.PARENT, false);
+				parent.setCdId(newCdId);
+				logger.info("Updated parent with new cdId: " + newCdId);
+			}
+
+			// Save the standardized structure and possibly the new cdid to the parent
+			parent.setMolStructure(standardizedMol);
 			parent.persist();
 
 			if (p % 100 == 0){
