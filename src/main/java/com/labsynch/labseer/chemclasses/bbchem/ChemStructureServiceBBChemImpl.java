@@ -249,6 +249,14 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 	@Override
+	public int saveStructure(CmpdRegMolecule cmpdRegMolecule, StructureType structureType, boolean checkForDupes) {
+			// Process the molfile and calculate fingerprints = true
+			BBChemParentStructure bbChemStructure = cmpdRegMolecule.molecule;
+
+
+	}
+
+	@Override
 	public int saveStructure(String molfile, StructureType structureType, boolean checkForDupes) {
 
 		Long cdId=0L;
@@ -561,52 +569,44 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 	@Override
+	public HashMap<String, CmpdRegMolecule> standardizeStructures(HashMap<String, String> structures) throws CmpdRegMolFormatException {
+
+		// Get preprocessed structures (standardized mol structures)
+		HashMap<String, String> preprocessedStructures = new HashMap<String, String>();
+		try {
+			preprocessedStructures = bbChemStructureService.getPreprocessedStructures(structures);
+		} catch (IOException e) {
+			logger.error("Error getting preprocessed structures: "+e.getMessage());
+			throw new CmpdRegMolFormatException("Error getting preprocessed structures: "+e.getMessage());
+		}
+
+		// Get processed structures (hashes and include fingerprints)
+		HashMap<String, BBChemParentStructure> standardizedStructures = bbChemStructureService.getProcessedStructures(preprocessedStructures, true);
+
+		// Return hashmap
+		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
+		for(String key : standardizedStructures.keySet()){
+			BBChemParentStructure bbchemStructure = standardizedStructures.get(key);
+			CmpdRegMolecule molStructure = new CmpdRegMoleculeBBChemImpl(bbchemStructure);
+			result.put(key, molStructure);
+		}
+		return result;
+	} 
+
+	@Override
 	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, IOException {
-		// Calls preprocessor URL and gets the standardized structure from the preprocessor URL
-		String molOut = null;
+		
+		// Create input hashmap
+		HashMap<String, String> inputStructures = new HashMap<String, String>();
+		inputStructures.put("molfile", molfile);
+		
+		// Call the service
+		HashMap<String, CmpdRegMolecule>  standardizedStructureHashMap = standardizeStructures(inputStructures);
 
-		// Read the preprocessor settings as json
-		JsonNode jsonNode = bbChemStructureService.getPreprocessorSettings();
+		// Get the standardized structure
+		CmpdRegMolecule standardizedMolecule = standardizedStructureHashMap.get("molfile");
 
-		// Extract the url to call
-		JsonNode urlNode = jsonNode.get("preprocessURL");
-		if(urlNode == null || urlNode.isNull()) {
-			logger.error("Missing preprocessorSettings preprocessURL!!");
-		}
-
-		String url = urlNode.asText();
-
-		ObjectMapper mapper = new ObjectMapper();
-		ObjectNode requestData = mapper.createObjectNode();
-		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
-		requestData.put("config", standardizerActions);
-		requestData.put("output_format", "MOL");
-
-		// Create a "structures": { "structure-id": "molfile" } object and add it to the request
-		ObjectNode structuresNode = mapper.createObjectNode();
-		String id = UUID.randomUUID().toString();
-		structuresNode.put(id, molfile);
-		requestData.put("structures", structuresNode);
-
-		// Post to the service
-		HttpURLConnection connection = SimpleUtil.postRequest(url, requestData.toString(), logger);
-		String postResponse = null;
-		if(connection.getResponseCode() != 200) {
-			logger.error("Error posting to preprocessor service: " + connection.getResponseMessage());
-			throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + connection.getResponseMessage());
-		} else {
-			postResponse = SimpleUtil.getStringBody(connection);
-		}
-		logger.info("Got response: "+ postResponse);
-
-		// Parse the response json to get the standardized mol
-		ObjectMapper responseMapper = new ObjectMapper();
-		JsonNode responseNode = responseMapper.readTree(postResponse);
-		JsonNode structuresResponseNode = responseNode.get("structures");
-		JsonNode structureResponseNode = structuresResponseNode.get(id);
-		molOut = structureResponseNode.get("structure").asText();
-	
-		return molOut;
+		return standardizedMolecule.getMolStructure();
 	}
 
 	@Override

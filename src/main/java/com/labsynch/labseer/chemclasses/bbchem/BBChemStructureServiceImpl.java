@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
@@ -57,7 +58,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 	}
 
-	private BitSet getFingerprint(String molStructure, String type)  throws CmpdRegMolFormatException{
+
+	private HashMap<String, BitSet> getFingerPrints(HashMap<String, String> structures, String type)  throws CmpdRegMolFormatException{
 		// Fetch the fingerprint from the BBChem fingerprint service
 		String url = null;
 		try {
@@ -72,7 +74,10 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 		// Add the structures to the request
 		ArrayNode arrayNode = mapper.createArrayNode();
-		arrayNode.add(molStructure);
+
+		for (String structure : structures.keySet()) {
+			arrayNode.add(structures.get(structure));
+		}
 		requestData.put("sdfs", arrayNode);
 
 		requestData.put("fingerprint_type", type);
@@ -95,16 +100,43 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			ObjectMapper responseMapper = new ObjectMapper();
 			JsonNode responseNode = responseMapper.readTree(postResponse);
 			JsonNode resultsNode = responseNode.get("fingerprint_results");
-			return SimpleUtil.stringToBitSet(resultsNode.get(0).asText());
+
+			// Return hashmap
+			HashMap<String, BitSet> fingerprints = new HashMap<String, BitSet>();
+			
+			Object[] structuresArray = structures.keySet().toArray();
+			// Loop through the length of results
+			for (int i = 0; i < resultsNode.size(); i++) {
+				JsonNode resultNode = resultsNode.get(i);
+				String stringFingerPrint = resultNode.asText();
+				BitSet bitSet = SimpleUtil.stringToBitSet(stringFingerPrint);
+				String structureKey = structuresArray[i].toString();
+				fingerprints.put(structureKey, bitSet);
+			}
+
+			return fingerprints;
 		} catch (Exception e) {
 			logger.error("Error posting to fingerprint service: " + e.getMessage());
 			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
 		}
 	}
 
-	@Override
-	public JsonNode postToProcessService(String molfile) throws IOException {
-		
+	private BitSet getFingerprint(String molStructure, String type)  throws CmpdRegMolFormatException{
+		// Get a single fingerprint by calling the BBChem fingerprint service
+		try {
+			// Create the request data object
+			HashMap<String, String> structures = new HashMap<String, String>();
+			structures.put("molStructure", molStructure);
+			HashMap<String, BitSet> fingerPrintHashMap = getFingerPrints(structures, type);
+			return fingerPrintHashMap.get("molStructure");
+		} catch (Exception e) {
+			logger.error("Error posting to fingerprint service: " + e.getMessage());
+			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
+		}
+	}
+
+	private JsonNode postToProcessService(HashMap<String, String> structures)  throws IOException {
+
 		String url = getUrlFromPreprocessorSettings("processURL");
 
 		JsonNode jsonNode = getPreprocessorSettings();
@@ -123,7 +155,10 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 		// Add the structures to the request
 		ArrayNode arrayNode = mapper.createArrayNode();
-		arrayNode.add(molfile);
+
+		for (String structure : structures.keySet()) {
+			arrayNode.add(structures.get(structure));
+		}
 		requestData.put("structures", arrayNode);
 
 		// Post to the service and parse the response
@@ -149,18 +184,87 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	@Override
-	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints) throws CmpdRegMolFormatException {
-		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
+	public JsonNode postToProcessService(String molfile) throws IOException {
+		
+		//New hashamp
+		HashMap<String, String> structures = new HashMap<String, String>();
+		//Add the molfile to the hashmap
+		structures.put("mol", molfile);
+		//Post to the service
+		JsonNode jsonNode = postToProcessService(structures);
+
+		return jsonNode;
+	}
+
+	@Override
+	public HashMap<String, String> getPreprocessedStructures(HashMap<String, String> structures)  throws CmpdRegMolFormatException, IOException{
+		// Returns standardized mols
+		String url = getUrlFromPreprocessorSettings("preprocessURL");
+
+		JsonNode jsonNode = getPreprocessorSettings();
+
+		ObjectMapper mapper = new ObjectMapper();
+		ObjectNode requestData = mapper.createObjectNode();
+		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
+		requestData.put("config", standardizerActions);
+		requestData.put("output_format", "MOL");
+
+		// Create a "structures": { "structure-id": "molfile" } object and add it to the request
+		ObjectNode structuresNode = mapper.createObjectNode();
+
+		for (String structureId : structures.keySet()){
+			String structure = structures.get(structureId);
+			structuresNode.put(structureId, structure);
+		}
+		requestData.put("structures", structuresNode);
+
+		// Post to the service
+		HttpURLConnection connection = SimpleUtil.postRequest(url, requestData.toString(), logger);
+		String postResponse = null;
+		if(connection.getResponseCode() != 200) {
+			logger.error("Error posting to preprocessor service: " + connection.getResponseMessage());
+			throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + connection.getResponseMessage());
+		} else {
+			postResponse = SimpleUtil.getStringBody(connection);
+		}
+		logger.info("Got response: "+ postResponse);
+
+		// Parse the response json to get the standardized mol
+		ObjectMapper responseMapper = new ObjectMapper();
+		JsonNode responseNode = responseMapper.readTree(postResponse);
+		JsonNode structuresResponseNode = responseNode.get("structures");
+
+		HashMap<String, String> standardizedStructures = new HashMap<String, String>();
+		for (String structureId : structures.keySet()){
+			String mol = structuresResponseNode.get(structureId).asText();
+			standardizedStructures.put(structureId, mol);
+		}
+		return standardizedStructures;
+	}
+
+	@Override
+	public HashMap<String, BBChemParentStructure> getProcessedStructures(HashMap<String, String> structures, Boolean includeFingerprints) throws CmpdRegMolFormatException {
+
+		// Return map
+		HashMap<String, BBChemParentStructure> processedStructures = new HashMap<String, BBChemParentStructure>();
+		
 		// Post to the service and parse the response
 		try {
 			JsonNode responseNode;
 			try {
-				responseNode = postToProcessService(molfile);
+				responseNode = postToProcessService(structures);
 			} catch (IOException e) {
 				throw new CmpdRegMolFormatException(e);
 			}
-			for (JsonNode responseJsonNode : responseNode)  {
 
+			Object[] structuresArray = structures.keySet().toArray();
+			// Loop through length of response node
+			for (int i = 0; i < responseNode.size(); i++) {
+				
+				JsonNode responseJsonNode = responseNode.get(i);
+				
+				BBChemParentStructure bbChemStructure = new BBChemParentStructure();
+				
 				// Throw exception if there is an error reading the molecule
 				JsonNode errorCodeNode = responseJsonNode.get("error_code");
 
@@ -194,23 +298,66 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				JsonNode molecularFormulaNode = responseJsonNode.get("molecular_formula");
 				bbChemStructure.setMolecularFormula(molecularFormulaNode.asText());
 
-				if(includeFingerprints) {
-					JsonNode fingerprintNode = responseJsonNode.get("fingerprint");
-					bbChemStructure.setSubstructure(getFingerprint(bbChemStructure.getMol(), "substructure_search"));
-					bbChemStructure.setSimilarity(getFingerprint(bbChemStructure.getMol(), "similarity_score"));
+				// Set recorded date todays date. This simplifies the code when we need to persist the structure
+				// in various places.
+				bbChemStructure.setRecordedDate(new Date());
+
+				//Get get hasmap name of structure at index i
+				String structureKey = structuresArray[i].toString();
+				
+				// Add to the map
+				processedStructures.put(structureKey, bbChemStructure);
+			}
+
+			if(includeFingerprints) {
+				// Input fingerprint hashes
+				HashMap<String, String> processedStructureHash = new HashMap<String, String>();
+				for (String structureId : processedStructures.keySet()){
+					processedStructureHash.put(structureId, processedStructures.get(structureId).getMol());
+				}
+
+				// Get the fingerprints
+				HashMap<String, BitSet> substructureHashMap = getFingerPrints(processedStructureHash, "substructure_search");
+				HashMap<String, BitSet> similarityHashMap = getFingerPrints(processedStructureHash, "similarity_score");
+
+				// Add the substructure fingerprints to the processed structures
+				for (String structureId : substructureHashMap.keySet()){
+					processedStructures.get(structureId).setSubstructure(substructureHashMap.get(structureId));
+				}
+
+				// Add the similarity fingerprints to the processed structures
+				for (String structureId : similarityHashMap.keySet()){
+					processedStructures.get(structureId).setSubstructure(similarityHashMap.get(structureId));
 				}
 			}
 
-
+			return processedStructures;
 		} catch (CmpdRegMolFormatException e) {
-			logger.error("Error posting to preprocessor service: " + e.getMessage());
+			logger.error("Error posting to processor service: " + e.getMessage());
 			throw new CmpdRegMolFormatException(e);
 		}
 
-		// Set recorded date todays date. This simplifies the code when we need to persist the structure
-		// in various places.
-		bbChemStructure.setRecordedDate(new Date());
-		return bbChemStructure;
+	}
+
+	@Override
+	public BBChemParentStructure getProcessedStructure(String molfile, Boolean includeFingerprints) throws CmpdRegMolFormatException {
+		BBChemParentStructure bbChemStructure = new BBChemParentStructure();
+		// Post to the service and parse the response
+		try {
+			// Input hashmap 
+			HashMap<String, String> structures = new HashMap<String, String>();
+			structures.put("molstructure", molfile);
+
+			HashMap<String, BBChemParentStructure> processedStructuresHashMap = getProcessedStructures(structures, includeFingerprints);
+
+			// Get the first structure
+			bbChemStructure = processedStructuresHashMap.get("molstructure");
+			return bbChemStructure;
+
+		} catch (CmpdRegMolFormatException e) {
+			logger.error("Error posting to processor service: " + e.getMessage());
+			throw new CmpdRegMolFormatException(e);
+		}
 	}
 
 	@Override
@@ -307,8 +454,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 
 		} catch (Exception e) {
-			logger.error("Error posting to preprocessor service: " + e);
-			throw new CmpdRegMolFormatException("Error posting to preprocessor service: " + e);
+			logger.error("Error posting to parse service: " + e);
+			throw new CmpdRegMolFormatException("Error posting to parse service: " + e);
 		}
 
 		return bbChemStructures;

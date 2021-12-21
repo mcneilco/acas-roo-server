@@ -1,8 +1,10 @@
 package com.labsynch.labseer.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +21,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.Lot;
@@ -153,8 +156,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Transactional
-	private int saveDryRunStructure(String molStructure) {
-		int cdId = chemStructureService.saveStructure(molStructure, StructureType.DRY_RUN, false);
+	private int saveDryRunStructure(CmpdRegMolecule cmpdregMolecule) {
+		int cdId = chemStructureService.saveStructure(cmpdregMolecule, StructureType.DRY_RUN, false);
 		return cdId;
 	}
 
@@ -187,64 +190,97 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		int p = 1;
 		float previousPercent = percent;
 		previousPercent = percent;
+
+		// Split parent ids into groups of batchSize
+		List<List<Long>> parentIdGroups = new ArrayList<List<Long>>();
+		List<Long> parentIdGroup = new ArrayList<Long>();
 		for (Long parentId : parentIds) {
-			parent = Parent.findParent(parentId);
-			stndznCompound = new StandardizationDryRunCompound();
-			stndznCompound.setRunNumber(runNumber);
-			stndznCompound.setQcDate(qcDate);
-			stndznCompound.setParentId(parent.getId());
-			stndznCompound.setCorpName(parent.getCorpName());
-			stndznCompound.setAlias(getParentAlias(parent));
-			stndznCompound.setStereoCategory(parent.getStereoCategory().getName());
-			stndznCompound.setStereoComment(parent.getStereoComment());
-			stndznCompound.setOldMolWeight(parent.getMolWeight());
-
-			queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
-			if (queryLots.size() != 1)
-				logger.error("!!!!!!!!!!!!  odd lot number size   !!!!!!!!!  " + queryLots.size() + "  saltForm: "
-						+ parent.getId());
-			if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null) {
-				asDrawnStruct = queryLots.get(0).getAsDrawnStruct();
-			} else {
-				asDrawnStruct = parent.getMolStructure();
+			parentIdGroup.add(parentId);
+			if (parentIdGroup.size() == batchSize) {
+				parentIdGroups.add(parentIdGroup);
+				parentIdGroup = new ArrayList<Long>();
 			}
-			logger.debug("attempting to standardize: " + parent.getCorpName() + "   " + asDrawnStruct);
-			stndznCompound.setMolStructure(chemStructureService.standardizeStructure(asDrawnStruct));
-			stndznCompound.setNewMolWeight(chemStructureService.getMolWeight(stndznCompound.getMolStructure()));
+		}
 
-			if (parent.getMolWeight() == 0 && stndznCompound.getNewMolWeight() == 0) {
-				logger.debug("mol weight 0 before and after standardization - skipping");
+		// Do a bulk standardization
+		for (List<Long> pIdGroup : parentIdGroups) {
+			logger.info("Starting batch of " + pIdGroup.size() + " parents");
 
-			} else {
-				boolean displayTheSame = chemStructureService.isIdenticalDisplay(parent.getMolStructure(),
-						stndznCompound.getMolStructure());
-				if (!displayTheSame) {
-					stndznCompound.setDisplayChange(true);
-					logger.debug("the compounds are NOT matching: " + parent.getCorpName());
-					nonMatchingCmpds++;
+			// Create standardization hashmap
+			HashMap<String, String> inputStructures = new HashMap<String, String>();
+			HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
+			for(Long parentId : pIdGroup) {
+				parent = Parent.findParent(parentId);
+				parents.put(parentId, parent);
+				inputStructures.put(parentId.toString(parentId), parent.getMolStructure());
+			}
+
+			// Do standardization
+			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(inputStructures);
+
+			for(Long parentId : pIdGroup) {
+				parent = parents.get(parentId);
+				stndznCompound = new StandardizationDryRunCompound();
+				stndznCompound.setRunNumber(runNumber);
+				stndznCompound.setQcDate(qcDate);
+				stndznCompound.setParentId(parent.getId());
+				stndznCompound.setCorpName(parent.getCorpName());
+				stndznCompound.setAlias(getParentAlias(parent));
+				stndznCompound.setStereoCategory(parent.getStereoCategory().getName());
+				stndznCompound.setStereoComment(parent.getStereoComment());
+				stndznCompound.setOldMolWeight(parent.getMolWeight());
+
+				queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
+				if (queryLots.size() != 1)
+					logger.error("!!!!!!!!!!!!  odd lot number size   !!!!!!!!!  " + queryLots.size() + "  saltForm: "
+							+ parent.getId());
+				if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null) {
+					asDrawnStruct = queryLots.get(0).getAsDrawnStruct();
+				} else {
+					asDrawnStruct = parent.getMolStructure();
 				}
-				boolean asDrawnDisplaySame = chemStructureService.isIdenticalDisplay(asDrawnStruct,
+
+				CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());
+				stndznCompound.setMolStructure(cmpdRegMolecule.getMolStructure());
+				stndznCompound.setNewMolWeight(cmpdRegMolecule.getMass());
+	
+				if (parent.getMolWeight() == 0 && stndznCompound.getNewMolWeight() == 0) {
+					logger.debug("mol weight 0 before and after standardization - skipping");
+	
+				} else {
+
+					boolean displayTheSame = chemStructureService.isIdenticalDisplay(parent.getMolStructure(),
 						stndznCompound.getMolStructure());
-				if (!asDrawnDisplaySame) {
-					stndznCompound.setAsDrawnDisplayChange(true);
-					logger.debug("the compounds are NOT matching: " + parent.getCorpName());
-					nonMatchingCmpds++;
+
+					if (!displayTheSame) {
+						stndznCompound.setDisplayChange(true);
+						logger.debug("the compounds are NOT matching: " + parent.getCorpName());
+						nonMatchingCmpds++;
+					}
+					boolean asDrawnDisplaySame = chemStructureService.isIdenticalDisplay(asDrawnStruct,
+						stndznCompound.getMolStructure());
+
+					if (!asDrawnDisplaySame) {
+						stndznCompound.setAsDrawnDisplayChange(true);
+						logger.debug("the compounds are NOT matching: " + parent.getCorpName());
+						nonMatchingCmpds++;
+					}
+				}
+				cdId = saveDryRunStructure(cmpdRegMolecule);
+
+				if (cdId == -1) {
+					logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
+							+ ", Parent ID " + stndznCompound.getParentId() + ": " + stndznCompound.getMolStructure());
+				} else {
+					stndznCompound.setCdId(cdId);
+					stndznCompound.persist();
 				}
 			}
-			cdId = saveDryRunStructure(stndznCompound.getMolStructure());
-			if (cdId == -1) {
-				logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
-						+ ", Parent ID " + stndznCompound.getParentId() + ": " + stndznCompound.getMolStructure());
-			} else {
-				stndznCompound.setCdId(cdId);
-				stndznCompound.persist();
-			}
-
-			if (p % 100 == 0){
-				logger.debug("flushing loader session");
-				session.flush();
-				session.clear();
-			}
+			// End loop through parent id group
+			logger.debug("flushing loader session");
+			session.flush();
+			session.clear();
+			
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
@@ -258,8 +294,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			// Update the percentage.
 			previousPercent = percent;
 			p++;
-
 		}
+
 		logger.info(
 				"total number of non matching; structure, display or as drawn display changes: " + nonMatchingCmpds);
 		return (nonMatchingCmpds);
