@@ -348,12 +348,14 @@ public class SimpleUtil {
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Accept-Charset", charset);
 		connection.setRequestProperty("Content-Type", "application/json");		
-		logger.info("Sending request to: "+url);
-		logger.info("with data: "+jsonContent);
+		logger.debug("Sending request to: "+url);
+		logger.debug("with data: "+jsonContent);
 		try{
 			OutputStream output = connection.getOutputStream();
 			output.write(jsonContent.getBytes());
 		}catch (Exception e){
+			logger.error("Error sending request to: "+url);
+			logger.error("with data: "+jsonContent);
 			logger.error("Error occurred in making HTTP Request to external server",e);
 		}
 		return getStringBody(connection);
@@ -373,12 +375,14 @@ public class SimpleUtil {
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Accept-Charset", charset);
 		connection.setRequestProperty("Content-Type", "application/json");		
-		logger.info("Sending request to: "+url);
-		logger.info("with data: "+jsonContent);
+		logger.debug("Sending request to: "+url);
+		logger.debug("with data: "+jsonContent);
 		try{
 			OutputStream output = connection.getOutputStream();
 			output.write(jsonContent.getBytes());
 		}catch (Exception e){
+			logger.error("Error sending request to: "+url);
+			logger.error("with data: "+jsonContent);
 			logger.error("Error occurred in making HTTP Request to external server",e);
 		}
 		return connection;
@@ -392,12 +396,14 @@ public class SimpleUtil {
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Accept-Charset", charset);
 		connection.setRequestProperty("Content-Type", "application/json");		
-		logger.info("Sending request to: "+url);
-		logger.info("with data: "+jsonContent);
+		logger.debug("Sending request to: "+url);
+		logger.debug("with data: "+jsonContent);
 		try{
 			OutputStream output = connection.getOutputStream();
 			output.write(jsonContent.getBytes());
 		}catch (Exception e){
+			logger.error("Error sending request to: "+url);
+			logger.error("with data: "+jsonContent);
 			logger.error("Error occurred in making HTTP Request to external server",e);
 		}
 		InputStream input = connection.getInputStream();
@@ -418,9 +424,9 @@ public class SimpleUtil {
 		connection.setDoOutput(true);
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Accept-Charset", charset);
-		logger.info("Sending request to: "+fullUrl);
+		logger.debug("Sending request to: "+fullUrl);
 		int responseCode = connection.getResponseCode();
-		logger.info("Response Code: "+responseCode);
+		logger.debug("Response Code: "+responseCode);
 		BufferedReader inStream = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
@@ -464,12 +470,14 @@ public class SimpleUtil {
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Accept-Charset", charset);
 		connection.setRequestProperty("Content-Type", "application/json");		
-		logger.info("Sending request to: "+url);
-		logger.info("with data: "+jsonContent);
+		logger.debug("Sending request to: "+url);
+		logger.debug("with data: "+jsonContent);
 		try{
 			OutputStream output = connection.getOutputStream();
 			output.write(jsonContent.getBytes());
 		} catch (Exception e){
+			logger.error("Error sending request to: "+url);
+			logger.error("with data: "+jsonContent);
 			logger.error("Error occurred in making HTTP Request to external server",e);
 		}
 		InputStream input;

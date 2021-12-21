@@ -80,7 +80,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		// Post to the service and parse the response
 		try {
 			String requestString = requestData.toString();
-			logger.info("requestString: " + requestString);
+			logger.debug("requestString: " + requestString);
 			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
@@ -89,7 +89,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			} else {
 				postResponse = SimpleUtil.getStringBody(connection);
 			}
-			logger.info("Got response: "+ postResponse);
+			logger.debug("Got response: "+ postResponse);
 
 			// Parse the response json to get the standardized mol
 			ObjectMapper responseMapper = new ObjectMapper();
@@ -128,7 +128,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 		// Post to the service and parse the response
 		String requestString = requestData.toString();
-		logger.info("requestString: " + requestString);
+		logger.debug("requestString: " + requestString);
 		HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
 
 		String postResponse = null;
@@ -138,7 +138,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		} else {
 			postResponse = SimpleUtil.getStringBody(connection);
 		}
-		logger.info("Got response: "+ postResponse);
+		logger.debug("Got response: "+ postResponse);
 
 		// Parse the response json to get the standardized mol
 		ObjectMapper responseMapper = new ObjectMapper();
@@ -250,9 +250,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 		// Post to the service and parse the response
 		String requestString = requestData.toString();
-		logger.info("requestString: " + requestString);
+		logger.debug("requestString: " + requestString);
 		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
-		logger.info("Got response: "+ postResponse);
+		logger.debug("Got response: "+ postResponse);
 
 		// Parse the response json
 		ObjectMapper responseMapper = new ObjectMapper();
@@ -283,9 +283,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		// Post to the service and parse the response
 		try {
 			String requestString = requestData.toString();
-			logger.info("requestString: " + requestString);
+			logger.debug("requestString: " + requestString);
 			String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
-			logger.info("Got response: "+ postResponse);
+			logger.debug("Got response: "+ postResponse);
 
 			// Parse the response json to get the standardized mol
 			ObjectMapper responseMapper = new ObjectMapper();
@@ -338,7 +338,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		// Post to the service and parse the response
 		try {
 			String requestString = requestData.toString();
-			logger.info("requestString: " + requestString);
+			logger.debug("requestString: " + requestString);
 			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
@@ -347,7 +347,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			} else {
 				postResponse = SimpleUtil.getStringBody(connection);
 			}
-			logger.info("Got response: "+ postResponse);
+			logger.debug("Got response: "+ postResponse);
 
 			// Parse the response json to get the standardized mol
 			ObjectMapper responseMapper = new ObjectMapper();
@@ -394,7 +394,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		// Post to the service and parse the response
 		try {
 			String requestString = requestData.toString();
-			logger.info("requestString: " + requestString);
+			logger.debug("requestString: " + requestString);
 			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
@@ -403,7 +403,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			} else {
 				postResponse = SimpleUtil.getStringBody(connection);
 			}
-			logger.info("Got response: "+ postResponse);
+			logger.debug("Got response: "+ postResponse);
 
 			// Parse the response json to get the standardized mol
 			ObjectMapper responseMapper = new ObjectMapper();
