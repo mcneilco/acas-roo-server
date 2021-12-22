@@ -159,7 +159,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Override
-	public int populateStanardizationDryRunTable()
+	public int populateStandardizationDryRunTable()
 			throws CmpdRegMolFormatException, IOException, StandardizerException {
 		List<Long> parentIds = Parent.getParentIds();
 
@@ -648,7 +648,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		logger.info("step 1/3: resetting dry run table");
 		this.reset();
 		logger.info("step 2/3: populating dry run table");
-		int numberOfDisplayChanges = this.populateStanardizationDryRunTable();
+		int numberOfDisplayChanges = this.populateStandardizationDryRunTable();
 		logger.info("step 3/3: checking for standardization duplicates");
 		numberOfDisplayChanges = this.dupeCheckStandardizationStructures();
 		logger.info("standardization dry run complete");
