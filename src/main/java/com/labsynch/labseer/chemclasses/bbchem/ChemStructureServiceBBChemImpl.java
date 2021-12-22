@@ -495,7 +495,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 		// Post to the service
 		String postResponse = SimpleUtil.postRequestToExternalServer(url, requestData.toString(), logger);
-		logger.info("Got response: "+ postResponse);
+		logger.debug("Got response: "+ postResponse);
 
 		// Parse the response json
 		ObjectMapper responseMapper = new ObjectMapper();
@@ -577,6 +577,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			preprocessedStructures = bbChemStructureService.getPreprocessedStructures(structures);
 		} catch (IOException e) {
 			logger.error("Error getting preprocessed structures: "+e.getMessage());
+            logger.error("URL was: " + url);
+            logger.error("Request was : " + requestData.toString());
 			throw new CmpdRegMolFormatException("Error getting preprocessed structures: "+e.getMessage());
 		}
 

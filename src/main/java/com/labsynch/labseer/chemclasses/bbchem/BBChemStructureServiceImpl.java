@@ -90,6 +90,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
 				logger.error("Error posting to fingerprint service: " + connection.getResponseMessage());
+				logger.error("URL was: " + url);
+				logger.error("Request was : " + requestString);
 				throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + connection.getResponseMessage());
 			} else {
 				postResponse = SimpleUtil.getStringBody(connection);
@@ -169,6 +171,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		String postResponse = null;
 		if(connection.getResponseCode() != 200) {
 			logger.error("Error posting to process service: " + connection.getResponseMessage());
+			logger.error("URL was: " + url);
+			logger.error("Request was : " + requestString);
 			throw new IOException("Error posting to process service: " + connection.getResponseMessage());
 		} else {
 			postResponse = SimpleUtil.getStringBody(connection);
@@ -490,6 +494,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
 				logger.error("Error posting to split service: " + connection.getResponseMessage());
+				logger.error("URL was: " + url);
+				logger.error("Request was : " + requestString);
 				throw new CmpdRegMolFormatException("Error posting to split service: " + connection.getResponseMessage());
 			} else {
 				postResponse = SimpleUtil.getStringBody(connection);
@@ -546,6 +552,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
 				logger.error("Error posting to substructure match service: " + connection.getResponseMessage());
+				logger.error("URL was: " + url);
+				logger.error("Request was : " + requestString);
 				throw new CmpdRegMolFormatException("Error posting to substructure match service: " + connection.getResponseMessage());
 			} else {
 				postResponse = SimpleUtil.getStringBody(connection);
