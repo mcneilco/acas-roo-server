@@ -674,5 +674,33 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 		standardizationConfigDTO.setType("indigo");
 		return standardizationConfigDTO;
 	}
+
+	@Override
+	public HashMap<String, CmpdRegMolecule> standardizeStructures(HashMap<String, String> structures)
+			throws CmpdRegMolFormatException, StandardizerException {
+		HashMap<String, CmpdRegMolecule> standardizedStructures = new HashMap<String, CmpdRegMolecule>();
+		for(String structureKey : structures.keySet()){
+			String structure = structures.get(structureKey);
+			try{
+				String standardizedStructure = standardizeStructure(structure);
+				CmpdRegMoleculeIndigoImpl standardizedCmpdRegMolecule = new CmpdRegMoleculeIndigoImpl(standardizedStructure);
+				standardizedStructures.put(structureKey, standardizedCmpdRegMolecule);
+			} catch (Exception e) {
+				logger.error("Got error trying to standardize structure " + structure, e);
+				throw new CmpdRegMolFormatException(e);
+			}
+		}
+		return standardizedStructures;
+	}
+
+	@Override
+	public int saveStructure(CmpdRegMolecule cmpdregMolecule, StructureType structureType, boolean checkForDupes) {
+		try {
+			return saveStructure(cmpdregMolecule.getMolStructure(), structureType, checkForDupes);
+		} catch (CmpdRegMolFormatException e) {
+			logger.error("Got error trying to save structure", e);
+			return -1;
+		}
+	}
 }
 

@@ -248,21 +248,12 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		return true;
 	}
 
-	@Override
-	public int saveStructure(CmpdRegMolecule cmpdRegMolecule, StructureType structureType, boolean checkForDupes) {
-			// Process the molfile and calculate fingerprints = true
-			BBChemParentStructure bbChemStructure = cmpdRegMolecule.molecule;
-
-
-	}
-
-	@Override
-	public int saveStructure(String molfile, StructureType structureType, boolean checkForDupes) {
-
+	private int saveStructure(BBChemParentStructure bbChemStructure, StructureType structureType, boolean checkForDupes) {
 		Long cdId=0L;
 		try {
-			// Process the molfile and calculate fingerprints = true
-			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molfile, true);
+			if(bbChemStructure.getReg() == null || bbChemStructure.getSubstructure() == null) {
+				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true);
+			}
 
 			if (structureType == StructureType.PARENT){
 				if(checkForDupes){
@@ -319,6 +310,30 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			return toIntExact(cdId);
 		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error saving structure: " + e.getMessage());
+			return -1;
+		}
+	}
+
+	@Override
+	public int saveStructure(CmpdRegMolecule cmpdRegMolecule, StructureType structureType, boolean checkForDupes) {
+		// Process the molfile and calculate fingerprints = true
+		CmpdRegMoleculeBBChemImpl bbchemCmpdRegMolecule = (CmpdRegMoleculeBBChemImpl) cmpdRegMolecule;
+		BBChemParentStructure bbChemParentStructure = bbchemCmpdRegMolecule.getMolecule();
+
+		// Save the structure
+		return saveStructure(bbChemParentStructure, structureType, checkForDupes);
+	}
+
+	@Override
+	public int saveStructure(String molfile, StructureType structureType, boolean checkForDupes) {
+		
+		try {
+			// Process the molfile and calculate fingerprints = true
+			BBChemParentStructure bbChemStructure = bbChemStructureService.getProcessedStructure(molfile, true);
+			// Save the structure
+			return saveStructure(bbChemStructure, structureType, checkForDupes);
+		} catch (CmpdRegMolFormatException e) {
+			logger.error("Error processing molfile: " + e.getMessage());
 			return -1;
 		}
 	}
