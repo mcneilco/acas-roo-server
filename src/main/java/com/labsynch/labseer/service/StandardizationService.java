@@ -12,7 +12,7 @@ public interface StandardizationService {
 
 	void reset();
 
-	int populateStanardizationDryRunTable() throws CmpdRegMolFormatException, IOException, StandardizerException;
+	int populateStandardizationDryRunTable() throws CmpdRegMolFormatException, IOException, StandardizerException;
 
 	int dupeCheckStandardizationStructures() throws CmpdRegMolFormatException;
 

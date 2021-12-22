@@ -32,8 +32,6 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.SimpleUtil;
-import com.labsynch.labseer.utils.SimpleUtil.PostResponse;
 
 import chemaxon.calculations.cip.CIPStereoCalculator;
 import chemaxon.calculations.clean.Cleaner;
@@ -65,13 +63,6 @@ import chemaxon.util.HitColoringAndAlignmentOptions;
 import chemaxon.util.MolHandler;
 
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import java.util.UUID;
 
 @Component
@@ -153,64 +144,23 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		// throw or catch errors
 		// create Standardizer based on a XML configuration file
 		String molOut = null;
-
-		// If preprocessor settings are not null then use the preprocessor settings
-		if(propertiesUtilService.getPreprocessorSettings() != null) {
-
-			// Read the preprocessor settings as json
-			ObjectMapper objectMapper = new ObjectMapper();
-			JsonNode jsonNode = objectMapper.readTree(propertiesUtilService.getPreprocessorSettings());
-
-			// Extract the url to call
-			JsonNode urlNode = jsonNode.get("preprocessorURL");
-			if(urlNode == null || urlNode.isNull()) {
-				logger.error("Missing preprocessorSettings preprocessorURL!!");
-			}
-
-			String url = urlNode.asText();
-
-			// Get the preprocessory settings
-			JsonNode preprocessorSettingsNode = jsonNode.get("preprocessorSettings");
-
+		try {
+			Standardizer standardizer = new Standardizer(new File(propertiesUtilService.getStandardizerConfigFilePath()));
+			MolHandler mh = new MolHandler(molfile);
+			Molecule molecule = mh.getMolecule();
+			// standardize molecule
+			standardizer.standardize(molecule);
+			// export standardized molecule
+			molOut = MolExporter.exportToFormat(molecule, "mol");
+			
+		} catch (MolFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-			// Create a "structures": { "structure-id": "molfile" } object and add it to the request
-			ObjectNode structuresNode = objectMapper.createObjectNode();
-			String id = UUID.randomUUID().toString();
-			structuresNode.put(id, molfile);
-			ObjectNode preprocessorSettingObject = ((ObjectNode) preprocessorSettingsNode);
-			preprocessorSettingObject.put("structures", structuresNode);
-	
-			// Post to the service
-			String postResponse = SimpleUtil.postRequestToExternalServer(url, preprocessorSettingObject.toString(), logger);
-			logger.info("Got response: "+ postResponse);
-
-			// Parse the response json to get the standardized mol
-			ObjectMapper responseMapper = new ObjectMapper();
-			JsonNode responseNode = responseMapper.readTree(postResponse);
-			JsonNode structuresResponseNode = responseNode.get("structures");
-			JsonNode structureResponseNode = structuresResponseNode.get(id);
-			molOut = structureResponseNode.get("structure").asText();
-
-		} else {
-
-			try {
-				Standardizer standardizer = new Standardizer(new File(propertiesUtilService.getStandardizerConfigFilePath()));
-				MolHandler mh = new MolHandler(molfile);
-				Molecule molecule = mh.getMolecule();
-				// standardize molecule
-				standardizer.standardize(molecule);
-				// export standardized molecule
-				molOut = MolExporter.exportToFormat(molecule, "mol");
-				
-			} catch (MolFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}		
 		return molOut;
 	}
 
@@ -219,28 +169,16 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		// service to standardize input structure
 		// return standardized structure
 		// create Standardizer based on a XML configuration file
-		if(propertiesUtilService.getPreprocessorSettings() != null) {
-			try {
-				String mol = standardizeStructure(MolExporter.exportToFormat(molecule, "mol"));
-				MolHandler mh = new MolHandler(mol);
-				return mh.getMolecule();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return molecule;
-		} else {
-			Standardizer standardizer = new Standardizer(new File(propertiesUtilService.getStandardizerConfigFilePath()));
-			try {
-				// standardize molecule
-				standardizer.standardize(molecule);
-				// export standardized molecule
-			} catch (LicenseException e) {
-				e.printStackTrace();
-			}
-
-			return molecule;
+		Standardizer standardizer = new Standardizer(new File(propertiesUtilService.getStandardizerConfigFilePath()));
+		try {
+			// standardize molecule
+			standardizer.standardize(molecule);
+			// export standardized molecule
+		} catch (LicenseException e) {
+			e.printStackTrace();
 		}
+
+		return molecule;
 	}
 
 
@@ -367,11 +305,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			e.printStackTrace();
 		} 
 
-
-		System.out.println("here is the new saved cdId  " + cdId);		
 		return cdId;
-
-
 	}
 
 	@Override
@@ -400,7 +334,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	
 	@Override
 	public int[] searchMolStructures(String molfile, StructureType structureType, SearchType searchType) {
-		return searchMolStructures(molfile, structureType, searchType);	
+		return searchMolStructures(molfile, structureType, searchType, 0f);	
 	}
 
 	@Override
@@ -1473,7 +1407,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		boolean updatedStructure = false;
 
 		try {
-			logger.info("the connection closed: " + conn.isClosed());
+			logger.debug("the connection closed: " + conn.isClosed());
 			conn.setAutoCommit(true);
 			ch.setConnection(conn);
 		} catch (SQLException e1) {
@@ -1588,7 +1522,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		boolean updatedStructure = false;
 
 		try {
-			logger.info("the connection closed: " + conn.isClosed());
+			logger.debug("the connection closed: " + conn.isClosed());
 			conn.setAutoCommit(true);
 			ch.setConnection(conn);
 		} catch (SQLException e1) {
@@ -1677,7 +1611,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		boolean deleteSuccessful = false;
 
 		try {
-			logger.info("the connection closed: " + conn.isClosed());
+			logger.debug("the connection closed: " + conn.isClosed());
 			conn.setAutoCommit(true);
 			ch.setConnection(conn);
 		} catch (SQLException e1) {
@@ -1738,16 +1672,22 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 	@Override
 	public StandardizerSettingsConfigDTO getStandardizerSettings() throws StandardizerException{
-		File standardizationSettingsFile = new File(propertiesUtilService.getStandardizerConfigFilePath());
-        String standardizerSettingsFileContents = "";
-        try {
-            standardizerSettingsFileContents = FileUtils.readFileToString(standardizationSettingsFile);
-        } catch (IOException e) {
-			throw new StandardizerException("Got error trying to read jchem standardizer file at " + standardizationSettingsFile.getAbsolutePath(), e);
-        }
 		StandardizerSettingsConfigDTO standardizationConfigDTO = new StandardizerSettingsConfigDTO();
-		standardizationConfigDTO.setSettings(standardizerSettingsFileContents);
 		standardizationConfigDTO.setType("jchem");
+		standardizationConfigDTO.setShouldStandardize(false);
+
+		// Check if standardizer turned on
+		if(propertiesUtilService.getUseExternalStandardizerConfig()){
+			standardizationConfigDTO.setShouldStandardize(true);
+			File standardizationSettingsFile = new File(propertiesUtilService.getStandardizerConfigFilePath());
+			String standardizerSettingsFileContents = "";
+			try {
+				standardizerSettingsFileContents = FileUtils.readFileToString(standardizationSettingsFile);
+				standardizationConfigDTO.setSettings(standardizerSettingsFileContents);
+			} catch (IOException e) {
+				throw new StandardizerException("Got error trying to read jchem standardizer file at " + standardizationSettingsFile.getAbsolutePath(), e);
+			}
+		}
 		return standardizationConfigDTO;
 	}
 }

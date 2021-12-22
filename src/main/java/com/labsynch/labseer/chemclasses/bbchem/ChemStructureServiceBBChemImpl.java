@@ -359,18 +359,30 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			BBChemParentStructure bbChemStructureUpdated = bbChemStructureService.getProcessedStructure(molStructure, true);
 			if (structureType == StructureType.PARENT){
 				BBChemParentStructure bbChemStructureSaved = BBChemParentStructure.findBBChemParentStructure(id);
+				if(bbChemStructureSaved == null) {
+					return false;
+				}
 				bbChemStructureSaved.updateStructureInfo(bbChemStructureUpdated);
 				bbChemStructureSaved.persist();
 			} else if (structureType == StructureType.SALT_FORM){
 				BBChemSaltFormStructure bbChemSaltFormStructureSaved = BBChemSaltFormStructure.findBBChemSaltFormStructure(id);
+				if(bbChemSaltFormStructureSaved == null) {
+					return false;
+				}
 				bbChemSaltFormStructureSaved.updateStructureInfo(bbChemStructureUpdated);
 				bbChemSaltFormStructureSaved.persist();
 			} else if (structureType == StructureType.SALT){
 				BBChemSaltStructure bbChemSaltStructureSaved = BBChemSaltStructure.findBBChemSaltStructure(id);
+				if(bbChemSaltStructureSaved == null) {
+					return false;
+				}
 				bbChemSaltStructureSaved.updateStructureInfo(bbChemStructureUpdated);
 				bbChemSaltStructureSaved.persist();
 			} else if (structureType == StructureType.DRY_RUN){
 				BBChemDryRunStructure bbChemDryRunStructureSaved = BBChemDryRunStructure.findBBChemDryRunStructure(id);
+				if(bbChemDryRunStructureSaved == null) {
+					return false;
+				}
 				bbChemDryRunStructureSaved.updateStructureInfo(bbChemStructureUpdated);
 				bbChemDryRunStructureSaved.persist();
 			}

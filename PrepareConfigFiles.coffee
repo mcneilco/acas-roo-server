@@ -19,7 +19,7 @@ mkdirSync = (path) ->
 		fs.mkdirSync path,{ recursive: true }
 	catch e
 		if e.code != 'EEXIST'
-			throw e
+			console.log e
 	return
 
 writeJSONFormat = (conf) ->
