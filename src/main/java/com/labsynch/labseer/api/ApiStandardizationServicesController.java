@@ -58,7 +58,7 @@ public class ApiStandardizationServicesController {
 		headers.add("Content-Type", "application/json");		
 		logger.info("checking parent structs and saving to dry run table");
 		int numberOfDisplayChanges = 0;
-		numberOfDisplayChanges = standardizationService.populateStanardizationDryRunTable();
+		numberOfDisplayChanges = standardizationService.populateStandardizationDryRunTable();
 		logger.info("number of compounds with display change: " + numberOfDisplayChanges);
 		return new ResponseEntity<String>(" Compound check done. " + numberOfDisplayChanges, headers, HttpStatus.OK);
 	}
