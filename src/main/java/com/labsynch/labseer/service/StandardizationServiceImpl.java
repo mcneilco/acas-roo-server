@@ -496,7 +496,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 			// Save the standardized structure and possibly the new cdid to the parent
 			parent.setMolStructure(standardizedMol);
-			parent.persist();
+			parent.merge();
 
 			if (p % 100 == 0){
 				logger.debug("flushing loader session");
