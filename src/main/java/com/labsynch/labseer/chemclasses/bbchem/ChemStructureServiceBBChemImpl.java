@@ -252,6 +252,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		Long cdId=0L;
 		try {
 			if(bbChemStructure.getReg() == null || bbChemStructure.getSubstructure() == null) {
+				logger.debug("Reg or Substructure is null for bbchem structure so calling processStructure to generate them before saving");
 				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true);
 			}
 
@@ -306,7 +307,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				bbChemStructureDryRun.persist();
 				cdId = bbChemStructureDryRun.getId();
 			}
-
+			logger.debug("Saved structure with id " + cdId);
 			return toIntExact(cdId);
 		} catch (CmpdRegMolFormatException e) {
 			logger.error("Error saving structure: " + e.getMessage());

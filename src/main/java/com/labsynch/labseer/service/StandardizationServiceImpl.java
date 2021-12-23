@@ -216,8 +216,18 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 
 			// Do standardization
+			logger.debug("Starting standardization of " + inputStructures.size() + " compounds");
+			// Start timer
+			long standardizationStart = new Date().getTime();
 			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(inputStructures);
+			long standardizationEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
+			logger.debug("Standardization took " + standardizationTime + " seconds");
 
+			logger.debug("Starting saving of " + pIdGroup.size() + " compounds");
+			// Start timer
+			long saveStart = new Date().getTime();
 			for(Long parentId : pIdGroup) {
 				parent = parents.get(parentId);
 				stndznCompound = new StandardizationDryRunCompound();
@@ -275,7 +285,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					stndznCompound.setCdId(cdId);
 					stndznCompound.persist();
 				}
+				p++;
 			}
+			// End timer
+			long saveEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long saveTime = (saveEnd - saveStart) / 1000;
+			logger.debug("Saving took " + saveTime + " seconds");
+			
 			// End loop through parent id group
 			logger.debug("flushing loader session");
 			session.flush();
@@ -293,7 +310,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 			// Update the percentage.
 			previousPercent = percent;
-			p++;
 		}
 
 		logger.info(

@@ -240,7 +240,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 		HashMap<String, String> standardizedStructures = new HashMap<String, String>();
 		for (String structureId : structures.keySet()){
-			String mol = structuresResponseNode.get(structureId).asText();
+			String mol = structuresResponseNode.get(structureId).get("structure").asText();
 			standardizedStructures.put(structureId, mol);
 		}
 		return standardizedStructures;
@@ -331,7 +331,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 				// Add the similarity fingerprints to the processed structures
 				for (String structureId : similarityHashMap.keySet()){
-					processedStructures.get(structureId).setSubstructure(similarityHashMap.get(structureId));
+					processedStructures.get(structureId).setSimilarity(similarityHashMap.get(structureId));
 				}
 			}
 
