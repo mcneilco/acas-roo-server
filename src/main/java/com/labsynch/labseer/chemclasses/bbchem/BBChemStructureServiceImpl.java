@@ -90,6 +90,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
 				logger.error("Error posting to fingerprint service: " + connection.getResponseMessage());
+				logger.error("Response Body: " + SimpleUtil.getStringBody(connection));
 				logger.error("URL was: " + url);
 				logger.error("Request was : " + requestString);
 				throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + connection.getResponseMessage());
@@ -171,6 +172,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		String postResponse = null;
 		if(connection.getResponseCode() != 200) {
 			logger.error("Error posting to process service: " + connection.getResponseMessage());
+			logger.error("Response Body: " + SimpleUtil.getStringBody(connection));
 			logger.error("URL was: " + url);
 			logger.error("Request was : " + requestString);
 			throw new IOException("Error posting to process service: " + connection.getResponseMessage());
@@ -274,7 +276,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 				// Check if we have an error code
 				if( errorCodeNode != null) {
-					throw new CmpdRegMolFormatException("Error processing mol: Code " + errorCodeNode.getTextValue() + " " + responseJsonNode.get("error_msg").getTextValue());
+					throw new CmpdRegMolFormatException("Error processing structures: Error Code " + errorCodeNode.getTextValue() + " " + responseJsonNode.get("error_msg").getTextValue());
 				}
 
 				JsonNode registrationHashesNode = responseJsonNode.get("registration_hash");
@@ -337,7 +339,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 			return processedStructures;
 		} catch (CmpdRegMolFormatException e) {
-			logger.error("Error posting to processor service: " + e.getMessage());
+			logger.error("Error processing structures: " + e.getMessage());
 			throw new CmpdRegMolFormatException(e);
 		}
 
@@ -359,7 +361,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			return bbChemStructure;
 
 		} catch (CmpdRegMolFormatException e) {
-			logger.error("Error posting to processor service: " + e.getMessage());
+			logger.error("Error in getProcessedStructures: " + e.getMessage());
 			throw new CmpdRegMolFormatException(e);
 		}
 	}
@@ -494,6 +496,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
 				logger.error("Error posting to split service: " + connection.getResponseMessage());
+				logger.error("Response Body: " + SimpleUtil.getStringBody(connection));
 				logger.error("URL was: " + url);
 				logger.error("Request was : " + requestString);
 				throw new CmpdRegMolFormatException("Error posting to split service: " + connection.getResponseMessage());
@@ -552,6 +555,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			String postResponse = null;
 			if(connection.getResponseCode() != 200) {
 				logger.error("Error posting to substructure match service: " + connection.getResponseMessage());
+				logger.error("Response Body: " + SimpleUtil.getStringBody(connection));
 				logger.error("URL was: " + url);
 				logger.error("Request was : " + requestString);
 				throw new CmpdRegMolFormatException("Error posting to substructure match service: " + connection.getResponseMessage());
