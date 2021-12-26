@@ -202,7 +202,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			runNumber++;
 		}
 		float percent = 0;
-		int p = 1;
+		int p = 0;
 		float previousPercent = percent;
 		previousPercent = percent;
 
@@ -319,7 +319,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				currentTime = new Date().getTime();
 				// Output if different from the last time.
 				logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
-				+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
+					+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 				currentTime = new Date().getTime();
 				logger.debug("Time Elapsed:"+ (currentTime - startTime));
 			}
@@ -516,6 +516,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	public int restandardizeParentStructures(List<Long> parentIds)
 			throws CmpdRegMolFormatException, StandardizerException, IOException {
+
+		int batchSize = propertiesUtilService.getBatchSize();
 		Parent parent;
 		List<Lot> lots;
 		Lot lot;
@@ -524,7 +526,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		int totalCount = parentIds.size();
 		logger.info("number of parents to restandardize: " + totalCount);
 		float percent = 0;
-		int p = 1;
+		int p = 0;
 		float previousPercent = percent;
 		previousPercent = percent;
 
@@ -532,44 +534,83 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		
+
+		// Split parent ids into groups of batchSize
+		List<List<Long>> parentIdGroups = new ArrayList<List<Long>>();
+		List<Long> parentIdGroup = new ArrayList<Long>();
 		for (Long parentId : parentIds) {
-			parent = Parent.findParent(parentId);
-			lots = Lot.findLotsByParent(parent).getResultList();
-			lot = lots.get(0);
+			parentIdGroup.add(parentId);
+			if (parentIdGroup.size() == batchSize) {
+				parentIdGroups.add(parentIdGroup);
+				parentIdGroup = new ArrayList<Long>();
+			}
+		}
 
-			// Try getting the as drawn structure first if we have it
-			if (lots.size() > 0 && lot.getAsDrawnStruct() != null) {
-				originalStructure = lot.getAsDrawnStruct();
-			} else {
-				logger.warn("Did not find the asDrawnStruct for parent: " + parentId + "  " + parent.getCorpName());
-				originalStructure = parent.getMolStructure();
+		// Do a bulk standardization
+		for (List<Long> pIdGroup : parentIdGroups) {
+			logger.info("Starting batch of " + pIdGroup.size() + " parents");
+
+			// Create standardization hashmap
+			HashMap<String, String> inputStructures = new HashMap<String, String>();
+			HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
+			for(Long parentId : pIdGroup) {
+				parent = Parent.findParent(parentId);
+				parents.put(parentId, parent);
+				inputStructures.put(parentId.toString(parentId), parent.getMolStructure());
 			}
 
-			// We standardize the structure first
-			standardizedMol = chemStructureService.standardizeStructure(originalStructure);
+			// Do standardization
+			logger.debug("Starting standardization of " + inputStructures.size() + " compounds");
+			// Start timer
+			long standardizationStart = new Date().getTime();
+			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(inputStructures);
+			long standardizationEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
+			logger.debug("Standardization took " + standardizationTime + " seconds");
 
-			// Now we update the parent structure
-			Boolean success = updateStructure(standardizedMol, parent.getCdId());
+			for(Long parentId : pIdGroup) {
 
-			// In the case where we are switching chemistry engines the structure might not exist,
-			// so we need to check for that	and if it does not exist we need to create it
-			if(!success){
-				logger.warn("Could not update structure for parent: " + parentId + "  " + parent.getCorpName());
-				logger.info("Assuming the structure did not exist in the first place and saving a new one");
-				int newCdId = chemStructureService.saveStructure(standardizedMol, StructureType.PARENT, false);
-				parent.setCdId(newCdId);
-				logger.info("Updated parent with new cdId: " + newCdId);
+				parent = parents.get(parentId);
+				lots = Lot.findLotsByParent(parent).getResultList();
+				lot = lots.get(0);
+
+				// Try getting the as drawn structure first if we have it
+				if (lots.size() > 0 && lot.getAsDrawnStruct() != null) {
+					originalStructure = lot.getAsDrawnStruct();
+				} else {
+					logger.warn("Did not find the asDrawnStruct for parent: " + parentId + "  " + parent.getCorpName());
+					originalStructure = parent.getMolStructure();
+				}
+
+				// We standardize the structure first
+				CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());
+				standardizedMol = cmpdRegMolecule.getMolStructure();
+
+				// Now we update the parent structure
+				Boolean success = updateStructure(standardizedMol, parent.getCdId());
+
+				// In the case where we are switching chemistry engines the structure might not exist,
+				// so we need to check for that	and if it does not exist we need to create it
+				if(!success){
+					logger.warn("Could not update structure for parent: " + parentId + "  " + parent.getCorpName());
+					logger.info("Assuming the structure did not exist in the first place and saving a new one");
+					int newCdId = chemStructureService.saveStructure(cmpdRegMolecule, StructureType.PARENT, false);
+					parent.setCdId(newCdId);
+					logger.info("Updated parent with new cdId: " + newCdId);
+				}
+
+				// Save the standardized structure and possibly the new cdid to the parent
+				parent.setMolStructure(standardizedMol);
+				parent.merge();
+				p++;
+
 			}
 
-			// Save the standardized structure and possibly the new cdid to the parent
-			parent.setMolStructure(standardizedMol);
-			parent.merge();
-
-			if (p % 100 == 0){
-				logger.debug("flushing loader session");
-				session.flush();
-				session.clear();
-			}
+			logger.debug("flushing loader session");
+			session.flush();
+			session.clear();
+			
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
@@ -582,7 +623,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 			// Update the percentage.
 			previousPercent = percent;
-			p++;
 		}
 		return parentIds.size();
 	}
