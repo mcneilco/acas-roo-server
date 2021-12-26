@@ -72,17 +72,32 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ApplicationContext context = event.getApplicationContext();
-        System.out.println(context.getDisplayName());
-		logger.info("Checking compound standardization state");
 		logger.info("Application context: " + context.getDisplayName());
 		if (context.getDisplayName().equals("Root WebApplicationContext")) {
 			// this is the root context so wait for the web application context to be initialized
 			return;
 		}
+
+		logger.info("Checking compound standardization state");
 		try {
 			// Get the current configuration settings
 			StandardizerSettingsConfigDTO currentStandardizationSettings = chemStructureService
 					.getStandardizerSettings();
+
+			// Cancel all running standardization histories as failed
+			List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
+			for (StandardizationHistory history : histories) {
+				if(history.getStandardizationStatus() != null && history.getStandardizationStatus().equals("running")){
+					logger.info("Failing running standardization for run id " + history.getId());
+					history.setStandardizationStatus("failed");
+					history.merge();
+				}
+				if(history.getDryRunStatus() != null && history.getDryRunStatus().equals("running")){
+					logger.info("Failing running standardization dry run for run id " + history.getId());
+					history.setDryRunStatus("failed");
+					history.merge();
+				}
+			}
 
 			// Get the applied settings from the history table which should have the most
 			// recent standardization settings applied
