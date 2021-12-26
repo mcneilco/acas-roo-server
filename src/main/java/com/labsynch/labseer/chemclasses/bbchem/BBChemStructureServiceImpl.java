@@ -10,6 +10,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+import java.util.Collections;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
@@ -17,6 +23,8 @@ import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.utils.Response;
+import com.labsynch.labseer.utils.Request;
 
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -156,37 +164,89 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		options.put("standardizer_actions", mapper.createObjectNode());
 		requestData.put("options", options);
 
-		// Add the structures to the request
-		ArrayNode arrayNode = mapper.createArrayNode();
+		// // Add the structures to the request
+		// ArrayNode arrayNode = mapper.createArrayNode();
 
+		// for (String structure : structures.keySet()) {
+		// 	arrayNode.add(structures.get(structure));
+		// }
+		// requestData.put("structures", arrayNode);
+
+		// // Post to the service and parse the response
+		// String requestString = requestData.toString();
+		// logger.debug("requestString: " + requestString);
+		// HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+
+		// Split the list of structures into chunks of 100
+		List<List<String>> structureGroups = new ArrayList<List<String>>();
+		List<String> structureGroup = new ArrayList<String>();
 		for (String structure : structures.keySet()) {
-			arrayNode.add(structures.get(structure));
+			structureGroup.add(structures.get(structure));
+			if(structureGroup.size() == 100) {
+				structureGroups.add(structureGroup);
+				structureGroup = new ArrayList<String>();
+			}
 		}
-		requestData.put("structures", arrayNode);
 
-		// Post to the service and parse the response
-		String requestString = requestData.toString();
-		logger.debug("requestString: " + requestString);
-		HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+		Collection<Callable<Response>> tasks = new ArrayList<>();
+		// Create the tasks and include an id for the task
+		for (int i = 0; i < structureGroups.size(); i++) {
+			List<String> structureGroupList = structureGroups.get(i);
 
-		String postResponse = null;
-		if(connection.getResponseCode() != 200) {
-			logger.error("Error posting to process service: " + connection.getResponseMessage());
-			logger.error("Response Body: " + SimpleUtil.getStringBody(connection));
-			logger.error("URL was: " + url);
-			logger.error("Request was : " + requestString);
-			throw new IOException("Error posting to process service: " + connection.getResponseMessage());
-		} else {
-			postResponse = SimpleUtil.getStringBody(connection);
+			// Add the structures to the request
+			ArrayNode arrayNode = mapper.createArrayNode();
+
+			for (String structure : structureGroupList) {
+				arrayNode.add(structures.get(structure));
+			}
+			requestData.put("structures", arrayNode);
+
+			// Post to the service and parse the response
+			String requestString = requestData.toString();
+			logger.debug("requestString: " + requestString);
+			tasks.add(new Request(String.valueOf(i), url, requestString));
 		}
-		logger.debug("Got response: "+ postResponse);
 
-		// Parse the response json to get the standardized mol
-		ObjectMapper responseMapper = new ObjectMapper();
-		
-		JsonNode responseNode = responseMapper.readTree(postResponse);
+		// int numThreads = structureGroups.size() > 4 ? 4 : structureGroups.size();
+		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+		List<Future<Response>> results = pool.invokeAll(tasks);
+		HashMap<String, JsonNode> responseMap = new HashMap<String, JsonNode>();
+		for(Future<Response> response : results){
+			String responseBody;
+			int responseCode;
+			String responseId;
+			try {
+				responseBody = response.get().getResponseBody();
+				responseCode = response.get().getResponseCode();
+				responseId = response.get().getId();
+			} catch (InterruptedException | ExecutionException e) {
+				throw new IOException("Error posting to process service: " + e.getMessage());
+			}
 
-		return responseNode;
+			if(responseCode != 200) {
+				logger.error("Response Body: " + responseBody);
+				logger.error("URL was: " + url);
+				throw new IOException("Error posting to process service: " + responseBody);
+			}
+
+			// Parse the response json to get the standardized mol
+			ObjectMapper responseMapper = new ObjectMapper();
+			JsonNode responseNode = responseMapper.readTree(responseBody);
+			responseMap.put(responseId, responseNode);
+		}
+
+		// Sort the response hashmap by the keys
+		List<String> responseIds = new ArrayList<String>(responseMap.keySet());
+		Collections.sort(responseIds);
+		//Empty json node array
+		ArrayNode responseArray = mapper.createArrayNode();
+		for(String responseId : responseIds) {
+			logger.debug("Response ID: " + responseId);
+			// Combine the json nodes
+			JsonNode responseNode = responseMap.get(responseId);
+			responseArray.add(responseNode);
+		}
+		return responseArray;
 	}
 
 	@Override
