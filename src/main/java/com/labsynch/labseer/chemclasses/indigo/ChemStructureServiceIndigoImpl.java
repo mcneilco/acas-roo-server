@@ -702,5 +702,16 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			return -1;
 		}
 	}
+
+	@Override
+	public HashMap<String, Integer> saveStructures(HashMap<String, CmpdRegMolecule> structures, StructureType structureType, Boolean checkForDupes) {
+		// return hash
+		HashMap<String, Integer> result = new HashMap<String, Integer>();
+		for(String key : structures.keySet()){
+			CmpdRegMolecule cmpdRegMolecule = structures.get(key);
+			result.put(key, saveStructure(cmpdRegMolecule, structureType, checkForDupes));
+		}
+		return result;
+	}
 }
 

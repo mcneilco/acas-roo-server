@@ -113,7 +113,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		}
 		
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " tasks");
+		logger.info("Invoking " + tasks.size() + " fingerprint tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
 		HashMap<String, JsonNode> responseMap = new HashMap<String, JsonNode>();
 		for(Future<Response> response : results){
@@ -144,7 +144,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			}
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " tasks");
+		logger.info("Got response for all " + tasks.size() + " fingerprint tasks");
 
 		// Sort the response hashmap by the keys
 		List<String> responseIds = new ArrayList<String>(responseMap.keySet());
@@ -235,7 +235,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " tasks");
+		logger.info("Invoking " + tasks.size() + " process tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
 		HashMap<String, JsonNode> responseMap = new HashMap<String, JsonNode>();
 		for(Future<Response> response : results){
@@ -261,7 +261,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			JsonNode responseNode = responseMapper.readTree(responseBody);
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " tasks");
+		logger.info("Got response for all " + tasks.size() + " process tasks");
 
 		// Sort the response hashmap by the keys
 		List<String> responseIds = new ArrayList<String>(responseMap.keySet());
@@ -337,7 +337,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
-		logger.info("Invoking " + tasks.size() + " tasks");
+		logger.info("Invoking " + tasks.size() + " preprocess tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
 		HashMap<String, JsonNode> responseMap = new HashMap<String, JsonNode>();
 		for(Future<Response> response : results){
@@ -363,7 +363,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			JsonNode responseNode = responseMapper.readTree(responseBody);
 			responseMap.put(responseId, responseNode);
 		}
-		logger.info("Got response for all " + tasks.size() + " tasks");
+		logger.info("Got response for all " + tasks.size() + " preprocess tasks");
 
 		// Sort the response hashmap by the keys
 		List<String> responseIds = new ArrayList<String>(responseMap.keySet());
@@ -397,7 +397,6 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			JsonNode responseNode;
 			try {
 				responseNode = postToProcessService(structures);
-				logger.info("Got response" + responseNode.toString());
 			} catch (IOException e) {
 				throw new CmpdRegMolFormatException(e);
 			}
@@ -417,7 +416,6 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				if( errorCodeNode != null) {
 					throw new CmpdRegMolFormatException("Error processing structures: Error Code " + errorCodeNode.getTextValue() + " " + responseJsonNode.get("error_msg").getTextValue());
 				}
-				logger.info("PRocessing "+ responseJsonNode.toString());
 				JsonNode registrationHashesNode = responseJsonNode.get("registration_hash");
 				String registrationHash = registrationHashesNode.get(0).asText();
 				bbChemStructure.setReg(registrationHashesNode.get(0).asText());

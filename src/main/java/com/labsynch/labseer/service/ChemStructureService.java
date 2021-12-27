@@ -125,5 +125,7 @@ public interface ChemStructureService {
 	}
 
 	public int saveStructure(CmpdRegMolecule cmpdregMolecule, StructureType structureType, boolean checkForDupes);
+
+	public HashMap<String, Integer> saveStructures(HashMap<String, CmpdRegMolecule> structures, StructureType structureType, Boolean checkForDupes);
 	
 }

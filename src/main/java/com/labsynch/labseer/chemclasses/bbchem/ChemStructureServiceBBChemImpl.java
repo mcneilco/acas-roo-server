@@ -252,7 +252,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		Long cdId=0L;
 		try {
 			if(bbChemStructure.getReg() == null || bbChemStructure.getSubstructure() == null) {
-				logger.debug("Reg or Substructure is null for bbchem structure so calling processStructure to generate them before saving");
+				logger.info("Reg or Substructure is null for bbchem structure so calling processStructure to generate them before saving");
 				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true);
 			}
 
@@ -685,6 +685,17 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		standardizationConfigDTO.setShouldStandardize(true);
 		return standardizationConfigDTO;
 
+	}
+
+	public HashMap<String, Integer> saveStructures(HashMap<String, CmpdRegMolecule> structures, StructureType structureType, Boolean checkForDupes) {
+		// return hash
+		HashMap<String, Integer> result = new HashMap<String, Integer>();
+		for(String key : structures.keySet()){
+			CmpdRegMolecule cmpdRegMolecule = structures.get(key);
+			BBChemParentStructure bbchemStructure = ((CmpdRegMoleculeBBChemImpl) cmpdRegMolecule).getMolecule();
+			result.put(key, saveStructure(bbchemStructure, structureType, checkForDupes));
+		}
+		return result;
 	}
 
 }

@@ -171,9 +171,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Transactional
-	private int saveDryRunStructure(CmpdRegMolecule cmpdregMolecule) {
-		int cdId = chemStructureService.saveStructure(cmpdregMolecule, StructureType.DRY_RUN, false);
-		return cdId;
+	private HashMap<String, Integer> saveDryRunStructures(HashMap<String, CmpdRegMolecule> structures) {
+		HashMap<String, Integer> saveResults = chemStructureService.saveStructures(structures, StructureType.DRY_RUN, false);
+		return saveResults;
 	}
 
 	@Override
@@ -209,9 +209,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		// Split parent ids into groups of batchSize
 		List<List<Long>> parentIdGroups = new ArrayList<List<Long>>();
 		List<Long> parentIdGroup = new ArrayList<Long>();
+		int pidCount = 1;
 		for (Long parentId : parentIds) {
 			parentIdGroup.add(parentId);
-			if (parentIdGroup.size() == batchSize) {
+			if (parentIdGroup.size() == batchSize || pidCount == parentIds.size()) {
 				parentIdGroups.add(parentIdGroup);
 				parentIdGroup = new ArrayList<Long>();
 			}
@@ -231,18 +232,25 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 
 			// Do standardization
-			logger.debug("Starting standardization of " + inputStructures.size() + " compounds");
+			logger.info("Starting standardization of " + inputStructures.size() + " compounds");
 			// Start timer
 			long standardizationStart = new Date().getTime();
 			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(inputStructures);
 			long standardizationEnd = new Date().getTime();
 			// Convert the ms time to seconds
 			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
-			logger.debug("Standardization took " + standardizationTime + " seconds");
+			logger.info("Standardization took " + standardizationTime + " seconds");
 
-			logger.debug("Starting saving of " + pIdGroup.size() + " compounds");
-			// Start timer
+			logger.info("Starting saving of " + pIdGroup.size() + " dry run structures");
 			long saveStart = new Date().getTime();
+			HashMap<String, Integer> saveResults = saveDryRunStructures(standardizationResults);
+			long saveEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long saveTime = (saveEnd - saveStart) / 1000;
+			logger.info("Saving took " + saveTime + " seconds");
+
+			logger.info("Starting saving of " + pIdGroup.size() + " standardization dry run compounds");
+			long dryRunSaveStart = new Date().getTime();
 			for(Long parentId : pIdGroup) {
 				parent = parents.get(parentId);
 				stndznCompound = new StandardizationDryRunCompound();
@@ -255,10 +263,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				stndznCompound.setStereoComment(parent.getStereoComment());
 				stndznCompound.setOldMolWeight(parent.getMolWeight());
 
+				asDrawnStruct = parent.getMolStructure();
+
 				queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
-				if (queryLots.size() != 1)
-					logger.error("!!!!!!!!!!!!  odd lot number size   !!!!!!!!!  " + queryLots.size() + "  saltForm: "
-							+ parent.getId());
 				if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null) {
 					asDrawnStruct = queryLots.get(0).getAsDrawnStruct();
 				} else {
@@ -291,7 +298,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 						nonMatchingCmpds++;
 					}
 				}
-				cdId = saveDryRunStructure(cmpdRegMolecule);
+				cdId = saveResults.get(parentId.toString());
 
 				if (cdId == -1) {
 					logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
@@ -303,10 +310,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				p++;
 			}
 			// End timer
-			long saveEnd = new Date().getTime();
+			long dryRunSaveEnd = new Date().getTime();
 			// Convert the ms time to seconds
-			long saveTime = (saveEnd - saveStart) / 1000;
-			logger.debug("Saving took " + saveTime + " seconds");
+			long dryRunSaveTime = (dryRunSaveEnd - dryRunSaveStart) / 1000;
+			logger.info("Saving took " + dryRunSaveTime + " seconds");
 			
 			// End loop through parent id group
 			logger.debug("flushing loader session");
@@ -538,12 +545,14 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		// Split parent ids into groups of batchSize
 		List<List<Long>> parentIdGroups = new ArrayList<List<Long>>();
 		List<Long> parentIdGroup = new ArrayList<Long>();
+		int pidCount = 1;
 		for (Long parentId : parentIds) {
 			parentIdGroup.add(parentId);
-			if (parentIdGroup.size() == batchSize) {
+			if (parentIdGroup.size() == batchSize || pidCount == parentIds.size()) {
 				parentIdGroups.add(parentIdGroup);
 				parentIdGroup = new ArrayList<Long>();
 			}
+			pidCount++;
 		}
 
 		// Do a bulk standardization
