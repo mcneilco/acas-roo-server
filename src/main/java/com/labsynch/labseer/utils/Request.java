@@ -3,9 +3,11 @@ package com.labsynch.labseer.utils;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.Callable;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+
+import org.apache.commons.io.IOUtils;
+import java.io.OutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Request implements Callable<Response> {
 
@@ -28,26 +30,24 @@ public class Request implements Callable<Response> {
         try {
             obj = new URL(url);
             con = (HttpURLConnection) obj.openConnection();
+    		String charset = "UTF-8";
             con.setRequestMethod("POST");
-    
+            con.setDoOutput(true);
+            con.setRequestProperty("Accept", "application/json");
+            con.setRequestProperty("Accept-Charset", charset);
+            con.setRequestProperty("Content-Type", "application/json");		
+            OutputStream output = con.getOutputStream();
+            output.write(json.getBytes());
+
             int responseCode = con.getResponseCode();
-            if(responseCode == 200) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuffer stringBuffer = new StringBuffer();
-    
-                while ((inputLine = in.readLine()) != null) {
-                    stringBuffer.append(inputLine);
-                }
-                in.close();
-                response = stringBuffer.toString();
-                return new Response(id, responseCode, response);
+            InputStream inputStream = null;
+            if (responseCode < HttpURLConnection.HTTP_BAD_REQUEST) {
+                inputStream = con.getInputStream();
+            } else {
+                inputStream = con.getErrorStream();
             }
-            else {
-                response = "{\"response\":\"some error occurred\"}";
-                return new Response(id, responseCode, response);
-            }
-    
+            String body = IOUtils.toString(inputStream);
+            return new Response(id, responseCode, body);
         } catch (IOException e) {
             response = "{\"output\":\"some error occurred\"}";
             return new Response(id, 404, response);
