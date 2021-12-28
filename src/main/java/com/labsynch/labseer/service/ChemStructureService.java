@@ -128,4 +128,8 @@ public interface ChemStructureService {
 
 	public HashMap<String, Integer> saveStructures(HashMap<String, CmpdRegMolecule> structures, StructureType structureType, Boolean checkForDupes);
 	
+	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> cmpdRegMoleculeHashMap, StructureType structureType) throws CmpdRegMolFormatException;
+
+	public int[] searchMolStructures(CmpdRegMolecule cmpdRegMolecule, StructureType structureType, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException;
+
 }

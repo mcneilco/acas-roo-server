@@ -126,4 +126,6 @@ public interface PropertiesUtilService {
 
 	String getPreprocessorSettings();
 	
+	Integer getStandardizationBatchSize();
+
 }
