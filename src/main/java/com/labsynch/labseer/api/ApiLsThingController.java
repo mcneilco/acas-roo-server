@@ -367,7 +367,9 @@ public class ApiLsThingController {
 	public ResponseEntity<String> getLsThingBatchesByParentIdCodeName(@PathVariable("lsType") String lsType, 
 			@PathVariable("lsKind") String lsKind,
 			@PathVariable("parentIdOrCodeName") String parentIdOrCodeName,
-			@RequestParam(value = "with", required = false) String with) {
+			@RequestParam(value = "with", required = false) String with,
+			@RequestParam(value = "labelType", required = false) String labelType) {
+			) {
 		logger.debug("----from the LsThing GET controller----");
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
@@ -402,6 +404,16 @@ public class ApiLsThingController {
 					return new ResponseEntity<String>(LsThing.toJsonArrayWithNestedStubs(batches), headers, HttpStatus.OK);
 				} else if (with.equalsIgnoreCase("stub")) {
 					return new ResponseEntity<String>(LsThing.toJsonArrayStub(batches), headers, HttpStatus.OK);
+				} else if (with.equalsIgnoreCase("codeTable")) {
+					LsThingQueryCodeTableResultDTO resultDTO = new LsThingQueryCodeTableResultDTO();
+					if (batches != null){
+						if (labelType != null && labelType.length() > 0){
+							resultDTO.setResults(lsThingService.convertToCodeTables(batches, labelType));
+						} else{
+							resultDTO.setResults(lsThingService.convertToCodeTables(batches));
+						}
+					}
+					return new ResponseEntity<String>(resultDTO.toJson(), headers, HttpStatus.OK);
 				}
 			}
 			return new ResponseEntity<String>(LsThing.toJsonArray(batches), headers, HttpStatus.OK);
