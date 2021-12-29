@@ -369,7 +369,7 @@ public class ApiLsThingController {
 			@PathVariable("parentIdOrCodeName") String parentIdOrCodeName,
 			@RequestParam(value = "with", required = false) String with,
 			@RequestParam(value = "labelType", required = false) String labelType) {
-			) {
+
 		logger.debug("----from the LsThing GET controller----");
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");
@@ -409,7 +409,7 @@ public class ApiLsThingController {
 					if (batches != null){
 						if (labelType != null && labelType.length() > 0){
 							resultDTO.setResults(lsThingService.convertToCodeTables(batches, labelType));
-						} else{
+						}else{
 							resultDTO.setResults(lsThingService.convertToCodeTables(batches));
 						}
 					}
