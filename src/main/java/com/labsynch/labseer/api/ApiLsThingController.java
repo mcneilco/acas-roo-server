@@ -407,7 +407,6 @@ public class ApiLsThingController {
 				} else if (with.equalsIgnoreCase("codeTable")) {
 					Collection<CodeTableDTO> codeTables = new ArrayList<CodeTableDTO>();
 					if (batches != null){
-						return new ResponseEntity<String>(CodeTableDTO.toJsonArray(codeTables), headers, HttpStatus.OK);
 						if (labelType != null && labelType.length() > 0){
 							codeTables = lsThingService.convertToCodeTables(batches, labelType);
 						}else{
