@@ -233,15 +233,18 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			logger.info("Standardization took " + standardizationTime + " seconds");
 
 			logger.info("Starting saving of " + pIdGroup.size() + " dry run structures");
-			long saveStart = new Date().getTime();
-			HashMap<String, Integer> saveResults = saveDryRunStructures(standardizationResults);
-			long saveEnd = new Date().getTime();
+			long structureSaveStart = new Date().getTime();
+
+			// Save the standardized dry run structures and return the hashmap of String (parent id) and Integer (cd id).  We use the cdIds below
+			// when saving the dry run compounds to the database which links the structures and compounds together.
+			HashMap<String, Integer> parentIdToStructureId = saveDryRunStructures(standardizationResults);
+			long structureSaveEnd = new Date().getTime();
 			// Convert the ms time to seconds
-			long saveTime = (saveEnd - saveStart) / 1000;
+			long saveTime = (structureSaveEnd - structureSaveStart) / 1000;
 			logger.info("Saving took " + saveTime + " seconds");
 
 			logger.info("Starting saving of " + pIdGroup.size() + " standardization dry run compounds");
-			long dryRunSaveStart = new Date().getTime();
+			long dryRunCompoundSaveStart = new Date().getTime();
 			for(Long parentId : pIdGroup) {
 				parent = parents.get(parentId);
 				stndznCompound = new StandardizationDryRunCompound();
@@ -289,7 +292,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 						nonMatchingCmpds++;
 					}
 				}
-				cdId = saveResults.get(parentId.toString());
+				cdId = parentIdToStructureId.get(parentId.toString());
 
 				if (cdId == -1) {
 					logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
@@ -301,10 +304,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				p++;
 			}
 			// End timer
-			long dryRunSaveEnd = new Date().getTime();
+			long dryRunCompoundSaveEnd = new Date().getTime();
 			// Convert the ms time to seconds
-			long dryRunSaveTime = (dryRunSaveEnd - dryRunSaveStart) / 1000;
-			logger.info("Saving took " + dryRunSaveTime + " seconds");
+			long dryRunCompoundSaveTime = (dryRunCompoundSaveEnd - dryRunCompoundSaveStart) / 1000;
+			logger.info("Saving took " + dryRunCompoundSaveTime + " seconds");
 			
 			// End loop through parent id group
 			logger.debug("flushing loader session");
