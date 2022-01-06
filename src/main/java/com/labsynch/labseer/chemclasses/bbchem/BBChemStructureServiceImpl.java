@@ -59,7 +59,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 
-	private HashMap<String, BitSet> getFingerPrints(HashMap<String, String> structures, String type)  throws CmpdRegMolFormatException{
+	private HashMap<String, BitSet> getFingerprints(HashMap<String, String> structures, String type)  throws CmpdRegMolFormatException{
 		// Fetch the fingerprint from the BBChem fingerprint service
 		String url = null;
 		try {
@@ -130,7 +130,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			// Create the request data object
 			HashMap<String, String> structures = new HashMap<String, String>();
 			structures.put("molStructure", molStructure);
-			HashMap<String, BitSet> fingerPrintHashMap = getFingerPrints(structures, type);
+			HashMap<String, BitSet> fingerPrintHashMap = getFingerprints(structures, type);
 			return fingerPrintHashMap.get("molStructure");
 		} catch (Exception e) {
 			logger.error("Error posting to fingerprint service: " + e.getMessage());
@@ -323,8 +323,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				}
 
 				// Get the fingerprints
-				HashMap<String, BitSet> substructureHashMap = getFingerPrints(processedStructureHash, "substructure_search");
-				HashMap<String, BitSet> similarityHashMap = getFingerPrints(processedStructureHash, "similarity_score");
+				HashMap<String, BitSet> substructureHashMap = getFingerprints(processedStructureHash, "substructure_search");
+				HashMap<String, BitSet> similarityHashMap = getFingerprints(processedStructureHash, "similarity_score");
 
 				// Add the substructure fingerprints to the processed structures
 				for (String structureId : substructureHashMap.keySet()){
