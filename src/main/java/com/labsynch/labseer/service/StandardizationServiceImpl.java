@@ -222,19 +222,19 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			logger.info("Starting batch of " + pIdGroup.size() + " parents");
 
 			// Create standardization hashmap
-			HashMap<String, String> inputStructures = new HashMap<String, String>();
+			HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
 			HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
 			for(Long parentId : pIdGroup) {
 				parent = Parent.findParent(parentId);
 				parents.put(parentId, parent);
-				inputStructures.put(parentId.toString(parentId), parent.getMolStructure());
+				parentIdsToStructures.put(parentId.toString(parentId), parent.getMolStructure());
 			}
 
 			// Do standardization
-			logger.debug("Starting standardization of " + inputStructures.size() + " compounds");
+			logger.debug("Starting standardization of " + parentIdsToStructures.size() + " compounds");
 			// Start timer
 			long standardizationStart = new Date().getTime();
-			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(inputStructures);
+			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(parentIdsToStructures);
 			long standardizationEnd = new Date().getTime();
 			// Convert the ms time to seconds
 			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
