@@ -720,13 +720,13 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 	@Override
-	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> cmpdRegMoleculeHashMap,
+	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> keyIdToStructureId,
 			StructureType structureType) throws CmpdRegMolFormatException {
 		
 		// For each structure, get the mol structure
 		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
-		for(String key : cmpdRegMoleculeHashMap.keySet()){
-			Integer structureId = cmpdRegMoleculeHashMap.get(key);
+		for(String key : keyIdToStructureId.keySet()){
+			Integer structureId = keyIdToStructureId.get(key);
 			AbstractBBChemStructure structure = null;
 			if(structureType == StructureType.PARENT) {
 				structure = BBChemParentStructure.findBBChemParentStructure(structureId.longValue());
