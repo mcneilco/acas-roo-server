@@ -132,9 +132,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		try {
 			// Create the request data object
 			HashMap<String, String> structures = new HashMap<String, String>();
-			structures.put("molStructure", molStructure);
+			structures.put("TmpKey01", molStructure);
 			HashMap<String, BitSet> fingerPrintHashMap = molsToFingerprints(structures, type);
-			return fingerPrintHashMap.get("molStructure");
+			return fingerPrintHashMap.get("TmpKey01");
 		} catch (Exception e) {
 			logger.error("Error posting to fingerprint service: " + e.getMessage());
 			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
