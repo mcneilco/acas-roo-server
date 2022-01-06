@@ -67,7 +67,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 
-	private HashMap<String, BitSet> getFingerPrints(HashMap<String, String> structures, String type)  throws CmpdRegMolFormatException{
+	private HashMap<String, BitSet> molsToFingerprints(HashMap<String, String> structures, String type)  throws CmpdRegMolFormatException{
 		// Fetch the fingerprint from the BBChem fingerprint service
 		String url = null;
 		try {
@@ -146,10 +146,12 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		}
 		logger.info("Got response for all " + tasks.size() + " fingerprint tasks");
 
+        // The output array is guaranteed to be in the same order as its inputs
 		// Sort the response hashmap by the keys
 		List<String> responseIds = new ArrayList<String>(responseMap.keySet());
 		Collections.sort(responseIds);
 		
+        // Return hashmap with the String key from the input hashmap and the fingerprint BitSet
 		HashMap<String, BitSet> fingerprints = new HashMap<String, BitSet>();
 	    int s = 0;
 		for(String responseId : responseIds) {			
@@ -174,9 +176,12 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		try {
 			// Create the request data object
 			HashMap<String, String> structures = new HashMap<String, String>();
-			structures.put("molStructure", molStructure);
-			HashMap<String, BitSet> fingerPrintHashMap = getFingerPrints(structures, type);
-			return fingerPrintHashMap.get("molStructure");
+
+			// Temporary key just to match the molToFingerprints hashmap key/value inputs
+			String structureKey = "TmpKey01";
+			structures.put(structureKey, molStructure);
+			HashMap<String, BitSet> fingerPrintHashMap = molsToFingerprints(structures, type);
+			return fingerPrintHashMap.get(structureKey);
 		} catch (Exception e) {
 			logger.error("Error posting to fingerprint service: " + e.getMessage());
 			throw new CmpdRegMolFormatException("Error posting to fingerprint service: " + e.getMessage());
@@ -401,6 +406,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				throw new CmpdRegMolFormatException(e);
 			}
 
+			// The output array is guaranteed to be in the same order as its inputs
+			// Its most efficient to match the input keys to the output keys by index
+			// when the input keys are converted to an array first
 			Object[] structuresArray = structures.keySet().toArray();
 			// Loop through length of response node
 			for (int i = 0; i < responseNode.size(); i++) {
@@ -445,7 +453,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				// in various places.
 				bbChemStructure.setRecordedDate(new Date());
 
-				//Get get hasmap name of structure at index i
+				// The output array is guaranteed to be in the same order as its inputs
+				// So get the key from the array we created above and assume the same order
 				String structureKey = structuresArray[i].toString();
 				
 				// Add to the map
@@ -460,8 +469,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				}
 
 				// Get the fingerprints
-				HashMap<String, BitSet> substructureHashMap = getFingerPrints(processedStructureHash, "substructure_search");
-				HashMap<String, BitSet> similarityHashMap = getFingerPrints(processedStructureHash, "similarity_score");
+				HashMap<String, BitSet> substructureHashMap = molsToFingerprints(processedStructureHash, "substructure_search");
+				HashMap<String, BitSet> similarityHashMap = molsToFingerprints(processedStructureHash, "similarity_score");
 
 				// Add the substructure fingerprints to the processed structures
 				for (String structureId : substructureHashMap.keySet()){

@@ -206,7 +206,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	}
 
 	public BBChemParentStructure getMolecule() {
-		return molecule;
+		return this.molecule;
 	}
 
 }
