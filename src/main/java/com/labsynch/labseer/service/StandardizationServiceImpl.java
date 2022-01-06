@@ -207,15 +207,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		previousPercent = percent;
 
 		// Split parent ids into groups of batchSize
-		List<List<Long>> parentIdGroups = new ArrayList<List<Long>>();
-		List<Long> parentIdGroup = new ArrayList<Long>();
-		for (Long parentId : parentIds) {
-			parentIdGroup.add(parentId);
-			if (parentIdGroup.size() == batchSize) {
-				parentIdGroups.add(parentIdGroup);
-				parentIdGroup = new ArrayList<Long>();
-			}
-		}
+		List<List<Long>> parentIdGroups = splitArrayIntoGroups(parentIds, batchSize);
 
 		// Do a bulk standardization
 		for (List<Long> pIdGroup : parentIdGroups) {
@@ -513,6 +505,20 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return success;
 	}
 
+	List<List<Long>> splitArrayIntoGroups(List<Long> array, int groupSize) {
+		// Split array into groups of groupSize
+		List<List<Long>> groups = new ArrayList<List<Long>>();
+		List<Long> group = new ArrayList<Long>();
+		for (Long l : array) {
+			group.add(l);
+			if (group.size() == groupSize) {
+				groups.add(group);
+				group = new ArrayList<Long>();
+			}
+		}
+		return groups;
+	}
+
 	@Override
 	public int restandardizeParentStructures(List<Long> parentIds)
 			throws CmpdRegMolFormatException, StandardizerException, IOException {
@@ -534,17 +540,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		
+		List<List<Long>> parentIdGroups = splitArrayIntoGroups(parentIds, batchSize);
 
-		// Split parent ids into groups of batchSize
-		List<List<Long>> parentIdGroups = new ArrayList<List<Long>>();
-		List<Long> parentIdGroup = new ArrayList<Long>();
-		for (Long parentId : parentIds) {
-			parentIdGroup.add(parentId);
-			if (parentIdGroup.size() == batchSize) {
-				parentIdGroups.add(parentIdGroup);
-				parentIdGroup = new ArrayList<Long>();
-			}
-		}
 
 		// Do a bulk standardization
 		for (List<Long> pIdGroup : parentIdGroups) {
