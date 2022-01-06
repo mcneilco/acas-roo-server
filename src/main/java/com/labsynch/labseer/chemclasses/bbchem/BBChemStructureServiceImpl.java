@@ -266,6 +266,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				throw new CmpdRegMolFormatException(e);
 			}
 
+			// The output array is guaranteed to be in the same order as its inputs
+			// Its most efficient to match the input keys to the output keys by index
+			// when the input keys are converted to an array first
 			Object[] structuresArray = structures.keySet().toArray();
 			// Loop through length of response node
 			for (int i = 0; i < responseNode.size(); i++) {
@@ -311,7 +314,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				// in various places.
 				bbChemStructure.setRecordedDate(new Date());
 
-				//Get get hasmap name of structure at index i
+				// The output array is guaranteed to be in the same order as its inputs
+				// So get the key from the array we created above and assume the same order
 				String structureKey = structuresArray[i].toString();
 				
 				// Add to the map
