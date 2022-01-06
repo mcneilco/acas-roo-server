@@ -518,16 +518,16 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		// Split array into groups of groupSize
 		List<List<Long>> groups = new ArrayList<List<Long>>();
 		List<Long> group = new ArrayList<Long>();
-        int loopCount = 1;
+		int loopCount = 1;
 		for (Long l : array) {
 			group.add(l);
 			// Check to see if we are at the end of the group or if we are at the end of the array
 			// if so, then add the group to the list of groups and start a new group
-            if (group.size() == groupSize || loopCount == array.size()) {
+			if (group.size() == groupSize || loopCount == array.size()) {
 				groups.add(group);
 				group = new ArrayList<Long>();
 			}
-            loopCount ++;
+			loopCount ++;
 		}
 		return groups;
 	}
