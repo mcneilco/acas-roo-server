@@ -419,7 +419,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 							}
 						}
 					}
-					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get("mol"),
+					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
 							StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 					oldDuplicateCount = hits.length;
 					dryRunCompound.setChangedStructure(true);
