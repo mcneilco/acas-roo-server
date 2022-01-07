@@ -1733,13 +1733,13 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 
 	@Override
-	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> cmpdRegMoleculeHashMap,
+	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> keyIdToStructureId,
 			StructureType structureType)  throws CmpdRegMolFormatException {
 		
 		// Get hashmap values as int array
-		int[] cdIds = new int[cmpdRegMoleculeHashMap.size()];
+		int[] cdIds = new int[keyIdToStructureId.size()];
 		int c = 0;
-		for(Integer cdId : cmpdRegMoleculeHashMap.values()){
+		for(Integer cdId : keyIdToStructureId.values()){
 			cdIds[c] = cdId;
 			c++;
 		}
@@ -1759,7 +1759,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			fieldNames.add("cd_formula"); 
 			fieldNames.add("cd_molweight");
 			List<Object[]> fieldValues = new ArrayList<Object[]>();
-			String[] keys = cmpdRegMoleculeHashMap.keySet().toArray(new String[0]);
+			String[] keys = keyIdToStructureId.keySet().toArray(new String[0]);
 			Molecule[] molecules;
 
 			molecules = searcher.getHitsAsMolecules(hitList, hitColorOptions, fieldNames, fieldValues);

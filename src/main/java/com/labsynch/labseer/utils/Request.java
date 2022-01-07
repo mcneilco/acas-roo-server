@@ -16,10 +16,10 @@ public class Request implements Callable<Response> {
     private String response;
     
     private String url;
-    private String id;
+    private int id;
     private String json;
     
-    public Request(String id, String url, String json) {
+    public Request(int id, String url, String json) {
         this.id = id;
         this.url = url;
         this.json = json;

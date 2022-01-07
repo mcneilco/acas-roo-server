@@ -715,15 +715,15 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 	}
 
 	@Override
-	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> cmpdRegMoleculeHashMap,
+	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> keyIdToStructureId,
 			StructureType structureType) throws CmpdRegMolFormatException {
 
 		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
 		String baseQuery = "SELECT mol_structure FROM " + structureType.entityTable + " WHERE cd_id = :cd_id";
 		EntityManager em = Parent.entityManager();
 		Query query = em.createNativeQuery(baseQuery);
-		for(String key : cmpdRegMoleculeHashMap.keySet()){
-			query.setParameter("cd_id", cmpdRegMoleculeHashMap.get(key));
+		for(String key : keyIdToStructureId.keySet()){
+			query.setParameter("cd_id", keyIdToStructureId.get(key));
 			String molStructure = (String) query.getSingleResult();
 			CmpdRegMoleculeIndigoImpl cmpdRegMolecule = new CmpdRegMoleculeIndigoImpl(molStructure);
 			result.put(key, cmpdRegMolecule);

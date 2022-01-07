@@ -212,51 +212,44 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		previousPercent = percent;
 
 		// Split parent ids into groups of batchSize
-		List<List<Long>> parentIdGroups = new ArrayList<List<Long>>();
-		List<Long> parentIdGroup = new ArrayList<Long>();
-		int pidCount = 1;
-		for (Long parentId : parentIds) {
-			parentIdGroup.add(parentId);
-			if (parentIdGroup.size() == batchSize || pidCount == parentIds.size()) {
-				parentIdGroups.add(parentIdGroup);
-				parentIdGroup = new ArrayList<Long>();
-			}
-			pidCount++;
-		}
+		List<List<Long>> parentIdGroups = splitArrayIntoGroups(parentIds, batchSize);
 
 		// Do a bulk standardization
 		for (List<Long> pIdGroup : parentIdGroups) {
 			logger.info("Starting batch of " + pIdGroup.size() + " parents");
 
 			// Create standardization hashmap
-			HashMap<String, String> inputStructures = new HashMap<String, String>();
+			HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
 			HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
 			for(Long parentId : pIdGroup) {
 				parent = Parent.findParent(parentId);
 				parents.put(parentId, parent);
-				inputStructures.put(parentId.toString(parentId), parent.getMolStructure());
+				parentIdsToStructures.put(parentId.toString(parentId), parent.getMolStructure());
 			}
 
 			// Do standardization
-			logger.info("Starting standardization of " + inputStructures.size() + " compounds");
+			logger.info("Starting standardization of " + parentIdsToStructures.size() + " compounds");
 			// Start timer
 			long standardizationStart = new Date().getTime();
-			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(inputStructures);
+			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(parentIdsToStructures);
 			long standardizationEnd = new Date().getTime();
 			// Convert the ms time to seconds
 			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
 			logger.info("Standardization took " + standardizationTime + " seconds");
 
 			logger.info("Starting saving of " + pIdGroup.size() + " dry run structures");
-			long saveStart = new Date().getTime();
-			HashMap<String, Integer> saveResults = saveDryRunStructures(standardizationResults);
-			long saveEnd = new Date().getTime();
+			long structureSaveStart = new Date().getTime();
+
+			// Save the standardized dry run structures and return the hashmap of String (parent id) and Integer (cd id).  We use the cdIds below
+			// when saving the dry run compounds to the database which links the structures and compounds together.
+			HashMap<String, Integer> parentIdToStructureId = saveDryRunStructures(standardizationResults);
+			long structureSaveEnd = new Date().getTime();
 			// Convert the ms time to seconds
-			long saveTime = (saveEnd - saveStart) / 1000;
+			long saveTime = (structureSaveEnd - structureSaveStart) / 1000;
 			logger.info("Saving took " + saveTime + " seconds");
 
 			logger.info("Starting saving of " + pIdGroup.size() + " standardization dry run compounds");
-			long dryRunSaveStart = new Date().getTime();
+			long dryRunCompoundSaveStart = new Date().getTime();
 			for(Long parentId : pIdGroup) {
 				parent = parents.get(parentId);
 				stndznCompound = new StandardizationDryRunCompound();
@@ -304,7 +297,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 						nonMatchingCmpds++;
 					}
 				}
-				cdId = saveResults.get(parentId.toString());
+				cdId = parentIdToStructureId.get(parentId.toString());
 
 				if (cdId == -1) {
 					logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
@@ -316,10 +309,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				p++;
 			}
 			// End timer
-			long dryRunSaveEnd = new Date().getTime();
+			long dryRunCompoundSaveEnd = new Date().getTime();
 			// Convert the ms time to seconds
-			long dryRunSaveTime = (dryRunSaveEnd - dryRunSaveStart) / 1000;
-			logger.info("Saving took " + dryRunSaveTime + " seconds");
+			long dryRunCompoundSaveTime = (dryRunCompoundSaveEnd - dryRunCompoundSaveStart) / 1000;
+			logger.info("Saving took " + dryRunCompoundSaveTime + " seconds");
 			
 			// End loop through parent id group
 			logger.debug("flushing loader session");
@@ -393,10 +386,16 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					logger.debug("mol has a weight of 0 - skipping");
 				} else {
 					HashMap<String, Integer> chemStructureHashMap = new HashMap<String, Integer>();
-					chemStructureHashMap.put("mol", dryRunCompound.getCdId());
+
+					// Arbitrary key to call service and fetch cmpdreg molecule
+					String tmpStructureKey = "TmpStructureKey01";
+					chemStructureHashMap.put(tmpStructureKey, dryRunCompound.getCdId());
 					HashMap<String, CmpdRegMolecule> cmpdRegMolecules = chemStructureService.getCmpdRegMolecules(chemStructureHashMap,
 							StructureType.DRY_RUN);
-					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get("mol"),
+
+					// Pass -1F for simlarityPercent (non nullable int required in function signature not used in DUPLICATE_TAUTOMER searches)
+					// Pass -1 for maxResults (non nullable int required in function signature we don't want to limit the hit counts here)
+					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
 							StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 					newDupeCount = hits.length;
 					for (int hit : hits) {
@@ -577,6 +576,24 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return success;
 	}
 
+	List<List<Long>> splitArrayIntoGroups(List<Long> array, int groupSize) {
+		// Split array into groups of groupSize
+		List<List<Long>> groups = new ArrayList<List<Long>>();
+		List<Long> group = new ArrayList<Long>();
+		int loopCount = 1;
+		for (Long l : array) {
+			group.add(l);
+			// Check to see if we are at the end of the group or if we are at the end of the array
+			// if so, then add the group to the list of groups and start a new group
+			if (group.size() == groupSize || loopCount == array.size()) {
+				groups.add(group);
+				group = new ArrayList<Long>();
+			}
+			loopCount ++;
+		}
+		return groups;
+	}
+
 	@Override
 	public int restandardizeParentStructures(List<Long> parentIds)
 			throws CmpdRegMolFormatException, StandardizerException, IOException {
@@ -598,38 +615,27 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		
+		List<List<Long>> parentIdGroups = splitArrayIntoGroups(parentIds, batchSize);
 
-		// Split parent ids into groups of batchSize
-		List<List<Long>> parentIdGroups = new ArrayList<List<Long>>();
-		List<Long> parentIdGroup = new ArrayList<Long>();
-		int pidCount = 1;
-		for (Long parentId : parentIds) {
-			parentIdGroup.add(parentId);
-			if (parentIdGroup.size() == batchSize || pidCount == parentIds.size()) {
-				parentIdGroups.add(parentIdGroup);
-				parentIdGroup = new ArrayList<Long>();
-			}
-			pidCount++;
-		}
 
 		// Do a bulk standardization
 		for (List<Long> pIdGroup : parentIdGroups) {
 			logger.info("Starting batch of " + pIdGroup.size() + " parents");
 
 			// Create standardization hashmap
-			HashMap<String, String> inputStructures = new HashMap<String, String>();
+			HashMap<String, String> parentIdsToParents = new HashMap<String, String>();
 			HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
 			for(Long parentId : pIdGroup) {
 				parent = Parent.findParent(parentId);
 				parents.put(parentId, parent);
-				inputStructures.put(parentId.toString(parentId), parent.getMolStructure());
+				parentIdsToParents.put(parentId.toString(parentId), parent.getMolStructure());
 			}
 
 			// Do standardization
-			logger.info("Starting standardization of " + inputStructures.size() + " compounds");
+			logger.debug("Starting standardization of " + parentIdsToParents.size() + " compounds");
 			// Start timer
 			long standardizationStart = new Date().getTime();
-			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(inputStructures);
+			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(parentIdsToParents);
 			long standardizationEnd = new Date().getTime();
 			// Convert the ms time to seconds
 			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;

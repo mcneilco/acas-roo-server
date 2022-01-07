@@ -2,17 +2,17 @@ package com.labsynch.labseer.utils;
 
 public class Response {
 
-    private String id;
+    private int id;
     private String responseBody;
     private int responseCode;
     
-    public Response(String id,int responseCode, String responseBody) {
+    public Response(int id,int responseCode, String responseBody) {
         this.id = id;
         this.responseBody = responseBody;
         this.responseCode = responseCode;
     }
     
-    public String getId() {
+    public int getId() {
         return id;
     }
     

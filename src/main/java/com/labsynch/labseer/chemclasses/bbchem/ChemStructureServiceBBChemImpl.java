@@ -464,15 +464,27 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		Long id = new Long(cdId);
 		if (structureType == StructureType.PARENT){
 			BBChemParentStructure bbChemStructure = BBChemParentStructure.findBBChemParentStructure(id);
+			if(bbChemStructure == null) {
+				return false;
+			}
 			bbChemStructure.remove();
 		} else if (structureType == StructureType.SALT_FORM){
 			BBChemSaltFormStructure bbChemSaltFormStructure = BBChemSaltFormStructure.findBBChemSaltFormStructure(id);
+			if(bbChemSaltFormStructure == null) {
+				return false;
+			}
 			bbChemSaltFormStructure.remove();
 		} else if (structureType == StructureType.SALT){
 			BBChemSaltStructure bbChemSaltStructure = BBChemSaltStructure.findBBChemSaltStructure(id);
+			if(bbChemSaltStructure == null) {
+				return false;
+			}
 			bbChemSaltStructure.remove();
 		} else if (structureType == StructureType.DRY_RUN){
 			BBChemDryRunStructure bbChemDryRunStructure = BBChemDryRunStructure.findBBChemDryRunStructure(id);
+			if(bbChemDryRunStructure == null) {
+				return false;
+			}
 			bbChemDryRunStructure.remove();
 		}
 		return true;
@@ -708,13 +720,13 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	}
 
 	@Override
-	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> cmpdRegMoleculeHashMap,
+	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> keyIdToStructureId,
 			StructureType structureType) throws CmpdRegMolFormatException {
 		
 		// For each structure, get the mol structure
 		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
-		for(String key : cmpdRegMoleculeHashMap.keySet()){
-			Integer structureId = cmpdRegMoleculeHashMap.get(key);
+		for(String key : keyIdToStructureId.keySet()){
+			Integer structureId = keyIdToStructureId.get(key);
 			AbstractBBChemStructure structure = null;
 			if(structureType == StructureType.PARENT) {
 				structure = BBChemParentStructure.findBBChemParentStructure(structureId.longValue());
