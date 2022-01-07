@@ -1,5 +1,6 @@
 package com.labsynch.labseer.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
+import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
@@ -67,6 +69,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Autowired
 	PropertiesUtilService propertiesUtilService;
+
+	@Autowired
+	public CmpdRegSDFWriterFactory sdfWriterFactory;
 
 	@Override
 	@Transactional
@@ -498,10 +503,58 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Override
+	public String getStandardizationDryRunReportFiles(String sdfFileName) throws IOException, CmpdRegMolFormatException {
+
+		// Getchanges
+		List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findStandardizationChanges()
+			.getResultList();
+
+		// Create/recreate file
+		File sdfFile = new File(sdfFileName);
+		if (sdfFile.exists()) {
+			sdfFile.delete();
+		}
+
+		// Get SD Writer
+		CmpdRegSDFWriter sdfWriter = sdfWriterFactory.getCmpdRegSDFWriter(sdfFileName);
+
+		// Fetch all compounds as cmpdreg molecules
+		HashMap<String, Integer> standardizationDryRunHashCompoundHashmap = new HashMap<String, Integer>();
+		for(StandardizationDryRunCompound stndznCompound : stndznCompounds){
+			standardizationDryRunHashCompoundHashmap.put(stndznCompound.getCorpName(), stndznCompound.getCdId());
+		}
+		HashMap<String, CmpdRegMolecule> cmpdRegMolecules = chemStructureService.getCmpdRegMolecules(standardizationDryRunHashCompoundHashmap, StructureType.DRY_RUN);
+
+		// Loop stndznCompounds and write cmpdreg molecule to the sdf file
+		for (StandardizationDryRunCompound stndznCompound : stndznCompounds) {
+			CmpdRegMolecule cmpdRegMolecule = cmpdRegMolecules.get(stndznCompound.getCorpName());
+			if (cmpdRegMolecule != null) {
+				cmpdRegMolecule.setProperty("Corporate ID", stndznCompound.getCorpName());
+				cmpdRegMolecule.setProperty("Structure Change", String.valueOf(stndznCompound.isChangedStructure()));
+				cmpdRegMolecule.setProperty("Display Change", String.valueOf(stndznCompound.isDisplayChange()));
+				cmpdRegMolecule.setProperty("New Duplicates", stndznCompound.getNewDuplicates());
+				cmpdRegMolecule.setProperty("Existing Duplicates", stndznCompound.getExistingDuplicates());
+				cmpdRegMolecule.setProperty("Delta Mol. Weight", String.valueOf(stndznCompound.getOldMolWeight()-stndznCompound.getNewMolWeight()));
+				cmpdRegMolecule.setProperty("New Mol. Weight", String.valueOf(stndznCompound.getNewMolWeight()));
+				cmpdRegMolecule.setProperty("Old Mol. Weight",  String.valueOf(stndznCompound.getOldMolWeight()));
+				cmpdRegMolecule.setProperty("As Drawn Display Change", String.valueOf(stndznCompound.isAsDrawnDisplayChange()));
+				cmpdRegMolecule.setProperty("Stereo Category", stndznCompound.getStereoCategory());
+				cmpdRegMolecule.setProperty("Stereo Comment", stndznCompound.getStereoComment());
+				sdfWriter.writeMol(cmpdRegMolecule);
+			}
+		}
+		sdfWriter.close();
+
+		// Return the path to the sdf file
+		return sdfFileName;
+	}
+
+	@Override
 	public String getStandardizationDryRunReport()
 			throws StandardizerException, CmpdRegMolFormatException, IOException {
 		List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findStandardizationChanges()
 				.getResultList();
+		
 		String json = "[]";
 		if (stndznCompounds.size() > 0) {
 			json = StandardizationDryRunCompound.toJsonArray(stndznCompounds);

@@ -82,7 +82,7 @@ public abstract class AbstractBBChemStructure {
     private String molecularFormula;
 
     @Transient
-    private HashMap<String, String> properties;
+    private HashMap<String, String> properties =  new HashMap<>();
 
     public void updateStructureInfo(AbstractBBChemStructure updatedBbChemStructure) {
         this.setMol(updatedBbChemStructure.getMol());
