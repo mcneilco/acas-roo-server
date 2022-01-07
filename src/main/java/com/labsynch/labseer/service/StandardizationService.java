@@ -16,6 +16,8 @@ public interface StandardizationService {
 
 	int dupeCheckStandardizationStructures() throws CmpdRegMolFormatException;
 
+	String getStandardizationDryRunReportFiles(String sdfFileName) throws IOException, CmpdRegMolFormatException;
+
 	String getStandardizationDryRunReport() throws IOException, CmpdRegMolFormatException, StandardizerException;
 
 	String getDryRunStats() throws StandardizerException;

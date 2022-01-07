@@ -33,9 +33,6 @@ public class ApiStandardizationServicesController {
 	@Autowired
 	private StandardizationService standardizationService;
 
-	@Autowired
-	private ChemStructureService chemStructServ;
-
 	@Transactional
 	@RequestMapping(value = "/resetDryRunTables", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -79,6 +76,15 @@ public class ApiStandardizationServicesController {
 		// Get most recent standardization history
 		String jsonReport = standardizationService.getStandardizationDryRunReport();
 		return new ResponseEntity<String>(jsonReport, headers, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/dryRunReportFiles", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> dryRunReportFile(@RequestBody String filePath) throws IOException, CmpdRegMolFormatException{	
+		HttpHeaders headers = new HttpHeaders();
+		// Get most recent standardization history
+		String outputFilePath = standardizationService.getStandardizationDryRunReportFiles(filePath);
+		return new ResponseEntity<String>(outputFilePath, headers, HttpStatus.OK);
 	}
 
 
