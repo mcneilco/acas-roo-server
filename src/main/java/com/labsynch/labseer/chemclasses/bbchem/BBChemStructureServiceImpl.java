@@ -80,13 +80,13 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode requestData = mapper.createObjectNode();
 
-		// Split the list of structures into chunks of 100
+		// Split the list of structures into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
 		List<List<String>> structureGroups = new ArrayList<List<String>>();
 		List<String> structureGroup = new ArrayList<String>();
 		Object[] structuresArray = structures.keySet().toArray();
 		for (String structure : structures.keySet()) {
 			structureGroup.add(structures.get(structure));
-			if(structureGroup.size() == 100 || structure == structuresArray[structuresArray.length - 1]) {
+			if(structureGroup.size() == propertiesUtilService.getExternalStructureProcessingBatchSize() || structure == structuresArray[structuresArray.length - 1]) {
 				structureGroups.add(structureGroup);
 				structureGroup = new ArrayList<String>();
 			}
@@ -206,15 +206,15 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		options.put("standardizer_actions", mapper.createObjectNode());
 		requestData.put("options", options);
 
-		// Split the list of structures into chunks of 100
+		// Split the list of structures into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
 		List<List<String>> structureGroups = new ArrayList<List<String>>();
 		List<String> structureGroup = new ArrayList<String>();
 		Object[] structuresArray = structures.keySet().toArray();
 		for (String structure : structures.keySet()) {
 			structureGroup.add(structures.get(structure));
 
-			// Check if structure group size is now 100 or this is the last structure
-			if (structureGroup.size() == 100 || structure == structuresArray[structuresArray.length - 1]) {
+			// Check if structure group size is now propertiesUtilService.getExternalStructureProcessingBatchSize() or this is the last structure
+			if (structureGroup.size() == propertiesUtilService.getExternalStructureProcessingBatchSize() || structure == structuresArray[structuresArray.length - 1]) {
 				structureGroups.add(structureGroup);
 				structureGroup = new ArrayList<String>();
 			}
@@ -308,13 +308,13 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		requestData.put("config", standardizerActions);
 		requestData.put("output_format", "MOL");
 
-		// Split the list of structures into chunks of 100
+		// Split the list of structures into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
 		List<HashMap<String, String>> structureGroups = new ArrayList<HashMap<String, String>>();
 		HashMap<String, String> structureGroup = new HashMap<String, String>();
 		Object[] structuresArray = structures.keySet().toArray();
 		for (String structure : structures.keySet()) {
 			structureGroup.put(structure, structures.get(structure));
-			if(structureGroup.size() == 100 || structure == structuresArray[structuresArray.length - 1]) {
+			if(structureGroup.size() == propertiesUtilService.getExternalStructureProcessingBatchSize() || structure == structuresArray[structuresArray.length - 1]) {
 				structureGroups.add(structureGroup);
 				structureGroup = new HashMap<String, String>();
 			}

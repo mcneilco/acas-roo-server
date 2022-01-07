@@ -128,4 +128,6 @@ public interface PropertiesUtilService {
 	
 	Integer getStandardizationBatchSize();
 
+	Integer getExternalStructureProcessingBatchSize();
+
 }
