@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
@@ -1690,5 +1691,93 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		}
 		return standardizationConfigDTO;
 	}
+
+	@Override
+	public HashMap<String, CmpdRegMolecule> standardizeStructures(HashMap<String, String> structures)
+			throws CmpdRegMolFormatException, StandardizerException {
+		HashMap<String, CmpdRegMolecule> standardizedStructures = new HashMap<String, CmpdRegMolecule>();
+		for(String structureKey : structures.keySet()){
+			String structure = structures.get(structureKey);
+			try{
+				String standardizedStructure = standardizeStructure(structure);
+				CmpdRegMoleculeJChemImpl standardizedCmpdRegMolecule = new CmpdRegMoleculeJChemImpl(standardizedStructure);
+				standardizedStructures.put(structureKey, standardizedCmpdRegMolecule);
+			}catch (Exception e) {
+				logger.error("Got error trying to standardize structure " + structure, e);
+				throw new CmpdRegMolFormatException(e);
+			}
+		}
+		return standardizedStructures;
+	}
+
+	@Override
+	public int saveStructure(CmpdRegMolecule cmpdregMolecule, StructureType structureType, boolean checkForDupes) {
+		try {
+			return saveStructure(cmpdregMolecule.getMolStructure(), structureType, checkForDupes);
+		} catch (CmpdRegMolFormatException e) {
+			logger.error("Got error trying to save structure", e);
+			return -1;
+		}
+	}
+
+	@Override
+	public HashMap<String, Integer> saveStructures(HashMap<String, CmpdRegMolecule> structures, StructureType structureType, Boolean checkForDupes) {
+		// return hash
+		HashMap<String, Integer> result = new HashMap<String, Integer>();
+		for(String key : structures.keySet()){
+			CmpdRegMolecule cmpdRegMolecule = structures.get(key);
+			result.put(key, saveStructure(cmpdRegMolecule, structureType, checkForDupes));
+		}
+		return result;
+	}
+
+
+	@Override
+	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> keyIdToStructureId,
+			StructureType structureType)  throws CmpdRegMolFormatException {
+		
+		// Get hashmap values as int array
+		int[] cdIds = new int[keyIdToStructureId.size()];
+		int c = 0;
+		for(Integer cdId : keyIdToStructureId.values()){
+			cdIds[c] = cdId;
+			c++;
+		}
+
+		// Search for cdids and fetch cooresponding molecules
+		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
+		JChemSearch searcher = new JChemSearch();
+		String structureTable = getJchemStructureTableFromStructureType(structureType);
+		searcher.setStructureTable(structureTable);
+		searcher.setFilterIDList(cdIds);
+		try {
+			searcher.run();
+			int[] hitList = searcher.getResults();
+			HitColoringAndAlignmentOptions hitColorOptions = null;
+			List<String> fieldNames = new ArrayList<String>(); 
+			fieldNames.add("cd_id"); 
+			fieldNames.add("cd_formula"); 
+			fieldNames.add("cd_molweight");
+			List<Object[]> fieldValues = new ArrayList<Object[]>();
+			String[] keys = keyIdToStructureId.keySet().toArray(new String[0]);
+			Molecule[] molecules;
+
+			molecules = searcher.getHitsAsMolecules(hitList, hitColorOptions, fieldNames, fieldValues);
+			for (int i = 0; i < hitList.length; i++) { 
+				molecules[i].setProperty("cd_id", Integer.toString(hitList[i]));
+				result.put(keys[i], new CmpdRegMoleculeJChemImpl(molecules[i]));
+			}
+			return result;
+		} catch (SQLException | IOException | SearchException | SupergraphException | DatabaseSearchException e) {
+			throw new CmpdRegMolFormatException(e);
+		}
+	}
+
+	@Override
+	public int[] searchMolStructures(CmpdRegMolecule cmpdRegMolecule, StructureType structureType, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
+		return searchMolStructures(cmpdRegMolecule.getMolStructure(), structureType, searchType, simlarityPercent, maxResults);
+	}
+	
+
 }
 

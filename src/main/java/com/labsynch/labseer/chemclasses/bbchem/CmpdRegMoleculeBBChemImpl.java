@@ -205,4 +205,8 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		// BBCHem implementation always kekulizes the structure
 	}
 
+	public BBChemParentStructure getMolecule() {
+		return this.molecule;
+	}
+
 }

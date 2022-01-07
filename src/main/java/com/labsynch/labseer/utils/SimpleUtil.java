@@ -362,7 +362,13 @@ public class SimpleUtil {
 	}
 
 	public static String getStringBody(HttpURLConnection httpURLConnection) throws IOException {
-		InputStream inputStream = httpURLConnection.getInputStream();
+		// Input stream
+		InputStream inputStream = null;
+		if (httpURLConnection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+			inputStream = httpURLConnection.getInputStream();
+		} else {
+			inputStream = httpURLConnection.getErrorStream();
+		}
 		String body = IOUtils.toString(inputStream);
 		return body;
 	}

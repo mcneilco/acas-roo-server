@@ -1,8 +1,10 @@
 package com.labsynch.labseer.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +21,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.Lot;
@@ -69,17 +72,32 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Transactional
 	public void onApplicationEvent(ContextRefreshedEvent event) {
 		ApplicationContext context = event.getApplicationContext();
-        System.out.println(context.getDisplayName());
-		logger.info("Checking compound standardization state");
 		logger.info("Application context: " + context.getDisplayName());
 		if (context.getDisplayName().equals("Root WebApplicationContext")) {
 			// this is the root context so wait for the web application context to be initialized
 			return;
 		}
+
+		logger.info("Checking compound standardization state");
 		try {
 			// Get the current configuration settings
 			StandardizerSettingsConfigDTO currentStandardizationSettings = chemStructureService
 					.getStandardizerSettings();
+
+			// Cancel all running standardization histories as failed
+			List<StandardizationHistory> histories = StandardizationHistory.findAllStandardizationHistorys();
+			for (StandardizationHistory history : histories) {
+				if(history.getStandardizationStatus() != null && history.getStandardizationStatus().equals("running")){
+					logger.info("Failing running standardization for run id " + history.getId());
+					history.setStandardizationStatus("failed");
+					history.merge();
+				}
+				if(history.getDryRunStatus() != null && history.getDryRunStatus().equals("running")){
+					logger.info("Failing running standardization dry run for run id " + history.getId());
+					history.setDryRunStatus("failed");
+					history.merge();
+				}
+			}
 
 			// Get the applied settings from the history table which should have the most
 			// recent standardization settings applied
@@ -153,9 +171,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Transactional
-	private int saveDryRunStructure(String molStructure) {
-		int cdId = chemStructureService.saveStructure(molStructure, StructureType.DRY_RUN, false);
-		return cdId;
+	private HashMap<String, Integer> saveDryRunStructures(HashMap<String, CmpdRegMolecule> structures) {
+		HashMap<String, Integer> saveResults = chemStructureService.saveStructures(structures, StructureType.DRY_RUN, false);
+		return saveResults;
 	}
 
 	@Override
@@ -167,7 +185,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 
-		int batchSize = propertiesUtilService.getBatchSize();
+		int batchSize = propertiesUtilService.getStandardizationBatchSize();
 		Parent parent;
 		StandardizationDryRunCompound stndznCompound;
 		int nonMatchingCmpds = 0;
@@ -184,82 +202,132 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			runNumber++;
 		}
 		float percent = 0;
-		int p = 1;
+		int p = 0;
 		float previousPercent = percent;
 		previousPercent = percent;
-		for (Long parentId : parentIds) {
-			parent = Parent.findParent(parentId);
-			stndznCompound = new StandardizationDryRunCompound();
-			stndznCompound.setRunNumber(runNumber);
-			stndznCompound.setQcDate(qcDate);
-			stndznCompound.setParentId(parent.getId());
-			stndznCompound.setCorpName(parent.getCorpName());
-			stndznCompound.setAlias(getParentAlias(parent));
-			stndznCompound.setStereoCategory(parent.getStereoCategory().getName());
-			stndznCompound.setStereoComment(parent.getStereoComment());
-			stndznCompound.setOldMolWeight(parent.getMolWeight());
 
-			queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
-			if (queryLots.size() != 1)
-				logger.error("!!!!!!!!!!!!  odd lot number size   !!!!!!!!!  " + queryLots.size() + "  saltForm: "
-						+ parent.getId());
-			if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null) {
-				asDrawnStruct = queryLots.get(0).getAsDrawnStruct();
-			} else {
+		// Split parent ids into groups of batchSize
+		List<List<Long>> parentIdGroups = splitArrayIntoGroups(parentIds, batchSize);
+
+		// Do a bulk standardization
+		for (List<Long> pIdGroup : parentIdGroups) {
+			logger.info("Starting batch of " + pIdGroup.size() + " parents");
+
+			// Create standardization hashmap
+			HashMap<String, String> parentIdsToStructures = new HashMap<String, String>();
+			HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
+			for(Long parentId : pIdGroup) {
+				parent = Parent.findParent(parentId);
+				parents.put(parentId, parent);
+				parentIdsToStructures.put(parentId.toString(parentId), parent.getMolStructure());
+			}
+
+			// Do standardization
+			logger.info("Starting standardization of " + parentIdsToStructures.size() + " compounds");
+			// Start timer
+			long standardizationStart = new Date().getTime();
+			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(parentIdsToStructures);
+			long standardizationEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
+			logger.info("Standardization took " + standardizationTime + " seconds");
+
+			logger.info("Starting saving of " + pIdGroup.size() + " dry run structures");
+			long structureSaveStart = new Date().getTime();
+
+			// Save the standardized dry run structures and return the hashmap of String (parent id) and Integer (cd id).  We use the cdIds below
+			// when saving the dry run compounds to the database which links the structures and compounds together.
+			HashMap<String, Integer> parentIdToStructureId = saveDryRunStructures(standardizationResults);
+			long structureSaveEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long saveTime = (structureSaveEnd - structureSaveStart) / 1000;
+			logger.info("Saving took " + saveTime + " seconds");
+
+			logger.info("Starting saving of " + pIdGroup.size() + " standardization dry run compounds");
+			long dryRunCompoundSaveStart = new Date().getTime();
+			for(Long parentId : pIdGroup) {
+				parent = parents.get(parentId);
+				stndznCompound = new StandardizationDryRunCompound();
+				stndznCompound.setRunNumber(runNumber);
+				stndznCompound.setQcDate(qcDate);
+				stndznCompound.setParentId(parent.getId());
+				stndznCompound.setCorpName(parent.getCorpName());
+				stndznCompound.setAlias(getParentAlias(parent));
+				stndznCompound.setStereoCategory(parent.getStereoCategory().getName());
+				stndznCompound.setStereoComment(parent.getStereoComment());
+				stndznCompound.setOldMolWeight(parent.getMolWeight());
+
 				asDrawnStruct = parent.getMolStructure();
-			}
-			logger.debug("attempting to standardize: " + parent.getCorpName() + "   " + asDrawnStruct);
-			stndznCompound.setMolStructure(chemStructureService.standardizeStructure(asDrawnStruct));
-			stndznCompound.setNewMolWeight(chemStructureService.getMolWeight(stndznCompound.getMolStructure()));
 
-			if (parent.getMolWeight() == 0 && stndznCompound.getNewMolWeight() == 0) {
-				logger.debug("mol weight 0 before and after standardization - skipping");
-
-			} else {
-				boolean displayTheSame = chemStructureService.isIdenticalDisplay(parent.getMolStructure(),
-						stndznCompound.getMolStructure());
-				if (!displayTheSame) {
-					stndznCompound.setDisplayChange(true);
-					logger.debug("the compounds are NOT matching: " + parent.getCorpName());
-					nonMatchingCmpds++;
+				queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
+				if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null) {
+					asDrawnStruct = queryLots.get(0).getAsDrawnStruct();
+				} else {
+					asDrawnStruct = parent.getMolStructure();
 				}
-				boolean asDrawnDisplaySame = chemStructureService.isIdenticalDisplay(asDrawnStruct,
-						stndznCompound.getMolStructure());
-				if (!asDrawnDisplaySame) {
-					stndznCompound.setAsDrawnDisplayChange(true);
-					logger.debug("the compounds are NOT matching: " + parent.getCorpName());
-					nonMatchingCmpds++;
-				}
-			}
-			cdId = saveDryRunStructure(stndznCompound.getMolStructure());
-			if (cdId == -1) {
-				logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
-						+ ", Parent ID " + stndznCompound.getParentId() + ": " + stndznCompound.getMolStructure());
-			} else {
-				stndznCompound.setCdId(cdId);
-				stndznCompound.persist();
-			}
 
-			if (p % 100 == 0){
-				logger.debug("flushing loader session");
-				session.flush();
-				session.clear();
+				CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());
+				stndznCompound.setMolStructure(cmpdRegMolecule.getMolStructure());
+				stndznCompound.setNewMolWeight(cmpdRegMolecule.getMass());
+	
+				if (parent.getMolWeight() == 0 && stndznCompound.getNewMolWeight() == 0) {
+					logger.debug("mol weight 0 before and after standardization - skipping");
+	
+				} else {
+
+					boolean displayTheSame = chemStructureService.isIdenticalDisplay(parent.getMolStructure(),
+						stndznCompound.getMolStructure());
+
+					if (!displayTheSame) {
+						stndznCompound.setDisplayChange(true);
+						logger.debug("the compounds are NOT matching: " + parent.getCorpName());
+						nonMatchingCmpds++;
+					}
+					boolean asDrawnDisplaySame = chemStructureService.isIdenticalDisplay(asDrawnStruct,
+						stndznCompound.getMolStructure());
+
+					if (!asDrawnDisplaySame) {
+						stndznCompound.setAsDrawnDisplayChange(true);
+						logger.debug("the compounds are NOT matching: " + parent.getCorpName());
+						nonMatchingCmpds++;
+					}
+				}
+				cdId = parentIdToStructureId.get(parentId.toString());
+
+				if (cdId == -1) {
+					logger.error("Bad molformat. Please fix the molfile for Corp Name " + stndznCompound.getCorpName()
+							+ ", Parent ID " + stndznCompound.getParentId() + ": " + stndznCompound.getMolStructure());
+				} else {
+					stndznCompound.setCdId(cdId);
+					stndznCompound.persist();
+				}
+				p++;
 			}
+			// End timer
+			long dryRunCompoundSaveEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long dryRunCompoundSaveTime = (dryRunCompoundSaveEnd - dryRunCompoundSaveStart) / 1000;
+			logger.info("Saving took " + dryRunCompoundSaveTime + " seconds");
+			
+			// End loop through parent id group
+			logger.debug("flushing loader session");
+			session.flush();
+			session.clear();
+			
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
 				currentTime = new Date().getTime();
 				// Output if different from the last time.
 				logger.info("populating standardization dry run table " + percent + "% complete (" + p + " of "
-				+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
+					+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
 				currentTime = new Date().getTime();
 				logger.debug("Time Elapsed:"+ (currentTime - startTime));
 			}
 			// Update the percentage.
 			previousPercent = percent;
-			p++;
-
 		}
+
 		logger.info(
 				"total number of non matching; structure, display or as drawn display changes: " + nonMatchingCmpds);
 		return (nonMatchingCmpds);
@@ -312,8 +380,18 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				if (dryRunCompound.getNewMolWeight() == 0) {
 					logger.debug("mol has a weight of 0 - skipping");
 				} else {
-					hits = chemStructureService.searchMolStructures(dryRunCompound.getMolStructure(),
-							StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER);
+					HashMap<String, Integer> chemStructureHashMap = new HashMap<String, Integer>();
+
+					// Arbitrary key to call service and fetch cmpdreg molecule
+					String tmpStructureKey = "TmpStructureKey01";
+					chemStructureHashMap.put(tmpStructureKey, dryRunCompound.getCdId());
+					HashMap<String, CmpdRegMolecule> cmpdRegMolecules = chemStructureService.getCmpdRegMolecules(chemStructureHashMap,
+							StructureType.DRY_RUN);
+
+					// Pass -1F for simlarityPercent (non nullable int required in function signature not used in DUPLICATE_TAUTOMER searches)
+					// Pass -1 for maxResults (non nullable int required in function signature we don't want to limit the hit counts here)
+					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
+							StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 					newDupeCount = hits.length;
 					for (int hit : hits) {
 						List<StandardizationDryRunCompound> searchResults = StandardizationDryRunCompound
@@ -341,9 +419,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 							}
 						}
 					}
-
-					hits = chemStructureService.searchMolStructures(dryRunCompound.getMolStructure(),
-							StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER);
+					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
+							StructureType.PARENT, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 					oldDuplicateCount = hits.length;
 					dryRunCompound.setChangedStructure(true);
 					for (int hit : hits) {
@@ -441,14 +518,34 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	}
 
 	@Transactional
-	public Boolean updateStructure(String molStructure, int cdId) {
-		Boolean success = chemStructureService.updateStructure(molStructure, StructureType.PARENT, cdId);
+	public Boolean updateStructure(CmpdRegMolecule cmpdRegMolecule, int cdId) {
+		Boolean success = chemStructureService.updateStructure(cmpdRegMolecule, StructureType.PARENT, cdId);
 		return success;
+	}
+
+	List<List<Long>> splitArrayIntoGroups(List<Long> array, int groupSize) {
+		// Split array into groups of groupSize
+		List<List<Long>> groups = new ArrayList<List<Long>>();
+		List<Long> group = new ArrayList<Long>();
+		int loopCount = 1;
+		for (Long l : array) {
+			group.add(l);
+			// Check to see if we are at the end of the group or if we are at the end of the array
+			// if so, then add the group to the list of groups and start a new group
+			if (group.size() == groupSize || loopCount == array.size()) {
+				groups.add(group);
+				group = new ArrayList<Long>();
+			}
+			loopCount ++;
+		}
+		return groups;
 	}
 
 	@Override
 	public int restandardizeParentStructures(List<Long> parentIds)
 			throws CmpdRegMolFormatException, StandardizerException, IOException {
+
+		int batchSize = propertiesUtilService.getStandardizationBatchSize();
 		Parent parent;
 		List<Lot> lots;
 		Lot lot;
@@ -457,7 +554,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		int totalCount = parentIds.size();
 		logger.info("number of parents to restandardize: " + totalCount);
 		float percent = 0;
-		int p = 1;
+		int p = 0;
 		float previousPercent = percent;
 		previousPercent = percent;
 
@@ -465,44 +562,70 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		
-		for (Long parentId : parentIds) {
-			parent = Parent.findParent(parentId);
-			lots = Lot.findLotsByParent(parent).getResultList();
-			lot = lots.get(0);
+		List<List<Long>> parentIdGroups = splitArrayIntoGroups(parentIds, batchSize);
 
-			// Try getting the as drawn structure first if we have it
-			if (lots.size() > 0 && lot.getAsDrawnStruct() != null) {
-				originalStructure = lot.getAsDrawnStruct();
-			} else {
-				logger.warn("Did not find the asDrawnStruct for parent: " + parentId + "  " + parent.getCorpName());
+
+		// Do a bulk standardization
+		for (List<Long> pIdGroup : parentIdGroups) {
+			logger.info("Starting batch of " + pIdGroup.size() + " parents");
+
+			// Create standardization hashmap
+			HashMap<String, String> parentIdsToParents = new HashMap<String, String>();
+			HashMap<Long, Parent> parents = new HashMap<Long, Parent>();
+			for(Long parentId : pIdGroup) {
+				parent = Parent.findParent(parentId);
+				parents.put(parentId, parent);
+				parentIdsToParents.put(parentId.toString(parentId), parent.getMolStructure());
+			}
+
+			// Do standardization
+			logger.debug("Starting standardization of " + parentIdsToParents.size() + " compounds");
+			// Start timer
+			long standardizationStart = new Date().getTime();
+			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(parentIdsToParents);
+			long standardizationEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
+			logger.info("Standardization took " + standardizationTime + " seconds");
+
+			for(Long parentId : pIdGroup) {
+
+				parent = parents.get(parentId);
 				originalStructure = parent.getMolStructure();
+
+				List<Lot> queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
+				if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null) {
+					originalStructure = queryLots.get(0).getAsDrawnStruct();
+				}
+
+				// We standardize the structure first
+				CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());
+				standardizedMol = cmpdRegMolecule.getMolStructure();
+
+				// Now we update the parent structure
+				Boolean success = updateStructure(cmpdRegMolecule, parent.getCdId());
+
+				// In the case where we are switching chemistry engines the structure might not exist,
+				// so we need to check for that	and if it does not exist we need to create it
+				if(!success){
+					logger.warn("Could not update structure for parent: " + parentId + "  " + parent.getCorpName());
+					logger.info("Assuming the structure did not exist in the first place and saving a new one");
+					int newCdId = chemStructureService.saveStructure(cmpdRegMolecule, StructureType.PARENT, false);
+					parent.setCdId(newCdId);
+					logger.info("Updated parent with new cdId: " + newCdId);
+				}
+
+				// Save the standardized structure and possibly the new cdid to the parent
+				parent.setMolStructure(standardizedMol);
+				parent.merge();
+				p++;
+
 			}
 
-			// We standardize the structure first
-			standardizedMol = chemStructureService.standardizeStructure(originalStructure);
-
-			// Now we update the parent structure
-			Boolean success = updateStructure(standardizedMol, parent.getCdId());
-
-			// In the case where we are switching chemistry engines the structure might not exist,
-			// so we need to check for that	and if it does not exist we need to create it
-			if(!success){
-				logger.warn("Could not update structure for parent: " + parentId + "  " + parent.getCorpName());
-				logger.info("Assuming the structure did not exist in the first place and saving a new one");
-				int newCdId = chemStructureService.saveStructure(standardizedMol, StructureType.PARENT, false);
-				parent.setCdId(newCdId);
-				logger.info("Updated parent with new cdId: " + newCdId);
-			}
-
-			// Save the standardized structure and possibly the new cdid to the parent
-			parent.setMolStructure(standardizedMol);
-			parent.merge();
-
-			if (p % 100 == 0){
-				logger.debug("flushing loader session");
-				session.flush();
-				session.clear();
-			}
+			logger.debug("flushing loader session");
+			session.flush();
+			session.clear();
+			
 			// Compute your percentage.
 			percent = (float) Math.floor(p * 100f / totalCount);
 			if (percent != previousPercent) {
@@ -515,7 +638,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 			// Update the percentage.
 			previousPercent = percent;
-			p++;
 		}
 		return parentIds.size();
 	}

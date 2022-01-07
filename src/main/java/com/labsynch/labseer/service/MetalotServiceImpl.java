@@ -225,6 +225,7 @@ public class MetalotServiceImpl implements MetalotService {
 			String molStructure;
 			if (propertiesUtilService.getUseExternalStandardizerConfig()){
 				molStructure = chemService.standardizeStructure(parent.getMolStructure());
+				parent.setMolStructure(molStructure);
 			}
 			int dupeParentCount = 0;			
 			if (!metaLot.isSkipParentDupeCheck()){

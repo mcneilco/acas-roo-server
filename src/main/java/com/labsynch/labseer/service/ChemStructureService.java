@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +73,8 @@ public interface ChemStructureService {
 
 	public String standardizeStructure(String molfile) throws CmpdRegMolFormatException, StandardizerException, IOException;
 
+	public HashMap<String, CmpdRegMolecule> standardizeStructures(HashMap<String, String> structures) throws CmpdRegMolFormatException, StandardizerException;
+
 	public boolean compareStructures(String preMolStruct, String postMolStruct, SearchType searchType);
 
 	public boolean standardizedMolCompare(String queryMol, String targetMol) throws CmpdRegMolFormatException;
@@ -120,5 +123,13 @@ public interface ChemStructureService {
 		String mol2 = molStructure2.substring(StringUtils.ordinalIndexOf(molStructure2, "\n", 2)+1);
 		return(mol1.equals(mol2));
 	}
+
+	public int saveStructure(CmpdRegMolecule cmpdregMolecule, StructureType structureType, boolean checkForDupes);
+
+	public HashMap<String, Integer> saveStructures(HashMap<String, CmpdRegMolecule> structures, StructureType structureType, Boolean checkForDupes);
 	
+	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> keyIdToStructureId, StructureType structureType) throws CmpdRegMolFormatException;
+
+	public int[] searchMolStructures(CmpdRegMolecule cmpdRegMolecule, StructureType structureType, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException;
+
 }
