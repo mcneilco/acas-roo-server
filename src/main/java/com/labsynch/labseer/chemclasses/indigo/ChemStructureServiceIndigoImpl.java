@@ -702,5 +702,39 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			return -1;
 		}
 	}
+
+	@Override
+	public HashMap<String, Integer> saveStructures(HashMap<String, CmpdRegMolecule> structures, StructureType structureType, Boolean checkForDupes) {
+		// return hash
+		HashMap<String, Integer> result = new HashMap<String, Integer>();
+		for(String key : structures.keySet()){
+			CmpdRegMolecule cmpdRegMolecule = structures.get(key);
+			result.put(key, saveStructure(cmpdRegMolecule, structureType, checkForDupes));
+		}
+		return result;
+	}
+
+	@Override
+	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> keyIdToStructureId,
+			StructureType structureType) throws CmpdRegMolFormatException {
+
+		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
+		String baseQuery = "SELECT mol_structure FROM " + structureType.entityTable + " WHERE cd_id = :cd_id";
+		EntityManager em = Parent.entityManager();
+		Query query = em.createNativeQuery(baseQuery);
+		for(String key : keyIdToStructureId.keySet()){
+			query.setParameter("cd_id", keyIdToStructureId.get(key));
+			String molStructure = (String) query.getSingleResult();
+			CmpdRegMoleculeIndigoImpl cmpdRegMolecule = new CmpdRegMoleculeIndigoImpl(molStructure);
+			result.put(key, cmpdRegMolecule);
+		}
+		return result;
+	}
+
+	@Override
+	public int[] searchMolStructures(CmpdRegMolecule cmpdRegMolecule, StructureType structureType,
+			SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
+		return searchMolStructures(cmpdRegMolecule.getMolStructure(), structureType, searchType, simlarityPercent, maxResults);
+	}
 }
 

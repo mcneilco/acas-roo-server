@@ -723,5 +723,38 @@ public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	public String getPreprocessorSettings() {
 	    return this.preprocessorSettings;
 	}
+
+	int standardizationBatchSize;
+
+	@Value("${server.acas.standardizationBatchSize}")
+	public void setStandardizationBatchSize(String standardizationBatchSize) {
+		if (standardizationBatchSize.startsWith("${")) {
+			this.standardizationBatchSize = 1000;
+		} else {
+			this.standardizationBatchSize = Integer.parseInt(standardizationBatchSize);
+		};
+	}
+
+	@Override
+	public Integer getStandardizationBatchSize() {
+	    return this.standardizationBatchSize;
+	}
+
+	int externalStructureProcessingBatchSize;
+
+	@Value("${server.acas.externalStructureProcessingBatchSize}")
+	public void setExternalStructureProcessingBatchSize(String externalStructureProcessingBatchSize) {
+		if (externalStructureProcessingBatchSize.startsWith("${")) {
+			this.externalStructureProcessingBatchSize = 100;
+		} else {
+			this.externalStructureProcessingBatchSize = Integer.parseInt(externalStructureProcessingBatchSize);
+		};
+	}
+
+	@Override
+	public Integer getExternalStructureProcessingBatchSize() {
+	    return this.externalStructureProcessingBatchSize;
+	}
+
 	
 }
