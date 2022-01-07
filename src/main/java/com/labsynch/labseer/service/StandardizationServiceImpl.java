@@ -381,10 +381,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					logger.debug("mol has a weight of 0 - skipping");
 				} else {
 					HashMap<String, Integer> chemStructureHashMap = new HashMap<String, Integer>();
-					chemStructureHashMap.put("mol", dryRunCompound.getCdId());
+
+					// Arbitrary key to call service and fetch cmpdreg molecule
+					String tmpStructureKey = "TmpStructureKey01";
+					chemStructureHashMap.put(tmpStructureKey, dryRunCompound.getCdId());
 					HashMap<String, CmpdRegMolecule> cmpdRegMolecules = chemStructureService.getCmpdRegMolecules(chemStructureHashMap,
 							StructureType.DRY_RUN);
-					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get("mol"),
+					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
 							StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 					newDupeCount = hits.length;
 					for (int hit : hits) {
