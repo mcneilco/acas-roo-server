@@ -304,9 +304,18 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
 		requestData.put("config", standardizerActions);
 		requestData.put("output_format", "MOL");
-
+		
 		// Split the list of structures into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
-		List<List<String>> structureGroups = splitIntoListOfLists(structures);
+		List<HashMap<String, String>> structureGroups = new ArrayList<HashMap<String, String>>();
+		HashMap<String, String> structureGroup = new HashMap<String, String>();
+		Object[] structuresArray = structures.keySet().toArray();
+		for (String structure : structures.keySet()) {
+			structureGroup.put(structure, structures.get(structure));
+			if(structureGroup.size() == propertiesUtilService.getExternalStructureProcessingBatchSize() || structure == structuresArray[structuresArray.length - 1]) {
+				structureGroups.add(structureGroup);
+				structureGroup = new HashMap<String, String>();
+			}
+		}
 
 		Collection<Callable<Response>> tasks = new ArrayList<>();
 		// Create the tasks and include an id for the task
