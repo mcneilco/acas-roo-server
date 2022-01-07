@@ -387,6 +387,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					chemStructureHashMap.put(tmpStructureKey, dryRunCompound.getCdId());
 					HashMap<String, CmpdRegMolecule> cmpdRegMolecules = chemStructureService.getCmpdRegMolecules(chemStructureHashMap,
 							StructureType.DRY_RUN);
+
+					// Pass -1F for simlarityPercent (non nullable int required in function signature not used in DUPLICATE_TAUTOMER searches)
+					// Pass -1 for maxResults (non nullable int required in function signature we don't want to limit the hit counts here)
 					hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
 							StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 					newDupeCount = hits.length;
