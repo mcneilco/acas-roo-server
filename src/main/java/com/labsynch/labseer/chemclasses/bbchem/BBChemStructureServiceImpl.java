@@ -81,16 +81,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		ObjectNode requestData = mapper.createObjectNode();
 
 		// Split the list of structures into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
-		List<List<String>> structureGroups = new ArrayList<List<String>>();
-		List<String> structureGroup = new ArrayList<String>();
-		Object[] structuresArray = structures.keySet().toArray();
-		for (String structure : structures.keySet()) {
-			structureGroup.add(structures.get(structure));
-			if(structureGroup.size() == propertiesUtilService.getExternalStructureProcessingBatchSize() || structure == structuresArray[structuresArray.length - 1]) {
-				structureGroups.add(structureGroup);
-				structureGroup = new ArrayList<String>();
-			}
-		}
+		List<List<String>> structureGroups = splitIntoListOfLists(structures);
 		
 		Collection<Callable<Response>> tasks = new ArrayList<>();
 		// Create the tasks and include an id for the task
@@ -188,6 +179,23 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		}
 	}
 
+	List<List<String>> splitIntoListOfLists(HashMap<String, String> stringHashMap) {
+		// Split the hashmap into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
+		List<List<String>> groups = new ArrayList<List<String>>();
+		List<String> group = new ArrayList<String>();
+		Object[] array = stringHashMap.keySet().toArray();
+		for (String key : stringHashMap.keySet()) {
+			group.add(stringHashMap.get(key));
+
+			// Check if structure group size is now propertiesUtilService.getExternalStructureProcessingBatchSize() or this is the last item in the original hashmap
+			if (group.size() == propertiesUtilService.getExternalStructureProcessingBatchSize() || key == array[array.length - 1]) {
+				groups.add(group);
+				group = new ArrayList<String>();
+			}
+		}
+		return groups;
+	}
+	
 	private JsonNode postToProcessService(HashMap<String, String> structures)  throws IOException {
 
 		String url = getUrlFromPreprocessorSettings("processURL");
@@ -206,19 +214,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		options.put("standardizer_actions", mapper.createObjectNode());
 		requestData.put("options", options);
 
-		// Split the list of structures into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
-		List<List<String>> structureGroups = new ArrayList<List<String>>();
-		List<String> structureGroup = new ArrayList<String>();
-		Object[] structuresArray = structures.keySet().toArray();
-		for (String structure : structures.keySet()) {
-			structureGroup.add(structures.get(structure));
-
-			// Check if structure group size is now propertiesUtilService.getExternalStructureProcessingBatchSize() or this is the last structure
-			if (structureGroup.size() == propertiesUtilService.getExternalStructureProcessingBatchSize() || structure == structuresArray[structuresArray.length - 1]) {
-				structureGroups.add(structureGroup);
-				structureGroup = new ArrayList<String>();
-			}
-		}
+		// Split the list of structures into chunks for processing
+		List<List<String>> structureGroups = splitIntoListOfLists(structures);
 
 		Collection<Callable<Response>> tasks = new ArrayList<>();
 		// Create the tasks and include an id for the task
@@ -309,16 +306,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		requestData.put("output_format", "MOL");
 
 		// Split the list of structures into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
-		List<HashMap<String, String>> structureGroups = new ArrayList<HashMap<String, String>>();
-		HashMap<String, String> structureGroup = new HashMap<String, String>();
-		Object[] structuresArray = structures.keySet().toArray();
-		for (String structure : structures.keySet()) {
-			structureGroup.put(structure, structures.get(structure));
-			if(structureGroup.size() == propertiesUtilService.getExternalStructureProcessingBatchSize() || structure == structuresArray[structuresArray.length - 1]) {
-				structureGroups.add(structureGroup);
-				structureGroup = new HashMap<String, String>();
-			}
-		}
+		List<List<String>> structureGroups = splitIntoListOfLists(structures);
 
 		Collection<Callable<Response>> tasks = new ArrayList<>();
 		// Create the tasks and include an id for the task
