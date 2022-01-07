@@ -144,7 +144,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		
         // Return hashmap with the String key from the input hashmap and the fingerprint BitSet
 		HashMap<String, BitSet> fingerprints = new HashMap<String, BitSet>();
-	    int s = 0;
+		int s = 0;
 		for(String responseId : responseIds) {			
 			logger.debug("Response ID: " + responseId);
 			// Combine the json nodes
@@ -304,7 +304,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		JsonNode standardizerActions = jsonNode.get("standardizer_actions");
 		requestData.put("config", standardizerActions);
 		requestData.put("output_format", "MOL");
-		
+
 		// Split the list of structures into chunks of propertiesUtilService.getExternalStructureProcessingBatchSize()
 		List<HashMap<String, String>> structureGroups = new ArrayList<HashMap<String, String>>();
 		HashMap<String, String> structureGroup = new HashMap<String, String>();
