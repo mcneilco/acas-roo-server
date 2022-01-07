@@ -57,36 +57,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 	</scm>
 	<repositories>
 		<repository>
-			<id>spring-maven-release</id>
-			<name>Spring Maven Release Repository</name>
-			<url>https://maven.springframework.org/release</url>
+			<id>spring-release</id>
+			<name>Spring Release</name>
+			<url>https://repo.spring.io/release</url>
 		</repository>
-		<repository>
-			<id>spring-maven-milestone</id>
-			<name>Spring Maven Milestone Repository</name>
-			<url>https://maven.springframework.org/milestone</url>
-		</repository>
-		<repository>
-			<id>spring-roo-repository</id>
-			<name>Spring Roo Repository</name>
-			<url>https://spring-roo-repository.springsource.org/release</url>
-		</repository>
+
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>spring-maven-release</id>
-			<name>Spring Maven Release Repository</name>
-			<url>https://maven.springframework.org/release</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-maven-milestone</id>
-			<name>Spring Maven Milestone Repository</name>
-			<url>https://maven.springframework.org/milestone</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-roo-repository</id>
-			<name>Spring Roo Repository</name>
-			<url>https://spring-roo-repository.springsource.org/release</url>
+			<id>spring-release</id>
+			<name>Spring Release</name>
+			<url>https://repo.spring.io/release</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<!-- Maven Build profile controls whether to use JChem or Indigo -->
