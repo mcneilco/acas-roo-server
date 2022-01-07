@@ -100,17 +100,17 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			// Post to the service and parse the response
 			String requestString = requestData.toString();
 			logger.debug("requestString: " + requestString);
-			tasks.add(new Request(String.valueOf(i), url, requestString));
+			tasks.add(new Request(i, url, requestString));
 		}
 		
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		logger.info("Invoking " + tasks.size() + " fingerprint tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
-		HashMap<String, JsonNode> responseMap = new HashMap<String, JsonNode>();
+		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for(Future<Response> response : results){
 			String responseBody;
 			int responseCode;
-			String responseId;
+			Integer responseId;
 			try {
 				responseBody = response.get().getResponseBody();
 				responseCode = response.get().getResponseCode();
@@ -139,13 +139,14 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
         // The output array is guaranteed to be in the same order as its inputs
 		// Sort the response hashmap by the keys
-		List<String> responseIds = new ArrayList<String>(responseMap.keySet());
+		List<Integer> responseIds = new ArrayList<Integer>(responseMap.keySet());
 		Collections.sort(responseIds);
 		
         // Return hashmap with the String key from the input hashmap and the fingerprint BitSet
 		HashMap<String, BitSet> fingerprints = new HashMap<String, BitSet>();
+		Object[] structuresArray = structures.keySet().toArray();
 		int s = 0;
-		for(String responseId : responseIds) {			
+		for(Integer responseId : responseIds) {			
 			logger.debug("Response ID: " + responseId);
 			// Combine the json nodes
 			JsonNode responseNode = responseMap.get(responseId);
@@ -233,17 +234,17 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			// Post to the service and parse the response
 			String requestString = requestData.toString();
 			logger.debug("requestString: " + requestString);
-			tasks.add(new Request(String.valueOf(i), url, requestString));
+			tasks.add(new Request(i, url, requestString));
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		logger.info("Invoking " + tasks.size() + " process tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
-		HashMap<String, JsonNode> responseMap = new HashMap<String, JsonNode>();
+		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for(Future<Response> response : results){
 			String responseBody;
 			int responseCode;
-			String responseId;
+			int responseId;
 			try {
 				responseBody = response.get().getResponseBody();
 				responseCode = response.get().getResponseCode();
@@ -266,11 +267,11 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		logger.info("Got response for all " + tasks.size() + " process tasks");
 
 		// Sort the response hashmap by the keys
-		List<String> responseIds = new ArrayList<String>(responseMap.keySet());
+		List<Integer> responseIds = new ArrayList<Integer>(responseMap.keySet());
 		Collections.sort(responseIds);
 		//Empty json node array
 		ArrayNode responseArray = mapper.createArrayNode();
-		for(String responseId : responseIds) {
+		for(Integer responseId : responseIds) {
 			logger.debug("Response ID: " + responseId);
 			// Combine the json nodes
 			JsonNode responseNode = responseMap.get(responseId);
@@ -335,17 +336,17 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			// Post to the service and parse the response
 			String requestString = requestData.toString();
 			logger.debug("requestString: " + requestString);
-			tasks.add(new Request(String.valueOf(i), url, requestString));
+			tasks.add(new Request(i, url, requestString));
 		}
 
 		ForkJoinPool pool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
 		logger.info("Invoking " + tasks.size() + " preprocess tasks");
 		List<Future<Response>> results = pool.invokeAll(tasks);
-		HashMap<String, JsonNode> responseMap = new HashMap<String, JsonNode>();
+		HashMap<Integer, JsonNode> responseMap = new HashMap<Integer, JsonNode>();
 		for(Future<Response> response : results){
 			String responseBody;
 			int responseCode;
-			String responseId;
+			Integer responseId;
 			try {
 				responseBody = response.get().getResponseBody();
 				responseCode = response.get().getResponseCode();
@@ -368,11 +369,11 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		logger.info("Got response for all " + tasks.size() + " preprocess tasks");
 
 		// Sort the response hashmap by the keys
-		List<String> responseIds = new ArrayList<String>(responseMap.keySet());
+		List<Integer> responseIds = new ArrayList<Integer>(responseMap.keySet());
 		Collections.sort(responseIds);
 		//Empty hashmap
 		HashMap<String, String> standardizedStructures = new HashMap<String, String>();
-		for(String responseId : responseIds) {
+		for(Integer responseId : responseIds) {
 			logger.debug("Response ID: " + responseId);
 			// Combine the json nodes
 			JsonNode responseNode = responseMap.get(responseId);
