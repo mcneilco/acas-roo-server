@@ -1,4 +1,6 @@
-package com.labsynch.labseer.domain;
+package com.labsynch.labseer.chemclasses.bbchem;
+
+import com.labsynch.labseer.domain.AbstractBBChemStructure;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;

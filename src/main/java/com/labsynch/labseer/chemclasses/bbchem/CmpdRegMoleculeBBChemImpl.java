@@ -3,7 +3,6 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.IOException;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
-import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.SimpleUtil;
 

@@ -1,4 +1,4 @@
-package com.labsynch.labseer.domain;
+package com.labsynch.labseer.chemclasses.bbchem;
 
 import java.util.BitSet;
 import java.util.List;
@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.utils.SimpleUtil;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;

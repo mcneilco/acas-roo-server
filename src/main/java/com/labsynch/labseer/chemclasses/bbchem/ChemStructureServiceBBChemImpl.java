@@ -14,10 +14,6 @@ import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
-import com.labsynch.labseer.domain.BBChemDryRunStructure;
-import com.labsynch.labseer.domain.BBChemSaltFormStructure;
-import com.labsynch.labseer.domain.BBChemSaltStructure;
-import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;

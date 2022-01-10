@@ -19,7 +19,6 @@ import java.util.Collections;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
-import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;

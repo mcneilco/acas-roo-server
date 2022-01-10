@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
-import com.labsynch.labseer.domain.BBChemParentStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
 import org.codehaus.jackson.JsonNode;
