@@ -1752,6 +1752,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 
 
 	@Override
+	@Transactional
 	public HashMap<String, CmpdRegMolecule> getCmpdRegMolecules(HashMap<String, Integer> keyIdToStructureId,
 			StructureType structureType)  throws CmpdRegMolFormatException {
 		
