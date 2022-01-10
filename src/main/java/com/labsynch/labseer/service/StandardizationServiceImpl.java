@@ -262,14 +262,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				stndznCompound.setStereoComment(parent.getStereoComment());
 				stndznCompound.setOldMolWeight(parent.getMolWeight());
 
-				asDrawnStruct = parent.getMolStructure();
+				asDrawnStruct = Lot.getOriginallyDrawnAsStructure(parent);
 
-				queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
-				if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null) {
-					asDrawnStruct = queryLots.get(0).getAsDrawnStruct();
-				} else {
-					asDrawnStruct = parent.getMolStructure();
-				}
 
 				CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());
 				stndznCompound.setMolStructure(cmpdRegMolecule.getMolStructure());
@@ -644,12 +638,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			for(Long parentId : pIdGroup) {
 
 				parent = parents.get(parentId);
-				originalStructure = parent.getMolStructure();
 
-				List<Lot> queryLots = Lot.findLotByParentAndLowestLotNumber(parent).getResultList();
-				if (queryLots.size() > 0 && queryLots.get(0).getAsDrawnStruct() != null) {
-					originalStructure = queryLots.get(0).getAsDrawnStruct();
-				}
+				originalStructure = Lot.getOriginallyDrawnAsStructure(parent);
 
 				// We standardize the structure first
 				CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());

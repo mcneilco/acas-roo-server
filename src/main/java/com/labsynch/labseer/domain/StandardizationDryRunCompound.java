@@ -92,7 +92,7 @@ public class StandardizationDryRunCompound {
 	}
 
 	public static int getStandardizationChangesCount() {
-		return toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s", Long.class).getSingleResult());
+		return toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE changedStructure = true OR existingDuplicateCount > 0 OR newDuplicateCount > 0 OR displayChange = true", Long.class).getSingleResult());
 	}
 
 	public static TypedQuery<Long> findParentsWithDisplayChanges() {

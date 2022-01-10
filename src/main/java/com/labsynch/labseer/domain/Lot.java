@@ -471,6 +471,24 @@ public class Lot {
         q.setParameter("ignore", false);
         return q;
     }
+
+    public static String getOriginallyDrawnAsStructure(Parent parent) {
+        if (parent == null) throw new IllegalArgumentException("The parent argument is required");
+        String parentStructure = parent.getMolStructure();
+        EntityManager em = Lot.entityManager();
+        TypedQuery<String> q = em.createQuery("SELECT o.asDrawnStruct FROM Lot AS o WHERE o.saltForm.parent = :parent AND (o.ignore IS NULL OR o.ignore IS :ignore) AND o.lotNumber = (select min(l.lotNumber) FROM Lot AS l WHERE l.saltForm.parent = :parent AND (l.ignore IS NULL OR l.ignore IS :ignore ))", String.class);
+        q.setParameter("parent", parent);
+        q.setParameter("ignore", false);
+        
+        // Get string result from typed query
+        String lotAsDrawnStrucucture = q.getSingleResult();
+        if (lotAsDrawnStrucucture == null) {
+            return parentStructure;
+        } else {
+            return lotAsDrawnStrucucture;
+        }
+    }
+
     public static TypedQuery<Lot> findLotsBySaltForm(SaltForm saltForm) {
         if (saltForm == null) throw new IllegalArgumentException("The saltForm argument is required");
         EntityManager em = Lot.entityManager();
