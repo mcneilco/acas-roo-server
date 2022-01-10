@@ -1372,7 +1372,7 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 		if (structureType == StructureType.PARENT){
 			plainTable = "PARENT_STRUCTURE";
 		} else if (structureType == StructureType.SALT_FORM){
-			plainTable = "SALT_FORM_STRUCTURE";
+			plainTable = "SALTFORM_STRUCTURE";
 		} else if (structureType == StructureType.SALT){
 			plainTable = "SALT_STRUCTURE";
 		} else if (structureType == StructureType.DRY_RUN){
@@ -1577,9 +1577,27 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				uh2.setStructure(MolExporter.exportToFormat(mol, "mol"));
 				uh2.setEmptyStructuresAllowed(true);
 				uh2.setID(cdId);
+
+				// This does not throw and error if the structure id does not exist
 				uh2.execute(true);
 				uh2.saveUpdateLogs(); 
-				updatedStructure = true;
+
+				// Hashmap to fetch structure id
+				// Verify that the structure exists
+
+				HashMap<String, Integer> structureIdMap = new HashMap<String, Integer>();
+				structureIdMap.put("structureId", cdId);
+				try{
+					HashMap<String, CmpdRegMolecule> cmpdRegMolecule = getCmpdRegMolecules(structureIdMap, structureType);
+					// Verify that the structure exists
+					if (cmpdRegMolecule.size() > 0){
+						updatedStructure = true;
+					} else {
+						updatedStructure = false;
+					}
+				} catch (Exception e){
+					logger.error("Error in retrieving structure id: " + e.getMessage());
+				}
 			} else {
 				if (logger.isDebugEnabled()) logger.debug("offending molformat:  " + MolExporter.exportToFormat(mol, "mol"));
 				updatedStructure = false;
