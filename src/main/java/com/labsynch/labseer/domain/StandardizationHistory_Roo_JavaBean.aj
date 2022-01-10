@@ -160,4 +160,12 @@ privileged aspect StandardizationHistory_Roo_JavaBean {
         this.changedStructureCount = changedStructureCount;
     }
     
+    public Integer StandardizationHistory.getDryRunStandardizationChangesCount() {
+        return this.dryRunStandardizationChangesCount;
+    }
+    
+    public void StandardizationHistory.setDryRunStandardizationChangesCount(Integer dryRunStandardizationChangesCount) {
+        this.dryRunStandardizationChangesCount = dryRunStandardizationChangesCount;
+    }
+    
 }

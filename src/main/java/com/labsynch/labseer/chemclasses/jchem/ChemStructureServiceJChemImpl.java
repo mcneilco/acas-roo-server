@@ -496,8 +496,9 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			if (searchType == SearchType.SUBSTRUCTURE){
 				searchOptions.setFilterQuery("select cd_id from "+ structureType.entityTable + " where id > 0");				
 			}
-
-			searchOptions.setMaxResultCount(maxResultCount);
+			if(maxResultCount > -1) {
+				searchOptions.setMaxResultCount(maxResultCount);
+			}
 			searcher.setOrder(JChemSearch.ORDERING_BY_ID_OR_SIMILARITY);
 			searcher.setSearchOptions(searchOptions);
 			searcher.setRunMode(JChemSearch.RUN_MODE_SYNCH_COMPLETE);
@@ -1744,13 +1745,21 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 			c++;
 		}
 
+		Connection conn = DataSourceUtils.getConnection(basicJdbcTemplate.getDataSource());	
+		ConnectionHandler ch = new ConnectionHandler();
+		ch.setConnection(conn);
+		CacheRegistrationUtil cru = null;
+		
 		// Search for cdids and fetch cooresponding molecules
 		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
 		JChemSearch searcher = new JChemSearch();
 		String structureTable = getJchemStructureTableFromStructureType(structureType);
 		searcher.setStructureTable(structureTable);
 		searcher.setFilterIDList(cdIds);
+		searcher.setConnectionHandler(ch);
+		
 		try {
+
 			searcher.run();
 			int[] hitList = searcher.getResults();
 			HitColoringAndAlignmentOptions hitColorOptions = null;
@@ -1767,9 +1776,19 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 				molecules[i].setProperty("cd_id", Integer.toString(hitList[i]));
 				result.put(keys[i], new CmpdRegMoleculeJChemImpl(molecules[i]));
 			}
+
 			return result;
 		} catch (SQLException | IOException | SearchException | SupergraphException | DatabaseSearchException e) {
 			throw new CmpdRegMolFormatException(e);
+		} finally {
+			if (this.shouldCloseConnection) {
+				try {
+					ch.close();
+					conn.close();
+				} catch (SQLException e) {
+					logger.error("Got error trying to close connection", e);
+				}
+			}
 		}
 	}
 

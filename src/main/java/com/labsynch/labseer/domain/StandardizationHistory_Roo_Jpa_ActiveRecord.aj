@@ -14,7 +14,7 @@ privileged aspect StandardizationHistory_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager StandardizationHistory.entityManager;
     
-    public static final List<String> StandardizationHistory.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "recordedDate", "settings", "settingsHash", "dryRunStatus", "dryRunStart", "dryRunComplete", "standardizationStatus", "standardizationUser", "standardizationReason", "standardizationStart", "standardizationComplete", "structuresStandardizedCount", "structuresUpdatedCount", "newDuplicateCount", "existingDuplicateCount", "displayChangeCount", "asDrawnDisplayChangeCount", "changedStructureCount");
+    public static final List<String> StandardizationHistory.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "recordedDate", "settings", "settingsHash", "dryRunStatus", "dryRunStart", "dryRunComplete", "standardizationStatus", "standardizationUser", "standardizationReason", "standardizationStart", "standardizationComplete", "structuresStandardizedCount", "structuresUpdatedCount", "newDuplicateCount", "existingDuplicateCount", "displayChangeCount", "asDrawnDisplayChangeCount", "changedStructureCount", "dryRunStandardizationChangesCount");
     
     public static final EntityManager StandardizationHistory.entityManager() {
         EntityManager em = new StandardizationHistory().entityManager;

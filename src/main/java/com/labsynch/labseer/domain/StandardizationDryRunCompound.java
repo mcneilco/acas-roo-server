@@ -91,6 +91,10 @@ public class StandardizationDryRunCompound {
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class);
 	}
 
+	public static int getStandardizationChangesCount() {
+		return toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s", Long.class).getSingleResult());
+	}
+
 	public static TypedQuery<Long> findParentsWithDisplayChanges() {
 		String querySQL = "SELECT o.parentId FROM StandardizationDryRunCompound o WHERE displayChange = true";
 		return StandardizationDryRunCompound.entityManager().createQuery(querySQL, Long.class);

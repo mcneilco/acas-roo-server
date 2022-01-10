@@ -61,6 +61,8 @@ public class StandardizationHistory {
 
 	private Integer changedStructureCount;
 
+	private Integer dryRunStandardizationChangesCount;
+
 	public StandardizationHistory() {
 	}
 
