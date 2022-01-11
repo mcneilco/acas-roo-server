@@ -2,6 +2,7 @@ package com.labsynch.labseer.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -267,7 +268,9 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 				CmpdRegMolecule cmpdRegMolecule = standardizationResults.get(parentId.toString());
 				stndznCompound.setMolStructure(cmpdRegMolecule.getMolStructure());
-				stndznCompound.setNewMolWeight(cmpdRegMolecule.getMass());
+
+				DecimalFormat dMolWeight = new DecimalFormat("#.###"); 
+				stndznCompound.setNewMolWeight(Double.valueOf(dMolWeight.format(cmpdRegMolecule.getMass())));
 	
 				if (parent.getMolWeight() == 0 && stndznCompound.getNewMolWeight() == 0) {
 					logger.debug("mol weight 0 before and after standardization - skipping");
