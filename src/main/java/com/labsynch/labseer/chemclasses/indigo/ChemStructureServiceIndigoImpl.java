@@ -736,5 +736,11 @@ public class ChemStructureServiceIndigoImpl implements ChemStructureService {
 			SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 		return searchMolStructures(cmpdRegMolecule.getMolStructure(), structureType, searchType, simlarityPercent, maxResults);
 	}
+
+	@Override
+	public void fillMissingStructures() throws CmpdRegMolFormatException {
+		// Not currently implemented for indigo as there is no use case currently to switch to indigo from another chemistry engine
+		
+	}
 }
 

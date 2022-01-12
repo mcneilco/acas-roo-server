@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
 
 import javax.persistence.EntityManager;
@@ -40,6 +42,7 @@ import com.labsynch.labseer.domain.LsThingValue;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -529,4 +532,32 @@ public class SimpleUtil {
 			return DbType.UNKNOWN;
 		}
 	}
+
+	public static List<List<Long>> splitArrayIntoGroups(List<Long> array, int groupSize) {
+		// Split array into groups of groupSize
+		List<List<Long>> groups = new ArrayList<List<Long>>();
+		List<Long> group = new ArrayList<Long>();
+		int loopCount = 1;
+		for (Long l : array) {
+			group.add(l);
+			// Check to see if we are at the end of the group or if we are at the end of the array
+			// if so, then add the group to the list of groups and start a new group
+			if (group.size() == groupSize || loopCount == array.size()) {
+				groups.add(group);
+				group = new ArrayList<Long>();
+			}
+			loopCount ++;
+		}
+		return groups;
+	}
+
+
+	public static List<List<Long>> splitIntArrayIntoGroups(List<BigInteger> missingIds, int groupSize) {
+		List<Long> longs = missingIds.stream()
+        	.mapToLong(BigInteger::longValue)
+        	.boxed().collect(Collectors.toList());
+
+		return splitArrayIntoGroups(longs, groupSize);
+	}
+
 }

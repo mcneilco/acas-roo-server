@@ -41,6 +41,7 @@ import com.labsynch.labseer.exceptions.StructureSaveException;
 import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.SimpleUtil;
 
 @Service
 public class StandardizationServiceImpl implements StandardizationService, ApplicationListener<ContextRefreshedEvent> {
@@ -82,6 +83,13 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		if (context.getDisplayName().equals("Root WebApplicationContext")) {
 			// this is the root context so wait for the web application context to be initialized
 			return;
+		}
+
+		logger.info("Checking for structures missing from chemistry engine tables");
+		try {
+			chemStructureService.fillMissingStructures();
+		} catch (Exception e) {
+			logger.error("Error in trying to fill missing structures", e);
 		}
 
 		logger.info("Checking compound standardization state");
@@ -213,7 +221,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		previousPercent = percent;
 
 		// Split parent ids into groups of batchSize
-		List<List<Long>> parentIdGroups = splitArrayIntoGroups(parentIds, batchSize);
+		List<List<Long>> parentIdGroups = SimpleUtil.splitArrayIntoGroups(parentIds, batchSize);
 
 		// Do a bulk standardization
 		for (List<Long> pIdGroup : parentIdGroups) {
@@ -573,24 +581,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return success;
 	}
 
-	List<List<Long>> splitArrayIntoGroups(List<Long> array, int groupSize) {
-		// Split array into groups of groupSize
-		List<List<Long>> groups = new ArrayList<List<Long>>();
-		List<Long> group = new ArrayList<Long>();
-		int loopCount = 1;
-		for (Long l : array) {
-			group.add(l);
-			// Check to see if we are at the end of the group or if we are at the end of the array
-			// if so, then add the group to the list of groups and start a new group
-			if (group.size() == groupSize || loopCount == array.size()) {
-				groups.add(group);
-				group = new ArrayList<Long>();
-			}
-			loopCount ++;
-		}
-		return groups;
-	}
-
 	@Override
 	public int restandardizeParentStructures(List<Long> parentIds)
 			throws CmpdRegMolFormatException, StandardizerException, IOException {
@@ -612,7 +602,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		Long startTime = new Date().getTime();
 		Long currentTime = new Date().getTime();
 		
-		List<List<Long>> parentIdGroups = splitArrayIntoGroups(parentIds, batchSize);
+		List<List<Long>> parentIdGroups = SimpleUtil.splitArrayIntoGroups(parentIds, batchSize);
 
 
 		// Do a bulk standardization

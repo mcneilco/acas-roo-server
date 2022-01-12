@@ -1,6 +1,7 @@
 package com.labsynch.labseer.chemclasses.bbchem;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
+import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.MolConvertOutputDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
@@ -40,6 +42,8 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import java.util.UUID;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import static java.lang.Math.toIntExact;
@@ -757,6 +761,76 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		}
 		return hits;
 	}
+
+	@Override
+	public void fillMissingStructures() throws CmpdRegMolFormatException {
+
+		// Parents
+		EntityManager em = BBChemParentStructure.entityManager();
+		Query q = em.createNativeQuery("SELECT p.id FROM Parent p LEFT JOIN "+getBBChemStructureTableNameFromStructureType(StructureType.PARENT) + " b on p.cd_id=b.id where b.id is null");
+		List<BigInteger> missingIds = q.getResultList();
+		if(missingIds.size() > 0) {
+			logger.warn("Found " + missingIds.size() + " parent ids missing structure representations");
+		} else {
+			logger.info("No parent ids missing structure representations");
+			return;
+		}
+
+		int batchSize = propertiesUtilService.getStandardizationBatchSize();
+
+		List<List<Long>> groups = SimpleUtil.splitIntArrayIntoGroups(missingIds, batchSize);
+		Boolean checkForDupes = false;
+		Long startTime = new Date().getTime();
+		Long currentTime = new Date().getTime();
+		int totalCount = missingIds.size();
+		float percent = 0;
+		int p = 0;
+		float previousPercent = percent;
+		for(List<Long> group : groups) {
+			logger.info("Started fetching " + group.size() + " parent molstructures to save");
+			HashMap<String, String> structureIdParentMolStructureMap = new HashMap<String, String>();
+			List<Parent> parents = em.createQuery("SELECT p FROM Parent p where id in (:ids)", Parent.class)
+				.setParameter("ids", group)
+				.getResultList();
+			for(Parent parent : parents) {
+				structureIdParentMolStructureMap.put(String.valueOf(parent.getCdId()), parent.getMolStructure());
+			}
+			logger.info("Finished fetching " + group.size() + " parent molstructures to save");
+			logger.info("Started processing " + structureIdParentMolStructureMap.size() + " parent structures");
+			HashMap<String, BBChemParentStructure> processedStructures = bbChemStructureService.getProcessedStructures(structureIdParentMolStructureMap, true);
+			logger.info("Finished processing " + structureIdParentMolStructureMap.size() + " parent structures");
+			logger.info("Started saving " + processedStructures.size() + " parent structures");
+			// Loop through parents
+			for(Parent parent : parents) {
+				String originalCdId = String.valueOf(parent.getCdId());
+				BBChemParentStructure processedParentStructure = processedStructures.get(originalCdId);
+				int savedCdId = saveStructure(processedParentStructure, StructureType.PARENT, checkForDupes);
+				parent.setCdId(savedCdId);
+				parent.persist();
+				logger.info("CdId for parent corp name " + parent.getCorpName() + " changed from " + originalCdId + " to " + savedCdId);
+				p++;
+			}
+
+			logger.info("Finished saving " + processedStructures.size() + " parent structures");
+
+			// Compute your percentage.
+			percent = (float) Math.floor(p * 100f / totalCount);
+			if (percent != previousPercent) {
+				currentTime = new Date().getTime();
+				// Output if different from the last time.
+				logger.info("filling parent structure representations " + percent + "% complete (" + p + " of "
+				+ totalCount + ") average speed (rows/min):"+ (p/((currentTime - startTime) / 60.0 / 1000.0)));
+				currentTime = new Date().getTime();
+				logger.debug("Time Elapsed:"+ (currentTime - startTime));
+			}
+			// Update the percentage.
+			previousPercent = percent;
+		}
+		
+
+	}
+
+	
 	
 
 }

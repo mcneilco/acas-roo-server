@@ -1815,6 +1815,12 @@ public class ChemStructureServiceJChemImpl implements ChemStructureService {
 	public int[] searchMolStructures(CmpdRegMolecule cmpdRegMolecule, StructureType structureType, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException {
 		return searchMolStructures(cmpdRegMolecule.getMolStructure(), structureType, searchType, simlarityPercent, maxResults);
 	}
+
+	@Override
+	public void fillMissingStructures() throws CmpdRegMolFormatException {
+		// Not currently implemented for jchem as there is no use case currently to switch to jchem from another chemistry engine
+		
+	}
 	
 
 }
