@@ -132,4 +132,6 @@ public interface ChemStructureService {
 
 	public int[] searchMolStructures(CmpdRegMolecule cmpdRegMolecule, StructureType structureType, SearchType searchType, Float simlarityPercent, int maxResults) throws CmpdRegMolFormatException;
 
+	public void fillMissingStructures() throws CmpdRegMolFormatException;
+
 }
