@@ -19,7 +19,7 @@ CREATE INDEX bbchem_parent_structure_reg_idx ON bbchem_parent_structure(reg);
 CREATE TABLE bbchem_salt_structure (
     id bigint NOT NULL,
     mol text NOT NULL,
-    substructure BIT(300) NOT NULL,
+    substructure BIT(2048) NOT NULL,
     similarity BIT(1024) NOT NULL,
     pre_reg character(40) NOT NULL,
     recorded_date timestamp without time zone NOT NULL,
