@@ -187,10 +187,10 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		}
 		requestData.put("molv3", mol);
 		requestData.put("format", imageFormat);
-		ObjectNode options = mapper.createObjectNode();
-		options.put("width", wSize);
-		options.put("height", hSize);
-		requestData.put("options", options);
+		ObjectNode draw_options = mapper.createObjectNode();
+		draw_options.put("width", wSize);
+		draw_options.put("height", hSize);
+		requestData.put("draw_options", draw_options);
 		String request = requestData.toString();
 		logger.info("Image request" + request);
 
