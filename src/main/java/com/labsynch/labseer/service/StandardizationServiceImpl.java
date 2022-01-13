@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
@@ -581,6 +583,16 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return success;
 	}
 
+	@Transactional
+	public int restandardizeLots(List<Long> parentIds) {
+		EntityManager em = Parent.entityManager();
+		String updateLotSql = "UPDATE lot SET lot_mol_weight = parent.mol_weight + salt_form.salt_weight, version = lot.version+1, modified_date = :modifiedDate FROM parent, salt_form WHERE parent.id = salt_form.parent and salt_form.id = lot.salt_form and parent.id in (:parentIds)";
+		Query updateLotQuery = em.createNativeQuery(updateLotSql);
+		updateLotQuery.setParameter("parentIds", parentIds);
+		updateLotQuery.setParameter("modifiedDate", new Date());
+		return updateLotQuery.executeUpdate();
+	}
+
 	@Override
 	public int restandardizeParentStructures(List<Long> parentIds)
 			throws CmpdRegMolFormatException, StandardizerException, IOException {
@@ -619,7 +631,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			}
 
 			// Do standardization
-			logger.debug("Starting standardization of " + parentIdsToParents.size() + " compounds");
+			logger.info("Starting standardization of " + parentIdsToParents.size() + " compounds");
 			// Start timer
 			long standardizationStart = new Date().getTime();
 			HashMap<String, CmpdRegMolecule> standardizationResults = chemStructureService.standardizeStructures(parentIdsToParents);
@@ -628,6 +640,8 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			long standardizationTime = (standardizationEnd - standardizationStart) / 1000;
 			logger.info("Standardization took " + standardizationTime + " seconds");
 
+			logger.info("Starting save of " + pIdGroup.size() + " parents");
+			long savingStart = new Date().getTime();
 			for(Long parentId : pIdGroup) {
 
 				parent = parents.get(parentId);
@@ -651,12 +665,30 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					logger.info("Updated parent with new cdId: " + newCdId);
 				}
 
-				// Save the standardized structure and possibly the new cdid to the parent
+				// Update the mol structure
 				parent.setMolStructure(standardizedMol);
+
+				// Update other properties
+				DecimalFormat dExactMass = new DecimalFormat("#.######");
+				parent.setExactMass(Double.valueOf(dExactMass.format(cmpdRegMolecule.getExactMass())));
+				DecimalFormat dMolWeight = new DecimalFormat("#.###"); 
+				parent.setMolWeight(Double.valueOf(dMolWeight.format(cmpdRegMolecule.getMass())));
+				parent.setMolFormula(cmpdRegMolecule.getFormula());
+
 				parent.merge();
+
+
 				p++;
 
 			}
+			// Update lot information, this is much faster than looping through the salt_forms and lots using hibernate
+			int countLotsUpdated = restandardizeLots(pIdGroup);
+			logger.info("Updated " + countLotsUpdated + " lots");
+
+			long savingEnd = new Date().getTime();
+			// Convert the ms time to seconds
+			long savingTime = (savingEnd - savingStart) / 1000;
+			logger.info("Saving took " + savingTime + " seconds");
 
 			logger.debug("flushing loader session");
 			session.flush();
