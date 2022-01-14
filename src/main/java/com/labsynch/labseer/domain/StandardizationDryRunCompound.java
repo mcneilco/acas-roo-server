@@ -14,6 +14,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 
 @RooJavaBean
@@ -113,6 +114,10 @@ public class StandardizationDryRunCompound {
 
 		return(stats);
 	}
+
+	public static TypedQuery<StandardizationDryRunCompound> searchStandardiationDryRun(StandardizationDryRunSearchDTO dryRunSearch) {
+		return findStandardizationChanges();
+	} 
 
 	public static StandardizationHistory addStatsToHistory(StandardizationHistory standardizationHistory) {
 		standardizationHistory.setStructuresStandardizedCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s", Long.class).getSingleResult()));
