@@ -1,11 +1,5 @@
 package com.labsynch.labseer.dto;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -17,12 +11,50 @@ import org.springframework.roo.addon.tostring.RooToString;
 
 public class StandardizationDryRunSearchDTO {
 
-    class NumericWithOperator {
-        Double numeric;
+    public static class NumericWithOperator {
+        Double value;
         String operator;
+
+        public NumericWithOperator() {
+
+        }
+        public NumericWithOperator(Double value, String operator) {
+            this.value = value;
+            this.operator = operator;
+        }
+
+        public Double getValue() {
+            return value;
+        }
+
+        public void setValue(Double value) {
+            this.value = value;
+        }
+
+        public String getOperator() {
+            return operator;
+        }
+
+        public void setOperator(String operator) {
+            this.operator = operator;
+        }
+
     }
     
-    private NumericWithOperator deltaMolWeight;
-    
+    private NumericWithOperator oldMolWeight;
+
+    private NumericWithOperator newMolWeight;
+
+    private String[] corpNames;
+
+    private Boolean hasNewDuplicates;
+
+    private Boolean hasExistingDuplicates;
+
+    private Boolean asDrawnDisplayChange;
+
+    private Boolean changedStructure;
+
+    private Boolean displayChange;
 
 }

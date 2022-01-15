@@ -1,9 +1,16 @@
 package com.labsynch.labseer.domain;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.EntityManager;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import static java.lang.Math.toIntExact;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +48,8 @@ public class StandardizationDryRunCompound {
 	private Double oldMolWeight;
 
 	private Double newMolWeight;
+
+	private Double deltaMolWeight;
 
 	private boolean displayChange;
 
@@ -115,8 +124,97 @@ public class StandardizationDryRunCompound {
 		return(stats);
 	}
 
+	public static List<Predicate> buildPredicateFromNumericValue(CriteriaBuilder cb, Root<StandardizationDryRunCompound> root, List<Predicate> predicates, String fieldName, Double value, String operator) {
+		Predicate predicate = null;
+		if (operator == null || operator.equals("=")) {
+			predicate = cb.equal(root.get(fieldName), value);
+		} else if (operator.equals(">")) {
+			predicate = cb.greaterThan(root.get(fieldName), value);
+		} else if (operator.equals("<")) {
+			predicate = cb.lessThan(root.get(fieldName), value);
+		}
+		if(predicate != null) {
+			predicates.add(predicate);
+		}
+		return predicates;
+	}
+
 	public static TypedQuery<StandardizationDryRunCompound> searchStandardiationDryRun(StandardizationDryRunSearchDTO dryRunSearch) {
-		return findStandardizationChanges();
+        EntityManager em = StandardizationDryRunCompound.entityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<StandardizationDryRunCompound> criteria = criteriaBuilder.createQuery(StandardizationDryRunCompound.class);
+        Root<StandardizationDryRunCompound> root = criteria.from(StandardizationDryRunCompound.class);
+        criteria.select(root);
+
+		// Predicate List
+		List<Predicate> predicates = new ArrayList<Predicate>();
+
+		// New mol weight
+		if (dryRunSearch.getNewMolWeight() != null) {
+			predicates = buildPredicateFromNumericValue(criteriaBuilder, root, predicates, "newMolWeight", dryRunSearch.getNewMolWeight().getValue(), dryRunSearch.getNewMolWeight().getOperator());
+		}
+
+		// Delta mol weight
+		// if (dryRunSearch.getDeltaMolWeight() != null) {
+		// 	predicates = buildPredicateFromNumericValue(criteriaBuilder, root, predicates, "deltaMolWeight", dryRunSearch.getDeltaMolWeight().getValue(), dryRunSearch.getDeltaMolWeight().getOperator());
+		// }
+
+		// Old mol weight
+		if (dryRunSearch.getOldMolWeight() != null) {
+			predicates = buildPredicateFromNumericValue(criteriaBuilder, root, predicates, "oldMolWeight", dryRunSearch.getOldMolWeight().getValue(), dryRunSearch.getOldMolWeight().getOperator());
+		}
+
+		// Corp name in list
+		if (dryRunSearch.getCorpNames() != null && dryRunSearch.getCorpNames().length > 0) {
+			predicates.add(root.get("corpName").in(dryRunSearch.getCorpNames()));
+		}
+
+		// Existing duplicate
+		if (dryRunSearch.getHasExistingDuplicates() != null) {
+			if(dryRunSearch.getHasExistingDuplicates()) {
+				predicates.add(root.get("existingDuplicates").isNotNull());
+			} else {
+				predicates.add(root.get("existingDuplicates").isNull());
+			}
+		}
+
+		// New duplicates
+		if (dryRunSearch.getHasNewDuplicates() != null) {
+			if(dryRunSearch.getHasNewDuplicates()) {
+				predicates.add(root.get("newDuplicates").isNotNull());
+			} else {
+				predicates.add(root.get("newDuplicates").isNull());
+			}
+
+		}
+
+		// Boolean searches
+		// Changed structure
+		if (dryRunSearch.getChangedStructure() != null) {
+			predicates.add(criteriaBuilder.equal(root.get("changedStructure"), dryRunSearch.getChangedStructure()));
+		}
+
+		// Display change
+		if (dryRunSearch.getDisplayChange() != null) {
+			predicates.add(criteriaBuilder.equal(root.get("displayChange"), dryRunSearch.getDisplayChange()));
+		}
+
+		// As drawn display change
+		if (dryRunSearch.getAsDrawnDisplayChange() != null) {
+			predicates.add(criteriaBuilder.equal(root.get("asDrawnDisplayChange"), dryRunSearch.getAsDrawnDisplayChange()));
+		}
+
+		if(predicates.size() > 0) {
+			Predicate[] predicatesToAdd = new Predicate[0];
+			predicatesToAdd = predicates.toArray(predicatesToAdd);
+			Predicate firstItxAndPredicates = criteriaBuilder.and(predicatesToAdd);
+			criteria.where(predicates.toArray(new Predicate[predicates.size()]));
+		}
+
+        criteria.orderBy(criteriaBuilder.desc(root.get("corpName")));
+        TypedQuery<StandardizationDryRunCompound> q = em.createQuery(criteria);		
+
+		return q;
 	} 
 
 	public static StandardizationHistory addStatsToHistory(StandardizationHistory standardizationHistory) {
