@@ -282,6 +282,11 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				DecimalFormat dMolWeight = new DecimalFormat("#.###"); 
 				stndznCompound.setNewMolWeight(Double.valueOf(dMolWeight.format(cmpdRegMolecule.getMass())));
 	
+				DecimalFormat deltaMolFormat = new DecimalFormat("#.###"); 
+
+				Double deltaMolWeight = stndznCompound.getOldMolWeight()-stndznCompound.getNewMolWeight();
+				stndznCompound.setDeltaMolWeight(Double.valueOf(deltaMolFormat.format(deltaMolWeight)));
+
 				if (parent.getMolWeight() == 0 && stndznCompound.getNewMolWeight() == 0) {
 					logger.debug("mol weight 0 before and after standardization - skipping");
 	
@@ -541,7 +546,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				cmpdRegMolecule.setProperty("Display Change", String.valueOf(stndznCompound.isDisplayChange()));
 				cmpdRegMolecule.setProperty("New Duplicates", stndznCompound.getNewDuplicates());
 				cmpdRegMolecule.setProperty("Existing Duplicates", stndznCompound.getExistingDuplicates());
-				cmpdRegMolecule.setProperty("Delta Mol. Weight", String.valueOf(stndznCompound.getOldMolWeight()-stndznCompound.getNewMolWeight()));
+				cmpdRegMolecule.setProperty("Delta Mol. Weight", String.valueOf(stndznCompound.getDeltaMolWeight()));
 				cmpdRegMolecule.setProperty("New Mol. Weight", String.valueOf(stndznCompound.getNewMolWeight()));
 				cmpdRegMolecule.setProperty("Old Mol. Weight",  String.valueOf(stndznCompound.getOldMolWeight()));
 				cmpdRegMolecule.setProperty("As Drawn Display Change", String.valueOf(stndznCompound.isAsDrawnDisplayChange()));
