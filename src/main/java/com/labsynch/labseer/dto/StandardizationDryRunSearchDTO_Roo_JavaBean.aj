@@ -23,6 +23,14 @@ privileged aspect StandardizationDryRunSearchDTO_Roo_JavaBean {
         this.newMolWeight = newMolWeight;
     }
     
+    public NumericWithOperator StandardizationDryRunSearchDTO.getDeltaMolWeight() {
+        return this.deltaMolWeight;
+    }
+    
+    public void StandardizationDryRunSearchDTO.setDeltaMolWeight(NumericWithOperator deltaMolWeight) {
+        this.deltaMolWeight = deltaMolWeight;
+    }
+    
     public String[] StandardizationDryRunSearchDTO.getCorpNames() {
         return this.corpNames;
     }

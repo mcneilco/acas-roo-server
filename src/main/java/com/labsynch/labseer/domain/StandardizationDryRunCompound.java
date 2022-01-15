@@ -155,9 +155,9 @@ public class StandardizationDryRunCompound {
 		}
 
 		// Delta mol weight
-		// if (dryRunSearch.getDeltaMolWeight() != null) {
-		// 	predicates = buildPredicateFromNumericValue(criteriaBuilder, root, predicates, "deltaMolWeight", dryRunSearch.getDeltaMolWeight().getValue(), dryRunSearch.getDeltaMolWeight().getOperator());
-		// }
+		if (dryRunSearch.getDeltaMolWeight() != null) {
+			predicates = buildPredicateFromNumericValue(criteriaBuilder, root, predicates, "deltaMolWeight", dryRunSearch.getDeltaMolWeight().getValue(), dryRunSearch.getDeltaMolWeight().getOperator());
+		}
 
 		// Old mol weight
 		if (dryRunSearch.getOldMolWeight() != null) {

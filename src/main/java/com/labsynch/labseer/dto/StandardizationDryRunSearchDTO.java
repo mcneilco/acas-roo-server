@@ -45,6 +45,8 @@ public class StandardizationDryRunSearchDTO {
 
     private NumericWithOperator newMolWeight;
 
+    private NumericWithOperator deltaMolWeight;
+
     private String[] corpNames;
 
     private Boolean hasNewDuplicates;
