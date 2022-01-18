@@ -49,6 +49,8 @@ public class StandardizationDryRunSearchDTO {
 
     private String[] corpNames;
 
+    private Boolean includeCorpNames;
+
     private Boolean hasNewDuplicates;
 
     private Boolean hasExistingDuplicates;

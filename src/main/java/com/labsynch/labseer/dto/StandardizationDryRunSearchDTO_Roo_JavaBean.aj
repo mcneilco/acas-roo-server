@@ -39,6 +39,14 @@ privileged aspect StandardizationDryRunSearchDTO_Roo_JavaBean {
         this.corpNames = corpNames;
     }
     
+    public Boolean StandardizationDryRunSearchDTO.getIncludeCorpNames() {
+        return this.includeCorpNames;
+    }
+    
+    public void StandardizationDryRunSearchDTO.setIncludeCorpNames(Boolean includeCorpNames) {
+        this.includeCorpNames = includeCorpNames;
+    }
+    
     public Boolean StandardizationDryRunSearchDTO.getHasNewDuplicates() {
         return this.hasNewDuplicates;
     }

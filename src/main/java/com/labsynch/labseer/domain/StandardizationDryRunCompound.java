@@ -126,6 +126,7 @@ public class StandardizationDryRunCompound {
 
 	public static List<Predicate> buildPredicateFromNumericValue(CriteriaBuilder cb, Root<StandardizationDryRunCompound> root, List<Predicate> predicates, String fieldName, Double value, String operator) {
 		Predicate predicate = null;
+		if(value == null) return predicates;
 		if (operator == null || operator.equals("=")) {
 			predicate = cb.equal(root.get(fieldName), value);
 		} else if (operator.equals(">")) {
@@ -166,7 +167,11 @@ public class StandardizationDryRunCompound {
 
 		// Corp name in list
 		if (dryRunSearch.getCorpNames() != null && dryRunSearch.getCorpNames().length > 0) {
-			predicates.add(root.get("corpName").in(dryRunSearch.getCorpNames()));
+			if(dryRunSearch.getIncludeCorpNames() == null || dryRunSearch.getIncludeCorpNames()) {
+				predicates.add(root.get("corpName").in(dryRunSearch.getCorpNames()));
+			} else {
+				predicates.add(criteriaBuilder.not(root.get("corpName").in(dryRunSearch.getCorpNames())));
+			}
 		}
 
 		// Existing duplicate
@@ -207,8 +212,8 @@ public class StandardizationDryRunCompound {
 		if(predicates.size() > 0) {
 			Predicate[] predicatesToAdd = new Predicate[0];
 			predicatesToAdd = predicates.toArray(predicatesToAdd);
-			Predicate firstItxAndPredicates = criteriaBuilder.and(predicatesToAdd);
-			criteria.where(predicates.toArray(new Predicate[predicates.size()]));
+			Predicate wherePredicates = criteriaBuilder.and(predicatesToAdd);
+			criteria.where(wherePredicates);
 		}
 
         criteria.orderBy(criteriaBuilder.desc(root.get("corpName")));
