@@ -175,10 +175,18 @@ public class StandardizationDryRunCompound {
 
 		// Corp name in list
 		if (dryRunSearch.getIncludeCorpNames() != null) {
-			if(dryRunSearch.getIncludeCorpNames()) {
-				predicates.add(root.get("corpName").in(dryRunSearch.getCorpNames()));
+			if(dryRunSearch.getCorpNames() != null && dryRunSearch.getCorpNames().length > 0) {
+				if(dryRunSearch.getIncludeCorpNames()) {
+					predicates.add(root.get("corpName").in(dryRunSearch.getCorpNames()));
+				} else {
+					predicates.add(criteriaBuilder.not(root.get("corpName").in(dryRunSearch.getCorpNames())));
+				}
 			} else {
-				predicates.add(criteriaBuilder.not(root.get("corpName").in(dryRunSearch.getCorpNames())));
+				if(dryRunSearch.getIncludeCorpNames()) {
+					// Return 0 rows on purpose because there are no corp names to search for
+					predicates.add(criteriaBuilder.equal(root.get("id"), -1));
+				}
+				// else if not include corp names then it is excluding 0 corpnames and we don't filter
 			}
 		}
 
