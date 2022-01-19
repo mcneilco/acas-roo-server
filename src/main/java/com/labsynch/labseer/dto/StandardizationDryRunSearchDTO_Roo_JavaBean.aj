@@ -87,4 +87,20 @@ privileged aspect StandardizationDryRunSearchDTO_Roo_JavaBean {
         this.displayChange = displayChange;
     }
     
+    public String StandardizationDryRunSearchDTO.getFilePath() {
+        return this.filePath;
+    }
+    
+    public void StandardizationDryRunSearchDTO.setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+    
+    public Integer StandardizationDryRunSearchDTO.getMaxResults() {
+        return this.maxResults;
+    }
+    
+    public void StandardizationDryRunSearchDTO.setMaxResults(Integer maxResults) {
+        this.maxResults = maxResults;
+    }
+    
 }

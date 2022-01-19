@@ -140,12 +140,20 @@ public class StandardizationDryRunCompound {
 		return predicates;
 	}
 
-	public static TypedQuery<StandardizationDryRunCompound> searchStandardiationDryRun(StandardizationDryRunSearchDTO dryRunSearch) {
+
+	public static TypedQuery<Long> searchStandardiationDryRunCount(StandardizationDryRunSearchDTO dryRunSearch) {
         EntityManager em = StandardizationDryRunCompound.entityManager();
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-        CriteriaQuery<StandardizationDryRunCompound> criteria = criteriaBuilder.createQuery(StandardizationDryRunCompound.class);
+        CriteriaQuery<Long> criteria = criteriaBuilder.createQuery(Long.class);
         Root<StandardizationDryRunCompound> root = criteria.from(StandardizationDryRunCompound.class);
-        criteria.select(root);
+		criteria.select(criteriaBuilder.count(root));
+		criteria.where(buildPredicatesForSearch(criteriaBuilder, root, dryRunSearch));
+
+        return em.createQuery(criteria);	
+	}
+
+
+	private static Predicate buildPredicatesForSearch(CriteriaBuilder criteriaBuilder, Root<StandardizationDryRunCompound> root, StandardizationDryRunSearchDTO dryRunSearch) {
 
 		// Predicate List
 		List<Predicate> predicates = new ArrayList<Predicate>();
@@ -166,8 +174,8 @@ public class StandardizationDryRunCompound {
 		}
 
 		// Corp name in list
-		if (dryRunSearch.getCorpNames() != null && dryRunSearch.getCorpNames().length > 0) {
-			if(dryRunSearch.getIncludeCorpNames() == null || dryRunSearch.getIncludeCorpNames()) {
+		if (dryRunSearch.getIncludeCorpNames() != null) {
+			if(dryRunSearch.getIncludeCorpNames()) {
 				predicates.add(root.get("corpName").in(dryRunSearch.getCorpNames()));
 			} else {
 				predicates.add(criteriaBuilder.not(root.get("corpName").in(dryRunSearch.getCorpNames())));
@@ -209,16 +217,28 @@ public class StandardizationDryRunCompound {
 			predicates.add(criteriaBuilder.equal(root.get("asDrawnDisplayChange"), dryRunSearch.getAsDrawnDisplayChange()));
 		}
 
-		if(predicates.size() > 0) {
-			Predicate[] predicatesToAdd = new Predicate[0];
-			predicatesToAdd = predicates.toArray(predicatesToAdd);
-			Predicate wherePredicates = criteriaBuilder.and(predicatesToAdd);
-			criteria.where(wherePredicates);
-		}
+		Predicate[] predicatesToAdd = new Predicate[0];
+		predicatesToAdd = predicates.toArray(predicatesToAdd);
+		Predicate wherePredicates = criteriaBuilder.and(predicatesToAdd);
+		return wherePredicates;
+	}
 
-        criteria.orderBy(criteriaBuilder.desc(root.get("corpName")));
+	public static TypedQuery<StandardizationDryRunCompound> searchStandardiationDryRun(StandardizationDryRunSearchDTO dryRunSearch) {
+        EntityManager em = StandardizationDryRunCompound.entityManager();
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<StandardizationDryRunCompound> criteria = criteriaBuilder.createQuery(StandardizationDryRunCompound.class);
+        Root<StandardizationDryRunCompound> root = criteria.from(StandardizationDryRunCompound.class);
+        criteria.select(root);
+
+		criteria.where(buildPredicatesForSearch(criteriaBuilder, root, dryRunSearch));
+		
+		criteria.orderBy(criteriaBuilder.desc(root.get("corpName")));
         TypedQuery<StandardizationDryRunCompound> q = em.createQuery(criteria);		
 
+		if(dryRunSearch.getMaxResults() != null && dryRunSearch.getMaxResults() > -1) {
+			q.setMaxResults(dryRunSearch.getMaxResults());
+		}
+		
 		return q;
 	} 
 
