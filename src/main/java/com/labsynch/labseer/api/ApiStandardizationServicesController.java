@@ -92,7 +92,7 @@ public class ApiStandardizationServicesController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
 		if (countOnly != null && countOnly == true){
-			return new ResponseEntity<String>("{count: " + StandardizationDryRunCompound.searchStandardiationDryRunCount(searchCriteria).getSingleResult() + "}", headers, HttpStatus.OK);
+			return new ResponseEntity<String>("{\"count\":" + StandardizationDryRunCompound.searchStandardiationDryRunCount(searchCriteria).getSingleResult() + "}", headers, HttpStatus.OK);
 		} else {
 			TypedQuery<StandardizationDryRunCompound> dryRunCompounds = StandardizationDryRunCompound.searchStandardiationDryRun(searchCriteria);
 			return new ResponseEntity<String>(StandardizationDryRunCompound.toJsonArray(dryRunCompounds.getResultList()), headers, HttpStatus.OK);
