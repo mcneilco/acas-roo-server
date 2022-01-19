@@ -86,14 +86,29 @@ public class ApiStandardizationServicesController {
 
 	@RequestMapping(value = "/dryRunSearch", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<java.lang.String> dryRunSearch(
+			@RequestParam(value="countOnly", required = false) Boolean countOnly,
 			@RequestBody String json) {
-		logger.debug("incoming json: " + json);
 		StandardizationDryRunSearchDTO searchCriteria = StandardizationDryRunSearchDTO.fromJsonToStandardizationDryRunSearchDTO(json);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Content-Type", "application/json");		
-		TypedQuery<StandardizationDryRunCompound> dryRunCompounds = StandardizationDryRunCompound.searchStandardiationDryRun(searchCriteria);
-		return new ResponseEntity<String>(StandardizationDryRunCompound.toJsonArray(dryRunCompounds.getResultList()), headers, HttpStatus.OK);
+		if (countOnly != null && countOnly == true){
+			return new ResponseEntity<String>("{count: " + StandardizationDryRunCompound.searchStandardiationDryRun(searchCriteria).getSingleResult() + "}", headers, HttpStatus.OK);
+		} else {
+			TypedQuery<StandardizationDryRunCompound> dryRunCompounds = StandardizationDryRunCompound.searchStandardiationDryRun(searchCriteria);
+			return new ResponseEntity<String>(StandardizationDryRunCompound.toJsonArray(dryRunCompounds.getResultList()), headers, HttpStatus.OK);
+		}
 	}
+
+	@RequestMapping(value = "/dryRunSearchExport", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> dryRunSearchExport(
+			@RequestBody String json)  throws IOException, CmpdRegMolFormatException {
+		logger.debug("incoming json: " + json);
+		StandardizationDryRunSearchDTO searchCriteria = StandardizationDryRunSearchDTO.fromJsonToStandardizationDryRunSearchDTO(json);
+		HttpHeaders headers = new HttpHeaders();
+		String outputFilePath = standardizationService.getStandardizationDryRunReportFiles(searchCriteria);
+		return new ResponseEntity<String>(outputFilePath, headers, HttpStatus.OK);
+	}
+
 
 	@RequestMapping(value = "/dryRunReportFiles", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody

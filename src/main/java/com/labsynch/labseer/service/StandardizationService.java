@@ -7,6 +7,7 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.domain.StandardizationSettings;
+import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 
 public interface StandardizationService {
 
@@ -17,6 +18,8 @@ public interface StandardizationService {
 	int dupeCheckStandardizationStructures() throws CmpdRegMolFormatException;
 
 	String getStandardizationDryRunReportFiles(String sdfFileName) throws IOException, CmpdRegMolFormatException;
+
+	String getStandardizationDryRunReportFiles(StandardizationDryRunSearchDTO searchCriteria) throws IOException, CmpdRegMolFormatException;
 
 	String getStandardizationDryRunReport() throws IOException, CmpdRegMolFormatException, StandardizerException;
 

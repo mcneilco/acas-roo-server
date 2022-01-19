@@ -36,6 +36,7 @@ import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.domain.StandardizationSettings;
+import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
@@ -514,12 +515,24 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		return (result);
 	}
 
+
 	@Override
 	public String getStandardizationDryRunReportFiles(String sdfFileName) throws IOException, CmpdRegMolFormatException {
-
-		// Getchanges
 		List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.findStandardizationChanges()
 			.getResultList();
+
+		return (writeStandardizationCompoundsToSDF(stndznCompounds, sdfFileName));
+	}
+
+	@Override
+	public String getStandardizationDryRunReportFiles(StandardizationDryRunSearchDTO searchCriteria) throws IOException, CmpdRegMolFormatException {
+		List<StandardizationDryRunCompound> stndznCompounds = StandardizationDryRunCompound.searchStandardiationDryRun(searchCriteria)
+			.getResultList();
+		return (writeStandardizationCompoundsToSDF(stndznCompounds, searchCriteria.getFilePath()));
+	}
+
+	public String writeStandardizationCompoundsToSDF(List<StandardizationDryRunCompound> stndznCompounds, String sdfFileName) throws IOException, CmpdRegMolFormatException {
+
 
 		// Create/recreate file
 		File sdfFile = new File(sdfFileName);

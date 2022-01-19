@@ -61,4 +61,8 @@ public class StandardizationDryRunSearchDTO {
 
     private Boolean displayChange;
 
+    private String filePath;
+
+    private Integer maxResults;
+
 }
