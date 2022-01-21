@@ -3,6 +3,8 @@ package com.labsynch.labseer.api;
 import java.io.IOException;
 import java.util.List;
 
+import javax.persistence.TypedQuery;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import flexjson.JSONDeserializer;
+
+import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.domain.StandardizationHistory;
 import com.labsynch.labseer.domain.StandardizationSettings;
+import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.StandardizerException;
 import com.labsynch.labseer.service.ChemStructureService;
@@ -77,6 +83,32 @@ public class ApiStandardizationServicesController {
 		String jsonReport = standardizationService.getStandardizationDryRunReport();
 		return new ResponseEntity<String>(jsonReport, headers, HttpStatus.OK);
 	}
+
+	@RequestMapping(value = "/dryRunSearch", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> dryRunSearch(
+			@RequestParam(value="countOnly", required = false) Boolean countOnly,
+			@RequestBody String json) {
+		StandardizationDryRunSearchDTO searchCriteria = StandardizationDryRunSearchDTO.fromJsonToStandardizationDryRunSearchDTO(json);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/json");		
+		if (countOnly != null && countOnly == true){
+			return new ResponseEntity<String>("{\"count\":" + StandardizationDryRunCompound.searchStandardiationDryRunCount(searchCriteria).getSingleResult() + "}", headers, HttpStatus.OK);
+		} else {
+			TypedQuery<StandardizationDryRunCompound> dryRunCompounds = StandardizationDryRunCompound.searchStandardiationDryRun(searchCriteria);
+			return new ResponseEntity<String>(StandardizationDryRunCompound.toJsonArray(dryRunCompounds.getResultList()), headers, HttpStatus.OK);
+		}
+	}
+
+	@RequestMapping(value = "/dryRunSearchExport", method = RequestMethod.POST, headers = "Accept=application/json")
+	public ResponseEntity<java.lang.String> dryRunSearchExport(
+			@RequestBody String json)  throws IOException, CmpdRegMolFormatException {
+		logger.debug("incoming json: " + json);
+		StandardizationDryRunSearchDTO searchCriteria = StandardizationDryRunSearchDTO.fromJsonToStandardizationDryRunSearchDTO(json);
+		HttpHeaders headers = new HttpHeaders();
+		String outputFilePath = standardizationService.getStandardizationDryRunReportFiles(searchCriteria);
+		return new ResponseEntity<String>(outputFilePath, headers, HttpStatus.OK);
+	}
+
 
 	@RequestMapping(value = "/dryRunReportFiles", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody

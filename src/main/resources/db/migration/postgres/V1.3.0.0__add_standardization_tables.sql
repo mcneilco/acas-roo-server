@@ -26,6 +26,7 @@ CREATE TABLE standardization_dry_run_compound
   changed_structure boolean,
   old_mol_weight double precision,
   new_mol_weight double precision,
+  delta_mol_weight double precision,
   existing_duplicate_count integer,
   new_duplicate_count integer,
   new_duplicates text,

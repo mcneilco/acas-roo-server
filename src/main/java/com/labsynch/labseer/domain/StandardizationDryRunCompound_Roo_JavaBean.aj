@@ -80,6 +80,14 @@ privileged aspect StandardizationDryRunCompound_Roo_JavaBean {
         this.newMolWeight = newMolWeight;
     }
     
+    public Double StandardizationDryRunCompound.getDeltaMolWeight() {
+        return this.deltaMolWeight;
+    }
+    
+    public void StandardizationDryRunCompound.setDeltaMolWeight(Double deltaMolWeight) {
+        this.deltaMolWeight = deltaMolWeight;
+    }
+    
     public boolean StandardizationDryRunCompound.isDisplayChange() {
         return this.displayChange;
     }

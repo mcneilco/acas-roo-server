@@ -14,7 +14,7 @@ privileged aspect StandardizationDryRunCompound_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager StandardizationDryRunCompound.entityManager;
     
-    public static final List<String> StandardizationDryRunCompound.fieldNames4OrderClauseFilter = java.util.Arrays.asList("runNumber", "qcDate", "parentId", "corpName", "newDuplicates", "existingDuplicates", "changedStructure", "oldMolWeight", "newMolWeight", "displayChange", "asDrawnDisplayChange", "newDuplicateCount", "existingDuplicateCount", "alias", "stereoCategory", "stereoComment", "CdId", "molStructure", "comment", "ignore");
+    public static final List<String> StandardizationDryRunCompound.fieldNames4OrderClauseFilter = java.util.Arrays.asList("runNumber", "qcDate", "parentId", "corpName", "newDuplicates", "existingDuplicates", "changedStructure", "oldMolWeight", "newMolWeight", "deltaMolWeight", "displayChange", "asDrawnDisplayChange", "newDuplicateCount", "existingDuplicateCount", "alias", "stereoCategory", "stereoComment", "CdId", "molStructure", "comment", "ignore");
     
     public static final EntityManager StandardizationDryRunCompound.entityManager() {
         EntityManager em = new StandardizationDryRunCompound().entityManager;
