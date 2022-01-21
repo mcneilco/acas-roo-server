@@ -2472,6 +2472,136 @@ public class LsThingServiceImpl implements LsThingService {
 						}
 					}
 				}
+				// Search for itxs values
+				if (interaction.getThingValues() != null){
+					for (ValueQueryDTO valueQuery : interaction.getThingValues()){
+						List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
+						Join<LsThing, LsThingState> state = firstThing.join("lsStates");
+						Join<LsThingState, LsThingValue> value = firstThing.join("lsValues");
+						
+						Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
+						Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
+						valuePredicatesList.add(stateNotIgn);
+						valuePredicatesList.add(valueNotIgn);
+						
+						if (valueQuery.getStateType() != null){
+							Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),valueQuery.getStateType());
+							valuePredicatesList.add(stateType);
+						}
+						if (valueQuery.getStateKind() != null){
+							Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),valueQuery.getStateKind());
+							valuePredicatesList.add(stateKind);
+						}
+						if (valueQuery.getValueType() != null){
+							Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),valueQuery.getValueType());
+							valuePredicatesList.add(valueType);
+						}
+						if (valueQuery.getValueKind() != null){
+							Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),valueQuery.getValueKind());
+							valuePredicatesList.add(valueKind);
+						}
+						if (valueQuery.getValue() != null){
+							if (valueQuery.getValueType() == null){
+								logger.error("valueType must be specified if value is specified!");
+								throw new Exception("valueType must be specified if value is specified!");
+							}else if (valueQuery.getValueType().equalsIgnoreCase("dateValue")){
+								Calendar cal = Calendar.getInstance(); // locale-specific
+								boolean parsedTime = false;
+								if (SimpleUtil.isNumeric(valueQuery.getValue())){
+									cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+									parsedTime = true;
+								}else{
+									try{
+										SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+										cal.setTime(sdf.parse(valueQuery.getValue()));
+										parsedTime = true;
+									}catch (Exception e){
+										logger.warn("Failed to parse date in LsThing generic query for value",e);
+									}
+								}
+								if (parsedTime){
+									if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+										Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<Date>get("dateValue"), new Date(cal.getTimeInMillis()));
+										valuePredicatesList.add(valueGreaterThan);
+									}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+										Predicate valueLessThan = criteriaBuilder.lessThan(value.<Date>get("dateValue"), new Date(cal.getTimeInMillis()));
+										valuePredicatesList.add(valueLessThan);
+									}else{
+										String postgresTimeUnit = "day";
+										Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+										
+										cal.set(Calendar.HOUR_OF_DAY, 0);
+										cal.set(Calendar.MINUTE, 0);
+										cal.set(Calendar.SECOND, 0);
+										cal.set(Calendar.MILLISECOND, 0);
+										long time = cal.getTimeInMillis();
+										Date queryDate = new Date(time);
+										Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
+										valuePredicatesList.add(valueLike);
+									}
+								}
+							}else if (valueQuery.getValueType().equalsIgnoreCase("numericValue")){
+								try{
+									BigDecimal numberValue = new BigDecimal(valueQuery.getValue());
+									if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+										Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueGreaterThan);
+									}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+										Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueGreaterThan);
+									}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+										Predicate valueLessThan = criteriaBuilder.lessThan(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueLessThan);
+									}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+										Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueLessThan);
+									}else{
+										Predicate valueEquals = criteriaBuilder.equal(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueEquals);
+									}
+								} catch (NumberFormatException e){
+									logger.warn("Failed to parse number in LsThing generic query for value",e);
+									valuePredicatesList.add(criteriaBuilder.disjunction());
+		
+								}
+						}else{
+							//string value types: stringValue, codeValue, fileValue, clobValue
+							if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("=")){
+								Predicate valueEquals = criteriaBuilder.equal(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueEquals);
+							}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("!=")){
+								Predicate valueNotEquals = criteriaBuilder.notEqual(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueNotEquals);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("~")){
+								Predicate valueLike = criteriaBuilder.like(criteriaBuilder.lower(value.<String>get(valueQuery.getValueType())), '%' + valueQuery.getValue().toLowerCase() + '%');
+								valuePredicatesList.add(valueLike);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("!~")){
+								Predicate valueNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(value.<String>get(valueQuery.getValueType())),  '%' + valueQuery.getValue().toLowerCase() + '%');
+								valuePredicatesList.add(valueNotLike);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+								Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueGreaterThan);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals(">=")){
+								Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueGreaterThan);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+								Predicate valueLessThan = criteriaBuilder.lessThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueLessThan);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+								Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueLessThan);
+							}else{
+								Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
+								valuePredicatesList.add(valueLike);
+							}
+						}
+						}
+						//gather predicates with AND
+						Predicate[] valuePredicates = new Predicate[0];
+						valuePredicates = valuePredicatesList.toArray(valuePredicates);
+						firstItxPredicates.add(criteriaBuilder.and(valuePredicates));
+					}
+				}
 				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
 				Predicate[] firstPredicates = new Predicate[0];
 				firstPredicates = firstItxPredicates.toArray(firstPredicates);
@@ -2558,6 +2688,136 @@ public class LsThingServiceImpl implements LsThingService {
 							Predicate secondThingLabelLike = criteriaBuilder.like(criteriaBuilder.lower(secondThingLabel.<String>get("labelText")), '%' + interaction.getThingLabelText().toLowerCase() + '%');
 							secondItxPredicates.add(secondThingLabelLike);
 						}
+					}
+				}
+				// Search for itxs values
+				if (interaction.getThingValues() != null){
+					for (ValueQueryDTO valueQuery : interaction.getThingValues()){
+						List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
+						Join<LsThing, LsThingState> state = secondThing.join("lsStates");
+						Join<LsThingState, LsThingValue> value = secondThing.join("lsValues");
+						
+						Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
+						Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
+						valuePredicatesList.add(stateNotIgn);
+						valuePredicatesList.add(valueNotIgn);
+						
+						if (valueQuery.getStateType() != null){
+							Predicate stateType = criteriaBuilder.equal(state.<String>get("lsType"),valueQuery.getStateType());
+							valuePredicatesList.add(stateType);
+						}
+						if (valueQuery.getStateKind() != null){
+							Predicate stateKind = criteriaBuilder.equal(state.<String>get("lsKind"),valueQuery.getStateKind());
+							valuePredicatesList.add(stateKind);
+						}
+						if (valueQuery.getValueType() != null){
+							Predicate valueType = criteriaBuilder.equal(value.<String>get("lsType"),valueQuery.getValueType());
+							valuePredicatesList.add(valueType);
+						}
+						if (valueQuery.getValueKind() != null){
+							Predicate valueKind = criteriaBuilder.equal(value.<String>get("lsKind"),valueQuery.getValueKind());
+							valuePredicatesList.add(valueKind);
+						}
+						if (valueQuery.getValue() != null){
+							if (valueQuery.getValueType() == null){
+								logger.error("valueType must be specified if value is specified!");
+								throw new Exception("valueType must be specified if value is specified!");
+							}else if (valueQuery.getValueType().equalsIgnoreCase("dateValue")){
+								Calendar cal = Calendar.getInstance(); // locale-specific
+								boolean parsedTime = false;
+								if (SimpleUtil.isNumeric(valueQuery.getValue())){
+									cal.setTimeInMillis(Long.valueOf(valueQuery.getValue()));
+									parsedTime = true;
+								}else{
+									try{
+										SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+										cal.setTime(sdf.parse(valueQuery.getValue()));
+										parsedTime = true;
+									}catch (Exception e){
+										logger.warn("Failed to parse date in LsThing generic query for value",e);
+									}
+								}
+								if (parsedTime){
+									if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+										Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<Date>get("dateValue"), new Date(cal.getTimeInMillis()));
+										valuePredicatesList.add(valueGreaterThan);
+									}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+										Predicate valueLessThan = criteriaBuilder.lessThan(value.<Date>get("dateValue"), new Date(cal.getTimeInMillis()));
+										valuePredicatesList.add(valueLessThan);
+									}else{
+										String postgresTimeUnit = "day";
+										Expression<Date> dateTruncExpr = criteriaBuilder.function("date_trunc", Date.class, criteriaBuilder.literal(postgresTimeUnit), value.<Date>get("dateValue"));
+										
+										cal.set(Calendar.HOUR_OF_DAY, 0);
+										cal.set(Calendar.MINUTE, 0);
+										cal.set(Calendar.SECOND, 0);
+										cal.set(Calendar.MILLISECOND, 0);
+										long time = cal.getTimeInMillis();
+										Date queryDate = new Date(time);
+										Predicate valueLike = criteriaBuilder.equal(dateTruncExpr, queryDate);
+										valuePredicatesList.add(valueLike);
+									}
+								}
+							}else if (valueQuery.getValueType().equalsIgnoreCase("numericValue")){
+								try{
+									BigDecimal numberValue = new BigDecimal(valueQuery.getValue());
+									if (valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+										Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueGreaterThan);
+									}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+										Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueGreaterThan);
+									}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+										Predicate valueLessThan = criteriaBuilder.lessThan(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueLessThan);
+									}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+										Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueLessThan);
+									}else{
+										Predicate valueEquals = criteriaBuilder.equal(value.<BigDecimal>get("numericValue"), numberValue);
+										valuePredicatesList.add(valueEquals);
+									}
+								} catch (NumberFormatException e){
+									logger.warn("Failed to parse number in LsThing generic query for value",e);
+									valuePredicatesList.add(criteriaBuilder.disjunction());
+		
+								}
+						}else{
+							//string value types: stringValue, codeValue, fileValue, clobValue
+							if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("=")){
+								Predicate valueEquals = criteriaBuilder.equal(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueEquals);
+							}else if (valueQuery.getOperator() != null && valueQuery.getOperator().equals("!=")){
+								Predicate valueNotEquals = criteriaBuilder.notEqual(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueNotEquals);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("~")){
+								Predicate valueLike = criteriaBuilder.like(criteriaBuilder.lower(value.<String>get(valueQuery.getValueType())), '%' + valueQuery.getValue().toLowerCase() + '%');
+								valuePredicatesList.add(valueLike);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("!~")){
+								Predicate valueNotLike = criteriaBuilder.notLike(criteriaBuilder.lower(value.<String>get(valueQuery.getValueType())),  '%' + valueQuery.getValue().toLowerCase() + '%');
+								valuePredicatesList.add(valueNotLike);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals(">")){
+								Predicate valueGreaterThan = criteriaBuilder.greaterThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueGreaterThan);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals(">=")){
+								Predicate valueGreaterThan = criteriaBuilder.greaterThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueGreaterThan);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<")){
+								Predicate valueLessThan = criteriaBuilder.lessThan(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueLessThan);
+							}else if(valueQuery.getOperator() != null && valueQuery.getOperator().equals("<=")){
+								Predicate valueLessThan = criteriaBuilder.lessThanOrEqualTo(value.<String>get(valueQuery.getValueType()), valueQuery.getValue());
+								valuePredicatesList.add(valueLessThan);
+							}else{
+								Predicate valueLike = criteriaBuilder.like(value.<String>get(valueQuery.getValueType()), '%' + valueQuery.getValue() + '%');
+								valuePredicatesList.add(valueLike);
+							}
+						}
+						}
+						//gather predicates with AND
+						Predicate[] valuePredicates = new Predicate[0];
+						valuePredicates = valuePredicatesList.toArray(valuePredicates);
+						secondItxPredicates.add(criteriaBuilder.and(valuePredicates));
 					}
 				}
 				//gather interactions, AND between each within group, then OR on the two, then add to outer predicates
