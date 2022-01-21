@@ -2477,7 +2477,7 @@ public class LsThingServiceImpl implements LsThingService {
 					for (ValueQueryDTO valueQuery : interaction.getThingValues()){
 						List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
 						Join<LsThing, LsThingState> state = firstThing.join("lsStates");
-						Join<LsThingState, LsThingValue> value = firstThing.join("lsValues");
+						Join<LsThingState, LsThingValue> value = state.join("lsValues");
 						
 						Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
 						Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
@@ -2695,7 +2695,7 @@ public class LsThingServiceImpl implements LsThingService {
 					for (ValueQueryDTO valueQuery : interaction.getThingValues()){
 						List<Predicate> valuePredicatesList = new ArrayList<Predicate>();
 						Join<LsThing, LsThingState> state = secondThing.join("lsStates");
-						Join<LsThingState, LsThingValue> value = secondThing.join("lsValues");
+						Join<LsThingState, LsThingValue> value = state.join("lsValues");
 						
 						Predicate stateNotIgn = criteriaBuilder.isFalse(state.<Boolean>get("ignored"));
 						Predicate valueNotIgn = criteriaBuilder.isFalse(value.<Boolean>get("ignored"));
