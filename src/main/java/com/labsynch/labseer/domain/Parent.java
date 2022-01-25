@@ -159,6 +159,55 @@ public class Parent {
         q.setParameter("ignore", false);
         return q;
     }
+
+	public static TypedQuery<Integer> findParentIdsByCdIdInAndProjectIn(List<Integer> cdIds, List<String> projectNames) {
+		EntityManager em = Parent.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> criteria = criteriaBuilder.createQuery(Integer.class);
+		Root<Parent> parentRoot = criteria.from(Parent.class);
+
+		// Join to lots so we can filter out parents that are not in the project list
+		Join<Parent, SaltForm> parentSaltForm = parentRoot.join("saltForms");
+		Join<SaltForm, Lot> saltFormLot = parentRoot.join("saltForms").join("lots");
+
+		Predicate[] predicates = new Predicate[0];
+		List<Predicate> predicateList = new ArrayList<Predicate>();
+
+		// Boolean return empty to break queries if cdIds or project names are empty
+		Boolean return_empty_query = false;
+
+		// Filter the results by cdIds list or return no results if no cdIds
+		if(cdIds != null && !cdIds.isEmpty()){
+			predicateList.add(parentRoot.get("CdId").in(cdIds));
+		} else {
+			// Return 0 rows on purpose because there are no corp names to search for
+			return_empty_query = true;
+		}
+
+		// Filter the results by projects list or return no results if no projects
+		if(projectNames != null && !projectNames.isEmpty()){
+			predicateList.add(saltFormLot.get("project").in(projectNames));
+		} else {
+			// Return 0 rows on purpose because there are no projects to search for
+			return_empty_query = true;
+		}
+		
+		// Return no results if return empty query is true
+		if(return_empty_query){
+			predicateList.add(criteriaBuilder.equal(parentRoot.get("id"), -1));
+		}
+
+		criteria.select(parentRoot.<Integer>get("id"));
+
+		// Select distinct because we joined one to many lots
+		criteria.distinct(true);
+
+		// Add the predicates and create the query
+		predicates = predicateList.toArray(predicates);
+		criteria.where(criteriaBuilder.and(predicates));
+		TypedQuery<Integer> q = em.createQuery(criteria);
+        return q;
+    }
     
     @Transactional
     public static List<Parent> findParentsByLessMolWeight(double molWeight) {

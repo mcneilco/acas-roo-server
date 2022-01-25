@@ -6,10 +6,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -660,6 +664,27 @@ public class SearchFormServiceImpl implements SearchFormService {
 		query.append(" order by date");
 
 		return query.toString();
+	}
+
+
+	@Override
+	public List<Integer> findParentIds(String molStructure, Integer maxResults, Float similarity, String searchType,
+			List<String> projects) throws IOException, CmpdRegMolFormatException {
+		String structureTable = "parent_structure";
+		String plainTable = "parent";
+
+		// We don't want to limit the max results when searching for structures so set the number really high becuse
+		// none of the searchMolStructures implementations allow an unlimited option for max results.
+		int[] parentStructureHits = structureService.searchMolStructures(molStructure,  structureTable, plainTable, searchType, similarity, 999999999);
+		List<Integer> cdIdslist = Arrays.stream( parentStructureHits ).boxed().collect( Collectors.toList() );
+		TypedQuery<Integer> parentQuery = Parent.findParentIdsByCdIdInAndProjectIn(cdIdslist, projects);
+
+		// We limit max results when searching for parents
+		if(maxResults != null && maxResults > -1) {
+			parentQuery.setMaxResults(maxResults);
+		}
+
+		return parentQuery.getResultList();
 	}
 
 
