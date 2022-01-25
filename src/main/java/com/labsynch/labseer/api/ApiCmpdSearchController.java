@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.labsynch.labseer.dto.CmpdRegStructureSearchDTO;
 import com.labsynch.labseer.dto.PreferredNameDTO;
 import com.labsynch.labseer.dto.SearchCdIdReturnDTO;
 import com.labsynch.labseer.dto.SearchFormDTO;
@@ -40,7 +41,28 @@ public class ApiCmpdSearchController {
 	@Autowired
 	private SearchFormService searchFormService;
 
+	@RequestMapping(value = "/", method = RequestMethod.POST, headers = "Accept=application/json")
+	@ResponseBody
+	public ResponseEntity<String> structureSearch(@RequestBody String json){
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.add("Access-Control-Allow-Headers", "Content-Type");
+		headers.add("Access-Control-Allow-Origin", "*");
+		headers.add("Cache-Control","no-store, no-cache, must-revalidate"); //HTTP 1.1
+		headers.add("Pragma","no-cache"); //HTTP 1.0
+		headers.setExpires(0); // Expire the cache
 
+		List<Integer> searchResults;
+		try {
+			CmpdRegStructureSearchDTO structureSearchDTO = CmpdRegStructureSearchDTO.fromJsonToCmpdRegStructureSearchDTO(json);
+			searchResults = searchFormService.findParentIds(structureSearchDTO.getMolStructure(), structureSearchDTO.getMaxResults(), structureSearchDTO.getPercentSimilarity(), structureSearchDTO.getSearchType(), structureSearchDTO.getProjects());
+			// Return the integer list of parent ids as a response Entity array
+			return new ResponseEntity<String>(searchResults.toString(), headers, HttpStatus.OK);
+		} catch (CmpdRegMolFormatException | IOException e) {
+			logger.error("Error in structureSearch: " + e.getMessage());
+			return new ResponseEntity<String>("Encountered error with input structure: "+e.toString(), headers, HttpStatus.BAD_REQUEST);
+		}
+	}
 
 	@Transactional
 	@RequestMapping(value = "/getPreferredName/parent", method = RequestMethod.POST, headers = "Accept=application/json")
