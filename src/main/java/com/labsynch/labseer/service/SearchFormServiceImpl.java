@@ -660,14 +660,13 @@ public class SearchFormServiceImpl implements SearchFormService {
 
 
 	@Override
-	public List<Integer> findParentIds(String molStructure, Integer maxResults, Float similarity, String searchType,
+	public List<Integer> findParentIds(String molStructure, Integer maxResults, Float similarity, SearchType searchType,
 			List<String> projects) throws IOException, CmpdRegMolFormatException {
-		String structureTable = "parent_structure";
-		String plainTable = "parent";
 
 		// We don't want to limit the max results when searching for structures so set the number really high becuse
 		// none of the searchMolStructures implementations allow an unlimited option for max results.
-		int[] parentStructureHits = structureService.searchMolStructures(molStructure,  structureTable, plainTable, searchType, similarity, 999999999);
+
+		int[] parentStructureHits = structureService.searchMolStructures(molStructure,  StructureType.PARENT, searchType, similarity, 999999999);
 		List<Integer> cdIdslist = Arrays.stream( parentStructureHits ).boxed().collect( Collectors.toList() );
 		TypedQuery<Integer> parentQuery = Parent.findParentIdsByCdIdInAndProjectIn(cdIdslist, projects);
 

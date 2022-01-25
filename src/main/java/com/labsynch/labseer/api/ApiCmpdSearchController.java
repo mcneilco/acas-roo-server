@@ -57,7 +57,8 @@ public class ApiCmpdSearchController {
 		List<Integer> searchResults;
 		try {
 			CmpdRegStructureSearchDTO structureSearchDTO = CmpdRegStructureSearchDTO.fromJsonToCmpdRegStructureSearchDTO(json);
-			searchResults = searchFormService.findParentIds(structureSearchDTO.getMolStructure(), structureSearchDTO.getMaxResults(), structureSearchDTO.getPercentSimilarity(), structureSearchDTO.getSearchType(), structureSearchDTO.getProjects());
+			SearchType matchedSearchType = SearchType.getIfPresent(structureSearchDTO.getSearchType()).orElse(SearchType.SUBSTRUCTURE);
+			searchResults = searchFormService.findParentIds(structureSearchDTO.getMolStructure(), structureSearchDTO.getMaxResults(), structureSearchDTO.getPercentSimilarity(), matchedSearchType, structureSearchDTO.getProjects());
 			// Return the integer list of parent ids as a response Entity array
 			return new ResponseEntity<String>(searchResults.toString(), headers, HttpStatus.OK);
 		} catch (CmpdRegMolFormatException | IOException e) {

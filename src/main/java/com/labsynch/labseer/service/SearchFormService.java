@@ -20,7 +20,7 @@ public interface SearchFormService {
 
 
 	public List<Integer> findParentIds(String molStructure,
-			Integer maxResults, Float similarity, String searchType,
+			Integer maxResults, Float similarity, SearchType searchType,
 			List<String> projects) throws IOException, CmpdRegMolFormatException;
 
 }
