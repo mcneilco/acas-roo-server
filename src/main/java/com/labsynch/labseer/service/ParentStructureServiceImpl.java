@@ -13,7 +13,7 @@ import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.MoleculeUtil;
 import com.labsynch.labseer.utils.SecurityUtil;
 
@@ -60,7 +60,7 @@ public class ParentStructureServiceImpl implements ParentStructureService {
 		CmpdRegMolecule mol = chemService.toMolecule(inputParent.getMolStructure());
 		parent.setMolStructure(mol.getMolStructure());
 		parent.setMolFormula(chemService.getMolFormula(inputParent.getMolStructure()));
-		boolean updateFlag = chemService.updateStructure(mol, "Parent_Structure", inputParent.getCdId());
+		boolean updateFlag = chemService.updateStructure(mol, StructureType.PARENT, inputParent.getCdId());
 
 		logger.debug("parent structure for " + parent.getCorpName() + "  was updated: " + updateFlag);
 		parent.setModifiedDate(new Date());

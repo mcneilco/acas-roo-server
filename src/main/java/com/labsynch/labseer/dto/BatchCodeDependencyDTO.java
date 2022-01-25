@@ -24,9 +24,8 @@ import com.labsynch.labseer.domain.BulkLoadTemplate;
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.Configuration;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONSerializer;
@@ -37,8 +36,6 @@ import flexjson.JSONSerializer;
 public class BatchCodeDependencyDTO {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BatchCodeDependencyDTO.class);
-	
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
 
 	private Collection<String> batchCodes;
 	

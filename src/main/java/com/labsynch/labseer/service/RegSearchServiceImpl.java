@@ -26,7 +26,9 @@ import com.labsynch.labseer.dto.RegSearchDTO;
 import com.labsynch.labseer.dto.RegSearchParamsDTO;
 import com.labsynch.labseer.dto.SaltFormDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.MoleculeUtil;
 
 @Service
@@ -39,6 +41,12 @@ public class RegSearchServiceImpl implements RegSearchService {
 	
 	@Autowired
 	CmpdRegMoleculeFactory cmpdRegMoleculeFactory;
+
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
+
+	@Autowired
+	private CorpNameService corpNameService;
 
 	@Override
 	@Transactional
@@ -66,14 +74,14 @@ public class RegSearchServiceImpl implements RegSearchService {
 			regSearchDTO.setAsDrawnStructure(mol.getMolStructure());
 			regSearchDTO.setAsDrawnMolFormula(mol.getFormula());
 			regSearchDTO.setAsDrawnExactMass(mol.getExactMass());
-			if(Configuration.getConfigInfo().getMetaLot().isUseExactMass()){
+			if(propertiesUtilService.getUseExactMass()){
 				regSearchDTO.setAsDrawnMolWeight(mol.getExactMass());
 
 			}else{
 				regSearchDTO.setAsDrawnMolWeight(mol.getMass());
 
 			}
-			int[] parentHits = chemStructureService.searchMolStructures(MoleculeUtil.exportMolAsText(mol, "mol"), "Parent_Structure", "parent", "FULL_TAUTOMER");
+			int[] parentHits = chemStructureService.searchMolStructures(MoleculeUtil.exportMolAsText(mol, "mol"), StructureType.PARENT, SearchType.FULL_TAUTOMER);
 			logger.debug("number of parents found: " + parentHits.length);
 
 			if (parentHits.length > 0){
@@ -89,28 +97,28 @@ public class RegSearchServiceImpl implements RegSearchService {
 			System.out.println("search with corpName: " + corpName);
 			regSearchDTO.setAsDrawnStructure("");
 
-			boolean saltBeforeLot = Configuration.getConfigInfo().getMetaLot().isSaltBeforeLot();
+			boolean saltBeforeLot = propertiesUtilService.getSaltBeforeLot();
 
 			List<Parent> parentList;			
-			if (CorpName.checkParentCorpName(corpName)){
+			if (corpNameService.checkParentCorpName(corpName)){
 				logger.debug("corpName looks like a parent corpName: " + corpName);
 
 				parentList = Parent.findParentsByCorpNameEquals(corpName).getResultList();
 				regSearchDTO = this.populateFromParents(regSearchDTO, parentList);
 
-			} else if (CorpName.checkCorpNumber(corpName)){
+			} else if (corpNameService.checkCorpNumber(corpName)){
 				logger.debug("corpName looks like a corp number: " + corpName);
 
-				corpName = CorpName.convertCorpNameNumber(corpName);
+				corpName = corpNameService.convertCorpNameNumber(corpName);
 				parentList = Parent.findParentsByCorpNameEquals(corpName).getResultList();
 				regSearchDTO = this.populateFromParents(regSearchDTO, parentList);
 
-			}else if (CorpName.checkSaltFormCorpName(corpName) && saltBeforeLot){
+			}else if (corpNameService.checkSaltFormCorpName(corpName) && saltBeforeLot){
 				logger.debug("corpName looks like a saltForm: " + corpName);
 				SaltForm saltForm = SaltForm.findSaltFormsByCorpNameEquals(corpName).getSingleResult();
 				regSearchDTO = this.populateFromSaltForm(regSearchDTO, saltForm);
 
-			} else if (CorpName.checkLotCorpName(corpName)){
+			} else if (corpNameService.checkLotCorpName(corpName)){
 				logger.debug("corpName looks like a lot: " + corpName);
 				List<Lot> lots = Lot.findLotsByCorpNameEquals(corpName.trim()).getResultList();
 				logger.debug("number of lots found: " + lots.size());

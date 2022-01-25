@@ -313,6 +313,17 @@ public class Parent {
 	}
 
 
+    @Transactional	
+	public static List<Integer> findAllCdIds() {
+		EntityManager em = Parent.entityManager();
+		CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> criteria = criteriaBuilder.createQuery(Integer.class);
+		Root<Parent> parentRoot = criteria.from(Parent.class);
+		criteria.select(parentRoot.<Integer>get("CdId"));
+		criteria.distinct(true);
+		TypedQuery<Integer> q = em.createQuery(criteria);
+		return q.getResultList();
+	}
     
 	public static Parent update(Parent inputParent) {
 		Parent parent = Parent.findParent(inputParent.getId());

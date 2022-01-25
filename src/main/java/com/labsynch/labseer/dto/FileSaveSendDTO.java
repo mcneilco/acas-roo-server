@@ -17,9 +17,13 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 import com.labsynch.labseer.utils.MimeTypeUtil;
 
+@Configurable
 @RooJavaBean
 @RooToString
 @RooJson
@@ -38,7 +42,8 @@ public class FileSaveSendDTO{
 	@Transient 
 	private List<MultipartFile> file = new ArrayList<MultipartFile>();
 
-
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	public List<MultipartFile> getFile() { 
 		return file; 
@@ -64,7 +69,7 @@ public class FileSaveSendDTO{
 				FileSaveReturnDTO fileSaveReturn = new FileSaveReturnDTO();
 				try { 
 					InputStream in = file.getInputStream(); 
-					String rootSavePath = Configuration.getConfigInfo().getServerSettings().getNotebookSavePath(); 
+					String rootSavePath = propertiesUtilService.getNotebookSavePath(); 
 					logger.debug(rootSavePath);
 					String savePath = rootSavePath + this.getSubdir() +  File.separator ;
 					logger.debug(savePath);

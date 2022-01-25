@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.StereoCategory;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
-import com.labsynch.labseer.utils.Configuration;
+
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RooWebScaffold(path = "stereocategorys", formBackingObject = StereoCategory.class)
 @RequestMapping({ "/stereoCategorys", "/stereocategorys", "/stereoCategories" })
@@ -29,7 +30,8 @@ import com.labsynch.labseer.utils.Configuration;
 public class StereoCategoryController {
 
 
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
@@ -59,7 +61,7 @@ public class StereoCategoryController {
         headers.add("Pragma", "no-cache"); //HTTP 1.0
         headers.setExpires(0); // Expire the cache
  
-        if (mainConfig.getServerSettings().isOrderSelectLists()){
+        if (propertiesUtilService.getOrderSelectLists()){
             return new ResponseEntity<String>(StereoCategory.toJsonArray(StereoCategory.findAllStereoCategorys("name","ASC")), headers, HttpStatus.OK);
         } else {
             return new ResponseEntity<String>(StereoCategory.toJsonArray(StereoCategory.findAllStereoCategorys()), headers, HttpStatus.OK);

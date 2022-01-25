@@ -10,12 +10,15 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
 
 import javax.persistence.EntityManager;
@@ -39,6 +42,7 @@ import com.labsynch.labseer.domain.LsThingValue;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -319,6 +323,26 @@ public class SimpleUtil {
 		return filteredValues;
 	}
 
+	public static String bitSetToString(BitSet bitSet) {
+		if(bitSet.length() == 0) return null;
+
+		final StringBuilder s = new StringBuilder();
+		for( int i = 0; i < bitSet.size();  i++ ) {
+			s.append( bitSet.get( i ) == true ? '1': '0' );
+		}
+		return s.toString();
+	}
+
+	public static BitSet stringToBitSet(String bitString) {
+		BitSet bitset = new BitSet(bitString.length());
+		for (int i = 0; i < bitString.length(); i++) {
+			if (bitString.charAt(i) == '1') {
+				bitset.set(i);
+			}
+		}
+		return bitset;
+	}
+
 	public static String postRequestToExternalServer(String url, String jsonContent, Logger logger) throws MalformedURLException, IOException {
 		String charset = "UTF-8";
 		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -327,18 +351,72 @@ public class SimpleUtil {
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Accept-Charset", charset);
 		connection.setRequestProperty("Content-Type", "application/json");		
-		logger.info("Sending request to: "+url);
-		logger.info("with data: "+jsonContent);
+		logger.debug("Sending request to: "+url);
+		logger.debug("with data: "+jsonContent);
 		try{
 			OutputStream output = connection.getOutputStream();
 			output.write(jsonContent.getBytes());
 		}catch (Exception e){
+			logger.error("Error sending request to: "+url);
+			logger.error("with data: "+jsonContent);
+			logger.error("Error occurred in making HTTP Request to external server",e);
+		}
+		return getStringBody(connection);
+	}
+
+	public static String getStringBody(HttpURLConnection httpURLConnection) throws IOException {
+		// Input stream
+		InputStream inputStream = null;
+		if (httpURLConnection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+			inputStream = httpURLConnection.getInputStream();
+		} else {
+			inputStream = httpURLConnection.getErrorStream();
+		}
+		String body = IOUtils.toString(inputStream);
+		return body;
+	}
+
+	public static HttpURLConnection postRequest(String url, String jsonContent, Logger logger) throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		connection.setRequestProperty("Content-Type", "application/json");		
+		logger.debug("Sending request to: "+url);
+		logger.debug("with data: "+jsonContent);
+		try{
+			OutputStream output = connection.getOutputStream();
+			output.write(jsonContent.getBytes());
+		}catch (Exception e){
+			logger.error("Error sending request to: "+url);
+			logger.error("with data: "+jsonContent);
+			logger.error("Error occurred in making HTTP Request to external server",e);
+		}
+		return connection;
+	}
+
+	public static byte[] postRequestToExternalServerBinaryResponse(String url, String jsonContent, Logger logger) throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		connection.setRequestProperty("Content-Type", "application/json");		
+		logger.debug("Sending request to: "+url);
+		logger.debug("with data: "+jsonContent);
+		try{
+			OutputStream output = connection.getOutputStream();
+			output.write(jsonContent.getBytes());
+		}catch (Exception e){
+			logger.error("Error sending request to: "+url);
+			logger.error("with data: "+jsonContent);
 			logger.error("Error occurred in making HTTP Request to external server",e);
 		}
 		InputStream input = connection.getInputStream();
-		byte[] bytes = IOUtils.toByteArray(input);
-		String responseJson = new String(bytes);
-		return responseJson;
+		return IOUtils.toByteArray(input);
 	}
 	
 	public static String getFromExternalServer(String url, Map<String, String> queryParams, Logger logger) throws MalformedURLException, IOException {
@@ -355,9 +433,9 @@ public class SimpleUtil {
 		connection.setDoOutput(true);
 		connection.setRequestProperty("Accept", "application/json");
 		connection.setRequestProperty("Accept-Charset", charset);
-		logger.info("Sending request to: "+fullUrl);
+		logger.debug("Sending request to: "+fullUrl);
 		int responseCode = connection.getResponseCode();
-		logger.info("Response Code: "+responseCode);
+		logger.debug("Response Code: "+responseCode);
 		BufferedReader inStream = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
@@ -368,6 +446,64 @@ public class SimpleUtil {
 		inStream.close();
 		return response.toString();
 	}
+
+
+
+	public static class PostResponse {
+	    private String json = null;
+	    private int status = -1;
+
+	    public int getStatus() {
+	        return this.status;
+	    }
+
+	    public void setStatus(int status) {
+	        this.status = status;
+	    }
+
+	    public String getJson() {
+	        return this.json;
+	    }
+
+	    public void setJson(String json) {
+	        this.json = json;
+	    }
+
+	}
+
+	public static PostResponse postRequestToExternalServerReturnObject(String url, String jsonContent, Logger logger) throws MalformedURLException, IOException {
+		String charset = "UTF-8";
+		HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+		connection.setRequestMethod("POST");
+		connection.setDoOutput(true);
+		connection.setRequestProperty("Accept", "application/json");
+		connection.setRequestProperty("Accept-Charset", charset);
+		connection.setRequestProperty("Content-Type", "application/json");		
+		logger.debug("Sending request to: "+url);
+		logger.debug("with data: "+jsonContent);
+		try{
+			OutputStream output = connection.getOutputStream();
+			output.write(jsonContent.getBytes());
+		} catch (Exception e){
+			logger.error("Error sending request to: "+url);
+			logger.error("with data: "+jsonContent);
+			logger.error("Error occurred in making HTTP Request to external server",e);
+		}
+		InputStream input;
+		if (connection.getResponseCode() < HttpURLConnection.HTTP_BAD_REQUEST) {
+			input = connection.getInputStream();
+		} else {
+		     /* error from server */
+			input = connection.getErrorStream();
+		}
+		byte[] bytes = IOUtils.toByteArray(input);
+		String responseJson = new String(bytes);
+		PostResponse postResponse = new PostResponse();
+		postResponse.setJson(responseJson);
+		postResponse.setStatus(connection.getResponseCode());
+		return postResponse;
+	}
+
 
 	public enum DbType {
 		MY_SQL, ORACLE, POSTGRES, SQL_SERVER, HSQLDB, H2, UNKNOWN
@@ -396,4 +532,32 @@ public class SimpleUtil {
 			return DbType.UNKNOWN;
 		}
 	}
+
+	public static List<List<Long>> splitArrayIntoGroups(List<Long> array, int groupSize) {
+		// Split array into groups of groupSize
+		List<List<Long>> groups = new ArrayList<List<Long>>();
+		List<Long> group = new ArrayList<Long>();
+		int loopCount = 1;
+		for (Long l : array) {
+			group.add(l);
+			// Check to see if we are at the end of the group or if we are at the end of the array
+			// if so, then add the group to the list of groups and start a new group
+			if (group.size() == groupSize || loopCount == array.size()) {
+				groups.add(group);
+				group = new ArrayList<Long>();
+			}
+			loopCount ++;
+		}
+		return groups;
+	}
+
+
+	public static List<List<Long>> splitIntArrayIntoGroups(List<BigInteger> missingIds, int groupSize) {
+		List<Long> longs = missingIds.stream()
+        	.mapToLong(BigInteger::longValue)
+        	.boxed().collect(Collectors.toList());
+
+		return splitArrayIntoGroups(longs, groupSize);
+	}
+
 }

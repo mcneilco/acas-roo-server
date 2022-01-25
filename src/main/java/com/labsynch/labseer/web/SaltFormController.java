@@ -28,6 +28,7 @@ import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.mysema.query.BooleanBuilder;
 import com.mysema.query.types.path.PathBuilder;
 
@@ -45,7 +46,7 @@ public class SaltFormController {
 	private ChemStructureService service;
 
 	private SaltForm saveSaltFormStructure(SaltForm saltForm) {
-		int saltFormCdId = service.saveStructure(saltForm.getMolStructure(), "SaltForm_Structure");
+		int saltFormCdId = service.saveStructure(saltForm.getMolStructure(), StructureType.SALT_FORM);
 		saltForm.setCdId(saltFormCdId);
 		return saltForm;
 	}

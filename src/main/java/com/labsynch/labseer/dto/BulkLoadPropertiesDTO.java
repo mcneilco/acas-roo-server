@@ -24,9 +24,10 @@ import com.labsynch.labseer.domain.BulkLoadTemplate;
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.PhysicalState;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.labsynch.labseer.utils.ExcludeNulls;
 
 import flexjson.JSONSerializer;
@@ -37,8 +38,6 @@ import flexjson.JSONSerializer;
 public class BulkLoadPropertiesDTO {
 	
 	private static final Logger logger = LoggerFactory.getLogger(BulkLoadPropertiesDTO.class);
-	
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
 
     private Collection<SimpleBulkLoadPropertyDTO> sdfProperties;
     
@@ -52,8 +51,8 @@ public class BulkLoadPropertiesDTO {
     
     private String templateName;
     
-    public BulkLoadPropertiesDTO(){
-    	this.dbProperties = mainConfig.getBulkLoadSettings().getDbProperties();
+    public BulkLoadPropertiesDTO(Collection<SimpleBulkLoadPropertyDTO> dbProperties){
+    	this.dbProperties = dbProperties;
     }
     
     public String toJson() {

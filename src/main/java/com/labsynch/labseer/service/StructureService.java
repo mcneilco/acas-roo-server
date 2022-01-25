@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.MolPropertiesDTO;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 @Service
 public interface StructureService {
@@ -24,12 +25,12 @@ public interface StructureService {
 	byte[] renderStructureByCodeName(String codeName, Integer height,
 			Integer width, String format) throws IOException, CDKException;
 
-	Collection<ChemStructure> searchStructures(String queryMol, String searchType,
+	Collection<ChemStructure> searchStructures(String queryMol, SearchType searchType,
 			Integer maxResults, Float similarity);
 
-	Collection<String> searchStructuresCodes(String queryMol, String searchType, Integer maxResults, Float similarity);
+	Collection<String> searchStructuresCodes(String queryMol, SearchType searchType, Integer maxResults, Float similarity);
 
-	Collection<ChemStructure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType,
+	Collection<ChemStructure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, SearchType searchType,
 			Integer maxResults, Float similarity);
 
 	String renderMolStructureBase64(String molStructure, Integer hSize, Integer wSize, String format)

@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.MolPropertiesDTO;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
@@ -184,16 +185,16 @@ public class StructureServiceImpl implements StructureService {
 	}
 
 	@Override
-	public Collection<ChemStructure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, String searchType, Integer maxResults, Float similarity){
+	public Collection<ChemStructure> searchStructuresByTypeKind(String queryMol, String lsType, String lsKind, SearchType searchType, Integer maxResults, Float similarity){
 		String chemistryPackage = propertiesUtilService.getChemistryPackage();
 		if (chemistryPackage == null) chemistryPackage = "rdkit";
 		Collection<ChemStructure> searchResults = new HashSet<ChemStructure>();
 		if (chemistryPackage.equalsIgnoreCase("rdkit")){
-			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")){
+			if (searchType == SearchType.SUBSTRUCTURE){
 				searchResults = rdkitSubstructureSearch(queryMol, maxResults);
-			}else if (searchType.equalsIgnoreCase("SIMILARITY")){
+			}else if (searchType == SearchType.SIMILARITY){
 				searchResults = rdkitSimilaritySearch(queryMol, similarity, maxResults);
-			}else if (searchType.equalsIgnoreCase("EXACT")){
+			}else if (searchType == SearchType.EXACT){
 				searchResults = rdkitExactSearch(queryMol, lsType, lsKind, maxResults);
 			}
 		}else{
@@ -227,16 +228,16 @@ public class StructureServiceImpl implements StructureService {
 	}
 
 	@Override
-	public Collection<ChemStructure> searchStructures(String queryMol, String searchType, Integer maxResults, Float similarity){
+	public Collection<ChemStructure> searchStructures(String queryMol, SearchType searchType, Integer maxResults, Float similarity){
 		String chemistryPackage = propertiesUtilService.getChemistryPackage();
 		if (chemistryPackage == null) chemistryPackage = "rdkit";
 		Collection<ChemStructure> searchResults = new HashSet<ChemStructure>();
 		if (chemistryPackage.equalsIgnoreCase("rdkit")){
-			if (searchType.equalsIgnoreCase("SUBSTRUCTURE")){
+			if (searchType == SearchType.SUBSTRUCTURE){
 				searchResults = rdkitSubstructureSearch(queryMol, maxResults);
-			}else if (searchType.equalsIgnoreCase("SIMILARITY")){
+			}else if (searchType == SearchType.SIMILARITY){
 				searchResults = rdkitSimilaritySearch(queryMol, similarity, maxResults);
-			}else if (searchType.equalsIgnoreCase("EXACT")){
+			}else if (searchType == SearchType.EXACT){
 				searchResults = rdkitExactSearch(queryMol, maxResults);
 			}
 		}else{
@@ -246,7 +247,7 @@ public class StructureServiceImpl implements StructureService {
 	}
 	
 	@Override
-	public Collection<String> searchStructuresCodes(String queryMol, String searchType, Integer maxResults, Float similarity){
+	public Collection<String> searchStructuresCodes(String queryMol, SearchType searchType, Integer maxResults, Float similarity){
 		String chemistryPackage = propertiesUtilService.getChemistryPackage();
 		if (chemistryPackage == null) chemistryPackage = "rdkit";
 		Collection<String> searchResults = new HashSet<String>();

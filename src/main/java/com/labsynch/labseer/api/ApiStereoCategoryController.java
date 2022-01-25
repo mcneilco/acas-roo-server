@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.StereoCategory;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RequestMapping(value = {"/api/v1/stereoCategories"})
 @Controller
@@ -28,7 +29,8 @@ public class ApiStereoCategoryController {
 
 	Logger logger = LoggerFactory.getLogger(ApiStereoCategoryController.class);
 
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	@RequestMapping(value = "/validate", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -154,7 +156,7 @@ public class ApiStereoCategoryController {
 		headers.add("Pragma", "no-cache"); //HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 
-		if (mainConfig.getServerSettings().isOrderSelectLists()){
+		if (propertiesUtilService.getOrderSelectLists()){
 			return new ResponseEntity<String>(StereoCategory.toJsonArray(StereoCategory.findAllStereoCategorys("name", "ASC")), headers, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<String>(StereoCategory.toJsonArray(StereoCategory.findAllStereoCategorys()), headers, HttpStatus.OK);

@@ -108,11 +108,6 @@ public class SecurityUtil {
 		Author chemist = new Author();
 		chemist.setUserName(loginName);
 		chemist.setFirstName(loginName);
-//		if (Configuration.getConfigInfo().getServerSettings().isNewUserIsChemist()){
-//			chemist.setIsChemist(true);
-//		}else{
-//			chemist.setIsChemist(false);
-//		}
 		chemist.persist();
 		return chemist;
 
@@ -123,11 +118,6 @@ public class SecurityUtil {
 		Author chemist = new Author();
 		chemist.setUserName(loginName);
 		chemist.setFirstName(fullName);
-//		if (Configuration.getConfigInfo().getServerSettings().isNewUserIsChemist()){
-//			chemist.setIsChemist(true);
-//		}else{
-//			chemist.setIsChemist(false);
-//		}
 		chemist.persist();
 		return chemist;
 

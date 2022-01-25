@@ -6,6 +6,7 @@ import com.epam.indigo.Indigo;
 import com.epam.indigo.IndigoObject;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
+import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
 public class CmpdRegSDFReaderIndigoImpl implements CmpdRegSDFReader {
 	
@@ -23,7 +24,7 @@ public class CmpdRegSDFReaderIndigoImpl implements CmpdRegSDFReader {
 	}
 
 	@Override
-	public CmpdRegMolecule readNextMol() throws IOException {
+	public CmpdRegMolecule readNextMol() throws IOException, CmpdRegMolFormatException {
 		if (reader.hasNext()) {
 			CmpdRegMoleculeIndigoImpl molecule = new CmpdRegMoleculeIndigoImpl(reader.next());
 			return molecule;

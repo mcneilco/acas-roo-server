@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
+import org.springframework.stereotype.Component;
+@Component
 public interface CmpdRegMolecule {
 		
 	public void setProperty(String key, String value);

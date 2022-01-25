@@ -6,6 +6,7 @@ import java.util.List;
 import com.labsynch.labseer.dto.SearchFormDTO;
 import com.labsynch.labseer.dto.SearchFormReturnDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 public interface SearchFormService {
 
@@ -14,7 +15,7 @@ public interface SearchFormService {
 
 
 	public String findParentIds(String molStructure,
-			int maxResults, Float similarity, String searchType,
+			int maxResults, Float similarity, SearchType searchType,
 			String outputFormat) throws IOException, CmpdRegMolFormatException;
 
 

@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
@@ -31,7 +32,7 @@ public class CmpdRegSDFReaderJChemImpl implements CmpdRegSDFReader {
 	}
 	
 	@Override
-	public CmpdRegMoleculeJChemImpl readNextMol() throws IOException{
+	public CmpdRegMolecule readNextMol() throws IOException, CmpdRegMolFormatException {
 		Molecule mol = this.molImporter.read();
 		if (mol == null) return null;
 		CmpdRegMoleculeJChemImpl molecule = new CmpdRegMoleculeJChemImpl(mol);

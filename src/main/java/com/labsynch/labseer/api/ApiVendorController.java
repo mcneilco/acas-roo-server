@@ -18,9 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Vendor;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @RequestMapping(value = {"/api/v1/vendors"})
 @Controller
@@ -28,7 +29,8 @@ public class ApiVendorController {
 
 	Logger logger = LoggerFactory.getLogger(ApiVendorController.class);
 
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 
 	//check if vendor already exists by code
@@ -160,7 +162,7 @@ public class ApiVendorController {
 		headers.add("Pragma", "no-cache"); //HTTP 1.0
 		headers.setExpires(0); // Expire the cache
 
-		if (mainConfig.getServerSettings().isOrderSelectLists()){
+		if (propertiesUtilService.getOrderSelectLists()){
 			return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findAllVendors("name", "ASC")), headers, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<String>(Vendor.toJsonArray(Vendor.findAllVendors()), headers, HttpStatus.OK);

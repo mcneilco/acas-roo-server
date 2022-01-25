@@ -17,5 +17,5 @@ public interface SaltFormService {
 	
 	public SaltForm updateSaltForm(Parent parent, SaltForm saltForm, Set<IsoSalt> isoSalts, Lot lot, double totalSaltWeight, ArrayList<ErrorMessage> errors) throws SaltFormMolFormatException, DupeSaltFormStructureException;
 
-
+	public double calculateSaltWeight(SaltForm saltForm);
 }

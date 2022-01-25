@@ -4,6 +4,7 @@
 package com.labsynch.labseer.dto;
 
 import com.labsynch.labseer.dto.FileSaveSendDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +36,14 @@ privileged aspect FileSaveSendDTO_Roo_JavaBean {
     
     public void FileSaveSendDTO.setFile(List<MultipartFile> file) {
         this.file = file;
+    }
+    
+    public PropertiesUtilService FileSaveSendDTO.getPropertiesUtilService() {
+        return this.propertiesUtilService;
+    }
+    
+    public void FileSaveSendDTO.setPropertiesUtilService(PropertiesUtilService propertiesUtilService) {
+        this.propertiesUtilService = propertiesUtilService;
     }
     
 }

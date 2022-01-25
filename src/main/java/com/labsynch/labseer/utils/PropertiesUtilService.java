@@ -1,5 +1,10 @@
 package com.labsynch.labseer.utils;
 
+import java.util.Collection;
+
+import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,5 +57,77 @@ public interface PropertiesUtilService {
 	String getBenchesLocationLabel();
 
 	String getEmailFromAddress();
+
+	String getAcasURL();
+
+	String getAcasAppURL();
 	
+	Boolean getLotCalledBatch();
+	
+	Boolean getUseExactMass();
+	
+	String getCorpPrefix();
+	
+	String getCorpSeparator();
+	
+	String getSaltSeparator();
+	
+	String getBatchSeparator();
+	
+	Integer getNumberCorpDigits();
+	
+	Integer getFormatBatchDigits();
+	
+	Integer getStartingCorpNumber();
+	
+	Boolean getFancyCorpNumberFormat();
+	
+	String getCorpParentFormat();
+	
+	String getCorpBatchFormat();
+	
+	Boolean getAppendSaltCodeToLotName();
+
+	Boolean getSaltBeforeLot();
+	
+	String getNoSaltCode();
+	
+	Boolean getUsePredefinedList();
+	
+	Boolean getUniqueNotebook();
+	
+	String getNotebookSavePath();
+	
+	SearchType getExactMatchDef();
+	
+	Integer getMaxSearchTime();
+	
+	Integer getMaxSearchResults();
+	
+	Boolean getProjectRestrictions();
+	
+	Boolean getCompoundInventory();
+	
+	Boolean getDisableTubeCreationIfNoBarcode();
+	
+	Boolean getCheckACASDependenciesByContainerCode();
+	
+	Boolean getUseExternalStandardizerConfig();
+	
+	String getStandardizerConfigFilePath();
+	
+	Boolean getOrderSelectLists();
+	
+	Boolean getRegisterNoStructureCompoundsAsUniqueParents();
+	
+	Boolean getUseProjectRoles();
+	
+	Collection<SimpleBulkLoadPropertyDTO> getDbProperties();
+
+	String getPreprocessorSettings();
+	
+	Integer getStandardizationBatchSize();
+
+	Integer getExternalStructureProcessingBatchSize();
+
 }

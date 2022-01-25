@@ -18,10 +18,11 @@ import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.dto.configuration.MainConfigDTO;
+
 import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
 import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
-import com.labsynch.labseer.utils.Configuration;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
 @Service
@@ -30,7 +31,17 @@ public class SaltFormServiceImpl implements SaltFormService {
 	@Autowired
 	private ChemStructureService chemService;
 
-	private static final MainConfigDTO mainConfig = Configuration.getConfigInfo();
+	@Autowired
+	private CorpNameService corpNameService;
+
+	@Autowired
+	private LotService lotService;
+
+	@Autowired
+	private IsoSaltService isoSaltService;
+	
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
 
 	private static final Logger logger = LoggerFactory.getLogger(SaltFormServiceImpl.class);
 
@@ -102,7 +113,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 			}
 		}
 		if (changedSaltForm){
-			if (mainConfig.getMetaLot().isSaltBeforeLot()){
+			if (propertiesUtilService.getSaltBeforeLot()){
 				// isSaltBeforeLot == true; Parent > SaltForm > Lot mode
 				//search for existing saltForms matching changed saltForm by set of isoSalts
 				boolean isNewSaltForm = true;
@@ -117,7 +128,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 						lot.setSaltForm(saltForm);
 						lot.setLotNumber(-1);
 						String oldCorpName = lot.getCorpName();
-						lot.setCorpName(lot.generateCorpName());
+						lot.setCorpName(lotService.generateCorpName(lot));
 						String newCorpName = lot.getCorpName();
 						errors.add(new ErrorMessage("info", "Changing saltForm has renamed this lot from "+oldCorpName+" to "+newCorpName));
 						saltForm.getLots().add(lot);
@@ -127,7 +138,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 				}
 				if (isNewSaltForm){
 					SaltForm newSaltForm = new SaltForm();
-					String saltFormCorpName = CorpName.generateSaltFormCorpName(parent.getCorpName(), isoSalts);
+					String saltFormCorpName = corpNameService.generateSaltFormCorpName(parent.getCorpName(), isoSalts);
 					newSaltForm.setParent(parent);
 					newSaltForm.setCasNumber(saltForm.getCasNumber());
 					newSaltForm.setChemist(saltForm.getChemist());
@@ -138,7 +149,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 						logger.debug("no salt form structure");
 
 					} else {
-						cdId = chemService.saveStructure(saltForm.getMolStructure(), "SaltForm_Structure", true);
+						cdId = chemService.saveStructure(saltForm.getMolStructure(), StructureType.SALT_FORM, true);
 						if (cdId == -1){
 							ErrorMessage saltFormError = new ErrorMessage();
 							saltFormError.setLevel("error");
@@ -159,7 +170,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 					newSaltForm.persist();
 					saltForm = newSaltForm;
 					lot.setSaltForm(saltForm);
-					lot.setCorpName(lot.generateCorpName());
+					lot.setCorpName(lotService.generateCorpName(lot));
 					lot.merge();
 					Set<IsoSalt> newIsoSalts = new HashSet<IsoSalt>();
 					for (IsoSalt isoSalt : isoSalts ){
@@ -171,7 +182,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 						newIsoSalt.setEquivalents(isoSalt.getEquivalents());
 						newIsoSalt.persist();
 						newIsoSalts.add(newIsoSalt);
-						double saltWeight = IsoSalt.calculateSaltWeight(newIsoSalt);
+						double saltWeight = isoSaltService.calculateSaltWeight(newIsoSalt);
 						totalSaltWeight = totalSaltWeight + saltWeight;
 						logger.debug("current totalSaltWeigth: " + totalSaltWeight);	
 					}
@@ -180,7 +191,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 					saltForm.merge();
 				}else{
 					lot.setSaltForm(saltForm);
-					lot.setCorpName(lot.generateCorpName());
+					lot.setCorpName(lotService.generateCorpName(lot));
 //					lot.merge();
 				}
 			}else{
@@ -189,7 +200,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 				logger.warn("SaltForm changed - updating saltForm and dependent lots");
 				double newTotalSaltWeight = 0;
 				for (IsoSalt isoSalt: isoSalts){
-					newTotalSaltWeight += IsoSalt.calculateSaltWeight(isoSalt);
+					newTotalSaltWeight += isoSaltService.calculateSaltWeight(isoSalt);
 				}
 				for (IsoSalt isoSalt : addedIsoSalts){
 					SaltForm oldSaltForm = SaltForm.findSaltForm(saltForm.getId());
@@ -205,7 +216,7 @@ public class SaltFormServiceImpl implements SaltFormService {
 				}
 				SaltForm oldSaltForm = SaltForm.findSaltForm(lot.getSaltForm().getId());
 				oldSaltForm.setSaltWeight(newTotalSaltWeight);
-				String saltFormCorpName = CorpName.generateSaltFormCorpName(parent.getCorpName(), isoSalts);
+				String saltFormCorpName = corpNameService.generateSaltFormCorpName(parent.getCorpName(), isoSalts);
 				oldSaltForm.setCorpName(saltFormCorpName);
 				for (IsoSalt isoSalt : isoSalts){
 					isoSalt.setSaltForm(oldSaltForm);
@@ -220,9 +231,9 @@ public class SaltFormServiceImpl implements SaltFormService {
 				String oldLotCorpName = oldLot.getCorpName();
 				lot.setLotMolWeight(Lot.calculateLotMolWeight(oldLot));
 				String newLotCorpName = oldLot.getCorpName();
-				if (!mainConfig.getServerSettings().getCorpBatchFormat().equalsIgnoreCase("cas_style_format")){
+				if (!propertiesUtilService.getCorpBatchFormat().equalsIgnoreCase("cas_style_format")){
 					// if NOT cas_style lot corpName; generate a new lot corp name based on lot numbering
-					lot.setCorpName(lot.generateCorpName());
+					lot.setCorpName(lotService.generateCorpName(lot));
 					newLotCorpName = lot.getCorpName();
 				}
 				lot.merge();
@@ -270,6 +281,17 @@ public class SaltFormServiceImpl implements SaltFormService {
 				}
 			return true;
 		}
+	}
+
+	@Override
+	public double calculateSaltWeight(SaltForm saltForm){
+		double totalSaltWeight = 0;
+		for (IsoSalt isoSalt : saltForm.getIsoSalts() ){
+			double saltWeight = isoSaltService.calculateSaltWeight(isoSalt);
+			totalSaltWeight = totalSaltWeight + saltWeight;
+			logger.debug("current totalSaltWeigth: " + totalSaltWeight);	
+		}
+		return totalSaltWeight;
 	}
 
 
