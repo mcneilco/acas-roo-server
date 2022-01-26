@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -21,6 +23,7 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 
@@ -73,6 +76,16 @@ public class StandardizationDryRunCompound {
 	private String comment;
 
 	private boolean ignore;
+	
+	@Enumerated(EnumType.STRING)
+	private CmpdRegMolecule.StandardizationStatus standardizationStatus;
+
+	private String standardizationComment;
+
+	@Enumerated(EnumType.STRING)
+	private CmpdRegMolecule.RegistrationStatus registrationStatus;
+
+	private String registrationComment;
 
 	public StandardizationDryRunCompound() {
 	}

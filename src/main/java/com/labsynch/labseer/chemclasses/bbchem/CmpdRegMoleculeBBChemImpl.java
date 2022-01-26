@@ -23,8 +23,9 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	private BBChemStructureService bbChemStructureService;
 
-	public CmpdRegMoleculeBBChemImpl(BBChemParentStructure molecule) {
+	public CmpdRegMoleculeBBChemImpl(BBChemParentStructure molecule, BBChemStructureService bbChemStructureService) {
 		this.molecule = molecule;
+		this.bbChemStructureService = bbChemStructureService;
 	}
 
 	public CmpdRegMoleculeBBChemImpl(String singleSDF, BBChemStructureService bbChemStructureService) {

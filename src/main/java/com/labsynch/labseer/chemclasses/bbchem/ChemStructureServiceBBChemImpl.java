@@ -42,6 +42,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -609,7 +610,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public HashMap<String, CmpdRegMolecule> standardizeStructures(HashMap<String, String> structures) throws CmpdRegMolFormatException {
 
 		// Get preprocessed structures (standardized mol structures)
-		HashMap<String, String> preprocessedStructures = new HashMap<String, String>();
+		HashMap<String, Entry<String, String>>preprocessedStructures = new HashMap<String, Entry<String, String>>();
 		try {
 			preprocessedStructures = bbChemStructureService.getPreprocessedStructures(structures);
 		} catch (IOException e) {
@@ -617,14 +618,31 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			throw new CmpdRegMolFormatException("Error getting preprocessed structures: "+e.getMessage());
 		}
 
+		// Only structures which have passed preprocessing should be passed to be processed so we need to remove those with an error
+		// Loop through the preprocessStructures and remove any structures that have an error
+		HashMap<String, String> structuresToProcess = new HashMap<String, String>();
+		for (String structureKey : preprocessedStructures.keySet()){
+			Entry<String, String> preprocessedStructure = preprocessedStructures.get(structureKey);
+			if (!preprocessedStructure.getKey().equals("SUCCESS")) {
+				logger.error("Got unexpected status '"+preprocessedStructure.getKey()+"' when preprocessing structure for id:'"+structureKey+"' molstruture: '" + structures.get(structureKey) + "'");
+				// Just add the original structure to the list of structures to process
+				// We will add the error message to the structure later
+				// TODO: Make sure the statement ends up true before merging this code
+				structuresToProcess.put(structureKey, structures.get(structureKey));
+			} else {
+				structuresToProcess.put(structureKey, preprocessedStructure.getValue());
+			}
+
+		}
+
 		// Get processed structures (hashes and include fingerprints)
-		HashMap<String, BBChemParentStructure> standardizedStructures = bbChemStructureService.getProcessedStructures(preprocessedStructures, true);
+		HashMap<String, BBChemParentStructure> standardizedStructures = bbChemStructureService.getProcessedStructures(structuresToProcess, true);
 
 		// Return hashmap
 		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
 		for(String key : standardizedStructures.keySet()){
 			BBChemParentStructure bbchemStructure = standardizedStructures.get(key);
-			CmpdRegMolecule molStructure = new CmpdRegMoleculeBBChemImpl(bbchemStructure);
+			CmpdRegMolecule molStructure = new CmpdRegMoleculeBBChemImpl(bbchemStructure, bbChemStructureService);
 			result.put(key, molStructure);
 		}
 		return result;
@@ -740,7 +758,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			}
 			BBChemParentStructure bbchemParentStructure = new BBChemParentStructure();
 			bbchemParentStructure.updateStructureInfo(structure);
-			result.put(key, new CmpdRegMoleculeBBChemImpl(bbchemParentStructure));
+			result.put(key, new CmpdRegMoleculeBBChemImpl(bbchemParentStructure, bbChemStructureService));
 		}
 		return result;
 	}

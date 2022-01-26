@@ -36,4 +36,18 @@ public interface CmpdRegMolecule {
 
 	public void dearomatize();
 
+	public StandardizationStatus getStandardizationStatus();
+	public enum StandardizationStatus {
+		SUCCESS,
+		ERROR,
+		WARNING
+	}
+
+	public RegistrationStatus getRegistrationStatus();
+	public enum RegistrationStatus {
+		SUCCESS,
+		ERROR,
+		WARNING
+	}
+
 }
