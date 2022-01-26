@@ -209,4 +209,26 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		return this.molecule;
 	}
 
+	@Override
+	public StandardizationStatus getStandardizationStatus() {
+		return this.molecule.getStandardizationStatus();
+	}
+
+	@Override
+	public String getStandardizationComment() {
+		return this.molecule.getStandardizationComment();
+	}
+
+	@Override
+	public RegistrationStatus getRegistrationStatus() {
+		return this.molecule.getRegistrationStatus();
+
+	}
+
+	@Override
+	public String getRegistrationComment() {
+		return this.molecule.getRegistrationComment();
+
+	}
+
 }

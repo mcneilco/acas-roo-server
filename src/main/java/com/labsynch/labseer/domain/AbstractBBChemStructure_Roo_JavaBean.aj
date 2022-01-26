@@ -3,6 +3,8 @@
 
 package com.labsynch.labseer.domain;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import java.util.BitSet;
 import java.util.Date;
@@ -56,6 +58,38 @@ privileged aspect AbstractBBChemStructure_Roo_JavaBean {
     
     public void AbstractBBChemStructure.setRecordedDate(Date recordedDate) {
         this.recordedDate = recordedDate;
+    }
+    
+    public StandardizationStatus AbstractBBChemStructure.getStandardizationStatus() {
+        return this.standardizationStatus;
+    }
+    
+    public void AbstractBBChemStructure.setStandardizationStatus(StandardizationStatus standardizationStatus) {
+        this.standardizationStatus = standardizationStatus;
+    }
+    
+    public String AbstractBBChemStructure.getStandardizationComment() {
+        return this.standardizationComment;
+    }
+    
+    public void AbstractBBChemStructure.setStandardizationComment(String standardizationComment) {
+        this.standardizationComment = standardizationComment;
+    }
+    
+    public RegistrationStatus AbstractBBChemStructure.getRegistrationStatus() {
+        return this.registrationStatus;
+    }
+    
+    public void AbstractBBChemStructure.setRegistrationStatus(RegistrationStatus registrationStatus) {
+        this.registrationStatus = registrationStatus;
+    }
+    
+    public String AbstractBBChemStructure.getRegistrationComment() {
+        return this.registrationComment;
+    }
+    
+    public void AbstractBBChemStructure.setRegistrationComment(String registrationComment) {
+        this.registrationComment = registrationComment;
     }
     
     public Double AbstractBBChemStructure.getExactMolWeight() {

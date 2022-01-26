@@ -40,6 +40,10 @@ CREATE TABLE standardization_dry_run_compound
   cd_id integer NOT NULL,
   mol_structure text,
   comment character varying(2000),
+  registration_status character varying(255),
+  registration_comment text,
+  standardization_status character varying(255),
+  standardization_comment text,
   ignore boolean,
   CONSTRAINT stndzn_dry_run_pkey PRIMARY KEY (id)
 )

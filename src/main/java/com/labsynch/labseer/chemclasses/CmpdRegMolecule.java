@@ -43,11 +43,15 @@ public interface CmpdRegMolecule {
 		WARNING
 	}
 
+	public String getStandardizationComment();
+
 	public RegistrationStatus getRegistrationStatus();
 	public enum RegistrationStatus {
 		SUCCESS,
 		ERROR,
 		WARNING
 	}
+
+	public String getRegistrationComment();
 
 }
