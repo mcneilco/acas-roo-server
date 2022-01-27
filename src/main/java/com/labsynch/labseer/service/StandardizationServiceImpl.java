@@ -325,7 +325,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					logger.debug("the compounds are NOT matching: " + parent.getCorpName());
 					nonMatchingCmpds++;
 				}
-				// }
+
 				cdId = parentIdToStructureId.get(parentId.toString());
 
 				if (cdId == -1) {
@@ -411,9 +411,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				boolean firstOldDuplicateHit = true;
 				dryRunCompound = StandardizationDryRunCompound.findStandardizationDryRunCompound(dryRunId);
 				logger.debug("query compound: " + dryRunCompound.getCorpName());
-				// if (dryRunCompound.getNewMolWeight() == 0) {
-				// 	logger.debug("mol has a weight of 0 - skipping");
-				// } else {
+
 				HashMap<String, Integer> chemStructureHashMap = new HashMap<String, Integer>();
 
 				// Arbitrary key to call service and fetch cmpdreg molecule

@@ -629,7 +629,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			throw new CmpdRegMolFormatException("Error getting preprocessed structures: "+e.getMessage());
 		}
 
-		// Only structures which have passed preprocessing should be passed to be processed so we need to remove those with an error
+		// Filling in preprocessor failures with their original structure
 		// Loop through the preprocessStructures and remove any structures that have an error
 		HashMap<String, String> structuresToProcess = new HashMap<String, String>();
 		for (String structureKey : preprocessedStructures.keySet()){
@@ -638,7 +638,6 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				logger.error("Got unexpected status '"+preprocessedStructure.getKey()+"' when preprocessing structure for id:'"+structureKey+"' molstruture: '" + structures.get(structureKey) + "'");
 				// Just add the original structure to the list of structures to process
 				// We will add the error message to the structure later
-				// TODO: Make sure the statement ends up true before merging this code
 				structuresToProcess.put(structureKey, structures.get(structureKey));
 			} else {
 				structuresToProcess.put(structureKey, preprocessedStructure.getValue());
