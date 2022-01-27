@@ -14,7 +14,7 @@ privileged aspect AbstractBBChemStructure_Roo_Jpa_ActiveRecord {
     @PersistenceContext
     transient EntityManager AbstractBBChemStructure.entityManager;
     
-    public static final List<String> AbstractBBChemStructure.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "preReg", "reg", "mol", "substructure", "similarity", "recordedDate", "exactMolWeight", "averageMolWeight", "totalCharge", "smiles", "inchi", "molecularFormula", "properties");
+    public static final List<String> AbstractBBChemStructure.fieldNames4OrderClauseFilter = java.util.Arrays.asList("id", "preReg", "reg", "mol", "substructure", "similarity", "recordedDate", "standardizationStatus", "standardizationComment", "registrationStatus", "registrationComment", "exactMolWeight", "averageMolWeight", "totalCharge", "smiles", "inchi", "molecularFormula", "properties");
     
     public static final EntityManager AbstractBBChemStructure.entityManager() {
         EntityManager em = new AbstractBBChemStructure() {
