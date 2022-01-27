@@ -137,12 +137,12 @@ public class StandardizationDryRunCompound {
 
 		TypedQuery<Long> standardizationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.standardizationStatus = :standardizationStatus", Long.class);
 		standardizationStatusCountQuery.setParameter("standardizationStatus", StandardizationStatus.ERROR);
-		stats.setStandardizationStatusErrorCount(toIntExact(standardizationStatusCountQuery.getSingleResult()));
+		stats.setStandardizationErrorCount(toIntExact(standardizationStatusCountQuery.getSingleResult()));
 
 
 		TypedQuery<Long> registrationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.registrationStatus = :registrationStatus", Long.class);
 		registrationStatusCountQuery.setParameter("registrationStatus", StandardizationStatus.ERROR);
-		stats.setStandardizationStatusErrorCount(toIntExact(registrationStatusCountQuery.getSingleResult()));
+		stats.setRegistrationErrorCount(toIntExact(registrationStatusCountQuery.getSingleResult()));
 
 		return(stats);
 	}
@@ -301,12 +301,12 @@ public class StandardizationDryRunCompound {
 
 		TypedQuery<Long> standardizationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.standardizationStatus = :standardizationStatus", Long.class);
 		standardizationStatusCountQuery.setParameter("standardizationStatus", StandardizationStatus.ERROR);
-		standardizationHistory.setStandardizationStatusErrorCount(toIntExact(standardizationStatusCountQuery.getSingleResult()));
+		standardizationHistory.setStandardizationErrorCount(toIntExact(standardizationStatusCountQuery.getSingleResult()));
 
 
 		TypedQuery<Long> registrationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.registrationStatus = :registrationStatus", Long.class);
 		registrationStatusCountQuery.setParameter("registrationStatus", StandardizationStatus.ERROR);
-		standardizationHistory.setStandardizationStatusErrorCount(toIntExact(registrationStatusCountQuery.getSingleResult()));
+		standardizationHistory.setRegistrationErrorCount(toIntExact(registrationStatusCountQuery.getSingleResult()));
 
 		return(standardizationHistory);
 	}
