@@ -47,6 +47,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	private PropertiesUtilService propertiesUtilService;
 
 	private static final String EMPTY_STRUCTURE = "EMPTY_STRUCTURE";
+	private static final String ERROR_STRUCTURE = "ERROR_STRUCTURE";
 
 	@Override
 	public JsonNode getPreprocessorSettings() throws IOException {
@@ -433,23 +434,26 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				// Check if we have an error code
 				if( errorCodeNode != null) {
 					String errorCode = errorCodeNode.asText();
+					String msg = responseJsonNode.get("error_msg").getTextValue();
 					if(errorCode.equals("4004")) {
-						String msg = responseJsonNode.get("error_msg").getTextValue();
-						logger.warn("Preprocessor error code 4004 for '" + structureKey + "': " + msg);
+						logger.warn("Processor error code '" + errorCode + "' for '" + structureKey + "': " + msg);
 						bbChemStructure.setReg(EMPTY_STRUCTURE);
 						bbChemStructure.setPreReg(EMPTY_STRUCTURE);
 						bbChemStructure.setMol(structures.get(structureKey));
 						bbChemStructure.setAverageMolWeight(0.0);
 						bbChemStructure.setExactMolWeight(0.0);
 						bbChemStructure.setTotalCharge(0);
+						bbChemStructure.setRegistrationStatus(CmpdRegMolecule.RegistrationStatus.WARNING);
+						bbChemStructure.setRegistrationComment(msg);
 
-						// We are not setting smiles or molecular formula in the
-						// bbChemStructure.setSmiles(EMPTY_STRUCTURE);
-						// bbChemStructure.setMolecularFormula(EMPTY_STRUCTURE);
 					} else {
 						// Print the structures
-						logger.error("There was an error processing the structure for '" + structureKey + "', structure was '" + structures.get(structureKey) + "'");
-						throw new CmpdRegMolFormatException("Error processing structures: Error Code " + errorCodeNode.getTextValue() + " " + responseJsonNode.get("error_msg").getTextValue());
+						logger.error("Processor error code '" + errorCode + "' for '" + structureKey + "': " + msg);
+						bbChemStructure.setReg(ERROR_STRUCTURE);
+						bbChemStructure.setPreReg(ERROR_STRUCTURE);
+						bbChemStructure.setMol(structures.get(structureKey));
+						bbChemStructure.setRegistrationStatus(CmpdRegMolecule.RegistrationStatus.ERROR);
+						bbChemStructure.setRegistrationComment(msg);
 					}
 				} else {
 
@@ -477,6 +481,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	
 					JsonNode molecularFormulaNode = responseJsonNode.get("molecular_formula");
 					bbChemStructure.setMolecularFormula(molecularFormulaNode.asText());
+
+					bbChemStructure.setRegistrationStatus(CmpdRegMolecule.RegistrationStatus.SUCCESS);
+					bbChemStructure.setRegistrationComment(null);
 					
 				}
 
@@ -492,7 +499,10 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				// Input fingerprint hashes
 				HashMap<String, String> processedStructureHash = new HashMap<String, String>();
 				for (String structureId : processedStructures.keySet()){
-					processedStructureHash.put(structureId, processedStructures.get(structureId).getMol());
+					BBChemParentStructure processedStructure = processedStructures.get(structureId);
+					if(processedStructure.getRegistrationStatus() == CmpdRegMolecule.RegistrationStatus.SUCCESS) {
+						processedStructureHash.put(structureId, processedStructure.getMol());
+					}
 				}
 
 				// Get the fingerprints

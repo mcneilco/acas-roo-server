@@ -42,11 +42,9 @@ public abstract class AbstractBBChemStructure {
 		this.id = id;
 	}
 
-    @NotNull
     @Column(columnDefinition = "CHAR(40)")
     private String preReg;
 
-    @NotNull
     @Column(columnDefinition = "CHAR(40)")
     private String reg;
 
@@ -108,6 +106,10 @@ public abstract class AbstractBBChemStructure {
         this.setTotalCharge(updatedBbChemStructure.getTotalCharge());
         this.setSmiles(updatedBbChemStructure.getSmiles());
         this.setMolecularFormula(updatedBbChemStructure.getMolecularFormula());
+        this.setStandardizationStatus(updatedBbChemStructure.getStandardizationStatus());
+        this.setStandardizationComment(updatedBbChemStructure.getStandardizationComment());
+        this.setRegistrationStatus(updatedBbChemStructure.getRegistrationStatus());
+        this.setRegistrationComment(updatedBbChemStructure.getRegistrationComment());
         this.setRecordedDate(updatedBbChemStructure.getRecordedDate());
     } 
 
