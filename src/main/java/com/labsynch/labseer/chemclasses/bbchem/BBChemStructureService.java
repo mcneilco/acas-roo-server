@@ -2,7 +2,6 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
@@ -21,8 +20,7 @@ public interface BBChemStructureService {
 
     public HashMap<String, BBChemParentStructure> getProcessedStructures(HashMap<String, String> structures, Boolean includeFingerprints) throws CmpdRegMolFormatException;
 
-    // HashMap<OriginalKey, Entry<PreprocessorStatus, PreprocessorStructure>>
-    public HashMap<String, Entry<String, String>> getPreprocessedStructures(HashMap<String, String> structures) throws CmpdRegMolFormatException, IOException;
+    public HashMap<String, String> getPreprocessedStructures(HashMap<String, String> structures) throws CmpdRegMolFormatException, IOException;
 
     public String getSDF(BBChemParentStructure structure) throws IOException;
 

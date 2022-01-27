@@ -1,8 +1,5 @@
 package com.labsynch.labseer.dto;
 
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
-
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -67,9 +64,5 @@ public class StandardizationDryRunSearchDTO {
     private String filePath;
 
     private Integer maxResults;
-
-    private StandardizationStatus[] standardizationStatuses;
-
-    private RegistrationStatus[] registrationStatuses;
 
 }

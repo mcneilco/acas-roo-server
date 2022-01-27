@@ -3,7 +3,6 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.BitSet;
@@ -11,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -46,8 +44,6 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
 
-	private static final String EMPTY_STRUCTURE = "EMPTY_STRUCTURE";
-	private static final String ERROR_STRUCTURE = "ERROR_STRUCTURE";
 
 	@Override
 	public JsonNode getPreprocessorSettings() throws IOException {
@@ -297,10 +293,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 	}
 
 	@Override
-	public HashMap<String, Entry<String, String>> getPreprocessedStructures(HashMap<String, String> structures)  throws CmpdRegMolFormatException, IOException{
-		// Return a hashmap of the preprocessed structures
-		// HashMap<OriginalKey, Entry<PreprocessorStatus, PreprocessedStructure>>
-
+	public HashMap<String, String> getPreprocessedStructures(HashMap<String, String> structures)  throws CmpdRegMolFormatException, IOException{
 		// Returns standardized mols
 		String url = getUrlFromPreprocessorSettings("preprocessURL");
 
@@ -378,7 +371,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		List<Integer> responseIds = new ArrayList<Integer>(responseMap.keySet());
 		Collections.sort(responseIds);
 		//Empty hashmap
-		HashMap<String, Entry<String, String>> standardizedStructures = new HashMap<String, Entry<String, String>>();
+		HashMap<String, String> standardizedStructures = new HashMap<String, String>();
 		for(Integer responseId : responseIds) {
 			logger.debug("Response ID: " + responseId);
 			// Combine the json nodes
@@ -387,11 +380,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 			// Add the standardized structures to the hashmap
 			structuresResponseNode.getFieldNames().forEachRemaining(structureId -> {
-				JsonNode node = structuresResponseNode.get(structureId);
-				String status = node.get("status").asText();
-				String structure = node.get("structure").asText();
-				Map.Entry<String,String> entry = new AbstractMap.SimpleEntry<String, String>(status, structure);
-				standardizedStructures.put(structureId, entry);
+				String structure = structuresResponseNode.get(structureId).get("structure").asText();
+				standardizedStructures.put(structureId, structure);
 			});
 		}
 
@@ -423,74 +413,47 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				JsonNode responseJsonNode = responseNode.get(i);
 				
 				BBChemParentStructure bbChemStructure = new BBChemParentStructure();
-
-				// The output array is guaranteed to be in the same order as its inputs
-				// So get the key from the array we created above and assume the same order
-				String structureKey = structuresArray[i].toString();
-
+				
 				// Throw exception if there is an error reading the molecule
 				JsonNode errorCodeNode = responseJsonNode.get("error_code");
 
 				// Check if we have an error code
 				if( errorCodeNode != null) {
-					String errorCode = errorCodeNode.asText();
-					String msg = responseJsonNode.get("error_msg").getTextValue();
-					if(errorCode.equals("4004")) {
-						logger.warn("Processor error code '" + errorCode + "' for '" + structureKey + "': " + msg);
-						bbChemStructure.setReg(EMPTY_STRUCTURE);
-						bbChemStructure.setPreReg(EMPTY_STRUCTURE);
-						bbChemStructure.setMol(structures.get(structureKey));
-						bbChemStructure.setAverageMolWeight(0.0);
-						bbChemStructure.setExactMolWeight(0.0);
-						bbChemStructure.setTotalCharge(0);
-						bbChemStructure.setRegistrationStatus(CmpdRegMolecule.RegistrationStatus.WARNING);
-						bbChemStructure.setRegistrationComment(msg);
-
-					} else {
-						// Print the structures
-						logger.error("Processor error code '" + errorCode + "' for '" + structureKey + "': " + msg);
-						bbChemStructure.setReg(ERROR_STRUCTURE);
-						bbChemStructure.setPreReg(ERROR_STRUCTURE);
-						bbChemStructure.setMol(structures.get(structureKey));
-						bbChemStructure.setRegistrationStatus(CmpdRegMolecule.RegistrationStatus.ERROR);
-						bbChemStructure.setRegistrationComment(msg);
-					}
-				} else {
-
-					JsonNode registrationHashesNode = responseJsonNode.get("registration_hash");
-					String registrationHash = registrationHashesNode.get(0).asText();
-					bbChemStructure.setReg(registrationHashesNode.get(0).asText());
-	
-					JsonNode noStereoHashNode = responseJsonNode.get("no_stereo_hash");
-					bbChemStructure.setPreReg(noStereoHashNode.asText());
-	
-					JsonNode sdfNode = responseJsonNode.get("sdf");
-					bbChemStructure.setMol(sdfNode.asText());
-	
-					JsonNode averageMolWeightNode = responseJsonNode.get("molecular_weight");
-					bbChemStructure.setAverageMolWeight(averageMolWeightNode.asDouble());
-	
-					JsonNode exactMolWeightNode = responseJsonNode.get("exact_molecular_weight");
-					bbChemStructure.setExactMolWeight(exactMolWeightNode.asDouble());
-	
-					JsonNode totalChargeNode = responseJsonNode.get("total_charge");
-					bbChemStructure.setTotalCharge(Integer.valueOf(totalChargeNode.asInt()));
-	
-					JsonNode smilesNode = responseJsonNode.get("smiles");
-					bbChemStructure.setSmiles(smilesNode.asText());
-	
-					JsonNode molecularFormulaNode = responseJsonNode.get("molecular_formula");
-					bbChemStructure.setMolecularFormula(molecularFormulaNode.asText());
-
-					bbChemStructure.setRegistrationStatus(CmpdRegMolecule.RegistrationStatus.SUCCESS);
-					bbChemStructure.setRegistrationComment(null);
-					
+					throw new CmpdRegMolFormatException("Error processing structures: Error Code " + errorCodeNode.getTextValue() + " " + responseJsonNode.get("error_msg").getTextValue());
 				}
+				JsonNode registrationHashesNode = responseJsonNode.get("registration_hash");
+				String registrationHash = registrationHashesNode.get(0).asText();
+				bbChemStructure.setReg(registrationHashesNode.get(0).asText());
+
+				JsonNode noStereoHashNode = responseJsonNode.get("no_stereo_hash");
+				bbChemStructure.setPreReg(noStereoHashNode.asText());
+
+				JsonNode sdfNode = responseJsonNode.get("sdf");
+				bbChemStructure.setMol(sdfNode.asText());
+
+				JsonNode averageMolWeightNode = responseJsonNode.get("molecular_weight");
+				bbChemStructure.setAverageMolWeight(averageMolWeightNode.asDouble());
+
+				JsonNode exactMolWeightNode = responseJsonNode.get("exact_molecular_weight");
+				bbChemStructure.setExactMolWeight(exactMolWeightNode.asDouble());
+
+				JsonNode totalChargeNode = responseJsonNode.get("total_charge");
+				bbChemStructure.setTotalCharge(Integer.valueOf(totalChargeNode.asInt()));
+
+				JsonNode smilesNode = responseJsonNode.get("smiles");
+				bbChemStructure.setSmiles(smilesNode.asText());
+
+				JsonNode molecularFormulaNode = responseJsonNode.get("molecular_formula");
+				bbChemStructure.setMolecularFormula(molecularFormulaNode.asText());
 
 				// Set recorded date todays date. This simplifies the code when we need to persist the structure
 				// in various places.
 				bbChemStructure.setRecordedDate(new Date());
 
+				// The output array is guaranteed to be in the same order as its inputs
+				// So get the key from the array we created above and assume the same order
+				String structureKey = structuresArray[i].toString();
+				
 				// Add to the map
 				processedStructures.put(structureKey, bbChemStructure);
 			}
@@ -499,10 +462,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				// Input fingerprint hashes
 				HashMap<String, String> processedStructureHash = new HashMap<String, String>();
 				for (String structureId : processedStructures.keySet()){
-					BBChemParentStructure processedStructure = processedStructures.get(structureId);
-					if(processedStructure.getRegistrationStatus() == CmpdRegMolecule.RegistrationStatus.SUCCESS) {
-						processedStructureHash.put(structureId, processedStructure.getMol());
-					}
+					processedStructureHash.put(structureId, processedStructures.get(structureId).getMol());
 				}
 
 				// Get the fingerprints

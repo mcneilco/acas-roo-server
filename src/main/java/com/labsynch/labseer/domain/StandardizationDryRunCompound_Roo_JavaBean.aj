@@ -3,8 +3,6 @@
 
 package com.labsynch.labseer.domain;
 
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import java.util.Date;
 
@@ -176,38 +174,6 @@ privileged aspect StandardizationDryRunCompound_Roo_JavaBean {
     
     public void StandardizationDryRunCompound.setIgnore(boolean ignore) {
         this.ignore = ignore;
-    }
-    
-    public StandardizationStatus StandardizationDryRunCompound.getStandardizationStatus() {
-        return this.standardizationStatus;
-    }
-    
-    public void StandardizationDryRunCompound.setStandardizationStatus(StandardizationStatus standardizationStatus) {
-        this.standardizationStatus = standardizationStatus;
-    }
-    
-    public String StandardizationDryRunCompound.getStandardizationComment() {
-        return this.standardizationComment;
-    }
-    
-    public void StandardizationDryRunCompound.setStandardizationComment(String standardizationComment) {
-        this.standardizationComment = standardizationComment;
-    }
-    
-    public RegistrationStatus StandardizationDryRunCompound.getRegistrationStatus() {
-        return this.registrationStatus;
-    }
-    
-    public void StandardizationDryRunCompound.setRegistrationStatus(RegistrationStatus registrationStatus) {
-        this.registrationStatus = registrationStatus;
-    }
-    
-    public String StandardizationDryRunCompound.getRegistrationComment() {
-        return this.registrationComment;
-    }
-    
-    public void StandardizationDryRunCompound.setRegistrationComment(String registrationComment) {
-        this.registrationComment = registrationComment;
     }
     
 }

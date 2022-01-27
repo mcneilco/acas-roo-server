@@ -3,8 +3,6 @@
 
 package com.labsynch.labseer.dto;
 
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 
 privileged aspect StandardizationDryRunSearchDTO_Roo_JavaBean {
@@ -103,22 +101,6 @@ privileged aspect StandardizationDryRunSearchDTO_Roo_JavaBean {
     
     public void StandardizationDryRunSearchDTO.setMaxResults(Integer maxResults) {
         this.maxResults = maxResults;
-    }
-    
-    public StandardizationStatus[] StandardizationDryRunSearchDTO.getStandardizationStatuses() {
-        return this.standardizationStatuses;
-    }
-    
-    public void StandardizationDryRunSearchDTO.setStandardizationStatuses(StandardizationStatus[] standardizationStatuses) {
-        this.standardizationStatuses = standardizationStatuses;
-    }
-    
-    public RegistrationStatus[] StandardizationDryRunSearchDTO.getRegistrationStatuses() {
-        return this.registrationStatuses;
-    }
-    
-    public void StandardizationDryRunSearchDTO.setRegistrationStatuses(RegistrationStatus[] registrationStatuses) {
-        this.registrationStatuses = registrationStatuses;
     }
     
 }

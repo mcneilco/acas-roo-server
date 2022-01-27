@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -23,7 +21,6 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 
@@ -76,16 +73,6 @@ public class StandardizationDryRunCompound {
 	private String comment;
 
 	private boolean ignore;
-	
-	@Enumerated(EnumType.STRING)
-	private CmpdRegMolecule.StandardizationStatus standardizationStatus;
-
-	private String standardizationComment;
-
-	@Enumerated(EnumType.STRING)
-	private CmpdRegMolecule.RegistrationStatus registrationStatus;
-
-	private String registrationComment;
 
 	public StandardizationDryRunCompound() {
 	}
@@ -238,24 +225,6 @@ public class StandardizationDryRunCompound {
 			predicates.add(criteriaBuilder.equal(root.get("asDrawnDisplayChange"), dryRunSearch.getAsDrawnDisplayChange()));
 		}
 
-		// Standardization statuses
-		if (dryRunSearch.getStandardizationStatuses() != null) {
-			if(dryRunSearch.getStandardizationStatuses().length > 0) {
-				predicates.add(root.get("standardizationStatus").in(dryRunSearch.getStandardizationStatuses()));
-			} else {
-				predicates.add(criteriaBuilder.equal(root.get("id"), -1));
-			}
-		}
-		
-		// Registration statuses
-		if (dryRunSearch.getRegistrationStatuses() != null) {
-			if(dryRunSearch.getRegistrationStatuses().length > 0) {
-				predicates.add(root.get("registrationStatus").in(dryRunSearch.getRegistrationStatuses()));
-			} else {
-				predicates.add(criteriaBuilder.equal(root.get("id"), -1));
-			}
-		}
-		
 		Predicate[] predicatesToAdd = new Predicate[0];
 		predicatesToAdd = predicates.toArray(predicatesToAdd);
 		Predicate wherePredicates = criteriaBuilder.and(predicatesToAdd);
