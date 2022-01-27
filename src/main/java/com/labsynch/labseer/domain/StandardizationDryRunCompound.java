@@ -24,6 +24,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
 
@@ -133,6 +134,15 @@ public class StandardizationDryRunCompound {
 		stats.setNewDuplicateCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.newDuplicateCount > 0", Long.class).getSingleResult()));
 		stats.setDisplayChangeCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.displayChange = true", Long.class).getSingleResult()));
 		stats.setAsDrawnDisplayChangeCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.asDrawnDisplayChange = true", Long.class).getSingleResult()));
+
+		TypedQuery<Long> standardizationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.standardizationStatus = :standardizationStatus", Long.class);
+		standardizationStatusCountQuery.setParameter("standardizationStatus", StandardizationStatus.ERROR);
+		stats.setStandardizationErrorCount(toIntExact(standardizationStatusCountQuery.getSingleResult()));
+
+
+		TypedQuery<Long> registrationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.registrationStatus = :registrationStatus", Long.class);
+		registrationStatusCountQuery.setParameter("registrationStatus", StandardizationStatus.ERROR);
+		stats.setRegistrationErrorCount(toIntExact(registrationStatusCountQuery.getSingleResult()));
 
 		return(stats);
 	}
@@ -288,6 +298,16 @@ public class StandardizationDryRunCompound {
 		standardizationHistory.setNewDuplicateCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.newDuplicateCount > 0", Long.class).getSingleResult()));
 		standardizationHistory.setDisplayChangeCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.displayChange = true", Long.class).getSingleResult()));
 		standardizationHistory.setAsDrawnDisplayChangeCount(toIntExact(StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.asDrawnDisplayChange = true", Long.class).getSingleResult()));
+
+		TypedQuery<Long> standardizationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.standardizationStatus = :standardizationStatus", Long.class);
+		standardizationStatusCountQuery.setParameter("standardizationStatus", StandardizationStatus.ERROR);
+		standardizationHistory.setStandardizationErrorCount(toIntExact(standardizationStatusCountQuery.getSingleResult()));
+
+
+		TypedQuery<Long> registrationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.registrationStatus = :registrationStatus", Long.class);
+		registrationStatusCountQuery.setParameter("registrationStatus", StandardizationStatus.ERROR);
+		standardizationHistory.setRegistrationErrorCount(toIntExact(registrationStatusCountQuery.getSingleResult()));
+
 		return(standardizationHistory);
 	}
 }
