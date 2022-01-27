@@ -168,4 +168,20 @@ privileged aspect StandardizationHistory_Roo_JavaBean {
         this.dryRunStandardizationChangesCount = dryRunStandardizationChangesCount;
     }
     
+    public Integer StandardizationHistory.getStandardizationErrorCount() {
+        return this.standardizationErrorCount;
+    }
+    
+    public void StandardizationHistory.setStandardizationErrorCount(Integer standardizationErrorCount) {
+        this.standardizationErrorCount = standardizationErrorCount;
+    }
+    
+    public Integer StandardizationHistory.getRegistrationErrorCount() {
+        return this.registrationErrorCount;
+    }
+    
+    public void StandardizationHistory.setRegistrationErrorCount(Integer registrationErrorCount) {
+        this.registrationErrorCount = registrationErrorCount;
+    }
+    
 }
