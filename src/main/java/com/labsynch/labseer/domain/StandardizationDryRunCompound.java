@@ -238,6 +238,24 @@ public class StandardizationDryRunCompound {
 			predicates.add(criteriaBuilder.equal(root.get("asDrawnDisplayChange"), dryRunSearch.getAsDrawnDisplayChange()));
 		}
 
+		// Standardization statuses
+		if (dryRunSearch.getStandardizationStatuses() != null) {
+			if(dryRunSearch.getStandardizationStatuses().length > 0) {
+				predicates.add(root.get("standardizationStatus").in(dryRunSearch.getStandardizationStatuses()));
+			} else {
+				predicates.add(criteriaBuilder.equal(root.get("id"), -1));
+			}
+		}
+		
+		// Registration statuses
+		if (dryRunSearch.getRegistrationStatuses() != null) {
+			if(dryRunSearch.getRegistrationStatuses().length > 0) {
+				predicates.add(root.get("registrationStatus").in(dryRunSearch.getRegistrationStatuses()));
+			} else {
+				predicates.add(criteriaBuilder.equal(root.get("id"), -1));
+			}
+		}
+		
 		Predicate[] predicatesToAdd = new Predicate[0];
 		predicatesToAdd = predicates.toArray(predicatesToAdd);
 		Predicate wherePredicates = criteriaBuilder.and(predicatesToAdd);
