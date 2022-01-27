@@ -22,6 +22,7 @@ RUN 	mvn clean && \
         mv target/acas* $CATALINA_HOME/webapps/acas
 
 FROM 	${TOMCAT_IMAGE} as build
+RUN     dnf install -y openssl
 COPY 	--from=compile /src/target/acas*.war $CATALINA_HOME/webapps/acas/ $CATALINA_HOME/webapps/acas.war
 COPY 	--from=compile /src/target/acas* $CATALINA_HOME/webapps/acas/ $CATALINA_HOME/webapps/acas
 WORKDIR $CATALINA_HOME
