@@ -75,6 +75,8 @@ CREATE TABLE standardization_history
   display_change_count integer,
   as_drawn_display_change_count integer,
   changed_structure_count integer,
+  standardization_error_count integer,
+  registration_error_count integer,
   CONSTRAINT stndzn_history_pkey PRIMARY KEY (id)
 )
 WITH (

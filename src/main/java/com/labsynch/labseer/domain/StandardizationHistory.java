@@ -63,6 +63,10 @@ public class StandardizationHistory {
 
 	private Integer dryRunStandardizationChangesCount;
 
+	private Integer standardizationErrorCount;
+
+	private Integer registrationErrorCount;
+	
 	public StandardizationHistory() {
 	}
 
