@@ -78,7 +78,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 	public String getFormula() {
 		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) { 
 			return null; 
-		} else if(this.molecule.getRegistrationStatus() != RegistrationStatus.ERROR && this.molecule.getMolecularFormula() != null) {
+		} else if(this.molecule.getMolecularFormula() != null) {
 			return this.molecule.getMolecularFormula();
 		} else {
 			try {
