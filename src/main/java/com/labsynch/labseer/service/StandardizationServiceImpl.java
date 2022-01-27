@@ -571,6 +571,10 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 			CmpdRegMolecule cmpdRegMolecule = cmpdRegMolecules.get(stndznCompound.getCorpName());
 			if (cmpdRegMolecule != null) {
 				cmpdRegMolecule.setProperty("Corporate ID", stndznCompound.getCorpName());
+				cmpdRegMolecule.setProperty("Standardization Status", stndznCompound.getStandardizationStatus().name());
+				cmpdRegMolecule.setProperty("Standardization Comment", stndznCompound.getStandardizationComment());
+				cmpdRegMolecule.setProperty("Registration Status", stndznCompound.getRegistrationStatus().name());
+				cmpdRegMolecule.setProperty("Registration Comment", stndznCompound.getRegistrationComment());
 				cmpdRegMolecule.setProperty("Structure Change", String.valueOf(stndznCompound.isChangedStructure()));
 				cmpdRegMolecule.setProperty("Display Change", String.valueOf(stndznCompound.isDisplayChange()));
 				cmpdRegMolecule.setProperty("New Duplicates", stndznCompound.getNewDuplicates());
