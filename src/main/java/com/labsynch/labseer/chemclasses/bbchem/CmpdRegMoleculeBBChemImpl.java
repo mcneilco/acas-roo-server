@@ -23,8 +23,9 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	private BBChemStructureService bbChemStructureService;
 
-	public CmpdRegMoleculeBBChemImpl(BBChemParentStructure molecule) {
+	public CmpdRegMoleculeBBChemImpl(BBChemParentStructure molecule, BBChemStructureService bbChemStructureService) {
 		this.molecule = molecule;
+		this.bbChemStructureService = bbChemStructureService;
 	}
 
 	public CmpdRegMoleculeBBChemImpl(String singleSDF, BBChemStructureService bbChemStructureService) {
@@ -75,7 +76,8 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public String getFormula() {
-		if(this.molecule.getMolecularFormula() != null) {
+		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) return null;
+		if(this.molecule.getRegistrationStatus() != RegistrationStatus.ERROR && this.molecule.getMolecularFormula() != null) {
 			return this.molecule.getMolecularFormula();
 		} else {
 			try {
@@ -90,6 +92,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public Double getExactMass() {
+		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) return null;
 		if(this.molecule.getExactMolWeight() != null) {
 			return this.molecule.getExactMolWeight();
 		} else {
@@ -105,6 +108,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public Double getMass() {
+		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) return null;
 		if(this.molecule.getAverageMolWeight() != null) {
 			return this.molecule.getAverageMolWeight();
 		} else {
@@ -120,6 +124,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public int getTotalCharge() {
+		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) return -1;
 		if(this.molecule.getTotalCharge() != null) {
 			return this.molecule.getTotalCharge();
 		} else {
@@ -135,6 +140,7 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	@Override
 	public String getSmiles() {
+		if(this.getRegistrationStatus() == RegistrationStatus.ERROR) return null;
 		if(this.molecule.getSmiles() != null) {
 			return this.molecule.getSmiles();
 		} else {
@@ -206,6 +212,28 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 
 	public BBChemParentStructure getMolecule() {
 		return this.molecule;
+	}
+
+	@Override
+	public StandardizationStatus getStandardizationStatus() {
+		return this.molecule.getStandardizationStatus();
+	}
+
+	@Override
+	public String getStandardizationComment() {
+		return this.molecule.getStandardizationComment();
+	}
+
+	@Override
+	public RegistrationStatus getRegistrationStatus() {
+		return this.molecule.getRegistrationStatus();
+
+	}
+
+	@Override
+	public String getRegistrationComment() {
+		return this.molecule.getRegistrationComment();
+
 	}
 
 }

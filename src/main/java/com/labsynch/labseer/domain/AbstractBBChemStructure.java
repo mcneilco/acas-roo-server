@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -12,6 +14,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 
 import org.hibernate.annotations.Type;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -39,11 +42,9 @@ public abstract class AbstractBBChemStructure {
 		this.id = id;
 	}
 
-    @NotNull
     @Column(columnDefinition = "CHAR(40)")
     private String preReg;
 
-    @NotNull
     @Column(columnDefinition = "CHAR(40)")
     private String reg;
 
@@ -62,6 +63,16 @@ public abstract class AbstractBBChemStructure {
     @NotNull
     @DateTimeFormat(style="M-")
     private Date recordedDate;
+
+	@Enumerated(EnumType.STRING)
+	private CmpdRegMolecule.StandardizationStatus standardizationStatus;
+
+	private String standardizationComment;
+
+	@Enumerated(EnumType.STRING)
+	private CmpdRegMolecule.RegistrationStatus registrationStatus;
+
+	private String registrationComment;
 
     @Transient
     private Double exactMolWeight;
@@ -95,6 +106,10 @@ public abstract class AbstractBBChemStructure {
         this.setTotalCharge(updatedBbChemStructure.getTotalCharge());
         this.setSmiles(updatedBbChemStructure.getSmiles());
         this.setMolecularFormula(updatedBbChemStructure.getMolecularFormula());
+        this.setStandardizationStatus(updatedBbChemStructure.getStandardizationStatus());
+        this.setStandardizationComment(updatedBbChemStructure.getStandardizationComment());
+        this.setRegistrationStatus(updatedBbChemStructure.getRegistrationStatus());
+        this.setRegistrationComment(updatedBbChemStructure.getRegistrationComment());
         this.setRecordedDate(updatedBbChemStructure.getRecordedDate());
     } 
 

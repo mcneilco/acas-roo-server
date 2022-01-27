@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
@@ -42,6 +44,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -261,7 +264,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	private int saveStructure(BBChemParentStructure bbChemStructure, StructureType structureType, boolean checkForDupes) {
 		Long cdId=0L;
 		try {
-			if(bbChemStructure.getReg() == null || bbChemStructure.getSubstructure() == null) {
+			if(bbChemStructure.getRegistrationStatus() != RegistrationStatus.ERROR && (bbChemStructure.getReg() == null || bbChemStructure.getSubstructure() == null)) {
 				logger.info("Reg or Substructure is null for bbchem structure so calling processStructure to generate them before saving");
 				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true);
 			}
@@ -399,6 +402,15 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 
 	private Boolean updateStructure(BBChemParentStructure bbChemStructure, StructureType structureType, int cdId) {
 		Long id= new Long(cdId);
+		if(bbChemStructure.getRegistrationStatus() != RegistrationStatus.ERROR && (bbChemStructure.getReg() == null || bbChemStructure.getSubstructure() == null)) {
+			logger.info("Reg or Substructure is null for bbchem structure so calling processStructure to generate them before saving");
+			try{
+				bbChemStructure = bbChemStructureService.getProcessedStructure(bbChemStructure.getMol(), true);
+			} catch (CmpdRegMolFormatException e) {
+				logger.error("Error processing molfile: " + e.getMessage());
+				return false;
+			}
+		}
 		if (structureType == StructureType.PARENT){
 			BBChemParentStructure bbChemStructureSaved = BBChemParentStructure.findBBChemParentStructure(id);
 			if(bbChemStructureSaved == null) {
@@ -609,7 +621,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 	public HashMap<String, CmpdRegMolecule> standardizeStructures(HashMap<String, String> structures) throws CmpdRegMolFormatException {
 
 		// Get preprocessed structures (standardized mol structures)
-		HashMap<String, String> preprocessedStructures = new HashMap<String, String>();
+		HashMap<String, Entry<String, String>>preprocessedStructures = new HashMap<String, Entry<String, String>>();
 		try {
 			preprocessedStructures = bbChemStructureService.getPreprocessedStructures(structures);
 		} catch (IOException e) {
@@ -617,14 +629,40 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			throw new CmpdRegMolFormatException("Error getting preprocessed structures: "+e.getMessage());
 		}
 
+		// Only structures which have passed preprocessing should be passed to be processed so we need to remove those with an error
+		// Loop through the preprocessStructures and remove any structures that have an error
+		HashMap<String, String> structuresToProcess = new HashMap<String, String>();
+		for (String structureKey : preprocessedStructures.keySet()){
+			Entry<String, String> preprocessedStructure = preprocessedStructures.get(structureKey);
+			if (!preprocessedStructure.getKey().equals("SUCCESS")) {
+				logger.error("Got unexpected status '"+preprocessedStructure.getKey()+"' when preprocessing structure for id:'"+structureKey+"' molstruture: '" + structures.get(structureKey) + "'");
+				// Just add the original structure to the list of structures to process
+				// We will add the error message to the structure later
+				// TODO: Make sure the statement ends up true before merging this code
+				structuresToProcess.put(structureKey, structures.get(structureKey));
+			} else {
+				structuresToProcess.put(structureKey, preprocessedStructure.getValue());
+			}
+
+		}
+
 		// Get processed structures (hashes and include fingerprints)
-		HashMap<String, BBChemParentStructure> standardizedStructures = bbChemStructureService.getProcessedStructures(preprocessedStructures, true);
+		HashMap<String, BBChemParentStructure> standardizedStructures = bbChemStructureService.getProcessedStructures(structuresToProcess, true);
 
 		// Return hashmap
 		HashMap<String, CmpdRegMolecule> result = new HashMap<String, CmpdRegMolecule>();
 		for(String key : standardizedStructures.keySet()){
 			BBChemParentStructure bbchemStructure = standardizedStructures.get(key);
-			CmpdRegMolecule molStructure = new CmpdRegMoleculeBBChemImpl(bbchemStructure);
+
+			// Fill in the standardization status and standardization comments
+			Entry<String, String> preprocessedStructure = preprocessedStructures.get(key);
+			if(preprocessedStructure.getKey().equals("SUCCESS")) {
+				bbchemStructure.setStandardizationStatus(StandardizationStatus.SUCCESS);
+			} else {
+				bbchemStructure.setStandardizationStatus(StandardizationStatus.ERROR);
+			}
+
+			CmpdRegMolecule molStructure = new CmpdRegMoleculeBBChemImpl(bbchemStructure, bbChemStructureService);
 			result.put(key, molStructure);
 		}
 		return result;
@@ -740,7 +778,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			}
 			BBChemParentStructure bbchemParentStructure = new BBChemParentStructure();
 			bbchemParentStructure.updateStructureInfo(structure);
-			result.put(key, new CmpdRegMoleculeBBChemImpl(bbchemParentStructure));
+			result.put(key, new CmpdRegMoleculeBBChemImpl(bbchemParentStructure, bbChemStructureService));
 		}
 		return result;
 	}
