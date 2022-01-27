@@ -490,7 +490,6 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 					dryRunCompound.setExistingDuplicates(oldDuplicateCorpNames);
 					}
 
-				// }
 
 				dryRunCompound.merge();
 				newDuplicateCorpNames = "";
