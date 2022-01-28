@@ -136,4 +136,23 @@ public class CmpdRegMoleculeIndigoImpl implements CmpdRegMolecule {
 		this.molecule.dearomatize();
 	}
 
+	@Override
+	public StandardizationStatus getStandardizationStatus() {
+		return StandardizationStatus.SUCCESS;
+	}
+
+	@Override
+	public String getStandardizationComment() {
+		return null;
+	}
+
+	@Override
+	public RegistrationStatus getRegistrationStatus() {
+		return RegistrationStatus.SUCCESS;
+	}
+
+	@Override
+	public String getRegistrationComment() {
+		return null;
+	}
 }
