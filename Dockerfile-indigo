@@ -1,3 +1,4 @@
+# IDENTICAL TO Dockerfile but commented out unused CHEMISTRY_ENGINES for use with environments which do not support usage of buildkit builds
 ARG 	CHEMISTRY_PACKAGE=indigo
 ARG 	TOMCAT_IMAGE=mcneilco/tomcat-maven:1.4-openjdk8
 
