@@ -1,4 +1,4 @@
-# IDENTICAL TO Dockerfile but removed unused CHEMISTRY_ENGINES for use with environments which do not support usage of buildkit builds
+# IDENTICAL TO Dockerfile-multistage but removed unused CHEMISTRY_ENGINES for use with environments which do not support usage of buildkit builds
 ARG 	CHEMISTRY_PACKAGE=jchem
 ARG 	TOMCAT_IMAGE=mcneilco/tomcat-maven:1.5-openjdk8
 
