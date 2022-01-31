@@ -97,7 +97,8 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			for (String structure : structureGroupList) {
 				arrayNode.add(structure);
 			}
-			requestData.put("sdfs", arrayNode);
+			requestData.put("input", arrayNode);
+			requestData.put("input_type", "sdf");
 			requestData.put("fingerprint_type", type);
 
 			// Post to the service and parse the response
@@ -727,8 +728,9 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		for(AbstractBBChemStructure needsMatch : needsMatchStructures) {
 			arrayNode.add(needsMatch.getMol());
 		}
-		requestData.put("needs_match_molv3s", arrayNode);
-		requestData.put("query_molv3", queryMol);
+		requestData.put("needs_match", arrayNode);
+		requestData.put("query", queryMol);
+		requestData.put("input_type", "sdf");
 		requestData.put("boolean_results", true);
 		// Post to the service and parse the response
 		try {
