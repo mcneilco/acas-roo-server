@@ -1,5 +1,5 @@
 ARG 	CHEMISTRY_PACKAGE=jchem
-ARG 	TOMCAT_IMAGE=mcneilco/tomcat-maven:1.3-openjdk8
+ARG 	TOMCAT_IMAGE=mcneilco/tomcat-maven:1.6-openjdk8
 
 FROM 	${TOMCAT_IMAGE} as dependencies
 ARG     CHEMISTRY_PACKAGE
@@ -22,7 +22,6 @@ RUN 	mvn clean && \
         mv target/acas* $CATALINA_HOME/webapps/acas
 
 FROM 	${TOMCAT_IMAGE} as build
-RUN     dnf install -y openssl
 COPY 	--from=compile /src/target/acas*.war $CATALINA_HOME/webapps/acas/ $CATALINA_HOME/webapps/acas.war
 COPY 	--from=compile /src/target/acas* $CATALINA_HOME/webapps/acas/ $CATALINA_HOME/webapps/acas
 WORKDIR $CATALINA_HOME
