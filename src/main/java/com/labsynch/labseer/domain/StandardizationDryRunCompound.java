@@ -24,6 +24,7 @@ import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule.RegistrationStatus;
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule.StandardizationStatus;
 import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
 import com.labsynch.labseer.dto.configuration.StandardizerSettingsConfigDTO;
@@ -305,7 +306,7 @@ public class StandardizationDryRunCompound {
 
 
 		TypedQuery<Long> registrationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.registrationStatus = :registrationStatus", Long.class);
-		registrationStatusCountQuery.setParameter("registrationStatus", StandardizationStatus.ERROR);
+		registrationStatusCountQuery.setParameter("registrationStatus", RegistrationStatus.ERROR);
 		standardizationHistory.setRegistrationErrorCount(toIntExact(registrationStatusCountQuery.getSingleResult()));
 
 		return(standardizationHistory);
