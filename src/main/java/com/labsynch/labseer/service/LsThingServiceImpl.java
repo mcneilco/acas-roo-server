@@ -3100,7 +3100,7 @@ public class LsThingServiceImpl implements LsThingService {
 			if (queryDTO.getSecondInteractions() != null){
 				List<ItxQueryDTO> secondInteractions = new ArrayList<ItxQueryDTO>();
 				for (ItxQueryDTO itx : queryDTO.getSecondInteractions()){
-					if(itx.getThingLabelText() != null | itx.getThingCodeName() != null | (itx.getThingValues() != null & itx.getThingValues().size() > 0)) {
+					if(itx.getThingLabelText() != null | itx.getThingCodeName() != null | (itx.getThingValues() != null && itx.getThingValues().size() > 0)) {
 						secondInteractions.add(itx);
 						hasCriteria = true;
 					}
