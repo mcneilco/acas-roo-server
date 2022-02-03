@@ -3,7 +3,6 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.util.List;
 
-import com.labsynch.labseer.dto.SearchCompoundReturnDTO;
 import com.labsynch.labseer.dto.SearchFormDTO;
 import com.labsynch.labseer.dto.SearchFormReturnDTO;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
@@ -18,5 +17,9 @@ public interface SearchFormService {
 			int maxResults, Float similarity, String searchType,
 			String outputFormat) throws IOException, CmpdRegMolFormatException;
 
+
+	public List<Integer> findParentIds(String molStructure,
+			Integer maxResults, Float similarity, String searchType,
+			List<String> projects) throws IOException, CmpdRegMolFormatException;
 
 }
