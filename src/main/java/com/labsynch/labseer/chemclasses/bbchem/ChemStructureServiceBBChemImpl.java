@@ -111,6 +111,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 					query = BBChemSaltFormStructure.findBBChemSaltFormStructuresByPreRegEquals(bbchemStructure.getPreReg());
 				} else if (structureType == StructureType.DRY_RUN) {
 					query = BBChemDryRunStructure.findBBChemDryRunStructuresByPreRegEquals(bbchemStructure.getPreReg());
+				} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+					query = BBChemStandardizationDryRunStructure.findBBChemStandardizationDryRunStructuresByPreRegEquals(bbchemStructure.getPreReg());
 				} else {
 					throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches on " + structureType);
 				}
@@ -124,6 +126,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 					query = BBChemSaltFormStructure.findBBChemSaltFormStructuresByRegEquals(bbchemStructure.getReg());
 				} else if (structureType == StructureType.DRY_RUN) {
 					query = BBChemDryRunStructure.findBBChemDryRunStructuresByRegEquals(bbchemStructure.getReg());
+				} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+					query = BBChemStandardizationDryRunStructure.findBBChemStandardizationDryRunStructuresByRegEquals(bbchemStructure.getReg());
 				} else {
 					throw new CmpdRegMolFormatException("Structure type not implemented for BBChem searches on " + structureType);
 				}
@@ -249,6 +253,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			plainTable = "bbchem_salt_structure";
 		} else if (structureType == StructureType.DRY_RUN){
 			plainTable = "bbchem_dry_run_structure";
+		} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN){
+			plainTable = "bbchem_standardization_dry_run_structure";
 		}
 		return(plainTable);
 	}
@@ -319,6 +325,20 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				}
 				bbChemStructureDryRun.persist();
 				cdId = bbChemStructureDryRun.getId();
+			} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN){
+				// Can't type cast from subclass to superclass so we go to json and back
+				BBChemStandardizationDryRunStructure bbChemStructureStandardizationDryRun = new BBChemStandardizationDryRunStructure();
+				bbChemStructureStandardizationDryRun.updateStructureInfo(bbChemStructure);
+
+				if(checkForDupes){
+					List<BBChemStandardizationDryRunStructure> bbChemStructures =  BBChemStandardizationDryRunStructure.findBBChemStandardizationDryRunStructuresByRegEquals(bbChemStructureStandardizationDryRun.getReg()).getResultList();
+					if(bbChemStructures.size() > 0){
+						logger.error("StandardizationDryRun structure already exists with id "+ bbChemStructures.get(0).getId());
+						return 0;
+					}
+				}
+				bbChemStructureStandardizationDryRun.persist();
+				cdId = bbChemStructureStandardizationDryRun.getId();
 			}
 			logger.debug("Saved structure with id " + cdId);
 			return toIntExact(cdId);
@@ -439,6 +459,13 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			}
 			bbChemDryRunStructureSaved.updateStructureInfo(bbChemStructure);
 			bbChemDryRunStructureSaved.persist();
+		} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN){
+			BBChemStandardizationDryRunStructure bbChemStandardizationDryRunStructureSaved = BBChemStandardizationDryRunStructure.findBBChemStandardizationDryRunStructure(id);
+			if(bbChemStandardizationDryRunStructureSaved == null) {
+				return false;
+			}
+			bbChemStandardizationDryRunStructureSaved.updateStructureInfo(bbChemStructure);
+			bbChemStandardizationDryRunStructureSaved.persist();
 		}
 		return true;
 	}
@@ -499,6 +526,12 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				return false;
 			}
 			bbChemDryRunStructure.remove();
+		} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN){
+			BBChemStandardizationDryRunStructure bbChemStandardizationDryRunStructure = BBChemStandardizationDryRunStructure.findBBChemStandardizationDryRunStructure(id);
+			if(bbChemStandardizationDryRunStructure == null) {
+				return false;
+			}
+			bbChemStandardizationDryRunStructure.remove();
 		}
 		return true;
 	}
@@ -774,6 +807,8 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 				structure = BBChemSaltFormStructure.findBBChemSaltFormStructure(structureId.longValue());
 			} else if (structureType == StructureType.DRY_RUN) {
 				structure = BBChemDryRunStructure.findBBChemDryRunStructure(structureId.longValue());
+			} else if (structureType == StructureType.STANDARDIZATION_DRY_RUN) {
+				structure = BBChemStandardizationDryRunStructure.findBBChemStandardizationDryRunStructure(structureId.longValue());
 			}
 			BBChemParentStructure bbchemParentStructure = new BBChemParentStructure();
 			bbchemParentStructure.updateStructureInfo(structure);
