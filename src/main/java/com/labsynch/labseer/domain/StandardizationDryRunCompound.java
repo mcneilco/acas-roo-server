@@ -142,7 +142,7 @@ public class StandardizationDryRunCompound {
 
 
 		TypedQuery<Long> registrationStatusCountQuery = StandardizationDryRunCompound.entityManager().createQuery("SELECT count(s.id) FROM StandardizationDryRunCompound s WHERE s.registrationStatus = :registrationStatus", Long.class);
-		registrationStatusCountQuery.setParameter("registrationStatus", StandardizationStatus.ERROR);
+		registrationStatusCountQuery.setParameter("registrationStatus", RegistrationStatus.ERROR);
 		stats.setRegistrationErrorCount(toIntExact(registrationStatusCountQuery.getSingleResult()));
 
 		return(stats);
