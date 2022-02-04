@@ -189,7 +189,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 
 	@Transactional
 	private HashMap<String, Integer> saveDryRunStructures(HashMap<String, CmpdRegMolecule> structures) {
-		HashMap<String, Integer> saveResults = chemStructureService.saveStructures(structures, StructureType.DRY_RUN, false);
+		HashMap<String, Integer> saveResults = chemStructureService.saveStructures(structures, StructureType.STANDARDIZATION_DRY_RUN, false);
 		return saveResults;
 	}
 
@@ -418,12 +418,12 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 				String tmpStructureKey = "TmpStructureKey01";
 				chemStructureHashMap.put(tmpStructureKey, dryRunCompound.getCdId());
 				HashMap<String, CmpdRegMolecule> cmpdRegMolecules = chemStructureService.getCmpdRegMolecules(chemStructureHashMap,
-						StructureType.DRY_RUN);
+						StructureType.STANDARDIZATION_DRY_RUN);
 
 				// Pass -1F for simlarityPercent (non nullable int required in function signature not used in DUPLICATE_TAUTOMER searches)
 				// Pass -1 for maxResults (non nullable int required in function signature we don't want to limit the hit counts here)
 				hits = chemStructureService.searchMolStructures(cmpdRegMolecules.get(tmpStructureKey),
-						StructureType.DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
+						StructureType.STANDARDIZATION_DRY_RUN, SearchType.DUPLICATE_TAUTOMER, -1F, -1);
 				newDupeCount = hits.length;
 				for (int hit : hits) {
 					List<StandardizationDryRunCompound> searchResults = StandardizationDryRunCompound
@@ -561,7 +561,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 		for(StandardizationDryRunCompound stndznCompound : stndznCompounds){
 			standardizationDryRunHashCompoundHashmap.put(stndznCompound.getCorpName(), stndznCompound.getCdId());
 		}
-		HashMap<String, CmpdRegMolecule> cmpdRegMolecules = chemStructureService.getCmpdRegMolecules(standardizationDryRunHashCompoundHashmap, StructureType.DRY_RUN);
+		HashMap<String, CmpdRegMolecule> cmpdRegMolecules = chemStructureService.getCmpdRegMolecules(standardizationDryRunHashCompoundHashmap, StructureType.STANDARDIZATION_DRY_RUN);
 
 		// Loop stndznCompounds and write cmpdreg molecule to the sdf file
 		for (StandardizationDryRunCompound stndznCompound : stndznCompounds) {
@@ -608,7 +608,7 @@ public class StandardizationServiceImpl implements StandardizationService, Appli
 	@Override
 	@Transactional
 	public void reset() {
-		boolean truncateTable = chemStructureService.truncateStructureTable(StructureType.DRY_RUN);
+		boolean truncateTable = chemStructureService.truncateStructureTable(StructureType.STANDARDIZATION_DRY_RUN);
 		StandardizationDryRunCompound.truncateTable();
 	}
 
