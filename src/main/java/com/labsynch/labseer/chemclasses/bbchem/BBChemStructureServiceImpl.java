@@ -99,7 +99,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			}
 			requestData.put("input", arrayNode);
 			requestData.put("input_type", "sdf");
-			requestData.put("fingerprint_type", type);
+			requestData.put("fingerprint_use", type);
 
 			// Post to the service and parse the response
 			String requestString = requestData.toString();
