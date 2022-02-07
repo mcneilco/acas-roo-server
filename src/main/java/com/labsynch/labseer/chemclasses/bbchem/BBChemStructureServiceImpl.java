@@ -98,7 +98,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				arrayNode.add(structure);
 			}
 			requestData.put("input", arrayNode);
-			requestData.put("input_type", "sdf");
+			requestData.put("input_format", "sdf");
 			requestData.put("fingerprint_use", type);
 
 			// Post to the service and parse the response
@@ -730,7 +730,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		}
 		requestData.put("needs_match", arrayNode);
 		requestData.put("query", queryMol);
-		requestData.put("input_type", "sdf");
+		requestData.put("query_format", "sdf");
 		requestData.put("boolean_results", true);
 		// Post to the service and parse the response
 		try {
