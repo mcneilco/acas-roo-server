@@ -9,6 +9,8 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+      matrix:
+        chemistry_package: [ indigo, bingo ]
     steps:
       -
         name: Set up QEMU
@@ -27,4 +29,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: bbolt/acas:latest
+          tags: bbolt/acas-roo-server-oss:${{ matrix.chemistry_package }}
+          file: Dockerfile-${{ matrix.chemistry_package }}
+          
