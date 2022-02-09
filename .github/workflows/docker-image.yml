@@ -4,7 +4,9 @@ on:
   push:
     branches: [ release/1.13.7, release/1.13.6 ]
   pull_request:
-    branches: [ release/1.13.7, release/1.13.6 ]
+    branches: "**"
+  create:
+    tags: "**"
 jobs:
   acas-roo-server:
     runs-on: ubuntu-latest
@@ -32,7 +34,6 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=sha
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
