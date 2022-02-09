@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        chemistry_package: [ indigo, bingo ]
+        chemistry_package: [ indigo, bbchem ]
     steps:
       -
         name: Checkout
@@ -29,10 +29,9 @@ jobs:
             type=schedule
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
+            type=semver,pattern={{version}}-${{ matrix.chemistry_package }}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=sha
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
