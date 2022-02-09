@@ -1,7 +1,7 @@
-ARG 	CHEMISTRY_PACKAGE=bbchem
-ARG 	TOMCAT_IMAGE=mcneilco/tomcat-maven:1.6-openjdk8
+FROM adoptopenjdk/maven-openjdk8 as builder
 
-FROM 	${TOMCAT_IMAGE} as dependencies
+
+FROM 	builder as dependencies
 ARG     CHEMISTRY_PACKAGE
 ENV     CHEMISTRY_PACKAGE=${CHEMISTRY_PACKAGE}
 
@@ -23,7 +23,8 @@ RUN 	mvn clean && \
 RUN     mv target/acas*.war $CATALINA_HOME/webapps/acas.war && \
         mv target/acas* $CATALINA_HOME/webapps/acas/
 
-FROM 	${TOMCAT_IMAGE} as build
+FROM tomcat:9.0.58-jre8-openjdk-slim-buster
+RUN apt-get install -y openssl
 COPY 	--chown=runner:runner --from=compile /usr/local/tomcat/webapps/acas.war $CATALINA_HOME/webapps/acas.war
 COPY 	--chown=runner:runner --from=compile /usr/local/tomcat/webapps/acas $CATALINA_HOME/webapps/acas
 WORKDIR $CATALINA_HOME
