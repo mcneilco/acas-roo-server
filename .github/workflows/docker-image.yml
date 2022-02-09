@@ -54,4 +54,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: Dockerfile-multistage
+          platforms: linux/amd64,linux/arm64,linux/ppc64le
           build-args: CHEMISTRY_PACKAGE=${{ matrix.chemistry_package }}
