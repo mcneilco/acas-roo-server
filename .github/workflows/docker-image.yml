@@ -28,12 +28,12 @@ jobs:
             bbolt/acas-roo-server-oss
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=schedule-${{ matrix.chemistry_package }}
-            type=ref,event=branch-${{ matrix.chemistry_package }}
-            type=ref,event=pr-${{ matrix.chemistry_package }}
-            type=semver,pattern={{version}}-${{ matrix.chemistry_package }}
-            type=semver,pattern={{major}}.{{minor}}-${{ matrix.chemistry_package }}
-            type=semver,pattern={{major}}-${{ matrix.chemistry_package }}
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -51,6 +51,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.meta.outputs.tags }}-${{ matrix.chemistry_package }}
+          labels: ${{ steps.meta.outputs.labels }}-${{ matrix.chemistry_package }}
           file: Dockerfile-${{ matrix.chemistry_package }}
