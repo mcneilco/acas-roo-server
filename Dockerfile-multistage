@@ -23,8 +23,8 @@ RUN 	mvn clean && \
 
 FROM tomcat:9.0.58-jre8-openjdk-slim-buster
 RUN apt-get install -y openssl
-COPY 	--chown=runner:runner --from=compile /src/target/acas.war /usr/local/tomcat/webapps/webapps/acas.war
-COPY 	--chown=runner:runner --from=compile /src/target/acas /usr/local/tomcat/webapps/webapps/acas
+COPY 	--chown=runner:runner --from=compile /src/target/acas*.war /usr/local/tomcat/webapps/webapps/acas.war
+COPY 	--chown=runner:runner --from=compile /src/target/acas* /usr/local/tomcat/webapps/webapps/acas
 WORKDIR $CATALINA_HOME
 EXPOSE 	8080
 ENV    ACAS_HOME=/home/runner/build
