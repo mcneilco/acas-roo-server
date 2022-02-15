@@ -29,7 +29,7 @@ RUN apt-get update && \
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_VERSION 14.x
 RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
-  apt-get install -y nodejs
+  apt-get install -y nodejsa
 
 # runner user
 RUN	useradd -u 1000 -ms /bin/bash runner
