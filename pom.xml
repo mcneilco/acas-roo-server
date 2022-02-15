@@ -46,7 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<cdk.version>1.5.13</cdk.version>
 		<jchem.version>16.4.25.0</jchem.version>
 		<rdkit.version>2021.03.5-release</rdkit.version>
-		<indigo.version>1.2.3.r0</indigo.version>
+		<indigo.version>1.6.1</indigo.version>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
 		<tomcat.version>7.0.63</tomcat.version>
