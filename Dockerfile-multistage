@@ -30,7 +30,7 @@ RUN apt-get update && \
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_VERSION 14.x
 RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
-  apt-get install -y nodejs && \
+  apt-get install -y nodejs npm && \
   npm install -g coffeescript properties underscore underscore-deep-extend properties-parser flat glob dotenv dotenv-expand
 ENV NODE_PATH /usr/local/lib/node_modules
 
