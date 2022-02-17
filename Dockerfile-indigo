@@ -1,3 +1,4 @@
+# IDENTICAL TO Dockerfile-multistage but removed unused CHEMISTRY_ENGINES for use with environments which do not support usage of buildkit builds
 ARG 	CHEMISTRY_PACKAGE=indigo
 FROM adoptopenjdk/maven-openjdk8 as builder
 
@@ -16,32 +17,34 @@ RUN 	mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
 
 FROM tomcat:9.0.58-jre8-openjdk-slim-buster
+
 RUN apt-get update && \
     apt-get install -y openssl libfontconfig libfreetype6
 
-# node
+# Add nodejs for prepare config files
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_VERSION 14.x
-RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
-  apt-get install -y nodejs
+RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
+  apt-get install -y nodejs npm && \
+  npm install -g coffeescript properties underscore underscore-deep-extend properties-parser flat glob dotenv dotenv-expand
+ENV NODE_PATH /usr/local/lib/node_modules
 
-# runner user
+# Add runner user so we don't run as root
 RUN	useradd -u 1000 -ms /bin/bash runner
 
-# allow sel signed certs updates
+# Allow certificates to be added by runner
 RUN chgrp runner /usr/local/openjdk-8/lib/security/cacerts && \
     chmod g+w /usr/local/openjdk-8/lib/security/cacerts && \
     mkdir -p /usr/lib/jvm/java/jre/lib/security && \
     ln -s /usr/local/openjdk-8/lib/security/cacerts /usr/lib/jvm/java/jre/lib/security/cacerts
 
-# get acas from build
+# Get acas-roo-server compiled code
 COPY 	--chown=runner:runner --from=compile /src/target/acas*.war /usr/local/tomcat/webapps/acas.war
 COPY 	--chown=runner:runner --from=compile /src/target/acas* /usr/local/tomcat/webapps/acas
 
-# wait for it command to wait for db startup
+# Wait for it startup script
 COPY 	--chown=runner:runner wait-for-it.sh ./wait-for-it.sh
 RUN 	chmod 755 wait-for-it.sh
-
 
 WORKDIR $CATALINA_HOME
 ENV    ACAS_HOME=/home/runner/build
@@ -50,7 +53,10 @@ ENV    CATALINA_OPTS="-Xms512M -Xmx1536M -XX:MaxPermSize=512m"
 # Prepare config files
 COPY --chown=runner:runner ./PrepareConfigFiles.coffee /home/runner/build/src/javascripts/BuildUtilities/PrepareConfigFiles.coffee
 
-# entrypoint
+# Become runner user so we don't run as root
+USER runner
+
+# Setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"] 
 CMD 	["catalina.sh", "run"]
