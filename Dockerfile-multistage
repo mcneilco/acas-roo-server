@@ -57,6 +57,7 @@ ENV    CATALINA_OPTS="-Xms512M -Xmx1536M -XX:MaxPermSize=512m"
 # Prepare config files
 COPY --chown=runner:runner ./PrepareConfigFiles.coffee /home/runner/build/src/javascripts/BuildUtilities/PrepareConfigFiles.coffee
 
+USER runner
 # entrypoint
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"] 
