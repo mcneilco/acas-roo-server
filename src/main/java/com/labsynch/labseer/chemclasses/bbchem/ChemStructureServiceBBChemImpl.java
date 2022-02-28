@@ -89,6 +89,9 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 			// We need to do fingerprint matching for these searches so pass true here
 			serviceBBChemStructure = bbChemStructureService.getProcessedStructure(molfile, true);
 		}
+		if(serviceBBChemStructure.getRegistrationStatus() == RegistrationStatus.ERROR){
+			throw new CmpdRegMolFormatException(serviceBBChemStructure.getRegistrationComment());
+		}
 		return searchBBChemStructures(serviceBBChemStructure, structureType, inputCdIdHitList, searchType, simlarityPercent, maxResults);
 	}
 

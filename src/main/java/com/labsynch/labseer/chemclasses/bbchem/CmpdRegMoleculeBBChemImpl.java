@@ -28,15 +28,9 @@ public class CmpdRegMoleculeBBChemImpl implements CmpdRegMolecule {
 		this.bbChemStructureService = bbChemStructureService;
 	}
 
-	public CmpdRegMoleculeBBChemImpl(String singleSDF, BBChemStructureService bbChemStructureService) {
+	public CmpdRegMoleculeBBChemImpl(String singleSDF, BBChemStructureService bbChemStructureService) throws CmpdRegMolFormatException {
 		this.bbChemStructureService = bbChemStructureService;
-		try {
-			this.molecule = bbChemStructureService.parseSDF(singleSDF).get(0);
-		} catch (CmpdRegMolFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		this.molecule = bbChemStructureService.parseSDF(singleSDF).get(0);
 	}
 
 	@Override

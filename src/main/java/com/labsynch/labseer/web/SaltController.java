@@ -150,7 +150,17 @@ public class SaltController {
 			errors.add(error);
 		}
 		if (validSalt) {
-			salt = saltStructureService.saveStructure(salt);
+			try{
+				salt = saltStructureService.saveStructure(salt);
+			} catch (CmpdRegMolFormatException e) {
+				logger.error("Error saving salt: " + e.getMessage());
+				validSalt = false;
+				ErrorMessage error = new ErrorMessage();
+				error.setLevel("error");
+				error.setMessage("Error saving salt: " + e.getMessage());
+				errors.add(error);
+				return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.BAD_REQUEST);
+			}
 		}
 		if (salt.getCdId() == -1) {
 			ErrorMessage error = new ErrorMessage();
