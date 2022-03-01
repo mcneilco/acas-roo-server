@@ -64,7 +64,7 @@ public class RegSearchController {
 		} catch (IOException | CmpdRegMolFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return new ResponseEntity<String>("ERROR", headers, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(e.getMessage(), headers, HttpStatus.BAD_REQUEST);
 
 		}
 

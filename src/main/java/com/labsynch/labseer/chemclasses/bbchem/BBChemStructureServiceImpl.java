@@ -24,6 +24,7 @@ import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.utils.SimpleUtil.PostResponse;
 import com.labsynch.labseer.utils.Response;
 import com.labsynch.labseer.utils.Request;
 
@@ -621,7 +622,18 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 		try {
 			String requestString = requestData.toString();
 			logger.debug("requestString: " + requestString);
-			String postResponse = SimpleUtil.postRequestToExternalServer(url, requestString, logger);
+			HttpURLConnection connection = SimpleUtil.postRequest(url, requestString, logger);
+			String postResponse = null;
+			if(connection.getResponseCode() != 200) {
+				logger.error("Error posting to sdf parse service: " + connection.getResponseMessage());
+				String body = SimpleUtil.getStringBody(connection);
+				logger.error("Response Body: " + body);
+				logger.error("URL was: " + url);
+				logger.error("Request was : " + requestString);
+				throw new CmpdRegMolFormatException(body);
+			} else {
+				postResponse = SimpleUtil.getStringBody(connection);
+			}
 			logger.debug("Got response: "+ postResponse);
 
 			// Parse the response json to get the standardized mol
@@ -645,7 +657,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 
 		} catch (Exception e) {
 			logger.error("Error posting to parse service: " + e);
-			throw new CmpdRegMolFormatException("Error posting to parse service: " + e);
+			throw new CmpdRegMolFormatException(e.getMessage());
 		}
 
 		return bbChemStructures;

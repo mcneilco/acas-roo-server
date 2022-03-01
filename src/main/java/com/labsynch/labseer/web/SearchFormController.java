@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.labsynch.labseer.dto.SearchFormDTO;
 import com.labsynch.labseer.dto.SearchFormReturnDTO;
+import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.SearchFormService;
 
@@ -97,7 +98,14 @@ public class SearchFormController {
 //				logger.debug("here is the search return: " + SearchCompoundReturnDTO.toJsonArray(foundCompounds));
 				return new ResponseEntity<String>(foundCompounds.toJson(), headers, HttpStatus.OK);			
 			}
-		}catch (Exception e){
+		} catch (CmpdRegMolFormatException e){
+			ErrorMessage searchError = new ErrorMessage();
+			searchError.setLevel("error");
+			searchError.setMessage(e.getMessage());
+			List<ErrorMessage> errors = new ArrayList<ErrorMessage>();
+			errors.add(searchError);
+			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.BAD_REQUEST); 
+		} catch (Exception e){
 			logger.error("Uncaught error in searchCmpdsByParams",e);
 			ErrorMessage searchError = new ErrorMessage();
 			searchError.setLevel("error");
@@ -105,7 +113,7 @@ public class SearchFormController {
 			List<ErrorMessage> errors = new ArrayList<ErrorMessage>();
 			errors.add(searchError);
 			return new ResponseEntity<String>(ErrorMessage.toJsonArray(errors), headers, HttpStatus.INTERNAL_SERVER_ERROR); 
-		}		
+		}	
 	}
 
 
