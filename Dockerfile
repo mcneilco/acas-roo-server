@@ -12,18 +12,18 @@ RUN     mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jc
 FROM 	dependencies as indigo
 
 FROM 	${CHEMISTRY_PACKAGE} as compile
+ADD 	--chown=runner:runner pom.xml /src/pom.xml
 WORKDIR /src
-ADD 	pom.xml /src/pom.xml
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
 RUN 	mvn clean && \
-        mvn compile war:war -P ${CHEMISTRY_PACKAGE} && \
-        mv target/acas*.war $CATALINA_HOME/webapps/acas.war && \
-        mv target/acas* $CATALINA_HOME/webapps/acas
+        mvn compile war:war -P ${CHEMISTRY_PACKAGE}
+RUN     mv target/acas*.war $CATALINA_HOME/webapps/acas.war && \
+        mv target/acas* $CATALINA_HOME/webapps/acas/
 
 FROM 	${TOMCAT_IMAGE} as build
-COPY 	--from=compile /src/target/acas*.war $CATALINA_HOME/webapps/acas/ $CATALINA_HOME/webapps/acas.war
-COPY 	--from=compile /src/target/acas* $CATALINA_HOME/webapps/acas/ $CATALINA_HOME/webapps/acas
+COPY 	--chown=runner:runner --from=compile /usr/local/tomcat/webapps/acas.war $CATALINA_HOME/webapps/acas.war
+COPY 	--chown=runner:runner --from=compile /usr/local/tomcat/webapps/acas $CATALINA_HOME/webapps/acas
 WORKDIR $CATALINA_HOME
 EXPOSE 	8080
 CMD 	["catalina.sh", "run"]
