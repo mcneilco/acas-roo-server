@@ -635,7 +635,6 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				postResponse = SimpleUtil.getStringBody(connection);
 			}
 			logger.debug("Got response: "+ postResponse);
-			// logger.debug("Got response: "+ postResponse);
 
 			// Parse the response json to get the standardized mol
 			ObjectMapper responseMapper = new ObjectMapper();
