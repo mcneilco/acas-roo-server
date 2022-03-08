@@ -1,6 +1,6 @@
 # IDENTICAL TO Dockerfile-multistage but removed unused CHEMISTRY_ENGINES for use with environments which do not support usage of buildkit builds
 ARG 	CHEMISTRY_PACKAGE=indigo
-FROM adoptopenjdk/maven-openjdk8 as builder
+FROM maven:3-openjdk-8 as builder
 
 FROM 	builder as dependencies
 ARG     CHEMISTRY_PACKAGE

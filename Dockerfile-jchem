@@ -1,5 +1,5 @@
 ARG 	CHEMISTRY_PACKAGE=jchem
-FROM adoptopenjdk/maven-openjdk8 as builder
+FROM maven:3-openjdk-8 as builder
 
 FROM 	builder as dependencies
 ARG     CHEMISTRY_PACKAGE
