@@ -918,6 +918,16 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		if (lot.getNotebookPage() == null && requiredDbProperties.contains("Lot Notebook Page")) missingProperties.add("Lot Notebook Page");
 		if (lot.getChemist() == null && requiredDbProperties.contains("Lot Chemist")) missingProperties.add("Lot Chemist");
 		if (lot.getPurityMeasuredBy() == null && requiredDbProperties.contains("Lot Purity Measured By"))  missingProperties.add("Lot Purity Measured By");
+
+		// If lot inventory is one then we do extra validation to make sure
+		// that lot barcode, amount and amount untis are filled in if the user
+		// is trying to add lot inventory
+		if (propertiesUtilService.getCompoundInventory()) {
+			if ((lot.getAmount() != null || lot.getAmountUnits() != null) && lot.getBarcode() == null) missingProperties.add("Lot Barcode");
+			if ((lot.getBarcode() != null || lot.getAmountUnits() != null) && lot.getAmount() == null) missingProperties.add("Lot Amount");
+			if ((lot.getBarcode() != null || lot.getAmount() != null) && lot.getAmountUnits() == null) missingProperties.add("Lot Amount Units");
+		}
+		
 		if (!missingProperties.isEmpty()){
 			String errorMessage = "";
 			for (String missingProperty : missingProperties){
