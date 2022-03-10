@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +83,11 @@ public class FileSaveSendDTO{
 						logger.error("unable to create the directory " + savePath);
 					}
 					logger.debug(" Saving file: " + file.getOriginalFilename() + " to  " + saveFileName); 
-					String urlString = "getFile?fileUrl=" + saveFileName;
+
+					// URL encode the file name
+					String charset = "UTF-8";
+					String urlString = "getFile?fileUrl=" + URLEncoder.encode(saveFileName, charset);
+
 					logger.debug("url string " + urlString);
 
 					FileOutputStream f = new FileOutputStream(saveFileName); 
