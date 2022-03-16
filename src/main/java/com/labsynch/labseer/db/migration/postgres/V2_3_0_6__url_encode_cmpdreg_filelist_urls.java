@@ -15,9 +15,9 @@ import org.springframework.jdbc.core.RowMapper;
 
 
 
-public class V2_3_0_5__url_encode_cmpdreg_filelist_urls implements SpringJdbcMigration {
+public class V2_3_0_6__url_encode_cmpdreg_filelist_urls implements SpringJdbcMigration {
  
-	Logger logger = LoggerFactory.getLogger(V2_3_0_5__url_encode_cmpdreg_filelist_urls.class);
+	Logger logger = LoggerFactory.getLogger(V2_3_0_6__url_encode_cmpdreg_filelist_urls.class);
 
 	@Transactional
 	public void migrate(JdbcTemplate jdbcTemplate) throws Exception {
