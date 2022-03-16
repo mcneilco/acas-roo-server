@@ -10,7 +10,7 @@ ADD 	lib/jchem-16.4.25.0.jar /lib/jchem-16.4.25.0.jar
 RUN     mvn install:install-file -Dfile=/lib/jchem-16.4.25.0.jar -DartifactId=jchem -DgroupId=com.chemaxon -Dversion=16.4.25.0 -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
 
 FROM 	${CHEMISTRY_PACKAGE} as compile
-ADD 	--chown=runner:runner pom.xml /src/pom.xml
+ADD 	pom.xml /src/pom.xml
 WORKDIR /src
 RUN 	mvn dependency:resolve -P ${CHEMISTRY_PACKAGE}
 ADD 	. /src
@@ -41,7 +41,7 @@ RUN chgrp runner /usr/local/openjdk-8/lib/security/cacerts && \
 
 # Get acas-roo-server compiled code
 COPY 	--chown=runner:runner --from=compile /src/target/acas*.war /usr/local/tomcat/webapps/acas.war
-COPY 	--chown=runner:runner --from=compile /src/target/acas* /usr/local/tomcat/webapps/acas
+COPY 	--chown=runner:runner --from=compile /src/target/acas* /usr/local/tomcat/webapps/acas/
 
 # Wait for it startup script
 COPY 	--chown=runner:runner wait-for-it.sh ./wait-for-it.sh
