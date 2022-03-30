@@ -22,6 +22,8 @@ FROM tomcat:9.0.58-jre8-openjdk-slim-buster
 RUN apt-get update && \
     apt-get install -y openssl libfontconfig libfreetype6 curl
 
+RUN  sed -i 's/<Connector port="8080"/<Connector address="${listen.address}" port="8080"/' conf/server.xml
+
 # Add nodejs for prepare config files
 ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_VERSION 14.x
