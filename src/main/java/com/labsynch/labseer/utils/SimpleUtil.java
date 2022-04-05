@@ -135,7 +135,7 @@ public class SimpleUtil {
     		startIndex=endIndex;
     	}
     	for (String sqlClause : sqlCurveIdMap.keySet()){
-			String completeQueryString = queryString + sqlClause + " )";
+			String completeQueryString = queryString + sqlClause;
 			Query q = em.createQuery(completeQueryString);
 			String groupName = sqlClause.split(":")[1].replace(")","");
         	q.setParameter(groupName, sqlCurveIdMap.get(sqlClause));
@@ -168,7 +168,6 @@ public class SimpleUtil {
     		}
     		numClause++;
     	}
-    	queryString = queryString + " )";
     	Query q = em.createQuery(queryString);
 		for (String sqlClause : sqlCurveIdMap.keySet()){
         	String groupName = sqlClause.split(":")[1].replace(")","");
