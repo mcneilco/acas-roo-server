@@ -9,7 +9,6 @@ import javax.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,9 +30,6 @@ public class ForgotPasswordController {
     
     @Autowired
     private PropertiesUtilService propertiesUtilService;
-
-	@Autowired
-	private MessageDigestPasswordEncoder messageDigestPasswordEncoder;
 
     @ModelAttribute("forgotpasswordForm")
     public ForgotPasswordForm formBackingObject() {
@@ -59,9 +55,7 @@ public class ForgotPasswordController {
         	if(null!=userQuery && userQuery.getMaxResults()>0){
         		Author User = userQuery.getSingleResult();
         		Random random = new Random(System.currentTimeMillis());
-        		String newPassword = "pass"+random.nextLong();
-//        		User.setPassword(messageDigestPasswordEncoder.encodePassword(newPassword, null));
-        		
+        		String newPassword = "pass"+random.nextLong();        		
         		
 	    	    String encryptedPassword = null;
 	    		try {

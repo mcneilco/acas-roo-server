@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -50,9 +49,6 @@ public class SignUpController {
     private transient MailSender mailSender;
 
     private transient SimpleMailMessage simpleMailMessage;
-
-	@Autowired
-	private MessageDigestPasswordEncoder messageDigestPasswordEncoder;
 
     @ModelAttribute("Author")
     public UserRegistrationForm formBackingObject() {
@@ -102,10 +98,7 @@ public class SignUpController {
             author.setFirstName(userRegistration.getFirstName());
             author.setLastName(userRegistration.getLastName());
             author.setUserName(userRegistration.getUserName());
-            
-//    	    messageDigestPasswordEncoder.setEncodeHashAsBase64(true);
-//            author.setPassword(messageDigestPasswordEncoder.encodePassword(userRegistration.getPassword(), null));
-            
+
     	    String encryptedPassword = null;
     		try {
     			encryptedPassword = DatabaseAuthenticationProvider.getBase64ShaHash(userRegistration.getPassword());

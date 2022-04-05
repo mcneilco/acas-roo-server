@@ -8,7 +8,6 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -30,9 +29,6 @@ public class ChangePasswordController {
 	
 	@Autowired
 	private ChangePasswordValidator validator;
-
-	@Autowired
-	private MessageDigestPasswordEncoder messageDigestPasswordEncoder;
 
 	@ModelAttribute("changePasswordForm")
 	public ChangePasswordForm formBackingObject() {
@@ -65,9 +61,6 @@ public class ChangePasswordController {
 				Query query = Author
 						.findAuthorsByUserName(userDetails.getUsername());
 				Author person = (Author) query.getSingleResult();
-				
-//			    messageDigestPasswordEncoder.setEncodeHashAsBase64(true);
-//				person.setPassword(messageDigestPasswordEncoder.encodePassword(newPassword, null));
 				
 				
 	    	    String encryptedPassword = null;

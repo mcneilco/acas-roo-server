@@ -121,12 +121,6 @@ import com.labsynch.labseer.domain.BulkLoadFile;;
 @Transactional
 public class ApplicationConversionServiceFactoryBean extends FormattingConversionServiceFactoryBean {
 
-	@Override
-	protected void installFormatters(FormatterRegistry registry) {
-		super.installFormatters(registry);
-		// Register application converters and formatters
-	}
-
 	public Converter<AnalysisGroup, String> getAnalysisGroupToStringConverter() {
         return new org.springframework.core.convert.converter.Converter<com.labsynch.labseer.domain.AnalysisGroup, java.lang.String>() {
             public String convert(AnalysisGroup analysisGroup) {

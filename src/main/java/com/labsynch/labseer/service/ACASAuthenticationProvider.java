@@ -26,10 +26,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
-import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
+import org.springframework.security.crypto.password.MessageDigestPasswordEncoder;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.GrantedAuthorityImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,7 +148,7 @@ AbstractUserDetailsAuthenticationProvider {
 				throw new BadCredentialsException("Invalid password");
 			}
 			// authorize admin
-			authorities.add(new GrantedAuthorityImpl("ROLE_ADMIN"));
+			authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
 		} else {
 
@@ -171,7 +171,7 @@ AbstractUserDetailsAuthenticationProvider {
 					TypedQuery<AuthorRole> roleQuery=AuthorRole.findAuthorRolesByUserEntry(targetUser);
 					List<AuthorRole> userRoles = roleQuery.getResultList();
 					for(AuthorRole userRole:userRoles){
-						authorities.add(new GrantedAuthorityImpl(userRole.getRoleEntry().getRoleName()));
+						authorities.add(new SimpleGrantedAuthority(userRole.getRoleEntry().getRoleName()));
 					}
 					enabled = targetUser.getEnabled();
 					if (!enabled) {
