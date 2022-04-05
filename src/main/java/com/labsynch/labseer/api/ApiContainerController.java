@@ -9,7 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -579,7 +579,7 @@ public class ApiContainerController {
 				return new ResponseEntity<String>("Barcode already exists", headers, HttpStatus.BAD_REQUEST);
 			}
 		}
-		catch (EmptyResultDataAccessException e){
+		catch (NoResultException e){
 			//barcode is unique, proceed to plate creation
 		}catch (IncorrectResultSizeDataAccessException e){
 			return new ResponseEntity<String>("More than one of this barcode already exists!!", headers, HttpStatus.BAD_REQUEST);
@@ -609,7 +609,7 @@ public class ApiContainerController {
 				if (dupeContainer != null){
 					return new ResponseEntity<String>("Barcode already exists: "+plateRequest.getBarcode(), headers, HttpStatus.BAD_REQUEST);
 				}
-			}catch (EmptyResultDataAccessException e){
+			}catch (NoResultException e){
 				//barcode is unique, proceed to plate creation
 			}catch (IncorrectResultSizeDataAccessException e){
 				return new ResponseEntity<String>("More than one of this barcode already exists!!: "+plateRequest.getBarcode(), headers, HttpStatus.BAD_REQUEST);
@@ -640,7 +640,7 @@ public class ApiContainerController {
 				return new ResponseEntity<String>("Barcode already exists", headers, HttpStatus.BAD_REQUEST);
 			}
 		}
-		catch (EmptyResultDataAccessException e){
+		catch (NoResultException e){
 			//barcode is unique, proceed to plate creation
 		}catch (IncorrectResultSizeDataAccessException e){
 			return new ResponseEntity<String>("More than one of this barcode already exists!!", headers, HttpStatus.BAD_REQUEST);
@@ -670,7 +670,7 @@ public class ApiContainerController {
 				if (dupeContainer != null){
 					return new ResponseEntity<String>("Barcode already exists: "+plateRequest.getBarcode(), headers, HttpStatus.BAD_REQUEST);
 				}
-			}catch (EmptyResultDataAccessException e){
+			}catch (NoResultException e){
 				//barcode is unique, proceed to plate creation
 			}catch (IncorrectResultSizeDataAccessException e){
 				return new ResponseEntity<String>("More than one of this barcode already exists!! "+plateRequest.getBarcode(), headers, HttpStatus.BAD_REQUEST);

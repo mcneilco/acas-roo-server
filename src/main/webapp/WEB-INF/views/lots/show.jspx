@@ -33,7 +33,7 @@
         <field:display field="ignore" id="s_com_labsynch_labseer_domain_Lot_ignore" object="${lot}" z="Qh7yLCzpODAKnsls0NqCdRYHttY="/>
         <field:display field="physicalState" id="s_com_labsynch_labseer_domain_Lot_physicalState" object="${lot}" z="cwhh+0WbiVcP8O83E3+hUAEnvu4="/>
         <field:display field="vendor" id="s_com_labsynch_labseer_domain_Lot_vendor" object="${lot}" z="jnKMmngcCnjVVZLlGhHBsLr9uRc="/>
-        <field:display field="vendorID" id="s_com_labsynch_labseer_domain_Lot_vendorID" object="${lot}" z="70pfq8uoh1pUHHJLtAe//QgcibM="/>
+        <field:display field="vendorId" id="s_com_labsynch_labseer_domain_Lot_vendorId" object="${lot}" z="70pfq8uoh1pUHHJLtAe//QgcibM="/>
         <field:display field="retain" id="s_com_labsynch_labseer_domain_Lot_retain" object="${lot}" z="UfZVL6I/Z/XShV1JGFzIQZowyOE="/>
         <field:display field="retainUnits" id="s_com_labsynch_labseer_domain_Lot_retainUnits" object="${lot}" z="2XOyXZUN4QyAf74NHN015CI2S5U="/>
         <field:display field="retainLocation" id="s_com_labsynch_labseer_domain_Lot_retainLocation" object="${lot}" z="TQ/vHgGpJbqiGKXgNDANLZVldAU="/>

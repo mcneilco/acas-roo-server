@@ -3,7 +3,7 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -46,7 +46,7 @@ public class LotAliasDTO {
 		LotAlias lotAlias;
 		try {
 			lotAlias = LotAlias.findLotAliasesByAliasNameEqualsAndLsTypeEqualsAndLsKindEquals(lotAliasDTO.getAliasName(), lotAliasDTO.getLsType(), lotAliasDTO.getLsKind()).getSingleResult();
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			lotAlias = null;
 		}
 		return new LotAliasDTO(lotAlias);

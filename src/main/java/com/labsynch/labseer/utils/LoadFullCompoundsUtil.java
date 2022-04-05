@@ -9,7 +9,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,7 +112,7 @@ public class LoadFullCompoundsUtil {
 		}
 		try{
 			cmpdChemist = Author.findAuthorsByUserName(chemistCodeName).getSingleResult();
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			if (chemistCodeName.trim().equalsIgnoreCase("")){
 				//default set cchemist as the chemist
 				chemistCodeName = "cchemist";
@@ -155,7 +155,7 @@ public class LoadFullCompoundsUtil {
 			StereoCategory stereoCategory = StereoCategory.findStereoCategorysByCodeEquals(stereoCategoryCode).getSingleResult();
 			logger.info("found the following stereo category  " + stereoCategory.toJson());
 			parent.setStereoCategory(stereoCategory);
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			logger.error("Did not find the query stereoCategoryCode: " + stereoCategoryCode);
 		}
 		
@@ -179,7 +179,7 @@ public class LoadFullCompoundsUtil {
 			try {
 				Vendor vendor = Vendor.findVendorsByCodeEquals(supplierCode).getSingleResult();
 				lot.setVendor(vendor);
-			} catch (EmptyResultDataAccessException e){
+			} catch (NoResultException e){
 				logger.error("Did not find the query supplierCode: " + supplierCode);
 			}			
 		}

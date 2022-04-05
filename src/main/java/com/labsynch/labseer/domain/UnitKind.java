@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PersistenceContext;
 import javax.persistence.SequenceGenerator;
@@ -30,6 +31,7 @@ public class UnitKind {
 
     @NotNull
     @ManyToOne
+	@JoinColumn(name = "ls_type")
     private UnitType lsType;
 
     @NotNull

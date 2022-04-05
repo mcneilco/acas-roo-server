@@ -11,6 +11,7 @@
     <Logger name="org.springframework.orm" level="info"/>
     <Logger name="org.springframework.security" level="info"/>
     <Logger name="org.springframework.web" level="info"/>
+    <Logger name="org.apache.catalina.core.ContainerBase.[Catalina].[localhost]" level="info"/>
     <Root level="info">
       <AppenderRef ref="STDOUT"/>
     </Root>

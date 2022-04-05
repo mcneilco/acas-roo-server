@@ -19,7 +19,7 @@ import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.supercsv.cellprocessor.Optional;
@@ -2765,7 +2765,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			try {
 				targetGene = LsThing.findLsThingByLabelText("gene", "entrez gene", "name", "Entrez Gene ID", geneOrthologDTO.getGeneId()).getSingleResult();
 				logger.info("target gene: " + targetGene.getCodeName());				
-			} catch (EmptyResultDataAccessException e) {
+			} catch (NoResultException e) {
 				logger.error("ERROR - did not find a gene with ID: " + geneOrthologDTO.getGeneId());
 				throw new RuntimeException();
 			}
@@ -2774,7 +2774,7 @@ public class GeneThingServiceImpl implements GeneThingService {
 			try {
 				orthologGene = LsThing.findLsThingByLabelText("gene", "entrez gene", "name", "Entrez Gene ID", geneOrthologDTO.getMappedGeneId()).getSingleResult();
 				logger.info("mapped ortholog gene: " + orthologGene.getCodeName());			
-			} catch (EmptyResultDataAccessException e) {
+			} catch (NoResultException e) {
 				logger.error("ERROR - did not find a gene with ID: " + geneOrthologDTO.getMappedGeneId());
 				throw new RuntimeException();
 			}

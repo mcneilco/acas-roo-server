@@ -39,7 +39,7 @@ import com.github.underscore.$;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1043,7 +1043,7 @@ public class LsThingServiceImpl implements LsThingService {
 		Collection<LsThing> batches;
 		try{
 			batches = LsThing.findFirstLsThingsByItxTypeKindEqualsAndSecondLsThingEquals("instantiates", "batch_parent", parent).getResultList();
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			batches = null;
 		}
 		return batches;
@@ -1054,7 +1054,7 @@ public class LsThingServiceImpl implements LsThingService {
 		Collection<LsThing> batches;
 		try{
 			batches = LsThing.findFirstLsThingsByItxTypeEqualsAndSecondLsThingEquals("incorporates", component).getResultList();
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			batches = null;
 		}
 		return batches;
@@ -1065,7 +1065,7 @@ public class LsThingServiceImpl implements LsThingService {
 		LsThing parent;
 		try{
 			parent = LsThing.findSecondLsThingsByItxTypeKindEqualsAndFirstLsThingEquals("instantiates", "batch_parent", batch).getSingleResult();
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			parent = null;
 		}
 		return parent;
@@ -1328,12 +1328,12 @@ public class LsThingServiceImpl implements LsThingService {
 		if (includeIgnored){
 			try{
 				searchResults = LsThing.findLsThingsByLsTypeAndKindEquals(lsType+"_"+lsKind).getResultList();
-			} catch (EmptyResultDataAccessException e){}
+			} catch (NoResultException e){}
 		}
 		else {
 			try{
 				searchResults = LsThing.findLsThing(lsType, lsKind).getResultList();
-			} catch (EmptyResultDataAccessException e){}
+			} catch (NoResultException e){}
 		}
 		return searchResults;
 	}
@@ -1924,7 +1924,7 @@ public class LsThingServiceImpl implements LsThingService {
 				Collection<LsThing> foundLsThings = new HashSet<LsThing>();
 				try{
 					foundLsThings = LsThing.findLsThingByLabelTextAndLsKind(labelText, lsKind).getResultList();
-				} catch (EmptyResultDataAccessException e){
+				} catch (NoResultException e){
 					//found nothing
 				}
 				if (!foundLsThings.isEmpty()){

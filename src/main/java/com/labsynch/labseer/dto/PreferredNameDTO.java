@@ -12,7 +12,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Size;
 
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +51,7 @@ public class PreferredNameDTO {
     		String preferredName;
     		try {
     			preferredName = Lot.findLotsByCorpNameEquals(preferredNameDTO.getRequestName()).getSingleResult().getCorpName();
-    		} catch (EmptyResultDataAccessException e){
+    		} catch (NoResultException e){
     			preferredName = "";
     		}
     		preferredNameDTO.setPreferredName(preferredName);
@@ -64,7 +64,7 @@ public class PreferredNameDTO {
     		String preferredName;
     		try {
     			preferredName = Parent.findParentsByCorpNameEquals(preferredNameDTO.getRequestName()).getSingleResult().getCorpName();
-    		} catch (EmptyResultDataAccessException e){
+    		} catch (NoResultException e){
     			preferredName = "";
     		}
     		preferredNameDTO.setPreferredName(preferredName);

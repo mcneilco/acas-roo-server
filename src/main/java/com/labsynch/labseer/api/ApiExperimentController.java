@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -1383,7 +1383,7 @@ public class ApiExperimentController {
         Experiment experiment;
         try{
         	experiment = Experiment.findExperimentsByCodeNameEquals(codeName).getSingleResult();
-        } catch (EmptyResultDataAccessException e){
+        } catch (NoResultException e){
         	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         if (with != null) {
@@ -1416,7 +1416,7 @@ public class ApiExperimentController {
         Collection<ExperimentErrorMessageDTO> foundExperiments;
         try{
         	foundExperiments = experimentService.findExperimentsByCodeNames(codeNames);
-        } catch (EmptyResultDataAccessException e){
+        } catch (NoResultException e){
         	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         if (with != null) {

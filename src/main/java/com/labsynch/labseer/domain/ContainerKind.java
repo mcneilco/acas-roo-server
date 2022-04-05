@@ -2,6 +2,7 @@ package com.labsynch.labseer.domain;
 
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class ContainerKind {
 	
 	@NotNull
 	@ManyToOne
+	@JoinColumn(name = "ls_type")
 	private ContainerType lsType;
 
 	@NotNull

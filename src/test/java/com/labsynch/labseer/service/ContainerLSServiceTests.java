@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -546,14 +546,14 @@ public class ContainerLSServiceTests {
 		//barcode/barcode
 		try{
 			LabelType labelType = LabelType.findLabelTypesByTypeNameEquals("barcode").getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			LabelType labelType = new LabelType();
 			labelType.setTypeName("barcode");
 			labelType.persist();
 		}
 		try{
 			LabelKind labelKind = LabelKind.findLabelKindsByKindNameEqualsAndLsType("barcode", LabelType.findLabelTypesByTypeNameEquals("barcode").getSingleResult()).getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			LabelKind labelKind = new LabelKind();
 			labelKind.setLsType(LabelType.findLabelTypesByTypeNameEquals("barcode").getSingleResult());
 			labelKind.setKindName("barcode");
@@ -578,7 +578,7 @@ public class ContainerLSServiceTests {
 		//moved to/plate container
 		try{
 			InteractionKind itxKind = InteractionKind.findInteractionKindsByKindNameEqualsAndLsType("plate container", InteractionType.findInteractionTypesByTypeNameEquals("moved to").getSingleResult()).getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			InteractionKind itxKind = new InteractionKind();
 			itxKind.setLsType(InteractionType.findInteractionTypesByTypeNameEquals("moved to").getSingleResult());
 			itxKind.setKindName("plate container");

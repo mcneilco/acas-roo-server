@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -51,7 +51,7 @@ public class TypeDTO {
 			ProtocolType protocolType;
 			try{
 				protocolType = ProtocolType.findProtocolTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				protocolType = new ProtocolType();
 				protocolType.setTypeName(type.typeName);
 				protocolType.persist();
@@ -68,7 +68,7 @@ public class TypeDTO {
 			ExperimentType experimentType;
 			try{
 				experimentType = ExperimentType.findExperimentTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				experimentType = new ExperimentType();
 				experimentType.setTypeName(type.typeName);
 				experimentType.persist();
@@ -85,7 +85,7 @@ public class TypeDTO {
 			InteractionType interactionType;
 			try{
 				interactionType = InteractionType.findInteractionTypesByTypeNameEquals(type.getTypeName()).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				interactionType = new InteractionType();
 				interactionType.setTypeName(type.getTypeName());
 				interactionType.setTypeVerb(type.getTypeVerb());
@@ -103,7 +103,7 @@ public class TypeDTO {
 			ContainerType containerType;
 			try{
 				containerType = ContainerType.findContainerTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				containerType = new ContainerType();
 				containerType.setTypeName(type.typeName);
 				containerType.persist();
@@ -120,7 +120,7 @@ public class TypeDTO {
 			StateType stateType;
 			try{
 				stateType = StateType.findStateTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				stateType = new StateType();
 				stateType.setTypeName(type.typeName);
 				stateType.persist();
@@ -137,10 +137,11 @@ public class TypeDTO {
 			ValueType valueType;
 			try{
 				valueType = ValueType.findValueTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				valueType = new ValueType();
 				valueType.setTypeName(type.typeName);
 				valueType.persist();
+				valueType.flush();
 			}
 			valueTypes.add(valueType);
 		}
@@ -154,7 +155,7 @@ public class TypeDTO {
 			LabelType labelType;
 			try{
 				labelType = LabelType.findLabelTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				labelType = new LabelType();
 				labelType.setTypeName(type.typeName);
 				labelType.persist();
@@ -171,7 +172,7 @@ public class TypeDTO {
 			ThingType thingType;
 			try{
 				thingType = ThingType.findThingTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				thingType = new ThingType();
 				thingType.setTypeName(type.typeName);
 				thingType.persist();
@@ -188,7 +189,7 @@ public class TypeDTO {
 			OperatorType operatorType;
 			try{
 				operatorType = OperatorType.findOperatorTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				operatorType = new OperatorType();
 				operatorType.setTypeName(type.typeName);
 				operatorType.persist();
@@ -205,7 +206,7 @@ public class TypeDTO {
 			UnitType unitType;
 			try{
 				unitType = UnitType.findUnitTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				unitType = new UnitType();
 				unitType.setTypeName(type.typeName);
 				unitType.persist();
@@ -222,7 +223,7 @@ public class TypeDTO {
 			DDictType dDictType;
 			try{
 				dDictType = DDictType.findDDictTypesByNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				dDictType = new DDictType();
 				dDictType.setName(type.typeName);
 				dDictType.persist();
@@ -239,7 +240,7 @@ public class TypeDTO {
 			RoleType roleType;
 			try{
 				roleType = RoleType.findRoleTypesByTypeNameEquals(type.typeName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				roleType = new RoleType();
 				roleType.setTypeName(type.typeName);
 				roleType.persist();

@@ -10,7 +10,7 @@ import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +35,7 @@ public class LabelSequenceServiceImpl implements LabelSequenceService {
 			LabelSequence savedLabelSequence;
 			try{
 				savedLabelSequence = LabelSequence.findLabelSequencesByThingTypeAndKindEqualsAndLabelTypeAndKindEquals(labelSequence.getThingTypeAndKind(), labelSequence.getLabelTypeAndKind()).getSingleResult();
-			}catch(EmptyResultDataAccessException e){
+			}catch(NoResultException e){
 				savedLabelSequence = labelSequence;
 				savedLabelSequence.save();
 			}

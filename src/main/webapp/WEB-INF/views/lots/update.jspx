@@ -33,7 +33,7 @@
         <field:checkbox field="ignore" id="c_com_labsynch_labseer_domain_Lot_ignore" z="0fu+LuBvYXYF2DJaESteuYimqnk="/>
         <field:select field="physicalState" id="c_com_labsynch_labseer_domain_Lot_physicalState" itemValue="id" items="${physicalstates}" path="/physicalstates" z="ZMnew6SjVYLawxt+xpI1tQJmPW8="/>
         <field:select field="vendor" id="c_com_labsynch_labseer_domain_Lot_vendor" itemValue="id" items="${vendors}" path="/vendors" z="vIMamx8Wh67GL0Au0038GyMnLpM="/>
-        <field:textarea field="vendorID" id="c_com_labsynch_labseer_domain_Lot_vendorID" z="+zerPBbArlXC6nCGa24jTSXI++A="/>
+        <field:textarea field="vendorId" id="c_com_labsynch_labseer_domain_Lot_vendorId" z="+zerPBbArlXC6nCGa24jTSXI++A="/>
         <field:simple field="fileLists" id="c_com_labsynch_labseer_domain_Lot_fileLists" messageCode="entity_reference_not_managed" messageCodeAttribute="File List" z="MnAjUKMFQtLu4/pJ5ILS4uDtGTU="/>
         <field:input field="retain" id="c_com_labsynch_labseer_domain_Lot_retain" validationMessageCode="field_invalid_number" z="Kpkl5aySWjfVrttptW+10sr1wK0="/>
         <field:select field="retainUnits" id="c_com_labsynch_labseer_domain_Lot_retainUnits" itemValue="id" items="${units}" path="/units" z="oSwKg7L+tT0vB/vdJzlOn6CYTyw="/>

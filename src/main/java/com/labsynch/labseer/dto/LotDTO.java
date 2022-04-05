@@ -78,7 +78,7 @@ public class LotDTO {
 	private Double totalAmountStored;
 	private String totalAmountStoredUnitsCode;
 	private String vendorCode;
-	private String vendorID;
+	private String vendorId;
 	private String saltFormCorpName;
 	private String casNumber;
 	private String saltAbbrevs;

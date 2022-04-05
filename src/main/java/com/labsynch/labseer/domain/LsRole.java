@@ -52,7 +52,7 @@ public class LsRole {
     @Size(max = 200)
     private String roleDescription;
     
-    @Column(unique = true)
+    // @Column(unique = true)
     @Size(max = 255)
     private String lsTypeAndKind;
 

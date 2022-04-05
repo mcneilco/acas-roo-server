@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.jpa.activerecord.RooJpaActiveRecord;
 import org.springframework.roo.addon.json.RooJson;
@@ -347,7 +347,7 @@ public class ItxLsThingLsThing extends AbstractThing {
         int order;
         try {
         	order = q.getSingleResult();
-        } catch (EmptyResultDataAccessException e){
+        } catch (NoResultException e){
         	order = -1;
         }
     	return order;

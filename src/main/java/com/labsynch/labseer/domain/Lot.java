@@ -68,22 +68,18 @@ public class Lot {
     @Column(unique = true)
     @NotNull
     @Size(max = 255)
-    @org.hibernate.annotations.Index(name = "Lot_corpName_IDX")
     private String corpName;
 
-    @org.hibernate.annotations.Index(name = "Lot_lotNumber_IDX")
     private Integer lotNumber;
 
     private Double lotMolWeight;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
-    @org.hibernate.annotations.Index(name = "Lot_SynthDate_IDX")
     private Date synthesisDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(style = "S-")
-    @org.hibernate.annotations.Index(name = "Lot_RegDate_IDX")
     private Date registrationDate;
     
 	private String registeredBy;
@@ -95,14 +91,12 @@ public class Lot {
 	private String modifiedBy;
 
     @Size(max = 255)
-    @org.hibernate.annotations.Index(name = "Lot_Barcode_IDX")
     private String barcode;
     
     @Size(max = 255)
     private String color;
 
     @Size(max = 255)
-    @org.hibernate.annotations.Index(name = "Lot_Notebook_IDX")
     private String notebookPage;
 
     private Double amount;
@@ -136,25 +130,22 @@ public class Lot {
     @Column(columnDefinition="text")
     private String comments;
 
-    @org.hibernate.annotations.Index(name = "Lot_Virtual_IDX")
     private Boolean isVirtual;
 
     private Boolean ignore;
 
     
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "Lot_PhysicalState_IDX")
     private PhysicalState physicalState;
 
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "Lot_Vendor_IDX")
     private Vendor vendor;
 
     @Size(max = 255)
-    private String vendorID;
+    @Column(name = "vendorid")
+    private String vendorId;
 
     @ManyToOne
-    @org.hibernate.annotations.Index(name = "Lot_SaltForm_IDX")
     private SaltForm saltForm;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "lot", fetch = FetchType.LAZY)

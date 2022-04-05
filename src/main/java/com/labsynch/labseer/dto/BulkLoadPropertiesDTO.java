@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
@@ -106,7 +106,7 @@ public class BulkLoadPropertiesDTO {
 		BulkLoadTemplate foundTemplate = null;
 		try{
 			foundTemplate = BulkLoadTemplate.findBulkLoadTemplatesByTemplateNameEqualsAndRecordedByEquals(templateName, userName).getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			logger.error("Template name: "+templateName+" with userName: "+userName+" could not be found.");
 			return;
 		}

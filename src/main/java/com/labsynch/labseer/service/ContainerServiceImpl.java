@@ -36,7 +36,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -607,7 +607,7 @@ public class ContainerServiceImpl implements ContainerService {
 							.findContainerLabelsByLsTypeEqualsAndLabelTextEqualsAndIgnoredNot(
 									containerLabel.getLsType(), labelText, true)
 							.getResultList();
-				} catch (EmptyResultDataAccessException e) {
+				} catch (NoResultException e) {
 					// found nothing
 				}
 				if (!foundContainerLabels.isEmpty()) {
@@ -1136,7 +1136,7 @@ public class ContainerServiceImpl implements ContainerService {
 					} else {
 						logger.info("Did not find a Container with the requested name: " + request.getRequestName());
 					}
-				} catch (EmptyResultDataAccessException e) {
+				} catch (NoResultException e) {
 					logger.info("Did not find a Container with the requested name: " + request.getRequestName());
 				}
 			}
@@ -2110,7 +2110,7 @@ public class ContainerServiceImpl implements ContainerService {
 		try {
 			PlateStubDTO result = q.getSingleResult();
 			return result;
-		} catch (EmptyResultDataAccessException e) {
+		} catch (NoResultException e) {
 			return null;
 		}
 	}

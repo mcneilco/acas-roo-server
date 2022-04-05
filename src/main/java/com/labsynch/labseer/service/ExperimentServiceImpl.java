@@ -22,7 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -1647,7 +1647,7 @@ public class ExperimentServiceImpl implements ExperimentService {
 					}else{
 						logger.info("Did not find an EXPERIMENT WITH THE REQUESTED NAME: " + request.getRequestName());
 					}
-				}catch (EmptyResultDataAccessException e){
+				}catch (NoResultException e){
 					logger.info("Did not find an EXPERIMENT WITH THE REQUESTED NAME: " + request.getRequestName());
 				}
 			}

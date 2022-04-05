@@ -384,12 +384,12 @@ privileged aspect LotDTO_Roo_JavaBean {
         this.vendorCode = vendorCode;
     }
     
-    public String LotDTO.getVendorID() {
-        return this.vendorID;
+    public String LotDTO.getVendorId() {
+        return this.vendorId;
     }
     
-    public void LotDTO.setVendorID(String vendorID) {
-        this.vendorID = vendorID;
+    public void LotDTO.setVendorId(String vendorId) {
+        this.vendorId = vendorId;
     }
     
     public String LotDTO.getSaltFormCorpName() {

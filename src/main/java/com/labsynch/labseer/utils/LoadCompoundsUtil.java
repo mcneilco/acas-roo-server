@@ -14,7 +14,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,7 +114,7 @@ public class LoadCompoundsUtil {
 					logger.debug("query chemist = " + chemistCodeName);
 					try{
 						chemist = Author.findAuthorsByUserName(chemistCodeName).getSingleResult();
-					} catch (EmptyResultDataAccessException e){
+					} catch (NoResultException e){
 						if (chemistCodeName.trim().equalsIgnoreCase("")){
 							//default set Russell as the chemist
 							chemistCodeName = "rkey";
@@ -138,7 +138,7 @@ public class LoadCompoundsUtil {
 				Parent parent = null;
 				try{
 					parent = Parent.findParentsByCorpNameEquals(parentCorpName).getSingleResult();
-				} catch (EmptyResultDataAccessException e){
+				} catch (NoResultException e){
 					logger.debug("create the new parent");
 					parent = new Parent();
 					parent.setMolStructure(MoleculeUtil.exportMolAsText(mol, "mol"));
@@ -152,7 +152,7 @@ public class LoadCompoundsUtil {
 						String stereoCategoryCode = MoleculeUtil.getMolProperty(mol, "StereoCategory");
 						try{
 							stereoCategory = StereoCategory.findStereoCategorysByCodeEquals(stereoCategoryCode).getSingleResult();			    		
-						} catch (EmptyResultDataAccessException e2){
+						} catch (NoResultException e2){
 							logger.error("Did not find the stereoCategory code" + stereoCategoryCode);
 							stereoCategory = StereoCategory.findStereoCategorysByCodeEquals("unknown").getSingleResult();			    		
 						}
@@ -188,7 +188,7 @@ public class LoadCompoundsUtil {
 						//now cheat to use the code below
 						saltCount = 1;
 						mol.setProperty("RemovedSalts", isotopeAbbrev);
-					} catch (EmptyResultDataAccessException e){
+					} catch (NoResultException e){
 						logger.debug("Did not find the isotope code " + isotopeAbbrev );
 					}
 				}	
@@ -205,7 +205,7 @@ public class LoadCompoundsUtil {
 								isoSalt.setType("salt");
 								isoSalt.setSalt(salt);
 								isoSalt.setEquivalents(saltCount);
-							} catch (EmptyResultDataAccessException e2){
+							} catch (NoResultException e2){
 								logger.debug("Did not find the salt code " + saltAbbrev + "  Check if it is an isotope.");
 								//							    	check that it is not an isotope
 								try {
@@ -213,7 +213,7 @@ public class LoadCompoundsUtil {
 									isoSalt.setType("isotope");
 									isoSalt.setIsotope(isotope);
 									isoSalt.setEquivalents(saltCount);
-								}  catch (EmptyResultDataAccessException e3){
+								}  catch (NoResultException e3){
 									logger.error("Not an isotope either!!. Did not find the isotope code " + saltAbbrev);
 									saltIsotopeError = true;
 									goodMolToProcess = false;
@@ -231,7 +231,7 @@ public class LoadCompoundsUtil {
 				SaltForm saltForm = null;
 				try{
 					saltForm = SaltForm.findSaltFormsByCorpNameEquals(saltFormCorpName).getSingleResult();	    		
-				} catch (EmptyResultDataAccessException e){
+				} catch (NoResultException e){
 					logger.debug("new salForm: " + saltFormCorpName);
 					saltForm = new SaltForm();
 					saltForm.setParent(parent);
@@ -263,7 +263,7 @@ public class LoadCompoundsUtil {
 
 				try{
 					lot = Lot.findLotsByCorpNameEquals(lotCorpName).getSingleResult();	    		
-				} catch (EmptyResultDataAccessException e){
+				} catch (NoResultException e){
 					logger.debug("new lot created: " + lotCorpName);
 					lot = new Lot();
 					lot.setCorpName(lotCorpName);

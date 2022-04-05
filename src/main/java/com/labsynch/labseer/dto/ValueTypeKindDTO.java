@@ -1,6 +1,6 @@
 package com.labsynch.labseer.dto;
 
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -39,7 +39,7 @@ public class ValueTypeKindDTO {
 		ValueType valueType;
     	try{
     		valueType = ValueType.findValueTypesByTypeNameEquals(this.lsType).getSingleResult();
-    	} catch(EmptyResultDataAccessException e){
+    	} catch(NoResultException e){
     		this.valueKind = null;
     		valueType = null;
     	}
@@ -47,7 +47,7 @@ public class ValueTypeKindDTO {
     	try{
     		valueKind = ValueKind.findValueKindsByKindNameEqualsAndLsType(this.lsKind, valueType).getSingleResult();
     		this.valueKind = valueKind;
-    	} catch(EmptyResultDataAccessException e){
+    	} catch(NoResultException e){
     		this.valueKind = null;
     	}
 	}

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -73,7 +73,7 @@ public class TypeKindDTO {
 			ProtocolKind protocolKind;
 			try{
 				protocolKind = ProtocolKind.findProtocolKindsByLsTypeEqualsAndKindNameEquals(protocolType, typeKind.kindName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				protocolKind = new ProtocolKind();
 				protocolKind.setLsType(protocolType);
 				protocolKind.setKindName(typeKind.kindName);
@@ -98,7 +98,7 @@ public class TypeKindDTO {
 			ExperimentKind experimentKind;
 			try{
 				experimentKind = ExperimentKind.findExperimentKindsByLsTypeEqualsAndKindNameEquals(experimentType, typeKind.kindName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				experimentKind = new ExperimentKind();
 				experimentKind.setLsType(experimentType);
 				experimentKind.setKindName(typeKind.kindName);
@@ -123,7 +123,7 @@ public class TypeKindDTO {
 			InteractionKind interactionKind;
 			try{
 				interactionKind = InteractionKind.findInteractionKindsByKindNameEqualsAndLsType(typeKind.kindName, interactionType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				interactionKind = new InteractionKind();
 				interactionKind.setLsType(interactionType);
 				interactionKind.setKindName(typeKind.kindName);
@@ -148,7 +148,7 @@ public class TypeKindDTO {
 			ContainerKind containerKind;
 			try{
 				containerKind = ContainerKind.findContainerKindsByKindNameEqualsAndLsType(typeKind.kindName, containerType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				containerKind = new ContainerKind();
 				containerKind.setLsType(containerType);
 				containerKind.setKindName(typeKind.kindName);
@@ -173,7 +173,7 @@ public class TypeKindDTO {
 			StateKind stateKind;
 			try{
 				stateKind = StateKind.findStateKindsByKindNameEqualsAndLsType(typeKind.kindName, stateType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				stateKind = new StateKind();
 				stateKind.setLsType(stateType);
 				stateKind.setKindName(typeKind.kindName);
@@ -198,7 +198,7 @@ public class TypeKindDTO {
 			ValueKind valueKind;
 			try{
 				valueKind = ValueKind.findValueKindsByKindNameEqualsAndLsType(typeKind.kindName, valueType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				valueKind = new ValueKind();
 				valueKind.setLsType(valueType);
 				valueKind.setKindName(typeKind.kindName);
@@ -223,7 +223,7 @@ public class TypeKindDTO {
 			LabelKind labelKind;
 			try{
 				labelKind = LabelKind.findLabelKindsByKindNameEqualsAndLsType(typeKind.kindName, labelType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				labelKind = new LabelKind();
 				labelKind.setLsType(labelType);
 				labelKind.setKindName(typeKind.kindName);
@@ -248,7 +248,7 @@ public class TypeKindDTO {
 			ThingKind thingKind;
 			try{
 				thingKind = ThingKind.findThingKindsByKindNameEqualsAndLsType(typeKind.kindName, thingType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				thingKind = new ThingKind();
 				thingKind.setLsType(thingType);
 				thingKind.setKindName(typeKind.kindName);
@@ -273,7 +273,7 @@ public class TypeKindDTO {
 			OperatorKind operatorKind;
 			try{
 				operatorKind = OperatorKind.findOperatorKindsByKindNameEqualsAndLsType(typeKind.kindName, operatorType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				operatorKind = new OperatorKind();
 				operatorKind.setLsType(operatorType);
 				operatorKind.setKindName(typeKind.kindName);
@@ -298,7 +298,7 @@ public class TypeKindDTO {
 			UnitKind unitKind;
 			try{
 				unitKind = UnitKind.findUnitKindsByKindNameEqualsAndLsType(typeKind.kindName, unitType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				unitKind = new UnitKind();
 				unitKind.setLsType(unitType);
 				unitKind.setKindName(typeKind.kindName);
@@ -323,7 +323,7 @@ public class TypeKindDTO {
 			DDictKind dDictKind;
 			try{
 				dDictKind = DDictKind.findDDictKindsByLsTypeEqualsAndNameEquals(dDictType.getName(), typeKind.kindName).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				dDictKind = new DDictKind();
 				dDictKind.setLsType(dDictType.getName());
 				dDictKind.setName(typeKind.kindName);
@@ -348,7 +348,7 @@ public class TypeKindDTO {
 			RoleKind roleKind;
 			try{
 				roleKind = RoleKind.findRoleKindsByKindNameEqualsAndLsType(typeKind.kindName, roleType).getSingleResult();
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				roleKind = new RoleKind();
 				roleKind.setLsType(roleType);
 				roleKind.setKindName(typeKind.kindName);

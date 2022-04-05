@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -113,7 +113,7 @@ public class ApiStructureController {
     	try{
     		ChemStructure structure = ChemStructure.findStructureByCodeName(codeName);
             return new ResponseEntity<String>(structure.toJson(), headers, HttpStatus.OK);
-    	}catch (EmptyResultDataAccessException empty){
+    	}catch (NoResultException empty){
     		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
     	}catch (Exception e){
     		logger.error("Caught exception saving structure",e);
@@ -139,7 +139,7 @@ public class ApiStructureController {
 		try{
 			byte[] image = structureService.renderStructureByCodeName(codeName, height, width, format);  
 			return new ResponseEntity<byte[]>(image, headers, HttpStatus.OK);
-		}catch (EmptyResultDataAccessException empty){
+		}catch (NoResultException empty){
 			return new ResponseEntity<byte[]>(headers, HttpStatus.NOT_FOUND);
 		}catch (Exception e){
 			logger.error("Caught exception in renderStructureByCodeName",e);
@@ -164,7 +164,7 @@ public class ApiStructureController {
 		try{
 			byte[] image = lsThingService.renderStructureByLsThingCodeName(codeName, height, width, format);  
 			return new ResponseEntity<byte[]>(image, headers, HttpStatus.OK);
-		}catch (EmptyResultDataAccessException empty){
+		}catch (NoResultException empty){
 			return new ResponseEntity<byte[]>(headers, HttpStatus.NOT_FOUND);
 		}catch (NotFoundException notFound){
 			return new ResponseEntity<byte[]>(headers, HttpStatus.NOT_FOUND);
@@ -287,7 +287,7 @@ public class ApiStructureController {
     	try{
     		String molStructure = structureService.convertSmilesToMol(smiles);
             return new ResponseEntity<String>(molStructure, headers, HttpStatus.OK);
-    	}catch (EmptyResultDataAccessException empty){
+    	}catch (NoResultException empty){
     		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
     	}catch (Exception e){
     		logger.error("Caught exception converting smiles to MOL",e);
@@ -305,7 +305,7 @@ public class ApiStructureController {
     	try{
     		String cleanedMolStructure = structureService.cleanMolStructure(molStructure);
             return new ResponseEntity<String>(cleanedMolStructure, headers, HttpStatus.OK);
-    	}catch (EmptyResultDataAccessException empty){
+    	}catch (NoResultException empty){
     		return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
     	}catch (Exception e){
     		logger.error("Caught exception cleaning MOL structure",e);

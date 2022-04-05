@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -33,9 +35,17 @@ public class ValueType {
     @Size(max = 64)
     private String typeName;
 
+    public static TypedQuery<ValueType> findValueTypesByTypeNameEquals(String typeName) {
+        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+        EntityManager em = ValueType.entityManager();
+        TypedQuery<ValueType> q = em.createQuery("SELECT o FROM ValueType AS o WHERE o.typeName = :typeName", ValueType.class);
+        q.setParameter("typeName", typeName);
+        return q;
+    }
+    
 	public static ValueType getOrCreate(String name) {
 		ValueType lsType = null;
-        List<ValueType> lsTypes = ValueType.findValueTypesByTypeNameEquals(name).getResultList();
+        List<ValueType> lsTypes = findValueTypesByTypeNameEquals(name).getResultList();
         if (lsTypes.size() == 0) {
             lsType = new ValueType();
             lsType.setTypeName(name);

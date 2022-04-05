@@ -21,7 +21,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -189,7 +189,7 @@ AbstractUserDetailsAuthenticationProvider {
 					throw new BadCredentialsException("Invalid Password");
 				}
 
-			} catch (EmptyResultDataAccessException e) {
+			} catch (NoResultException e) {
 				throw new BadCredentialsException("Invalid user");
 			} catch (EntityNotFoundException e) {
 				throw new BadCredentialsException("Invalid user");

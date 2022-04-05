@@ -15,7 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -332,7 +332,7 @@ public class ApiProtocolController {
         Protocol protocol;
         try{
         	protocol = Protocol.findProtocolsByCodeNameEquals(codeName).getSingleResult();
-        } catch (EmptyResultDataAccessException e){
+        } catch (NoResultException e){
         	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<String>(protocol.toJsonStub(), headers, HttpStatus.OK);
@@ -481,7 +481,7 @@ public class ApiProtocolController {
         Collection<ProtocolErrorMessageDTO> foundProtocols;
         try{
         	foundProtocols = protocolService.findProtocolsByCodeNames(codeNames);
-        } catch (EmptyResultDataAccessException e){
+        } catch (NoResultException e){
         	return new ResponseEntity<String>(headers, HttpStatus.NOT_FOUND);
         }
         if (with != null) {

@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -243,7 +243,7 @@ public class CreateProjectsTests {
 		Author jappleseed = null;
 		try{
 			jappleseed = Author.findAuthorsByUserName("jappleseed").getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			jappleseed = new Author();
 			jappleseed.setFirstName("Johnny");
 			jappleseed.setLastName("Appleseed");
@@ -256,7 +256,7 @@ public class CreateProjectsTests {
 		Author bsplit = null;
 		try{
 			bsplit = Author.findAuthorsByUserName("bsplit").getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			bsplit = new Author();
 			bsplit.setFirstName("Banana");
 			bsplit.setLastName("Split");
@@ -272,7 +272,7 @@ public class CreateProjectsTests {
 		LsRole appleUser = null;
 		try{
 			appleUser = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", appleCodeName, "User").getSingleResult();
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException e){
 			appleUser = new LsRole();
 			appleUser.setLsType("Project");
 			appleUser.setLsKind(appleCodeName);
@@ -282,7 +282,7 @@ public class CreateProjectsTests {
 		LsRole appleAdministrator = null;
 		try{
 			appleAdministrator = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", appleCodeName, "Administrator").getSingleResult();
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException e){
 			appleAdministrator = new LsRole();
 			appleAdministrator.setLsType("Project");
 			appleAdministrator.setLsKind(appleCodeName);
@@ -292,7 +292,7 @@ public class CreateProjectsTests {
 		LsRole bananaUser = null;
 		try{
 			bananaUser = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", bananaCodeName, "User").getSingleResult();
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException e){
 			bananaUser = new LsRole();
 			bananaUser.setLsType("Project");
 			bananaUser.setLsKind(bananaCodeName);
@@ -302,7 +302,7 @@ public class CreateProjectsTests {
 		LsRole bananaAdministrator = null;
 		try{
 			bananaAdministrator = LsRole.findLsRolesByLsTypeEqualsAndLsKindEqualsAndRoleNameEquals("Project", bananaCodeName, "Administrator").getSingleResult();
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException e){
 			bananaAdministrator = new LsRole();
 			bananaAdministrator.setLsType("Project");
 			bananaAdministrator.setLsKind(bananaCodeName);
@@ -313,7 +313,7 @@ public class CreateProjectsTests {
 		AuthorRole appleUserRole = null;
 		try{
 			appleUserRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(appleUser, jappleseed).getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			appleUserRole = new AuthorRole();
 			appleUserRole.setRoleEntry(appleUser);
 			appleUserRole.setUserEntry(jappleseed);
@@ -322,7 +322,7 @@ public class CreateProjectsTests {
 		AuthorRole appleAdministratorRole = null;
 		try{
 			appleAdministratorRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(appleAdministrator, jappleseed).getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			appleAdministratorRole = new AuthorRole();
 			appleAdministratorRole.setRoleEntry(appleAdministrator);
 			appleAdministratorRole.setUserEntry(jappleseed);
@@ -331,7 +331,7 @@ public class CreateProjectsTests {
 		AuthorRole bananaUserRole = null;
 		try{
 			bananaUserRole = AuthorRole.findAuthorRolesByRoleEntryAndUserEntry(bananaUser, bsplit).getSingleResult();
-		}catch (EmptyResultDataAccessException e){
+		}catch (NoResultException e){
 			bananaUserRole = new AuthorRole();
 			bananaUserRole.setRoleEntry(bananaUser);
 			bananaUserRole.setUserEntry(bsplit);

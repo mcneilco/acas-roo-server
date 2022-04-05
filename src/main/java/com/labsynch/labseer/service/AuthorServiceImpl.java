@@ -28,7 +28,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.AuthenticationException;
@@ -476,7 +476,7 @@ public class AuthorServiceImpl implements AuthorService {
 		try{
 			Author foundAuthor = Author.findAuthorsByUserName(userName).getSingleResult();
 			return foundAuthor;
-		}catch(EmptyResultDataAccessException e){
+		}catch(NoResultException e){
 			logger.debug("Author "+userName+" not found. Creating new author");
 			return saveAuthor(author);
 		}

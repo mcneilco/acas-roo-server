@@ -14,7 +14,7 @@ import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -141,7 +141,7 @@ public class FlagWellDTO {
 					oldAlgorithmFlagState.merge();
 //					oldAlgorithmFlagState.flush();
 					logger.debug("Old algorithm flag state ignored.");
-				}catch(EmptyResultDataAccessException e) {
+				}catch(NoResultException e) {
 					logger.debug("Old state of typekind data/auto flag not found for Subject " + subject.getCodeName() + " , creating new one");
 				}
 				SubjectState newAlgorithmState = createWellFlagState(subject.getId(), "data", "auto flag", recordedBy, lsTransaction);
@@ -155,7 +155,7 @@ public class FlagWellDTO {
 					oldPreprocessFlagState.merge();
 //					oldPreprocessFlagState.flush();
 					logger.debug("Old preprocess flag state ignored.");
-				}catch(EmptyResultDataAccessException e) {
+				}catch(NoResultException e) {
 					logger.debug("Old state of typekind data/preprocess flag not found for Subject " + subject.getCodeName() + " , creating new one");
 				}
 				SubjectState newPreprocessState = createWellFlagState(subject.getId(), "data", "preprocess flag", recordedBy, lsTransaction);
@@ -169,7 +169,7 @@ public class FlagWellDTO {
 					oldUserFlagState.merge();
 //					oldUserFlagState.flush();
 					logger.debug("Old user flag state ignored.");
-				}catch(EmptyResultDataAccessException e) {
+				}catch(NoResultException e) {
 					logger.debug("Old state of typekind data/user flag not found for Subject " + subject.getCodeName() + " , creating new one");
 				}
 				SubjectState newUserState = createWellFlagState(subject.getId(), "data", "user flag", recordedBy, lsTransaction);
@@ -197,7 +197,7 @@ public class FlagWellDTO {
 					oldState.merge();
 //					oldState.flush();
 					logger.debug("Old TreatmentGroupState ignored.");
-				}catch(EmptyResultDataAccessException e){
+				}catch(NoResultException e){
 					logger.debug("No state data/results found. Creating a new state.");
 				}
 				TreatmentGroupState newState = createResultsTreatmentGroupState(treatmentGroup.getId(), "data", "results", recordedBy, lsTransaction);

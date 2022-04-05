@@ -583,7 +583,7 @@ public class MetalotServiceImpl implements MetalotService {
 					//
 					oldLot.setObservedMassOne(lot.getObservedMassOne());
 					oldLot.setObservedMassTwo(lot.getObservedMassTwo());
-					oldLot.setVendorID(lot.getVendorID());
+					oldLot.setVendorId(lot.getVendorId());
 					oldLot.setTareWeight(lot.getTareWeight());
 					oldLot.setTareWeightUnits(lot.getTareWeightUnits());
 					oldLot.setTotalAmountStored(lot.getTotalAmountStored());

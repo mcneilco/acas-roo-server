@@ -11,7 +11,7 @@
 			login-page="/login" authentication-success-handler-ref="postSuccessAuthHandler"
 			authentication-failure-url="/login?login_error=t" />
 		<logout logout-url="/resources/j_spring_security_logout" />
-
+		<csrf disabled="true"/>
 		<!-- Configure these elements to secure URIs in your application -->
 		<intercept-url pattern="/api/admin/**" access="hasRole('ROLE_ADMIN')" />
 		<intercept-url pattern="/resources/**" access="permitAll" />

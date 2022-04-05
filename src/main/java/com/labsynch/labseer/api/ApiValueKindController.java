@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +38,7 @@ public class ApiValueKindController {
         	ValueType valueType;
         	try{
         		valueType = ValueType.findValueTypesByTypeNameEquals(lsType).getSingleResult();
-        	} catch(EmptyResultDataAccessException e){
+        	} catch(NoResultException e){
         		valueType = new ValueType();
         		valueType.setTypeName(lsType);
         		valueType.persist();
@@ -47,7 +47,7 @@ public class ApiValueKindController {
         	try{
         		valueKind = ValueKind.findValueKindsByKindNameEqualsAndLsType(lsKind, valueType).getSingleResult();
         		valueKinds.add(valueKind);
-        	} catch(EmptyResultDataAccessException e){
+        	} catch(NoResultException e){
         		valueKind = new ValueKind();
         		valueKind.setKindName(lsKind);
         		valueKind.setLsType(valueType);

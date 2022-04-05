@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.roo.addon.javabean.RooJavaBean;
 import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
@@ -59,7 +59,7 @@ public class ParentAliasDTO {
 		ParentAlias parentAlias;
 		try {
 			parentAlias = ParentAlias.findParentAliasesByAliasNameEqualsAndLsTypeEqualsAndLsKindEquals(parentAliasDTO.getAliasName(), parentAliasDTO.getLsType(), parentAliasDTO.getLsKind()).getSingleResult();
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			parentAlias = null;
 		}
 		return new ParentAliasDTO(parentAlias);

@@ -50,6 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<git-sha-1>${buildNumber}</git-sha-1>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
 		<tomcat.version>7.0.63</tomcat.version>
+		<hibernate.version>5.6.1.Final</hibernate.version>
     </properties>
 	<scm>
 		<connection>scm:git:git://github.com/mcneilco/acas-roo-server.git</connection>
@@ -62,7 +63,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<name>Spring Release</name>
 			<url>https://repo.spring.io/release</url>
 		</repository>
-
+		<repository>
+			<id>MavenCentral</id>
+			<name>Maven repository</name>
+			<url>https://repo1.maven.org/maven2</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
@@ -281,17 +292,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>4.3.11.Final</version>
+			<version>${hibernate.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
-			<artifactId>hibernate-types-43</artifactId>
+			<artifactId>hibernate-types-52</artifactId>
 			<version>2.14.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.3.11.Final</version>
+			<version>${hibernate.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>cglib</groupId>
@@ -316,7 +327,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>4.3.2.Final</version>
+			<version>6.0.15.Final</version>
 			<exclusions>
 				<exclusion>
 					<groupId>javax.xml.bind</groupId>
@@ -328,11 +339,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
-			<version>2.0.1.Final</version>
-		</dependency>
+			<version>1.1.0.Final</version>
+		</dependency> -->
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
@@ -439,7 +450,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>org.apache.tiles</groupId>
 			<artifactId>tiles-jsp</artifactId>
-			<version>2.2.2</version>
+			<version>3.0.8</version>
 		</dependency>
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
@@ -547,11 +558,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<version>1.3.1</version>
 		</dependency>
 		<!-- JCHEM 16 requires dom4j 1.3. This depdendency can be removed when we upgrade jchem to jchem > 17 -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>dom4j</groupId>
 			<artifactId>dom4j</artifactId>
-			<version>1.3</version>
-		</dependency>
+			<version>1.6.1</version>
+		</dependency> -->
 		<dependency>
 			<groupId>com.beust</groupId>
 			<artifactId>jcommander</artifactId>

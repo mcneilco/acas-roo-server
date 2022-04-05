@@ -19,7 +19,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -163,7 +163,7 @@ public class DatabaseAuthenticationProvider extends AbstractUserDetailsAuthentic
 	        for(AuthorRole userRole:userRoles){
 	        	authorities.add(new SimpleGrantedAuthority(userRole.getRoleEntry().getRoleName()));
 	        }
-	      } catch (EmptyResultDataAccessException e) {
+	      } catch (NoResultException e) {
 		        throw new BadCredentialsException("Invalid user");
 	      } catch (EntityNotFoundException e) {
 	        throw new BadCredentialsException("Invalid user");

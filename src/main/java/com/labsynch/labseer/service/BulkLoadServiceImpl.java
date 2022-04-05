@@ -29,7 +29,7 @@ import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
@@ -170,7 +170,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			oldTemplate.update(templateToSave);
 			if (logger.isDebugEnabled()) if (logger.isDebugEnabled()) logger.debug("Updated template to: "+oldTemplate.toJson());
 			return oldTemplate;
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			if (logger.isDebugEnabled()) logger.debug("Saving new template");
 			templateToSave.persist();
 			return templateToSave;
@@ -572,7 +572,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 			mol.setProperty("Registered Lot Amount Units", ((metalotReturn.getMetalot().getLot().getAmountUnits() == null) ? "" : metalotReturn.getMetalot().getLot().getAmountUnits().getCode()));
 			mol.setProperty("Registered Lot Supplier", ((metalotReturn.getMetalot().getLot().getSupplier() == null) ? "" : metalotReturn.getMetalot().getLot().getSupplier()));
 			mol.setProperty("Registered Lot Supplier ID",((metalotReturn.getMetalot().getLot().getSupplierID() == null) ? "" : metalotReturn.getMetalot().getLot().getSupplierID()));
-			mol.setProperty("Registered Lot Vendor ID", ((metalotReturn.getMetalot().getLot().getVendorID() == null) ? "" : metalotReturn.getMetalot().getLot().getVendorID()));
+			mol.setProperty("Registered Lot Vendor ID", ((metalotReturn.getMetalot().getLot().getVendorId() == null) ? "" : metalotReturn.getMetalot().getLot().getVendorId()));
 			if (!parentAliasList.isEmpty()){
 				for (String alias : parentAliasList){
 					if (allParentAliases.length() == 0) allParentAliases += alias;
@@ -761,7 +761,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				else{
 					parent = foundParent;
 				}
-			}catch (EmptyResultDataAccessException empty){
+			}catch (NoResultException empty){
 				logger.warn("Parent corp name entered that doesn't already exist (sdf corp name: '"+parent.getCorpName()+"'), this compound will be registered with a new parent corp name: ");
 				foundParent = null;
 			}catch (DupeParentException dupe){
@@ -980,7 +980,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 				}else{
 					throw new DupeLotException("Duplicate lot cannot be registered due to previously existing lot in database.", previousLot.getCorpName());
 				}
-			} catch(EmptyResultDataAccessException e){
+			} catch(NoResultException e){
 				logger.debug("Not a duplicate lot corp name");
 			}	
 		}
@@ -1005,7 +1005,7 @@ public class BulkLoadServiceImpl implements BulkLoadService {
 		lot.setColor(getStringValueFromMappings(mol, "Lot Color", mappings, results, recordNumber));
 		lot.setSupplier(getStringValueFromMappings(mol, "Lot Supplier", mappings, results, recordNumber));
 		lot.setSupplierID(getStringValueFromMappings(mol, "Lot Supplier ID", mappings, results, recordNumber));
-		lot.setVendorID(getStringValueFromMappings(mol, "Lot Vendor ID", mappings, results, recordNumber));
+		lot.setVendorId(getStringValueFromMappings(mol, "Lot Vendor ID", mappings, results, recordNumber));
 		lot.setComments(getStringValueFromMappings(mol, "Lot Comments", mappings, results, recordNumber));		
 		lot.setSupplierLot(getStringValueFromMappings(mol, "Lot Supplier Lot", mappings, results, recordNumber));
 		lot.setMeltingPoint(getNumericValueFromMappings(mol, "Lot Melting Point", mappings, results, recordNumber));

@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -64,7 +64,7 @@ public class SecurityUtil {
 			chemist = Author.findAuthorsByUserName(chemistName).getSingleResult();
 			userJson = chemist.toJson();
 
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			logger.error("unable to find the user: " + chemistName);
 			chemist = new Author();
 		}
@@ -82,7 +82,7 @@ public class SecurityUtil {
 			chemist = Author.findAuthorsByUserName(loginName).getSingleResult();
 			userJson = chemist.toJson();
 			logger.debug(userJson);
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			logger.debug("did not find the new chemist. create the new entry");
 			chemist = createUser(loginName);
 		}
@@ -97,7 +97,7 @@ public class SecurityUtil {
 			chemist = Author.findAuthorsByUserName(loginName).getSingleResult();
 			userJson = chemist.toJson();
 			logger.debug(userJson);
-		} catch (EmptyResultDataAccessException e){
+		} catch (NoResultException e){
 			logger.debug("did not find the new chemist. create the new entry");
 			chemist = createUser(loginName, fullName);
 		}

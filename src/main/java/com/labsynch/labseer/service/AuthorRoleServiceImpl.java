@@ -7,7 +7,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
+import javax.persistence.NoResultException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +52,7 @@ public class AuthorRoleServiceImpl implements AuthorRoleService {
 			LsRole role;
 			try{
 				role = LsRole.findLsRolesByLsTypeEqualsAndRoleNameEquals("LDAP",roleName).getSingleResult();
-			}catch (EmptyResultDataAccessException e){
+			}catch (NoResultException e){
 				role = new LsRole();
 				role.setRoleName(roleName);
 				role.setLsType("LDAP");
