@@ -21,7 +21,6 @@ import com.labsynch.labseer.dto.FlagWellDTO;
 import com.labsynch.labseer.dto.KiCurveFitDTO;
 import com.labsynch.labseer.dto.RawCurveDataDTO;
 import com.labsynch.labseer.dto.TgDataDTO;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("api/v1/curvefit")
@@ -31,7 +30,6 @@ public class ApiCurveFitController {
 	private static final Logger logger = LoggerFactory.getLogger(ApiCurveFitController.class);
 	
 	//no longer needed - preparing to deprecate
-	@ApiOperation(value="getFitDataByCurveId")
 	@Transactional
     @RequestMapping(value = "/fitdata", method = RequestMethod.POST, headers = "Accept=application/json")
     public ResponseEntity<String> getFitDataByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format) {
@@ -74,7 +72,6 @@ public class ApiCurveFitController {
 		}
     }
 	
-	@ApiOperation(value="getRawCurveDataByCurveId")
 	@Transactional
 	@RequestMapping(value = "/rawdata", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> getRawCurveDataByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format,
@@ -98,7 +95,6 @@ public class ApiCurveFitController {
 		}
 	}
 	
-	@ApiOperation(value="getRawAgonistCurveDataByCurveId")
 	@Transactional
 	@RequestMapping(value = "/rawdataagonist", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> getRawCurveDataAgonistByCurveId(@RequestBody List<String> curveIds, @RequestParam(value = "format", required = false) String format,

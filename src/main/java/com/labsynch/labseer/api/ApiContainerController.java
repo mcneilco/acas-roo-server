@@ -54,7 +54,6 @@ import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.ContainerService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
-import com.wordnik.swagger.annotations.ApiOperation;
 
 import flexjson.JSONSerializer;
 
@@ -369,11 +368,6 @@ public class ApiContainerController {
 		}
 	}
 
-	@ApiOperation(value = "Checks for dependent containers that would preclude deletion",
-			notes="A container will fail the dependency check if: \n"
-					+ "A) It has other containers stored in it (added to interaction) \n"
-					+ "B) It has referenced Subjects (Subject-Container interactions) \n"
-					+ "C) Any members (member interaction) have referenced Subjects")
 	@RequestMapping(value = "/checkDependencies/{idOrCodeName}", method = RequestMethod.GET, headers = "Accept=application/json")
 	public ResponseEntity<String> checkDependencies(@PathVariable("idOrCodeName") String idOrCodeName) {
 		HttpHeaders headers = new HttpHeaders();
@@ -421,10 +415,6 @@ public class ApiContainerController {
 		return new ResponseEntity<String>(Container.toJsonArray(Container.findContainerByContainerLabel(labelText)), headers, HttpStatus.OK);
 	}
 
-	@ApiOperation(value="Validates container name is unique", notes="Name is determined by label lsType=name."
-			+ "Search is across all containers, for other lsType=name labels, with an exact string match."
-			+ "Successful validation (name is unique) gives HTTP Status 202: Accepted"
-			+ "Failure on validation gives HTTP Status 409: Conflict")
 	@RequestMapping(value = "/validate", method = RequestMethod.POST, headers = "Accept=application/json")
 	public ResponseEntity<String> validateContainer(
 			@RequestBody String json) {

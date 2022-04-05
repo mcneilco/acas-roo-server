@@ -14,7 +14,7 @@
 		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />
 	<!-- Configures view for returning JSON to the client -->
 	<bean
-		class="org.springframework.web.servlet.view.json.MappingJacksonJsonView">
+		class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
 		<property name="contentType" value="text/plain" />
 	</bean>
 
@@ -82,7 +82,7 @@
 <bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" id="tilesViewResolver">
     <property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/>
   </bean>
-    <bean class="org.springframework.web.servlet.view.tiles2.TilesConfigurer" id="tilesConfigurer">
+    <bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer" id="tilesConfigurer">
     <property name="definitions">
       <list>
         <value>/WEB-INF/layouts/layouts.xml</value>
@@ -92,6 +92,5 @@
     </property>
   </bean>
 <bean class="com.labsynch.labseer.web.ApplicationConversionServiceFactoryBean" id="applicationConversionService"/>
-<bean class="com.labsynch.labseer.config.SwaggerConfig" id="swaggerConfig"/>
 
 </beans>
