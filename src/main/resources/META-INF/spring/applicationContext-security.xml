@@ -8,7 +8,10 @@
 	<!-- HTTP security configurations -->
 	<http auto-config="true" use-expressions="true">
 		<form-login login-processing-url="/resources/j_spring_security_check"
-			login-page="/login" authentication-success-handler-ref="postSuccessAuthHandler"
+			login-page="/login" 
+			username-parameter="j_username"
+			password-parameter="j_password" 
+			authentication-success-handler-ref="postSuccessAuthHandler"
 			authentication-failure-url="/login?login_error=t" />
 		<logout logout-url="/resources/j_spring_security_logout" />
 		<csrf disabled="true"/>
@@ -34,6 +37,15 @@
 	<authentication-manager alias="authenticationManager">
 		<authentication-provider ref="acasAuthenticationProvider" />
 	</authentication-manager>
+
+	<!-- Configure firewall -->
+	<!-- Note, we should remove this, this allows // in url and normalizes the url -->
+	<!-- Default is strict matching but there are logs of places in ACAS which sent // in the url -->
+	<beans:bean 
+		id="ACASHttpFirewall" class="com.labsynch.labseer.utils.ACASHttpFirewall">
+	</beans:bean>
+	<http-firewall ref="ACASHttpFirewall"/>
+
 	
 <!-- 	<user-service id="userDetailsService" properties="/WEB-INF/ps-users.properties" />
  -->	
