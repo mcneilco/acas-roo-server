@@ -1,6 +1,7 @@
 package com.labsynch.labseer.domain;
 
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -18,5 +19,6 @@ public class UncertaintyKind {
     @NotNull
     @Column(unique = true)
     @Size(max = 255)
+    @JoinColumn(name = "ls_type")
     private String kindName;
 }

@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.PersistenceContext;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
@@ -32,6 +33,7 @@ public class DDictKind {
     private static final Logger logger = LoggerFactory.getLogger(DDictKind.class);
 
     @Size(max = 255)
+    @JoinColumn(name = "ls_type")
     private String lsType;
     
     @NotNull

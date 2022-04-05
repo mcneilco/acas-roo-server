@@ -1,5 +1,6 @@
 package com.labsynch.labseer.domain;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,6 +18,7 @@ public class ParentAliasKind {
 	
     @NotNull
     @ManyToOne
+    @JoinColumn(name = "ls_type")
     private ParentAliasType lsType;
 
     @Size(max = 255)
