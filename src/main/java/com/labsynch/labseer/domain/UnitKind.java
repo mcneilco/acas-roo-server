@@ -31,7 +31,7 @@ public class UnitKind {
 
     @NotNull
     @ManyToOne
-	@JoinColumn(name = "ls_type")
+    @JoinColumn(name = "ls_type")
     private UnitType lsType;
 
     @NotNull
