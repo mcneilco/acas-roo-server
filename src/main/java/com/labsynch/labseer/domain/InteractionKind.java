@@ -34,7 +34,7 @@ public class InteractionKind {
 
     @NotNull
     @ManyToOne
-	@JoinColumn(name = "ls_type")
+    @JoinColumn(name = "ls_type")
     private InteractionType lsType;
 
     @NotNull
