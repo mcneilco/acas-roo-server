@@ -41,7 +41,7 @@ public class ProtocolKind {
 
     @NotNull
     @ManyToOne
-	@JoinColumn(name = "ls_type")
+    @JoinColumn(name = "ls_type")
     private ProtocolType lsType;
 
     @NotNull
