@@ -31,7 +31,7 @@ public class OperatorKind {
 
     @NotNull
     @ManyToOne
-	@JoinColumn(name = "ls_type")
+    @JoinColumn(name = "ls_type")
     private OperatorType lsType;
 
     @NotNull
