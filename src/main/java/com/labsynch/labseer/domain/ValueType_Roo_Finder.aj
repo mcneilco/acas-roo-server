@@ -17,6 +17,13 @@ privileged aspect ValueType_Roo_Finder {
         return ((Long) q.getSingleResult());
     }
 
+    public static TypedQuery<ValueType> ValueType.findValueTypesByTypeNameEquals(String typeName) {
+        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
+        EntityManager em = ValueType.entityManager();
+        TypedQuery<ValueType> q = em.createQuery("SELECT o FROM ValueType AS o WHERE o.typeName = :typeName", ValueType.class);
+        q.setParameter("typeName", typeName);
+        return q;
+    }
     
     public static TypedQuery<ValueType> ValueType.findValueTypesByTypeNameEquals(String typeName, String sortFieldName, String sortOrder) {
         if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
