@@ -34,18 +34,10 @@ public class ValueType {
     @Column(unique = true)
     @Size(max = 64)
     private String typeName;
-
-    public static TypedQuery<ValueType> findValueTypesByTypeNameEquals(String typeName) {
-        if (typeName == null || typeName.length() == 0) throw new IllegalArgumentException("The typeName argument is required");
-        EntityManager em = ValueType.entityManager();
-        TypedQuery<ValueType> q = em.createQuery("SELECT o FROM ValueType AS o WHERE o.typeName = :typeName", ValueType.class);
-        q.setParameter("typeName", typeName);
-        return q;
-    }
     
 	public static ValueType getOrCreate(String name) {
 		ValueType lsType = null;
-        List<ValueType> lsTypes = findValueTypesByTypeNameEquals(name).getResultList();
+        List<ValueType> lsTypes = ValueType.findValueTypesByTypeNameEquals(name).getResultList();
         if (lsTypes.size() == 0) {
             lsType = new ValueType();
             lsType.setTypeName(name);
