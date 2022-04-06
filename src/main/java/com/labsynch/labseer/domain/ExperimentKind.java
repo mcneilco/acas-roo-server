@@ -29,7 +29,7 @@ public class ExperimentKind {
 
     @NotNull
     @ManyToOne
-	@JoinColumn(name = "ls_type")
+    @JoinColumn(name = "ls_type")
     private ExperimentType lsType;
 
     @NotNull
