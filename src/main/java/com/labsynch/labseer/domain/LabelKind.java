@@ -35,7 +35,7 @@ public class LabelKind {
 
 
     @ManyToOne
-	@JoinColumn(name = "ls_type")
+    @JoinColumn(name = "ls_type")
     private LabelType lsType;
 
     @NotNull
