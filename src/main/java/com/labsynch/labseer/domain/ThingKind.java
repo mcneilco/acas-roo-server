@@ -35,7 +35,7 @@ public class ThingKind {
 
     @NotNull
     @ManyToOne
-	@JoinColumn(name = "ls_type")
+    @JoinColumn(name = "ls_type")
     private ThingType lsType;
 
     @NotNull
