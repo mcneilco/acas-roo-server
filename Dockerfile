@@ -17,7 +17,7 @@ ADD 	. /src
 RUN 	mvn clean && \
         mvn compile war:war -P ${CHEMISTRY_PACKAGE}
 
-FROM tomcat:9.0.58-jre8-openjdk-slim-buster
+FROM tomcat:9.0.68-jre8-openjdk-slim-buster
 
 RUN apt-get update && \
     apt-get install -y openssl libfontconfig libfreetype6 curl
