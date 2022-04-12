@@ -15,12 +15,13 @@ import java.util.Set;
 
 import javax.persistence.NoResultException;
 
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -118,8 +119,8 @@ public class AnalysisGroupValueServiceTest {
 		//		 InputStream stream = new FileInputStream(fileName);
 
 		ObjectMapper mapper = new ObjectMapper();
-		JsonFactory jsonFactory = mapper.getJsonFactory();
-		JsonParser jp = jsonFactory.createJsonParser(br);
+		JsonFactory jsonFactory = mapper.getFactory();
+		JsonParser jp = jsonFactory.createParser(br);
 		JsonToken token;
 		long currentTime = System.currentTimeMillis();
 		while ((token = jp.nextToken()) != null) {

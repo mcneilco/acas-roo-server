@@ -28,10 +28,10 @@ import com.labsynch.labseer.utils.SimpleUtil.PostResponse;
 import com.labsynch.labseer.utils.Response;
 import com.labsynch.labseer.utils.Request;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			logger.error("Missing preprocessorSettings "+propertyKey+"!!");
 			throw new IOException("Missing preprocessorSettings "+propertyKey+"!!");
 		}
-		String url = urlNode.getTextValue();
+		String url = urlNode.asText();
 		return url;
 
 	}
@@ -388,7 +388,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 			JsonNode structuresResponseNode = responseNode.get("structures");
 
 			// Add the standardized structures to the hashmap
-			structuresResponseNode.getFieldNames().forEachRemaining(structureId -> {
+			structuresResponseNode.fieldNames().forEachRemaining(structureId -> {
 				JsonNode node = structuresResponseNode.get(structureId);
 				String status = node.get("status").asText();
 				String structure = node.get("structure").asText();
@@ -436,7 +436,7 @@ public class BBChemStructureServiceImpl  implements BBChemStructureService {
 				// Check if we have an error code
 				if( errorCodeNode != null) {
 					String errorCode = errorCodeNode.asText();
-					String msg = responseJsonNode.get("error_msg").getTextValue();
+					String msg = responseJsonNode.get("error_msg").asText();
 					if(errorCode.equals("4004")) {
 						logger.warn("Processor error code '" + errorCode + "' for '" + structureKey + "': " + msg);
 						bbChemStructure.setReg(EMPTY_STRUCTURE);

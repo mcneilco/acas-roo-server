@@ -35,14 +35,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.util.UUID;
 import java.util.Map.Entry;
 
@@ -749,7 +750,7 @@ public class ChemStructureServiceBBChemImpl implements ChemStructureService {
 		try{
 			JsonNode responseNode = bbChemStructureService.postToProcessService(molFile);
 			JsonNode errorCodeNode = responseNode.get(0).get("error_code");
-			if( errorCodeNode != null && errorCodeNode.getTextValue().equals("4004")){
+			if( errorCodeNode != null && errorCodeNode.asText().equals("4004")){
 				return true;
 			} else {
 				return false;
