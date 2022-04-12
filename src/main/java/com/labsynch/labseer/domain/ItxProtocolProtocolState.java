@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -51,6 +52,7 @@ public class ItxProtocolProtocolState extends AbstractState {
     }
 
 	@ManyToOne
+	@JoinColumn(name = "itx_protocol_protocol")
     private ItxProtocolProtocol itxProtocolProtocol;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsState",  fetch =  FetchType.LAZY)

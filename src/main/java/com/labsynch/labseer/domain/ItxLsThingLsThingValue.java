@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.TypedQuery;
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ItxLsThingLsThingValue extends AbstractValue {
 
     @ManyToOne
+    @JoinColumn(name = "ls_state")
     private ItxLsThingLsThingState lsState;
 
     public ItxLsThingLsThingValue(com.labsynch.labseer.domain.ItxLsThingLsThingValue itxLsThingLsThingValue) {

@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.springframework.roo.addon.javabean.RooJavaBean;
@@ -28,6 +29,7 @@ import flexjson.JSONSerializer;
 public class ItxProtocolProtocolValue extends AbstractValue {
 		
     @ManyToOne
+    @JoinColumn(name = "ls_state")
     private ItxProtocolProtocolState lsState;
     
     public static ItxProtocolProtocolValue update(ItxProtocolProtocolValue object) {

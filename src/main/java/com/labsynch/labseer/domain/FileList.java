@@ -8,6 +8,7 @@ import java.io.InputStream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.persistence.TypedQuery;
@@ -33,6 +34,7 @@ public class FileList {
     private static final Logger logger = LoggerFactory.getLogger(FileListController.class);
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lot")
     private Lot lot;
 
     private String description;

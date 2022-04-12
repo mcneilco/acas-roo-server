@@ -1,5 +1,6 @@
 package com.labsynch.labseer.domain;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ public class SaltFormAlias {
 	
 	@ManyToOne
     @org.hibernate.annotations.Index(name="SaltFormAlias_SaltForm_IDX")
+	@JoinColumn(name = "salt_form")
 	private SaltForm saltForm;
 	
     private String lsType;

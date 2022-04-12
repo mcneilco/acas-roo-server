@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.EntityManager;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
@@ -56,6 +57,7 @@ public class ItxSubjectContainerState extends AbstractState {
     }
   
 	@ManyToOne
+	@JoinColumn(name = "itx_subject_container")
     private ItxSubjectContainer itxSubjectContainer;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsState")

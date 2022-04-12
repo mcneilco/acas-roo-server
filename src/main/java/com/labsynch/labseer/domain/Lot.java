@@ -13,6 +13,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Query;
@@ -102,11 +103,13 @@ public class Lot {
     private Double amount;
 
     @ManyToOne
+    @JoinColumn(name = "amount_units")
     private Unit amountUnits;
 
     private Double solutionAmount;
 
     @ManyToOne    
+    @JoinColumn(name = "solution_amount_units")
     private SolutionUnit solutionAmountUnits;
     
     @Size(max = 255)
@@ -118,9 +121,11 @@ public class Lot {
     private Double purity;
 
     @ManyToOne
+    @JoinColumn(name = "purity_operator")
     private Operator purityOperator;
 
     @ManyToOne
+    @JoinColumn(name = "purity_measured_by")
     private PurityMeasuredBy purityMeasuredBy;
 
     private String chemist;
@@ -136,9 +141,11 @@ public class Lot {
 
     
     @ManyToOne
+    @JoinColumn(name = "physical_state")
     private PhysicalState physicalState;
 
     @ManyToOne
+    @JoinColumn(name = "vendor")
     private Vendor vendor;
 
     @Size(max = 255)
@@ -146,6 +153,7 @@ public class Lot {
     private String vendorId;
 
     @ManyToOne
+    @JoinColumn(name = "salt_form")
     private SaltForm saltForm;
 
     @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "lot", fetch = FetchType.LAZY)
@@ -154,6 +162,7 @@ public class Lot {
     private Double retain;
 
     @ManyToOne
+    @JoinColumn(name = "retain_units")
     private Unit retainUnits;
     
     private String retainLocation;
@@ -171,6 +180,7 @@ public class Lot {
     private Parent parent;
     
     @ManyToOne
+    @JoinColumn(name = "bulk_load_file")
     private BulkLoadFile bulkLoadFile;
     
     private Double lambda;
@@ -188,11 +198,13 @@ public class Lot {
     private Double tareWeight;
     
     @ManyToOne
+    @JoinColumn(name = "tare_weight_units")
     private Unit tareWeightUnits;
     
     private Double totalAmountStored;
     
     @ManyToOne
+    @JoinColumn(name = "total_amount_stored_units")
     private Unit totalAmountStoredUnits;
     
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "lot", fetch = FetchType.LAZY)

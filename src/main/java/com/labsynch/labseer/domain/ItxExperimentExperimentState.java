@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -53,6 +54,7 @@ public class ItxExperimentExperimentState extends AbstractState {
     }
 
 	@ManyToOne
+	@JoinColumn(name = "itx_experiment_experiment")
     private ItxExperimentExperiment itxExperimentExperiment;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lsState",  fetch =  FetchType.LAZY)

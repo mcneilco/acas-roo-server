@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Size;
 
@@ -28,9 +29,11 @@ public class IsoSalt {
 	private static final Logger logger = LoggerFactory.getLogger(IsoSalt.class);
 
     @ManyToOne
+    @JoinColumn(name = "isotope")
     private Isotope isotope;
 
     @ManyToOne
+    @JoinColumn(name = "salt")
     private Salt salt;
 
     @Size(max = 25)
@@ -41,6 +44,7 @@ public class IsoSalt {
     private Boolean ignore;
 
     @ManyToOne
+    @JoinColumn(name = "salt_form")
     private SaltForm saltForm;
 
     

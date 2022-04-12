@@ -60,6 +60,7 @@ public class ThingPage {
     private boolean archived;
 
     @ManyToOne
+    @JoinColumn(name = "ls_transaction")
     private LsTransaction lsTransaction;
 
     @NotNull

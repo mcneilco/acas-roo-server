@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Query;
 
@@ -30,6 +31,7 @@ import flexjson.JSONSerializer;
 public class ItxSubjectContainerValue extends AbstractValue {
 
     @ManyToOne
+	@JoinColumn(name = "ls_state")
     private ItxSubjectContainerState lsState;
     
     public static ItxSubjectContainerValue update(ItxSubjectContainerValue object) {

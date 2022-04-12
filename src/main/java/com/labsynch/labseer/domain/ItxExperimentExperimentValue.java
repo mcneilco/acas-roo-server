@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -30,6 +31,7 @@ import flexjson.JSONSerializer;
 public class ItxExperimentExperimentValue extends AbstractValue {
 		
     @ManyToOne
+    @JoinColumn(name = "ls_state")
     private ItxExperimentExperimentState lsState;
     
     public static ItxExperimentExperimentValue update(ItxExperimentExperimentValue object) {

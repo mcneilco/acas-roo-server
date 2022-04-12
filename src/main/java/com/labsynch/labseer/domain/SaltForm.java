@@ -11,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -74,6 +75,7 @@ public class SaltForm implements Comparable {
 
 	@ManyToOne
     @org.hibernate.annotations.Index(name="SaltForm_Parent_IDX")
+	@JoinColumn(name = "parent")
 	private Parent parent;
 
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "saltForm", fetch=FetchType.LAZY)
@@ -83,6 +85,7 @@ public class SaltForm implements Comparable {
 	private Set<IsoSalt> isoSalts = new HashSet<IsoSalt>();
 	
     @ManyToOne
+	@JoinColumn(name = "bulk_load_file")
     private BulkLoadFile bulkLoadFile;
 	
     public static final List<String> fieldNames4OrderClauseFilter = java.util.Arrays.asList("corpName", "CdId", "parent", "bulkLoadFile");

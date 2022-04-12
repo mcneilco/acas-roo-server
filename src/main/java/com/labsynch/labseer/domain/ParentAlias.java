@@ -1,5 +1,6 @@
 package com.labsynch.labseer.domain;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.slf4j.Logger;
@@ -25,6 +26,7 @@ public class ParentAlias {
 	
 	@ManyToOne
     @org.hibernate.annotations.Index(name="ParentAlias_Parent_IDX")
+	@JoinColumn(name = "parent")
 	private Parent parent;
 	
     private String lsType;

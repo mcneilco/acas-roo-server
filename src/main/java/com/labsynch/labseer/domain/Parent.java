@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EntityManager;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -70,6 +71,7 @@ public class Parent {
 
 	@ManyToOne
 	@org.hibernate.annotations.Index(name="Parent_stereoCategory_IDX")
+	@JoinColumn(name = "stereo_category")
 	private StereoCategory stereoCategory;
 
 	@Size(max = 1000)
@@ -111,12 +113,15 @@ public class Parent {
 	private Set<ParentAlias> parentAliases = new HashSet<ParentAlias>();
 
     @ManyToOne
+	@JoinColumn(name = "bulk_load_file")
     private BulkLoadFile bulkLoadFile;
     
     @ManyToOne
+	@JoinColumn(name = "parent_annotation")
     private ParentAnnotation parentAnnotation;
     
     @ManyToOne
+	@JoinColumn(name = "compound_type")
     private CompoundType compoundType;
     
     @Column(columnDefinition="text")

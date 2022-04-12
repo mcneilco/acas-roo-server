@@ -1,5 +1,6 @@
 package com.labsynch.labseer.domain;
 
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ public class LotAlias {
 	
 	@ManyToOne
     @org.hibernate.annotations.Index(name="LotAlias_Parent_IDX")
+	@JoinColumn(name = "lot")
 	private Lot lot;
 	
     private String lsType;
