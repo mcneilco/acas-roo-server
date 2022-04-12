@@ -51,6 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<BuildScmBranch>${scmBranch}</BuildScmBranch>
 		<tomcat.version>7.0.63</tomcat.version>
 		<hibernate.version>5.6.1.Final</hibernate.version>
+		<spring-ldap-core.version>2.3.6.RELEASE</spring-ldap-core.version>
     </properties>
 	<scm>
 		<connection>scm:git:git://github.com/mcneilco/acas-roo-server.git</connection>
@@ -487,12 +488,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core</artifactId>
-			<version>2.3.6.RELEASE</version>
+			<version>${spring-ldap-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.ldap</groupId>
 			<artifactId>spring-ldap-core-tiger</artifactId>
-			<version>2.3.6.RELEASE</version>
+			<version>${spring-ldap-core.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
