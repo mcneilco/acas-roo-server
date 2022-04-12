@@ -42,11 +42,6 @@
         <context:exclude-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
     <bean class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" id="dataSource">
-        <property name="connectionInitSqls">
-            <list>
-                <value>SET SCHEMA '${server.database.schema}'</value>
-            </list>
-        </property>
         <property name="driverClassName" value="${server.database.driver}"/>
         <property name="url" value="${server.database.url}"/>
         <property name="username" value="${server.database.username}"/>
