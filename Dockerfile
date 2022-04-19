@@ -29,7 +29,7 @@ ENV NPM_CONFIG_LOGLEVEL warn
 ENV NODE_VERSION 14.x
 RUN curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | bash - && \
   apt-get install -y nodejs && \
-  npm install -g coffeescript@2.5.1 properties@1.2.1 underscore@1.12.0 underscore-deep-extend@1.1.5 properties-parser@0.3.1 flat@5.0.2 glob@7.1.6 dotenv@10.0.0 dotenv-expand@5.1.0
+  npm install -g coffeescript@2.5.1 properties@1.2.1 underscore@1.12.0 underscore-deep-extend@1.1.5 properties-parser@0.3.1 flat@5.0.2 glob@7.1.6
 ENV NODE_PATH /usr/lib/node_modules
 
 # Add runner user so we don't run as root
