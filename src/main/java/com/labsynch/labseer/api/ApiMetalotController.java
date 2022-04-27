@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -36,11 +36,10 @@ import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.MetalotService;
 
-@RooWebScaffold(path = "metalots", formBackingObject = Metalot.class)
-@RequestMapping("/metalots")
+@RequestMapping(value="/api/v1/metalots")
 @Controller
 //@Transactional
-public class MetalotController {
+public class ApiMetalotController {
 		
 	@Autowired
 	private MetalotService metalotService;
@@ -48,7 +47,7 @@ public class MetalotController {
 	@Autowired
 	private ChemStructureService chemStructService;
 	
-	private static final Logger logger = LoggerFactory.getLogger(MetalotController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApiMetalotController.class);
 
 	@Transactional
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
