@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpHeaders;
@@ -18,13 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.labsynch.labseer.domain.ParentAnnotation;
 
-@RooWebScaffold(path = "parentAnnotations", formBackingObject = ParentAnnotation.class)
-@RequestMapping("/parentAnnotations")
+@RequestMapping(value = {"/api/v1/parentAnnotations"})
 @Transactional
 @Controller
-
-@RooWebFinder
-public class ParentAnnotationController {
+public class ApiParentAnnotationController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
