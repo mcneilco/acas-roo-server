@@ -1,21 +1,22 @@
-package com.labsynch.labseer.web;
-import java.io.UnsupportedEncodingException;
+package com.labsynch.labseer.api;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import com.labsynch.labseer.domain.Isotope;
+import com.labsynch.labseer.service.ErrorList;
+import com.labsynch.labseer.service.ErrorMessage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -28,21 +29,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.WebUtils;
 
-import com.labsynch.labseer.domain.Isotope;
-import com.labsynch.labseer.service.ErrorList;
-import com.labsynch.labseer.service.ErrorMessage;
-import com.mysema.query.BooleanBuilder;
-import com.mysema.query.types.path.PathBuilder;
-
-@RooWebScaffold(path = "isotopes", formBackingObject = Isotope.class)
-@RequestMapping("/isotopes")
-@Transactional
+@RequestMapping(value = {"/api/v1/isotopes"})
 @Controller
-
-@RooWebFinder
-public class IsotopeController {
-
-    private static final Logger logger = LoggerFactory.getLogger(IsotopeController.class);
+public class ApiIsotopeController {
+	
+    private static final Logger logger = LoggerFactory.getLogger(ApiIsotopeController.class);
 
     @RequestMapping(method = RequestMethod.POST)
     public String create(@Valid Isotope isotope, BindingResult bindingResult, Model uiModel, HttpServletRequest httpServletRequest) {
