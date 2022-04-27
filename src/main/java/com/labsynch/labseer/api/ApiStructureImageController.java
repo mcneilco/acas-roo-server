@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 
 import java.util.List;
 
@@ -24,12 +24,12 @@ import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.domain.StandardizationDryRunCompound;
 import com.labsynch.labseer.service.StructureImageService;
 
-@RequestMapping("/structureimage")
+@RequestMapping("/api/v1/structureimage")
 @Controller
 @Transactional
-public class StructureImageController {
+public class ApiStructureImageController {
 
-    Logger logger = LoggerFactory.getLogger(StructureImageController.class);
+    Logger logger = LoggerFactory.getLogger(ApiStructureImageController.class);
 
     @Autowired
     private StructureImageService structureImageService;
