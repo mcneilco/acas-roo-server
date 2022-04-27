@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 
@@ -29,13 +29,10 @@ import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@RooWebScaffold(path = "physicalstates", formBackingObject = PhysicalState.class)
-@RequestMapping({ "/physicalstates", "/physicalStates" })
+@RequestMapping(value = {"/api/v1/physicalStates"})
 @Transactional
 @Controller
-
-@RooWebFinder
-public class PhysicalStateController {
+public class ApiPhysicalStateController {
 	
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
