@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @RequestMapping(value = {"/api/v1/solutionUnits"})
+@Transactional
 @Controller
 public class ApiSolutionUnitController {
 
