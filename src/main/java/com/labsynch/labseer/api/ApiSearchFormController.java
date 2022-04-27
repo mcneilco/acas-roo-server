@@ -23,7 +23,7 @@ import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.SearchFormService;
 
 //@RooWebScaffold(path = "searchforms", formBackingObject = SearchForm.class)
-@RequestMapping(value = {"/searchforms", "/search"})
+@RequestMapping(value = {"/api/v1/searchforms", "/api/v1/search"})
 @Controller
 public class ApiSearchFormController {
 	
