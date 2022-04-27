@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +25,9 @@ import com.labsynch.labseer.service.SearchFormService;
 //@RooWebScaffold(path = "searchforms", formBackingObject = SearchForm.class)
 @RequestMapping(value = {"/searchforms", "/search"})
 @Controller
-public class SearchFormController {
+public class ApiSearchFormController {
 	
-	Logger logger = LoggerFactory.getLogger(SearchFormController.class);
+	Logger logger = LoggerFactory.getLogger(ApiSearchFormController.class);
 
 	
 	
