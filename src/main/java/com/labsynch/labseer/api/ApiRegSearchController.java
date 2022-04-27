@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -25,14 +25,14 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.RegSearchService;
 
 //@RooWebScaffold(path = "regsearches", formBackingObject = RegSearch.class)
-@RequestMapping(value ={"/regsearches", "/regSearches"})
+@RequestMapping(value ={"/api/v1/regsearches", "/api/v1/regSearches"})
 @Controller
-public class RegSearchController {
+public class ApiRegSearchController {
 	
 	@Autowired
 	private RegSearchService regSearchService;
 	
-	Logger logger = LoggerFactory.getLogger(RegSearchController.class);
+	Logger logger = LoggerFactory.getLogger(ApiRegSearchController.class);
 
 
 	String encodeUrlPathSegment(String pathSegment, HttpServletRequest httpServletRequest) {
