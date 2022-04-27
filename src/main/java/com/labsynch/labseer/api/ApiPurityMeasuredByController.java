@@ -22,13 +22,10 @@ import com.labsynch.labseer.utils.PropertiesUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
-@RequestMapping({"/puritymeasuredbys","/purityMeasuredBys"})
+@RequestMapping(value = {"/api/v1/purityMeasuredBys"})
 @Controller
 
-@RooWebJson(jsonObject = PurityMeasuredBy.class)
-@RooWebScaffold(path = "puritymeasuredbys", formBackingObject = PurityMeasuredBy.class)
-@RooWebFinder
-public class PurityMeasuredByController {
+public class ApiPurityMeasuredByController {
 
 
 	@Autowired
