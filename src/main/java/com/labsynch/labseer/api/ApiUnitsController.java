@@ -1,28 +1,26 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 
+import com.labsynch.labseer.domain.Unit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.roo.addon.web.mvc.controller.finder.RooWebFinder;
-import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import com.labsynch.labseer.domain.Unit;
 
-@RooWebScaffold(path = "units", formBackingObject = Unit.class)
-@RequestMapping("/units")
-@Transactional
+@RequestMapping(value = {"/api/v1/units"})
 @Controller
+public class ApiUnitsController {
+	
+	Logger logger = LoggerFactory.getLogger(ApiUnitsController.class);
 
-@RooWebFinder
-public class UnitController {
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
     public ResponseEntity<String> showJson(@PathVariable("id") Long id) {
         Unit unit = Unit.findUnit(id);
@@ -125,4 +123,5 @@ public class UnitController {
         headers.setExpires(0); // Expire the cache
         return new ResponseEntity<String>(headers, HttpStatus.OK);
     }
+
 }
