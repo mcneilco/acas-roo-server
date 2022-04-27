@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,13 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import com.labsynch.labseer.domain.Operator;
 
-@RooWebScaffold(path = "operators", formBackingObject = Operator.class)
-@RequestMapping("/operators")
+@RequestMapping(value = {"/api/v1/operators"})
 @Transactional
 @Controller
-
-@RooWebFinder
-public class OperatorController {
+public class ApiOperatorController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
