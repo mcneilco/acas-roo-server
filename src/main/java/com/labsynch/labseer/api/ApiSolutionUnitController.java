@@ -1,6 +1,21 @@
-package com.labsynch.labseer.web;
-import org.apache.commons.collections.CollectionUtils;
+package com.labsynch.labseer.api;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.labsynch.labseer.domain.SolutionUnit;
+import com.mysema.query.BooleanBuilder;
+import com.mysema.query.jpa.impl.JPAQuery;
+import com.mysema.query.types.path.PathBuilder;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,40 +29,16 @@ import org.springframework.roo.addon.web.mvc.controller.scaffold.RooWebScaffold;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.labsynch.labseer.domain.SolutionUnit;
-import com.mysema.query.BooleanBuilder;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.path.PathBuilder;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
-@RooWebScaffold(path = "solutionunits", formBackingObject = SolutionUnit.class)
-@RequestMapping({ "/solutionunits", "/solutionUnits" })
-@Transactional
+@RequestMapping(value = {"/api/v1/solutionUnits"})
 @Controller
-
-@RooWebFinder
-public class SolutionUnitController {
-
-    public BeanWrapper beanWrapper_dtt;
+public class ApiSolutionUnitController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, headers = "Accept=application/json")
     @ResponseBody
