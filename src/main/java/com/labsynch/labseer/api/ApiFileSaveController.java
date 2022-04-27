@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -35,15 +35,14 @@ import com.labsynch.labseer.dto.FileSaveReturnDTO;
 import com.labsynch.labseer.dto.FileSaveSendDTO;
 import com.labsynch.labseer.utils.MimeTypeUtil;
 
-@RooWebScaffold(path = "filesave", formBackingObject = FileSaveSendDTO.class)
-@RequestMapping({"/filesave", "/MultipleFilePicker"})
+@RequestMapping({"/api/v1/filesave", "/api/v1/MultipleFilePicker"})
 @Controller
-public class FileSaveController {
+public class ApiFileSaveController {
 
 	//simplified controller. This will just save the file to the directory path
 	//does not save the database info
 
-	private static final Logger logger = LoggerFactory.getLogger(FileSaveController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApiFileSaveController.class);
 
 	@RequestMapping(method = RequestMethod.POST)
 	public HttpEntity<String> create(@RequestParam("description[]") List<String> description,

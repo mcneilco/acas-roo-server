@@ -23,7 +23,7 @@ import com.labsynch.labseer.service.StructureImageService;
 @Controller
 public class ExportSDFController {
 
-	private static final Logger logger = LoggerFactory.getLogger(FileSaveController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExportSDFController.class);
 
 	@Autowired
 	private StructureImageService structureImageService;

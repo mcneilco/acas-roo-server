@@ -7,7 +7,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.labsynch.labseer.web.FileSaveController;
+import com.labsynch.labseer.api.ApiFileSaveController;
 
 public class MimeTypeUtil {
 
@@ -23,7 +23,7 @@ public class MimeTypeUtil {
 			String fileExtension = getFileExtension(originalFilename);
 			logger.debug("here is the file extension: " + fileExtension);
 			try {
-				mimeTypeStream = FileSaveController.class.getClassLoader().getResourceAsStream(MIME_PROP_FILE);
+				mimeTypeStream = ApiFileSaveController.class.getClassLoader().getResourceAsStream(MIME_PROP_FILE);
 				Properties mimeTypeProps = new Properties();
 				mimeTypeProps.load(mimeTypeStream);
 				contentType = mimeTypeProps.getProperty(fileExtension);
