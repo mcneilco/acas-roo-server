@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpHeaders;
@@ -19,13 +19,9 @@ import com.labsynch.labseer.domain.FileType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@RequestMapping({"/filetypes", "/fileTypes"})
+@RequestMapping(value = {"/api/v1/fileTypes"})
 @Controller
-
-@RooWebJson(jsonObject = FileType.class)
-@RooWebScaffold(path = "filetypes", formBackingObject = FileType.class)
-@RooWebFinder
-public class FileTypeController {
+public class ApiFileTypeController {
 	
 	@Autowired
 	private PropertiesUtilService propertiesUtilService;
