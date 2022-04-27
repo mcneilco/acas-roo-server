@@ -1,4 +1,4 @@
-package com.labsynch.labseer.web;
+package com.labsynch.labseer.api;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpHeaders;
