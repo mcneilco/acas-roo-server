@@ -439,11 +439,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.]]>
 			<version>1.5</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.tiles</groupId>
-			<artifactId>tiles-jsp</artifactId>
-			<version>3.0.8</version>
-		</dependency>
-		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-spatial</artifactId>
 			<version>${querydsl.version}</version>
