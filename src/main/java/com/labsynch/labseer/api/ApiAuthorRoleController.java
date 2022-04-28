@@ -21,7 +21,6 @@ import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.dto.AuthorRoleDTO;
 import com.labsynch.labseer.service.AuthorRoleService;
-import com.labsynch.labseer.web.AuthorRoleController;
 
 @Controller
 @RequestMapping("api/v1/authorroles")
@@ -30,7 +29,7 @@ public class ApiAuthorRoleController {
 	@Autowired
     private AuthorRoleService authorRoleService;
 	
-	private static final Logger logger = LoggerFactory.getLogger(AuthorRoleController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApiAuthorRoleController.class);
 
 	
     @RequestMapping(value = "/{id}", headers = "Accept=application/json")
