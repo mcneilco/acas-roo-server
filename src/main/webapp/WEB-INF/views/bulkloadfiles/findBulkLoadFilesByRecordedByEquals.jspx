@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
-    <jsp:output omit-xml-declaration="yes"/>
-    <form:find finderName="ByRecordedByEquals" id="ff_com_labsynch_labseer_domain_BulkLoadFile" path="/bulkloadfiles" z="Mn76W++jLr40y6xM+mx78NJ+7D4=">
-        <field:input disableFormBinding="true" field="recordedBy" id="f_com_labsynch_labseer_domain_BulkLoadFile_recordedBy" required="true" z="HxLoROGRnmcai+N6gFOat6N6ogo="/>
-    </form:find>
-</div>

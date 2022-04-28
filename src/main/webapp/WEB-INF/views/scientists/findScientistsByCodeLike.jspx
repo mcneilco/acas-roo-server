@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
-    <jsp:output omit-xml-declaration="yes"/>
-    <form:find finderName="ByCodeLike" id="ff_com_labsynch_labseer_domain_Scientist" path="/scientists" z="Pw7oVaAJOken1k0EfTr+MwSb7tI=">
-        <field:input disableFormBinding="true" field="code" id="f_com_labsynch_labseer_domain_Scientist_code" required="true" z="cOKzx5dGXDFh8p1nqZEap34cH4s="/>
-    </form:find>
-</div>

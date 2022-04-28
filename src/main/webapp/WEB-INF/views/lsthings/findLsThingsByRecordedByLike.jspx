@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<div xmlns:field="urn:jsptagdir:/WEB-INF/tags/form/fields" xmlns:form="urn:jsptagdir:/WEB-INF/tags/form" xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-    <jsp:directive.page contentType="text/html;charset=UTF-8"/>
-    <jsp:output omit-xml-declaration="yes"/>
-    <form:find finderName="ByRecordedByLike" id="ff_com_labsynch_labseer_domain_LsThing" path="/lsthings" z="1t8jwwhJNiXhiLBPDuGdwIt4k3U=">
-        <field:input disableFormBinding="true" field="recordedBy" id="f_com_labsynch_labseer_domain_LsThing_recordedBy" max="255" required="true" z="X9cj+Ww2UhkMZ7nrlLD8SZJQ6M8="/>
-    </form:find>
-</div>
