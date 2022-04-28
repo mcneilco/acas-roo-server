@@ -29,7 +29,6 @@ import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.service.SubjectValueService;
 import com.labsynch.labseer.service.TreatmentGroupService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.web.TreatmentGroupController;
 
 import flexjson.JSONTokener;
 
@@ -38,7 +37,7 @@ import flexjson.JSONTokener;
 @Transactional
 public class ApiTreatmentGroupController {
 	
-	private static final Logger logger = LoggerFactory.getLogger(TreatmentGroupController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApiTreatmentGroupController.class);
 
     @Autowired
     private PropertiesUtilService propertiesUtilService;

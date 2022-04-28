@@ -22,8 +22,6 @@ import org.springframework.roo.addon.json.RooJson;
 import org.springframework.roo.addon.tostring.RooToString;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.labsynch.labseer.web.FileListController;
-
 @RooJavaBean
 @RooToString
 @RooJson
@@ -31,7 +29,7 @@ import com.labsynch.labseer.web.FileListController;
 public class FileList {
 
 	
-    private static final Logger logger = LoggerFactory.getLogger(FileListController.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileList.class);
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lot")

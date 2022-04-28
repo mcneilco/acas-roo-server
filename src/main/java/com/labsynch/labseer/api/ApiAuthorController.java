@@ -31,14 +31,21 @@ import com.labsynch.labseer.exceptions.ErrorMessage;
 import com.labsynch.labseer.service.AuthorService;
 import com.labsynch.labseer.utils.PropertiesFileService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.web.AuthorController;
 
 @Controller
 @RequestMapping("api/v1/authors")
 public class ApiAuthorController {
 
+	private static final Logger logger = LoggerFactory.getLogger(ApiAuthorController.class);
+
 	@Autowired
 	private AuthorService authorService;
+	
+	@Autowired
+	private PropertiesUtilService propertiesUtilService;
+
+	@Autowired
+	private PropertiesFileService propertiesFileService;
 
 	@RequestMapping(value="/{format}", method = RequestMethod.GET, headers = "Accept=application/json")
 	@ResponseBody
@@ -99,14 +106,6 @@ public class ApiAuthorController {
 			return new ResponseEntity<String>(headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
-	private static final Logger logger = LoggerFactory.getLogger(AuthorController.class);
-
-	@Autowired
-	private PropertiesUtilService propertiesUtilService;
-
-	@Autowired
-	private PropertiesFileService propertiesFileService;
 
 	@RequestMapping(value = "/findbyname", method = RequestMethod.POST, headers = "Accept=application/json")
 	@ResponseBody
