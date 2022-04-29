@@ -16,6 +16,12 @@ import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import com.labsynch.labseer.domain.ChemStructure;
+import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.dto.MolPropertiesDTO;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.apache.commons.codec.binary.Base64OutputStream;
 import org.openscience.cdk.depict.Depiction;
 import org.openscience.cdk.depict.DepictionGenerator;
@@ -34,12 +40,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.ChemStructure;
-import com.labsynch.labseer.dto.AutoLabelDTO;
-import com.labsynch.labseer.dto.MolPropertiesDTO;
-import com.labsynch.labseer.service.ChemStructureService.SearchType;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
 @Transactional

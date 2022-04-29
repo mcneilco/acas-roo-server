@@ -4,10 +4,10 @@ import java.util.List;
 
 import javax.persistence.NonUniqueResultException;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface AutoLabelService {

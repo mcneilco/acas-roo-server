@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.Date;
 
+import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerLabel;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -13,9 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.labsynch.labseer.domain.Container;
-import com.labsynch.labseer.domain.ContainerLabel;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

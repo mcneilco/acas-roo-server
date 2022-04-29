@@ -1,15 +1,17 @@
 package com.labsynch.labseer.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
-
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.dto.SubjectCodeNameDTO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.SubjectCodeNameDTO;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

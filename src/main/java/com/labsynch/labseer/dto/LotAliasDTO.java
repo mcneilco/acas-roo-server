@@ -3,12 +3,14 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+
 import javax.persistence.NoResultException;
+
+import com.labsynch.labseer.domain.LotAlias;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.labsynch.labseer.domain.LotAlias;
-import com.labsynch.labseer.domain.ParentAlias;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

@@ -3,12 +3,12 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.AnalysisGroup;
 import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface AnalysisGroupService {

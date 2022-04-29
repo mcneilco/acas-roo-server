@@ -2,14 +2,14 @@ package com.labsynch.labseer.service;
 
 import java.util.List;
 
+import com.labsynch.labseer.domain.CronJob;
+import com.labsynch.labseer.dto.AutoLabelDTO;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.CronJob;
-import com.labsynch.labseer.dto.AutoLabelDTO;
 
 @Service
 @Transactional

@@ -7,10 +7,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+
+import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.supercsv.cellprocessor.Optional;
@@ -19,8 +22,6 @@ import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
 
-import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroupValue;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

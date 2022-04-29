@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
+import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +30,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.DateValueComparisonRequest;
-import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

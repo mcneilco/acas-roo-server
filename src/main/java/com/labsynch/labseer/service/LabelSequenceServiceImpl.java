@@ -6,19 +6,17 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.TypedQuery;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import javax.persistence.NoResultException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LabelSequenceRole;
 import com.labsynch.labseer.domain.LsRole;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service

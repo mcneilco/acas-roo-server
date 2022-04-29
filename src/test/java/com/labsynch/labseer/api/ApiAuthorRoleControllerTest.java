@@ -6,6 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.labsynch.labseer.dto.AuthorRoleDTO;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,8 +24,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.labsynch.labseer.dto.AuthorRoleDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

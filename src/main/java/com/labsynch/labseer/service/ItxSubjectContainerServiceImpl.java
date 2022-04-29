@@ -1,17 +1,17 @@
 package com.labsynch.labseer.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.labsynch.labseer.domain.Container;
 import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.ItxSubjectContainerState;
 import com.labsynch.labseer.domain.ItxSubjectContainerValue;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional

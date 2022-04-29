@@ -3,6 +3,7 @@ package com.labsynch.labseer.chemclasses.bbchem;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -10,12 +11,14 @@ import javax.persistence.TypedQuery;
 
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.utils.SimpleUtil;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Entity
 @Configurable

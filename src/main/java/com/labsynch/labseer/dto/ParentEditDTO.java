@@ -5,16 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.Size;
+import com.labsynch.labseer.domain.Parent;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.labsynch.labseer.domain.CompoundType;
-import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.domain.ParentAnnotation;
-import com.labsynch.labseer.domain.StereoCategory;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

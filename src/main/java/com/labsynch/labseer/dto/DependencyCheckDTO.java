@@ -8,17 +8,19 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.ContainerValue;
+import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.ContainerValue;
-import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

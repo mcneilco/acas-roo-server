@@ -2,7 +2,6 @@
 
 package com.labsynch.labseer.service;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,7 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.LsRole;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolState;
+import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,16 +30,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.AuthorRole;
-import com.labsynch.labseer.domain.LsRole;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsTransaction;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ProtocolState;
-import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.exceptions.UniqueNameException;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

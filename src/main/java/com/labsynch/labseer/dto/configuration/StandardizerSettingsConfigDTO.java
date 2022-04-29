@@ -1,15 +1,15 @@
 package com.labsynch.labseer.dto.configuration;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 
 public class StandardizerSettingsConfigDTO {

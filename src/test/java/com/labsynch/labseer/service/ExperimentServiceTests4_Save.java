@@ -2,16 +2,17 @@ package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.exceptions.NotFoundException;
+import com.labsynch.labseer.exceptions.UniqueNameException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,15 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.exceptions.NotFoundException;
-import com.labsynch.labseer.exceptions.UniqueNameException;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {

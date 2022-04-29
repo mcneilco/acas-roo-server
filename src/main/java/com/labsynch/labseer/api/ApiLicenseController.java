@@ -3,6 +3,9 @@ package com.labsynch.labseer.api;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.labsynch.labseer.dto.LicenseDTO;
+import com.labsynch.labseer.service.LicenseService;
+
 import org.bouncycastle.openpgp.PGPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.dto.LicenseDTO;
-import com.labsynch.labseer.service.LicenseService;
 
 @Controller
 @RequestMapping("/api/v1/license")

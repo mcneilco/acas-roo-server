@@ -6,7 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.service.TreatmentGroupService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,12 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.service.TreatmentGroupService;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:/META-INF/spring/applicationContext.xml", "classpath:/META-INF/spring/applicationContext-security.xml"})

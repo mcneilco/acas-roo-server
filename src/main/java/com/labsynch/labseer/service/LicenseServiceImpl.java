@@ -1,23 +1,18 @@
 package com.labsynch.labseer.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import com.labsynch.labseer.dto.LicenseDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.verhas.licensor.License;
+
 import org.bouncycastle.openpgp.PGPException;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -26,20 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
-
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.AuthorRole;
-import com.labsynch.labseer.domain.DDictValue;
-import com.labsynch.labseer.domain.LsRole;
-import com.labsynch.labseer.dto.AutoLabelDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.LicenseDTO;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.verhas.licensor.License;
 
 @Service
 @Transactional

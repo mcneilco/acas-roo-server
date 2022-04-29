@@ -11,7 +11,10 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.SubjectState;
+import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,14 +26,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.utils.PropertiesUtilService;
+import junit.framework.Assert;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

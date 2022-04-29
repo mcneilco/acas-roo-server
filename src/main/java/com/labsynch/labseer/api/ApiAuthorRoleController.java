@@ -3,6 +3,11 @@ package com.labsynch.labseer.api;
 import java.util.Collection;
 import java.util.List;
 
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.dto.AuthorRoleDTO;
+import com.labsynch.labseer.service.AuthorRoleService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.AuthorRole;
-import com.labsynch.labseer.dto.AuthorRoleDTO;
-import com.labsynch.labseer.service.AuthorRoleService;
 
 @Controller
 @RequestMapping("api/v1/authorroles")

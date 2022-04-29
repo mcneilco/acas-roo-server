@@ -1,13 +1,36 @@
 package com.labsynch.labseer.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Collection;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.ContainerKind;
+import com.labsynch.labseer.domain.ContainerType;
+import com.labsynch.labseer.domain.DDictKind;
+import com.labsynch.labseer.domain.DDictType;
+import com.labsynch.labseer.domain.DDictValue;
+import com.labsynch.labseer.domain.ExperimentKind;
+import com.labsynch.labseer.domain.ExperimentType;
+import com.labsynch.labseer.domain.InteractionKind;
+import com.labsynch.labseer.domain.InteractionType;
+import com.labsynch.labseer.domain.LabelKind;
+import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.domain.LabelType;
+import com.labsynch.labseer.domain.OperatorKind;
+import com.labsynch.labseer.domain.OperatorType;
+import com.labsynch.labseer.domain.ProtocolKind;
+import com.labsynch.labseer.domain.ProtocolType;
+import com.labsynch.labseer.domain.StateKind;
+import com.labsynch.labseer.domain.StateType;
+import com.labsynch.labseer.domain.ThingKind;
+import com.labsynch.labseer.domain.ThingType;
+import com.labsynch.labseer.domain.UnitKind;
+import com.labsynch.labseer.domain.UnitType;
+import com.labsynch.labseer.domain.ValueKind;
+import com.labsynch.labseer.domain.ValueType;
 
-import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,33 +47,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.labsynch.labseer.domain.ContainerKind;
-import com.labsynch.labseer.domain.ContainerType;
-import com.labsynch.labseer.domain.DDictKind;
-import com.labsynch.labseer.domain.DDictType;
-import com.labsynch.labseer.domain.DDictValue;
-import com.labsynch.labseer.domain.ExperimentKind;
-import com.labsynch.labseer.domain.ExperimentType;
-import com.labsynch.labseer.domain.InteractionKind;
-import com.labsynch.labseer.domain.InteractionType;
-import com.labsynch.labseer.domain.LabelKind;
-import com.labsynch.labseer.domain.LabelSequence;
-import com.labsynch.labseer.domain.LabelType;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.OperatorKind;
-import com.labsynch.labseer.domain.OperatorType;
-import com.labsynch.labseer.domain.ProtocolKind;
-import com.labsynch.labseer.domain.ProtocolType;
-import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.domain.StateKind;
-import com.labsynch.labseer.domain.StateType;
-import com.labsynch.labseer.domain.ThingKind;
-import com.labsynch.labseer.domain.ThingType;
-import com.labsynch.labseer.domain.UnitKind;
-import com.labsynch.labseer.domain.UnitType;
-import com.labsynch.labseer.domain.ValueKind;
-import com.labsynch.labseer.domain.ValueType;
-import com.labsynch.labseer.dto.CodeTableDTO;
+import junit.framework.Assert;
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)

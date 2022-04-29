@@ -5,11 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.labsynch.labseer.domain.FileList;
+import com.labsynch.labseer.dto.FileSaveReturnDTO;
+import com.labsynch.labseer.dto.FileSaveSendDTO;
+import com.labsynch.labseer.utils.MimeTypeUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -26,13 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriUtils;
-import org.springframework.web.util.WebUtils;
-
-import com.labsynch.labseer.domain.FileList;
-import com.labsynch.labseer.dto.FileSaveReturnDTO;
-import com.labsynch.labseer.dto.FileSaveSendDTO;
-import com.labsynch.labseer.utils.MimeTypeUtil;
 
 @RequestMapping({"/api/v1/filesave", "/api/v1/MultipleFilePicker"})
 @Controller

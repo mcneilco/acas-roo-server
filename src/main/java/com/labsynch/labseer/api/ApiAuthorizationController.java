@@ -6,6 +6,14 @@ import java.util.Date;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
+import com.labsynch.labseer.dto.ChangePasswordDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.service.AuthorService;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +27,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.dto.AuthGroupsAndProjectsDTO;
-import com.labsynch.labseer.dto.ChangePasswordDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.service.AuthorService;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Controller
 @RequestMapping("api/v1/authorization")

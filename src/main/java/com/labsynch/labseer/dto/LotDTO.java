@@ -2,29 +2,20 @@ package com.labsynch.labseer.dto;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.Size;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.LotAlias;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.ParentAlias;
-import com.labsynch.labseer.domain.PhysicalState;
 import com.labsynch.labseer.domain.SaltForm;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.service.ChemStructureService;
 import com.labsynch.labseer.utils.MoleculeUtil;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

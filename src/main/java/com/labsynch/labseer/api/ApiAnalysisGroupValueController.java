@@ -1,8 +1,6 @@
 package com.labsynch.labseer.api;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,7 +8,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
+import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.IdSetDTO;
+import com.labsynch.labseer.service.AnalysisGroupValueService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +32,6 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanWriter;
 import org.supercsv.io.ICsvBeanWriter;
 import org.supercsv.prefs.CsvPreference;
-
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.IdSetDTO;
-import com.labsynch.labseer.service.AnalysisGroupValueService;
 
 import flexjson.JSONDeserializer;
 

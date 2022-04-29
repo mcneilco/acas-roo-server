@@ -1,18 +1,17 @@
 package com.labsynch.labseer.api;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.persistence.NonUniqueResultException;
+
 import com.labsynch.labseer.domain.AuthorRole;
 import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
 import com.labsynch.labseer.service.AutoLabelService;
 import com.labsynch.labseer.service.LabelSequenceService;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.NonUniqueResultException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

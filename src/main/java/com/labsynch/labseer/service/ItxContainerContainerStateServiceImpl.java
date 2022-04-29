@@ -2,15 +2,15 @@ package com.labsynch.labseer.service;
 
 import java.util.Collection;
 
+import com.labsynch.labseer.domain.ItxContainerContainer;
+import com.labsynch.labseer.domain.ItxContainerContainerState;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.ItxContainerContainer;
-import com.labsynch.labseer.domain.ItxContainerContainerState;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
 @Transactional

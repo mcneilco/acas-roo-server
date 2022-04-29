@@ -3,10 +3,10 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.DDictValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface DataDictionaryService {

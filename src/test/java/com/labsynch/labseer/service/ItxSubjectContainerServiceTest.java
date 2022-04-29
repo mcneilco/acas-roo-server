@@ -2,10 +2,7 @@
 
 package com.labsynch.labseer.service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.labsynch.labseer.domain.ItxSubjectContainer;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,15 +14,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.ItxSubjectContainer;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectLabel;
-import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.dto.SubjectDTO;
-import com.labsynch.labseer.dto.SubjectLabelDTO;
-import com.labsynch.labseer.dto.SubjectStateDTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

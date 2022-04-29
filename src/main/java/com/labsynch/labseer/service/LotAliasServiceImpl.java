@@ -6,15 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.domain.LotAlias;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.Lot;
-import com.labsynch.labseer.domain.LotAlias;
-import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.domain.ParentAlias;
 
 @Service
 public class LotAliasServiceImpl implements LotAliasService {

@@ -5,6 +5,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.LsRole;
+import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
+import com.labsynch.labseer.dto.BatchCodeDTO;
+import com.labsynch.labseer.dto.ExperimentFilterDTO;
+import com.labsynch.labseer.dto.JSTreeNodeDTO;
+import com.labsynch.labseer.service.ExperimentService;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -16,16 +26,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.AuthorRole;
-import com.labsynch.labseer.domain.LsRole;
-import com.labsynch.labseer.dto.AnalysisGroupValueBaseDTO;
-import com.labsynch.labseer.dto.BatchCodeDTO;
-import com.labsynch.labseer.dto.ExperimentFilterDTO;
-import com.labsynch.labseer.dto.JSTreeNodeDTO;
-import com.labsynch.labseer.service.ExperimentService;
 
 import flexjson.JSONDeserializer;
 

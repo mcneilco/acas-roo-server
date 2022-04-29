@@ -13,6 +13,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.domain.TreatmentGroupLabel;
+import com.labsynch.labseer.domain.TreatmentGroupState;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.FlatThingCsvDTO;
+import com.labsynch.labseer.dto.TempThingDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +32,6 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
-
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.domain.TreatmentGroupLabel;
-import com.labsynch.labseer.domain.TreatmentGroupState;
-import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.dto.FlatThingCsvDTO;
-import com.labsynch.labseer.dto.TempThingDTO;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 @Service
 @Transactional

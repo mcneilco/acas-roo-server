@@ -11,7 +11,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.dto.IdCollectionDTO;
+import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
+import com.labsynch.labseer.exceptions.NotFoundException;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,14 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.dto.IdCollectionDTO;
-import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
-import com.labsynch.labseer.exceptions.NotFoundException;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-
-import flexjson.JSONTokener;
+import junit.framework.Assert;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

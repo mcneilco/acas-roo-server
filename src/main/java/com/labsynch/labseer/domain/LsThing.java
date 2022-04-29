@@ -1,7 +1,6 @@
 package com.labsynch.labseer.domain;
 
 import java.io.Reader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -17,8 +16,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+
+import com.labsynch.labseer.utils.ByteArrayTransformer;
+import com.labsynch.labseer.utils.ExcludeNulls;
+import com.labsynch.labseer.utils.SimpleUtil;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.StaleObjectStateException;
@@ -26,12 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.api.ApiExperimentController;
-import com.labsynch.labseer.utils.ByteArrayTransformer;
-import com.labsynch.labseer.utils.CustomBigDecimalFactory;
-import com.labsynch.labseer.utils.ExcludeNulls;
-import com.labsynch.labseer.utils.SimpleUtil;
 
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;

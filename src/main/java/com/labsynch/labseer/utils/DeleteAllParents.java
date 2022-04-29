@@ -2,11 +2,11 @@ package com.labsynch.labseer.utils;
 
 import java.util.List;
 
+import com.labsynch.labseer.domain.Parent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.Parent;
 
 @Transactional
 public class DeleteAllParents {

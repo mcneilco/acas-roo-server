@@ -5,6 +5,10 @@ package com.labsynch.labseer.service;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.labsynch.labseer.domain.ItxLsThingLsThing;
+import com.labsynch.labseer.domain.LsThing;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -14,10 +18,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.ItxLsThingLsThing;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

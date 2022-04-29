@@ -7,37 +7,34 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
-import java.util.Collections;
-
-import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
-import com.labsynch.labseer.domain.AbstractBBChemStructure;
-import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.SimpleUtil;
-import com.labsynch.labseer.utils.SimpleUtil.PostResponse;
-import com.labsynch.labseer.utils.Response;
-import com.labsynch.labseer.utils.Request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
+import com.labsynch.labseer.domain.AbstractBBChemStructure;
+import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+import com.labsynch.labseer.utils.Request;
+import com.labsynch.labseer.utils.Response;
+import com.labsynch.labseer.utils.SimpleUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 @Component
 public class BBChemStructureServiceImpl  implements BBChemStructureService {

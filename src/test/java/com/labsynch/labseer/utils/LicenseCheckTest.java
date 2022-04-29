@@ -3,6 +3,9 @@ package com.labsynch.labseer.utils;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.labsynch.labseer.dto.LicenseDTO;
+import com.labsynch.labseer.service.LicenseService;
+
 import org.bouncycastle.openpgp.PGPException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,9 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import com.labsynch.labseer.dto.LicenseDTO;
-import com.labsynch.labseer.service.LicenseService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:/META-INF/spring/applicationContext*.xml")

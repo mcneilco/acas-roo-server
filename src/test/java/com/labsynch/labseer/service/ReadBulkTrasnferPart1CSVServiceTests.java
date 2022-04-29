@@ -11,6 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.labsynch.labseer.domain.Container;
+import com.labsynch.labseer.domain.ContainerState;
+import com.labsynch.labseer.domain.LsTransaction;
+import com.labsynch.labseer.dto.BulkTransferPart1DTO;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -25,11 +30,6 @@ import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvBeanReader;
 import org.supercsv.io.ICsvBeanReader;
 import org.supercsv.prefs.CsvPreference;
-
-import com.labsynch.labseer.domain.Container;
-import com.labsynch.labseer.domain.ContainerState;
-import com.labsynch.labseer.domain.LsTransaction;
-import com.labsynch.labseer.dto.BulkTransferPart1DTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

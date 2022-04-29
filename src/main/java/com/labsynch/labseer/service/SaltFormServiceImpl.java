@@ -2,27 +2,23 @@ package com.labsynch.labseer.service;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+
+import com.labsynch.labseer.domain.IsoSalt;
+import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.domain.Parent;
+import com.labsynch.labseer.domain.SaltForm;
+import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
+import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.StructureType;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.labsynch.labseer.domain.CorpName;
-import com.labsynch.labseer.domain.IsoSalt;
-import com.labsynch.labseer.domain.Lot;
-import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.domain.SaltForm;
-
-import com.labsynch.labseer.exceptions.DupeSaltFormStructureException;
-import com.labsynch.labseer.exceptions.SaltFormMolFormatException;
-import com.labsynch.labseer.service.ChemStructureService.StructureType;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
 @Service

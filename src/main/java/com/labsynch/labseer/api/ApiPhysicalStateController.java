@@ -1,31 +1,18 @@
 package com.labsynch.labseer.api;
-import java.io.UnsupportedEncodingException;
-import java.util.Collection;
+import com.labsynch.labseer.domain.PhysicalState;
+import com.labsynch.labseer.utils.PropertiesUtilService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.UriUtils;
-import org.springframework.web.util.WebUtils;
-
-import com.labsynch.labseer.domain.PhysicalState;
-
-import com.labsynch.labseer.utils.PropertiesUtilService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @RequestMapping(value = {"/api/v1/physicalStates"})
 @Transactional

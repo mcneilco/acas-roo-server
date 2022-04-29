@@ -3,10 +3,12 @@ package com.labsynch.labseer.dto;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import com.labsynch.labseer.domain.LsThing;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.labsynch.labseer.domain.LsThing;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

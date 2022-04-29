@@ -15,15 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.TypedQuery;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
-import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.LotAlias;
 import com.labsynch.labseer.domain.Parent;
@@ -40,6 +32,13 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.ChemStructureService.SearchType;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SearchFormServiceImpl implements SearchFormService {

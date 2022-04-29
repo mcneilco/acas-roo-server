@@ -2,22 +2,17 @@ package com.labsynch.labseer.dto;
 
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.Size;
 
 import javax.persistence.NoResultException;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.domain.PhysicalState;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.transaction.annotation.Transactional;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

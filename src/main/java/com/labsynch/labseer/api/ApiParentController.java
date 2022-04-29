@@ -1,7 +1,12 @@
 package com.labsynch.labseer.api;
 
-import java.net.URLDecoder;
 import java.util.Collection;
+
+import com.labsynch.labseer.domain.Parent;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ParentEditDTO;
+import com.labsynch.labseer.dto.ParentValidationDTO;
+import com.labsynch.labseer.service.ParentService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,15 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ParentEditDTO;
-import com.labsynch.labseer.dto.ParentValidationDTO;
-import com.labsynch.labseer.service.ParentService;
-import com.labsynch.labseer.utils.SecurityUtil;
 
 @RequestMapping(value = {"/api/v1/parents"})
 @Controller

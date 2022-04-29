@@ -11,19 +11,20 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.Transient;
+
+import com.labsynch.labseer.utils.MimeTypeUtil;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.labsynch.labseer.utils.PropertiesUtilService;
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.labsynch.labseer.utils.MimeTypeUtil;
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 @Configurable
 

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.domain.TreatmentGroup;
 import com.labsynch.labseer.dto.ContainerSubjectsDTO;
@@ -20,6 +18,8 @@ import com.labsynch.labseer.dto.SubjectDTO;
 import com.labsynch.labseer.dto.SubjectSearchRequest;
 import com.labsynch.labseer.dto.TempThingDTO;
 import com.labsynch.labseer.dto.ValueQueryDTO;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface SubjectService {

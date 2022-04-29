@@ -11,27 +11,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.NoResultException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReader;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFReaderFactory;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriter;
 import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
-import com.labsynch.labseer.domain.CorpName;
+import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Isotope;
 import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Parent;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.domain.SaltForm;
-import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.dto.Metalot;
 import com.labsynch.labseer.dto.MetalotReturn;
@@ -39,6 +32,13 @@ import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.service.CorpNameService;
 import com.labsynch.labseer.service.ErrorMessage;
 import com.labsynch.labseer.service.MetalotService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional

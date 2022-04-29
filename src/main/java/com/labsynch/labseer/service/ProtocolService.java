@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.Protocol;
 import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 import com.labsynch.labseer.exceptions.UniqueNameException;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ProtocolService {

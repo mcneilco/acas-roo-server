@@ -6,7 +6,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.ChemStructure;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.ChemStructure;
-import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import junit.framework.Assert;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

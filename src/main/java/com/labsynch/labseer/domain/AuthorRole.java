@@ -18,8 +18,10 @@ import javax.persistence.Table;
 import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

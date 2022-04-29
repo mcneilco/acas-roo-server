@@ -3,13 +3,13 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.ExperimentValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ExperimentValuePathDTO;
 import com.labsynch.labseer.dto.GenericValuePathRequest;
 import com.labsynch.labseer.dto.StateValueDTO;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ExperimentValueService {

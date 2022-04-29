@@ -10,7 +10,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ItxExperimentExperiment;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,9 +19,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -30,12 +29,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ItxExperimentExperiment;
-import com.labsynch.labseer.domain.ItxProtocolProtocol;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.Protocol;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

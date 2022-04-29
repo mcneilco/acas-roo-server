@@ -1,11 +1,15 @@
 package com.labsynch.labseer.api;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+
+import com.labsynch.labseer.dto.CmpdRegStructureSearchDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.service.ChemStructureService.SearchType;
+import com.labsynch.labseer.service.RegSearchService;
+import com.labsynch.labseer.service.SearchFormService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.dto.CmpdRegStructureSearchDTO;
-import com.labsynch.labseer.dto.PreferredNameDTO;
-import com.labsynch.labseer.dto.SearchCdIdReturnDTO;
-import com.labsynch.labseer.dto.SearchFormDTO;
-import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.service.RegSearchService;
-import com.labsynch.labseer.service.SearchFormService;
-import com.labsynch.labseer.service.ChemStructureService.SearchType;
 
 @RequestMapping(value = {"/api/v1/structuresearch"})
 @Controller

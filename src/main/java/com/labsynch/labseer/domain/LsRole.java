@@ -21,10 +21,12 @@ import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.labsynch.labseer.dto.CodeTableDTO;
+
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.dto.CodeTableDTO;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

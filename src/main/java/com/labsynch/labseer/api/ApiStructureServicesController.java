@@ -1,8 +1,15 @@
 package com.labsynch.labseer.api;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.List;
+
+import com.labsynch.labseer.dto.HydrogenizeMolInputDTO;
+import com.labsynch.labseer.dto.MolCleanInputDTO;
+import com.labsynch.labseer.dto.MolConvertInputDTO;
+import com.labsynch.labseer.dto.MolConvertOutputDTO;
+import com.labsynch.labseer.dto.MolInputDTO;
+import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StandardizerException;
+import com.labsynch.labseer.service.ChemStructureService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,25 +18,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.ParentAliasKind;
-import com.labsynch.labseer.domain.ParentAliasType;
-import com.labsynch.labseer.dto.HydrogenizeMolInputDTO;
-import com.labsynch.labseer.dto.MolCleanInputDTO;
-import com.labsynch.labseer.dto.MolConvertInputDTO;
-import com.labsynch.labseer.dto.MolConvertOutputDTO;
-import com.labsynch.labseer.dto.MolInputDTO;
-import com.labsynch.labseer.dto.ParentAliasDTO;
-import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.exceptions.StandardizerException;
-import com.labsynch.labseer.service.ChemStructureService;
-import com.labsynch.labseer.service.SearchFormService;
 
 @RequestMapping(value = {"/api/v1/structureServices"})
 @Controller

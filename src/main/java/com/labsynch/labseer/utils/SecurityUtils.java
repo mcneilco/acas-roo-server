@@ -5,20 +5,20 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.service.AuthorRoleService;
+import com.labsynch.labseer.service.AuthorService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.security.ldap.userdetails.InetOrgPerson;
+import org.springframework.security.ldap.userdetails.LdapUserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.service.AuthorRoleService;
-import com.labsynch.labseer.service.AuthorService;
 
 @Service
 public class SecurityUtils {

@@ -3,6 +3,15 @@ package com.labsynch.labseer.api;
 import java.util.Collection;
 import java.util.List;
 
+import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.LotDTO;
+import com.labsynch.labseer.dto.LotsByProjectDTO;
+import com.labsynch.labseer.dto.ParentLotCodeDTO;
+import com.labsynch.labseer.dto.ReparentLotDTO;
+import com.labsynch.labseer.service.LotService;
+import com.labsynch.labseer.service.ParentLotService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.Lot;
-import com.labsynch.labseer.domain.Parent;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.LotDTO;
-import com.labsynch.labseer.dto.LotsByProjectDTO;
-import com.labsynch.labseer.dto.ParentEditDTO;
-import com.labsynch.labseer.dto.ParentLotCodeDTO;
-import com.labsynch.labseer.dto.ReparentLotDTO;
-import com.labsynch.labseer.service.LotService;
-import com.labsynch.labseer.service.ParentLotService;
-import com.labsynch.labseer.utils.SecurityUtil;
 
 @RequestMapping(value = {"/api/v1/parentLot"})
 @Controller

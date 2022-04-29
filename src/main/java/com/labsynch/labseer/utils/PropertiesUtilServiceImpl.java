@@ -1,14 +1,12 @@
 package com.labsynch.labseer.utils;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import javax.sql.DataSource;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
 import java.util.Collection;
+
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
 import com.labsynch.labseer.service.ChemStructureService.SearchType;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 @Service
 public class PropertiesUtilServiceImpl implements PropertiesUtilService{
 	

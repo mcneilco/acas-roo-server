@@ -1,30 +1,13 @@
 package com.labsynch.labseer.dto;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.Size;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import javax.persistence.NoResultException;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.BulkLoadTemplate;
-import com.labsynch.labseer.domain.CorpName;
-import com.labsynch.labseer.domain.Lot;
-import com.labsynch.labseer.domain.PhysicalState;
-
-import com.labsynch.labseer.service.ErrorMessage;
-import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

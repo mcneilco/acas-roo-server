@@ -14,26 +14,14 @@ import java.util.Random;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import org.apache.commons.lang3.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.persistence.NoResultException;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.Author;
 import com.labsynch.labseer.domain.AuthorLabel;
@@ -51,11 +39,19 @@ import com.labsynch.labseer.dto.AuthProjectGroupsDTO;
 import com.labsynch.labseer.dto.AuthorBrowserQueryDTO;
 import com.labsynch.labseer.dto.AuthorQueryDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ItxQueryDTO;
 import com.labsynch.labseer.dto.LabelQueryDTO;
 import com.labsynch.labseer.dto.ValueQueryDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional

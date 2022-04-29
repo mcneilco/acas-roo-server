@@ -1,22 +1,16 @@
 package com.labsynch.labseer.api;
 
-import com.labsynch.labseer.domain.ItxContainerContainer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+
 import com.labsynch.labseer.domain.ItxSubjectContainer;
 import com.labsynch.labseer.domain.Subject;
 import com.labsynch.labseer.service.ItxSubjectContainerService;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
 
-import flexjson.JSONTokener;
-
-import java.io.BufferedReader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

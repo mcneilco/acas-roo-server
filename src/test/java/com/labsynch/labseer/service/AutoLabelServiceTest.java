@@ -3,12 +3,13 @@
  */
 package com.labsynch.labseer.service;
 
-import java.math.BigInteger;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
 import javax.persistence.NoResultException;
+
+import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.dto.AutoLabelDTO;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,10 +21,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.DDictValue;
-import com.labsynch.labseer.domain.LabelSequence;
-import com.labsynch.labseer.dto.AutoLabelDTO;
 
 /**
  * @author fairway

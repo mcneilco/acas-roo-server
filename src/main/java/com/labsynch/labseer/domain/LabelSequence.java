@@ -29,6 +29,12 @@ import javax.persistence.TypedQuery;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.labsynch.labseer.dto.AutoLabelDTO;
+import com.labsynch.labseer.utils.ExcludeNulls;
+import com.labsynch.labseer.utils.SimpleUtil;
+import com.labsynch.labseer.utils.SimpleUtil.DbType;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.Session;
@@ -41,10 +47,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.dto.AutoLabelDTO;
-import com.labsynch.labseer.utils.ExcludeNulls;
-import com.labsynch.labseer.utils.SimpleUtil;
-import com.labsynch.labseer.utils.SimpleUtil.DbType;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

@@ -12,14 +12,14 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.LsTransaction;
 import com.labsynch.labseer.domain.LsTransactionStatus;
 import com.labsynch.labseer.domain.LsTransactionType;
 import com.labsynch.labseer.dto.LsTransactionQueryDTO;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service
 public class LsTransactionServiceImpl implements LsTransactionService {

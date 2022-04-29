@@ -5,6 +5,9 @@ package com.labsynch.labseer.service;
 import java.io.IOException;
 import java.util.Date;
 
+import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -14,9 +17,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.dto.TsvLoaderResponseDTO;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

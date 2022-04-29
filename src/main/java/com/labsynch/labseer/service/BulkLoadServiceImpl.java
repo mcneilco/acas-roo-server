@@ -1,14 +1,9 @@
 package com.labsynch.labseer.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,18 +16,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
-import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import javax.persistence.NoResultException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionSystemException;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.chemclasses.CmpdRegMolecule;
 import com.labsynch.labseer.chemclasses.CmpdRegMoleculeFactory;
@@ -43,6 +30,7 @@ import com.labsynch.labseer.chemclasses.CmpdRegSDFWriterFactory;
 import com.labsynch.labseer.domain.BulkLoadFile;
 import com.labsynch.labseer.domain.BulkLoadTemplate;
 import com.labsynch.labseer.domain.CompoundType;
+import com.labsynch.labseer.domain.DryRunCompound;
 import com.labsynch.labseer.domain.FileList;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Lot;
@@ -59,14 +47,13 @@ import com.labsynch.labseer.domain.SolutionUnit;
 import com.labsynch.labseer.domain.StereoCategory;
 import com.labsynch.labseer.domain.Unit;
 import com.labsynch.labseer.domain.Vendor;
-import com.labsynch.labseer.domain.DryRunCompound;
 import com.labsynch.labseer.dto.BatchCodeDependencyDTO;
 import com.labsynch.labseer.dto.BulkLoadPropertiesDTO;
 import com.labsynch.labseer.dto.BulkLoadPropertyMappingDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFRequestDTO;
 import com.labsynch.labseer.dto.BulkLoadRegisterSDFResponseDTO;
-import com.labsynch.labseer.dto.BulkLoadSDFValidationPropertiesResponseDTO;
 import com.labsynch.labseer.dto.BulkLoadSDFPropertyRequestDTO;
+import com.labsynch.labseer.dto.BulkLoadSDFValidationPropertiesResponseDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.ContainerBatchCodeDTO;
 import com.labsynch.labseer.dto.LabelPrefixDTO;
@@ -77,7 +64,6 @@ import com.labsynch.labseer.dto.PurgeFileResponseDTO;
 import com.labsynch.labseer.dto.SimpleBulkLoadPropertyDTO;
 import com.labsynch.labseer.dto.StrippedSaltDTO;
 import com.labsynch.labseer.dto.ValidationResponseDTO;
-
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 import com.labsynch.labseer.exceptions.DupeLotException;
 import com.labsynch.labseer.exceptions.DupeParentException;
@@ -86,6 +72,15 @@ import com.labsynch.labseer.exceptions.SaltedCompoundException;
 import com.labsynch.labseer.service.ChemStructureService.StructureType;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
+
+import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionSystemException;
+import org.springframework.transaction.annotation.Transactional;
+
 import flexjson.JSONSerializer;
 
 @Service

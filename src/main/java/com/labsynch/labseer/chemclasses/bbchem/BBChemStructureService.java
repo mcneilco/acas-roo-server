@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.labsynch.labseer.domain.AbstractBBChemStructure;
 import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Service;
 
 @Service

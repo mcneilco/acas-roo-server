@@ -2,27 +2,8 @@
 
 package com.labsynch.labseer.service;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import com.labsynch.labseer.domain.LsThingValue;
 
-import javax.persistence.NoResultException;
-
-import junit.framework.Assert;
-
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -33,19 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingValue;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.PreferredNameDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
-
-import flexjson.JSONTokener;
+import junit.framework.Assert;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

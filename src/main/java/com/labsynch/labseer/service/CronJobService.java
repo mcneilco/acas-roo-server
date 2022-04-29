@@ -1,8 +1,8 @@
 package com.labsynch.labseer.service;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.CronJob;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface CronJobService {

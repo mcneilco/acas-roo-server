@@ -6,8 +6,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.PreferredNameRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,18 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentState;
-import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.LsThingLabel;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.GeneIdDTO;
-import com.labsynch.labseer.dto.PreferredNameDTO;
-import com.labsynch.labseer.dto.PreferredNameRequestDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

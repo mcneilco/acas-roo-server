@@ -1,12 +1,11 @@
 package com.labsynch.labseer.api;
 
-import com.labsynch.labseer.domain.LsRole;
-import com.labsynch.labseer.dto.CodeTableDTO;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.labsynch.labseer.domain.LsRole;
+import com.labsynch.labseer.dto.CodeTableDTO;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

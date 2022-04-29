@@ -33,19 +33,18 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import com.labsynch.labseer.dto.LabelPrefixDTO;
+import com.labsynch.labseer.dto.SearchFormDTO;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.dto.LabelPrefixDTO;
-import com.labsynch.labseer.dto.SearchFormDTO;
-import com.labsynch.labseer.service.ChemStructureService;
-import com.labsynch.labseer.service.ParentService;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

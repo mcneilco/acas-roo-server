@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,36 +28,21 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.collections.map.MultiValueMap;
-import org.hibernate.StaleObjectStateException;
-import org.openscience.cdk.exception.CDKException;
-
-import com.github.underscore.Function1;
-import com.github.underscore.Tuple;
-import com.github.underscore.$;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.persistence.NoResultException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.labsynch.labseer.domain.ChemStructure;
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
+import com.labsynch.labseer.domain.LabelSequence;
 import com.labsynch.labseer.domain.LsThing;
 import com.labsynch.labseer.domain.LsThingLabel;
 import com.labsynch.labseer.domain.LsThingState;
 import com.labsynch.labseer.domain.LsThingValue;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ChemStructure;
+import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
 import com.labsynch.labseer.dto.CodeTypeKindDTO;
 import com.labsynch.labseer.dto.DateValueComparisonRequest;
 import com.labsynch.labseer.dto.DependencyCheckDTO;
 import com.labsynch.labseer.dto.ErrorMessageDTO;
-import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
 import com.labsynch.labseer.dto.ItxQueryDTO;
 import com.labsynch.labseer.dto.LabelQueryDTO;
 import com.labsynch.labseer.dto.LsThingBrowserQueryDTO;
@@ -81,8 +66,15 @@ import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
 import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
 import com.labsynch.labseer.utils.PropertiesUtilService;
 import com.labsynch.labseer.utils.SimpleUtil;
-import com.labsynch.labseer.domain.LabelSequence;
-import com.labsynch.labseer.dto.AutoLabelDTO;
+
+import org.apache.commons.collections.map.MultiValueMap;
+import org.hibernate.StaleObjectStateException;
+import org.openscience.cdk.exception.CDKException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LsThingServiceImpl implements LsThingService {

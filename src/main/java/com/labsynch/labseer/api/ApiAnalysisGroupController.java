@@ -1,14 +1,28 @@
 package com.labsynch.labseer.api;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.IOUtils;
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.Subject;
+import com.labsynch.labseer.domain.SubjectState;
+import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.domain.TreatmentGroup;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.KeyValueDTO;
+import com.labsynch.labseer.exceptions.NotFoundException;
+import com.labsynch.labseer.service.AnalysisGroupService;
+import com.labsynch.labseer.service.AnalysisGroupValueService;
+import com.labsynch.labseer.service.ExperimentStateService;
+import com.labsynch.labseer.service.ExperimentValueService;
+import com.labsynch.labseer.service.SubjectValueService;
+import com.labsynch.labseer.service.TreatmentGroupValueService;
+import com.labsynch.labseer.utils.SimpleUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,25 +37,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.Subject;
-import com.labsynch.labseer.domain.SubjectState;
-import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroup;
-import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.dto.IdCollectionDTO;
-import com.labsynch.labseer.dto.KeyValueDTO;
-import com.labsynch.labseer.exceptions.NotFoundException;
-import com.labsynch.labseer.service.AnalysisGroupService;
-import com.labsynch.labseer.service.AnalysisGroupValueService;
-import com.labsynch.labseer.service.ExperimentStateService;
-import com.labsynch.labseer.service.ExperimentValueService;
-import com.labsynch.labseer.service.SubjectValueService;
-import com.labsynch.labseer.service.TreatmentGroupValueService;
-import com.labsynch.labseer.utils.SimpleUtil;
 
 @Controller
 @RequestMapping("api/v1/analysisgroups")

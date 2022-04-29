@@ -1,5 +1,8 @@
 package com.labsynch.labseer.domain;
 
+import java.util.Collection;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -11,19 +14,19 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.Version;
+
+import com.labsynch.labseer.dto.SaltFormAliasDTO;
+import com.labsynch.labseer.exceptions.SaltFormNotFoundException;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.transaction.annotation.Transactional;
-import com.labsynch.labseer.dto.SaltFormAliasDTO;
-import com.labsynch.labseer.exceptions.ParentNotFoundException;
-import com.labsynch.labseer.exceptions.SaltFormNotFoundException;
+
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
-import java.util.Collection;
-import java.util.List;
 
 @Entity
 @Configurable

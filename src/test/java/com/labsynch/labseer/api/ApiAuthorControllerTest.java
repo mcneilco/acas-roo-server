@@ -10,7 +10,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.Author;
+import com.labsynch.labseer.domain.AuthorLabel;
+import com.labsynch.labseer.domain.AuthorState;
+import com.labsynch.labseer.domain.AuthorValue;
+import com.labsynch.labseer.dto.CodeTableDTO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,11 +33,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.labsynch.labseer.domain.Author;
-import com.labsynch.labseer.domain.AuthorLabel;
-import com.labsynch.labseer.domain.AuthorState;
-import com.labsynch.labseer.domain.AuthorValue;
-import com.labsynch.labseer.dto.CodeTableDTO;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

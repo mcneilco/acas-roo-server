@@ -4,6 +4,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.labsynch.labseer.domain.ContainerType;
+import com.labsynch.labseer.domain.DDictType;
+import com.labsynch.labseer.domain.ExperimentType;
+import com.labsynch.labseer.domain.InteractionType;
+import com.labsynch.labseer.domain.LabelType;
+import com.labsynch.labseer.domain.OperatorType;
+import com.labsynch.labseer.domain.ProtocolType;
+import com.labsynch.labseer.domain.StateType;
+import com.labsynch.labseer.domain.ThingType;
+import com.labsynch.labseer.domain.UnitType;
+import com.labsynch.labseer.domain.ValueType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -16,18 +28,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.ContainerType;
-import com.labsynch.labseer.domain.DDictType;
-import com.labsynch.labseer.domain.ExperimentType;
-import com.labsynch.labseer.domain.InteractionType;
-import com.labsynch.labseer.domain.LabelType;
-import com.labsynch.labseer.domain.OperatorType;
-import com.labsynch.labseer.domain.ProtocolType;
-import com.labsynch.labseer.domain.StateType;
-import com.labsynch.labseer.domain.ThingType;
-import com.labsynch.labseer.domain.UnitType;
-import com.labsynch.labseer.domain.ValueType;
 
 @Transactional
 @RequestMapping("api/v1")

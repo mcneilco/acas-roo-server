@@ -8,7 +8,9 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.domain.ExperimentState;
+import com.labsynch.labseer.domain.ExperimentValue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,9 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentState;
-import com.labsynch.labseer.domain.ExperimentValue;
+import junit.framework.Assert;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

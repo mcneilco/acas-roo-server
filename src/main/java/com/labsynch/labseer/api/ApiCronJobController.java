@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.labsynch.labseer.domain.CronJob;
+import com.labsynch.labseer.service.CronJobService;
+import com.labsynch.labseer.utils.SimpleUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.CronJob;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.service.CronJobService;
-import com.labsynch.labseer.utils.SimpleUtil;
 
 @Transactional
 @RequestMapping("api/v1/cronjobs")

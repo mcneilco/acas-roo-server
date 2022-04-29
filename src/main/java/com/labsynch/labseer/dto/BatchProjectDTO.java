@@ -6,13 +6,15 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+
+import com.labsynch.labseer.domain.Lot;
+import com.labsynch.labseer.utils.SimpleUtil;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.labsynch.labseer.domain.Lot;
-import com.labsynch.labseer.utils.SimpleUtil;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 

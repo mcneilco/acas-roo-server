@@ -2,11 +2,12 @@
 
 package com.labsynch.labseer.service;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.dto.ExperimentDataDTO;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,16 +18,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ProtocolLabel;
-import com.labsynch.labseer.domain.ProtocolState;
-import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.ExperimentDataDTO;
-import com.labsynch.labseer.dto.JSTreeNodeDTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

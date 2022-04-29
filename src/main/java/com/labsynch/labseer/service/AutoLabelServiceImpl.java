@@ -8,12 +8,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.labsynch.labseer.domain.LabelSequence;
+import com.labsynch.labseer.domain.LsSeqAnlGrp;
 import com.labsynch.labseer.domain.LsSeqContainer;
 import com.labsynch.labseer.domain.LsSeqExpt;
 import com.labsynch.labseer.domain.LsSeqItxCntrCntr;
@@ -23,9 +19,13 @@ import com.labsynch.labseer.domain.LsSeqItxSubjCntr;
 import com.labsynch.labseer.domain.LsSeqProtocol;
 import com.labsynch.labseer.domain.LsSeqSubject;
 import com.labsynch.labseer.domain.LsSeqTrtGrp;
-import com.labsynch.labseer.domain.LsSeqAnlGrp;
 import com.labsynch.labseer.dto.AutoLabelDTO;
 import com.labsynch.labseer.dto.LabelSequenceDTO;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional

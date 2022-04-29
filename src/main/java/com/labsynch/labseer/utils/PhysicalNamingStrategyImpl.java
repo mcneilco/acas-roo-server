@@ -1,9 +1,10 @@
 package com.labsynch.labseer.utils;
 
+import java.util.Locale;
+
 import org.hibernate.boot.model.naming.Identifier;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl;
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
-import java.util.Locale;
 public class PhysicalNamingStrategyImpl extends PhysicalNamingStrategyStandardImpl {
     @Override
     public Identifier toPhysicalTableName(Identifier name, JdbcEnvironment context) {

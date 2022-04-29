@@ -5,6 +5,14 @@ import java.util.List;
 
 import javax.persistence.TypedQuery;
 
+import com.labsynch.labseer.domain.StandardizationDryRunCompound;
+import com.labsynch.labseer.domain.StandardizationHistory;
+import com.labsynch.labseer.domain.StandardizationSettings;
+import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
+import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
+import com.labsynch.labseer.exceptions.StandardizerException;
+import com.labsynch.labseer.service.StandardizationService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import flexjson.JSONDeserializer;
-
-import com.labsynch.labseer.domain.StandardizationDryRunCompound;
-import com.labsynch.labseer.domain.StandardizationHistory;
-import com.labsynch.labseer.domain.StandardizationSettings;
-import com.labsynch.labseer.dto.StandardizationDryRunSearchDTO;
-import com.labsynch.labseer.exceptions.CmpdRegMolFormatException;
-import com.labsynch.labseer.exceptions.StandardizerException;
-import com.labsynch.labseer.service.ChemStructureService;
-import com.labsynch.labseer.service.StandardizationService;
 
 @RequestMapping(value = {"/api/v1/standardization"})
 @Controller

@@ -12,6 +12,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
+import com.labsynch.labseer.dto.PreferredNameDTO;
+import com.labsynch.labseer.dto.PreferredNameResultsDTO;
+import com.labsynch.labseer.utils.PropertiesUtilService;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,13 +34,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
-import com.labsynch.labseer.dto.PreferredNameDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
-import com.labsynch.labseer.utils.PropertiesUtilService;
 
 import flexjson.JSONDeserializer;
 

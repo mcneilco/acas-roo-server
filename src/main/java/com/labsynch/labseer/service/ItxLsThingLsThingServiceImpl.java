@@ -1,50 +1,21 @@
 package com.labsynch.labseer.service;
 
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.collections.map.MultiValueMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import javax.persistence.NoResultException;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.labsynch.labseer.domain.ItxLsThingLsThing;
 import com.labsynch.labseer.domain.ItxLsThingLsThingState;
 import com.labsynch.labseer.domain.ItxLsThingLsThingValue;
-import com.labsynch.labseer.domain.LsThing;
-import com.labsynch.labseer.domain.LsThingLabel;
-import com.labsynch.labseer.domain.LsThingState;
-import com.labsynch.labseer.domain.LsThingValue;
 import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ErrorMessageDTO;
-import com.labsynch.labseer.dto.LsThingValidationDTO;
-import com.labsynch.labseer.dto.PreferredNameDTO;
-import com.labsynch.labseer.dto.PreferredNameRequestDTO;
-import com.labsynch.labseer.dto.PreferredNameResultsDTO;
-import com.labsynch.labseer.dto.ValuePathDTO;
-import com.labsynch.labseer.dto.ValueRuleDTO;
-import com.labsynch.labseer.exceptions.ErrorMessage;
-import com.labsynch.labseer.exceptions.UniqueInteractionsException;
-import com.labsynch.labseer.exceptions.UniqueNameException;
-import com.labsynch.labseer.utils.ItxLsThingLsThingComparator;
-import com.labsynch.labseer.utils.LsThingComparatorByBatchNumber;
-import com.labsynch.labseer.utils.LsThingComparatorByCodeName;
 import com.labsynch.labseer.utils.PropertiesUtilService;
-import com.labsynch.labseer.utils.SimpleUtil;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ItxLsThingLsThingServiceImpl implements ItxLsThingLsThingService {

@@ -1,12 +1,15 @@
 package com.labsynch.labseer.domain;
 
-import flexjson.JSONDeserializer;
-import flexjson.JSONSerializer;
 import java.util.Collection;
 import java.util.List;
+
 import javax.persistence.Lob;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+
+import flexjson.JSONDeserializer;
+import flexjson.JSONSerializer;
 
 
 public class RegSearch {

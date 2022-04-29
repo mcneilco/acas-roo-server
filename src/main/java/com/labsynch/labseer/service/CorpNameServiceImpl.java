@@ -12,12 +12,6 @@ import java.util.regex.Pattern;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.labsynch.labseer.domain.CorpName;
 import com.labsynch.labseer.domain.IsoSalt;
 import com.labsynch.labseer.domain.Isotope;
@@ -25,6 +19,12 @@ import com.labsynch.labseer.domain.Lot;
 import com.labsynch.labseer.domain.Salt;
 import com.labsynch.labseer.dto.CorpNameDTO;
 import com.labsynch.labseer.utils.PropertiesUtilService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CorpNameServiceImpl implements CorpNameService {

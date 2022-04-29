@@ -5,7 +5,9 @@ package com.labsynch.labseer.service;
 import java.util.Collection;
 import java.util.HashSet;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.AnalysisGroup;
+import com.labsynch.labseer.domain.AnalysisGroupState;
+import com.labsynch.labseer.domain.AnalysisGroupValue;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,10 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.AnalysisGroup;
-import com.labsynch.labseer.domain.AnalysisGroupState;
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.ExperimentState;
+import junit.framework.Assert;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

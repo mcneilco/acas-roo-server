@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.labsynch.labseer.domain.AnalysisGroupLabel;
+import com.labsynch.labseer.domain.ContainerLabel;
+import com.labsynch.labseer.domain.ExperimentLabel;
+import com.labsynch.labseer.domain.LsThingLabel;
+import com.labsynch.labseer.domain.ProtocolLabel;
+import com.labsynch.labseer.domain.SubjectLabel;
+import com.labsynch.labseer.domain.TreatmentGroupLabel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -16,14 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.labsynch.labseer.domain.AnalysisGroupLabel;
-import com.labsynch.labseer.domain.ContainerLabel;
-import com.labsynch.labseer.domain.ExperimentLabel;
-import com.labsynch.labseer.domain.LsThingLabel;
-import com.labsynch.labseer.domain.ProtocolLabel;
-import com.labsynch.labseer.domain.SubjectLabel;
-import com.labsynch.labseer.domain.TreatmentGroupLabel;
 
 
 @Transactional

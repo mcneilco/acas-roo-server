@@ -10,6 +10,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.labsynch.labseer.domain.ItxProtocolProtocol;
+import com.labsynch.labseer.domain.Protocol;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,9 +29,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.labsynch.labseer.domain.ItxProtocolProtocol;
-import com.labsynch.labseer.domain.Protocol;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

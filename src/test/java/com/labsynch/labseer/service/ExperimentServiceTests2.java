@@ -8,6 +8,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.ItxProtocolProtocol;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
+import com.labsynch.labseer.dto.BatchCodeDTO;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.ExperimentFilterDTO;
+import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
+import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
+import com.labsynch.labseer.dto.JSTreeNodeDTO;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,17 +30,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.ItxProtocolProtocol;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
-import com.labsynch.labseer.dto.BatchCodeDTO;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.ExperimentFilterDTO;
-import com.labsynch.labseer.dto.ExperimentFilterSearchDTO;
-import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
-import com.labsynch.labseer.dto.JSTreeNodeDTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

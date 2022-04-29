@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.labsynch.labseer.api.ApiFileSaveController;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.labsynch.labseer.api.ApiFileSaveController;
 
 public class MimeTypeUtil {
 

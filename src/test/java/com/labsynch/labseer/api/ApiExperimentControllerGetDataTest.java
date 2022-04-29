@@ -1,17 +1,10 @@
 package com.labsynch.labseer.api;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import junit.framework.Assert;
+import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,11 +21,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.domain.ExperimentLabel;
-import com.labsynch.labseer.dto.ExperimentErrorMessageDTO;
-import com.labsynch.labseer.dto.ExperimentSearchRequestDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

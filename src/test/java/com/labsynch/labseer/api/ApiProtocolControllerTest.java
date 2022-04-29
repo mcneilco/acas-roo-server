@@ -9,7 +9,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import junit.framework.Assert;
+import com.labsynch.labseer.domain.AuthorRole;
+import com.labsynch.labseer.domain.LsRole;
+import com.labsynch.labseer.domain.Protocol;
+import com.labsynch.labseer.domain.ProtocolLabel;
+import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.dto.CodeTableDTO;
+import com.labsynch.labseer.dto.DateValueComparisonRequest;
+import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,14 +32,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.labsynch.labseer.domain.AuthorRole;
-import com.labsynch.labseer.domain.LsRole;
-import com.labsynch.labseer.domain.Protocol;
-import com.labsynch.labseer.domain.ProtocolLabel;
-import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.dto.CodeTableDTO;
-import com.labsynch.labseer.dto.DateValueComparisonRequest;
-import com.labsynch.labseer.dto.ProtocolErrorMessageDTO;
+import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

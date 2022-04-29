@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.labsynch.labseer.domain.ExperimentKind;
 import com.labsynch.labseer.domain.ExperimentType;
 import com.labsynch.labseer.domain.InteractionType;
@@ -19,6 +16,9 @@ import com.labsynch.labseer.domain.StateType;
 import com.labsynch.labseer.domain.ThingKind;
 import com.labsynch.labseer.domain.ThingType;
 import com.labsynch.labseer.domain.ValueType;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InitialSetup {
 		

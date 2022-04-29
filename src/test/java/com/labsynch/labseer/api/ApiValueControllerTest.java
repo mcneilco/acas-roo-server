@@ -9,6 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.HashSet;
 import java.util.Set;
 
+import com.labsynch.labseer.domain.AnalysisGroupValue;
+import com.labsynch.labseer.domain.ExperimentValue;
+import com.labsynch.labseer.domain.LsThingValue;
+import com.labsynch.labseer.domain.ProtocolValue;
+import com.labsynch.labseer.domain.SubjectValue;
+import com.labsynch.labseer.domain.TreatmentGroupValue;
+import com.labsynch.labseer.dto.IdSetDTO;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,14 +32,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.labsynch.labseer.domain.AnalysisGroupValue;
-import com.labsynch.labseer.domain.ExperimentValue;
-import com.labsynch.labseer.domain.LsThingValue;
-import com.labsynch.labseer.domain.ProtocolValue;
-import com.labsynch.labseer.domain.SubjectValue;
-import com.labsynch.labseer.domain.TreatmentGroupValue;
-import com.labsynch.labseer.dto.IdSetDTO;
 
 import junit.framework.Assert;
 

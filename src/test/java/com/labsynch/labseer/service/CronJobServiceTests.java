@@ -2,6 +2,8 @@
 
 package com.labsynch.labseer.service;
 
+import com.labsynch.labseer.domain.CronJob;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -12,8 +14,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.labsynch.labseer.domain.CronJob;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)

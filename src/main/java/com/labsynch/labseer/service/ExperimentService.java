@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.stereotype.Service;
-
 import com.labsynch.labseer.domain.Experiment;
 import com.labsynch.labseer.dto.AnalysisGroupValueDTO;
 import com.labsynch.labseer.dto.CodeTableDTO;
@@ -22,6 +20,8 @@ import com.labsynch.labseer.dto.StringCollectionDTO;
 import com.labsynch.labseer.exceptions.NotFoundException;
 import com.labsynch.labseer.exceptions.TooManyResultsException;
 import com.labsynch.labseer.exceptions.UniqueNameException;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public interface ExperimentService {

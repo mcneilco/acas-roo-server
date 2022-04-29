@@ -2,12 +2,14 @@ package com.labsynch.labseer.dto;
 
 import java.util.Collection;
 import java.util.List;
+
+import com.labsynch.labseer.domain.Experiment;
+import com.labsynch.labseer.utils.ExcludeNulls;
+
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.labsynch.labseer.domain.Experiment;
-import com.labsynch.labseer.utils.ExcludeNulls;
 import flexjson.JSONDeserializer;
 import flexjson.JSONSerializer;
 
